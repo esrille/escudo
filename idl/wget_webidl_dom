@@ -1,0 +1,10 @@
+wget http://dev.w3.org/2006/webapi/WebIDL/dom/dom2css.idl
+wget http://dev.w3.org/2006/webapi/WebIDL/dom/dom2events.idl
+wget http://dev.w3.org/2006/webapi/WebIDL/dom/dom2ranges.idl
+wget http://dev.w3.org/2006/webapi/WebIDL/dom/dom2stylesheets.idl
+wget http://dev.w3.org/2006/webapi/WebIDL/dom/dom2traversal.idl
+wget http://dev.w3.org/2006/webapi/WebIDL/dom/dom2views.idl
+wget http://dev.w3.org/2006/webapi/WebIDL/dom/dom3core.idl
+wget http://dev.w3.org/2006/webapi/WebIDL/dom/dom3ls.idl
+wget http://dev.w3.org/2006/webapi/WebIDL/dom/dom3validation.idl
+wget http://dev.w3.org/2006/webapi/WebIDL/dom/dom3xpath.idl

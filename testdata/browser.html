@@ -1,0 +1,26 @@
+<!doctype html> 
+<html> 
+<meta charset="UTF-8"> 
+<head>
+<script type="text/javascript"> 
+function keypress(e) {
+    if (e.keyCode == 13) {
+        var url = document.getElementById('location').value;
+        document.getElementById('frame').src = url;
+        e.preventDefault();
+    }
+}
+</script>
+</head>
+<body>
+<div>
+<input type="text" id="location" value="http://" style="width: 320px; height: 24px;">
+</div>
+<IFRAME id="frame" src="" width=796 height=1000 scrolling="AUTO" style="border-style: solid; border-width: thin;">
+</IFRAME>
+<script type="text/javascript"> 
+    document.getElementById('location').focus();
+    document.getElementById('location').addEventListener("keydown", keypress, false);
+</script>
+</body>
+</html>
