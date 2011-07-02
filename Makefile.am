@@ -456,20 +456,21 @@ org/w3c/dom/Node.h : $(idl_files)
 
 lib_LIBRARIES = libeshtml5.a libesfontmanager.a
 
-LDADD = libeshtml5.a libesfontmanager.a # -ljs_static
+LDADD = libeshtml5.a libesfontmanager.a
 
 AM_CPPFLAGS = \
-       -std=gnu++0x \
+	-std=gnu++0x \
 	-I $(srcdir) \
 	-isystem $(builddir) \
 	-I $(GECKO_SDK)/include \
 	$(ICU_CPPFLAGS) \
 	$(FREETYPE_CPPFLAGS) \
-       -DXP_UNIX \
-	-D YYERROR_VERBOSE \
+	-DXP_UNIX \
+	-DYYERROR_VERBOSE \
+	-DLIBERATON_TTF=\"$(LIBERATON_TTF)\" \
 	-Wall 
 
-AM_LDFLAGS = -L$(GECKO_SDK)/lib $(ICU_LIBS) $(FREETYPE_LIBS) -lpng -lglut -lGLU -lGL -lXmu -lXext -lX11 -lm -lboost_regex -lboost_system -lboost_iostreams -ljs
+AM_LDFLAGS = -L$(GECKO_SDK)/lib $(ICU_LIBS) $(FREETYPE_LIBS) -lpng -lglut -lGLU -lGL -lXext -lX11 -lm -lboost_regex -lboost_system -lboost_iostreams
 
 AM_YFLAGS = -d -v -t
 

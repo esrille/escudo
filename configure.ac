@@ -31,5 +31,12 @@ FREETYPE_LIBS=`$freetype_config --libs`
 AC_SUBST([FREETYPE_CPPFLAGS])
 AC_SUBST([FREETYPE_LIBS])
 
+# check for SpiderMonkey 1.8.5
+AC_SEARCH_LIBS(JS_NewCompartmentAndGlobalObject, js mozjs185)
+
+# check for liberation font
+AC_CHECK_FILE(/usr/share/fonts/liberation/LiberationSerif-Regular.ttf,[AC_SUBST(LIBERATON_TTF,/usr/share/fonts/liberation)])
+AC_CHECK_FILE(/usr/share/fonts/truetype/ttf-liberation/LiberationSerif-Regular.ttf,[AC_SUBST(LIBERATON_TTF,/usr/share/fonts/truetype/ttf-liberation)])
+
 AC_OUTPUT
 

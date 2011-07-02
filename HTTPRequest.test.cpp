@@ -19,6 +19,7 @@
 #include <unistd.h>
 
 #include <iostream>
+#include <boost/version.hpp>
 #include <boost/iostreams/stream.hpp>
 #include <boost/iostreams/device/file_descriptor.hpp>
 
@@ -44,7 +45,11 @@ int test(std::u16string urlString)
         return 1;
 
     std::cerr << request.getResponseMessage().toString() << "----\n";
+#if 104400 <= BOOST_VERSION
     boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request.getContentDescriptor(), boost::iostreams::never_close_handle);
+#else    
+    boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request.getContentDescriptor(), false);
+#endif    
     stream.seekg(0, std::ios::beg);
     while (stream) {
         char c = stream.get();

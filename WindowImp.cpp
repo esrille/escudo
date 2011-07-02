@@ -18,6 +18,7 @@
 
 #include <new>
 #include <iostream>
+#include <boost/version.hpp>
 #include <boost/iostreams/stream.hpp>
 #include <boost/iostreams/device/file_descriptor.hpp>
 
@@ -132,7 +133,11 @@ bool WindowImp::poll()
                 history.update(document);
             }
 
+#if 104400 <= BOOST_VERSION
             boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request.getContentDescriptor(), boost::iostreams::never_close_handle);
+#else
+            boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request.getContentDescriptor(), false);
+#endif
             stream.seekg(0, std::ios::beg);
             HTMLInputStream htmlInputStream(stream, "utf-8");  // TODO check header
             HTMLTokenizer tokenizer(&htmlInputStream);

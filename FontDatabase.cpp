@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Esrille Inc.
+ * Copyright 2010, 2011 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,30 +74,30 @@ FontInfo fontDatabase[] = {
         u"LiberationSerif",
         CSSFontFamilyValueImp::Serif,
         {
-            { "/usr/share/fonts/liberation/LiberationSerif-BoldItalic.ttf", 700, CSSFontStyleValueImp::Italic },
-            { "/usr/share/fonts/liberation/LiberationSerif-Italic.ttf", 400, CSSFontStyleValueImp::Italic },
-            { "/usr/share/fonts/liberation/LiberationSerif-Regular.ttf", 400 },
-            { "/usr/share/fonts/liberation/LiberationSerif-Bold.ttf", 700 },
+            { LIBERATON_TTF "/LiberationSerif-BoldItalic.ttf", 700, CSSFontStyleValueImp::Italic },
+            { LIBERATON_TTF "/LiberationSerif-Italic.ttf", 400, CSSFontStyleValueImp::Italic },
+            { LIBERATON_TTF "/LiberationSerif-Regular.ttf", 400 },
+            { LIBERATON_TTF "/LiberationSerif-Bold.ttf", 700 },
         }
     },
     {
         u"LiberationSans",
         CSSFontFamilyValueImp::SansSerif,
         {
-            { "/usr/share/fonts/liberation/LiberationSans-BoldItalic.ttf", 700, CSSFontStyleValueImp::Italic },
-            { "/usr/share/fonts/liberation/LiberationSans-Italic.ttf", 400, CSSFontStyleValueImp::Italic },
-            { "/usr/share/fonts/liberation/LiberationSans-Regular.ttf", 400 },
-            { "/usr/share/fonts/liberation/LiberationSans-Bold.ttf", 700 },
+            { LIBERATON_TTF "/LiberationSans-BoldItalic.ttf", 700, CSSFontStyleValueImp::Italic },
+            { LIBERATON_TTF "/LiberationSans-Italic.ttf", 400, CSSFontStyleValueImp::Italic },
+            { LIBERATON_TTF "/LiberationSans-Regular.ttf", 400 },
+            { LIBERATON_TTF "/LiberationSans-Bold.ttf", 700 },
         }
     },
     {
         u"LiberationMono",
         CSSFontFamilyValueImp::Monospace,
         {
-            { "/usr/share/fonts/liberation/LiberationMono-BoldItalic.ttf", 700, CSSFontStyleValueImp::Italic },
-            { "/usr/share/fonts/liberation/LiberationMono-Italic.ttf", 400, CSSFontStyleValueImp::Italic },
-            { "/usr/share/fonts/liberation/LiberationMono-Regular.ttf", 400 },
-            { "/usr/share/fonts/liberation/LiberationMono-Bold.ttf", 700 },
+            { LIBERATON_TTF "/LiberationMono-BoldItalic.ttf", 700, CSSFontStyleValueImp::Italic },
+            { LIBERATON_TTF "/LiberationMono-Italic.ttf", 400, CSSFontStyleValueImp::Italic },
+            { LIBERATON_TTF "/LiberationMono-Regular.ttf", 400 },
+            { LIBERATON_TTF "/LiberationMono-Bold.ttf", 700 },
         }
     }
 };
