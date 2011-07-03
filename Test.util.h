@@ -46,11 +46,4 @@ void mouse(int button, int state, int x, int y);
 void timer(int value);
 void init(int argc, char* argv[]);
 
-// Script.cpp
-struct JSRuntime;
-struct JSObject;
-JSRuntime* getRuntime();
-JSObject* getGlobal();
-void putGlobal(JSObject* global);
-
 #endif  // TEST_UTIL_H

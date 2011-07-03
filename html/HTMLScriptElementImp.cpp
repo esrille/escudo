@@ -16,11 +16,12 @@
 
 #include "HTMLScriptElementImp.h"
 
-#include <esjsapi.h>
-
 #include <iostream>
 
 #include "utf.h"
+#include "DocumentImp.h"
+#include "HTMLScriptElementImp.h"
+#include "js/esjsapi.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -77,7 +78,7 @@ bool HTMLScriptElementImp::execute()
     const char* filename = "";
     int lineno = 0;
     std::u16string script = getTextContent();
-    return JS_EvaluateUCScript(jscontext, JS_GetGlobalObject(jscontext),
+    return JS_EvaluateUCScript(jscontext, static_cast<JSObject*>(getOwnerDocumentImp()->getGlobal()),
                                reinterpret_cast<const jschar*>(script.c_str()), script.length(),
                                filename, lineno, &rval);
 }

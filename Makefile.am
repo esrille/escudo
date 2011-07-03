@@ -474,7 +474,12 @@ AM_LDFLAGS = -L$(GECKO_SDK)/lib $(ICU_LIBS) $(FREETYPE_LIBS) -lpng -lglut -lGLU 
 
 AM_YFLAGS = -d -v -t
 
-libesfontmanager_a_SOURCES = FontManager.cpp FontManager.h FontManagerBackEndGL.h
+libesfontmanager_a_SOURCES = \
+	font/FontManager.cpp \
+	font/FontManager.h \
+	font/FontManagerBackEndGL.h \
+	font/FontDatabase.h \
+	font/FontDatabase.cpp
 
 org/w3c/dom/Node.cpp : $(idl_files) 
 	esidl -messenger-src -string std::u16string -object Object -fno-multipleinheritance $^
@@ -490,15 +495,14 @@ libeshtml5_a_SOURCES = \
 	Any.h \
 	nullable.h \
 	sequence.h \
-	esjsapi.h \
-	bridge.cpp \
 	utf.h \
 	utf.cpp \
 	TextIterator.h \
-	FontDatabase.h \
-	FontDatabase.cpp \
 	U16InputStream.cpp \
 	U16InputStream.h \
+	js/esjsapi.h \
+	js/bridge.cpp \
+	js/Script.cpp \
 	url/URI.h \
 	url/URI.cpp \
 	url/URL.h \
@@ -548,7 +552,6 @@ libeshtml5_a_SOURCES = \
 	css/ViewCSSImp.cpp \
 	css/ViewCSSImp.h \
 	css/ViewCSSImpGL.cpp \
-	Script.cpp \
 	Test.util.h \
 	Test.util.cpp \
 	Test.glut.cpp

@@ -24,8 +24,8 @@
 #include "CSSStyleDeclarationImp.h"
 #include "ViewCSSImp.h"
 
-#include "FontManager.h"
-#include "FontManagerBackEndGL.h"
+#include "font/FontManager.h"
+#include "font/FontManagerBackEndGL.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 

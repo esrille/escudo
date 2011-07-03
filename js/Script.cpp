@@ -16,9 +16,9 @@
 
 // #define DEBUG 1 // for JS_DumpHeap
 
-#include <esjsapi.h>
+#include "Script.h"
 
-#include "Test.util.h"
+#include "esjsapi.h"
 
 #include "ApplicationCacheImp.h"
 #include "AttrImp.h"

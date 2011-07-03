@@ -91,8 +91,8 @@
 #include "WindowImp.h"
 #include "ObjectArrayImp.h"
 
-#include <esjsapi.h>
-#include "Test.util.h"
+#include "js/esjsapi.h"
+#include "js/Script.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 

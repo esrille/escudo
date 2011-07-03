@@ -72,6 +72,9 @@ public:
         return false;
     }
 
+    DocumentImp* getOwnerDocumentImp() const {
+        return ownerDocument;
+    }
     void setOwnerDocument(DocumentImp* document);
 
     unsigned int getChildCount()

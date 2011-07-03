@@ -27,9 +27,9 @@
 
 #include "Box.h"
 
-#include "FontDatabase.h"
-#include "FontManager.h"
-#include "FontManagerBackEndGL.h"
+#include "font/FontDatabase.h"
+#include "font/FontManager.h"
+#include "font/FontManagerBackEndGL.h"
 
 namespace {
 

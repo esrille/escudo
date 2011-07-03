@@ -32,7 +32,7 @@
 #include "NodeImp.h"
 
 #include "css/Box.h"
-#include "FontManager.h"
+#include "font/FontManager.h"
 
 using namespace org::w3c::dom::bootstrap;
 using namespace org::w3c::dom;

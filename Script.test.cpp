@@ -18,7 +18,8 @@
 
 #include <GL/freeglut.h>
 
-#include <esjsapi.h>
+#include "js/esjsapi.h"
+#include "js/Script.h"
 
 #include "DOMImplementationImp.h"
 #include "WindowImp.h"

@@ -30,7 +30,7 @@
 #include "Box.h"
 #include "CSSPropertyValueImp.h"
 
-#include "FontManager.h" // TODO
+#include "font/FontManager.h"
 
 namespace org { namespace w3c { namespace dom {
 

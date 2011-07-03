@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#include "FontManager.h"
-#include "FontManagerBackEndGL.h"
+#include "font/FontManager.h"
+#include "font/FontManagerBackEndGL.h"
 
 FontManagerBackEndGL backend;
 
