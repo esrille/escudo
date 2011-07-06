@@ -31,13 +31,13 @@ html::HTMLFormElement HTMLOptionElementImp::getForm()
     return static_cast<Object*>(0);
 }
 
-std::u16string HTMLOptionElementImp::getLabel()
+Nullable<std::u16string> HTMLOptionElementImp::getLabel()
 {
     // TODO: implement me!
     return u"";
 }
 
-void HTMLOptionElementImp::setLabel(std::u16string label)
+void HTMLOptionElementImp::setLabel(Nullable<std::u16string> label)
 {
     // TODO: implement me!
 }

@@ -17,8 +17,12 @@
 #ifndef CSSSPROPERTYVALUE_IMP_H
 #define CSSSPROPERTYVALUE_IMP_H
 
-#include <Object.h>
-#include <org/w3c/dom/css/CSSPrimitiveValue.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#include <org/w3c/dom/css/CSSPropertyValue.h>
+
 #include <org/w3c/dom/Document.h>
 #include <org/w3c/dom/Element.h>
 

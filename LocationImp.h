@@ -32,35 +32,39 @@ class LocationImp : public ObjectMixin<LocationImp>
     URL url;
 
 public:
-    // Location
-    std::u16string getHref();
-    void setHref(std::u16string href);
-    void assign(std::u16string url);
-    void replace(std::u16string url);
-    void reload();
-    std::u16string getProtocol();
-    void setProtocol(std::u16string protocol);
-    std::u16string getHost();
-    void setHost(std::u16string host);
-    std::u16string getHostname();
-    void setHostname(std::u16string hostname);
-    std::u16string getPort();
-    void setPort(std::u16string port);
-    std::u16string getPathname();
-    void setPathname(std::u16string pathname);
-    std::u16string getSearch();
-    void setSearch(std::u16string search);
-    std::u16string getHash();
-    void setHash(std::u16string hash);
-    std::u16string resolveURL(std::u16string url);
-
-    // Object
-    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
-        return html::Location::dispatch(this, selector, id, argc, argv);
-    }
-
     LocationImp(WindowImp* window, std::u16string url);
     LocationImp(const LocationImp& other);
+
+    // Location
+    virtual std::u16string getHref() __attribute__((weak));
+    virtual void setHref(std::u16string href) __attribute__((weak));
+    virtual void assign(std::u16string url) __attribute__((weak));
+    virtual void replace(std::u16string url) __attribute__((weak));
+    virtual void reload() __attribute__((weak));
+    virtual std::u16string getProtocol() __attribute__((weak));
+    virtual void setProtocol(std::u16string protocol) __attribute__((weak));
+    virtual std::u16string getHost() __attribute__((weak));
+    virtual void setHost(std::u16string host) __attribute__((weak));
+    virtual std::u16string getHostname() __attribute__((weak));
+    virtual void setHostname(std::u16string hostname) __attribute__((weak));
+    virtual std::u16string getPort() __attribute__((weak));
+    virtual void setPort(std::u16string port) __attribute__((weak));
+    virtual std::u16string getPathname() __attribute__((weak));
+    virtual void setPathname(std::u16string pathname) __attribute__((weak));
+    virtual std::u16string getSearch() __attribute__((weak));
+    virtual void setSearch(std::u16string search) __attribute__((weak));
+    virtual std::u16string getHash() __attribute__((weak));
+    virtual void setHash(std::u16string hash) __attribute__((weak));
+    virtual std::u16string resolveURL(std::u16string url) __attribute__((weak));
+    // Object
+    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
+    {
+        return html::Location::dispatch(this, selector, id, argc, argv);
+    }
+    static const char* const getMetaData()
+    {
+        return html::Location::getMetaData();
+    }
 };
 
 }}}}  // org::w3c::dom::bootstrap

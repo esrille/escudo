@@ -7,7 +7,6 @@ SUFFIXES = .idl .re
 vpath %.idl = $(srcdir)/idl
 
 idl_files = \
-	2dcontext.idl \
 	cssom.idl \
 	cssomview.idl \
 	dom2css.idl \
@@ -18,8 +17,6 @@ idl_files = \
 	eventsource.idl \
 	file.idl \
 	html5.idl \
-	microdata.idl \
-	postmsg.idl \
 	progress-events.idl \
 	selectors.idl \
 	typedarray.idl \
@@ -31,31 +28,33 @@ generated_headers = \
 	org/w3c/dom/CaretPosition.h \
 	org/w3c/dom/CharacterData.h \
 	org/w3c/dom/Comment.h \
-	org/w3c/dom/DocumentFragment.h \
-	org/w3c/dom/Document.h \
-	org/w3c/dom/DocumentType.h \
+	org/w3c/dom/DOMElementMap.h \
 	org/w3c/dom/DOMException.h \
 	org/w3c/dom/DOMImplementation.h \
 	org/w3c/dom/DOMSettableTokenList.h \
 	org/w3c/dom/DOMStringList.h \
 	org/w3c/dom/DOMStringMap.h \
 	org/w3c/dom/DOMTokenList.h \
+	org/w3c/dom/Document.h \
+	org/w3c/dom/DocumentFragment.h \
+	org/w3c/dom/DocumentType.h \
 	org/w3c/dom/Element.h \
 	org/w3c/dom/FormData.h \
 	org/w3c/dom/Node.h \
 	org/w3c/dom/NodeList.h \
 	org/w3c/dom/ProcessingInstruction.h \
 	org/w3c/dom/Text.h \
-	org/w3c/dom/XMLHttpRequestEventTarget.h \
 	org/w3c/dom/XMLHttpRequest.h \
+	org/w3c/dom/XMLHttpRequestEventTarget.h \
 	org/w3c/dom/XMLHttpRequestUpload.h \
-	org/w3c/dom/css/Counter.h \
 	org/w3c/dom/css/CSS2Properties.h \
 	org/w3c/dom/css/CSSCharsetRule.h \
 	org/w3c/dom/css/CSSColorComponentValue.h \
 	org/w3c/dom/css/CSSComponentValue.h \
 	org/w3c/dom/css/CSSFontFaceRule.h \
+	org/w3c/dom/css/CSSIdentifierComponentValue.h \
 	org/w3c/dom/css/CSSImportRule.h \
+	org/w3c/dom/css/CSSKeywordComponentValue.h \
 	org/w3c/dom/css/CSSLengthComponentValue.h \
 	org/w3c/dom/css/CSSMapValue.h \
 	org/w3c/dom/css/CSSMediaRule.h \
@@ -63,25 +62,30 @@ generated_headers = \
 	org/w3c/dom/css/CSSPageRule.h \
 	org/w3c/dom/css/CSSPercentageComponentValue.h \
 	org/w3c/dom/css/CSSPrimitiveValue.h \
+	org/w3c/dom/css/CSSPropertyValue.h \
 	org/w3c/dom/css/CSSPropertyValueList.h \
 	org/w3c/dom/css/CSSRule.h \
+	org/w3c/dom/css/CSSStringComponentValue.h \
 	org/w3c/dom/css/CSSStyleDeclaration.h \
 	org/w3c/dom/css/CSSStyleDeclarationValue.h \
 	org/w3c/dom/css/CSSStyleRule.h \
 	org/w3c/dom/css/CSSStyleSheet.h \
-	org/w3c/dom/css/CSSUnknownRule.h \
 	org/w3c/dom/css/CSSURLComponentValue.h \
+	org/w3c/dom/css/CSSUnknownRule.h \
 	org/w3c/dom/css/CSSValue.h \
 	org/w3c/dom/css/CSSValueList.h \
-	org/w3c/dom/css/DocumentCSS.h \
+	org/w3c/dom/css/Counter.h \
 	org/w3c/dom/css/DOMImplementationCSS.h \
+	org/w3c/dom/css/DocumentCSS.h \
 	org/w3c/dom/css/ElementCSSInlineStyle.h \
-	org/w3c/dom/css/Rect.h \
 	org/w3c/dom/css/RGBColor.h \
+	org/w3c/dom/css/Rect.h \
 	org/w3c/dom/events/CompositionEvent.h \
 	org/w3c/dom/events/CustomEvent.h \
-	org/w3c/dom/events/EventException.h \
+	org/w3c/dom/events/CustomEventInit.h \
 	org/w3c/dom/events/Event.h \
+	org/w3c/dom/events/EventException.h \
+	org/w3c/dom/events/EventInit.h \
 	org/w3c/dom/events/EventListener.h \
 	org/w3c/dom/events/EventTarget.h \
 	org/w3c/dom/events/FocusEvent.h \
@@ -89,48 +93,51 @@ generated_headers = \
 	org/w3c/dom/events/MouseEvent.h \
 	org/w3c/dom/events/MutationEvent.h \
 	org/w3c/dom/events/MutationNameEvent.h \
-	org/w3c/dom/eventsource/EventSource.h \
 	org/w3c/dom/events/ProgressEvent.h \
 	org/w3c/dom/events/TextEvent.h \
 	org/w3c/dom/events/UIEvent.h \
 	org/w3c/dom/events/WheelEvent.h \
+	org/w3c/dom/eventsource/EventSource.h \
 	org/w3c/dom/file/Blob.h \
+	org/w3c/dom/file/File.h \
+	org/w3c/dom/file/FileCallback.h \
 	org/w3c/dom/file/FileError.h \
 	org/w3c/dom/file/FileException.h \
-	org/w3c/dom/file/File.h \
+	org/w3c/dom/file/FileList.h \
 	org/w3c/dom/file/FileReader.h \
 	org/w3c/dom/file/FileReaderSync.h \
 	org/w3c/dom/html/ApplicationCache.h \
 	org/w3c/dom/html/BarProp.h \
 	org/w3c/dom/html/BeforeUnloadEvent.h \
+	org/w3c/dom/html/BlobCallback.h \
 	org/w3c/dom/html/BooleanCallback.h \
 	org/w3c/dom/html/CanvasGradient.h \
 	org/w3c/dom/html/CanvasPattern.h \
 	org/w3c/dom/html/CanvasPixelArray.h \
 	org/w3c/dom/html/CanvasRenderingContext2D.h \
 	org/w3c/dom/html/DataTransfer.h \
+	org/w3c/dom/html/DataTransferItem.h \
+	org/w3c/dom/html/DataTransferItemList.h \
 	org/w3c/dom/html/DragEvent.h \
 	org/w3c/dom/html/Function.h \
-	org/w3c/dom/html/HashChangeEvent.h \
-	org/w3c/dom/html/History.h \
 	org/w3c/dom/html/HTMLAllCollection.h \
 	org/w3c/dom/html/HTMLAnchorElement.h \
 	org/w3c/dom/html/HTMLAppletElement.h \
 	org/w3c/dom/html/HTMLAreaElement.h \
 	org/w3c/dom/html/HTMLAudioElement.h \
+	org/w3c/dom/html/HTMLBRElement.h \
 	org/w3c/dom/html/HTMLBaseElement.h \
 	org/w3c/dom/html/HTMLBaseFontElement.h \
 	org/w3c/dom/html/HTMLBodyElement.h \
-	org/w3c/dom/html/HTMLBRElement.h \
 	org/w3c/dom/html/HTMLButtonElement.h \
 	org/w3c/dom/html/HTMLCanvasElement.h \
 	org/w3c/dom/html/HTMLCollection.h \
 	org/w3c/dom/html/HTMLCommandElement.h \
+	org/w3c/dom/html/HTMLDListElement.h \
 	org/w3c/dom/html/HTMLDataListElement.h \
 	org/w3c/dom/html/HTMLDetailsElement.h \
 	org/w3c/dom/html/HTMLDirectoryElement.h \
 	org/w3c/dom/html/HTMLDivElement.h \
-	org/w3c/dom/html/HTMLDListElement.h \
 	org/w3c/dom/html/HTMLDocument.h \
 	org/w3c/dom/html/HTMLElement.h \
 	org/w3c/dom/html/HTMLEmbedElement.h \
@@ -140,17 +147,17 @@ generated_headers = \
 	org/w3c/dom/html/HTMLFormElement.h \
 	org/w3c/dom/html/HTMLFrameElement.h \
 	org/w3c/dom/html/HTMLFrameSetElement.h \
+	org/w3c/dom/html/HTMLHRElement.h \
 	org/w3c/dom/html/HTMLHeadElement.h \
 	org/w3c/dom/html/HTMLHeadingElement.h \
-	org/w3c/dom/html/HTMLHRElement.h \
 	org/w3c/dom/html/HTMLHtmlElement.h \
 	org/w3c/dom/html/HTMLIFrameElement.h \
 	org/w3c/dom/html/HTMLImageElement.h \
 	org/w3c/dom/html/HTMLInputElement.h \
 	org/w3c/dom/html/HTMLKeygenElement.h \
+	org/w3c/dom/html/HTMLLIElement.h \
 	org/w3c/dom/html/HTMLLabelElement.h \
 	org/w3c/dom/html/HTMLLegendElement.h \
-	org/w3c/dom/html/HTMLLIElement.h \
 	org/w3c/dom/html/HTMLLinkElement.h \
 	org/w3c/dom/html/HTMLMapElement.h \
 	org/w3c/dom/html/HTMLMarqueeElement.h \
@@ -159,8 +166,8 @@ generated_headers = \
 	org/w3c/dom/html/HTMLMetaElement.h \
 	org/w3c/dom/html/HTMLMeterElement.h \
 	org/w3c/dom/html/HTMLModElement.h \
-	org/w3c/dom/html/HTMLObjectElement.h \
 	org/w3c/dom/html/HTMLOListElement.h \
+	org/w3c/dom/html/HTMLObjectElement.h \
 	org/w3c/dom/html/HTMLOptGroupElement.h \
 	org/w3c/dom/html/HTMLOptionElement.h \
 	org/w3c/dom/html/HTMLOptionsCollection.h \
@@ -190,9 +197,10 @@ generated_headers = \
 	org/w3c/dom/html/HTMLUListElement.h \
 	org/w3c/dom/html/HTMLUnknownElement.h \
 	org/w3c/dom/html/HTMLVideoElement.h \
+	org/w3c/dom/html/HashChangeEvent.h \
+	org/w3c/dom/html/History.h \
 	org/w3c/dom/html/ImageData.h \
 	org/w3c/dom/html/Location.h \
-	org/w3c/dom/html/MediaError.h \
 	org/w3c/dom/html/MessageChannel.h \
 	org/w3c/dom/html/MessageEvent.h \
 	org/w3c/dom/html/MessagePort.h \
@@ -202,17 +210,17 @@ generated_headers = \
 	org/w3c/dom/html/PropertyNodeList.h \
 	org/w3c/dom/html/RadioNodeList.h \
 	org/w3c/dom/html/Screen.h \
-	org/w3c/dom/html/Selection.h \
 	org/w3c/dom/html/StyleMedia.h \
 	org/w3c/dom/html/TextMetrics.h \
 	org/w3c/dom/html/TimeRanges.h \
-	org/w3c/dom/html/UndoManagerEvent.h \
+	org/w3c/dom/html/Transferable.h \
 	org/w3c/dom/html/UndoManager.h \
+	org/w3c/dom/html/UndoManagerEvent.h \
 	org/w3c/dom/html/ValidityState.h \
 	org/w3c/dom/html/Window.h \
 	org/w3c/dom/ranges/DocumentRange.h \
-	org/w3c/dom/ranges/RangeException.h \
 	org/w3c/dom/ranges/Range.h \
+	org/w3c/dom/ranges/RangeException.h \
 	org/w3c/dom/stylesheets/LinkStyle.h \
 	org/w3c/dom/stylesheets/MediaList.h \
 	org/w3c/dom/stylesheets/StyleSheet.h \
@@ -234,20 +242,46 @@ generated_headers = \
 	org/w3c/dom/views/ClientRect.h \
 	org/w3c/dom/views/ClientRectList.h
 
+#	org/w3c/dom/html/AudioTrack.h \
+#	org/w3c/dom/html/AudioTrackList.h \
+#	org/w3c/dom/html/External.h \
+#	org/w3c/dom/html/FunctionStringCallback.h \
+#	org/w3c/dom/html/HTMLTrackElement.h \
+#	org/w3c/dom/html/LocalMediaStream.h \
+#	org/w3c/dom/html/MediaController.h \
+#	org/w3c/dom/html/MediaError.h \
+#	org/w3c/dom/html/MediaStream.h \
+#	org/w3c/dom/html/MediaStreamRecorder.h \
+#	org/w3c/dom/html/MutableTextTrack.h \
+#	org/w3c/dom/html/NavigatorUserMediaError.h \
+#	org/w3c/dom/html/NavigatorUserMediaErrorCallback.h \
+#	org/w3c/dom/html/NavigatorUserMediaSuccessCallback.h \
+#	org/w3c/dom/html/PeerConnection.h \
+#	org/w3c/dom/html/SignalingCallback.h \
+#	org/w3c/dom/html/StreamEvent.h \
+#	org/w3c/dom/html/StreamTrack.h \
+#	org/w3c/dom/html/TextTrack.h \
+#	org/w3c/dom/html/TextTrackCue.h \
+#	org/w3c/dom/html/TextTrackCueList.h \
+#	org/w3c/dom/html/VideoTrack.h \
+#	org/w3c/dom/html/VideoTrackList.h \
+#	org/w3c/dom/html/WindowModal.h
+
 generated_sources = \
 	org/w3c/dom/AnonXMLHttpRequest.cpp \
 	org/w3c/dom/Attr.cpp \
 	org/w3c/dom/CaretPosition.cpp \
 	org/w3c/dom/CharacterData.cpp \
 	org/w3c/dom/Comment.cpp \
-	org/w3c/dom/Document.cpp \
-	org/w3c/dom/DocumentFragment.cpp \
-	org/w3c/dom/DocumentType.cpp \
+	org/w3c/dom/DOMElementMap.cpp \
 	org/w3c/dom/DOMImplementation.cpp \
 	org/w3c/dom/DOMSettableTokenList.cpp \
 	org/w3c/dom/DOMStringList.cpp \
 	org/w3c/dom/DOMStringMap.cpp \
 	org/w3c/dom/DOMTokenList.cpp \
+	org/w3c/dom/Document.cpp \
+	org/w3c/dom/DocumentFragment.cpp \
+	org/w3c/dom/DocumentType.cpp \
 	org/w3c/dom/Element.cpp \
 	org/w3c/dom/FormData.cpp \
 	org/w3c/dom/Node.cpp \
@@ -257,13 +291,14 @@ generated_sources = \
 	org/w3c/dom/XMLHttpRequest.cpp \
 	org/w3c/dom/XMLHttpRequestEventTarget.cpp \
 	org/w3c/dom/XMLHttpRequestUpload.cpp \
-	org/w3c/dom/css/Counter.cpp \
 	org/w3c/dom/css/CSS2Properties.cpp \
 	org/w3c/dom/css/CSSCharsetRule.cpp \
 	org/w3c/dom/css/CSSColorComponentValue.cpp \
 	org/w3c/dom/css/CSSComponentValue.cpp \
 	org/w3c/dom/css/CSSFontFaceRule.cpp \
+	org/w3c/dom/css/CSSIdentifierComponentValue.cpp \
 	org/w3c/dom/css/CSSImportRule.cpp \
+	org/w3c/dom/css/CSSKeywordComponentValue.cpp \
 	org/w3c/dom/css/CSSLengthComponentValue.cpp \
 	org/w3c/dom/css/CSSMapValue.cpp \
 	org/w3c/dom/css/CSSMediaRule.cpp \
@@ -271,24 +306,29 @@ generated_sources = \
 	org/w3c/dom/css/CSSPageRule.cpp \
 	org/w3c/dom/css/CSSPercentageComponentValue.cpp \
 	org/w3c/dom/css/CSSPrimitiveValue.cpp \
+	org/w3c/dom/css/CSSPropertyValue.cpp \
 	org/w3c/dom/css/CSSPropertyValueList.cpp \
 	org/w3c/dom/css/CSSRule.cpp \
+	org/w3c/dom/css/CSSStringComponentValue.cpp \
 	org/w3c/dom/css/CSSStyleDeclaration.cpp \
 	org/w3c/dom/css/CSSStyleDeclarationValue.cpp \
 	org/w3c/dom/css/CSSStyleRule.cpp \
 	org/w3c/dom/css/CSSStyleSheet.cpp \
-	org/w3c/dom/css/CSSUnknownRule.cpp \
 	org/w3c/dom/css/CSSURLComponentValue.cpp \
+	org/w3c/dom/css/CSSUnknownRule.cpp \
 	org/w3c/dom/css/CSSValue.cpp \
 	org/w3c/dom/css/CSSValueList.cpp \
-	org/w3c/dom/css/DocumentCSS.cpp \
+	org/w3c/dom/css/Counter.cpp \
 	org/w3c/dom/css/DOMImplementationCSS.cpp \
+	org/w3c/dom/css/DocumentCSS.cpp \
 	org/w3c/dom/css/ElementCSSInlineStyle.cpp \
-	org/w3c/dom/css/Rect.cpp \
 	org/w3c/dom/css/RGBColor.cpp \
+	org/w3c/dom/css/Rect.cpp \
 	org/w3c/dom/events/CompositionEvent.cpp \
 	org/w3c/dom/events/CustomEvent.cpp \
+	org/w3c/dom/events/CustomEventInit.cpp \
 	org/w3c/dom/events/Event.cpp \
+	org/w3c/dom/events/EventInit.cpp \
 	org/w3c/dom/events/EventListener.cpp \
 	org/w3c/dom/events/EventTarget.cpp \
 	org/w3c/dom/events/FocusEvent.cpp \
@@ -296,47 +336,50 @@ generated_sources = \
 	org/w3c/dom/events/MouseEvent.cpp \
 	org/w3c/dom/events/MutationEvent.cpp \
 	org/w3c/dom/events/MutationNameEvent.cpp \
-	org/w3c/dom/eventsource/EventSource.cpp \
 	org/w3c/dom/events/ProgressEvent.cpp \
 	org/w3c/dom/events/TextEvent.cpp \
 	org/w3c/dom/events/UIEvent.cpp \
 	org/w3c/dom/events/WheelEvent.cpp \
+	org/w3c/dom/eventsource/EventSource.cpp \
 	org/w3c/dom/file/Blob.cpp \
 	org/w3c/dom/file/File.cpp \
+	org/w3c/dom/file/FileCallback.cpp \
 	org/w3c/dom/file/FileError.cpp \
+	org/w3c/dom/file/FileList.cpp \
 	org/w3c/dom/file/FileReader.cpp \
 	org/w3c/dom/file/FileReaderSync.cpp \
 	org/w3c/dom/html/ApplicationCache.cpp \
 	org/w3c/dom/html/BarProp.cpp \
 	org/w3c/dom/html/BeforeUnloadEvent.cpp \
+	org/w3c/dom/html/BlobCallback.cpp \
 	org/w3c/dom/html/BooleanCallback.cpp \
 	org/w3c/dom/html/CanvasGradient.cpp \
 	org/w3c/dom/html/CanvasPattern.cpp \
 	org/w3c/dom/html/CanvasPixelArray.cpp \
 	org/w3c/dom/html/CanvasRenderingContext2D.cpp \
 	org/w3c/dom/html/DataTransfer.cpp \
+	org/w3c/dom/html/DataTransferItem.cpp \
+	org/w3c/dom/html/DataTransferItemList.cpp \
 	org/w3c/dom/html/DragEvent.cpp \
 	org/w3c/dom/html/Function.cpp \
-	org/w3c/dom/html/HashChangeEvent.cpp \
-	org/w3c/dom/html/History.cpp \
 	org/w3c/dom/html/HTMLAllCollection.cpp \
 	org/w3c/dom/html/HTMLAnchorElement.cpp \
 	org/w3c/dom/html/HTMLAppletElement.cpp \
 	org/w3c/dom/html/HTMLAreaElement.cpp \
 	org/w3c/dom/html/HTMLAudioElement.cpp \
+	org/w3c/dom/html/HTMLBRElement.cpp \
 	org/w3c/dom/html/HTMLBaseElement.cpp \
 	org/w3c/dom/html/HTMLBaseFontElement.cpp \
 	org/w3c/dom/html/HTMLBodyElement.cpp \
-	org/w3c/dom/html/HTMLBRElement.cpp \
 	org/w3c/dom/html/HTMLButtonElement.cpp \
 	org/w3c/dom/html/HTMLCanvasElement.cpp \
 	org/w3c/dom/html/HTMLCollection.cpp \
 	org/w3c/dom/html/HTMLCommandElement.cpp \
+	org/w3c/dom/html/HTMLDListElement.cpp \
 	org/w3c/dom/html/HTMLDataListElement.cpp \
 	org/w3c/dom/html/HTMLDetailsElement.cpp \
 	org/w3c/dom/html/HTMLDirectoryElement.cpp \
 	org/w3c/dom/html/HTMLDivElement.cpp \
-	org/w3c/dom/html/HTMLDListElement.cpp \
 	org/w3c/dom/html/HTMLDocument.cpp \
 	org/w3c/dom/html/HTMLElement.cpp \
 	org/w3c/dom/html/HTMLEmbedElement.cpp \
@@ -346,17 +389,17 @@ generated_sources = \
 	org/w3c/dom/html/HTMLFormElement.cpp \
 	org/w3c/dom/html/HTMLFrameElement.cpp \
 	org/w3c/dom/html/HTMLFrameSetElement.cpp \
+	org/w3c/dom/html/HTMLHRElement.cpp \
 	org/w3c/dom/html/HTMLHeadElement.cpp \
 	org/w3c/dom/html/HTMLHeadingElement.cpp \
-	org/w3c/dom/html/HTMLHRElement.cpp \
 	org/w3c/dom/html/HTMLHtmlElement.cpp \
 	org/w3c/dom/html/HTMLIFrameElement.cpp \
 	org/w3c/dom/html/HTMLImageElement.cpp \
 	org/w3c/dom/html/HTMLInputElement.cpp \
 	org/w3c/dom/html/HTMLKeygenElement.cpp \
+	org/w3c/dom/html/HTMLLIElement.cpp \
 	org/w3c/dom/html/HTMLLabelElement.cpp \
 	org/w3c/dom/html/HTMLLegendElement.cpp \
-	org/w3c/dom/html/HTMLLIElement.cpp \
 	org/w3c/dom/html/HTMLLinkElement.cpp \
 	org/w3c/dom/html/HTMLMapElement.cpp \
 	org/w3c/dom/html/HTMLMarqueeElement.cpp \
@@ -365,8 +408,8 @@ generated_sources = \
 	org/w3c/dom/html/HTMLMetaElement.cpp \
 	org/w3c/dom/html/HTMLMeterElement.cpp \
 	org/w3c/dom/html/HTMLModElement.cpp \
-	org/w3c/dom/html/HTMLObjectElement.cpp \
 	org/w3c/dom/html/HTMLOListElement.cpp \
+	org/w3c/dom/html/HTMLObjectElement.cpp \
 	org/w3c/dom/html/HTMLOptGroupElement.cpp \
 	org/w3c/dom/html/HTMLOptionElement.cpp \
 	org/w3c/dom/html/HTMLOptionsCollection.cpp \
@@ -396,9 +439,10 @@ generated_sources = \
 	org/w3c/dom/html/HTMLUListElement.cpp \
 	org/w3c/dom/html/HTMLUnknownElement.cpp \
 	org/w3c/dom/html/HTMLVideoElement.cpp \
+	org/w3c/dom/html/HashChangeEvent.cpp \
+	org/w3c/dom/html/History.cpp \
 	org/w3c/dom/html/ImageData.cpp \
 	org/w3c/dom/html/Location.cpp \
-	org/w3c/dom/html/MediaError.cpp \
 	org/w3c/dom/html/MessageChannel.cpp \
 	org/w3c/dom/html/MessageEvent.cpp \
 	org/w3c/dom/html/MessagePort.cpp \
@@ -408,10 +452,10 @@ generated_sources = \
 	org/w3c/dom/html/PropertyNodeList.cpp \
 	org/w3c/dom/html/RadioNodeList.cpp \
 	org/w3c/dom/html/Screen.cpp \
-	org/w3c/dom/html/Selection.cpp \
 	org/w3c/dom/html/StyleMedia.cpp \
 	org/w3c/dom/html/TextMetrics.cpp \
 	org/w3c/dom/html/TimeRanges.cpp \
+	org/w3c/dom/html/Transferable.cpp \
 	org/w3c/dom/html/UndoManager.cpp \
 	org/w3c/dom/html/UndoManagerEvent.cpp \
 	org/w3c/dom/html/ValidityState.cpp \
@@ -439,13 +483,38 @@ generated_sources = \
 	org/w3c/dom/views/ClientRect.cpp \
 	org/w3c/dom/views/ClientRectList.cpp
 
+#	org/w3c/dom/html/AudioTrack.cpp \
+#	org/w3c/dom/html/AudioTrackList.cpp \
+#	org/w3c/dom/html/External.cpp \
+#	org/w3c/dom/html/FunctionStringCallback.cpp \
+#	org/w3c/dom/html/HTMLTrackElement.cpp \
+#	org/w3c/dom/html/LocalMediaStream.cpp \
+#	org/w3c/dom/html/MediaController.cpp \
+#	org/w3c/dom/html/MediaError.cpp \
+#	org/w3c/dom/html/MediaStream.cpp \
+#	org/w3c/dom/html/MediaStreamRecorder.cpp \
+#	org/w3c/dom/html/MutableTextTrack.cpp \
+#	org/w3c/dom/html/NavigatorUserMediaError.cpp \
+#	org/w3c/dom/html/NavigatorUserMediaErrorCallback.cpp \
+#	org/w3c/dom/html/NavigatorUserMediaSuccessCallback.cpp \
+#	org/w3c/dom/html/PeerConnection.cpp \
+#	org/w3c/dom/html/SignalingCallback.cpp \
+#	org/w3c/dom/html/StreamEvent.cpp \
+#	org/w3c/dom/html/StreamTrack.cpp \
+#	org/w3c/dom/html/TextTrack.cpp \
+#	org/w3c/dom/html/TextTrackCue.cpp \
+#	org/w3c/dom/html/TextTrackCueList.cpp \
+#	org/w3c/dom/html/VideoTrack.cpp \
+#	org/w3c/dom/html/VideoTrackList.cpp \
+#	org/w3c/dom/html/WindowModal.cpp
+
 generated_scanners = \
 	css/CSSPropertyNames.cpp \
 	css/CSSTokenizer.cpp \
 	css/CSSColor.cpp \
 	CSSGrammar.cc CSSGrammar.h
 
-BUILT_SOURCES = $(generated_headers) $(generated_scanners) $(generated_sources) 
+BUILT_SOURCES = $(generated_headers) $(generated_scanners) $(generated_sources)
 
 nobase_nodist_include_HEADERS = $(generated_headers)
 
@@ -468,7 +537,7 @@ AM_CPPFLAGS = \
 	-DXP_UNIX \
 	-DYYERROR_VERBOSE \
 	-DLIBERATON_TTF=\"$(LIBERATON_TTF)\" \
-	-Wall 
+	-Wall
 
 AM_LDFLAGS = -L$(GECKO_SDK)/lib $(ICU_LIBS) $(FREETYPE_LIBS) -lpng -lglut -lGLU -lGL -lXext -lX11 -lm -lboost_regex -lboost_system -lboost_iostreams
 
@@ -481,7 +550,7 @@ libesfontmanager_a_SOURCES = \
 	font/FontDatabase.h \
 	font/FontDatabase.cpp
 
-org/w3c/dom/Node.cpp : $(idl_files) 
+org/w3c/dom/Node.cpp : $(idl_files)
 	esidl -messenger-src -string std::u16string -object Object -fno-multipleinheritance $^
 
 $(generated_sources) : org/w3c/dom/Node.cpp
@@ -584,6 +653,8 @@ libeshtml5_a_SOURCES += \
 	CompositionEventImp.h \
 	CustomEventImp.cpp \
 	CustomEventImp.h \
+	CustomEventInitImp.cpp \
+	CustomEventInitImp.h \
 	DOMImplementationImp.cpp \
 	DOMImplementationImp.h \
 	DOMSettableTokenListImp.cpp \
@@ -594,8 +665,6 @@ libeshtml5_a_SOURCES += \
 	DOMStringMapImp.h \
 	DOMTokenListImp.cpp \
 	DOMTokenListImp.h \
-	DataTransferImp.cpp \
-	DataTransferImp.h \
 	DocumentFragmentImp.cpp \
 	DocumentFragmentImp.h \
 	DocumentImp.cpp \
@@ -612,6 +681,8 @@ libeshtml5_a_SOURCES += \
 	ElementImp.h \
 	EventImp.cpp \
 	EventImp.h \
+	EventInitImp.cpp \
+	EventInitImp.h \
 	EventListenerImp.cpp \
 	EventListenerImp.h \
 	EventSourceImp.cpp \
@@ -673,8 +744,6 @@ libeshtml5_a_SOURCES += \
 	RangeImp.h \
 	ScreenImp.cpp \
 	ScreenImp.h \
-	SelectionImp.cpp \
-	SelectionImp.h \
 	StyleMediaImp.cpp \
 	StyleMediaImp.h \
 	StyleSheetImp.cpp \
@@ -695,8 +764,6 @@ libeshtml5_a_SOURCES += \
 	WheelEventImp.h \
 	WindowImp.cpp \
 	WindowImp.h \
-	css/CounterImp.cpp \
-	css/CounterImp.h \
 	css/CSS2PropertiesImp.cpp \
 	css/CSS2PropertiesImp.h \
 	css/CSSCharsetRuleImp.cpp \
@@ -707,8 +774,12 @@ libeshtml5_a_SOURCES += \
 	css/CSSComponentValueImp.h \
 	css/CSSFontFaceRuleImp.cpp \
 	css/CSSFontFaceRuleImp.h \
+	css/CSSIdentifierComponentValueImp.cpp \
+	css/CSSIdentifierComponentValueImp.h \
 	css/CSSImportRuleImp.cpp \
 	css/CSSImportRuleImp.h \
+	css/CSSKeywordComponentValueImp.cpp \
+	css/CSSKeywordComponentValueImp.h \
 	css/CSSLengthComponentValueImp.cpp \
 	css/CSSLengthComponentValueImp.h \
 	css/CSSMapValueImp.cpp \
@@ -727,6 +798,8 @@ libeshtml5_a_SOURCES += \
 	css/CSSPropertyValueListImp.h \
 	css/CSSRuleImp.cpp \
 	css/CSSRuleImp.h \
+	css/CSSStringComponentValueImp.cpp \
+	css/CSSStringComponentValueImp.h \
 	css/CSSStyleDeclarationImp.cpp \
 	css/CSSStyleDeclarationImp.h \
 	css/CSSStyleDeclarationValueImp.cpp \
@@ -743,16 +816,20 @@ libeshtml5_a_SOURCES += \
 	css/CSSValueImp.h \
 	css/CSSValueListImp.cpp \
 	css/CSSValueListImp.h \
-	css/DocumentCSSImp.cpp \
-	css/DocumentCSSImp.h \
+	css/CounterImp.cpp \
+	css/CounterImp.h \
 	css/DOMImplementationCSSImp.cpp \
 	css/DOMImplementationCSSImp.h \
+	css/DocumentCSSImp.cpp \
+	css/DocumentCSSImp.h \
 	css/ElementCSSInlineStyleImp.cpp \
 	css/ElementCSSInlineStyleImp.h \
-	css/RectImp.cpp \
-	css/RectImp.h \
 	css/RGBColorImp.cpp \
 	css/RGBColorImp.h \
+	css/RectImp.cpp \
+	css/RectImp.h \
+	css/ViewCSSImp.cpp \
+	css/ViewCSSImp.h \
 	file/FileErrorImp.cpp \
 	file/FileErrorImp.h \
 	file/FileImp.cpp \
@@ -771,6 +848,12 @@ libeshtml5_a_SOURCES += \
 	html/CanvasPixelArrayImp.h \
 	html/CanvasRenderingContext2DImp.cpp \
 	html/CanvasRenderingContext2DImp.h \
+	html/DataTransferImp.cpp \
+	html/DataTransferImp.h \
+	html/DataTransferItemImp.cpp \
+	html/DataTransferItemImp.h \
+	html/DataTransferItemListImp.cpp \
+	html/DataTransferItemListImp.h \
 	html/HTMLAllCollectionImp.cpp \
 	html/HTMLAllCollectionImp.h \
 	html/HTMLAnchorElementImp.cpp \
@@ -984,7 +1067,7 @@ bin_PROGRAMS = \
 	CSSStyle.test \
 	Box.test \
 	Layout.test \
-	Script.test 
+	Script.test
 
 bin_PROGRAMS : $(LDADD)
 

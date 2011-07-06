@@ -3,19 +3,21 @@
  *
  * HTML5
  *
- * Original W3C Working Draft 24 June 2010:
+ * Original Living Standard — Last Updated 1 July 2011:
  *
- *   http://www.w3.org/TR/2010/WD-html5-20100624/Overview.html
+ *   http://www.whatwg.org/specs/web-apps/current-work/
  */
 
 module html {
 
 typedef css::CSSStyleDeclaration CSSStyleDeclaration;
 typedef dom::Document Document;
+typedef dom::DocumentFragment DocumentFragment;
 typedef dom::DOMImplementation DOMImplementation;
 typedef dom::DOMSettableTokenList DOMSettableTokenList;
 typedef dom::DOMStringList DOMStringList;
 typedef dom::DOMStringMap DOMStringMap;
+typedef dom::DOMElementMap DOMElementMap;
 typedef dom::DOMTokenList DOMTokenList;
 typedef dom::Element Element;
 typedef dom::Node Node;
@@ -23,7 +25,10 @@ typedef dom::NodeList NodeList;
 typedef events::Event Event;
 typedef events::EventTarget EventTarget;
 typedef events::MouseEvent MouseEvent;
+typedef file::Blob Blob;
+typedef file::File File;
 typedef file::FileList FileList;
+typedef file::FileCallback FileCallback;
 typedef ranges::Range Range;
 typedef stylesheets::LinkStyle LinkStyle;
 
@@ -33,21 +38,21 @@ typedef Window WindowProxy;
 
 interface HTMLCollection {
   readonly attribute unsigned long length;
-  caller getter object item(in unsigned long index); // only returns Element
-  caller getter object namedItem(in DOMString name); // only returns Element
+  caller getter Element? item(in unsigned long index);
+  caller getter object? namedItem(in DOMString name); // only returns Element
 };
 
 #endif
 
 interface HTMLAllCollection : HTMLCollection {
   // inherits length and item()
-  caller getter object namedItem(in DOMString name); // overrides inherited namedItem()
+  caller getter object? namedItem(in DOMString name); // overrides inherited namedItem()
   HTMLAllCollection tags(in DOMString tagName);
 };
 
 interface HTMLFormControlsCollection : HTMLCollection {
   // inherits length and item()
-  caller getter object namedItem(in DOMString name); // overrides inherited namedItem()
+  caller getter object? namedItem(in DOMString name); // overrides inherited namedItem()
 };
 
 interface RadioNodeList : NodeList {
@@ -57,17 +62,30 @@ interface RadioNodeList : NodeList {
 interface HTMLOptionsCollection : HTMLCollection {
   // inherits item()
            attribute unsigned long length; // overrides inherited length
-  caller getter object namedItem(in DOMString name); // overrides inherited namedItem()
-  void add(in HTMLElement element, in optional HTMLElement before);
+  caller getter object? namedItem(in DOMString name); // overrides inherited namedItem()
+  void add(in HTMLElement element, in optional HTMLElement? before);
   void add(in HTMLElement element, in long before);
   void remove(in long index);
+           attribute long selectedIndex;
+};
+
+interface HTMLPropertiesCollection : HTMLCollection {
+  // inherits length and item()
+  caller getter PropertyNodeList? namedItem(in DOMString name); // overrides inherited namedItem()
+  readonly attribute DOMStringList names;
+};
+
+typedef sequence<any> PropertyValueArray;
+
+interface PropertyNodeList : NodeList {
+  PropertyValueArray getValues();
 };
 
 #if 0  // Moved to DOM Core
 
 interface DOMTokenList {
   readonly attribute unsigned long length;
-  getter DOMString item(in unsigned long index);
+  getter DOMString? item(in unsigned long index);
   boolean contains(in DOMString token);
   void add(in DOMString token);
   void remove(in DOMString token);
@@ -79,6 +97,13 @@ interface DOMSettableTokenList : DOMTokenList {
             attribute DOMString value;
 };
 
+#endif
+
+[NoInterfaceObject]
+interface Transferable { };
+
+#if 0  // Moved to DOM Core
+
 interface DOMStringMap {
   getter DOMString (in DOMString name);
   setter void (in DOMString name, in DOMString value);
@@ -86,29 +111,44 @@ interface DOMStringMap {
   deleter void (in DOMString name);
 };
 
+interface DOMElementMap {
+  getter DOMString (in DOMString name);
+  setter void (in DOMString name, in Element value);
+  creator void (in DOMString name, in Element value);
+  deleter void (in DOMString name);
+};
+
+[Supplemental] exception DOMException {
+  const unsigned short URL_MISMATCH_ERR = 21;
+  const unsigned short QUOTA_EXCEEDED_ERR = 22;
+  const unsigned short DATA_CLONE_ERR = 25;
+};
+
 #endif
 
 [OverrideBuiltins]
 interface HTMLDocument {
   // resource metadata management
-  [PutForwards=href] readonly attribute Location location;
+  [PutForwards=href] readonly attribute Location? location;
   readonly attribute DOMString URL;
            attribute DOMString domain;
   readonly attribute DOMString referrer;
            attribute DOMString cookie;
   readonly attribute DOMString lastModified;
-  // readonly attribute DOMString compatMode;  // now defined in DOM Core
+#if 0 // moved to DOM Core
+  readonly attribute DOMString compatMode;
            attribute DOMString charset;
   readonly attribute DOMString characterSet;
   readonly attribute DOMString defaultCharset;
+#endif
   readonly attribute DOMString readyState;
 
   // DOM tree accessors
   getter any (in DOMString name);
            attribute DOMString title;
            attribute DOMString dir;
-           attribute HTMLElement body;
-  readonly attribute HTMLHeadElement head;
+           attribute HTMLElement? body;
+  readonly attribute HTMLHeadElement? head;
   readonly attribute HTMLCollection images;
   readonly attribute HTMLCollection embeds;
   readonly attribute HTMLCollection plugins;
@@ -116,7 +156,11 @@ interface HTMLDocument {
   readonly attribute HTMLCollection forms;
   readonly attribute HTMLCollection scripts;
   NodeList getElementsByName(in DOMString elementName);
-  // NodeList getElementsByClassName(in DOMString classNames);  // Now defined in Document in DOM Core
+#if 0 // defined in DOM Core
+  NodeList getElementsByClassName(in DOMString classNames);
+  NodeList getItems(in optional DOMString typeNames); // microdata
+#endif
+  readonly attribute DOMElementMap cssElementMap;
 
   // dynamic markup insertion
            attribute DOMString innerHTML;
@@ -127,9 +171,8 @@ interface HTMLDocument {
   void writeln(in DOMString... text);
 
   // user interaction
-  readonly attribute WindowProxy defaultView;
-  Selection getSelection();
-  readonly attribute Element activeElement;
+  readonly attribute WindowProxy? defaultView;
+  readonly attribute Element? activeElement;
   boolean hasFocus();
            attribute DOMString designMode;
   boolean execCommand(in DOMString commandId);
@@ -143,62 +186,75 @@ interface HTMLDocument {
   readonly attribute HTMLCollection commands;
 
   // event handler IDL attributes
-           attribute Function onabort;
-           attribute Function onblur;
-           attribute Function oncanplay;
-           attribute Function oncanplaythrough;
-           attribute Function onchange;
-           attribute Function onclick;
-           attribute Function oncontextmenu;
-           attribute Function ondblclick;
-           attribute Function ondrag;
-           attribute Function ondragend;
-           attribute Function ondragenter;
-           attribute Function ondragleave;
-           attribute Function ondragover;
-           attribute Function ondragstart;
-           attribute Function ondrop;
-           attribute Function ondurationchange;
-           attribute Function onemptied;
-           attribute Function onended;
-           attribute Function onerror;
-           attribute Function onfocus;
-           attribute Function onformchange;
-           attribute Function onforminput;
-           attribute Function oninput;
-           attribute Function oninvalid;
-           attribute Function onkeydown;
-           attribute Function onkeypress;
-           attribute Function onkeyup;
-           attribute Function onload;
-           attribute Function onloadeddata;
-           attribute Function onloadedmetadata;
-           attribute Function onloadstart;
-           attribute Function onmousedown;
-           attribute Function onmousemove;
-           attribute Function onmouseout;
-           attribute Function onmouseover;
-           attribute Function onmouseup;
-           attribute Function onmousewheel;
-           attribute Function onpause;
-           attribute Function onplay;
-           attribute Function onplaying;
-           attribute Function onprogress;
-           attribute Function onratechange;
-           attribute Function onreadystatechange;
-           attribute Function onscroll;
-           attribute Function onseeked;
-           attribute Function onseeking;
-           attribute Function onselect;
-           attribute Function onshow;
-           attribute Function onstalled;
-           attribute Function onsubmit;
-           attribute Function onsuspend;
-           attribute Function ontimeupdate;
-           attribute Function onvolumechange;
-           attribute Function onwaiting;
+           attribute Function? onabort;
+           attribute Function? onblur;
+           attribute Function? oncanplay;
+           attribute Function? oncanplaythrough;
+           attribute Function? onchange;
+           attribute Function? onclick;
+           attribute Function? oncontextmenu;
+           attribute Function? oncuechange;
+           attribute Function? ondblclick;
+           attribute Function? ondrag;
+           attribute Function? ondragend;
+           attribute Function? ondragenter;
+           attribute Function? ondragleave;
+           attribute Function? ondragover;
+           attribute Function? ondragstart;
+           attribute Function? ondrop;
+           attribute Function? ondurationchange;
+           attribute Function? onemptied;
+           attribute Function? onended;
+           attribute Function? onerror;
+           attribute Function? onfocus;
+           attribute Function? oninput;
+           attribute Function? oninvalid;
+           attribute Function? onkeydown;
+           attribute Function? onkeypress;
+           attribute Function? onkeyup;
+           attribute Function? onload;
+           attribute Function? onloadeddata;
+           attribute Function? onloadedmetadata;
+           attribute Function? onloadstart;
+           attribute Function? onmousedown;
+           attribute Function? onmousemove;
+           attribute Function? onmouseout;
+           attribute Function? onmouseover;
+           attribute Function? onmouseup;
+           attribute Function? onmousewheel;
+           attribute Function? onpause;
+           attribute Function? onplay;
+           attribute Function? onplaying;
+           attribute Function? onprogress;
+           attribute Function? onratechange;
+           attribute Function? onreadystatechange;
+           attribute Function? onreset;
+           attribute Function? onscroll;
+           attribute Function? onseeked;
+           attribute Function? onseeking;
+           attribute Function? onselect;
+           attribute Function? onshow;
+           attribute Function? onstalled;
+           attribute Function? onsubmit;
+           attribute Function? onsuspend;
+           attribute Function? ontimeupdate;
+           attribute Function? onvolumechange;
+           attribute Function? onwaiting;
 };
 Document implements HTMLDocument;
+
+#if 0  // define in DOM Core
+[Supplemental, NoInterfaceObject]
+interface DOMHTMLImplementation {
+  Document createHTMLDocument(in DOMString title);
+};
+DOMImplementation implements DOMHTMLImplementation;
+#endif
+
+[Supplemental, NoInterfaceObject]
+interface XMLDocumentLoader {
+  boolean load(in DOMString url);
+};
 
 interface HTMLElement : Element {
   // DOM tree accessors
@@ -218,26 +274,34 @@ interface HTMLElement : Element {
   readonly attribute DOMTokenList classList;
   readonly attribute DOMStringMap dataset;
 
+  // microdata
+           attribute boolean itemScope;
+           attribute DOMString itemType;
+           attribute DOMString itemId;
+  [PutForwards=value] readonly attribute DOMSettableTokenList itemRef;
+  [PutForwards=value] readonly attribute DOMSettableTokenList itemProp;
+  readonly attribute HTMLPropertiesCollection properties;
+           attribute any itemValue;
+
   // user interaction
            attribute boolean hidden;
   void click();
-  void scrollIntoView();
-  void scrollIntoView(in boolean top);
            attribute long tabIndex;
   void focus();
   void blur();
            attribute DOMString accessKey;
   readonly attribute DOMString accessKeyLabel;
            attribute boolean draggable;
+  [PutForwards=value] readonly attribute DOMSettableTokenList dropzone;
            attribute DOMString contentEditable;
   readonly attribute boolean isContentEditable;
-           attribute HTMLMenuElement contextMenu;
-           attribute DOMString spellcheck;
+           attribute HTMLMenuElement? contextMenu;
+           attribute boolean spellcheck;
 
   // command API
-  readonly attribute DOMString commandType;
-  readonly attribute DOMString label;
-  readonly attribute DOMString icon;
+  readonly attribute DOMString? commandType;
+  readonly attribute DOMString? label;
+  readonly attribute DOMString? icon;
   readonly attribute boolean disabled;
   readonly attribute boolean checked;
 
@@ -245,60 +309,60 @@ interface HTMLElement : Element {
   readonly attribute CSSStyleDeclaration style;
 
   // event handler IDL attributes
-           attribute Function onabort;
-           attribute Function onblur;
-           attribute Function oncanplay;
-           attribute Function oncanplaythrough;
-           attribute Function onchange;
-           attribute Function onclick;
-           attribute Function oncontextmenu;
-           attribute Function ondblclick;
-           attribute Function ondrag;
-           attribute Function ondragend;
-           attribute Function ondragenter;
-           attribute Function ondragleave;
-           attribute Function ondragover;
-           attribute Function ondragstart;
-           attribute Function ondrop;
-           attribute Function ondurationchange;
-           attribute Function onemptied;
-           attribute Function onended;
-           attribute Function onerror;
-           attribute Function onfocus;
-           attribute Function onformchange;
-           attribute Function onforminput;
-           attribute Function oninput;
-           attribute Function oninvalid;
-           attribute Function onkeydown;
-           attribute Function onkeypress;
-           attribute Function onkeyup;
-           attribute Function onload;
-           attribute Function onloadeddata;
-           attribute Function onloadedmetadata;
-           attribute Function onloadstart;
-           attribute Function onmousedown;
-           attribute Function onmousemove;
-           attribute Function onmouseout;
-           attribute Function onmouseover;
-           attribute Function onmouseup;
-           attribute Function onmousewheel;
-           attribute Function onpause;
-           attribute Function onplay;
-           attribute Function onplaying;
-           attribute Function onprogress;
-           attribute Function onratechange;
-           attribute Function onreadystatechange;
-           attribute Function onscroll;
-           attribute Function onseeked;
-           attribute Function onseeking;
-           attribute Function onselect;
-           attribute Function onshow;
-           attribute Function onstalled;
-           attribute Function onsubmit;
-           attribute Function onsuspend;
-           attribute Function ontimeupdate;
-           attribute Function onvolumechange;
-           attribute Function onwaiting;
+           attribute Function? onabort;
+           attribute Function? onblur;
+           attribute Function? oncanplay;
+           attribute Function? oncanplaythrough;
+           attribute Function? onchange;
+           attribute Function? onclick;
+           attribute Function? oncontextmenu;
+           attribute Function? oncuechange;
+           attribute Function? ondblclick;
+           attribute Function? ondrag;
+           attribute Function? ondragend;
+           attribute Function? ondragenter;
+           attribute Function? ondragleave;
+           attribute Function? ondragover;
+           attribute Function? ondragstart;
+           attribute Function? ondrop;
+           attribute Function? ondurationchange;
+           attribute Function? onemptied;
+           attribute Function? onended;
+           attribute Function? onerror;
+           attribute Function? onfocus;
+           attribute Function? oninput;
+           attribute Function? oninvalid;
+           attribute Function? onkeydown;
+           attribute Function? onkeypress;
+           attribute Function? onkeyup;
+           attribute Function? onload;
+           attribute Function? onloadeddata;
+           attribute Function? onloadedmetadata;
+           attribute Function? onloadstart;
+           attribute Function? onmousedown;
+           attribute Function? onmousemove;
+           attribute Function? onmouseout;
+           attribute Function? onmouseover;
+           attribute Function? onmouseup;
+           attribute Function? onmousewheel;
+           attribute Function? onpause;
+           attribute Function? onplay;
+           attribute Function? onplaying;
+           attribute Function? onprogress;
+           attribute Function? onratechange;
+           attribute Function? onreadystatechange;
+           attribute Function? onreset;
+           attribute Function? onscroll;
+           attribute Function? onseeked;
+           attribute Function? onseeking;
+           attribute Function? onselect;
+           attribute Function? onshow;
+           attribute Function? onstalled;
+           attribute Function? onsubmit;
+           attribute Function? onsuspend;
+           attribute Function? ontimeupdate;
+           attribute Function? onvolumechange;
+           attribute Function? onwaiting;
 };
 
 interface HTMLUnknownElement : HTMLElement { };
@@ -352,25 +416,26 @@ interface HTMLScriptElement : HTMLElement {
 };
 
 interface HTMLBodyElement : HTMLElement {
-           attribute Function onafterprint;
-           attribute Function onbeforeprint;
-           attribute Function onbeforeunload;
-           attribute Function onblur;
-           attribute Function onerror;
-           attribute Function onfocus;
-           attribute Function onhashchange;
-           attribute Function onload;
-           attribute Function onmessage;
-           attribute Function onoffline;
-           attribute Function ononline;
-           attribute Function onpopstate;
-           attribute Function onpagehide;
-           attribute Function onpageshow;
-           attribute Function onredo;
-           attribute Function onresize;
-           attribute Function onstorage;
-           attribute Function onundo;
-           attribute Function onunload;
+           attribute Function? onafterprint;
+           attribute Function? onbeforeprint;
+           attribute Function? onbeforeunload;
+           attribute Function? onblur;
+           attribute Function? onerror;
+           attribute Function? onfocus;
+           attribute Function? onhashchange;
+           attribute Function? onload;
+           attribute Function? onmessage;
+           attribute Function? onoffline;
+           attribute Function? ononline;
+           attribute Function? onpopstate;
+           attribute Function? onpagehide;
+           attribute Function? onpageshow;
+           attribute Function? onredo;
+           attribute Function? onresize;
+           attribute Function? onscroll;
+           attribute Function? onstorage;
+           attribute Function? onundo;
+           attribute Function? onunload;
 };
 
 interface HTMLHeadingElement : HTMLElement {};
@@ -388,6 +453,7 @@ interface HTMLQuoteElement : HTMLElement {
 interface HTMLOListElement : HTMLElement {
            attribute boolean reversed;
            attribute long start;
+           attribute DOMString type;
 };
 
 interface HTMLUListElement : HTMLElement {};
@@ -403,6 +469,9 @@ interface HTMLDivElement : HTMLElement {};
 interface HTMLAnchorElement : HTMLElement {
   stringifier attribute DOMString href;
            attribute DOMString target;
+
+           attribute DOMString ping;
+
            attribute DOMString rel;
   readonly attribute DOMTokenList relList;
            attribute DOMString media;
@@ -424,7 +493,7 @@ interface HTMLAnchorElement : HTMLElement {
 interface HTMLTimeElement : HTMLElement {
            attribute DOMString dateTime;
            attribute boolean pubDate;
-  readonly attribute Date valueAsDate;
+  readonly attribute Date? valueAsDate;
 };
 
 interface HTMLSpanElement : HTMLElement {};
@@ -442,6 +511,7 @@ interface HTMLModElement : HTMLElement {
 interface HTMLImageElement : HTMLElement {
            attribute DOMString alt;
            attribute DOMString src;
+           attribute DOMString crossOrigin;
            attribute DOMString useMap;
            attribute boolean isMap;
            attribute unsigned long width;
@@ -459,8 +529,8 @@ interface HTMLIFrameElement : HTMLElement {
            attribute boolean seamless;
            attribute DOMString width;
            attribute DOMString height;
-  readonly attribute Document contentDocument;
-  readonly attribute WindowProxy contentWindow;
+  readonly attribute Document? contentDocument;
+  readonly attribute WindowProxy? contentWindow;
 };
 
 interface HTMLEmbedElement : HTMLElement {
@@ -473,13 +543,14 @@ interface HTMLEmbedElement : HTMLElement {
 interface HTMLObjectElement : HTMLElement {
            attribute DOMString data;
            attribute DOMString type;
+           attribute boolean typeMustMatch;
            attribute DOMString name;
            attribute DOMString useMap;
-  readonly attribute HTMLFormElement form;
+  readonly attribute HTMLFormElement? form;
            attribute DOMString width;
            attribute DOMString height;
-  readonly attribute Document contentDocument;
-  readonly attribute WindowProxy contentWindow;
+  readonly attribute Document? contentDocument;
+  readonly attribute WindowProxy? contentWindow;
 
   readonly attribute boolean willValidate;
   readonly attribute ValidityState validity;
@@ -494,8 +565,8 @@ interface HTMLParamElement : HTMLElement {
 };
 
 interface HTMLVideoElement : HTMLMediaElement {
-           attribute DOMString width;
-           attribute DOMString height;
+           attribute unsigned long width;
+           attribute unsigned long height;
   readonly attribute unsigned long videoWidth;
   readonly attribute unsigned long videoHeight;
            attribute DOMString poster;
@@ -511,14 +582,25 @@ interface HTMLSourceElement : HTMLElement {
            attribute DOMString media;
 };
 
+interface HTMLTrackElement : HTMLElement {
+           attribute DOMString kind;
+           attribute DOMString src;
+           attribute DOMString srclang;
+           // attribute DOMString label;   TODO: ask team
+           attribute boolean default;
+
+  readonly attribute TextTrack track;
+};
+
 interface HTMLMediaElement : HTMLElement {
 
   // error state
-  readonly attribute MediaError error;
+  readonly attribute MediaError? error;
 
   // network state
            attribute DOMString src;
   readonly attribute DOMString currentSrc;
+           attribute DOMString crossOrigin;
   const unsigned short NETWORK_EMPTY = 0;
   const unsigned short NETWORK_IDLE = 1;
   const unsigned short NETWORK_LOADING = 2;
@@ -539,12 +621,13 @@ interface HTMLMediaElement : HTMLElement {
   readonly attribute boolean seeking;
 
   // playback state
-           attribute float currentTime;
-  readonly attribute float startTime;
-  readonly attribute float duration;
+           attribute double currentTime;
+  readonly attribute double initialTime;
+  readonly attribute double duration;
+  readonly attribute Date startOffsetTime;
   readonly attribute boolean paused;
-           attribute float defaultPlaybackRate;
-           attribute float playbackRate;
+           attribute double defaultPlaybackRate;
+           attribute double playbackRate;
   readonly attribute TimeRanges played;
   readonly attribute TimeRanges seekable;
   readonly attribute boolean ended;
@@ -553,10 +636,21 @@ interface HTMLMediaElement : HTMLElement {
   void play();
   void pause();
 
+  // media controller
+           attribute DOMString mediaGroup;
+           attribute MediaController? controller;
+
   // controls
            attribute boolean controls;
-           attribute float volume;
+           attribute double volume;
            attribute boolean muted;
+           attribute boolean defaultMuted;
+
+  // tracks
+  readonly attribute AudioTrackList audioTracks;
+  readonly attribute VideoTrackList videoTracks;
+  readonly attribute TextTrackList textTracks;
+  MutableTextTrack addTextTrack(in DOMString kind, in optional DOMString label, in optional DOMString language);
 };
 
 interface MediaError {
@@ -567,10 +661,143 @@ interface MediaError {
   readonly attribute unsigned short code;
 };
 
+interface AudioTrackList {
+  readonly attribute unsigned long length;
+  getter AudioTrack (in unsigned long index);
+  AudioTrack? getTrackById(in DOMString id);
+           attribute Function? onchange;
+};
+
+interface AudioTrack {
+  readonly attribute DOMString id;
+  readonly attribute DOMString kind;
+  readonly attribute DOMString label;
+  readonly attribute DOMString language;
+           attribute boolean enabled;
+};
+
+interface VideoTrackList {
+  readonly attribute unsigned long length;
+  getter VideoTrack (in unsigned long index);
+  VideoTrack? getTrackById(in DOMString id);
+  readonly attribute long selectedIndex;
+           attribute Function? onchange;
+};
+
+interface VideoTrack {
+  readonly attribute DOMString id;
+  readonly attribute DOMString kind;
+  readonly attribute DOMString label;
+  readonly attribute DOMString language;
+           attribute boolean selected;
+};
+
+[Constructor]
+interface MediaController {
+  readonly attribute TimeRanges buffered;
+  readonly attribute TimeRanges seekable;
+  readonly attribute double duration;
+           attribute double currentTime;
+
+  readonly attribute boolean paused;
+  readonly attribute TimeRanges played;
+  void play();
+  void pause();
+
+           attribute double defaultPlaybackRate;
+           attribute double playbackRate;
+
+           attribute double volume;
+           attribute boolean muted;
+
+           attribute Function? onemptied;
+           attribute Function? onloadedmetadata;
+           attribute Function? onloadeddata;
+           attribute Function? oncanplay;
+           attribute Function? oncanplaythrough;
+           attribute Function? onplaying;
+           attribute Function? onended;
+           attribute Function? onwaiting;
+
+           attribute Function? ondurationchange;
+           attribute Function? ontimeupdate;
+           attribute Function? onplay;
+           attribute Function? onpause;
+           attribute Function? onratechange;
+           attribute Function? onvolumechange;
+};
+
+interface TextTrack {
+  readonly attribute DOMString kind;
+  readonly attribute DOMString label;
+  readonly attribute DOMString language;
+
+  const unsigned short NONE = 0;
+  const unsigned short LOADING = 1;
+  const unsigned short LOADED = 2;
+  const unsigned short ERROR = 3;
+  readonly attribute unsigned short readyState;
+           attribute Function? onload;
+           attribute Function? onerror;
+
+  const unsigned short OFF = 0;
+  const unsigned short HIDDEN = 1;
+  const unsigned short SHOWING = 2;
+           attribute unsigned short mode;
+
+  readonly attribute TextTrackCueList? cues;
+  readonly attribute TextTrackCueList? activeCues;
+
+           attribute Function? oncuechange;
+};
+TextTrack implements EventTarget;
+
+typedef TextTrack[] TextTrackList;
+
+interface MutableTextTrack : TextTrack {
+ void addCue(in TextTrackCue cue);
+ void removeCue(in TextTrackCue cue);
+};
+
+interface TextTrackCueList {
+  readonly attribute unsigned long length;
+  getter TextTrackCue (in unsigned long index);
+  TextTrackCue? getCueById(in DOMString id);
+};
+
+
+
+[Constructor(in DOMString id, in double startTime, in double endTime, in DOMString text, in optional DOMString settings, in optional boolean pauseOnExit)]
+
+interface TextTrackCue {
+  readonly attribute TextTrack? track;
+  readonly attribute DOMString id;
+
+  readonly attribute double startTime;
+  readonly attribute double endTime;
+  readonly attribute boolean pauseOnExit;
+
+
+  readonly attribute DOMString direction;
+  readonly attribute boolean snapToLines;
+  readonly attribute long linePosition;
+  readonly attribute long textPosition;
+  readonly attribute long size;
+  readonly attribute DOMString alignment;
+
+
+  DOMString getCueAsSource();
+  DocumentFragment getCueAsHTML();
+
+           attribute Function? onenter;
+           attribute Function? onexit;
+};
+TextTrackCue implements EventTarget;
+
 interface TimeRanges {
   readonly attribute unsigned long length;
-  float start(in unsigned long index);
-  float end(in unsigned long index);
+  double start(in unsigned long index);
+  double end(in unsigned long index);
 };
 
 interface HTMLCanvasElement : HTMLElement {
@@ -578,8 +805,125 @@ interface HTMLCanvasElement : HTMLElement {
            attribute unsigned long height;
 
   DOMString toDataURL(in optional DOMString type, in any... args);
+  void toBlob(in FileCallback? callback, in optional DOMString type, in any... args);
 
-  object getContext(in DOMString contextId);
+  object? getContext(in DOMString contextId, in any... args);
+};
+
+interface CanvasRenderingContext2D {
+
+  // back-reference to the canvas
+  readonly attribute HTMLCanvasElement canvas;
+
+  // state
+  void save(); // push state on state stack
+  void restore(); // pop state stack and restore state
+
+  // transformations (default transform is the identity matrix)
+  void scale(in double x, in double y);
+  void rotate(in double angle);
+  void translate(in double x, in double y);
+  void transform(in double a, in double b, in double c, in double d, in double e, in double f);
+  void setTransform(in double a, in double b, in double c, in double d, in double e, in double f);
+
+  // compositing
+           attribute double globalAlpha; // (default 1.0)
+           attribute DOMString globalCompositeOperation; // (default source-over)
+
+  // colors and styles
+           attribute any strokeStyle; // (default black)
+           attribute any fillStyle; // (default black)
+  CanvasGradient createLinearGradient(in double x0, in double y0, in double x1, in double y1);
+  CanvasGradient createRadialGradient(in double x0, in double y0, in double r0, in double x1, in double y1, in double r1);
+  CanvasPattern createPattern(in HTMLImageElement image, in DOMString repetition);
+  CanvasPattern createPattern(in HTMLCanvasElement image, in DOMString repetition);
+  CanvasPattern createPattern(in HTMLVideoElement image, in DOMString repetition);
+
+  // line caps/joins
+           attribute double lineWidth; // (default 1)
+           attribute DOMString lineCap; // "butt", "round", "square" (default "butt")
+           attribute DOMString lineJoin; // "round", "bevel", "miter" (default "miter")
+           attribute double miterLimit; // (default 10)
+
+  // shadows
+           attribute double shadowOffsetX; // (default 0)
+           attribute double shadowOffsetY; // (default 0)
+           attribute double shadowBlur; // (default 0)
+           attribute DOMString shadowColor; // (default transparent black)
+
+  // rects
+  void clearRect(in double x, in double y, in double w, in double h);
+  void fillRect(in double x, in double y, in double w, in double h);
+  void strokeRect(in double x, in double y, in double w, in double h);
+
+  // path API
+  void beginPath();
+  void closePath();
+  void moveTo(in double x, in double y);
+  void lineTo(in double x, in double y);
+  void quadraticCurveTo(in double cpx, in double cpy, in double x, in double y);
+  void bezierCurveTo(in double cp1x, in double cp1y, in double cp2x, in double cp2y, in double x, in double y);
+  void arcTo(in double x1, in double y1, in double x2, in double y2, in double radius);
+  void rect(in double x, in double y, in double w, in double h);
+  void arc(in double x, in double y, in double radius, in double startAngle, in double endAngle, in optional boolean anticlockwise);
+  void fill();
+  void stroke();
+  void drawSystemFocusRing(in Element element);
+  boolean drawCustomFocusRing(in Element element);
+  void scrollPathIntoView();
+  void clip();
+  boolean isPointInPath(in double x, in double y);
+
+  // text
+           attribute DOMString font; // (default 10px sans-serif)
+           attribute DOMString textAlign; // "start", "end", "left", "right", "center" (default: "start")
+           attribute DOMString textBaseline; // "top", "hanging", "middle", "alphabetic", "ideographic", "bottom" (default: "alphabetic")
+  void fillText(in DOMString text, in double x, in double y, in optional double maxWidth);
+  void strokeText(in DOMString text, in double x, in double y, in optional double maxWidth);
+  TextMetrics measureText(in DOMString text);
+
+  // drawing images
+  void drawImage(in HTMLImageElement image, in double dx, in double dy);
+  void drawImage(in HTMLImageElement image, in double dx, in double dy, in double dw, in double dh);
+  void drawImage(in HTMLImageElement image, in double sx, in double sy, in double sw, in double sh, in double dx, in double dy, in double dw, in double dh);
+  void drawImage(in HTMLCanvasElement image, in double dx, in double dy);
+  void drawImage(in HTMLCanvasElement image, in double dx, in double dy, in double dw, in double dh);
+  void drawImage(in HTMLCanvasElement image, in double sx, in double sy, in double sw, in double sh, in double dx, in double dy, in double dw, in double dh);
+  void drawImage(in HTMLVideoElement image, in double dx, in double dy);
+  void drawImage(in HTMLVideoElement image, in double dx, in double dy, in double dw, in double dh);
+  void drawImage(in HTMLVideoElement image, in double sx, in double sy, in double sw, in double sh, in double dx, in double dy, in double dw, in double dh);
+
+  // pixel manipulation
+  ImageData createImageData(in double sw, in double sh);
+  ImageData createImageData(in ImageData imagedata);
+  ImageData getImageData(in double sx, in double sy, in double sw, in double sh);
+  void putImageData(in ImageData imagedata, in double dx, in double dy);
+  void putImageData(in ImageData imagedata, in double dx, in double dy, in double dirtyX, in double dirtyY, in double dirtyWidth, in double dirtyHeight);
+};
+
+interface CanvasGradient {
+  // opaque object
+  void addColorStop(in double offset, in DOMString color);
+};
+
+interface CanvasPattern {
+  // opaque object
+};
+
+interface TextMetrics {
+  readonly attribute double width;
+};
+
+interface ImageData {
+  readonly attribute unsigned long width;
+  readonly attribute unsigned long height;
+  readonly attribute CanvasPixelArray data;
+};
+
+interface CanvasPixelArray {
+  readonly attribute unsigned long length;
+  getter octet (in unsigned long index);
+  setter void (in unsigned long index, in octet value);
 };
 
 interface HTMLMapElement : HTMLElement {
@@ -594,6 +938,9 @@ interface HTMLAreaElement : HTMLElement {
            attribute DOMString shape;
   stringifier attribute DOMString href;
            attribute DOMString target;
+
+           attribute DOMString ping;
+
            attribute DOMString rel;
   readonly attribute DOMTokenList relList;
            attribute DOMString media;
@@ -611,13 +958,13 @@ interface HTMLAreaElement : HTMLElement {
 };
 
 interface HTMLTableElement : HTMLElement {
-           attribute HTMLTableCaptionElement caption;
+           attribute HTMLTableCaptionElement? caption;
   HTMLElement createCaption();
   void deleteCaption();
-           attribute HTMLTableSectionElement tHead;
+           attribute HTMLTableSectionElement? tHead;
   HTMLElement createTHead();
   void deleteTHead();
-           attribute HTMLTableSectionElement tFoot;
+           attribute HTMLTableSectionElement? tFoot;
   HTMLElement createTFoot();
   void deleteTFoot();
   readonly attribute HTMLCollection tBodies;
@@ -625,7 +972,7 @@ interface HTMLTableElement : HTMLElement {
   readonly attribute HTMLCollection rows;
   HTMLElement insertRow(in optional long index);
   void deleteRow(in long index);
-           attribute DOMString summary;
+           attribute DOMString border;
 };
 
 interface HTMLTableCaptionElement : HTMLElement {};
@@ -667,6 +1014,7 @@ interface HTMLFormElement : HTMLElement {
            attribute DOMString action;
            attribute DOMString autocomplete;
            attribute DOMString enctype;
+           attribute DOMString encoding;
            attribute DOMString method;
            attribute DOMString name;
            attribute boolean noValidate;
@@ -674,20 +1022,17 @@ interface HTMLFormElement : HTMLElement {
 
   readonly attribute HTMLFormControlsCollection elements;
   readonly attribute long length;
-  caller getter any item(in unsigned long index);
-  caller getter any namedItem(in DOMString name);
+  caller getter any (in unsigned long index);
+  caller getter any (in DOMString name);
 
   void submit();
   void reset();
   boolean checkValidity();
-
-  void dispatchFormInput();
-  void dispatchFormChange();
 };
 
 interface HTMLFieldSetElement : HTMLElement {
            attribute boolean disabled;
-  readonly attribute HTMLFormElement form;
+  readonly attribute HTMLFormElement? form;
            attribute DOMString name;
 
   readonly attribute DOMString type;
@@ -702,13 +1047,13 @@ interface HTMLFieldSetElement : HTMLElement {
 };
 
 interface HTMLLegendElement : HTMLElement {
-  readonly attribute HTMLFormElement form;
+  readonly attribute HTMLFormElement? form;
 };
 
 interface HTMLLabelElement : HTMLElement {
-  readonly attribute HTMLFormElement form;
+  readonly attribute HTMLFormElement? form;
            attribute DOMString htmlFor;
-  readonly attribute HTMLElement control;
+  readonly attribute HTMLElement? control;
 };
 
 interface HTMLInputElement : HTMLElement {
@@ -718,9 +1063,10 @@ interface HTMLInputElement : HTMLElement {
            attribute boolean autofocus;
            attribute boolean defaultChecked;
            attribute boolean checked;
+           attribute DOMString dirName;
            attribute boolean disabled;
-  readonly attribute HTMLFormElement form;
-  readonly attribute FileList files;
+  readonly attribute HTMLFormElement? form;
+  readonly attribute FileList? files;
            attribute DOMString formAction;
            attribute DOMString formEnctype;
            attribute DOMString formMethod;
@@ -728,7 +1074,7 @@ interface HTMLInputElement : HTMLElement {
            attribute DOMString formTarget;
            attribute DOMString height;
            attribute boolean indeterminate;
-  readonly attribute HTMLElement list;
+  readonly attribute HTMLElement? list;
            attribute DOMString max;
            attribute long maxLength;
            attribute DOMString min;
@@ -746,7 +1092,7 @@ interface HTMLInputElement : HTMLElement {
            attribute DOMString value;
            attribute Date valueAsDate;
            attribute double valueAsNumber;
-  readonly attribute HTMLOptionElement selectedOption;
+  readonly attribute HTMLOptionElement? selectedOption;
            attribute DOMString width;
 
   void stepUp(in optional long n);
@@ -763,13 +1109,14 @@ interface HTMLInputElement : HTMLElement {
   void select();
            attribute unsigned long selectionStart;
            attribute unsigned long selectionEnd;
-  void setSelectionRange(in unsigned long start, in unsigned long end);
+           attribute DOMString selectionDirection;
+  void setSelectionRange(in unsigned long start, in unsigned long end, in optional DOMString direction);
 };
 
 interface HTMLButtonElement : HTMLElement {
            attribute boolean autofocus;
            attribute boolean disabled;
-  readonly attribute HTMLFormElement form;
+  readonly attribute HTMLFormElement? form;
            attribute DOMString formAction;
            attribute DOMString formEnctype;
            attribute DOMString formMethod;
@@ -791,18 +1138,19 @@ interface HTMLButtonElement : HTMLElement {
 interface HTMLSelectElement : HTMLElement {
            attribute boolean autofocus;
            attribute boolean disabled;
-  readonly attribute HTMLFormElement form;
+  readonly attribute HTMLFormElement? form;
            attribute boolean multiple;
            attribute DOMString name;
+           attribute boolean required;
            attribute unsigned long size;
 
   readonly attribute DOMString type;
 
   readonly attribute HTMLOptionsCollection options;
            attribute unsigned long length;
-  caller getter any item(in unsigned long index);
-  caller getter any namedItem(in DOMString name);
-  void add(in HTMLElement element, in optional HTMLElement before);
+  getter any item(in unsigned long index);
+  any namedItem(in DOMString name);
+  void add(in HTMLElement element, in optional HTMLElement? before);
   void add(in HTMLElement element, in long before);
   void remove(in long index);
 
@@ -835,7 +1183,7 @@ interface HTMLOptGroupElement : HTMLElement {
  NamedConstructor=Option(in DOMString text, in DOMString value, in boolean defaultSelected, in boolean selected)]
 interface HTMLOptionElement : HTMLElement {
            attribute boolean disabled;
-  readonly attribute HTMLFormElement form;
+  readonly attribute HTMLFormElement? form;
            attribute DOMString label;
            attribute boolean defaultSelected;
            attribute boolean selected;
@@ -848,8 +1196,9 @@ interface HTMLOptionElement : HTMLElement {
 interface HTMLTextAreaElement : HTMLElement {
            attribute boolean autofocus;
            attribute unsigned long cols;
+           attribute DOMString dirName;
            attribute boolean disabled;
-  readonly attribute HTMLFormElement form;
+  readonly attribute HTMLFormElement? form;
            attribute long maxLength;
            attribute DOMString name;
            attribute DOMString placeholder;
@@ -874,14 +1223,15 @@ interface HTMLTextAreaElement : HTMLElement {
   void select();
            attribute unsigned long selectionStart;
            attribute unsigned long selectionEnd;
-  void setSelectionRange(in unsigned long start, in unsigned long end);
+           attribute DOMString selectionDirection;
+  void setSelectionRange(in unsigned long start, in unsigned long end, in optional DOMString direction);
 };
 
 interface HTMLKeygenElement : HTMLElement {
            attribute boolean autofocus;
            attribute DOMString challenge;
            attribute boolean disabled;
-  readonly attribute HTMLFormElement form;
+  readonly attribute HTMLFormElement? form;
            attribute DOMString keytype;
            attribute DOMString name;
 
@@ -898,7 +1248,7 @@ interface HTMLKeygenElement : HTMLElement {
 
 interface HTMLOutputElement : HTMLElement {
   [PutForwards=value] readonly attribute DOMSettableTokenList htmlFor;
-  readonly attribute HTMLFormElement form;
+  readonly attribute HTMLFormElement? form;
            attribute DOMString name;
 
   readonly attribute DOMString type;
@@ -915,21 +1265,19 @@ interface HTMLOutputElement : HTMLElement {
 };
 
 interface HTMLProgressElement : HTMLElement {
-           attribute float value;
-           attribute float max;
-  readonly attribute float position;
-  readonly attribute HTMLFormElement form;
+           attribute double value;
+           attribute double max;
+  readonly attribute double position;
   readonly attribute NodeList labels;
 };
 
 interface HTMLMeterElement : HTMLElement {
-           attribute float value;
-           attribute float min;
-           attribute float max;
-           attribute float low;
-           attribute float high;
-           attribute float optimum;
-  readonly attribute HTMLFormElement form;
+           attribute double value;
+           attribute double min;
+           attribute double max;
+           attribute double low;
+           attribute double high;
+           attribute double optimum;
   readonly attribute NodeList labels;
 };
 
@@ -963,8 +1311,8 @@ interface HTMLMenuElement : HTMLElement {
            attribute DOMString label;
 };
 
-[OverrideBuiltins, ReplaceableNamedProperties]
-interface Window : EventTarget {
+[ReplaceableNamedProperties]
+interface Window {
   // the current browsing context
   readonly attribute WindowProxy window;
   readonly attribute WindowProxy self;
@@ -972,14 +1320,16 @@ interface Window : EventTarget {
            attribute DOMString name;
   [PutForwards=href] readonly attribute Location location;
   readonly attribute History history;
+
   readonly attribute UndoManager undoManager;
-  Selection getSelection();
+
   [Replaceable] readonly attribute BarProp locationbar;
   [Replaceable] readonly attribute BarProp menubar;
   [Replaceable] readonly attribute BarProp personalbar;
   [Replaceable] readonly attribute BarProp scrollbars;
   [Replaceable] readonly attribute BarProp statusbar;
   [Replaceable] readonly attribute BarProp toolbar;
+           attribute DOMString status;
   void close();
   void stop();
   void focus();
@@ -989,96 +1339,101 @@ interface Window : EventTarget {
   [Replaceable] readonly attribute WindowProxy frames;
   [Replaceable] readonly attribute unsigned long length;
   readonly attribute WindowProxy top;
-  [Replaceable] readonly attribute WindowProxy opener;
+           attribute WindowProxy opener;
   readonly attribute WindowProxy parent;
-  readonly attribute Element frameElement;
+  readonly attribute Element? frameElement;
   WindowProxy open(in optional DOMString url, in optional DOMString target, in optional DOMString features, in optional boolean replace);
   getter WindowProxy (in unsigned long index);
   getter any (in DOMString name);
-  setter void (in DOMString name, in any value);  // for [ReplaceableNamedProperties]
+  setter void (in DOMString name, in any value);  // for [ReplaceableNamedProperties] TODO: Added only for esidl. This line should not be required.
 
   // the user agent
   readonly attribute Navigator navigator;
+  readonly attribute External external;
   readonly attribute ApplicationCache applicationCache;
 
   // user prompts
   void alert(in DOMString message);
   boolean confirm(in DOMString message);
-  DOMString prompt(in DOMString message, in optional DOMString default);
+  DOMString? prompt(in DOMString message, in optional DOMString default);
   void print();
   any showModalDialog(in DOMString url, in optional any argument);
 
+  // cross-document messaging
+  void postMessage(in any message, in DOMString targetOrigin, in optional sequence<Transferable> transfer);
+
   // event handler IDL attributes
-           attribute Function onabort;
-           attribute Function onafterprint;
-           attribute Function onbeforeprint;
-           attribute Function onbeforeunload;
-           attribute Function onblur;
-           attribute Function oncanplay;
-           attribute Function oncanplaythrough;
-           attribute Function onchange;
-           attribute Function onclick;
-           attribute Function oncontextmenu;
-           attribute Function ondblclick;
-           attribute Function ondrag;
-           attribute Function ondragend;
-           attribute Function ondragenter;
-           attribute Function ondragleave;
-           attribute Function ondragover;
-           attribute Function ondragstart;
-           attribute Function ondrop;
-           attribute Function ondurationchange;
-           attribute Function onemptied;
-           attribute Function onended;
-           attribute Function onerror;
-           attribute Function onfocus;
-           attribute Function onformchange;
-           attribute Function onforminput;
-           attribute Function onhashchange;
-           attribute Function oninput;
-           attribute Function oninvalid;
-           attribute Function onkeydown;
-           attribute Function onkeypress;
-           attribute Function onkeyup;
-           attribute Function onload;
-           attribute Function onloadeddata;
-           attribute Function onloadedmetadata;
-           attribute Function onloadstart;
-           attribute Function onmessage;
-           attribute Function onmousedown;
-           attribute Function onmousemove;
-           attribute Function onmouseout;
-           attribute Function onmouseover;
-           attribute Function onmouseup;
-           attribute Function onmousewheel;
-           attribute Function onoffline;
-           attribute Function ononline;
-           attribute Function onpause;
-           attribute Function onplay;
-           attribute Function onplaying;
-           attribute Function onpagehide;
-           attribute Function onpageshow;
-           attribute Function onpopstate;
-           attribute Function onprogress;
-           attribute Function onratechange;
-           attribute Function onreadystatechange;
-           attribute Function onredo;
-           attribute Function onresize;
-           attribute Function onscroll;
-           attribute Function onseeked;
-           attribute Function onseeking;
-           attribute Function onselect;
-           attribute Function onshow;
-           attribute Function onstalled;
-           attribute Function onstorage;
-           attribute Function onsubmit;
-           attribute Function onsuspend;
-           attribute Function ontimeupdate;
-           attribute Function onundo;
-           attribute Function onunload;
-           attribute Function onvolumechange;
-           attribute Function onwaiting;
+           attribute Function? onabort;
+           attribute Function? onafterprint;
+           attribute Function? onbeforeprint;
+           attribute Function? onbeforeunload;
+           attribute Function? onblur;
+           attribute Function? oncanplay;
+           attribute Function? oncanplaythrough;
+           attribute Function? onchange;
+           attribute Function? onclick;
+           attribute Function? oncontextmenu;
+           attribute Function? oncuechange;
+           attribute Function? ondblclick;
+           attribute Function? ondrag;
+           attribute Function? ondragend;
+           attribute Function? ondragenter;
+           attribute Function? ondragleave;
+           attribute Function? ondragover;
+           attribute Function? ondragstart;
+           attribute Function? ondrop;
+           attribute Function? ondurationchange;
+           attribute Function? onemptied;
+           attribute Function? onended;
+           attribute Function? onerror;
+           attribute Function? onfocus;
+           attribute Function? onhashchange;
+           attribute Function? oninput;
+           attribute Function? oninvalid;
+           attribute Function? onkeydown;
+           attribute Function? onkeypress;
+           attribute Function? onkeyup;
+           attribute Function? onload;
+           attribute Function? onloadeddata;
+           attribute Function? onloadedmetadata;
+           attribute Function? onloadstart;
+           attribute Function? onmessage;
+           attribute Function? onmousedown;
+           attribute Function? onmousemove;
+           attribute Function? onmouseout;
+           attribute Function? onmouseover;
+           attribute Function? onmouseup;
+           attribute Function? onmousewheel;
+           attribute Function? onoffline;
+           attribute Function? ononline;
+           attribute Function? onpause;
+           attribute Function? onplay;
+           attribute Function? onplaying;
+           attribute Function? onpagehide;
+           attribute Function? onpageshow;
+           attribute Function? onpopstate;
+           attribute Function? onprogress;
+           attribute Function? onratechange;
+           attribute Function? onreadystatechange;
+           attribute Function? onredo;
+           attribute Function? onreset;
+           attribute Function? onresize;
+           attribute Function? onscroll;
+           attribute Function? onseeked;
+           attribute Function? onseeking;
+           attribute Function? onselect;
+           attribute Function? onshow;
+           attribute Function? onstalled;
+           attribute Function? onstorage;
+           attribute Function? onsubmit;
+           attribute Function? onsuspend;
+           attribute Function? ontimeupdate;
+           attribute Function? onundo;
+           attribute Function? onunload;
+           attribute Function? onvolumechange;
+           attribute Function? onwaiting;
 };
+Window implements EventTarget;
 
 interface BarProp {
            attribute boolean visible;
@@ -1086,6 +1441,7 @@ interface BarProp {
 
 interface History {
   readonly attribute long length;
+  readonly attribute any state;
   void go(in optional long delta);
   void back();
   void forward();
@@ -1118,21 +1474,21 @@ interface PopStateEvent : Event {
 };
 
 interface HashChangeEvent : Event {
-  readonly attribute any oldURL;
-  readonly attribute any newURL;
+  readonly attribute DOMString oldURL;
+  readonly attribute DOMString newURL;
   void initHashChangeEvent(in DOMString typeArg, in boolean canBubbleArg, in boolean cancelableArg, in DOMString oldURLArg, in DOMString newURLArg);
 };
 
 interface PageTransitionEvent : Event {
-  readonly attribute any persisted;
-  void initPageTransitionEvent(in DOMString typeArg, in boolean canBubbleArg, in boolean cancelableArg, in any persistedArg);
+  readonly attribute boolean persisted;
+  void initPageTransitionEvent(in DOMString typeArg, in boolean canBubbleArg, in boolean cancelableArg, in boolean persistedArg);
 };
 
 interface BeforeUnloadEvent : Event {
            attribute DOMString returnValue;
 };
 
-interface ApplicationCache : EventTarget {
+interface ApplicationCache {
 
   // update status
   const unsigned short UNCACHED = 0;
@@ -1148,20 +1504,33 @@ interface ApplicationCache : EventTarget {
   void swapCache();
 
   // events
-           attribute Function onchecking;
-           attribute Function onerror;
-           attribute Function onnoupdate;
-           attribute Function ondownloading;
-           attribute Function onprogress;
-           attribute Function onupdateready;
-           attribute Function oncached;
-           attribute Function onobsolete;
+           attribute Function? onchecking;
+           attribute Function? onerror;
+           attribute Function? onnoupdate;
+           attribute Function? ondownloading;
+           attribute Function? onprogress;
+           attribute Function? onupdateready;
+           attribute Function? oncached;
+           attribute Function? onobsolete;
+};
+ApplicationCache implements EventTarget;
+
+[Supplemental, NoInterfaceObject]
+interface NavigatorOnLine {
+  readonly attribute boolean onLine;
 };
 
 [Callback=FunctionOnly, NoInterfaceObject]
 interface Function {
   any call(in any... arguments);
 };
+
+[Supplemental, NoInterfaceObject]
+interface WindowBase64 {
+  DOMString btoa(in DOMString btoa);
+  DOMString atob(in DOMString atob);
+};
+Window implements WindowBase64;
 
 [Supplemental, NoInterfaceObject]
 interface WindowTimers {
@@ -1172,7 +1541,7 @@ interface WindowTimers {
 };
 Window implements WindowTimers;
 
-[Supplemental, NoInterfaceObject] interface WindowModal {
+[NoInterfaceObject] interface WindowModal {
   readonly attribute any dialogArguments;
            attribute DOMString returnValue;
 };
@@ -1182,7 +1551,8 @@ interface Navigator {
 };
 Navigator implements NavigatorID;
 Navigator implements NavigatorOnLine;
-Navigator implements NavigatorAbilities;
+Navigator implements NavigatorContentUtils;
+Navigator implements NavigatorStorageUtils;
 
 [Supplemental, NoInterfaceObject]
 interface NavigatorID {
@@ -1193,55 +1563,65 @@ interface NavigatorID {
 };
 
 [Supplemental, NoInterfaceObject]
-interface NavigatorOnLine {
-  readonly attribute boolean onLine;
-};
-
-[Supplemental, NoInterfaceObject]
-interface NavigatorAbilities {
+interface NavigatorContentUtils {
   // content handler registration
   void registerProtocolHandler(in DOMString scheme, in DOMString url, in DOMString title);
   void registerContentHandler(in DOMString mimeType, in DOMString url, in DOMString title);
+};
+
+[Supplemental, NoInterfaceObject]
+interface NavigatorStorageUtils {
   void yieldForStorageUpdates();
 };
 
-interface Selection {
-  readonly attribute Node anchorNode;
-  readonly attribute long anchorOffset;
-  readonly attribute Node focusNode;
-  readonly attribute long focusOffset;
-  readonly attribute boolean isCollapsed;
-  void collapse(in Node parentNode, in long offset);
-  void collapseToStart();
-  void collapseToEnd();
-  void selectAllChildren(in Node parentNode);
-  void deleteFromDocument();
-  readonly attribute long rangeCount;
-  Range getRangeAt(in long index);
-  void addRange(in Range range);
-  void removeRange(in Range range);
-  void removeAllRanges();
-  stringifier DOMString ();
-};
-
-interface DragEvent : MouseEvent {
-  readonly attribute DataTransfer dataTransfer;
-
-  void initDragEvent(in DOMString typeArg, in boolean canBubbleArg, in boolean cancelableArg, in any dummyArg, in long detailArg, in long screenXArg, in long screenYArg, in long clientXArg, in long clientYArg, in boolean ctrlKeyArg, in boolean altKeyArg, in boolean shiftKeyArg, in boolean metaKeyArg, in unsigned short buttonArg, in EventTarget relatedTargetArg, in DataTransfer dataTransferArg);
+interface External {
+  void AddSearchProvider(in DOMString engineURL);
+  unsigned long IsSearchProviderInstalled(in DOMString engineURL);
 };
 
 interface DataTransfer {
            attribute DOMString dropEffect;
            attribute DOMString effectAllowed;
 
-  readonly attribute DOMStringList types;
-  void clearData(in optional DOMString format);
-  void setData(in DOMString format, in DOMString data);
-  DOMString getData(in DOMString format);
-  readonly attribute FileList files;
+  readonly attribute DataTransferItemList items;
 
   void setDragImage(in Element image, in long x, in long y);
   void addElement(in Element element);
+
+  /* old interface */
+  readonly attribute DOMStringList types;
+  DOMString getData(in DOMString format);
+  void setData(in DOMString format, in DOMString data);
+  void clearData(in optional DOMString format);
+  readonly attribute FileList files;
+};
+
+interface DataTransferItemList {
+  readonly attribute unsigned long length;
+  getter DataTransferItem (in unsigned long index);
+  deleter void (in unsigned long index);
+  void clear();
+
+  DataTransferItem? add(in DOMString data, in DOMString type);
+  DataTransferItem? add(in File data);
+};
+
+interface DataTransferItem {
+    readonly attribute DOMString kind;
+    readonly attribute DOMString type;
+    void getAsString(in FunctionStringCallback? callback);
+    File? getAsFile();
+};
+
+[Callback=FunctionOnly, NoInterfaceObject]
+interface FunctionStringCallback {
+  void handleEvent(in DOMString data);
+};
+
+interface DragEvent : MouseEvent {
+  readonly attribute DataTransfer? dataTransfer;
+
+  void initDragEvent(in DOMString typeArg, in boolean canBubbleArg, in boolean cancelableArg, in any dummyArg, in long detailArg, in long screenXArg, in long screenYArg, in long clientXArg, in long clientYArg, in boolean ctrlKeyArg, in boolean altKeyArg, in boolean shiftKeyArg, in boolean metaKeyArg, in unsigned short buttonArg, in EventTarget relatedTargetArg, in DataTransfer? dataTransferArg);
 };
 
 interface UndoManager {
@@ -1258,6 +1638,135 @@ interface UndoManagerEvent : Event {
   readonly attribute any data;
   void initUndoManagerEvent(in DOMString typeArg, in boolean canBubbleArg, in boolean cancelableArg, in any dataArg);
 };
+
+[Supplemental, NoInterfaceObject]
+interface NavigatorUserMedia {
+  void getUserMedia(in DOMString options, in NavigatorUserMediaSuccessCallback? successCallback, in optional NavigatorUserMediaErrorCallback? errorCallback);
+};
+Navigator implements NavigatorUserMedia;
+
+[Callback=FunctionOnly, NoInterfaceObject]
+interface NavigatorUserMediaSuccessCallback {
+  void handleEvent(in LocalMediaStream stream);
+};
+
+[NoInterfaceObject]
+interface NavigatorUserMediaError {
+  const unsigned short PERMISSION_DENIED = 1;
+  readonly attribute unsigned short code;
+};
+
+[Callback=FunctionOnly, NoInterfaceObject]
+interface NavigatorUserMediaErrorCallback {
+  void handleEvent(in NavigatorUserMediaError error);
+};
+
+[Constructor(in MediaStream parentStream)]
+interface MediaStream {
+  readonly attribute DOMString label;
+  readonly attribute StreamTrackList tracks;
+
+  MediaStreamRecorder record();
+
+  const unsigned short LIVE = 1;
+  const unsigned short ENDED = 2;
+  readonly attribute unsigned short readyState;
+           attribute Function? onended;
+};
+MediaStream implements EventTarget;
+
+interface LocalMediaStream : MediaStream {
+  void stop();
+};
+
+typedef StreamTrack[] StreamTrackList;
+
+interface StreamTrack {
+  readonly attribute DOMString kind;
+  readonly attribute DOMString label;
+           attribute boolean enabled;
+};
+
+interface MediaStreamRecorder {
+  void getRecordedData(in BlobCallback? callback);
+};
+
+[Callback=FunctionOnly, NoInterfaceObject]
+interface BlobCallback {
+  void handleEvent(in Blob blob);
+};
+
+#if 0  // URL is not ready to use
+
+[Supplemental]
+interface URL {
+  static DOMString createObjectURL(in MediaStream stream);
+};
+
+#endif
+
+[Constructor(in DOMString configuration, in SignalingCallback signalingCallback)]
+interface PeerConnection {
+  void signalingMessage(in DOMString message);
+
+  const unsigned short NEW = 0;
+  const unsigned short NEGOTIATING = 1;
+  const unsigned short ACTIVE = 2;
+  const unsigned short CLOSED = 3;
+  readonly attribute unsigned short readyState;
+
+  void send(in DOMString text);
+  void addStream(in MediaStream stream);
+  void removeStream(in MediaStream stream);
+  readonly attribute MediaStream[] localStreams;
+  readonly attribute MediaStream[] remoteStreams;
+
+  void close();
+
+  // connection quality information
+           attribute Function? onconnecting;
+           attribute Function? onopen;
+           attribute Function? onmessage;
+           attribute Function? onaddstream;
+           attribute Function? onremovestream;
+};
+PeerConnection implements EventTarget;
+
+[Callback=FunctionOnly, NoInterfaceObject]
+interface SignalingCallback {
+  void handleEvent(in DOMString message, in PeerConnection source);
+};
+
+interface StreamEvent : Event {
+  readonly attribute MediaStream? stream;
+  void initStreamEvent(in DOMString typeArg, in boolean canBubbleArg, in boolean cancelableArg, in MediaStream? streamArg);
+};
+
+interface MessageEvent : Event {
+  readonly attribute any data;
+  readonly attribute DOMString origin;
+  readonly attribute DOMString lastEventId;
+  readonly attribute WindowProxy? source;
+  readonly attribute MessagePort[] ports;
+  void initMessageEvent(in DOMString typeArg, in boolean canBubbleArg, in boolean cancelableArg, in any dataArg, in DOMString originArg, in DOMString lastEventIdArg, in WindowProxy? sourceArg, in sequence<MessagePort> portsArg);
+};
+
+[Constructor]
+interface MessageChannel {
+  readonly attribute MessagePort port1;
+  readonly attribute MessagePort port2;
+};
+
+interface MessagePort {
+  void postMessage(in any message, in optional sequence<Transferable> transfer);
+  void start();
+  void close();
+
+  // event handlers
+           attribute Function? onmessage;
+};
+MessagePort implements EventTarget;
+MessagePort implements Transferable;
 
 interface HTMLAppletElement : HTMLElement {
            attribute DOMString align;
@@ -1282,13 +1791,13 @@ interface HTMLMarqueeElement : HTMLElement {
            attribute long loop;
            attribute unsigned long scrollAmount;
            attribute unsigned long scrollDelay;
-           attribute DOMString trueSpeed;
+           attribute boolean trueSpeed;
            attribute unsigned long vspace;
            attribute DOMString width;
 
-           attribute Function onbounce;
-           attribute Function onfinish;
-           attribute Function onstart;
+           attribute Function? onbounce;
+           attribute Function? onfinish;
+           attribute Function? onstart;
 
   void start();
   void stop();
@@ -1297,25 +1806,26 @@ interface HTMLMarqueeElement : HTMLElement {
 interface HTMLFrameSetElement : HTMLElement {
            attribute DOMString cols;
            attribute DOMString rows;
-           attribute Function onafterprint;
-           attribute Function onbeforeprint;
-           attribute Function onbeforeunload;
-           attribute Function onblur;
-           attribute Function onerror;
-           attribute Function onfocus;
-           attribute Function onhashchange;
-           attribute Function onload;
-           attribute Function onmessage;
-           attribute Function onoffline;
-           attribute Function ononline;
-           attribute Function onpagehide;
-           attribute Function onpageshow;
-           attribute Function onpopstate;
-           attribute Function onredo;
-           attribute Function onresize;
-           attribute Function onstorage;
-           attribute Function onundo;
-           attribute Function onunload;
+           attribute Function? onafterprint;
+           attribute Function? onbeforeprint;
+           attribute Function? onbeforeunload;
+           attribute Function? onblur;
+           attribute Function? onerror;
+           attribute Function? onfocus;
+           attribute Function? onhashchange;
+           attribute Function? onload;
+           attribute Function? onmessage;
+           attribute Function? onoffline;
+           attribute Function? ononline;
+           attribute Function? onpagehide;
+           attribute Function? onpageshow;
+           attribute Function? onpopstate;
+           attribute Function? onredo;
+           attribute Function? onresize;
+           attribute Function? onscroll;
+           attribute Function? onstorage;
+           attribute Function? onundo;
+           attribute Function? onunload;
 };
 
 interface HTMLFrameElement : HTMLElement {
@@ -1327,7 +1837,8 @@ interface HTMLFrameElement : HTMLElement {
            attribute boolean noResize;
            attribute DOMString scrolling;
            attribute DOMString src;
-  readonly attribute Document contentDocument;
+  readonly attribute Document? contentDocument;
+  readonly attribute WindowProxy? contentWindow;
 };
 
 [Supplemental]
@@ -1494,7 +2005,6 @@ interface HTMLObjectElement {
 [Supplemental]
 interface HTMLOListElement {
            attribute boolean compact;
-           attribute DOMString type;
 };
 
 [Supplemental]
@@ -1523,11 +2033,11 @@ interface HTMLScriptElement {
 interface HTMLTableElement {
            attribute DOMString align;
            attribute DOMString bgColor;
-           attribute DOMString border;
            attribute DOMString cellPadding;
            attribute DOMString cellSpacing;
            attribute DOMString frame;
            attribute DOMString rules;
+           attribute DOMString summary;
            attribute DOMString width;
 };
 

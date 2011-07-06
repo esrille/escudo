@@ -27,17 +27,23 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 class CommentImp : public ObjectMixin<CommentImp, CharacterDataImp>
 {
 public:
-    // Node - override
-    virtual unsigned short getNodeType();
-
-    // Object
-    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
-        return Comment::dispatch(this, selector, id, argc, argv);
-    }
-
     CommentImp(DocumentImp* ownerDocument, const std::u16string& data) :
         ObjectMixin(ownerDocument, data) {
         nodeName = u"#comment";
+    }
+
+    // Node - override
+    virtual unsigned short getNodeType();
+
+    // Comment
+    // Object
+    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
+    {
+        return Comment::dispatch(this, selector, id, argc, argv);
+    }
+    static const char* const getMetaData()
+    {
+        return Comment::getMetaData();
     }
 };
 

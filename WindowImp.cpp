@@ -326,12 +326,6 @@ html::UndoManager WindowImp::getUndoManager()
     return static_cast<Object*>(0);
 }
 
-html::Selection WindowImp::getSelection()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
 Any WindowImp::getLocationbar()
 {
     // TODO: implement me!
@@ -446,13 +440,13 @@ html::Window WindowImp::getTop()
     return top;
 }
 
-Any WindowImp::getOpener()
+html::Window WindowImp::getOpener()
 {
     // TODO: implement me!
     return 0;
 }
 
-void WindowImp::setOpener(Any opener)
+void WindowImp::setOpener(html::Window opener)
 {
     // TODO: implement me!
 }
@@ -523,13 +517,13 @@ bool WindowImp::confirm(std::u16string message)
     return 0;
 }
 
-std::u16string WindowImp::prompt(std::u16string message)
+Nullable<std::u16string> WindowImp::prompt(std::u16string message)
 {
     // TODO: implement me!
     return u"";
 }
 
-std::u16string WindowImp::prompt(std::u16string message, std::u16string _default)
+Nullable<std::u16string> WindowImp::prompt(std::u16string message, std::u16string _default)
 {
     // TODO: implement me!
     return u"";
@@ -801,28 +795,6 @@ html::Function WindowImp::getOnfocus()
 }
 
 void WindowImp::setOnfocus(html::Function onfocus)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOnformchange()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOnformchange(html::Function onformchange)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOnforminput()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOnforminput(html::Function onforminput)
 {
     // TODO: implement me!
 }

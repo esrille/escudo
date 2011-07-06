@@ -27,22 +27,26 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 class TextImp : public ObjectMixin<TextImp, CharacterDataImp>
 {
 public:
+    TextImp(DocumentImp* ownerDocument, const std::u16string& data) :
+        ObjectMixin(ownerDocument, data) {
+        nodeName = u"#text";
+    }
+
     // Node - override
     virtual unsigned short getNodeType();
 
     // Text
-    virtual Text splitText(unsigned int offset);
-    virtual std::u16string getWholeText();
-    virtual Text replaceWholeText(std::u16string content);
-
+    virtual Text splitText(unsigned int offset) __attribute__((weak));
+    virtual std::u16string getWholeText() __attribute__((weak));
+    virtual Text replaceWholeText(std::u16string data) __attribute__((weak));
     // Object
-    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
+    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
+    {
         return Text::dispatch(this, selector, id, argc, argv);
     }
-
-    TextImp(DocumentImp* ownerDocument, const std::u16string& data) :
-        ObjectMixin(ownerDocument, data) {
-        nodeName = u"#text";
+    static const char* const getMetaData()
+    {
+        return Text::getMetaData();
     }
 };
 

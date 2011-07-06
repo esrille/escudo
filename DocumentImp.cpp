@@ -111,7 +111,7 @@ DocumentImp::DocumentImp(const std::u16string& url) :
     addEventListener(u"click", &clickListener);
 
     // Set up global
-    global = ::getGlobal();
+    global = newGlobal();
 }
 
 DocumentImp::~DocumentImp()
@@ -682,12 +682,6 @@ html::Window DocumentImp::getDefaultView()
     return defaultView;
 }
 
-html::Selection DocumentImp::getSelection()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
 Element DocumentImp::getActiveElement()
 {
     if (activeElement)
@@ -982,28 +976,6 @@ html::Function DocumentImp::getOnfocus()
 }
 
 void DocumentImp::setOnfocus(html::Function onfocus)
-{
-    // TODO: implement me!
-}
-
-html::Function DocumentImp::getOnformchange()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void DocumentImp::setOnformchange(html::Function onformchange)
-{
-    // TODO: implement me!
-}
-
-html::Function DocumentImp::getOnforminput()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void DocumentImp::setOnforminput(html::Function onforminput)
 {
     // TODO: implement me!
 }
@@ -1433,18 +1405,6 @@ void DocumentImp::clear()
 }
 
 html::HTMLAllCollection DocumentImp::getAll()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-NodeList DocumentImp::getItems()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-NodeList DocumentImp::getItems(std::u16string typeNames)
 {
     // TODO: implement me!
     return static_cast<Object*>(0);

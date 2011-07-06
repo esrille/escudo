@@ -18,6 +18,9 @@
 
 #include <org/w3c/dom/events/Event.h>
 
+#include <js/esjsapi.h>
+
+#include "DocumentImp.h"
 #include "EventImp.h"
 #include "NodeImp.h"
 
@@ -101,6 +104,9 @@ bool EventTargetImp::dispatchEvent(events::Event evt)
         return false;
     event->setDispatchFlag(true);
     event->setTarget(this);
+
+    JS_SetGlobalObject(jscontext, static_cast<JSObject*>(node->getOwnerDocumentImp()->getGlobal()));
+
     if (!node->parentNode)
         invoke(event);
     else {

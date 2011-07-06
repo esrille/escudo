@@ -41,7 +41,7 @@ class NativeClass
 
     NativeClass* proto;
     int protoRank;
-    char name[32];
+    char name[48];
     JSClass jsclass;
     std::unique_ptr<uint32_t[]> hashTable;
 
@@ -53,7 +53,7 @@ class NativeClass
     }
 
 public:
-    NativeClass(JSContext* cx, const char* metadata, Object (*getConstructor)() = 0);
+    NativeClass(JSContext* cx, JSObject* global, const char* metadata, Object (*getConstructor)() = 0);
 
     JSObject* createInstance(JSContext* cx, Object* other);
 

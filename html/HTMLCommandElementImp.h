@@ -33,10 +33,10 @@ public:
     // HTMLCommandElement
     virtual std::u16string getType();
     virtual void setType(std::u16string type);
-    virtual std::u16string getLabel();
-    virtual void setLabel(std::u16string label);
-    virtual std::u16string getIcon();
-    virtual void setIcon(std::u16string icon);
+    virtual Nullable<std::u16string> getLabel();
+    virtual void setLabel(Nullable<std::u16string> label);
+    virtual Nullable<std::u16string> getIcon();
+    virtual void setIcon(Nullable<std::u16string> icon);
     virtual bool getDisabled();
     virtual void setDisabled(bool disabled);
     virtual bool getChecked();

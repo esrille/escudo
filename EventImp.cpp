@@ -18,6 +18,40 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
+EventImp::EventImp() :
+    ObjectMixin(),
+    target(0),
+    currentTarget(0),
+    phase(0),
+    stopPropagationFlag(false),
+    stopImmediatePropagationFlag(false),
+    bubbleFlag(false),
+    cancelFlag(false),
+    canceledFlag(false),
+    trustedFlag(false),
+    initializedFlag(false),
+    dispatchFlag(false)
+{
+}
+
+EventImp::EventImp(std::u16string type) :
+    ObjectMixin(),
+    target(0),
+    currentTarget(0),
+    dispatchFlag(false)
+{
+    initEvent(type, true, false);
+}
+
+EventImp::EventImp(std::u16string type, events::EventInit eventInitDict) :
+    ObjectMixin(),
+    target(0),
+    currentTarget(0),
+    dispatchFlag(false)
+{
+    initEvent(type, eventInitDict.getBubbles(), eventInitDict.getCancelable());
+}
+
 std::u16string EventImp::getType()
 {
     return type;
@@ -99,20 +133,43 @@ void EventImp::initEvent(std::u16string type, bool bubbles, bool cancelable)
         cancelFlag = true;
 }
 
-EventImp::EventImp() :
-    ObjectMixin(),
-    target(0),
-    currentTarget(0),
-    phase(0),
-    stopPropagationFlag(false),
-    stopImmediatePropagationFlag(false),
-    bubbleFlag(false),
-    cancelFlag(false),
-    canceledFlag(false),
-    trustedFlag(false),
-    initializedFlag(false),
-    dispatchFlag(false)
+}  // org::w3c::dom::bootstrap
+
+namespace events {
+
+namespace {
+
+class Constructor : public Object
 {
+public:
+    // Object
+    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
+        bootstrap::EventImp* evt = 0;
+        switch (argc) {
+        case 1:
+            evt = new(std::nothrow) bootstrap::EventImp(argv[0].toString());
+            break;
+        case 2:
+            evt = new(std::nothrow) bootstrap::EventImp(argv[0].toString(), argv[1].toObject());
+            break;
+        default:
+            break;
+        }
+        return evt;
+    }
+    Constructor() :
+        Object(this) {
+    }
+};
+
+}  // namespace
+
+Object Event::getConstructor()
+{
+    static Constructor constructor;
+    return constructor.self();
 }
 
-}}}}  // org::w3c::dom::bootstrap
+}
+
+}}}  // org::w3c::dom::bootstrap

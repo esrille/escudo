@@ -32,25 +32,23 @@ class UIEventImp : public ObjectMixin<UIEventImp, EventImp>
     html::Window view;
     int detail;
 public:
-    // UIEvent
-    html::Window getView()
-    {
-        return view;
-    }
-    int getDetail()
-    {
-        return detail;
-    }
-    void initUIEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, html::Window viewArg, int detailArg);
-
-    // Object
-    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
-        return events::UIEvent::dispatch(this, selector, id, argc, argv);
-    }
-
     UIEventImp() :
         view(0)
     {
+    }
+
+    // UIEvent
+    html::Window getView() __attribute__((weak));
+    int getDetail() __attribute__((weak));
+    void initUIEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, html::Window viewArg, int detailArg) __attribute__((weak));
+    // Object
+    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
+    {
+        return events::UIEvent::dispatch(this, selector, id, argc, argv);
+    }
+    static const char* const getMetaData()
+    {
+        return events::UIEvent::getMetaData();
     }
 };
 

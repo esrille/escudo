@@ -32,8 +32,8 @@ public:
     bool getDisabled() __attribute__((weak));
     void setDisabled(bool disabled) __attribute__((weak));
     html::HTMLFormElement getForm() __attribute__((weak));
-    std::u16string getLabel() __attribute__((weak));
-    void setLabel(std::u16string label) __attribute__((weak));
+    Nullable<std::u16string> getLabel() __attribute__((weak));
+    void setLabel(Nullable<std::u16string> label) __attribute__((weak));
     bool getDefaultSelected() __attribute__((weak));
     void setDefaultSelected(bool defaultSelected) __attribute__((weak));
     bool getSelected() __attribute__((weak));

@@ -412,7 +412,7 @@ JSStrictPropertyOp NativeClass::setters[MAX_RANK] =
 Object (*NativeClass::constructorGetters[MAX_CONSTRUCTOR_COUNT])();
 int NativeClass::constructorCount;
 
-NativeClass::NativeClass(JSContext* cx, const char* metadata, Object (*getConstructor)()) :
+NativeClass::NativeClass(JSContext* cx, JSObject* global, const char* metadata, Object (*getConstructor)()) :
     proto(0),
     protoRank(0),
     jsclass {
@@ -424,12 +424,23 @@ NativeClass::NativeClass(JSContext* cx, const char* metadata, Object (*getConstr
 {
     Reflect::Interface meta(metadata);
 
+    std::string identifier = Reflect::getIdentifier(meta.getName());
+    assert(identifier.length() + 1 < sizeof(name));
+    strcpy(name, identifier.c_str());
+
+    JSBool found;
+    JS_HasProperty(cx, global, name, &found);
+    if (found) {
+        std::cerr << "error: Interface " << name << " has already been registered.\n";
+        return;
+    }
+
     JSObject* parentProto = 0;
     std::string parentName = Reflect::getIdentifier(meta.getExtends());
     if (0 < parentName.length()) {
         // Look up parentProto
         jsval val;
-        if (JS_GetProperty(cx, JS_GetGlobalObject(cx), parentName.c_str(), &val) && JSVAL_IS_OBJECT(val)) {
+        if (JS_GetProperty(cx, global, parentName.c_str(), &val) && JSVAL_IS_OBJECT(val)) {
             JSObject* parent = JSVAL_TO_OBJECT(val);
             if (JS_GetProperty(cx, parent, "prototype", &val) && JSVAL_IS_OBJECT(val))
                 parentProto = JSVAL_TO_OBJECT(val);
@@ -454,10 +465,6 @@ NativeClass::NativeClass(JSContext* cx, const char* metadata, Object (*getConstr
         auto table = std::unique_ptr<uint32_t[]>(new uint32_t[propertyCount]);
         hashTable = std::move(table);
     }
-
-    std::string identifier = Reflect::getIdentifier(meta.getName());
-    assert(identifier.length() + 1 < sizeof(name));
-    strcpy(name, identifier.c_str());
 
     char* heap = stringHeap.get();
     JSPropertySpec* pps = ps.get();
@@ -543,7 +550,7 @@ NativeClass::NativeClass(JSContext* cx, const char* metadata, Object (*getConstr
     assert(pps - ps.get() <= attributeCount);
     assert(pfs - fs.get() <= operationCount);
     assert(heap - stringHeap.get() <= meta.getStringSize());
-    JS_InitClass(cx, JS_GetGlobalObject(cx),
+    JS_InitClass(cx, global,
                  parentProto,
                  &jsclass,
                  constructor, 0,
@@ -552,7 +559,7 @@ NativeClass::NativeClass(JSContext* cx, const char* metadata, Object (*getConstr
 
     // Define constants
     jsval val;
-    if (0 < meta.getConstantCount() && JS_GetProperty(cx, JS_GetGlobalObject(cx), name, &val)) {
+    if (0 < meta.getConstantCount() && JS_GetProperty(cx, global, name, &val)) {
         assert(JSVAL_IS_OBJECT(val));
         JSObject* ctor = JSVAL_TO_OBJECT(val);
         Reflect::Property prop(meta);

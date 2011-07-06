@@ -30,16 +30,20 @@ class NodeListImp : public ObjectMixin<NodeListImp>
     // TODO: add more constraints for getElementsByTagName(), etc.
 
 public:
-    // NodeList
-    virtual Node item(unsigned int index);
-    virtual unsigned int getLength();
+    NodeListImp(Node node);
 
+    // NodeList
+    virtual Node item(unsigned int index) __attribute__((weak));
+    virtual unsigned int getLength() __attribute__((weak));
     // Object
-    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
+    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
+    {
         return NodeList::dispatch(this, selector, id, argc, argv);
     }
-
-    NodeListImp(Node node);
+    static const char* const getMetaData()
+    {
+        return NodeList::getMetaData();
+    }
 };
 
 

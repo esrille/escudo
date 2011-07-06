@@ -23,7 +23,7 @@
 struct JSRuntime;
 struct JSObject;
 JSRuntime* getRuntime();
-JSObject* getGlobal();
+JSObject* newGlobal();
 void putGlobal(JSObject* global);
 
 #endif  // SCRIPT_H

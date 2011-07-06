@@ -3,7 +3,7 @@
 // implementation.  Permission to use, copy, modify and distribute
 // this file in any software license is hereby granted.
 
-#include "MessageChannelImp.h"
+#include "CustomEventInitImp.h"
 
 namespace org
 {
@@ -14,16 +14,15 @@ namespace dom
 namespace bootstrap
 {
 
-html::MessagePort MessageChannelImp::getPort1()
+Any CustomEventInitImp::getDetail()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return 0;
 }
 
-html::MessagePort MessageChannelImp::getPort2()
+void CustomEventInitImp::setDetail(Any detail)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
 }
 
 }

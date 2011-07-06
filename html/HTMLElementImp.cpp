@@ -169,16 +169,6 @@ void HTMLElementImp::click()
     // TODO: implement me!
 }
 
-void HTMLElementImp::scrollIntoView()
-{
-    // TODO: implement me!
-}
-
-void HTMLElementImp::scrollIntoView(bool top)
-{
-    // TODO: implement me!
-}
-
 int HTMLElementImp::getTabIndex()
 {
     // TODO: implement me!
@@ -261,30 +251,30 @@ void HTMLElementImp::setContextMenu(html::HTMLMenuElement contextMenu)
     // TODO: implement me!
 }
 
-std::u16string HTMLElementImp::getSpellcheck()
+bool HTMLElementImp::getSpellcheck()
 {
     // TODO: implement me!
     return u"";
 }
 
-void HTMLElementImp::setSpellcheck(std::u16string spellcheck)
+void HTMLElementImp::setSpellcheck(bool spellcheck)
 {
     // TODO: implement me!
 }
 
-std::u16string HTMLElementImp::getCommandType()
-{
-    // TODO: implement me!
-    return u"";
-}
-
-std::u16string HTMLElementImp::getLabel()
+Nullable<std::u16string> HTMLElementImp::getCommandType()
 {
     // TODO: implement me!
     return u"";
 }
 
-std::u16string HTMLElementImp::getIcon()
+Nullable<std::u16string> HTMLElementImp::getLabel()
+{
+    // TODO: implement me!
+    return u"";
+}
+
+Nullable<std::u16string> HTMLElementImp::getIcon()
 {
     // TODO: implement me!
     return u"";
@@ -523,28 +513,6 @@ html::Function HTMLElementImp::getOnfocus()
 }
 
 void HTMLElementImp::setOnfocus(html::Function onfocus)
-{
-    // TODO: implement me!
-}
-
-html::Function HTMLElementImp::getOnformchange()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void HTMLElementImp::setOnformchange(html::Function onformchange)
-{
-    // TODO: implement me!
-}
-
-html::Function HTMLElementImp::getOnforminput()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void HTMLElementImp::setOnforminput(html::Function onforminput)
 {
     // TODO: implement me!
 }

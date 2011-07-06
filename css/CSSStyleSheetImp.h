@@ -39,15 +39,20 @@ public:
 
     // StyleSheet
     virtual std::u16string getType();
-    // CSSStyleSheet
-    virtual css::CSSRule getOwnerRule();
-    virtual css::CSSRuleList getCssRules();
-    virtual unsigned int insertRule(std::u16string rule, unsigned int index);
-    virtual void deleteRule(unsigned int index);
 
+    // CSSStyleSheet
+    css::CSSRule getOwnerRule() __attribute__((weak));
+    css::CSSRuleList getCssRules() __attribute__((weak));
+    unsigned int insertRule(std::u16string rule, unsigned int index) __attribute__((weak));
+    void deleteRule(unsigned int index) __attribute__((weak));
     // Object
-    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
+    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
+    {
         return css::CSSStyleSheet::dispatch(this, selector, id, argc, argv);
+    }
+    static const char* const getMetaData()
+    {
+        return css::CSSStyleSheet::getMetaData();
     }
 };
 

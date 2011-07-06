@@ -33,6 +33,7 @@ class CSSMediaRuleImp : public ObjectMixin<CSSMediaRuleImp, CSSRuleImp>
 {
     std::deque<css::CSSRule> ruleList;
     Retained<MediaListImp> mediaList;
+
 public:
     void append(css::CSSRule rule) {
         ruleList.push_back(rule);
@@ -42,15 +43,19 @@ public:
     virtual unsigned short getType();
 
     // CSSMediaRule
-    virtual stylesheets::MediaList getMedia();
-    virtual void setMedia(std::u16string media);
-    virtual css::CSSRuleList getCssRules();
-    virtual unsigned int insertRule(std::u16string rule, unsigned int index);
-    virtual void deleteRule(unsigned int index);
-
+    stylesheets::MediaList getMedia() __attribute__((weak));
+    void setMedia(std::u16string media) __attribute__((weak));
+    css::CSSRuleList getCssRules() __attribute__((weak));
+    unsigned int insertRule(std::u16string rule, unsigned int index) __attribute__((weak));
+    void deleteRule(unsigned int index) __attribute__((weak));
     // Object
-    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
+    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
+    {
         return css::CSSMediaRule::dispatch(this, selector, id, argc, argv);
+    }
+    static const char* const getMetaData()
+    {
+        return css::CSSMediaRule::getMetaData();
     }
 };
 

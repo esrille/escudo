@@ -29,8 +29,8 @@ public:
     // HTMLMenuElement
     std::u16string getType() __attribute__((weak));
     void setType(std::u16string type) __attribute__((weak));
-    std::u16string getLabel() __attribute__((weak));
-    void setLabel(std::u16string label) __attribute__((weak));
+    Nullable<std::u16string> getLabel() __attribute__((weak));
+    void setLabel(Nullable<std::u16string> label) __attribute__((weak));
     // HTMLMenuElement-22
     bool getCompact() __attribute__((weak));
     void setCompact(bool compact) __attribute__((weak));

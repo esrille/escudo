@@ -154,7 +154,7 @@ bool CSSPrimarySelector::match(Element e)
         if (e.getLocalName() != name)
             return false;
         if (namespacePrefix != u"*") {
-            if (e.getNamespaceURI() != namespacePrefix)
+            if (!e.getNamespaceURI().hasValue() || e.getNamespaceURI().value() != namespacePrefix)
                 return false;
         }
     }

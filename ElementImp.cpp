@@ -92,13 +92,15 @@ Node ElementImp::cloneNode(bool deep)
     return new(std::nothrow) ElementImp(this, deep);
 }
 
-std::u16string ElementImp::getTextContent()
+Nullable<std::u16string> ElementImp::getTextContent()
 {
     std::u16string content;
     for (Node child = getFirstChild(); child; child = child.getNextSibling()) {
         if (child.getNodeType() == Node::COMMENT_NODE)
             continue;
-        content += child.getTextContent();
+        Nullable<std::u16string> text = child.getTextContent();
+        if (text.hasValue())
+            content += text.value();
     }
     return content;
 }
@@ -114,12 +116,12 @@ void ElementImp::setTextContent(std::u16string textContent)
 }
 
 // Element
-std::u16string ElementImp::getNamespaceURI()
+Nullable<std::u16string> ElementImp::getNamespaceURI()
 {
     return namespaceURI;
 }
 
-std::u16string ElementImp::getPrefix()
+Nullable<std::u16string> ElementImp::getPrefix()
 {
     return prefix;
 }

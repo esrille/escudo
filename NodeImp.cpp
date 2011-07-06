@@ -93,7 +93,7 @@ std::u16string NodeImp::getNodeName()
     return nodeName;
 }
 
-std::u16string NodeImp::getBaseURI()
+Nullable<std::u16string> NodeImp::getBaseURI()
 {
     // TODO: implement me!
     return u"";
@@ -150,23 +150,23 @@ unsigned short NodeImp::compareDocumentPosition(Node other)
     return 0;
 }
 
-std::u16string NodeImp::getNodeValue()
+Nullable<std::u16string> NodeImp::getNodeValue()
 {
     // TODO: implement me!
     return u"";
 }
 
-void NodeImp::setNodeValue(std::u16string nodeValue)
+void NodeImp::setNodeValue(Nullable<std::u16string> nodeValue)
 {
     // TODO: implement me!
 }
 
-std::u16string NodeImp::getTextContent()
+Nullable<std::u16string> NodeImp::getTextContent()
 {
-    return u"";  // TODO: null? Ask Anne.
+    return u"";  // TODO: return null instead
 }
 
-void NodeImp::setTextContent(std::u16string textContent)
+void NodeImp::setTextContent(Nullable<std::u16string> textContent)
 {
     // TODO: implement me!
 }

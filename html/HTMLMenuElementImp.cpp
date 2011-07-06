@@ -25,13 +25,13 @@ void HTMLMenuElementImp::setType(std::u16string type)
     // TODO: implement me!
 }
 
-std::u16string HTMLMenuElementImp::getLabel()
+Nullable<std::u16string> HTMLMenuElementImp::getLabel()
 {
     // TODO: implement me!
     return u"";
 }
 
-void HTMLMenuElementImp::setLabel(std::u16string label)
+void HTMLMenuElementImp::setLabel(Nullable<std::u16string> label)
 {
     // TODO: implement me!
 }

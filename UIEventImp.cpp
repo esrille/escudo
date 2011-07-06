@@ -18,6 +18,16 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
+html::Window UIEventImp::getView()
+{
+    return view;
+}
+
+int UIEventImp::getDetail()
+{
+    return detail;
+}
+
 void UIEventImp::initUIEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg,
                              html::Window viewArg, int detailArg)
 {

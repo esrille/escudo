@@ -19,23 +19,24 @@
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 // Node
-std::u16string CharacterDataImp::getTextContent()
+Nullable<std::u16string> CharacterDataImp::getTextContent()
 {
     return getData();
 }
 
-void CharacterDataImp::setTextContent(std::u16string textContent)
+void CharacterDataImp::setTextContent(Nullable<std::u16string> textContent)
 {
-    setData(textContent);
+    if (textContent.hasValue())
+        setData(textContent.value());
 }
 
 // CharacterData
-std::u16string CharacterDataImp::getData() throw(DOMException)
+std::u16string CharacterDataImp::getData()
 {
     return data;
 }
 
-void CharacterDataImp::setData(std::u16string data) throw(DOMException)
+void CharacterDataImp::setData(std::u16string data)
 {
     this->data = data;
 }
@@ -45,27 +46,27 @@ unsigned int CharacterDataImp::getLength()
     return data.length();
 }
 
-std::u16string CharacterDataImp::substringData(unsigned int offset, unsigned int count) throw(DOMException)
+std::u16string CharacterDataImp::substringData(unsigned int offset, unsigned int count)
 {
     return data.substr(offset, count);
 }
 
-void CharacterDataImp::appendData(std::u16string arg) throw(DOMException)
+void CharacterDataImp::appendData(std::u16string arg)
 {
     data += arg;
 }
 
-void CharacterDataImp::insertData(unsigned int offset, std::u16string arg) throw(DOMException)
+void CharacterDataImp::insertData(unsigned int offset, std::u16string arg)
 {
     data.insert(offset, arg);
 }
 
-void CharacterDataImp::deleteData(unsigned int offset, unsigned int count) throw(DOMException)
+void CharacterDataImp::deleteData(unsigned int offset, unsigned int count)
 {
     data.erase(offset, count);
 }
 
-void CharacterDataImp::replaceData(unsigned int offset, unsigned int count, std::u16string arg) throw(DOMException)
+void CharacterDataImp::replaceData(unsigned int offset, unsigned int count, std::u16string arg)
 {
     data.replace(offset, count, arg);
 }

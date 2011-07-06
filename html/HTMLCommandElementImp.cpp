@@ -36,24 +36,24 @@ void HTMLCommandElementImp::setType(std::u16string type)
     // TODO: implement me!
 }
 
-std::u16string HTMLCommandElementImp::getLabel()
+Nullable<std::u16string> HTMLCommandElementImp::getLabel()
 {
     // TODO: implement me!
     return u"";
 }
 
-void HTMLCommandElementImp::setLabel(std::u16string label)
+void HTMLCommandElementImp::setLabel(Nullable<std::u16string> label)
 {
     // TODO: implement me!
 }
 
-std::u16string HTMLCommandElementImp::getIcon()
+Nullable<std::u16string> HTMLCommandElementImp::getIcon()
 {
     // TODO: implement me!
     return u"";
 }
 
-void HTMLCommandElementImp::setIcon(std::u16string icon)
+void HTMLCommandElementImp::setIcon(Nullable<std::u16string> icon)
 {
     // TODO: implement me!
 }

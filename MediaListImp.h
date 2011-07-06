@@ -30,20 +30,24 @@ private:
     std::bitset<32> types;
 
 public:
-    // MediaList
-    virtual std::u16string getMediaText();
-    virtual void setMediaText(std::u16string mediaText);
-    virtual unsigned int getLength();
-    virtual std::u16string item(unsigned int index);
-    virtual void appendMedium(std::u16string medium);
-    virtual void deleteMedium(std::u16string medium);
+    MediaListImp();
 
+    // MediaList
+    virtual std::u16string getMediaText() __attribute__((weak));
+    virtual void setMediaText(std::u16string mediaText) __attribute__((weak));
+    virtual unsigned int getLength() __attribute__((weak));
+    virtual std::u16string item(unsigned int index) __attribute__((weak));
+    virtual void appendMedium(std::u16string medium) __attribute__((weak));
+    virtual void deleteMedium(std::u16string medium) __attribute__((weak));
     // Object
-    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
+    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
+    {
         return stylesheets::MediaList::dispatch(this, selector, id, argc, argv);
     }
-
-    MediaListImp();
+    static const char* const getMetaData()
+    {
+        return stylesheets::MediaList::getMetaData();
+    }
 };
 
 }}}}  // org::w3c::dom::bootstrap

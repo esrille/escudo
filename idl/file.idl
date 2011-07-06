@@ -121,6 +121,12 @@ interface FileReaderSync {
   unsigned short code;
 };
 
+// from FILESYSTEMAPI
+[NoInterfaceObject, Callback=FunctionOnly]
+interface FileCallback {
+    void handleEvent (File file);
+};
+
 };
 
 #if XXX

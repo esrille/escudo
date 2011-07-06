@@ -77,9 +77,11 @@ bool HTMLScriptElementImp::execute()
     jsval rval;
     const char* filename = "";
     int lineno = 0;
-    std::u16string script = getTextContent();
+    Nullable<std::u16string> script = getTextContent();
+    if (!script.hasValue())
+        return false;
     return JS_EvaluateUCScript(jscontext, static_cast<JSObject*>(getOwnerDocumentImp()->getGlobal()),
-                               reinterpret_cast<const jschar*>(script.c_str()), script.length(),
+                               reinterpret_cast<const jschar*>(script.value().c_str()), script.value().length(),
                                filename, lineno, &rval);
 }
 

@@ -38,6 +38,7 @@ exception DOMException {
   const unsigned short URL_MISMATCH_ERR = 21;
   const unsigned short QUOTA_EXCEEDED_ERR = 22;
   const unsigned short TIMEOUT_ERR = 23;
+  const unsigned short INVALID_NODE_TYPE_ERR = 24;
   const unsigned short DATA_CLONE_ERR = 25;
   unsigned short code;
   DOMString name;
@@ -49,10 +50,11 @@ module events {
 
 typedef dom::DOMObject DOMObject;
 
+[Constructor(DOMString type, optional EventInit eventInitDict)]
 interface Event {
   readonly attribute DOMString type;
-  readonly attribute EventTarget target;
-  readonly attribute EventTarget currentTarget;
+  readonly attribute EventTarget? target;
+  readonly attribute EventTarget? currentTarget;
 
   const unsigned short CAPTURING_PHASE = 1;
   const unsigned short AT_TARGET = 2;
@@ -73,18 +75,28 @@ interface Event {
   void initEvent(DOMString type, boolean bubbles, boolean cancelable);
 };
 
+dictionary EventInit {
+  boolean bubbles;
+  boolean cancelable;
+};
+
+[Constructor(DOMString type, optional CustomEventInit eventInitDict)]
 interface CustomEvent : Event {
-  readonly attribute object detail;
-  void initCustomEvent(DOMString type, boolean bubbles, boolean cancelable, object detail);
+  readonly attribute any detail;
+};
+
+dictionary CustomEventInit : EventInit {
+  any detail;
 };
 
 interface EventTarget {
-  void addEventListener(DOMString type, EventListener listener, optional boolean capture);
-  void removeEventListener(DOMString type, EventListener listener, optional boolean capture);
+  void addEventListener(DOMString type, EventListener? listener, optional boolean capture);
+  void removeEventListener(DOMString type, EventListener? listener, optional boolean capture);
   boolean dispatchEvent(Event event);
 };
 
-[Callback] interface EventListener {
+[Callback, NoInterfaceObject]
+interface EventListener {
   void handleEvent(Event event);
 };
 
@@ -112,17 +124,17 @@ interface Node : EventTarget {
   readonly attribute unsigned short nodeType;
   readonly attribute DOMString nodeName;
 
-  readonly attribute DOMString baseURI;
+  readonly attribute DOMString? baseURI;
 
-  readonly attribute Document ownerDocument;
-  readonly attribute Node parentNode;
-  readonly attribute Element parentElement;
+  readonly attribute Document? ownerDocument;
+  readonly attribute Node? parentNode;
+  readonly attribute Element? parentElement;
   boolean hasChildNodes();
   readonly attribute NodeList childNodes;
-  readonly attribute Node firstChild;
-  readonly attribute Node lastChild;
-  readonly attribute Node previousSibling;
-  readonly attribute Node nextSibling;
+  readonly attribute Node? firstChild;
+  readonly attribute Node? lastChild;
+  readonly attribute Node? previousSibling;
+  readonly attribute Node? nextSibling;
 
   const unsigned short DOCUMENT_POSITION_DISCONNECTED = 0x01;
   const unsigned short DOCUMENT_POSITION_PRECEDING = 0x02;
@@ -132,16 +144,16 @@ interface Node : EventTarget {
   const unsigned short DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = 0x20;
   unsigned short compareDocumentPosition(Node other);
 
-           attribute DOMString nodeValue;
-           attribute DOMString textContent;
-  Node insertBefore([NoNull] Node newChild, Node refChild);
-  Node replaceChild([NoNull] Node newChild, [NoNull] Node oldChild);
-  Node removeChild([NoNull] Node oldChild);
-  Node appendChild([NoNull] Node newChild);
+           attribute DOMString? nodeValue;
+           attribute DOMString? textContent;
+  Node insertBefore(Node newChild, Node? refChild);
+  Node replaceChild(Node newChild, Node oldChild);
+  Node removeChild(Node oldChild);
+  Node appendChild(Node newChild);
 
   Node cloneNode(boolean deep);
-  boolean isSameNode(Node node);
-  boolean isEqualNode(Node node);
+  boolean isSameNode(Node? node);
+  boolean isEqualNode(Node? node);
 
   DOMString lookupPrefix([TreatNullAs=EmptyString] DOMString namespace);
   DOMString lookupNamespaceURI(DOMString? prefix);
@@ -156,12 +168,17 @@ interface Document : Node {
            attribute DOMString documentURI;
   readonly attribute DOMString compatMode;
 
-  readonly attribute DocumentType doctype;
-  readonly attribute Element documentElement;
+           attribute DOMString charset;
+  readonly attribute DOMString characterSet;
+  readonly attribute DOMString defaultCharset;
+  readonly attribute DOMString contentType;
+
+  readonly attribute DocumentType? doctype;
+  readonly attribute Element? documentElement;
   NodeList getElementsByTagName(DOMString qualifiedName);
   NodeList getElementsByTagNameNS(DOMString namespace, DOMString localName);
   NodeList getElementsByClassName(DOMString classNames);
-  Element getElementById(DOMString elementId);
+  Element? getElementById(DOMString elementId);
 
   Element createElement([TreatNullAs=EmptyString] DOMString localName);
   Element createElementNS(DOMString namespace, DOMString qualifiedName);
@@ -173,20 +190,20 @@ interface Document : Node {
   Node importNode(Node node, boolean deep);
   Node adoptNode(Node node);
 
-  Event createEvent(DOMString _interface);
+  Event createEvent(DOMString eventInterfaceName);
 };
 
 interface DOMImplementation {
   boolean hasFeature(DOMString feature, [TreatNullAs=EmptyString] DOMString version);
 
   DocumentType createDocumentType([TreatNullAs=EmptyString] DOMString qualifiedName, DOMString publicId, DOMString systemId);
-  Document createDocument([TreatNullAs=EmptyString] DOMString namespace, [TreatNullAs=EmptyString] DOMString qualifiedName, DocumentType doctype);
+  Document createDocument([TreatNullAs=EmptyString] DOMString namespace, [TreatNullAs=EmptyString] DOMString qualifiedName, DocumentType? doctype);
   Document createHTMLDocument(DOMString title);
 };
 
 interface Element : Node {
-  readonly attribute DOMString namespaceURI;
-  readonly attribute DOMString prefix;
+  readonly attribute DOMString? namespaceURI;
+  readonly attribute DOMString? prefix;
   readonly attribute DOMString localName;
   readonly attribute DOMString tagName;
 
@@ -200,14 +217,16 @@ interface Element : Node {
   boolean hasAttribute(DOMString qualifiedName);
   boolean hasAttributeNS(DOMString namespace, DOMString localName);
 
-  readonly attribute HTMLCollection children;
   NodeList getElementsByTagName(DOMString qualifiedName);
   NodeList getElementsByTagNameNS(DOMString namespace, DOMString localName);
   NodeList getElementsByClassName(DOMString classNames);
-  readonly attribute Element firstElementChild;
-  readonly attribute Element lastElementChild;
-  readonly attribute Element previousElementSibling;
-  readonly attribute Element nextElementSibling;
+
+  readonly attribute HTMLCollection children;
+  readonly attribute Element? firstElementChild;
+  readonly attribute Element? lastElementChild;
+  readonly attribute Element? previousElementSibling;
+  readonly attribute Element? nextElementSibling;
+  readonly attribute unsigned long childElementCount;
 };
 
 interface Attr {
@@ -242,14 +261,14 @@ interface CharacterData : Node {
 interface Text : CharacterData {
   Text splitText(unsigned long offset);
   readonly attribute DOMString wholeText;
-  Text replaceWholeText(DOMString data);
+  Text? replaceWholeText(DOMString data);
 };
 
 interface Comment : CharacterData {
 };
 
 interface NodeList {
-  getter Node item(unsigned long index);
+  getter Node? item(unsigned long index);
   readonly attribute unsigned long length;
 };
 
@@ -259,8 +278,8 @@ module html {
 
 interface HTMLCollection {
   readonly attribute unsigned long length;
-  getter Element item(unsigned long index);
-  getter object namedItem(DOMString name); // only returns Element
+  caller getter Element? item(in unsigned long index);
+  caller getter object? namedItem(in DOMString name); // only returns Element
 };
 
 };
@@ -269,13 +288,13 @@ module dom {
 
 interface DOMStringList {
   readonly attribute unsigned long length;
-  getter DOMString item(unsigned long index);
+  getter DOMString? item(unsigned long index);
   boolean contains(DOMString _string);
 };
 
 interface DOMTokenList {
   readonly attribute unsigned long length;
-  getter DOMString item(unsigned long index);
+  getter DOMString? item(unsigned long index);
   boolean contains(DOMString token);
   void add(DOMString token);
   void remove(DOMString token);
@@ -291,6 +310,13 @@ interface DOMStringMap {
   getter DOMString (in DOMString name);
   setter void (in DOMString name, in DOMString value);
   creator void (in DOMString name, in DOMString value);
+  deleter void (in DOMString name);
+};
+
+interface DOMElementMap {
+  getter DOMString (in DOMString name);
+  setter void (in DOMString name, in Element value);
+  creator void (in DOMString name, in Element value);
   deleter void (in DOMString name);
 };
 

@@ -47,18 +47,22 @@ class EventTargetImp : public ObjectMixin<EventTargetImp>
     void invoke(EventImp* event);
 
 public:
-    // EventTarget
-    virtual void addEventListener(std::u16string type, events::EventListener listener, bool useCapture = false);
-    virtual void removeEventListener(std::u16string type, events::EventListener listener, bool useCapture = false);
-    virtual bool dispatchEvent(events::Event evt);
-
-    // Object
-    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
-        return events::EventTarget::dispatch(this, selector, id, argc, argv);
-    }
-
     EventTargetImp();
     EventTargetImp(EventTargetImp* org);
+
+    // EventTarget
+    virtual void addEventListener(std::u16string type, events::EventListener listener, bool capture = false) __attribute__((weak));
+    virtual void removeEventListener(std::u16string type, events::EventListener listener, bool capture = false) __attribute__((weak));
+    virtual bool dispatchEvent(events::Event event) __attribute__((weak));
+    // Object
+    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
+    {
+        return events::EventTarget::dispatch(this, selector, id, argc, argv);
+    }
+    static const char* const getMetaData()
+    {
+        return events::EventTarget::getMetaData();
+    }
 };
 
 }}}}  // org::w3c::dom::bootstrap

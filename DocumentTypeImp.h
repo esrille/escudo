@@ -28,25 +28,30 @@ class DocumentTypeImp : public ObjectMixin<DocumentTypeImp, NodeImp>
 {
     std::u16string publicId;
     std::u16string systemId;
+
 public:
-    // DocumentType
-    virtual std::u16string getName();
-    virtual std::u16string getPublicId();
-    virtual std::u16string getSystemId();
-
-    // Node - override
-    virtual unsigned short getNodeType();
-
-    // Object
-    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
-        return DocumentType::dispatch(this, selector, id, argc, argv);
-    }
-
     DocumentTypeImp(std::u16string qualifiedName, Nullable<std::u16string> publicId, Nullable<std::u16string> systemId) :
         ObjectMixin(static_cast<DocumentImp*>(0)),  // TODO: use nullptr with gcc 4.6
         publicId(publicId.hasValue() ? publicId.value() : u""),
         systemId(systemId.hasValue() ? systemId.value() : u"") {
         nodeName = qualifiedName;
+    }
+
+    // Node - override
+    virtual unsigned short getNodeType();
+
+    // DocumentType
+    virtual std::u16string getName() __attribute__((weak));
+    virtual std::u16string getPublicId() __attribute__((weak));
+    virtual std::u16string getSystemId() __attribute__((weak));
+    // Object
+    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
+    {
+        return DocumentType::dispatch(this, selector, id, argc, argv);
+    }
+    static const char* const getMetaData()
+    {
+        return DocumentType::getMetaData();
     }
 };
 

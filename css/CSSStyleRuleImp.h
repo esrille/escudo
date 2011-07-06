@@ -33,7 +33,10 @@ class CSSStyleRuleImp : public ObjectMixin<CSSStyleRuleImp, CSSRuleImp>
 {
     CSSSelectorsGroup* selectorsGroup;
     css::CSSStyleDeclaration styleDeclaration;
+
 public:
+    CSSStyleRuleImp(CSSSelectorsGroup* selectorsGroup, css::CSSStyleDeclaration styleDeclaration);
+
     CSSSelector* match(Element element);
     CSSSpecificity getLastSpecificity() {  // of the last matched selector
         return selectorsGroup->getLastSpecificity();
@@ -43,16 +46,18 @@ public:
     virtual unsigned short getType();
 
     // CSSStyleRule
-    virtual std::u16string getSelectorText();
-    virtual void setSelectorText(std::u16string selectorText);
-    virtual css::CSSStyleDeclaration getStyle();
-
+    std::u16string getSelectorText() __attribute__((weak));
+    void setSelectorText(std::u16string selectorText) __attribute__((weak));
+    css::CSSStyleDeclaration getStyle() __attribute__((weak));
     // Object
-    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
+    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
+    {
         return css::CSSStyleRule::dispatch(this, selector, id, argc, argv);
     }
-
-    CSSStyleRuleImp(CSSSelectorsGroup* selectorsGroup, css::CSSStyleDeclaration styleDeclaration);
+    static const char* const getMetaData()
+    {
+        return css::CSSStyleRule::getMetaData();
+    }
 };
 
 }}}}  // org::w3c::dom::bootstrap

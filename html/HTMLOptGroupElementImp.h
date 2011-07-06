@@ -29,8 +29,8 @@ public:
     // HTMLOptGroupElement
     bool getDisabled() __attribute__((weak));
     void setDisabled(bool disabled) __attribute__((weak));
-    std::u16string getLabel() __attribute__((weak));
-    void setLabel(std::u16string label) __attribute__((weak));
+    Nullable<std::u16string> getLabel() __attribute__((weak));
+    void setLabel(Nullable<std::u16string> label) __attribute__((weak));
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

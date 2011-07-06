@@ -78,6 +78,16 @@ void HistoryImp::go(int delta)
     }
 }
 
+void HistoryImp::back()
+{
+    go(-1);
+}
+
+void HistoryImp::forward()
+{
+    go(1);
+}
+
 void HistoryImp::pushState(Any data, std::u16string title)
 {
     // TODO: implement me!
