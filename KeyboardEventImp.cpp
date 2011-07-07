@@ -43,6 +43,26 @@ unsigned int KeyboardEventImp::getLocation()
     return 0;
 }
 
+bool KeyboardEventImp::getCtrlKey()
+{
+    return modifiers & 2;
+}
+
+bool KeyboardEventImp::getShiftKey()
+{
+    return modifiers & 1;
+}
+
+bool KeyboardEventImp::getAltKey()
+{
+    return modifiers & 4;
+}
+
+bool KeyboardEventImp::getMetaKey()
+{
+    return modifiers & 8;
+}
+
 bool KeyboardEventImp::getRepeat()
 {
     // TODO: implement me!
@@ -65,6 +85,21 @@ void KeyboardEventImp::initKeyboardEvent(std::u16string typeArg, bool canBubbleA
 {
     // TODO: implement me!
     initUIEvent(typeArg, canBubbleArg, cancelableArg, viewArg, 0);
+}
+
+unsigned int KeyboardEventImp::getCharCode()
+{
+    return charCode;
+}
+
+unsigned int KeyboardEventImp::getKeyCode()
+{
+    return keyCode;
+}
+
+unsigned int KeyboardEventImp::getWhich()
+{
+    return which;
 }
 
 }

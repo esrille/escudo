@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-#ifndef UIEVENT_IMP_H
-#define UIEVENT_IMP_H
+#ifndef ORG_W3C_DOM_BOOTSTRAP_UIEVENTIMP_H_INCLUDED
+#define ORG_W3C_DOM_BOOTSTRAP_UIEVENTIMP_H_INCLUDED
 
-#include <Object.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include <org/w3c/dom/events/UIEvent.h>
+#include "EventImp.h"
 
+#include <org/w3c/dom/events/Event.h>
 #include <org/w3c/dom/html/Window.h>
 
 #include "EventImp.h"
@@ -38,9 +42,9 @@ public:
     }
 
     // UIEvent
-    html::Window getView() __attribute__((weak));
-    int getDetail() __attribute__((weak));
-    void initUIEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, html::Window viewArg, int detailArg) __attribute__((weak));
+    html::Window getView();
+    int getDetail();
+    void initUIEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, html::Window viewArg, int detailArg);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {
@@ -54,4 +58,5 @@ public:
 
 }}}}  // org::w3c::dom::bootstrap
 
-#endif  // UIEVENT_IMP_H
+#endif  // ORG_W3C_DOM_BOOTSTRAP_UIEVENTIMP_H_INCLUDED
+

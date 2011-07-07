@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef EVENT_IMP_H
-#define EVENT_IMP_H
+#ifndef ORG_W3C_DOM_BOOTSTRAP_EVENTIMP_H_INCLUDED
+#define ORG_W3C_DOM_BOOTSTRAP_EVENTIMP_H_INCLUDED
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -23,14 +23,21 @@
 
 #include <org/w3c/dom/events/Event.h>
 
+#include <org/w3c/dom/events/Event.h>
 #include <org/w3c/dom/events/EventInit.h>
 #include <org/w3c/dom/events/EventTarget.h>
 
 #include <map>
 #include <list>
 
-namespace org { namespace w3c { namespace dom { namespace bootstrap {
-
+namespace org
+{
+namespace w3c
+{
+namespace dom
+{
+namespace bootstrap
+{
 class EventImp : public ObjectMixin<EventImp>
 {
     std::u16string type;
@@ -76,19 +83,19 @@ public:
     }
 
     // Event
-    std::u16string getType() __attribute__((weak));
-    events::EventTarget getTarget() __attribute__((weak));
-    events::EventTarget getCurrentTarget() __attribute__((weak));
-    unsigned short getEventPhase() __attribute__((weak));
-    void stopPropagation() __attribute__((weak));
-    void stopImmediatePropagation() __attribute__((weak));
-    bool getBubbles() __attribute__((weak));
-    bool getCancelable() __attribute__((weak));
-    void preventDefault() __attribute__((weak));
-    bool getDefaultPrevented() __attribute__((weak));
-    bool getIsTrusted() __attribute__((weak));
-    DOMTimeStamp getTimeStamp() __attribute__((weak));
-    void initEvent(std::u16string type, bool bubbles, bool cancelable) __attribute__((weak));
+    std::u16string getType();
+    events::EventTarget getTarget();
+    events::EventTarget getCurrentTarget();
+    unsigned short getEventPhase();
+    void stopPropagation();
+    void stopImmediatePropagation();
+    bool getBubbles();
+    bool getCancelable();
+    void preventDefault();
+    bool getDefaultPrevented();
+    bool getIsTrusted();
+    DOMTimeStamp getTimeStamp();
+    void initEvent(std::u16string type, bool bubbles, bool cancelable);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {
@@ -100,6 +107,10 @@ public:
     }
 };
 
-}}}}  // org::w3c::dom::bootstrap
+}
+}
+}
+}
 
-#endif  // EVENT_IMP_H
+#endif  // ORG_W3C_DOM_BOOTSTRAP_EVENTIMP_H_INCLUDED
+

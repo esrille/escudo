@@ -55,36 +55,18 @@ public:
     std::u16string getChar();
     std::u16string getKey();
     unsigned int getLocation();
-    bool getCtrlKey()
-    {
-        return modifiers & 2;
-    }
-    bool getShiftKey()
-    {
-        return modifiers & 1;
-    }
-    bool getAltKey()
-    {
-        return modifiers & 4;
-    }
-    bool getMetaKey()
-    {
-        return modifiers & 8;
-    }
+    bool getCtrlKey();
+    bool getShiftKey();
+    bool getAltKey();
+    bool getMetaKey();
     bool getRepeat();
     std::u16string getLocale();
     bool getModifierState(std::u16string keyArg);
     void initKeyboardEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, html::Window viewArg, std::u16string charArg, std::u16string keyArg, unsigned int locationArg, std::u16string modifiersListArg, bool repeat, std::u16string localeArg);
-    // KeyboardEvent-43
-    unsigned int getCharCode() {
-        return charCode;
-    }
-    unsigned int getKeyCode() {
-        return keyCode;
-    }
-    unsigned int getWhich() {
-        return which;
-    }
+    // KeyboardEvent-41
+    unsigned int getCharCode();
+    unsigned int getKeyCode();
+    unsigned int getWhich();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {
@@ -94,6 +76,7 @@ public:
     {
         return events::KeyboardEvent::getMetaData();
     }
+
 };
 
 }

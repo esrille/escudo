@@ -18,6 +18,8 @@
 
 #include "Script.h"
 
+#include <iostream>
+
 #include "esjsapi.h"
 
 #include "ApplicationCacheImp.h"
