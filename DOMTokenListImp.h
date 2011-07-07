@@ -24,13 +24,13 @@ class DOMTokenListImp : public ObjectMixin<DOMTokenListImp>
 {
 public:
     // DOMTokenList
-    unsigned int getLength() __attribute__((weak));
-    std::u16string item(unsigned int index) __attribute__((weak));
-    bool contains(std::u16string token) __attribute__((weak));
-    void add(std::u16string token) __attribute__((weak));
-    void remove(std::u16string token) __attribute__((weak));
-    bool toggle(std::u16string token) __attribute__((weak));
-    std::u16string toString() __attribute__((weak));
+    unsigned int getLength();
+    std::u16string item(unsigned int index);
+    bool contains(std::u16string token);
+    void add(std::u16string token);
+    void remove(std::u16string token);
+    bool toggle(std::u16string token);
+    std::u16string toString();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

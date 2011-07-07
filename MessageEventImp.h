@@ -29,12 +29,12 @@ class MessageEventImp : public ObjectMixin<MessageEventImp, EventImp>
 {
 public:
     // MessageEvent
-    Any getData() __attribute__((weak));
-    std::u16string getOrigin() __attribute__((weak));
-    std::u16string getLastEventId() __attribute__((weak));
-    html::Window getSource() __attribute__((weak));
-    ObjectArray<html::MessagePort> getPorts() __attribute__((weak));
-    void initMessageEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, Any dataArg, std::u16string originArg, std::u16string lastEventIdArg, html::Window sourceArg, Sequence<html::MessagePort> portsArg) __attribute__((weak));
+    Any getData();
+    std::u16string getOrigin();
+    std::u16string getLastEventId();
+    html::Window getSource();
+    ObjectArray<html::MessagePort> getPorts();
+    void initMessageEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, Any dataArg, std::u16string originArg, std::u16string lastEventIdArg, html::Window sourceArg, Sequence<html::MessagePort> portsArg);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

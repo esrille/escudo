@@ -24,9 +24,9 @@ class CSSValueImp : public ObjectMixin<CSSValueImp>
 {
 public:
     // CSSValue
-    std::u16string getCssText() __attribute__((weak));
-    void setCssText(std::u16string cssText) __attribute__((weak));
-    unsigned short getCssValueType() __attribute__((weak));
+    std::u16string getCssText();
+    void setCssText(std::u16string cssText);
+    unsigned short getCssValueType();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

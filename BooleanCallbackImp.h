@@ -24,7 +24,7 @@ class BooleanCallbackImp : public ObjectMixin<BooleanCallbackImp>
 {
 public:
     // BooleanCallback
-    void handleEvent(bool arg) __attribute__((weak));
+    void handleEvent(bool arg);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

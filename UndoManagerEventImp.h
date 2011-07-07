@@ -27,8 +27,8 @@ class UndoManagerEventImp : public ObjectMixin<UndoManagerEventImp, EventImp>
 {
 public:
     // UndoManagerEvent
-    Any getData() __attribute__((weak));
-    void initUndoManagerEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, Any dataArg) __attribute__((weak));
+    Any getData();
+    void initUndoManagerEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, Any dataArg);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

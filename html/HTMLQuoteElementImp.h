@@ -27,8 +27,8 @@ class HTMLQuoteElementImp : public ObjectMixin<HTMLQuoteElementImp, HTMLElementI
 {
 public:
     // HTMLQuoteElement
-    std::u16string getCite() __attribute__((weak));
-    void setCite(std::u16string cite) __attribute__((weak));
+    std::u16string getCite();
+    void setCite(std::u16string cite);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

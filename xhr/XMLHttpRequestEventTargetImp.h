@@ -28,20 +28,20 @@ class XMLHttpRequestEventTargetImp : public ObjectMixin<XMLHttpRequestEventTarge
 {
 public:
     // XMLHttpRequestEventTarget
-    html::Function getOnloadstart() __attribute__((weak));
-    void setOnloadstart(html::Function onloadstart) __attribute__((weak));
-    html::Function getOnprogress() __attribute__((weak));
-    void setOnprogress(html::Function onprogress) __attribute__((weak));
-    html::Function getOnabort() __attribute__((weak));
-    void setOnabort(html::Function onabort) __attribute__((weak));
-    html::Function getOnerror() __attribute__((weak));
-    void setOnerror(html::Function onerror) __attribute__((weak));
-    html::Function getOnload() __attribute__((weak));
-    void setOnload(html::Function onload) __attribute__((weak));
-    html::Function getOntimeout() __attribute__((weak));
-    void setOntimeout(html::Function ontimeout) __attribute__((weak));
-    html::Function getOnloadend() __attribute__((weak));
-    void setOnloadend(html::Function onloadend) __attribute__((weak));
+    html::Function getOnloadstart();
+    void setOnloadstart(html::Function onloadstart);
+    html::Function getOnprogress();
+    void setOnprogress(html::Function onprogress);
+    html::Function getOnabort();
+    void setOnabort(html::Function onabort);
+    html::Function getOnerror();
+    void setOnerror(html::Function onerror);
+    html::Function getOnload();
+    void setOnload(html::Function onload);
+    html::Function getOntimeout();
+    void setOntimeout(html::Function ontimeout);
+    html::Function getOnloadend();
+    void setOnloadend(html::Function onloadend);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

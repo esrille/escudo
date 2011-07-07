@@ -27,12 +27,12 @@ class HTMLSourceElementImp : public ObjectMixin<HTMLSourceElementImp, HTMLElemen
 {
 public:
     // HTMLSourceElement
-    std::u16string getSrc() __attribute__((weak));
-    void setSrc(std::u16string src) __attribute__((weak));
-    std::u16string getType() __attribute__((weak));
-    void setType(std::u16string type) __attribute__((weak));
-    std::u16string getMedia() __attribute__((weak));
-    void setMedia(std::u16string media) __attribute__((weak));
+    std::u16string getSrc();
+    void setSrc(std::u16string src);
+    std::u16string getType();
+    void setType(std::u16string type);
+    std::u16string getMedia();
+    void setMedia(std::u16string media);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

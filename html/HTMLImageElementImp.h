@@ -45,36 +45,36 @@ public:
     virtual Node cloneNode(bool deep);
 
     // HTMLImageElement
-    std::u16string getAlt() __attribute__((weak));
-    void setAlt(std::u16string alt) __attribute__((weak));
-    std::u16string getSrc() __attribute__((weak));
-    void setSrc(std::u16string src) __attribute__((weak));
-    std::u16string getCrossOrigin() __attribute__((weak));
-    void setCrossOrigin(std::u16string crossOrigin) __attribute__((weak));
-    std::u16string getUseMap() __attribute__((weak));
-    void setUseMap(std::u16string useMap) __attribute__((weak));
-    bool getIsMap() __attribute__((weak));
-    void setIsMap(bool isMap) __attribute__((weak));
-    unsigned int getWidth() __attribute__((weak));
-    void setWidth(unsigned int width) __attribute__((weak));
-    unsigned int getHeight() __attribute__((weak));
-    void setHeight(unsigned int height) __attribute__((weak));
-    unsigned int getNaturalWidth() __attribute__((weak));
-    unsigned int getNaturalHeight() __attribute__((weak));
-    bool getComplete() __attribute__((weak));
+    std::u16string getAlt();
+    void setAlt(std::u16string alt);
+    std::u16string getSrc();
+    void setSrc(std::u16string src);
+    std::u16string getCrossOrigin();
+    void setCrossOrigin(std::u16string crossOrigin);
+    std::u16string getUseMap();
+    void setUseMap(std::u16string useMap);
+    bool getIsMap();
+    void setIsMap(bool isMap);
+    unsigned int getWidth();
+    void setWidth(unsigned int width);
+    unsigned int getHeight();
+    void setHeight(unsigned int height);
+    unsigned int getNaturalWidth();
+    unsigned int getNaturalHeight();
+    bool getComplete();
     // HTMLImageElement-20
-    std::u16string getName() __attribute__((weak));
-    void setName(std::u16string name) __attribute__((weak));
-    std::u16string getAlign() __attribute__((weak));
-    void setAlign(std::u16string align) __attribute__((weak));
-    std::u16string getBorder() __attribute__((weak));
-    void setBorder(std::u16string border) __attribute__((weak));
-    unsigned int getHspace() __attribute__((weak));
-    void setHspace(unsigned int hspace) __attribute__((weak));
-    std::u16string getLongDesc() __attribute__((weak));
-    void setLongDesc(std::u16string longDesc) __attribute__((weak));
-    unsigned int getVspace() __attribute__((weak));
-    void setVspace(unsigned int vspace) __attribute__((weak));
+    std::u16string getName();
+    void setName(std::u16string name);
+    std::u16string getAlign();
+    void setAlign(std::u16string align);
+    std::u16string getBorder();
+    void setBorder(std::u16string border);
+    unsigned int getHspace();
+    void setHspace(unsigned int hspace);
+    std::u16string getLongDesc();
+    void setLongDesc(std::u16string longDesc);
+    unsigned int getVspace();
+    void setVspace(unsigned int vspace);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

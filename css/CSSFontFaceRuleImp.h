@@ -28,7 +28,7 @@ class CSSFontFaceRuleImp : public ObjectMixin<CSSFontFaceRuleImp, CSSRuleImp>
 {
 public:
     // CSSFontFaceRule
-    css::CSSStyleDeclaration getStyle() __attribute__((weak));
+    css::CSSStyleDeclaration getStyle();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

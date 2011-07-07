@@ -28,8 +28,8 @@ class FormDataImp : public ObjectMixin<FormDataImp>
 {
 public:
     // FormData
-    void append(std::u16string name, file::Blob value) __attribute__((weak));
-    void append(std::u16string name, std::u16string value) __attribute__((weak));
+    void append(std::u16string name, file::Blob value);
+    void append(std::u16string name, std::u16string value);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

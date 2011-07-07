@@ -34,14 +34,14 @@ public:
     }
 
     // HTMLVideoElement
-    unsigned int getWidth() __attribute__((weak));
-    void setWidth(unsigned int width) __attribute__((weak));
-    unsigned int getHeight() __attribute__((weak));
-    void setHeight(unsigned int height) __attribute__((weak));
-    unsigned int getVideoWidth() __attribute__((weak));
-    unsigned int getVideoHeight() __attribute__((weak));
-    std::u16string getPoster() __attribute__((weak));
-    void setPoster(std::u16string poster) __attribute__((weak));
+    unsigned int getWidth();
+    void setWidth(unsigned int width);
+    unsigned int getHeight();
+    void setHeight(unsigned int height);
+    unsigned int getVideoWidth();
+    unsigned int getVideoHeight();
+    std::u16string getPoster();
+    void setPoster(std::u16string poster);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

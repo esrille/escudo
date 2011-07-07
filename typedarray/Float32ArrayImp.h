@@ -29,14 +29,14 @@ class Float32ArrayImp : public ObjectMixin<Float32ArrayImp, ArrayBufferViewImp>
 {
 public:
     // Float32Array
-    unsigned int getLength() __attribute__((weak));
-    float get(unsigned int index) __attribute__((weak));
-    void set(unsigned int index, float value) __attribute__((weak));
-    void set(typedarray::Float32Array array) __attribute__((weak));
-    void set(typedarray::Float32Array array, unsigned int offset) __attribute__((weak));
-    void set(ObjectArray<float> array) __attribute__((weak));
-    void set(ObjectArray<float> array, unsigned int offset) __attribute__((weak));
-    typedarray::Float32Array subarray(int start, int end) __attribute__((weak));
+    unsigned int getLength();
+    float get(unsigned int index);
+    void set(unsigned int index, float value);
+    void set(typedarray::Float32Array array);
+    void set(typedarray::Float32Array array, unsigned int offset);
+    void set(ObjectArray<float> array);
+    void set(ObjectArray<float> array, unsigned int offset);
+    typedarray::Float32Array subarray(int start, int end);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

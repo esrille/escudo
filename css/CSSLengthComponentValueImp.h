@@ -24,12 +24,12 @@ class CSSLengthComponentValueImp : public ObjectMixin<CSSLengthComponentValueImp
 {
 public:
     // CSSLengthComponentValue
-    float getEm() __attribute__((weak));
-    void setEm(float em) __attribute__((weak));
-    float getEx() __attribute__((weak));
-    void setEx(float ex) __attribute__((weak));
-    float getPx() __attribute__((weak));
-    void setPx(float px) __attribute__((weak));
+    float getEm();
+    void setEm(float em);
+    float getEx();
+    void setEx(float ex);
+    float getPx();
+    void setPx(float px);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

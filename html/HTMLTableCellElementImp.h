@@ -28,34 +28,34 @@ class HTMLTableCellElementImp : public ObjectMixin<HTMLTableCellElementImp, HTML
 {
 public:
     // HTMLTableCellElement
-    unsigned int getColSpan() __attribute__((weak));
-    void setColSpan(unsigned int colSpan) __attribute__((weak));
-    unsigned int getRowSpan() __attribute__((weak));
-    void setRowSpan(unsigned int rowSpan) __attribute__((weak));
-    DOMSettableTokenList getHeaders() __attribute__((weak));
-    void setHeaders(std::u16string headers) __attribute__((weak));
-    int getCellIndex() __attribute__((weak));
+    unsigned int getColSpan();
+    void setColSpan(unsigned int colSpan);
+    unsigned int getRowSpan();
+    void setRowSpan(unsigned int rowSpan);
+    DOMSettableTokenList getHeaders();
+    void setHeaders(std::u16string headers);
+    int getCellIndex();
     // HTMLTableCellElement-32
-    std::u16string getAbbr() __attribute__((weak));
-    void setAbbr(std::u16string abbr) __attribute__((weak));
-    std::u16string getAlign() __attribute__((weak));
-    void setAlign(std::u16string align) __attribute__((weak));
-    std::u16string getAxis() __attribute__((weak));
-    void setAxis(std::u16string axis) __attribute__((weak));
-    std::u16string getBgColor() __attribute__((weak));
-    void setBgColor(std::u16string bgColor) __attribute__((weak));
-    std::u16string getCh() __attribute__((weak));
-    void setCh(std::u16string ch) __attribute__((weak));
-    std::u16string getChOff() __attribute__((weak));
-    void setChOff(std::u16string chOff) __attribute__((weak));
-    std::u16string getHeight() __attribute__((weak));
-    void setHeight(std::u16string height) __attribute__((weak));
-    bool getNoWrap() __attribute__((weak));
-    void setNoWrap(bool noWrap) __attribute__((weak));
-    std::u16string getVAlign() __attribute__((weak));
-    void setVAlign(std::u16string vAlign) __attribute__((weak));
-    std::u16string getWidth() __attribute__((weak));
-    void setWidth(std::u16string width) __attribute__((weak));
+    std::u16string getAbbr();
+    void setAbbr(std::u16string abbr);
+    std::u16string getAlign();
+    void setAlign(std::u16string align);
+    std::u16string getAxis();
+    void setAxis(std::u16string axis);
+    std::u16string getBgColor();
+    void setBgColor(std::u16string bgColor);
+    std::u16string getCh();
+    void setCh(std::u16string ch);
+    std::u16string getChOff();
+    void setChOff(std::u16string chOff);
+    std::u16string getHeight();
+    void setHeight(std::u16string height);
+    bool getNoWrap();
+    void setNoWrap(bool noWrap);
+    std::u16string getVAlign();
+    void setVAlign(std::u16string vAlign);
+    std::u16string getWidth();
+    void setWidth(std::u16string width);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

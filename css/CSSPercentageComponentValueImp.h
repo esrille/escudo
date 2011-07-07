@@ -24,8 +24,8 @@ class CSSPercentageComponentValueImp : public ObjectMixin<CSSPercentageComponent
 {
 public:
     // CSSPercentageComponentValue
-    float getPercent() __attribute__((weak));
-    void setPercent(float percent) __attribute__((weak));
+    float getPercent();
+    void setPercent(float percent);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

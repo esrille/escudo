@@ -28,9 +28,9 @@ class MutationNameEventImp : public ObjectMixin<MutationNameEventImp, MutationEv
 {
 public:
     // MutationNameEvent
-    std::u16string getPrevNamespaceURI() __attribute__((weak));
-    std::u16string getPrevNodeName() __attribute__((weak));
-    void initMutationNameEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, Node relatedNodeArg, std::u16string prevNamespaceURIArg, std::u16string prevNodeNameArg) __attribute__((weak));
+    std::u16string getPrevNamespaceURI();
+    std::u16string getPrevNodeName();
+    void initMutationNameEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, Node relatedNodeArg, std::u16string prevNamespaceURIArg, std::u16string prevNodeNameArg);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

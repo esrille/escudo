@@ -27,12 +27,12 @@ class HTMLFontElementImp : public ObjectMixin<HTMLFontElementImp, HTMLElementImp
 {
 public:
     // HTMLFontElement
-    std::u16string getColor() __attribute__((weak));
-    void setColor(std::u16string color) __attribute__((weak));
-    std::u16string getFace() __attribute__((weak));
-    void setFace(std::u16string face) __attribute__((weak));
-    std::u16string getSize() __attribute__((weak));
-    void setSize(std::u16string size) __attribute__((weak));
+    std::u16string getColor();
+    void setColor(std::u16string color);
+    std::u16string getFace();
+    void setFace(std::u16string face);
+    std::u16string getSize();
+    void setSize(std::u16string size);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

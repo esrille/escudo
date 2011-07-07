@@ -26,9 +26,9 @@ class HTMLCollectionImp : public ObjectMixin<HTMLCollectionImp>
 {
 public:
     // HTMLCollection
-    unsigned int getLength() __attribute__((weak));
-    Element item(unsigned int index) __attribute__((weak));
-    Object namedItem(std::u16string name) __attribute__((weak));
+    unsigned int getLength();
+    Element item(unsigned int index);
+    Object namedItem(std::u16string name);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

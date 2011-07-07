@@ -29,10 +29,10 @@ class CSSImportRuleImp : public ObjectMixin<CSSImportRuleImp, CSSRuleImp>
 {
 public:
     // CSSImportRule
-    std::u16string getHref() __attribute__((weak));
-    stylesheets::MediaList getMedia() __attribute__((weak));
-    void setMedia(std::u16string media) __attribute__((weak));
-    css::CSSStyleSheet getStyleSheet() __attribute__((weak));
+    std::u16string getHref();
+    stylesheets::MediaList getMedia();
+    void setMedia(std::u16string media);
+    css::CSSStyleSheet getStyleSheet();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

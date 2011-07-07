@@ -28,7 +28,7 @@ class HTMLDataListElementImp : public ObjectMixin<HTMLDataListElementImp, HTMLEl
 {
 public:
     // HTMLDataListElement
-    html::HTMLCollection getOptions() __attribute__((weak));
+    html::HTMLCollection getOptions();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

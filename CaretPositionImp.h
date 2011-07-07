@@ -27,9 +27,9 @@ class CaretPositionImp : public ObjectMixin<CaretPositionImp>
 {
 public:
     // CaretPosition
-    Node getOffsetNode() __attribute__((weak));
-    unsigned int getOffset() __attribute__((weak));
-    ranges::Range getRange() __attribute__((weak));
+    Node getOffsetNode();
+    unsigned int getOffset();
+    ranges::Range getRange();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

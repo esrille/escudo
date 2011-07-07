@@ -34,12 +34,12 @@ public:
     AttrImp(Nullable<std::u16string> namespaceURI, Nullable<std::u16string> prefix, std::u16string localName, std::u16string value);
 
     // Attr
-    virtual Nullable<std::u16string> getNamespaceURI() __attribute__((weak));
-    virtual Nullable<std::u16string> getPrefix() __attribute__((weak));
-    virtual std::u16string getLocalName() __attribute__((weak));
-    virtual std::u16string getName() __attribute__((weak));
-    virtual std::u16string getValue() __attribute__((weak));
-    virtual void setValue(std::u16string value) __attribute__((weak));
+    virtual Nullable<std::u16string> getNamespaceURI();
+    virtual Nullable<std::u16string> getPrefix();
+    virtual std::u16string getLocalName();
+    virtual std::u16string getName();
+    virtual std::u16string getValue();
+    virtual void setValue(std::u16string value);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

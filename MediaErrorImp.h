@@ -24,7 +24,7 @@ class MediaErrorImp : public ObjectMixin<MediaErrorImp>
 {
 public:
     // MediaError
-    unsigned short getCode() __attribute__((weak));
+    unsigned short getCode();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

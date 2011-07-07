@@ -24,7 +24,7 @@ class CanvasGradientImp : public ObjectMixin<CanvasGradientImp>
 {
 public:
     // CanvasGradient
-    void addColorStop(double offset, std::u16string color) __attribute__((weak));
+    void addColorStop(double offset, std::u16string color);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

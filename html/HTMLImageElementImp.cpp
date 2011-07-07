@@ -50,6 +50,17 @@ void HTMLImageElementImp::setSrc(std::u16string src)
     // TODO: implement me!
 }
 
+std::u16string HTMLImageElementImp::getCrossOrigin()
+{
+    // TODO: implement me!
+    return u"";
+}
+
+void HTMLImageElementImp::setCrossOrigin(std::u16string crossOrigin)
+{
+    // TODO: implement me!
+}
+
 std::u16string HTMLImageElementImp::getUseMap()
 {
     // TODO: implement me!

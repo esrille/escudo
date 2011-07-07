@@ -24,9 +24,9 @@ class TimeRangesImp : public ObjectMixin<TimeRangesImp>
 {
 public:
     // TimeRanges
-    unsigned int getLength() __attribute__((weak));
-    float start(unsigned int index) __attribute__((weak));
-    float end(unsigned int index) __attribute__((weak));
+    unsigned int getLength();
+    float start(unsigned int index);
+    float end(unsigned int index);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

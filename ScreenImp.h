@@ -24,12 +24,12 @@ class ScreenImp : public ObjectMixin<ScreenImp>
 {
 public:
     // Screen
-    unsigned int getAvailWidth() __attribute__((weak));
-    unsigned int getAvailHeight() __attribute__((weak));
-    unsigned int getWidth() __attribute__((weak));
-    unsigned int getHeight() __attribute__((weak));
-    unsigned int getColorDepth() __attribute__((weak));
-    unsigned int getPixelDepth() __attribute__((weak));
+    unsigned int getAvailWidth();
+    unsigned int getAvailHeight();
+    unsigned int getWidth();
+    unsigned int getHeight();
+    unsigned int getColorDepth();
+    unsigned int getPixelDepth();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

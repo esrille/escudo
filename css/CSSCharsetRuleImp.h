@@ -28,8 +28,8 @@ class CSSCharsetRuleImp : public ObjectMixin<CSSCharsetRuleImp, CSSRuleImp>
 {
 public:
     // CSSCharsetRule
-    std::u16string getEncoding() __attribute__((weak));
-    void setEncoding(std::u16string encoding) throw(DOMException) __attribute__((weak));
+    std::u16string getEncoding();
+    void setEncoding(std::u16string encoding) throw(DOMException);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

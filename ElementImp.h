@@ -64,44 +64,44 @@ public:
     virtual void setTextContent(std::u16string textContent);
 
     // Element
-    virtual Nullable<std::u16string> getNamespaceURI() __attribute__((weak));
-    virtual Nullable<std::u16string> getPrefix() __attribute__((weak));
-    virtual std::u16string getLocalName() __attribute__((weak));
-    virtual std::u16string getTagName() __attribute__((weak));
-    virtual ObjectArray<Attr> getAttributes() __attribute__((weak));
-    virtual Nullable<std::u16string> getAttribute(std::u16string qualifiedName) __attribute__((weak));
-    virtual Nullable<std::u16string> getAttributeNS(std::u16string _namespace, std::u16string localName) __attribute__((weak));
-    virtual void setAttribute(std::u16string qualifiedName, std::u16string value) __attribute__((weak));
-    virtual void setAttributeNS(std::u16string _namespace, std::u16string qualifiedName, std::u16string value) __attribute__((weak));
-    virtual void removeAttribute(std::u16string qualifiedName) __attribute__((weak));
-    virtual void removeAttributeNS(std::u16string _namespace, std::u16string localName) __attribute__((weak));
-    virtual bool hasAttribute(std::u16string qualifiedName) __attribute__((weak));
-    virtual bool hasAttributeNS(std::u16string _namespace, std::u16string localName) __attribute__((weak));
-    virtual NodeList getElementsByTagName(std::u16string qualifiedName) __attribute__((weak));
-    virtual NodeList getElementsByTagNameNS(std::u16string _namespace, std::u16string localName) __attribute__((weak));
-    virtual NodeList getElementsByClassName(std::u16string classNames) __attribute__((weak));
-    virtual html::HTMLCollection getChildren() __attribute__((weak));
-    virtual Element getFirstElementChild() __attribute__((weak));
-    virtual Element getLastElementChild() __attribute__((weak));
-    virtual Element getPreviousElementSibling() __attribute__((weak));
-    virtual Element getNextElementSibling() __attribute__((weak));
-    virtual unsigned int getChildElementCount() __attribute__((weak));
+    virtual Nullable<std::u16string> getNamespaceURI();
+    virtual Nullable<std::u16string> getPrefix();
+    virtual std::u16string getLocalName();
+    virtual std::u16string getTagName();
+    virtual ObjectArray<Attr> getAttributes();
+    virtual Nullable<std::u16string> getAttribute(std::u16string qualifiedName);
+    virtual Nullable<std::u16string> getAttributeNS(std::u16string _namespace, std::u16string localName);
+    virtual void setAttribute(std::u16string qualifiedName, std::u16string value);
+    virtual void setAttributeNS(std::u16string _namespace, std::u16string qualifiedName, std::u16string value);
+    virtual void removeAttribute(std::u16string qualifiedName);
+    virtual void removeAttributeNS(std::u16string _namespace, std::u16string localName);
+    virtual bool hasAttribute(std::u16string qualifiedName);
+    virtual bool hasAttributeNS(std::u16string _namespace, std::u16string localName);
+    virtual NodeList getElementsByTagName(std::u16string qualifiedName);
+    virtual NodeList getElementsByTagNameNS(std::u16string _namespace, std::u16string localName);
+    virtual NodeList getElementsByClassName(std::u16string classNames);
+    virtual html::HTMLCollection getChildren();
+    virtual Element getFirstElementChild();
+    virtual Element getLastElementChild();
+    virtual Element getPreviousElementSibling();
+    virtual Element getNextElementSibling();
+    virtual unsigned int getChildElementCount();
     // Element-3
-    virtual views::ClientRectList getClientRects() __attribute__((weak));
-    virtual views::ClientRect getBoundingClientRect() __attribute__((weak));
-    virtual int getScrollTop() __attribute__((weak));
-    virtual void setScrollTop(int scrollTop) __attribute__((weak));
-    virtual int getScrollLeft() __attribute__((weak));
-    virtual void setScrollLeft(int scrollLeft) __attribute__((weak));
-    virtual int getScrollWidth() __attribute__((weak));
-    virtual int getScrollHeight() __attribute__((weak));
-    virtual int getClientTop() __attribute__((weak));
-    virtual int getClientLeft() __attribute__((weak));
-    virtual int getClientWidth() __attribute__((weak));
-    virtual int getClientHeight() __attribute__((weak));
+    virtual views::ClientRectList getClientRects();
+    virtual views::ClientRect getBoundingClientRect();
+    virtual int getScrollTop();
+    virtual void setScrollTop(int scrollTop);
+    virtual int getScrollLeft();
+    virtual void setScrollLeft(int scrollLeft);
+    virtual int getScrollWidth();
+    virtual int getScrollHeight();
+    virtual int getClientTop();
+    virtual int getClientLeft();
+    virtual int getClientWidth();
+    virtual int getClientHeight();
     // NodeSelector
-    virtual Element querySelector(std::u16string selectors) __attribute__((weak));
-    virtual NodeList querySelectorAll(std::u16string selectors) __attribute__((weak));
+    virtual Element querySelector(std::u16string selectors);
+    virtual NodeList querySelectorAll(std::u16string selectors);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

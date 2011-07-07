@@ -24,8 +24,8 @@ class BarPropImp : public ObjectMixin<BarPropImp>
 {
 public:
     // BarProp
-    bool getVisible() __attribute__((weak));
-    void setVisible(bool visible) __attribute__((weak));
+    bool getVisible();
+    void setVisible(bool visible);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

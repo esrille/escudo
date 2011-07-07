@@ -28,13 +28,13 @@ class NodeIteratorImp : public ObjectMixin<NodeIteratorImp>
 {
 public:
     // NodeIterator
-    Node getRoot() __attribute__((weak));
-    unsigned int getWhatToShow() __attribute__((weak));
-    traversal::NodeFilter getFilter() __attribute__((weak));
-    bool getExpandEntityReferences() __attribute__((weak));
-    Node nextNode() throw(DOMException) __attribute__((weak));
-    Node previousNode() throw(DOMException) __attribute__((weak));
-    void detach() __attribute__((weak));
+    Node getRoot();
+    unsigned int getWhatToShow();
+    traversal::NodeFilter getFilter();
+    bool getExpandEntityReferences();
+    Node nextNode() throw(DOMException);
+    Node previousNode() throw(DOMException);
+    void detach();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

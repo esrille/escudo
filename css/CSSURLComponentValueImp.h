@@ -24,8 +24,8 @@ class CSSURLComponentValueImp : public ObjectMixin<CSSURLComponentValueImp>
 {
 public:
     // CSSURLComponentValue
-    Nullable<std::u16string> getUrl() __attribute__((weak));
-    void setUrl(Nullable<std::u16string> url) __attribute__((weak));
+    Nullable<std::u16string> getUrl();
+    void setUrl(Nullable<std::u16string> url);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

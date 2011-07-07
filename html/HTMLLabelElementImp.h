@@ -28,10 +28,10 @@ class HTMLLabelElementImp : public ObjectMixin<HTMLLabelElementImp, HTMLElementI
 {
 public:
     // HTMLLabelElement
-    html::HTMLFormElement getForm() __attribute__((weak));
-    std::u16string getHtmlFor() __attribute__((weak));
-    void setHtmlFor(std::u16string htmlFor) __attribute__((weak));
-    html::HTMLElement getControl() __attribute__((weak));
+    html::HTMLFormElement getForm();
+    std::u16string getHtmlFor();
+    void setHtmlFor(std::u16string htmlFor);
+    html::HTMLElement getControl();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

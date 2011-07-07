@@ -28,15 +28,15 @@ class HTMLOptionsCollectionImp : public ObjectMixin<HTMLOptionsCollectionImp, HT
 {
 public:
     // HTMLOptionsCollection
-    unsigned int getLength() __attribute__((weak));
-    void setLength(unsigned int length) __attribute__((weak));
-    Object namedItem(std::u16string name) __attribute__((weak));
-    void add(html::HTMLElement element) __attribute__((weak));
-    void add(html::HTMLElement element, html::HTMLElement before) __attribute__((weak));
-    void add(html::HTMLElement element, int before) __attribute__((weak));
-    void remove(int index) __attribute__((weak));
-    int getSelectedIndex() __attribute__((weak));
-    void setSelectedIndex(int selectedIndex) __attribute__((weak));
+    unsigned int getLength();
+    void setLength(unsigned int length);
+    Object namedItem(std::u16string name);
+    void add(html::HTMLElement element);
+    void add(html::HTMLElement element, html::HTMLElement before);
+    void add(html::HTMLElement element, int before);
+    void remove(int index);
+    int getSelectedIndex();
+    void setSelectedIndex(int selectedIndex);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

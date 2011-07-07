@@ -34,15 +34,15 @@ public:
     StyleSheetImp();
 
     // StyleSheet
-    virtual std::u16string getType() __attribute__((weak));
-    virtual std::u16string getHref() __attribute__((weak));
-    virtual Node getOwnerNode() __attribute__((weak));
-    virtual stylesheets::StyleSheet getParentStyleSheet() __attribute__((weak));
-    virtual std::u16string getTitle() __attribute__((weak));
-    virtual stylesheets::MediaList getMedia() __attribute__((weak));
-    virtual void setMedia(std::u16string media) __attribute__((weak));
-    virtual bool getDisabled() __attribute__((weak));
-    virtual void setDisabled(bool disabled) __attribute__((weak));
+    virtual std::u16string getType();
+    virtual std::u16string getHref();
+    virtual Node getOwnerNode();
+    virtual stylesheets::StyleSheet getParentStyleSheet();
+    virtual std::u16string getTitle();
+    virtual stylesheets::MediaList getMedia();
+    virtual void setMedia(std::u16string media);
+    virtual bool getDisabled();
+    virtual void setDisabled(bool disabled);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

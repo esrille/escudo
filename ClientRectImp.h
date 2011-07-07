@@ -24,12 +24,12 @@ class ClientRectImp : public ObjectMixin<ClientRectImp>
 {
 public:
     // ClientRect
-    float getTop() __attribute__((weak));
-    float getRight() __attribute__((weak));
-    float getBottom() __attribute__((weak));
-    float getLeft() __attribute__((weak));
-    float getWidth() __attribute__((weak));
-    float getHeight() __attribute__((weak));
+    float getTop();
+    float getRight();
+    float getBottom();
+    float getLeft();
+    float getWidth();
+    float getHeight();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

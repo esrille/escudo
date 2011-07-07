@@ -24,9 +24,9 @@ class CounterImp : public ObjectMixin<CounterImp>
 {
 public:
     // Counter
-    std::u16string getIdentifier() __attribute__((weak));
-    std::u16string getListStyle() __attribute__((weak));
-    std::u16string getSeparator() __attribute__((weak));
+    std::u16string getIdentifier();
+    std::u16string getListStyle();
+    std::u16string getSeparator();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

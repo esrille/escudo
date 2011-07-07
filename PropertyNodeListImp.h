@@ -27,7 +27,7 @@ class PropertyNodeListImp : public ObjectMixin<PropertyNodeListImp, NodeListImp>
 {
 public:
     // PropertyNodeList
-    html::PropertyValueArray getValues() __attribute__((weak));
+    html::PropertyValueArray getValues();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

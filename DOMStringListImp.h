@@ -24,9 +24,9 @@ class DOMStringListImp : public ObjectMixin<DOMStringListImp>
 {
 public:
     // DOMStringList
-    unsigned int getLength() __attribute__((weak));
-    std::u16string item(unsigned int index) __attribute__((weak));
-    bool contains(std::u16string string) __attribute__((weak));
+    unsigned int getLength();
+    std::u16string item(unsigned int index);
+    bool contains(std::u16string string);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

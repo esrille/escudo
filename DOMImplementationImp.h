@@ -41,12 +41,12 @@ public:
     }
 
     // DOMImplementation
-    virtual bool hasFeature(std::u16string feature, std::u16string version) __attribute__((weak));
-    virtual DocumentType createDocumentType(std::u16string qualifiedName, std::u16string publicId, std::u16string systemId) __attribute__((weak));
-    virtual Document createDocument(std::u16string _namespace, std::u16string qualifiedName, DocumentType doctype) __attribute__((weak));
-    virtual Document createHTMLDocument(std::u16string title) __attribute__((weak));
+    virtual bool hasFeature(std::u16string feature, std::u16string version);
+    virtual DocumentType createDocumentType(std::u16string qualifiedName, std::u16string publicId, std::u16string systemId);
+    virtual Document createDocument(std::u16string _namespace, std::u16string qualifiedName, DocumentType doctype);
+    virtual Document createHTMLDocument(std::u16string title);
     // DOMImplementationCSS
-    virtual css::CSSStyleSheet createCSSStyleSheet(std::u16string title, std::u16string media) throw(DOMException) __attribute__((weak));
+    virtual css::CSSStyleSheet createCSSStyleSheet(std::u16string title, std::u16string media) throw(DOMException);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

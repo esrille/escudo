@@ -26,7 +26,7 @@ class NodeFilterImp : public ObjectMixin<NodeFilterImp>
 {
 public:
     // NodeFilter
-    short acceptNode(Node n) __attribute__((weak));
+    short acceptNode(Node n);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

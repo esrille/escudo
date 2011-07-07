@@ -27,28 +27,28 @@ class HTMLAppletElementImp : public ObjectMixin<HTMLAppletElementImp, HTMLElemen
 {
 public:
     // HTMLAppletElement
-    std::u16string getAlign() __attribute__((weak));
-    void setAlign(std::u16string align) __attribute__((weak));
-    std::u16string getAlt() __attribute__((weak));
-    void setAlt(std::u16string alt) __attribute__((weak));
-    std::u16string getArchive() __attribute__((weak));
-    void setArchive(std::u16string archive) __attribute__((weak));
-    std::u16string getCode() __attribute__((weak));
-    void setCode(std::u16string code) __attribute__((weak));
-    std::u16string getCodeBase() __attribute__((weak));
-    void setCodeBase(std::u16string codeBase) __attribute__((weak));
-    std::u16string getHeight() __attribute__((weak));
-    void setHeight(std::u16string height) __attribute__((weak));
-    unsigned int getHspace() __attribute__((weak));
-    void setHspace(unsigned int hspace) __attribute__((weak));
-    std::u16string getName() __attribute__((weak));
-    void setName(std::u16string name) __attribute__((weak));
-    std::u16string getObject() __attribute__((weak));
-    void setObject(std::u16string object) __attribute__((weak));
-    unsigned int getVspace() __attribute__((weak));
-    void setVspace(unsigned int vspace) __attribute__((weak));
-    std::u16string getWidth() __attribute__((weak));
-    void setWidth(std::u16string width) __attribute__((weak));
+    std::u16string getAlign();
+    void setAlign(std::u16string align);
+    std::u16string getAlt();
+    void setAlt(std::u16string alt);
+    std::u16string getArchive();
+    void setArchive(std::u16string archive);
+    std::u16string getCode();
+    void setCode(std::u16string code);
+    std::u16string getCodeBase();
+    void setCodeBase(std::u16string codeBase);
+    std::u16string getHeight();
+    void setHeight(std::u16string height);
+    unsigned int getHspace();
+    void setHspace(unsigned int hspace);
+    std::u16string getName();
+    void setName(std::u16string name);
+    std::u16string getObject();
+    void setObject(std::u16string object);
+    unsigned int getVspace();
+    void setVspace(unsigned int vspace);
+    std::u16string getWidth();
+    void setWidth(std::u16string width);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

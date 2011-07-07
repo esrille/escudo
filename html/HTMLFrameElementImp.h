@@ -36,24 +36,24 @@ public:
     }
 
     // HTMLFrameElement
-    std::u16string getFrameBorder() __attribute__((weak));
-    void setFrameBorder(std::u16string frameBorder) __attribute__((weak));
-    std::u16string getLongDesc() __attribute__((weak));
-    void setLongDesc(std::u16string longDesc) __attribute__((weak));
-    std::u16string getMarginHeight() __attribute__((weak));
-    void setMarginHeight(std::u16string marginHeight) __attribute__((weak));
-    std::u16string getMarginWidth() __attribute__((weak));
-    void setMarginWidth(std::u16string marginWidth) __attribute__((weak));
-    std::u16string getName() __attribute__((weak));
-    void setName(std::u16string name) __attribute__((weak));
-    bool getNoResize() __attribute__((weak));
-    void setNoResize(bool noResize) __attribute__((weak));
-    std::u16string getScrolling() __attribute__((weak));
-    void setScrolling(std::u16string scrolling) __attribute__((weak));
-    std::u16string getSrc() __attribute__((weak));
-    void setSrc(std::u16string src) __attribute__((weak));
-    Document getContentDocument() __attribute__((weak));
-    html::Window getContentWindow() __attribute__((weak));
+    std::u16string getFrameBorder();
+    void setFrameBorder(std::u16string frameBorder);
+    std::u16string getLongDesc();
+    void setLongDesc(std::u16string longDesc);
+    std::u16string getMarginHeight();
+    void setMarginHeight(std::u16string marginHeight);
+    std::u16string getMarginWidth();
+    void setMarginWidth(std::u16string marginWidth);
+    std::u16string getName();
+    void setName(std::u16string name);
+    bool getNoResize();
+    void setNoResize(bool noResize);
+    std::u16string getScrolling();
+    void setScrolling(std::u16string scrolling);
+    std::u16string getSrc();
+    void setSrc(std::u16string src);
+    Document getContentDocument();
+    html::Window getContentWindow();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

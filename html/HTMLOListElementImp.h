@@ -27,15 +27,15 @@ class HTMLOListElementImp : public ObjectMixin<HTMLOListElementImp, HTMLElementI
 {
 public:
     // HTMLOListElement
-    bool getReversed() __attribute__((weak));
-    void setReversed(bool reversed) __attribute__((weak));
-    int getStart() __attribute__((weak));
-    void setStart(int start) __attribute__((weak));
+    bool getReversed();
+    void setReversed(bool reversed);
+    int getStart();
+    void setStart(int start);
     // HTMLOListElement-25
-    bool getCompact() __attribute__((weak));
-    void setCompact(bool compact) __attribute__((weak));
-    std::u16string getType() __attribute__((weak));
-    void setType(std::u16string type) __attribute__((weak));
+    bool getCompact();
+    void setCompact(bool compact);
+    std::u16string getType();
+    void setType(std::u16string type);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

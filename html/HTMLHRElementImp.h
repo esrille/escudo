@@ -28,16 +28,16 @@ class HTMLHRElementImp : public ObjectMixin<HTMLHRElementImp, HTMLElementImp>
 public:
     // HTMLHRElement
     // HTMLHRElement-14
-    std::u16string getAlign() __attribute__((weak));
-    void setAlign(std::u16string align) __attribute__((weak));
-    std::u16string getColor() __attribute__((weak));
-    void setColor(std::u16string color) __attribute__((weak));
-    bool getNoShade() __attribute__((weak));
-    void setNoShade(bool noShade) __attribute__((weak));
-    std::u16string getSize() __attribute__((weak));
-    void setSize(std::u16string size) __attribute__((weak));
-    std::u16string getWidth() __attribute__((weak));
-    void setWidth(std::u16string width) __attribute__((weak));
+    std::u16string getAlign();
+    void setAlign(std::u16string align);
+    std::u16string getColor();
+    void setColor(std::u16string color);
+    bool getNoShade();
+    void setNoShade(bool noShade);
+    std::u16string getSize();
+    void setSize(std::u16string size);
+    std::u16string getWidth();
+    void setWidth(std::u16string width);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

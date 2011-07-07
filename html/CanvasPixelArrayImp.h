@@ -24,9 +24,9 @@ class CanvasPixelArrayImp : public ObjectMixin<CanvasPixelArrayImp>
 {
 public:
     // CanvasPixelArray
-    unsigned int getLength() __attribute__((weak));
-    unsigned char getElement(unsigned int index) __attribute__((weak));
-    void setElement(unsigned int index, unsigned char value) __attribute__((weak));
+    unsigned int getLength();
+    unsigned char getElement(unsigned int index);
+    void setElement(unsigned int index, unsigned char value);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

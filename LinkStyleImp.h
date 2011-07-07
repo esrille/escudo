@@ -26,7 +26,7 @@ class LinkStyleImp : public ObjectMixin<LinkStyleImp>
 {
 public:
     // LinkStyle
-    stylesheets::StyleSheet getSheet() __attribute__((weak));
+    stylesheets::StyleSheet getSheet();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

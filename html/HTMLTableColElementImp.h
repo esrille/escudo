@@ -27,19 +27,19 @@ class HTMLTableColElementImp : public ObjectMixin<HTMLTableColElementImp, HTMLEl
 {
 public:
     // HTMLTableColElement
-    unsigned int getSpan() __attribute__((weak));
-    void setSpan(unsigned int span) __attribute__((weak));
+    unsigned int getSpan();
+    void setSpan(unsigned int span);
     // HTMLTableColElement-9
-    std::u16string getAlign() __attribute__((weak));
-    void setAlign(std::u16string align) __attribute__((weak));
-    std::u16string getCh() __attribute__((weak));
-    void setCh(std::u16string ch) __attribute__((weak));
-    std::u16string getChOff() __attribute__((weak));
-    void setChOff(std::u16string chOff) __attribute__((weak));
-    std::u16string getVAlign() __attribute__((weak));
-    void setVAlign(std::u16string vAlign) __attribute__((weak));
-    std::u16string getWidth() __attribute__((weak));
-    void setWidth(std::u16string width) __attribute__((weak));
+    std::u16string getAlign();
+    void setAlign(std::u16string align);
+    std::u16string getCh();
+    void setCh(std::u16string ch);
+    std::u16string getChOff();
+    void setChOff(std::u16string chOff);
+    std::u16string getVAlign();
+    void setVAlign(std::u16string vAlign);
+    std::u16string getWidth();
+    void setWidth(std::u16string width);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

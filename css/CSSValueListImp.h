@@ -27,8 +27,8 @@ class CSSValueListImp : public ObjectMixin<CSSValueListImp, CSSValueImp>
 {
 public:
     // CSSValueList
-    unsigned int getLength() __attribute__((weak));
-    css::CSSValue item(unsigned int index) __attribute__((weak));
+    unsigned int getLength();
+    css::CSSValue item(unsigned int index);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

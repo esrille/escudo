@@ -35,31 +35,31 @@ public:
     }
 
     // HTMLFormElement
-    std::u16string getAcceptCharset() __attribute__((weak));
-    void setAcceptCharset(std::u16string acceptCharset) __attribute__((weak));
-    std::u16string getAction() __attribute__((weak));
-    void setAction(std::u16string action) __attribute__((weak));
-    std::u16string getAutocomplete() __attribute__((weak));
-    void setAutocomplete(std::u16string autocomplete) __attribute__((weak));
-    std::u16string getEnctype() __attribute__((weak));
-    void setEnctype(std::u16string enctype) __attribute__((weak));
-    std::u16string getEncoding() __attribute__((weak));
-    void setEncoding(std::u16string encoding) __attribute__((weak));
-    std::u16string getMethod() __attribute__((weak));
-    void setMethod(std::u16string method) __attribute__((weak));
-    std::u16string getName() __attribute__((weak));
-    void setName(std::u16string name) __attribute__((weak));
-    bool getNoValidate() __attribute__((weak));
-    void setNoValidate(bool noValidate) __attribute__((weak));
-    std::u16string getTarget() __attribute__((weak));
-    void setTarget(std::u16string target) __attribute__((weak));
-    html::HTMLFormControlsCollection getElements() __attribute__((weak));
-    int getLength() __attribute__((weak));
-    Any getElement(unsigned int index) __attribute__((weak));
-    Any getElement(std::u16string name) __attribute__((weak));
-    void submit() __attribute__((weak));
-    void reset() __attribute__((weak));
-    bool checkValidity() __attribute__((weak));
+    std::u16string getAcceptCharset();
+    void setAcceptCharset(std::u16string acceptCharset);
+    std::u16string getAction();
+    void setAction(std::u16string action);
+    std::u16string getAutocomplete();
+    void setAutocomplete(std::u16string autocomplete);
+    std::u16string getEnctype();
+    void setEnctype(std::u16string enctype);
+    std::u16string getEncoding();
+    void setEncoding(std::u16string encoding);
+    std::u16string getMethod();
+    void setMethod(std::u16string method);
+    std::u16string getName();
+    void setName(std::u16string name);
+    bool getNoValidate();
+    void setNoValidate(bool noValidate);
+    std::u16string getTarget();
+    void setTarget(std::u16string target);
+    html::HTMLFormControlsCollection getElements();
+    int getLength();
+    Any getElement(unsigned int index);
+    Any getElement(std::u16string name);
+    void submit();
+    void reset();
+    bool checkValidity();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

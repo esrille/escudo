@@ -27,10 +27,10 @@ class DataTransferItemImp : public ObjectMixin<DataTransferItemImp>
 {
 public:
     // DataTransferItem
-    std::u16string getKind() __attribute__((weak));
-    std::u16string getType() __attribute__((weak));
-    void getAsString(html::FunctionStringCallback callback) __attribute__((weak));
-    file::File getAsFile() __attribute__((weak));
+    std::u16string getKind();
+    std::u16string getType();
+    void getAsString(html::FunctionStringCallback callback);
+    file::File getAsFile();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

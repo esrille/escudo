@@ -28,10 +28,10 @@ class HTMLMapElementImp : public ObjectMixin<HTMLMapElementImp, HTMLElementImp>
 {
 public:
     // HTMLMapElement
-    std::u16string getName() __attribute__((weak));
-    void setName(std::u16string name) __attribute__((weak));
-    html::HTMLCollection getAreas() __attribute__((weak));
-    html::HTMLCollection getImages() __attribute__((weak));
+    std::u16string getName();
+    void setName(std::u16string name);
+    html::HTMLCollection getAreas();
+    html::HTMLCollection getImages();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

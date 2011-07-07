@@ -52,7 +52,30 @@ Node HTMLElementImp::cloneNode(bool deep)
     return new(std::nothrow) HTMLElementImp(this, deep);
 }
 
-// HTMLElement
+// HTMLElement - implemented
+
+void HTMLElementImp::focus()
+{
+    // TODO: check if this element is focusable.
+    if (!ownerDocument || !ownerDocument->getDefaultView())
+        return;
+    ownerDocument->setFocus(this);
+}
+
+void HTMLElementImp::blur()
+{
+    if (!ownerDocument || ownerDocument->getFocus() != this)
+        return;
+    ownerDocument->setFocus(0);
+}
+
+css::CSSStyleDeclaration HTMLElementImp::getStyle()
+{
+    return style;
+}
+
+// HTMLElement - just genereated
+
 NodeList HTMLElementImp::getElementsByClassName(std::u16string classNames)
 {
     // TODO: implement me!
@@ -153,6 +176,78 @@ DOMStringMap HTMLElementImp::getDataset()
     return static_cast<Object*>(0);
 }
 
+bool HTMLElementImp::getItemScope()
+{
+    // TODO: implement me!
+    return 0;
+}
+
+void HTMLElementImp::setItemScope(bool itemScope)
+{
+    // TODO: implement me!
+}
+
+std::u16string HTMLElementImp::getItemType()
+{
+    // TODO: implement me!
+    return u"";
+}
+
+void HTMLElementImp::setItemType(std::u16string itemType)
+{
+    // TODO: implement me!
+}
+
+std::u16string HTMLElementImp::getItemId()
+{
+    // TODO: implement me!
+    return u"";
+}
+
+void HTMLElementImp::setItemId(std::u16string itemId)
+{
+    // TODO: implement me!
+}
+
+DOMSettableTokenList HTMLElementImp::getItemRef()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void HTMLElementImp::setItemRef(std::u16string itemRef)
+{
+    // TODO: implement me!
+}
+
+DOMSettableTokenList HTMLElementImp::getItemProp()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void HTMLElementImp::setItemProp(std::u16string itemProp)
+{
+    // TODO: implement me!
+}
+
+html::HTMLPropertiesCollection HTMLElementImp::getProperties()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+Any HTMLElementImp::getItemValue()
+{
+    // TODO: implement me!
+    return 0;
+}
+
+void HTMLElementImp::setItemValue(Any itemValue)
+{
+    // TODO: implement me!
+}
+
 bool HTMLElementImp::getHidden()
 {
     // TODO: implement me!
@@ -180,21 +275,6 @@ void HTMLElementImp::setTabIndex(int tabIndex)
     // TODO: implement me!
 }
 
-void HTMLElementImp::focus()
-{
-    // TODO: check if this element is focusable.
-    if (!ownerDocument || !ownerDocument->getDefaultView())
-        return;
-    ownerDocument->setFocus(this);
-}
-
-void HTMLElementImp::blur()
-{
-    if (!ownerDocument || ownerDocument->getFocus() != this)
-        return;
-    ownerDocument->setFocus(0);
-}
-
 std::u16string HTMLElementImp::getAccessKey()
 {
     // TODO: implement me!
@@ -219,6 +299,17 @@ bool HTMLElementImp::getDraggable()
 }
 
 void HTMLElementImp::setDraggable(bool draggable)
+{
+    // TODO: implement me!
+}
+
+DOMSettableTokenList HTMLElementImp::getDropzone()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void HTMLElementImp::setDropzone(std::u16string dropzone)
 {
     // TODO: implement me!
 }
@@ -254,7 +345,7 @@ void HTMLElementImp::setContextMenu(html::HTMLMenuElement contextMenu)
 bool HTMLElementImp::getSpellcheck()
 {
     // TODO: implement me!
-    return u"";
+    return 0;
 }
 
 void HTMLElementImp::setSpellcheck(bool spellcheck)
@@ -290,11 +381,6 @@ bool HTMLElementImp::getChecked()
 {
     // TODO: implement me!
     return 0;
-}
-
-css::CSSStyleDeclaration HTMLElementImp::getStyle()
-{
-    return style;
 }
 
 html::Function HTMLElementImp::getOnabort()
@@ -370,6 +456,17 @@ html::Function HTMLElementImp::getOncontextmenu()
 }
 
 void HTMLElementImp::setOncontextmenu(html::Function oncontextmenu)
+{
+    // TODO: implement me!
+}
+
+html::Function HTMLElementImp::getOncuechange()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void HTMLElementImp::setOncuechange(html::Function oncuechange)
 {
     // TODO: implement me!
 }
@@ -748,6 +845,17 @@ void HTMLElementImp::setOnreadystatechange(html::Function onreadystatechange)
     // TODO: implement me!
 }
 
+html::Function HTMLElementImp::getOnreset()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void HTMLElementImp::setOnreset(html::Function onreset)
+{
+    // TODO: implement me!
+}
+
 html::Function HTMLElementImp::getOnscroll()
 {
     // TODO: implement me!
@@ -897,78 +1005,6 @@ int HTMLElementImp::getOffsetHeight()
 {
     // TODO: implement me!
     return 0;
-}
-
-bool HTMLElementImp::getItemScope()
-{
-    // TODO: implement me!
-    return 0;
-}
-
-void HTMLElementImp::setItemScope(bool itemScope)
-{
-    // TODO: implement me!
-}
-
-std::u16string HTMLElementImp::getItemType()
-{
-    // TODO: implement me!
-    return u"";
-}
-
-void HTMLElementImp::setItemType(std::u16string itemType)
-{
-    // TODO: implement me!
-}
-
-std::u16string HTMLElementImp::getItemId()
-{
-    // TODO: implement me!
-    return u"";
-}
-
-void HTMLElementImp::setItemId(std::u16string itemId)
-{
-    // TODO: implement me!
-}
-
-DOMSettableTokenList HTMLElementImp::getItemRef()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void HTMLElementImp::setItemRef(std::u16string itemRef)
-{
-    // TODO: implement me!
-}
-
-DOMSettableTokenList HTMLElementImp::getItemProp()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void HTMLElementImp::setItemProp(std::u16string itemProp)
-{
-    // TODO: implement me!
-}
-
-html::HTMLPropertiesCollection HTMLElementImp::getProperties()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-Any HTMLElementImp::getItemValue()
-{
-    // TODO: implement me!
-    return 0;
-}
-
-void HTMLElementImp::setItemValue(Any itemValue)
-{
-    // TODO: implement me!
 }
 
 }}}}  // org::w3c::dom::bootstrap

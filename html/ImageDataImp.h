@@ -26,9 +26,9 @@ class ImageDataImp : public ObjectMixin<ImageDataImp>
 {
 public:
     // ImageData
-    unsigned int getWidth() __attribute__((weak));
-    unsigned int getHeight() __attribute__((weak));
-    html::CanvasPixelArray getData() __attribute__((weak));
+    unsigned int getWidth();
+    unsigned int getHeight();
+    html::CanvasPixelArray getData();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

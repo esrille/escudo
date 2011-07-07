@@ -26,10 +26,10 @@ class BlobImp : public ObjectMixin<BlobImp>
 {
 public:
     // Blob
-    unsigned long long getSize() __attribute__((weak));
-    std::u16string getType() __attribute__((weak));
-    file::Blob slice(unsigned long long start, unsigned long long length) __attribute__((weak));
-    file::Blob slice(unsigned long long start, unsigned long long length, std::u16string contentType) __attribute__((weak));
+    unsigned long long getSize();
+    std::u16string getType();
+    file::Blob slice(unsigned long long start, unsigned long long length);
+    file::Blob slice(unsigned long long start, unsigned long long length, std::u16string contentType);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

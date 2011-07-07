@@ -30,18 +30,18 @@ class HTMLFieldSetElementImp : public ObjectMixin<HTMLFieldSetElementImp, HTMLEl
 {
 public:
     // HTMLFieldSetElement
-    bool getDisabled() __attribute__((weak));
-    void setDisabled(bool disabled) __attribute__((weak));
-    html::HTMLFormElement getForm() __attribute__((weak));
-    std::u16string getName() __attribute__((weak));
-    void setName(std::u16string name) __attribute__((weak));
-    std::u16string getType() __attribute__((weak));
-    html::HTMLFormControlsCollection getElements() __attribute__((weak));
-    bool getWillValidate() __attribute__((weak));
-    html::ValidityState getValidity() __attribute__((weak));
-    std::u16string getValidationMessage() __attribute__((weak));
-    bool checkValidity() __attribute__((weak));
-    void setCustomValidity(std::u16string error) __attribute__((weak));
+    bool getDisabled();
+    void setDisabled(bool disabled);
+    html::HTMLFormElement getForm();
+    std::u16string getName();
+    void setName(std::u16string name);
+    std::u16string getType();
+    html::HTMLFormControlsCollection getElements();
+    bool getWillValidate();
+    html::ValidityState getValidity();
+    std::u16string getValidationMessage();
+    bool checkValidity();
+    void setCustomValidity(std::u16string error);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

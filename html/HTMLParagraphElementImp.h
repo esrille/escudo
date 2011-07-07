@@ -28,8 +28,8 @@ class HTMLParagraphElementImp : public ObjectMixin<HTMLParagraphElementImp, HTML
 public:
     // HTMLParagraphElement
     // HTMLParagraphElement-26
-    std::u16string getAlign() __attribute__((weak));
-    void setAlign(std::u16string align) __attribute__((weak));
+    std::u16string getAlign();
+    void setAlign(std::u16string align);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

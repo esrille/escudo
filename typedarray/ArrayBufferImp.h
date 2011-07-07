@@ -26,7 +26,7 @@ class ArrayBufferImp : public ObjectMixin<ArrayBufferImp>
 {
 public:
     // ArrayBuffer
-    unsigned int getByteLength() __attribute__((weak));
+    unsigned int getByteLength();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

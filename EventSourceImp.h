@@ -29,15 +29,15 @@ class EventSourceImp : public ObjectMixin<EventSourceImp, EventTargetImp>
 {
 public:
     // EventSource
-    std::u16string getUrl() __attribute__((weak));
-    unsigned short getReadyState() __attribute__((weak));
-    html::Function getOnopen() __attribute__((weak));
-    void setOnopen(html::Function onopen) __attribute__((weak));
-    html::Function getOnmessage() __attribute__((weak));
-    void setOnmessage(html::Function onmessage) __attribute__((weak));
-    html::Function getOnerror() __attribute__((weak));
-    void setOnerror(html::Function onerror) __attribute__((weak));
-    void close() __attribute__((weak));
+    std::u16string getUrl();
+    unsigned short getReadyState();
+    html::Function getOnopen();
+    void setOnopen(html::Function onopen);
+    html::Function getOnmessage();
+    void setOnmessage(html::Function onmessage);
+    html::Function getOnerror();
+    void setOnerror(html::Function onerror);
+    void close();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

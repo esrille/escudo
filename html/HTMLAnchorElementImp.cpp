@@ -79,6 +79,17 @@ void HTMLAnchorElementImp::setTarget(std::u16string target)
     // TODO: implement me!
 }
 
+std::u16string HTMLAnchorElementImp::getPing()
+{
+    // TODO: implement me!
+    return u"";
+}
+
+void HTMLAnchorElementImp::setPing(std::u16string ping)
+{
+    // TODO: implement me!
+}
+
 std::u16string HTMLAnchorElementImp::getRel()
 {
     // TODO: implement me!

@@ -26,7 +26,7 @@ class CSSMapValueImp : public ObjectMixin<CSSMapValueImp>
 {
 public:
     // CSSMapValue
-    css::CSSValue getElement(std::u16string name) __attribute__((weak));
+    css::CSSValue getElement(std::u16string name);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

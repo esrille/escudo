@@ -26,10 +26,10 @@ class RectImp : public ObjectMixin<RectImp>
 {
 public:
     // Rect
-    css::CSSPrimitiveValue getTop() __attribute__((weak));
-    css::CSSPrimitiveValue getRight() __attribute__((weak));
-    css::CSSPrimitiveValue getBottom() __attribute__((weak));
-    css::CSSPrimitiveValue getLeft() __attribute__((weak));
+    css::CSSPrimitiveValue getTop();
+    css::CSSPrimitiveValue getRight();
+    css::CSSPrimitiveValue getBottom();
+    css::CSSPrimitiveValue getLeft();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

@@ -30,8 +30,8 @@ class DocumentTraversalImp : public ObjectMixin<DocumentTraversalImp>
 {
 public:
     // DocumentTraversal
-    traversal::NodeIterator createNodeIterator(Node root, unsigned int whatToShow, traversal::NodeFilter filter, bool entityReferenceExpansion) throw(DOMException) __attribute__((weak));
-    traversal::TreeWalker createTreeWalker(Node root, unsigned int whatToShow, traversal::NodeFilter filter, bool entityReferenceExpansion) throw(DOMException) __attribute__((weak));
+    traversal::NodeIterator createNodeIterator(Node root, unsigned int whatToShow, traversal::NodeFilter filter, bool entityReferenceExpansion) throw(DOMException);
+    traversal::TreeWalker createTreeWalker(Node root, unsigned int whatToShow, traversal::NodeFilter filter, bool entityReferenceExpansion) throw(DOMException);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

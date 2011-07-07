@@ -28,10 +28,10 @@ class TextEventImp : public ObjectMixin<TextEventImp, UIEventImp>
 {
 public:
     // TextEvent
-    std::u16string getData() __attribute__((weak));
-    unsigned int getInputMethod() __attribute__((weak));
-    std::u16string getLocale() __attribute__((weak));
-    void initTextEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, html::Window viewArg, std::u16string dataArg, unsigned int inputMethod, std::u16string localeArg) __attribute__((weak));
+    std::u16string getData();
+    unsigned int getInputMethod();
+    std::u16string getLocale();
+    void initTextEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, html::Window viewArg, std::u16string dataArg, unsigned int inputMethod, std::u16string localeArg);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

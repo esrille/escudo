@@ -24,10 +24,10 @@ class EventInitImp : public ObjectMixin<EventInitImp>
 {
 public:
     // EventInit
-    bool getBubbles() __attribute__((weak));
-    void setBubbles(bool bubbles) __attribute__((weak));
-    bool getCancelable() __attribute__((weak));
-    void setCancelable(bool cancelable) __attribute__((weak));
+    bool getBubbles();
+    void setBubbles(bool bubbles);
+    bool getCancelable();
+    void setCancelable(bool cancelable);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

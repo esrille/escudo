@@ -24,15 +24,15 @@ class ValidityStateImp : public ObjectMixin<ValidityStateImp>
 {
 public:
     // ValidityState
-    bool getValueMissing() __attribute__((weak));
-    bool getTypeMismatch() __attribute__((weak));
-    bool getPatternMismatch() __attribute__((weak));
-    bool getTooLong() __attribute__((weak));
-    bool getRangeUnderflow() __attribute__((weak));
-    bool getRangeOverflow() __attribute__((weak));
-    bool getStepMismatch() __attribute__((weak));
-    bool getCustomError() __attribute__((weak));
-    bool getValid() __attribute__((weak));
+    bool getValueMissing();
+    bool getTypeMismatch();
+    bool getPatternMismatch();
+    bool getTooLong();
+    bool getRangeUnderflow();
+    bool getRangeOverflow();
+    bool getStepMismatch();
+    bool getCustomError();
+    bool getValid();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

@@ -36,9 +36,9 @@ public:
     virtual unsigned short getNodeType();
 
     // Text
-    virtual Text splitText(unsigned int offset) __attribute__((weak));
-    virtual std::u16string getWholeText() __attribute__((weak));
-    virtual Text replaceWholeText(std::u16string data) __attribute__((weak));
+    virtual Text splitText(unsigned int offset);
+    virtual std::u16string getWholeText();
+    virtual Text replaceWholeText(std::u16string data);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

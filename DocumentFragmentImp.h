@@ -30,8 +30,8 @@ class DocumentFragmentImp : public ObjectMixin<DocumentFragmentImp, NodeImp>
 public:
     // DocumentFragment
     // NodeSelector
-    Element querySelector(std::u16string selectors) __attribute__((weak));
-    NodeList querySelectorAll(std::u16string selectors) __attribute__((weak));
+    Element querySelector(std::u16string selectors);
+    NodeList querySelectorAll(std::u16string selectors);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

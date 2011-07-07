@@ -31,27 +31,27 @@ class FileReaderImp : public ObjectMixin<FileReaderImp, EventTargetImp>
 {
 public:
     // FileReader
-    void readAsArrayBuffer(file::Blob blob) __attribute__((weak));
-    void readAsBinaryString(file::Blob blob) __attribute__((weak));
-    void readAsText(file::Blob blob) __attribute__((weak));
-    void readAsText(file::Blob blob, std::u16string encoding) __attribute__((weak));
-    void readAsDataURL(file::Blob blob) __attribute__((weak));
-    void abort() __attribute__((weak));
-    unsigned short getReadyState() __attribute__((weak));
-    Any getResult() __attribute__((weak));
-    file::FileError getError() __attribute__((weak));
-    html::Function getOnloadstart() __attribute__((weak));
-    void setOnloadstart(html::Function onloadstart) __attribute__((weak));
-    html::Function getOnprogress() __attribute__((weak));
-    void setOnprogress(html::Function onprogress) __attribute__((weak));
-    html::Function getOnload() __attribute__((weak));
-    void setOnload(html::Function onload) __attribute__((weak));
-    html::Function getOnabort() __attribute__((weak));
-    void setOnabort(html::Function onabort) __attribute__((weak));
-    html::Function getOnerror() __attribute__((weak));
-    void setOnerror(html::Function onerror) __attribute__((weak));
-    html::Function getOnloadend() __attribute__((weak));
-    void setOnloadend(html::Function onloadend) __attribute__((weak));
+    void readAsArrayBuffer(file::Blob blob);
+    void readAsBinaryString(file::Blob blob);
+    void readAsText(file::Blob blob);
+    void readAsText(file::Blob blob, std::u16string encoding);
+    void readAsDataURL(file::Blob blob);
+    void abort();
+    unsigned short getReadyState();
+    Any getResult();
+    file::FileError getError();
+    html::Function getOnloadstart();
+    void setOnloadstart(html::Function onloadstart);
+    html::Function getOnprogress();
+    void setOnprogress(html::Function onprogress);
+    html::Function getOnload();
+    void setOnload(html::Function onload);
+    html::Function getOnabort();
+    void setOnabort(html::Function onabort);
+    html::Function getOnerror();
+    void setOnerror(html::Function onerror);
+    html::Function getOnloadend();
+    void setOnloadend(html::Function onloadend);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

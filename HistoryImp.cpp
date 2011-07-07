@@ -50,6 +50,12 @@ int HistoryImp::getLength()
     return static_cast<int>(sessionHistory.size());
 }
 
+Any HistoryImp::getState()
+{
+    // TODO: implement me!
+    return 0;
+}
+
 void HistoryImp::go()
 {
     if (sessionHistory.empty())

@@ -27,7 +27,7 @@ class DOMImplementationCSSImp : public ObjectMixin<DOMImplementationCSSImp>
 {
 public:
     // DOMImplementationCSS
-    css::CSSStyleSheet createCSSStyleSheet(std::u16string title, std::u16string media) throw(DOMException) __attribute__((weak));
+    css::CSSStyleSheet createCSSStyleSheet(std::u16string title, std::u16string media) throw(DOMException);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

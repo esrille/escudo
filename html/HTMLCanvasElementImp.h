@@ -35,15 +35,15 @@ public:
     }
 
     // HTMLCanvasElement
-    unsigned int getWidth() __attribute__((weak));
-    void setWidth(unsigned int width) __attribute__((weak));
-    unsigned int getHeight() __attribute__((weak));
-    void setHeight(unsigned int height) __attribute__((weak));
-    std::u16string toDataURL() __attribute__((weak));
-    std::u16string toDataURL(std::u16string type, Variadic<Any> args = Variadic<Any>()) __attribute__((weak));
-    void toBlob(file::FileCallback callback) __attribute__((weak));
-    void toBlob(file::FileCallback callback, std::u16string type, Variadic<Any> args = Variadic<Any>()) __attribute__((weak));
-    Object getContext(std::u16string contextId, Variadic<Any> args = Variadic<Any>()) __attribute__((weak));
+    unsigned int getWidth();
+    void setWidth(unsigned int width);
+    unsigned int getHeight();
+    void setHeight(unsigned int height);
+    std::u16string toDataURL();
+    std::u16string toDataURL(std::u16string type, Variadic<Any> args = Variadic<Any>());
+    void toBlob(file::FileCallback callback);
+    void toBlob(file::FileCallback callback, std::u16string type, Variadic<Any> args = Variadic<Any>());
+    Object getContext(std::u16string contextId, Variadic<Any> args = Variadic<Any>());
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

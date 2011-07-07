@@ -28,11 +28,11 @@ class ProcessingInstructionImp : public ObjectMixin<ProcessingInstructionImp, No
 {
 public:
     // ProcessingInstruction
-    std::u16string getTarget() __attribute__((weak));
-    std::u16string getData() __attribute__((weak));
-    void setData(std::u16string data) __attribute__((weak));
+    std::u16string getTarget();
+    std::u16string getData();
+    void setData(std::u16string data);
     // LinkStyle
-    stylesheets::StyleSheet getSheet() __attribute__((weak));
+    stylesheets::StyleSheet getSheet();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

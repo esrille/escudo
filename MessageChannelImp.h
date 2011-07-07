@@ -27,8 +27,8 @@ class MessageChannelImp : public ObjectMixin<MessageChannelImp>
 {
 public:
     // MessageChannel
-    html::MessagePort getPort1() __attribute__((weak));
-    html::MessagePort getPort2() __attribute__((weak));
+    html::MessagePort getPort1();
+    html::MessagePort getPort2();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

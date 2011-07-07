@@ -29,20 +29,20 @@ class HTMLMeterElementImp : public ObjectMixin<HTMLMeterElementImp, HTMLElementI
 {
 public:
     // HTMLMeterElement
-    float getValue() __attribute__((weak));
-    void setValue(float value) __attribute__((weak));
-    float getMin() __attribute__((weak));
-    void setMin(float min) __attribute__((weak));
-    float getMax() __attribute__((weak));
-    void setMax(float max) __attribute__((weak));
-    float getLow() __attribute__((weak));
-    void setLow(float low) __attribute__((weak));
-    float getHigh() __attribute__((weak));
-    void setHigh(float high) __attribute__((weak));
-    float getOptimum() __attribute__((weak));
-    void setOptimum(float optimum) __attribute__((weak));
-    html::HTMLFormElement getForm() __attribute__((weak));
-    NodeList getLabels() __attribute__((weak));
+    float getValue();
+    void setValue(float value);
+    float getMin();
+    void setMin(float min);
+    float getMax();
+    void setMax(float max);
+    float getLow();
+    void setLow(float low);
+    float getHigh();
+    void setHigh(float high);
+    float getOptimum();
+    void setOptimum(float optimum);
+    html::HTMLFormElement getForm();
+    NodeList getLabels();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

@@ -28,9 +28,9 @@ class CompositionEventImp : public ObjectMixin<CompositionEventImp, UIEventImp>
 {
 public:
     // CompositionEvent
-    std::u16string getData() __attribute__((weak));
-    std::u16string getLocale() __attribute__((weak));
-    void initCompositionEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, html::Window viewArg, std::u16string dataArg, std::u16string localeArg) __attribute__((weak));
+    std::u16string getData();
+    std::u16string getLocale();
+    void initCompositionEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, html::Window viewArg, std::u16string dataArg, std::u16string localeArg);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

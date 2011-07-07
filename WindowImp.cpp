@@ -276,7 +276,7 @@ void WindowImp::keyup(unsigned charCode, unsigned keyCode, int modifiers)
 }
 
 //
-// html::Window
+// html::Window - implemented
 //
 
 html::Window WindowImp::getWindow()
@@ -294,17 +294,6 @@ Document WindowImp::getDocument()
     return document;
 }
 
-std::u16string WindowImp::getName()
-{
-    // TODO: implement me!
-    return u"";
-}
-
-void WindowImp::setName(std::u16string name)
-{
-    // TODO: implement me!
-}
-
 html::Location WindowImp::getLocation()
 {
     return getDocument().getLocation();
@@ -318,6 +307,70 @@ void WindowImp::setLocation(std::u16string href)
 html::History WindowImp::getHistory()
 {
     return &history;
+}
+
+Any WindowImp::getFrames()
+{
+    return this;
+}
+
+Any WindowImp::getLength()
+{
+    return childWindows.size();
+}
+
+html::Window WindowImp::getTop()
+{
+    WindowImp* top = this;
+    while (top->parent)
+        top = top->parent;
+    return top;
+}
+
+html::Window WindowImp::getParent()
+{
+    return parent;
+}
+
+html::Window WindowImp::open(std::u16string url, std::u16string target, std::u16string features, bool replace)
+{
+    // TODO: add more details
+    document = 0;  // XXX
+
+    if (url.empty())
+        url = u"about:blank";
+    request.abort();
+    request.open(u"get", url);
+    request.send();
+    HttpConnectionManager::getIOService().poll();
+    return this;
+}
+
+html::Window WindowImp::getElement(unsigned int index)
+{
+    if (index < childWindows.size())
+        return childWindows[index];
+    return 0;
+}
+
+void WindowImp::alert(std::u16string message)
+{
+    std::cerr << message << '\n';
+}
+
+//
+// html::Window - just generated
+//
+
+std::u16string WindowImp::getName()
+{
+    // TODO: implement me!
+    return u"";
+}
+
+void WindowImp::setName(std::u16string name)
+{
+    // TODO: implement me!
 }
 
 html::UndoManager WindowImp::getUndoManager()
@@ -392,6 +445,17 @@ void WindowImp::setToolbar(Any toolbar)
     // TODO: implement me!
 }
 
+std::u16string WindowImp::getStatus()
+{
+    // TODO: implement me!
+    return u"";
+}
+
+void WindowImp::setStatus(std::u16string status)
+{
+    // TODO: implement me!
+}
+
 void WindowImp::close()
 {
     // TODO: implement me!
@@ -412,19 +476,9 @@ void WindowImp::blur()
     // TODO: implement me!
 }
 
-Any WindowImp::getFrames()
-{
-    return this;
-}
-
 void WindowImp::setFrames(Any frames)
 {
     // TODO: implement me!
-}
-
-Any WindowImp::getLength()
-{
-    return childWindows.size();
 }
 
 void WindowImp::setLength(Any length)
@@ -432,18 +486,10 @@ void WindowImp::setLength(Any length)
     // TODO: implement me!
 }
 
-html::Window WindowImp::getTop()
-{
-    WindowImp* top = this;
-    while (top->parent)
-        top = top->parent;
-    return top;
-}
-
 html::Window WindowImp::getOpener()
 {
     // TODO: implement me!
-    return 0;
+    return static_cast<Object*>(0);
 }
 
 void WindowImp::setOpener(html::Window opener)
@@ -451,36 +497,10 @@ void WindowImp::setOpener(html::Window opener)
     // TODO: implement me!
 }
 
-html::Window WindowImp::getParent()
-{
-    return parent;
-}
-
 Element WindowImp::getFrameElement()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
-}
-
-html::Window WindowImp::open(std::u16string url, std::u16string target, std::u16string features, bool replace)
-{
-    // TODO: add more details
-    document = 0;  // XXX
-
-    if (url.empty())
-        url = u"about:blank";
-    request.abort();
-    request.open(u"get", url);
-    request.send();
-    HttpConnectionManager::getIOService().poll();
-    return this;
-}
-
-html::Window WindowImp::getElement(unsigned int index)
-{
-    if (index < childWindows.size())
-        return childWindows[index];
-    return 0;
 }
 
 Any WindowImp::getElement(std::u16string name)
@@ -500,15 +520,16 @@ html::Navigator WindowImp::getNavigator()
     return static_cast<Object*>(0);
 }
 
-html::ApplicationCache WindowImp::getApplicationCache()
+html::External WindowImp::getExternal()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::alert(std::u16string message)
+html::ApplicationCache WindowImp::getApplicationCache()
 {
-    std::cerr << message << '\n';
+    // TODO: implement me!
+    return static_cast<Object*>(0);
 }
 
 bool WindowImp::confirm(std::u16string message)
@@ -544,6 +565,16 @@ Any WindowImp::showModalDialog(std::u16string url, Any argument)
 {
     // TODO: implement me!
     return 0;
+}
+
+void WindowImp::postMessage(Any message, std::u16string targetOrigin)
+{
+    // TODO: implement me!
+}
+
+void WindowImp::postMessage(Any message, std::u16string targetOrigin, Sequence<html::Transferable> transfer)
+{
+    // TODO: implement me!
 }
 
 html::Function WindowImp::getOnabort()
@@ -652,6 +683,17 @@ html::Function WindowImp::getOncontextmenu()
 }
 
 void WindowImp::setOncontextmenu(html::Function oncontextmenu)
+{
+    // TODO: implement me!
+}
+
+html::Function WindowImp::getOncuechange()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOncuechange(html::Function oncuechange)
 {
     // TODO: implement me!
 }
@@ -1118,6 +1160,17 @@ void WindowImp::setOnredo(html::Function onredo)
     // TODO: implement me!
 }
 
+html::Function WindowImp::getOnreset()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOnreset(html::Function onreset)
+{
+    // TODO: implement me!
+}
+
 html::Function WindowImp::getOnresize()
 {
     // TODO: implement me!
@@ -1368,6 +1421,44 @@ int WindowImp::getOuterHeight()
 {
     // TODO: implement me!
     return 0;
+}
+
+void WindowImp::addEventListener(std::u16string type, events::EventListener listener)
+{
+    // TODO: implement me!
+}
+
+void WindowImp::addEventListener(std::u16string type, events::EventListener listener, bool capture)
+{
+    // TODO: implement me!
+}
+
+void WindowImp::removeEventListener(std::u16string type, events::EventListener listener)
+{
+    // TODO: implement me!
+}
+
+void WindowImp::removeEventListener(std::u16string type, events::EventListener listener, bool capture)
+{
+    // TODO: implement me!
+}
+
+bool WindowImp::dispatchEvent(events::Event event)
+{
+    // TODO: implement me!
+    return 0;
+}
+
+std::u16string WindowImp::btoa(std::u16string btoa)
+{
+    // TODO: implement me!
+    return u"";
+}
+
+std::u16string WindowImp::atob(std::u16string atob)
+{
+    // TODO: implement me!
+    return u"";
 }
 
 int WindowImp::setTimeout(Any handler)

@@ -36,26 +36,26 @@ public:
     LocationImp(const LocationImp& other);
 
     // Location
-    virtual std::u16string getHref() __attribute__((weak));
-    virtual void setHref(std::u16string href) __attribute__((weak));
-    virtual void assign(std::u16string url) __attribute__((weak));
-    virtual void replace(std::u16string url) __attribute__((weak));
-    virtual void reload() __attribute__((weak));
-    virtual std::u16string getProtocol() __attribute__((weak));
-    virtual void setProtocol(std::u16string protocol) __attribute__((weak));
-    virtual std::u16string getHost() __attribute__((weak));
-    virtual void setHost(std::u16string host) __attribute__((weak));
-    virtual std::u16string getHostname() __attribute__((weak));
-    virtual void setHostname(std::u16string hostname) __attribute__((weak));
-    virtual std::u16string getPort() __attribute__((weak));
-    virtual void setPort(std::u16string port) __attribute__((weak));
-    virtual std::u16string getPathname() __attribute__((weak));
-    virtual void setPathname(std::u16string pathname) __attribute__((weak));
-    virtual std::u16string getSearch() __attribute__((weak));
-    virtual void setSearch(std::u16string search) __attribute__((weak));
-    virtual std::u16string getHash() __attribute__((weak));
-    virtual void setHash(std::u16string hash) __attribute__((weak));
-    virtual std::u16string resolveURL(std::u16string url) __attribute__((weak));
+    virtual std::u16string getHref();
+    virtual void setHref(std::u16string href);
+    virtual void assign(std::u16string url);
+    virtual void replace(std::u16string url);
+    virtual void reload();
+    virtual std::u16string getProtocol();
+    virtual void setProtocol(std::u16string protocol);
+    virtual std::u16string getHost();
+    virtual void setHost(std::u16string host);
+    virtual std::u16string getHostname();
+    virtual void setHostname(std::u16string hostname);
+    virtual std::u16string getPort();
+    virtual void setPort(std::u16string port);
+    virtual std::u16string getPathname();
+    virtual void setPathname(std::u16string pathname);
+    virtual std::u16string getSearch();
+    virtual void setSearch(std::u16string search);
+    virtual std::u16string getHash();
+    virtual void setHash(std::u16string hash);
+    virtual std::u16string resolveURL(std::u16string url);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

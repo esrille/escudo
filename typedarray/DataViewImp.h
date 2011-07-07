@@ -29,34 +29,34 @@ class DataViewImp : public ObjectMixin<DataViewImp, ArrayBufferViewImp>
 {
 public:
     // DataView
-    signed char getInt8(unsigned int byteOffset) __attribute__((weak));
-    unsigned char getUint8(unsigned int byteOffset) __attribute__((weak));
-    short getInt16(unsigned int byteOffset) __attribute__((weak));
-    short getInt16(unsigned int byteOffset, bool littleEndian) __attribute__((weak));
-    unsigned short getUint16(unsigned int byteOffset) __attribute__((weak));
-    unsigned short getUint16(unsigned int byteOffset, bool littleEndian) __attribute__((weak));
-    int getInt32(unsigned int byteOffset) __attribute__((weak));
-    int getInt32(unsigned int byteOffset, bool littleEndian) __attribute__((weak));
-    unsigned int getUint32(unsigned int byteOffset) __attribute__((weak));
-    unsigned int getUint32(unsigned int byteOffset, bool littleEndian) __attribute__((weak));
-    float getFloat32(unsigned int byteOffset) __attribute__((weak));
-    float getFloat32(unsigned int byteOffset, bool littleEndian) __attribute__((weak));
-    double getFloat64(unsigned int byteOffset) __attribute__((weak));
-    double getFloat64(unsigned int byteOffset, bool littleEndian) __attribute__((weak));
-    void setInt8(unsigned int byteOffset, signed char value) __attribute__((weak));
-    void setUint8(unsigned int byteOffset, unsigned char value) __attribute__((weak));
-    void setInt16(unsigned int byteOffset, short value) __attribute__((weak));
-    void setInt16(unsigned int byteOffset, short value, bool littleEndian) __attribute__((weak));
-    void setUint16(unsigned int byteOffset, unsigned short value) __attribute__((weak));
-    void setUint16(unsigned int byteOffset, unsigned short value, bool littleEndian) __attribute__((weak));
-    void setInt32(unsigned int byteOffset, int value) __attribute__((weak));
-    void setInt32(unsigned int byteOffset, int value, bool littleEndian) __attribute__((weak));
-    void setUint32(unsigned int byteOffset, unsigned int value) __attribute__((weak));
-    void setUint32(unsigned int byteOffset, unsigned int value, bool littleEndian) __attribute__((weak));
-    void setFloat32(unsigned int byteOffset, float value) __attribute__((weak));
-    void setFloat32(unsigned int byteOffset, float value, bool littleEndian) __attribute__((weak));
-    void setFloat64(unsigned int byteOffset, double value) __attribute__((weak));
-    void setFloat64(unsigned int byteOffset, double value, bool littleEndian) __attribute__((weak));
+    signed char getInt8(unsigned int byteOffset);
+    unsigned char getUint8(unsigned int byteOffset);
+    short getInt16(unsigned int byteOffset);
+    short getInt16(unsigned int byteOffset, bool littleEndian);
+    unsigned short getUint16(unsigned int byteOffset);
+    unsigned short getUint16(unsigned int byteOffset, bool littleEndian);
+    int getInt32(unsigned int byteOffset);
+    int getInt32(unsigned int byteOffset, bool littleEndian);
+    unsigned int getUint32(unsigned int byteOffset);
+    unsigned int getUint32(unsigned int byteOffset, bool littleEndian);
+    float getFloat32(unsigned int byteOffset);
+    float getFloat32(unsigned int byteOffset, bool littleEndian);
+    double getFloat64(unsigned int byteOffset);
+    double getFloat64(unsigned int byteOffset, bool littleEndian);
+    void setInt8(unsigned int byteOffset, signed char value);
+    void setUint8(unsigned int byteOffset, unsigned char value);
+    void setInt16(unsigned int byteOffset, short value);
+    void setInt16(unsigned int byteOffset, short value, bool littleEndian);
+    void setUint16(unsigned int byteOffset, unsigned short value);
+    void setUint16(unsigned int byteOffset, unsigned short value, bool littleEndian);
+    void setInt32(unsigned int byteOffset, int value);
+    void setInt32(unsigned int byteOffset, int value, bool littleEndian);
+    void setUint32(unsigned int byteOffset, unsigned int value);
+    void setUint32(unsigned int byteOffset, unsigned int value, bool littleEndian);
+    void setFloat32(unsigned int byteOffset, float value);
+    void setFloat32(unsigned int byteOffset, float value, bool littleEndian);
+    void setFloat64(unsigned int byteOffset, double value);
+    void setFloat64(unsigned int byteOffset, double value, bool littleEndian);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

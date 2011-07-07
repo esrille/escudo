@@ -34,36 +34,36 @@ class XMLHttpRequestImp : public ObjectMixin<XMLHttpRequestImp, XMLHttpRequestEv
 {
 public:
     // XMLHttpRequest
-    html::Function getOnreadystatechange() __attribute__((weak));
-    void setOnreadystatechange(html::Function onreadystatechange) __attribute__((weak));
-    unsigned short getReadyState() __attribute__((weak));
-    void open(std::u16string method, std::u16string url) __attribute__((weak));
-    void open(std::u16string method, std::u16string url, bool async) __attribute__((weak));
-    void open(std::u16string method, std::u16string url, bool async, Nullable<std::u16string> user) __attribute__((weak));
-    void open(std::u16string method, std::u16string url, bool async, Nullable<std::u16string> user, Nullable<std::u16string> password) __attribute__((weak));
-    void setRequestHeader(std::u16string header, std::u16string value) __attribute__((weak));
-    unsigned int getTimeout() __attribute__((weak));
-    void setTimeout(unsigned int timeout) __attribute__((weak));
-    bool getWithCredentials() __attribute__((weak));
-    void setWithCredentials(bool withCredentials) __attribute__((weak));
-    XMLHttpRequestUpload getUpload() __attribute__((weak));
-    void send() __attribute__((weak));
-    void send(typedarray::ArrayBuffer data) __attribute__((weak));
-    void send(file::Blob data) __attribute__((weak));
-    void send(Document data) __attribute__((weak));
-    void send(FormData data) __attribute__((weak));
-    void send(Nullable<std::u16string> data) __attribute__((weak));
-    void abort() __attribute__((weak));
-    unsigned short getStatus() __attribute__((weak));
-    std::u16string getStatusText() __attribute__((weak));
-    std::u16string getResponseHeader(std::u16string header) __attribute__((weak));
-    std::u16string getAllResponseHeaders() __attribute__((weak));
-    void overrideMimeType(std::u16string mime) __attribute__((weak));
-    std::u16string getResponseType() __attribute__((weak));
-    void setResponseType(std::u16string responseType) __attribute__((weak));
-    Any getResponse() __attribute__((weak));
-    std::u16string getResponseText() __attribute__((weak));
-    Document getResponseXML() __attribute__((weak));
+    html::Function getOnreadystatechange();
+    void setOnreadystatechange(html::Function onreadystatechange);
+    unsigned short getReadyState();
+    void open(std::u16string method, std::u16string url);
+    void open(std::u16string method, std::u16string url, bool async);
+    void open(std::u16string method, std::u16string url, bool async, Nullable<std::u16string> user);
+    void open(std::u16string method, std::u16string url, bool async, Nullable<std::u16string> user, Nullable<std::u16string> password);
+    void setRequestHeader(std::u16string header, std::u16string value);
+    unsigned int getTimeout();
+    void setTimeout(unsigned int timeout);
+    bool getWithCredentials();
+    void setWithCredentials(bool withCredentials);
+    XMLHttpRequestUpload getUpload();
+    void send();
+    void send(typedarray::ArrayBuffer data);
+    void send(file::Blob data);
+    void send(Document data);
+    void send(FormData data);
+    void send(Nullable<std::u16string> data);
+    void abort();
+    unsigned short getStatus();
+    std::u16string getStatusText();
+    std::u16string getResponseHeader(std::u16string header);
+    std::u16string getAllResponseHeaders();
+    void overrideMimeType(std::u16string mime);
+    std::u16string getResponseType();
+    void setResponseType(std::u16string responseType);
+    Any getResponse();
+    std::u16string getResponseText();
+    Document getResponseXML();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

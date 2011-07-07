@@ -27,8 +27,8 @@ class BeforeUnloadEventImp : public ObjectMixin<BeforeUnloadEventImp, EventImp>
 {
 public:
     // BeforeUnloadEvent
-    std::u16string getReturnValue() __attribute__((weak));
-    void setReturnValue(std::u16string returnValue) __attribute__((weak));
+    std::u16string getReturnValue();
+    void setReturnValue(std::u16string returnValue);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

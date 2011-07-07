@@ -29,8 +29,8 @@ class DragEventImp : public ObjectMixin<DragEventImp, MouseEventImp>
 {
 public:
     // DragEvent
-    html::DataTransfer getDataTransfer() __attribute__((weak));
-    void initDragEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, Any dummyArg, int detailArg, int screenXArg, int screenYArg, int clientXArg, int clientYArg, bool ctrlKeyArg, bool altKeyArg, bool shiftKeyArg, bool metaKeyArg, unsigned short buttonArg, events::EventTarget relatedTargetArg, html::DataTransfer dataTransferArg) __attribute__((weak));
+    html::DataTransfer getDataTransfer();
+    void initDragEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, Any dummyArg, int detailArg, int screenXArg, int screenYArg, int clientXArg, int clientYArg, bool ctrlKeyArg, bool altKeyArg, bool shiftKeyArg, bool metaKeyArg, unsigned short buttonArg, events::EventTarget relatedTargetArg, html::DataTransfer dataTransferArg);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

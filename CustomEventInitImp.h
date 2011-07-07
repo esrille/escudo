@@ -27,8 +27,8 @@ class CustomEventInitImp : public ObjectMixin<CustomEventInitImp, EventInitImp>
 {
 public:
     // CustomEventInit
-    Any getDetail() __attribute__((weak));
-    void setDetail(Any detail) __attribute__((weak));
+    Any getDetail();
+    void setDetail(Any detail);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

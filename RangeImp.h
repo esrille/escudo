@@ -32,33 +32,33 @@ class RangeImp : public ObjectMixin<RangeImp>
 {
 public:
     // Range
-    Node getStartContainer() throw(DOMException) __attribute__((weak));
-    int getStartOffset() throw(DOMException) __attribute__((weak));
-    Node getEndContainer() throw(DOMException) __attribute__((weak));
-    int getEndOffset() throw(DOMException) __attribute__((weak));
-    bool getCollapsed() throw(DOMException) __attribute__((weak));
-    Node getCommonAncestorContainer() throw(DOMException) __attribute__((weak));
-    void setStart(Node refNode, int offset) throw(ranges::RangeException, DOMException) __attribute__((weak));
-    void setEnd(Node refNode, int offset) throw(ranges::RangeException, DOMException) __attribute__((weak));
-    void setStartBefore(Node refNode) throw(ranges::RangeException, DOMException) __attribute__((weak));
-    void setStartAfter(Node refNode) throw(ranges::RangeException, DOMException) __attribute__((weak));
-    void setEndBefore(Node refNode) throw(ranges::RangeException, DOMException) __attribute__((weak));
-    void setEndAfter(Node refNode) throw(ranges::RangeException, DOMException) __attribute__((weak));
-    void collapse(bool toStart) throw(DOMException) __attribute__((weak));
-    void selectNode(Node refNode) throw(ranges::RangeException, DOMException) __attribute__((weak));
-    void selectNodeContents(Node refNode) throw(ranges::RangeException, DOMException) __attribute__((weak));
-    short compareBoundaryPoints(unsigned short how, ranges::Range sourceRange) throw(DOMException) __attribute__((weak));
-    void deleteContents() throw(DOMException) __attribute__((weak));
-    DocumentFragment extractContents() throw(DOMException) __attribute__((weak));
-    DocumentFragment cloneContents() throw(DOMException) __attribute__((weak));
-    void insertNode(Node newNode) throw(DOMException, ranges::RangeException) __attribute__((weak));
-    void surroundContents(Node newParent) throw(DOMException, ranges::RangeException) __attribute__((weak));
-    ranges::Range cloneRange() throw(DOMException) __attribute__((weak));
-    std::u16string toString() throw(DOMException) __attribute__((weak));
-    void detach() throw(DOMException) __attribute__((weak));
+    Node getStartContainer() throw(DOMException);
+    int getStartOffset() throw(DOMException);
+    Node getEndContainer() throw(DOMException);
+    int getEndOffset() throw(DOMException);
+    bool getCollapsed() throw(DOMException);
+    Node getCommonAncestorContainer() throw(DOMException);
+    void setStart(Node refNode, int offset) throw(ranges::RangeException, DOMException);
+    void setEnd(Node refNode, int offset) throw(ranges::RangeException, DOMException);
+    void setStartBefore(Node refNode) throw(ranges::RangeException, DOMException);
+    void setStartAfter(Node refNode) throw(ranges::RangeException, DOMException);
+    void setEndBefore(Node refNode) throw(ranges::RangeException, DOMException);
+    void setEndAfter(Node refNode) throw(ranges::RangeException, DOMException);
+    void collapse(bool toStart) throw(DOMException);
+    void selectNode(Node refNode) throw(ranges::RangeException, DOMException);
+    void selectNodeContents(Node refNode) throw(ranges::RangeException, DOMException);
+    short compareBoundaryPoints(unsigned short how, ranges::Range sourceRange) throw(DOMException);
+    void deleteContents() throw(DOMException);
+    DocumentFragment extractContents() throw(DOMException);
+    DocumentFragment cloneContents() throw(DOMException);
+    void insertNode(Node newNode) throw(DOMException, ranges::RangeException);
+    void surroundContents(Node newParent) throw(DOMException, ranges::RangeException);
+    ranges::Range cloneRange() throw(DOMException);
+    std::u16string toString() throw(DOMException);
+    void detach() throw(DOMException);
     // Range-41
-    views::ClientRectList getClientRects() __attribute__((weak));
-    views::ClientRect getBoundingClientRect() __attribute__((weak));
+    views::ClientRectList getClientRects();
+    views::ClientRect getBoundingClientRect();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

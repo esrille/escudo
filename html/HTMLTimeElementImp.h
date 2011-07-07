@@ -27,11 +27,11 @@ class HTMLTimeElementImp : public ObjectMixin<HTMLTimeElementImp, HTMLElementImp
 {
 public:
     // HTMLTimeElement
-    std::u16string getDateTime() __attribute__((weak));
-    void setDateTime(std::u16string dateTime) __attribute__((weak));
-    bool getPubDate() __attribute__((weak));
-    void setPubDate(bool pubDate) __attribute__((weak));
-    unsigned long long getValueAsDate() __attribute__((weak));
+    std::u16string getDateTime();
+    void setDateTime(std::u16string dateTime);
+    bool getPubDate();
+    void setPubDate(bool pubDate);
+    unsigned long long getValueAsDate();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

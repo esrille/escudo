@@ -28,25 +28,25 @@ class ApplicationCacheImp : public ObjectMixin<ApplicationCacheImp, EventTargetI
 {
 public:
     // ApplicationCache
-    unsigned short getStatus() __attribute__((weak));
-    void update() __attribute__((weak));
-    void swapCache() __attribute__((weak));
-    html::Function getOnchecking() __attribute__((weak));
-    void setOnchecking(html::Function onchecking) __attribute__((weak));
-    html::Function getOnerror() __attribute__((weak));
-    void setOnerror(html::Function onerror) __attribute__((weak));
-    html::Function getOnnoupdate() __attribute__((weak));
-    void setOnnoupdate(html::Function onnoupdate) __attribute__((weak));
-    html::Function getOndownloading() __attribute__((weak));
-    void setOndownloading(html::Function ondownloading) __attribute__((weak));
-    html::Function getOnprogress() __attribute__((weak));
-    void setOnprogress(html::Function onprogress) __attribute__((weak));
-    html::Function getOnupdateready() __attribute__((weak));
-    void setOnupdateready(html::Function onupdateready) __attribute__((weak));
-    html::Function getOncached() __attribute__((weak));
-    void setOncached(html::Function oncached) __attribute__((weak));
-    html::Function getOnobsolete() __attribute__((weak));
-    void setOnobsolete(html::Function onobsolete) __attribute__((weak));
+    unsigned short getStatus();
+    void update();
+    void swapCache();
+    html::Function getOnchecking();
+    void setOnchecking(html::Function onchecking);
+    html::Function getOnerror();
+    void setOnerror(html::Function onerror);
+    html::Function getOnnoupdate();
+    void setOnnoupdate(html::Function onnoupdate);
+    html::Function getOndownloading();
+    void setOndownloading(html::Function ondownloading);
+    html::Function getOnprogress();
+    void setOnprogress(html::Function onprogress);
+    html::Function getOnupdateready();
+    void setOnupdateready(html::Function onupdateready);
+    html::Function getOncached();
+    void setOncached(html::Function oncached);
+    html::Function getOnobsolete();
+    void setOnobsolete(html::Function onobsolete);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

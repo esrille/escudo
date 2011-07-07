@@ -24,9 +24,9 @@ class CSSComponentValueImp : public ObjectMixin<CSSComponentValueImp>
 {
 public:
     // CSSComponentValue
-    std::u16string getType() __attribute__((weak));
-    Any getValue() __attribute__((weak));
-    void setValue(Any value) __attribute__((weak));
+    std::u16string getType();
+    Any getValue();
+    void setValue(Any value);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

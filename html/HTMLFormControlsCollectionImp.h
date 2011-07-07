@@ -27,7 +27,7 @@ class HTMLFormControlsCollectionImp : public ObjectMixin<HTMLFormControlsCollect
 {
 public:
     // HTMLFormControlsCollection
-    Object namedItem(std::u16string name) __attribute__((weak));
+    Object namedItem(std::u16string name);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

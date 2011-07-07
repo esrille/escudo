@@ -26,7 +26,7 @@ class CSSPropertyValueListImp : public ObjectMixin<CSSPropertyValueListImp>
 {
 public:
     // CSSPropertyValueList
-    ObjectArray<css::CSSValue> getList() __attribute__((weak));
+    ObjectArray<css::CSSValue> getList();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

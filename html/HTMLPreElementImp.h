@@ -28,8 +28,8 @@ class HTMLPreElementImp : public ObjectMixin<HTMLPreElementImp, HTMLElementImp>
 public:
     // HTMLPreElement
     // HTMLPreElement-28
-    unsigned int getWidth() __attribute__((weak));
-    void setWidth(unsigned int width) __attribute__((weak));
+    unsigned int getWidth();
+    void setWidth(unsigned int width);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

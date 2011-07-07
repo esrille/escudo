@@ -51,9 +51,9 @@ public:
     EventTargetImp(EventTargetImp* org);
 
     // EventTarget
-    virtual void addEventListener(std::u16string type, events::EventListener listener, bool capture = false) __attribute__((weak));
-    virtual void removeEventListener(std::u16string type, events::EventListener listener, bool capture = false) __attribute__((weak));
-    virtual bool dispatchEvent(events::Event event) __attribute__((weak));
+    virtual void addEventListener(std::u16string type, events::EventListener listener, bool capture = false);
+    virtual void removeEventListener(std::u16string type, events::EventListener listener, bool capture = false);
+    virtual bool dispatchEvent(events::Event event);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

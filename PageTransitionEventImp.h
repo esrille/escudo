@@ -27,8 +27,8 @@ class PageTransitionEventImp : public ObjectMixin<PageTransitionEventImp, EventI
 {
 public:
     // PageTransitionEvent
-    Any getPersisted() __attribute__((weak));
-    void initPageTransitionEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, Any persistedArg) __attribute__((weak));
+    Any getPersisted();
+    void initPageTransitionEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, Any persistedArg);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

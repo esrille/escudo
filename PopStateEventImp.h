@@ -27,8 +27,8 @@ class PopStateEventImp : public ObjectMixin<PopStateEventImp, EventImp>
 {
 public:
     // PopStateEvent
-    Any getState() __attribute__((weak));
-    void initPopStateEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, Any stateArg) __attribute__((weak));
+    Any getState();
+    void initPopStateEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, Any stateArg);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

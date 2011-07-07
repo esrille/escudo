@@ -180,6 +180,12 @@ std::u16string DocumentImp::getCompatMode()
     return compatMode;
 }
 
+std::u16string DocumentImp::getContentType()
+{
+    // TODO: implement me!
+    return u"";
+}
+
 DocumentType DocumentImp::getDoctype()
 {
     return doctype;
@@ -638,6 +644,12 @@ NodeList DocumentImp::getElementsByName(std::u16string elementName)
     return static_cast<Object*>(0);
 }
 
+DOMElementMap DocumentImp::getCssElementMap()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
 std::u16string DocumentImp::getInnerHTML()
 {
     // TODO: implement me!
@@ -833,6 +845,17 @@ html::Function DocumentImp::getOncontextmenu()
 }
 
 void DocumentImp::setOncontextmenu(html::Function oncontextmenu)
+{
+    // TODO: implement me!
+}
+
+html::Function DocumentImp::getOncuechange()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void DocumentImp::setOncuechange(html::Function oncuechange)
 {
     // TODO: implement me!
 }
@@ -1207,6 +1230,17 @@ html::Function DocumentImp::getOnreadystatechange()
 }
 
 void DocumentImp::setOnreadystatechange(html::Function onreadystatechange)
+{
+    // TODO: implement me!
+}
+
+html::Function DocumentImp::getOnreset()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void DocumentImp::setOnreset(html::Function onreset)
 {
     // TODO: implement me!
 }

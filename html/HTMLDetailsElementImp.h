@@ -27,8 +27,8 @@ class HTMLDetailsElementImp : public ObjectMixin<HTMLDetailsElementImp, HTMLElem
 {
 public:
     // HTMLDetailsElement
-    bool getOpen() __attribute__((weak));
-    void setOpen(bool open) __attribute__((weak));
+    bool getOpen();
+    void setOpen(bool open);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

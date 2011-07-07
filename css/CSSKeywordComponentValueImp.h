@@ -24,8 +24,8 @@ class CSSKeywordComponentValueImp : public ObjectMixin<CSSKeywordComponentValueI
 {
 public:
     // CSSKeywordComponentValue
-    std::u16string getKeyword() __attribute__((weak));
-    void setKeyword(std::u16string keyword) __attribute__((weak));
+    std::u16string getKeyword();
+    void setKeyword(std::u16string keyword);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

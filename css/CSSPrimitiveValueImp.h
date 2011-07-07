@@ -31,14 +31,14 @@ class CSSPrimitiveValueImp : public ObjectMixin<CSSPrimitiveValueImp, CSSValueIm
 {
 public:
     // CSSPrimitiveValue
-    unsigned short getPrimitiveType() __attribute__((weak));
-    void setFloatValue(unsigned short unitType, float floatValue) throw(DOMException) __attribute__((weak));
-    float getFloatValue(unsigned short unitType) throw(DOMException) __attribute__((weak));
-    void setStringValue(unsigned short stringType, std::u16string stringValue) throw(DOMException) __attribute__((weak));
-    std::u16string getStringValue() throw(DOMException) __attribute__((weak));
-    css::Counter getCounterValue() throw(DOMException) __attribute__((weak));
-    css::Rect getRectValue() throw(DOMException) __attribute__((weak));
-    css::RGBColor getRGBColorValue() throw(DOMException) __attribute__((weak));
+    unsigned short getPrimitiveType();
+    void setFloatValue(unsigned short unitType, float floatValue) throw(DOMException);
+    float getFloatValue(unsigned short unitType) throw(DOMException);
+    void setStringValue(unsigned short stringType, std::u16string stringValue) throw(DOMException);
+    std::u16string getStringValue() throw(DOMException);
+    css::Counter getCounterValue() throw(DOMException);
+    css::Rect getRectValue() throw(DOMException);
+    css::RGBColor getRGBColorValue() throw(DOMException);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

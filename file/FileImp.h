@@ -27,8 +27,8 @@ class FileImp : public ObjectMixin<FileImp, BlobImp>
 {
 public:
     // File
-    std::u16string getName() __attribute__((weak));
-    unsigned long long getLastModifiedDate() __attribute__((weak));
+    std::u16string getName();
+    unsigned long long getLastModifiedDate();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

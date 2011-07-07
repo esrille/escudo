@@ -24,8 +24,8 @@ class CSSIdentifierComponentValueImp : public ObjectMixin<CSSIdentifierComponent
 {
 public:
     // CSSIdentifierComponentValue
-    std::u16string getIdentifier() __attribute__((weak));
-    void setIdentifier(std::u16string identifier) __attribute__((weak));
+    std::u16string getIdentifier();
+    void setIdentifier(std::u16string identifier);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

@@ -33,8 +33,8 @@ public:
     NodeListImp(Node node);
 
     // NodeList
-    virtual Node item(unsigned int index) __attribute__((weak));
-    virtual unsigned int getLength() __attribute__((weak));
+    virtual Node item(unsigned int index);
+    virtual unsigned int getLength();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

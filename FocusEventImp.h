@@ -29,8 +29,8 @@ class FocusEventImp : public ObjectMixin<FocusEventImp, UIEventImp>
 {
 public:
     // FocusEvent
-    events::EventTarget getRelatedTarget() __attribute__((weak));
-    void initFocusEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, html::Window viewArg, int detailArg, events::EventTarget relatedTargetArg) __attribute__((weak));
+    events::EventTarget getRelatedTarget();
+    void initFocusEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, html::Window viewArg, int detailArg, events::EventTarget relatedTargetArg);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

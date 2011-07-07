@@ -66,16 +66,16 @@ public:
     void update(Document document);
 
     // History
-    int getLength() __attribute__((weak));
-    Any getState() __attribute__((weak));
-    void go() __attribute__((weak));
-    void go(int delta) __attribute__((weak));
-    void back() __attribute__((weak));
-    void forward() __attribute__((weak));
-    void pushState(Any data, std::u16string title) __attribute__((weak));
-    void pushState(Any data, std::u16string title, std::u16string url) __attribute__((weak));
-    void replaceState(Any data, std::u16string title) __attribute__((weak));
-    void replaceState(Any data, std::u16string title, std::u16string url) __attribute__((weak));
+    int getLength();
+    Any getState();
+    void go();
+    void go(int delta);
+    void back();
+    void forward();
+    void pushState(Any data, std::u16string title);
+    void pushState(Any data, std::u16string title, std::u16string url);
+    void replaceState(Any data, std::u16string title);
+    void replaceState(Any data, std::u16string title, std::u16string url);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

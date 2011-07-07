@@ -27,8 +27,8 @@ class HTMLTableHeaderCellElementImp : public ObjectMixin<HTMLTableHeaderCellElem
 {
 public:
     // HTMLTableHeaderCellElement
-    std::u16string getScope() __attribute__((weak));
-    void setScope(std::u16string scope) __attribute__((weak));
+    std::u16string getScope();
+    void setScope(std::u16string scope);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

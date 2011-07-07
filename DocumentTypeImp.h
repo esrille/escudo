@@ -41,9 +41,9 @@ public:
     virtual unsigned short getNodeType();
 
     // DocumentType
-    virtual std::u16string getName() __attribute__((weak));
-    virtual std::u16string getPublicId() __attribute__((weak));
-    virtual std::u16string getSystemId() __attribute__((weak));
+    virtual std::u16string getName();
+    virtual std::u16string getPublicId();
+    virtual std::u16string getSystemId();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

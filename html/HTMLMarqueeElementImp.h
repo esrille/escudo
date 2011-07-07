@@ -35,36 +35,36 @@ public:
     }
 
     // HTMLMarqueeElement
-    std::u16string getBehavior() __attribute__((weak));
-    void setBehavior(std::u16string behavior) __attribute__((weak));
-    std::u16string getBgColor() __attribute__((weak));
-    void setBgColor(std::u16string bgColor) __attribute__((weak));
-    std::u16string getDirection() __attribute__((weak));
-    void setDirection(std::u16string direction) __attribute__((weak));
-    std::u16string getHeight() __attribute__((weak));
-    void setHeight(std::u16string height) __attribute__((weak));
-    unsigned int getHspace() __attribute__((weak));
-    void setHspace(unsigned int hspace) __attribute__((weak));
-    int getLoop() __attribute__((weak));
-    void setLoop(int loop) __attribute__((weak));
-    unsigned int getScrollAmount() __attribute__((weak));
-    void setScrollAmount(unsigned int scrollAmount) __attribute__((weak));
-    unsigned int getScrollDelay() __attribute__((weak));
-    void setScrollDelay(unsigned int scrollDelay) __attribute__((weak));
-    bool getTrueSpeed() __attribute__((weak));
-    void setTrueSpeed(bool trueSpeed) __attribute__((weak));
-    unsigned int getVspace() __attribute__((weak));
-    void setVspace(unsigned int vspace) __attribute__((weak));
-    std::u16string getWidth() __attribute__((weak));
-    void setWidth(std::u16string width) __attribute__((weak));
-    html::Function getOnbounce() __attribute__((weak));
-    void setOnbounce(html::Function onbounce) __attribute__((weak));
-    html::Function getOnfinish() __attribute__((weak));
-    void setOnfinish(html::Function onfinish) __attribute__((weak));
-    html::Function getOnstart() __attribute__((weak));
-    void setOnstart(html::Function onstart) __attribute__((weak));
-    void start() __attribute__((weak));
-    void stop() __attribute__((weak));
+    std::u16string getBehavior();
+    void setBehavior(std::u16string behavior);
+    std::u16string getBgColor();
+    void setBgColor(std::u16string bgColor);
+    std::u16string getDirection();
+    void setDirection(std::u16string direction);
+    std::u16string getHeight();
+    void setHeight(std::u16string height);
+    unsigned int getHspace();
+    void setHspace(unsigned int hspace);
+    int getLoop();
+    void setLoop(int loop);
+    unsigned int getScrollAmount();
+    void setScrollAmount(unsigned int scrollAmount);
+    unsigned int getScrollDelay();
+    void setScrollDelay(unsigned int scrollDelay);
+    bool getTrueSpeed();
+    void setTrueSpeed(bool trueSpeed);
+    unsigned int getVspace();
+    void setVspace(unsigned int vspace);
+    std::u16string getWidth();
+    void setWidth(std::u16string width);
+    html::Function getOnbounce();
+    void setOnbounce(html::Function onbounce);
+    html::Function getOnfinish();
+    void setOnfinish(html::Function onfinish);
+    html::Function getOnstart();
+    void setOnstart(html::Function onstart);
+    void start();
+    void stop();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

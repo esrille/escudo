@@ -27,11 +27,11 @@ class CustomEventImp : public ObjectMixin<CustomEventImp, EventImp>
 {
 public:
     // CustomEvent
-    Object getDetail() __attribute__((weak));
-    void initCustomEvent(std::u16string type) __attribute__((weak));
-    void initCustomEvent(std::u16string type, bool bubbles) __attribute__((weak));
-    void initCustomEvent(std::u16string type, bool bubbles, bool cancelable) __attribute__((weak));
-    void initCustomEvent(std::u16string type, bool bubbles, bool cancelable, Object detail) __attribute__((weak));
+    Object getDetail();
+    void initCustomEvent(std::u16string type);
+    void initCustomEvent(std::u16string type, bool bubbles);
+    void initCustomEvent(std::u16string type, bool bubbles, bool cancelable);
+    void initCustomEvent(std::u16string type, bool bubbles, bool cancelable, Object detail);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

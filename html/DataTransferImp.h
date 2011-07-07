@@ -29,19 +29,19 @@ class DataTransferImp : public ObjectMixin<DataTransferImp>
 {
 public:
     // DataTransfer
-    std::u16string getDropEffect() __attribute__((weak));
-    void setDropEffect(std::u16string dropEffect) __attribute__((weak));
-    std::u16string getEffectAllowed() __attribute__((weak));
-    void setEffectAllowed(std::u16string effectAllowed) __attribute__((weak));
-    html::DataTransferItemList getItems() __attribute__((weak));
-    void setDragImage(Element image, int x, int y) __attribute__((weak));
-    void addElement(Element element) __attribute__((weak));
-    DOMStringList getTypes() __attribute__((weak));
-    std::u16string getData(std::u16string format) __attribute__((weak));
-    void setData(std::u16string format, std::u16string data) __attribute__((weak));
-    void clearData() __attribute__((weak));
-    void clearData(std::u16string format) __attribute__((weak));
-    file::FileList getFiles() __attribute__((weak));
+    std::u16string getDropEffect();
+    void setDropEffect(std::u16string dropEffect);
+    std::u16string getEffectAllowed();
+    void setEffectAllowed(std::u16string effectAllowed);
+    html::DataTransferItemList getItems();
+    void setDragImage(Element image, int x, int y);
+    void addElement(Element element);
+    DOMStringList getTypes();
+    std::u16string getData(std::u16string format);
+    void setData(std::u16string format, std::u16string data);
+    void clearData();
+    void clearData(std::u16string format);
+    file::FileList getFiles();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

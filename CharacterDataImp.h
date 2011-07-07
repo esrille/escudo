@@ -39,14 +39,14 @@ public:
     virtual void setTextContent(Nullable<std::u16string> textContent);
 
     // CharacterData
-    virtual std::u16string getData() __attribute__((weak));
-    virtual void setData(std::u16string data) __attribute__((weak));
-    virtual unsigned int getLength() __attribute__((weak));
-    virtual std::u16string substringData(unsigned int offset, unsigned int count) __attribute__((weak));
-    virtual void appendData(std::u16string data) __attribute__((weak));
-    virtual void insertData(unsigned int offset, std::u16string data) __attribute__((weak));
-    virtual void deleteData(unsigned int offset, unsigned int count) __attribute__((weak));
-    virtual void replaceData(unsigned int offset, unsigned int count, std::u16string data) __attribute__((weak));
+    virtual std::u16string getData();
+    virtual void setData(std::u16string data);
+    virtual unsigned int getLength();
+    virtual std::u16string substringData(unsigned int offset, unsigned int count);
+    virtual void appendData(std::u16string data);
+    virtual void insertData(unsigned int offset, std::u16string data);
+    virtual void deleteData(unsigned int offset, unsigned int count);
+    virtual void replaceData(unsigned int offset, unsigned int count, std::u16string data);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

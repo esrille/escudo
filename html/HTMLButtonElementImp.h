@@ -30,33 +30,33 @@ class HTMLButtonElementImp : public ObjectMixin<HTMLButtonElementImp, HTMLElemen
 {
 public:
     // HTMLButtonElement
-    bool getAutofocus() __attribute__((weak));
-    void setAutofocus(bool autofocus) __attribute__((weak));
-    bool getDisabled() __attribute__((weak));
-    void setDisabled(bool disabled) __attribute__((weak));
-    html::HTMLFormElement getForm() __attribute__((weak));
-    std::u16string getFormAction() __attribute__((weak));
-    void setFormAction(std::u16string formAction) __attribute__((weak));
-    std::u16string getFormEnctype() __attribute__((weak));
-    void setFormEnctype(std::u16string formEnctype) __attribute__((weak));
-    std::u16string getFormMethod() __attribute__((weak));
-    void setFormMethod(std::u16string formMethod) __attribute__((weak));
-    std::u16string getFormNoValidate() __attribute__((weak));
-    void setFormNoValidate(std::u16string formNoValidate) __attribute__((weak));
-    std::u16string getFormTarget() __attribute__((weak));
-    void setFormTarget(std::u16string formTarget) __attribute__((weak));
-    std::u16string getName() __attribute__((weak));
-    void setName(std::u16string name) __attribute__((weak));
-    std::u16string getType() __attribute__((weak));
-    void setType(std::u16string type) __attribute__((weak));
-    std::u16string getValue() __attribute__((weak));
-    void setValue(std::u16string value) __attribute__((weak));
-    bool getWillValidate() __attribute__((weak));
-    html::ValidityState getValidity() __attribute__((weak));
-    std::u16string getValidationMessage() __attribute__((weak));
-    bool checkValidity() __attribute__((weak));
-    void setCustomValidity(std::u16string error) __attribute__((weak));
-    NodeList getLabels() __attribute__((weak));
+    bool getAutofocus();
+    void setAutofocus(bool autofocus);
+    bool getDisabled();
+    void setDisabled(bool disabled);
+    html::HTMLFormElement getForm();
+    std::u16string getFormAction();
+    void setFormAction(std::u16string formAction);
+    std::u16string getFormEnctype();
+    void setFormEnctype(std::u16string formEnctype);
+    std::u16string getFormMethod();
+    void setFormMethod(std::u16string formMethod);
+    std::u16string getFormNoValidate();
+    void setFormNoValidate(std::u16string formNoValidate);
+    std::u16string getFormTarget();
+    void setFormTarget(std::u16string formTarget);
+    std::u16string getName();
+    void setName(std::u16string name);
+    std::u16string getType();
+    void setType(std::u16string type);
+    std::u16string getValue();
+    void setValue(std::u16string value);
+    bool getWillValidate();
+    html::ValidityState getValidity();
+    std::u16string getValidationMessage();
+    bool checkValidity();
+    void setCustomValidity(std::u16string error);
+    NodeList getLabels();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

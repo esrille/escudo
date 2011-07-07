@@ -43,11 +43,11 @@ public:
     virtual unsigned short getType();
 
     // CSSMediaRule
-    stylesheets::MediaList getMedia() __attribute__((weak));
-    void setMedia(std::u16string media) __attribute__((weak));
-    css::CSSRuleList getCssRules() __attribute__((weak));
-    unsigned int insertRule(std::u16string rule, unsigned int index) __attribute__((weak));
-    void deleteRule(unsigned int index) __attribute__((weak));
+    stylesheets::MediaList getMedia();
+    void setMedia(std::u16string media);
+    css::CSSRuleList getCssRules();
+    unsigned int insertRule(std::u16string rule, unsigned int index);
+    void deleteRule(unsigned int index);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

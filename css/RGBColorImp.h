@@ -26,9 +26,9 @@ class RGBColorImp : public ObjectMixin<RGBColorImp>
 {
 public:
     // RGBColor
-    css::CSSPrimitiveValue getRed() __attribute__((weak));
-    css::CSSPrimitiveValue getGreen() __attribute__((weak));
-    css::CSSPrimitiveValue getBlue() __attribute__((weak));
+    css::CSSPrimitiveValue getRed();
+    css::CSSPrimitiveValue getGreen();
+    css::CSSPrimitiveValue getBlue();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

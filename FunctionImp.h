@@ -24,7 +24,7 @@ class FunctionImp : public ObjectMixin<FunctionImp>
 {
 public:
     // Function
-    Any call(Variadic<Any> arguments = Variadic<Any>()) __attribute__((weak));
+    Any call(Variadic<Any> arguments = Variadic<Any>());
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

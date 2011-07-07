@@ -28,20 +28,20 @@ class NavigatorImp : public ObjectMixin<NavigatorImp>
 public:
     // Navigator
     // NavigatorID
-    std::u16string getAppName() __attribute__((weak));
-    std::u16string getAppVersion() __attribute__((weak));
-    std::u16string getPlatform() __attribute__((weak));
-    std::u16string getUserAgent() __attribute__((weak));
+    std::u16string getAppName();
+    std::u16string getAppVersion();
+    std::u16string getPlatform();
+    std::u16string getUserAgent();
     // NavigatorOnLine
-    bool getOnLine() __attribute__((weak));
+    bool getOnLine();
     // NavigatorContentUtils
-    void registerProtocolHandler(std::u16string scheme, std::u16string url, std::u16string title) __attribute__((weak));
-    void registerContentHandler(std::u16string mimeType, std::u16string url, std::u16string title) __attribute__((weak));
+    void registerProtocolHandler(std::u16string scheme, std::u16string url, std::u16string title);
+    void registerContentHandler(std::u16string mimeType, std::u16string url, std::u16string title);
     // NavigatorStorageUtils
-    void yieldForStorageUpdates() __attribute__((weak));
+    void yieldForStorageUpdates();
     // NavigatorUserMedia
-    void getUserMedia(std::u16string options, html::NavigatorUserMediaSuccessCallback successCallback) __attribute__((weak));
-    void getUserMedia(std::u16string options, html::NavigatorUserMediaSuccessCallback successCallback, html::NavigatorUserMediaErrorCallback errorCallback) __attribute__((weak));
+    void getUserMedia(std::u16string options, html::NavigatorUserMediaSuccessCallback successCallback);
+    void getUserMedia(std::u16string options, html::NavigatorUserMediaSuccessCallback successCallback, html::NavigatorUserMediaErrorCallback errorCallback);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

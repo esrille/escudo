@@ -26,10 +26,10 @@ class StyleMediaImp : public ObjectMixin<StyleMediaImp>
 {
 public:
     // StyleMedia
-    std::u16string getType() __attribute__((weak));
-    bool matchMedia(std::u16string mq_list) __attribute__((weak));
-    void addMediaListener(std::u16string mq_list, html::BooleanCallback mq_callback) __attribute__((weak));
-    void removeMediaListener(std::u16string mq_list, html::BooleanCallback mq_callback) __attribute__((weak));
+    std::u16string getType();
+    bool matchMedia(std::u16string mq_list);
+    void addMediaListener(std::u16string mq_list, html::BooleanCallback mq_callback);
+    void removeMediaListener(std::u16string mq_list, html::BooleanCallback mq_callback);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

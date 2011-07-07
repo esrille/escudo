@@ -27,12 +27,12 @@ class DataTransferItemListImp : public ObjectMixin<DataTransferItemListImp>
 {
 public:
     // DataTransferItemList
-    unsigned int getLength() __attribute__((weak));
-    html::DataTransferItem getElement(unsigned int index) __attribute__((weak));
-    void deleteElement(unsigned int index) __attribute__((weak));
-    void clear() __attribute__((weak));
-    html::DataTransferItem add(std::u16string data, std::u16string type) __attribute__((weak));
-    html::DataTransferItem add(file::File data) __attribute__((weak));
+    unsigned int getLength();
+    html::DataTransferItem getElement(unsigned int index);
+    void deleteElement(unsigned int index);
+    void clear();
+    html::DataTransferItem add(std::u16string data, std::u16string type);
+    html::DataTransferItem add(file::File data);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

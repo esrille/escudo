@@ -27,7 +27,7 @@ class DocumentCSSImp : public ObjectMixin<DocumentCSSImp>
 {
 public:
     // DocumentCSS
-    css::CSSStyleDeclaration getOverrideStyle(Element elt, Nullable<std::u16string> pseudoElt) __attribute__((weak));
+    css::CSSStyleDeclaration getOverrideStyle(Element elt, Nullable<std::u16string> pseudoElt);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

@@ -27,8 +27,8 @@ class CSSNamespaceRuleImp : public ObjectMixin<CSSNamespaceRuleImp, CSSRuleImp>
 {
 public:
     // CSSNamespaceRule
-    std::u16string getNamespaceURI() __attribute__((weak));
-    Nullable<std::u16string> getPrefix() __attribute__((weak));
+    std::u16string getNamespaceURI();
+    Nullable<std::u16string> getPrefix();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

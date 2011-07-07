@@ -31,22 +31,22 @@ class HTMLOutputElementImp : public ObjectMixin<HTMLOutputElementImp, HTMLElemen
 {
 public:
     // HTMLOutputElement
-    DOMSettableTokenList getHtmlFor() __attribute__((weak));
-    void setHtmlFor(std::u16string htmlFor) __attribute__((weak));
-    html::HTMLFormElement getForm() __attribute__((weak));
-    std::u16string getName() __attribute__((weak));
-    void setName(std::u16string name) __attribute__((weak));
-    std::u16string getType() __attribute__((weak));
-    std::u16string getDefaultValue() __attribute__((weak));
-    void setDefaultValue(std::u16string defaultValue) __attribute__((weak));
-    std::u16string getValue() __attribute__((weak));
-    void setValue(std::u16string value) __attribute__((weak));
-    bool getWillValidate() __attribute__((weak));
-    html::ValidityState getValidity() __attribute__((weak));
-    std::u16string getValidationMessage() __attribute__((weak));
-    bool checkValidity() __attribute__((weak));
-    void setCustomValidity(std::u16string error) __attribute__((weak));
-    NodeList getLabels() __attribute__((weak));
+    DOMSettableTokenList getHtmlFor();
+    void setHtmlFor(std::u16string htmlFor);
+    html::HTMLFormElement getForm();
+    std::u16string getName();
+    void setName(std::u16string name);
+    std::u16string getType();
+    std::u16string getDefaultValue();
+    void setDefaultValue(std::u16string defaultValue);
+    std::u16string getValue();
+    void setValue(std::u16string value);
+    bool getWillValidate();
+    html::ValidityState getValidity();
+    std::u16string getValidationMessage();
+    bool checkValidity();
+    void setCustomValidity(std::u16string error);
+    NodeList getLabels();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

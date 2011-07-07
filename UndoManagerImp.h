@@ -24,13 +24,13 @@ class UndoManagerImp : public ObjectMixin<UndoManagerImp>
 {
 public:
     // UndoManager
-    unsigned int getLength() __attribute__((weak));
-    Any item(unsigned int index) __attribute__((weak));
-    unsigned int getPosition() __attribute__((weak));
-    unsigned int add(Any data, std::u16string title) __attribute__((weak));
-    void remove(unsigned int index) __attribute__((weak));
-    void clearUndo() __attribute__((weak));
-    void clearRedo() __attribute__((weak));
+    unsigned int getLength();
+    Any item(unsigned int index);
+    unsigned int getPosition();
+    unsigned int add(Any data, std::u16string title);
+    void remove(unsigned int index);
+    void clearUndo();
+    void clearRedo();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

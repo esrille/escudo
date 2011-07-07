@@ -27,11 +27,11 @@ class ProgressEventImp : public ObjectMixin<ProgressEventImp, EventImp>
 {
 public:
     // ProgressEvent
-    bool getLengthComputable() __attribute__((weak));
-    unsigned int getLoaded() __attribute__((weak));
-    unsigned int getTotal() __attribute__((weak));
-    void initProgressEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, bool lengthComputableArg, unsigned int loadedArg, unsigned int totalArg) __attribute__((weak));
-    void initProgressEventNS(std::u16string namespaceURI, std::u16string typeArg, bool canBubbleArg, bool cancelableArg, bool lengthComputableArg, unsigned int loadedArg, unsigned int totalArg) __attribute__((weak));
+    bool getLengthComputable();
+    unsigned int getLoaded();
+    unsigned int getTotal();
+    void initProgressEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, bool lengthComputableArg, unsigned int loadedArg, unsigned int totalArg);
+    void initProgressEventNS(std::u16string namespaceURI, std::u16string typeArg, bool canBubbleArg, bool cancelableArg, bool lengthComputableArg, unsigned int loadedArg, unsigned int totalArg);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

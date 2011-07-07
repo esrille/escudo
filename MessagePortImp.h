@@ -29,18 +29,18 @@ class MessagePortImp : public ObjectMixin<MessagePortImp>
 {
 public:
     // MessagePort
-    void postMessage(Any message) __attribute__((weak));
-    void postMessage(Any message, Sequence<html::Transferable> transfer) __attribute__((weak));
-    void start() __attribute__((weak));
-    void close() __attribute__((weak));
-    html::Function getOnmessage() __attribute__((weak));
-    void setOnmessage(html::Function onmessage) __attribute__((weak));
+    void postMessage(Any message);
+    void postMessage(Any message, Sequence<html::Transferable> transfer);
+    void start();
+    void close();
+    html::Function getOnmessage();
+    void setOnmessage(html::Function onmessage);
     // EventTarget
-    void addEventListener(std::u16string type, events::EventListener listener) __attribute__((weak));
-    void addEventListener(std::u16string type, events::EventListener listener, bool capture) __attribute__((weak));
-    void removeEventListener(std::u16string type, events::EventListener listener) __attribute__((weak));
-    void removeEventListener(std::u16string type, events::EventListener listener, bool capture) __attribute__((weak));
-    bool dispatchEvent(events::Event event) __attribute__((weak));
+    void addEventListener(std::u16string type, events::EventListener listener);
+    void addEventListener(std::u16string type, events::EventListener listener, bool capture);
+    void removeEventListener(std::u16string type, events::EventListener listener);
+    void removeEventListener(std::u16string type, events::EventListener listener, bool capture);
+    bool dispatchEvent(events::Event event);
     // Transferable
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)

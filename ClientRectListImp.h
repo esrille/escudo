@@ -26,8 +26,8 @@ class ClientRectListImp : public ObjectMixin<ClientRectListImp>
 {
 public:
     // ClientRectList
-    unsigned int getLength() __attribute__((weak));
-    views::ClientRect item(unsigned int index) __attribute__((weak));
+    unsigned int getLength();
+    views::ClientRect item(unsigned int index);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

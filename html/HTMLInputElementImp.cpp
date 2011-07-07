@@ -157,6 +157,17 @@ void HTMLInputElementImp::setChecked(bool checked)
     // TODO: implement me!
 }
 
+std::u16string HTMLInputElementImp::getDirName()
+{
+    // TODO: implement me!
+    return u"";
+}
+
+void HTMLInputElementImp::setDirName(std::u16string dirName)
+{
+    // TODO: implement me!
+}
+
 bool HTMLInputElementImp::getDisabled()
 {
     // TODO: implement me!
@@ -551,7 +562,23 @@ void HTMLInputElementImp::setSelectionEnd(unsigned int selectionEnd)
     // TODO: implement me!
 }
 
+std::u16string HTMLInputElementImp::getSelectionDirection()
+{
+    // TODO: implement me!
+    return u"";
+}
+
+void HTMLInputElementImp::setSelectionDirection(std::u16string selectionDirection)
+{
+    // TODO: implement me!
+}
+
 void HTMLInputElementImp::setSelectionRange(unsigned int start, unsigned int end)
+{
+    // TODO: implement me!
+}
+
+void HTMLInputElementImp::setSelectionRange(unsigned int start, unsigned int end, std::u16string direction)
 {
     // TODO: implement me!
 }

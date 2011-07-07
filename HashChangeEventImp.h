@@ -27,9 +27,9 @@ class HashChangeEventImp : public ObjectMixin<HashChangeEventImp, EventImp>
 {
 public:
     // HashChangeEvent
-    Any getOldURL() __attribute__((weak));
-    Any getNewURL() __attribute__((weak));
-    void initHashChangeEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, std::u16string oldURLArg, std::u16string newURLArg) __attribute__((weak));
+    Any getOldURL();
+    Any getNewURL();
+    void initHashChangeEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, std::u16string oldURLArg, std::u16string newURLArg);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

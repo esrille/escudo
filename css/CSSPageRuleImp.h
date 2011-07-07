@@ -28,9 +28,9 @@ class CSSPageRuleImp : public ObjectMixin<CSSPageRuleImp, CSSRuleImp>
 {
 public:
     // CSSPageRule
-    std::u16string getSelectorText() __attribute__((weak));
-    void setSelectorText(std::u16string selectorText) __attribute__((weak));
-    css::CSSStyleDeclaration getStyle() __attribute__((weak));
+    std::u16string getSelectorText();
+    void setSelectorText(std::u16string selectorText);
+    css::CSSStyleDeclaration getStyle();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

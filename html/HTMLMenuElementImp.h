@@ -27,13 +27,13 @@ class HTMLMenuElementImp : public ObjectMixin<HTMLMenuElementImp, HTMLElementImp
 {
 public:
     // HTMLMenuElement
-    std::u16string getType() __attribute__((weak));
-    void setType(std::u16string type) __attribute__((weak));
-    Nullable<std::u16string> getLabel() __attribute__((weak));
-    void setLabel(Nullable<std::u16string> label) __attribute__((weak));
+    std::u16string getType();
+    void setType(std::u16string type);
+    Nullable<std::u16string> getLabel();
+    void setLabel(Nullable<std::u16string> label);
     // HTMLMenuElement-22
-    bool getCompact() __attribute__((weak));
-    void setCompact(bool compact) __attribute__((weak));
+    bool getCompact();
+    void setCompact(bool compact);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

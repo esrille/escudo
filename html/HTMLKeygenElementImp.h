@@ -30,24 +30,24 @@ class HTMLKeygenElementImp : public ObjectMixin<HTMLKeygenElementImp, HTMLElemen
 {
 public:
     // HTMLKeygenElement
-    bool getAutofocus() __attribute__((weak));
-    void setAutofocus(bool autofocus) __attribute__((weak));
-    std::u16string getChallenge() __attribute__((weak));
-    void setChallenge(std::u16string challenge) __attribute__((weak));
-    bool getDisabled() __attribute__((weak));
-    void setDisabled(bool disabled) __attribute__((weak));
-    html::HTMLFormElement getForm() __attribute__((weak));
-    std::u16string getKeytype() __attribute__((weak));
-    void setKeytype(std::u16string keytype) __attribute__((weak));
-    std::u16string getName() __attribute__((weak));
-    void setName(std::u16string name) __attribute__((weak));
-    std::u16string getType() __attribute__((weak));
-    bool getWillValidate() __attribute__((weak));
-    html::ValidityState getValidity() __attribute__((weak));
-    std::u16string getValidationMessage() __attribute__((weak));
-    bool checkValidity() __attribute__((weak));
-    void setCustomValidity(std::u16string error) __attribute__((weak));
-    NodeList getLabels() __attribute__((weak));
+    bool getAutofocus();
+    void setAutofocus(bool autofocus);
+    std::u16string getChallenge();
+    void setChallenge(std::u16string challenge);
+    bool getDisabled();
+    void setDisabled(bool disabled);
+    html::HTMLFormElement getForm();
+    std::u16string getKeytype();
+    void setKeytype(std::u16string keytype);
+    std::u16string getName();
+    void setName(std::u16string name);
+    std::u16string getType();
+    bool getWillValidate();
+    html::ValidityState getValidity();
+    std::u16string getValidationMessage();
+    bool checkValidity();
+    void setCustomValidity(std::u16string error);
+    NodeList getLabels();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

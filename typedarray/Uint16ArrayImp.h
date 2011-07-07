@@ -29,14 +29,14 @@ class Uint16ArrayImp : public ObjectMixin<Uint16ArrayImp, ArrayBufferViewImp>
 {
 public:
     // Uint16Array
-    unsigned int getLength() __attribute__((weak));
-    unsigned short get(unsigned int index) __attribute__((weak));
-    void set(unsigned int index, unsigned short value) __attribute__((weak));
-    void set(typedarray::Uint16Array array) __attribute__((weak));
-    void set(typedarray::Uint16Array array, unsigned int offset) __attribute__((weak));
-    void set(ObjectArray<unsigned short> array) __attribute__((weak));
-    void set(ObjectArray<unsigned short> array, unsigned int offset) __attribute__((weak));
-    typedarray::Uint16Array subarray(int start, int end) __attribute__((weak));
+    unsigned int getLength();
+    unsigned short get(unsigned int index);
+    void set(unsigned int index, unsigned short value);
+    void set(typedarray::Uint16Array array);
+    void set(typedarray::Uint16Array array, unsigned int offset);
+    void set(ObjectArray<unsigned short> array);
+    void set(ObjectArray<unsigned short> array, unsigned int offset);
+    typedarray::Uint16Array subarray(int start, int end);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

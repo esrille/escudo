@@ -26,9 +26,9 @@ class ArrayBufferViewImp : public ObjectMixin<ArrayBufferViewImp>
 {
 public:
     // ArrayBufferView
-    typedarray::ArrayBuffer getBuffer() __attribute__((weak));
-    unsigned int getByteOffset() __attribute__((weak));
-    unsigned int getByteLength() __attribute__((weak));
+    typedarray::ArrayBuffer getBuffer();
+    unsigned int getByteOffset();
+    unsigned int getByteLength();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

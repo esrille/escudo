@@ -27,8 +27,8 @@ class RadioNodeListImp : public ObjectMixin<RadioNodeListImp, NodeListImp>
 {
 public:
     // RadioNodeList
-    std::u16string getValue() __attribute__((weak));
-    void setValue(std::u16string value) __attribute__((weak));
+    std::u16string getValue();
+    void setValue(std::u16string value);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

@@ -24,7 +24,7 @@ class TextMetricsImp : public ObjectMixin<TextMetricsImp>
 {
 public:
     // TextMetrics
-    float getWidth() __attribute__((weak));
+    float getWidth();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

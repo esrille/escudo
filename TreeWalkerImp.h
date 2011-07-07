@@ -28,19 +28,19 @@ class TreeWalkerImp : public ObjectMixin<TreeWalkerImp>
 {
 public:
     // TreeWalker
-    Node getRoot() __attribute__((weak));
-    unsigned int getWhatToShow() __attribute__((weak));
-    traversal::NodeFilter getFilter() __attribute__((weak));
-    bool getExpandEntityReferences() __attribute__((weak));
-    Node getCurrentNode() __attribute__((weak));
-    void setCurrentNode(Node currentNode) throw(DOMException) __attribute__((weak));
-    Node parentNode() __attribute__((weak));
-    Node firstChild() __attribute__((weak));
-    Node lastChild() __attribute__((weak));
-    Node previousSibling() __attribute__((weak));
-    Node nextSibling() __attribute__((weak));
-    Node previousNode() __attribute__((weak));
-    Node nextNode() __attribute__((weak));
+    Node getRoot();
+    unsigned int getWhatToShow();
+    traversal::NodeFilter getFilter();
+    bool getExpandEntityReferences();
+    Node getCurrentNode();
+    void setCurrentNode(Node currentNode) throw(DOMException);
+    Node parentNode();
+    Node firstChild();
+    Node lastChild();
+    Node previousSibling();
+    Node nextSibling();
+    Node previousNode();
+    Node nextNode();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

@@ -28,19 +28,19 @@ class HTMLTableSectionElementImp : public ObjectMixin<HTMLTableSectionElementImp
 {
 public:
     // HTMLTableSectionElement
-    html::HTMLCollection getRows() __attribute__((weak));
-    html::HTMLElement insertRow() __attribute__((weak));
-    html::HTMLElement insertRow(int index) __attribute__((weak));
-    void deleteRow(int index) __attribute__((weak));
+    html::HTMLCollection getRows();
+    html::HTMLElement insertRow();
+    html::HTMLElement insertRow(int index);
+    void deleteRow(int index);
     // HTMLTableSectionElement-31
-    std::u16string getAlign() __attribute__((weak));
-    void setAlign(std::u16string align) __attribute__((weak));
-    std::u16string getCh() __attribute__((weak));
-    void setCh(std::u16string ch) __attribute__((weak));
-    std::u16string getChOff() __attribute__((weak));
-    void setChOff(std::u16string chOff) __attribute__((weak));
-    std::u16string getVAlign() __attribute__((weak));
-    void setVAlign(std::u16string vAlign) __attribute__((weak));
+    std::u16string getAlign();
+    void setAlign(std::u16string align);
+    std::u16string getCh();
+    void setCh(std::u16string ch);
+    std::u16string getChOff();
+    void setChOff(std::u16string chOff);
+    std::u16string getVAlign();
+    void setVAlign(std::u16string vAlign);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

@@ -27,10 +27,10 @@ class HTMLModElementImp : public ObjectMixin<HTMLModElementImp, HTMLElementImp>
 {
 public:
     // HTMLModElement
-    std::u16string getCite() __attribute__((weak));
-    void setCite(std::u16string cite) __attribute__((weak));
-    std::u16string getDateTime() __attribute__((weak));
-    void setDateTime(std::u16string dateTime) __attribute__((weak));
+    std::u16string getCite();
+    void setCite(std::u16string cite);
+    std::u16string getDateTime();
+    void setDateTime(std::u16string dateTime);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

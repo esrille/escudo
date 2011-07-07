@@ -28,10 +28,10 @@ class HTMLUListElementImp : public ObjectMixin<HTMLUListElementImp, HTMLElementI
 public:
     // HTMLUListElement
     // HTMLUListElement-34
-    bool getCompact() __attribute__((weak));
-    void setCompact(bool compact) __attribute__((weak));
-    std::u16string getType() __attribute__((weak));
-    void setType(std::u16string type) __attribute__((weak));
+    bool getCompact();
+    void setCompact(bool compact);
+    std::u16string getType();
+    void setType(std::u16string type);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

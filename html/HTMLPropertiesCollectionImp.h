@@ -29,8 +29,8 @@ class HTMLPropertiesCollectionImp : public ObjectMixin<HTMLPropertiesCollectionI
 {
 public:
     // HTMLPropertiesCollection
-    html::PropertyNodeList namedItem(std::u16string name) __attribute__((weak));
-    DOMStringList getNames() __attribute__((weak));
+    html::PropertyNodeList namedItem(std::u16string name);
+    DOMStringList getNames();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

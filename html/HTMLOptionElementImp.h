@@ -29,20 +29,20 @@ class HTMLOptionElementImp : public ObjectMixin<HTMLOptionElementImp, HTMLElemen
 {
 public:
     // HTMLOptionElement
-    bool getDisabled() __attribute__((weak));
-    void setDisabled(bool disabled) __attribute__((weak));
-    html::HTMLFormElement getForm() __attribute__((weak));
-    Nullable<std::u16string> getLabel() __attribute__((weak));
-    void setLabel(Nullable<std::u16string> label) __attribute__((weak));
-    bool getDefaultSelected() __attribute__((weak));
-    void setDefaultSelected(bool defaultSelected) __attribute__((weak));
-    bool getSelected() __attribute__((weak));
-    void setSelected(bool selected) __attribute__((weak));
-    std::u16string getValue() __attribute__((weak));
-    void setValue(std::u16string value) __attribute__((weak));
-    std::u16string getText() __attribute__((weak));
-    void setText(std::u16string text) __attribute__((weak));
-    int getIndex() __attribute__((weak));
+    bool getDisabled();
+    void setDisabled(bool disabled);
+    html::HTMLFormElement getForm();
+    Nullable<std::u16string> getLabel();
+    void setLabel(Nullable<std::u16string> label);
+    bool getDefaultSelected();
+    void setDefaultSelected(bool defaultSelected);
+    bool getSelected();
+    void setSelected(bool selected);
+    std::u16string getValue();
+    void setValue(std::u16string value);
+    std::u16string getText();
+    void setText(std::u16string text);
+    int getIndex();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

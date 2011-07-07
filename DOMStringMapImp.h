@@ -24,10 +24,10 @@ class DOMStringMapImp : public ObjectMixin<DOMStringMapImp>
 {
 public:
     // DOMStringMap
-    std::u16string getElement(std::u16string name) __attribute__((weak));
-    void setElement(std::u16string name, std::u16string value) __attribute__((weak));
-    void createElement(std::u16string name, std::u16string value) __attribute__((weak));
-    void deleteElement(std::u16string name) __attribute__((weak));
+    std::u16string getElement(std::u16string name);
+    void setElement(std::u16string name, std::u16string value);
+    void createElement(std::u16string name, std::u16string value);
+    void deleteElement(std::u16string name);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

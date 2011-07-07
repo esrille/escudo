@@ -29,11 +29,11 @@ class WheelEventImp : public ObjectMixin<WheelEventImp, MouseEventImp>
 {
 public:
     // WheelEvent
-    int getDeltaX() __attribute__((weak));
-    int getDeltaY() __attribute__((weak));
-    int getDeltaZ() __attribute__((weak));
-    unsigned int getDeltaMode() __attribute__((weak));
-    void initWheelEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, html::Window viewArg, int detailArg, int screenXArg, int screenYArg, int clientXArg, int clientYArg, unsigned short buttonArg, events::EventTarget relatedTargetArg, std::u16string modifiersListArg, int deltaXArg, int deltaYArg, int deltaZArg, unsigned int deltaMode) __attribute__((weak));
+    int getDeltaX();
+    int getDeltaY();
+    int getDeltaZ();
+    unsigned int getDeltaMode();
+    void initWheelEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, html::Window viewArg, int detailArg, int screenXArg, int screenYArg, int clientXArg, int clientYArg, unsigned short buttonArg, events::EventTarget relatedTargetArg, std::u16string modifiersListArg, int deltaXArg, int deltaYArg, int deltaZArg, unsigned int deltaMode);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

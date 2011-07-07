@@ -28,11 +28,11 @@ class FileReaderSyncImp : public ObjectMixin<FileReaderSyncImp>
 {
 public:
     // FileReaderSync
-    typedarray::ArrayBuffer readAsArrayBuffer(file::Blob blob) __attribute__((weak));
-    std::u16string readAsBinaryString(file::Blob blob) __attribute__((weak));
-    std::u16string readAsText(file::Blob blob) __attribute__((weak));
-    std::u16string readAsText(file::Blob blob, std::u16string encoding) __attribute__((weak));
-    std::u16string readAsDataURL(file::Blob blob) __attribute__((weak));
+    typedarray::ArrayBuffer readAsArrayBuffer(file::Blob blob);
+    std::u16string readAsBinaryString(file::Blob blob);
+    std::u16string readAsText(file::Blob blob);
+    std::u16string readAsText(file::Blob blob, std::u16string encoding);
+    std::u16string readAsDataURL(file::Blob blob);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

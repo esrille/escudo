@@ -26,8 +26,8 @@ class FileListImp : public ObjectMixin<FileListImp>
 {
 public:
     // FileList
-    file::File item(unsigned int index) __attribute__((weak));
-    unsigned int getLength() __attribute__((weak));
+    file::File item(unsigned int index);
+    unsigned int getLength();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

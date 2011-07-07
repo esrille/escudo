@@ -26,7 +26,7 @@ class DocumentRangeImp : public ObjectMixin<DocumentRangeImp>
 {
 public:
     // DocumentRange
-    ranges::Range createRange() __attribute__((weak));
+    ranges::Range createRange();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

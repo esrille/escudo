@@ -87,33 +87,33 @@ public:
     }
 
     // Node
-    virtual unsigned short getNodeType() __attribute__((weak));
-    virtual std::u16string getNodeName() __attribute__((weak));
-    virtual Nullable<std::u16string> getBaseURI() __attribute__((weak));
-    virtual Document getOwnerDocument() __attribute__((weak));
-    virtual Node getParentNode() __attribute__((weak));
-    virtual Element getParentElement() __attribute__((weak));
-    virtual bool hasChildNodes() __attribute__((weak));
-    virtual NodeList getChildNodes() __attribute__((weak));
-    virtual Node getFirstChild() __attribute__((weak));
-    virtual Node getLastChild() __attribute__((weak));
-    virtual Node getPreviousSibling() __attribute__((weak));
-    virtual Node getNextSibling() __attribute__((weak));
-    virtual unsigned short compareDocumentPosition(Node other) __attribute__((weak));
-    virtual Nullable<std::u16string> getNodeValue() __attribute__((weak));
-    virtual void setNodeValue(Nullable<std::u16string> nodeValue) __attribute__((weak));
-    virtual Nullable<std::u16string> getTextContent() __attribute__((weak));
-    virtual void setTextContent(Nullable<std::u16string> textContent) __attribute__((weak));
-    virtual Node insertBefore(Node newChild, Node refChild) __attribute__((weak));
-    virtual Node replaceChild(Node newChild, Node oldChild) __attribute__((weak));
-    virtual Node removeChild(Node oldChild) __attribute__((weak));
-    virtual Node appendChild(Node newChild) __attribute__((weak));
-    virtual Node cloneNode(bool deep) __attribute__((weak));
-    virtual bool isSameNode(Node node) __attribute__((weak));
-    virtual bool isEqualNode(Node node) __attribute__((weak));
-    virtual std::u16string lookupPrefix(std::u16string _namespace) __attribute__((weak));
-    virtual std::u16string lookupNamespaceURI(Nullable<std::u16string> prefix) __attribute__((weak));
-    virtual bool isDefaultNamespace(std::u16string _namespace) __attribute__((weak));
+    virtual unsigned short getNodeType();
+    virtual std::u16string getNodeName();
+    virtual Nullable<std::u16string> getBaseURI();
+    virtual Document getOwnerDocument();
+    virtual Node getParentNode();
+    virtual Element getParentElement();
+    virtual bool hasChildNodes();
+    virtual NodeList getChildNodes();
+    virtual Node getFirstChild();
+    virtual Node getLastChild();
+    virtual Node getPreviousSibling();
+    virtual Node getNextSibling();
+    virtual unsigned short compareDocumentPosition(Node other);
+    virtual Nullable<std::u16string> getNodeValue();
+    virtual void setNodeValue(Nullable<std::u16string> nodeValue);
+    virtual Nullable<std::u16string> getTextContent();
+    virtual void setTextContent(Nullable<std::u16string> textContent);
+    virtual Node insertBefore(Node newChild, Node refChild);
+    virtual Node replaceChild(Node newChild, Node oldChild);
+    virtual Node removeChild(Node oldChild);
+    virtual Node appendChild(Node newChild);
+    virtual Node cloneNode(bool deep);
+    virtual bool isSameNode(Node node);
+    virtual bool isEqualNode(Node node);
+    virtual std::u16string lookupPrefix(std::u16string _namespace);
+    virtual std::u16string lookupNamespaceURI(Nullable<std::u16string> prefix);
+    virtual bool isDefaultNamespace(std::u16string _namespace);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

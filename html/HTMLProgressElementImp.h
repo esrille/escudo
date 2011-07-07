@@ -29,13 +29,13 @@ class HTMLProgressElementImp : public ObjectMixin<HTMLProgressElementImp, HTMLEl
 {
 public:
     // HTMLProgressElement
-    float getValue() __attribute__((weak));
-    void setValue(float value) __attribute__((weak));
-    float getMax() __attribute__((weak));
-    void setMax(float max) __attribute__((weak));
-    float getPosition() __attribute__((weak));
-    html::HTMLFormElement getForm() __attribute__((weak));
-    NodeList getLabels() __attribute__((weak));
+    float getValue();
+    void setValue(float value);
+    float getMax();
+    void setMax(float max);
+    float getPosition();
+    html::HTMLFormElement getForm();
+    NodeList getLabels();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

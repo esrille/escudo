@@ -39,40 +39,40 @@ public:
     }
 
     // HTMLSelectElement
-    bool getAutofocus() __attribute__((weak));
-    void setAutofocus(bool autofocus) __attribute__((weak));
-    bool getDisabled() __attribute__((weak));
-    void setDisabled(bool disabled) __attribute__((weak));
-    html::HTMLFormElement getForm() __attribute__((weak));
-    bool getMultiple() __attribute__((weak));
-    void setMultiple(bool multiple) __attribute__((weak));
-    std::u16string getName() __attribute__((weak));
-    void setName(std::u16string name) __attribute__((weak));
-    bool getRequired() __attribute__((weak));
-    void setRequired(bool required) __attribute__((weak));
-    unsigned int getSize() __attribute__((weak));
-    void setSize(unsigned int size) __attribute__((weak));
-    std::u16string getType() __attribute__((weak));
-    html::HTMLOptionsCollection getOptions() __attribute__((weak));
-    unsigned int getLength() __attribute__((weak));
-    void setLength(unsigned int length) __attribute__((weak));
-    Any item(unsigned int index) __attribute__((weak));
-    Any namedItem(std::u16string name) __attribute__((weak));
-    void add(html::HTMLElement element) __attribute__((weak));
-    void add(html::HTMLElement element, html::HTMLElement before) __attribute__((weak));
-    void add(html::HTMLElement element, int before) __attribute__((weak));
-    void remove(int index) __attribute__((weak));
-    html::HTMLCollection getSelectedOptions() __attribute__((weak));
-    int getSelectedIndex() __attribute__((weak));
-    void setSelectedIndex(int selectedIndex) __attribute__((weak));
-    std::u16string getValue() __attribute__((weak));
-    void setValue(std::u16string value) __attribute__((weak));
-    bool getWillValidate() __attribute__((weak));
-    html::ValidityState getValidity() __attribute__((weak));
-    std::u16string getValidationMessage() __attribute__((weak));
-    bool checkValidity() __attribute__((weak));
-    void setCustomValidity(std::u16string error) __attribute__((weak));
-    NodeList getLabels() __attribute__((weak));
+    bool getAutofocus();
+    void setAutofocus(bool autofocus);
+    bool getDisabled();
+    void setDisabled(bool disabled);
+    html::HTMLFormElement getForm();
+    bool getMultiple();
+    void setMultiple(bool multiple);
+    std::u16string getName();
+    void setName(std::u16string name);
+    bool getRequired();
+    void setRequired(bool required);
+    unsigned int getSize();
+    void setSize(unsigned int size);
+    std::u16string getType();
+    html::HTMLOptionsCollection getOptions();
+    unsigned int getLength();
+    void setLength(unsigned int length);
+    Any item(unsigned int index);
+    Any namedItem(std::u16string name);
+    void add(html::HTMLElement element);
+    void add(html::HTMLElement element, html::HTMLElement before);
+    void add(html::HTMLElement element, int before);
+    void remove(int index);
+    html::HTMLCollection getSelectedOptions();
+    int getSelectedIndex();
+    void setSelectedIndex(int selectedIndex);
+    std::u16string getValue();
+    void setValue(std::u16string value);
+    bool getWillValidate();
+    html::ValidityState getValidity();
+    std::u16string getValidationMessage();
+    bool checkValidity();
+    void setCustomValidity(std::u16string error);
+    NodeList getLabels();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

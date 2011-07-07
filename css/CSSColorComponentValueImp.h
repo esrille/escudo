@@ -24,14 +24,14 @@ class CSSColorComponentValueImp : public ObjectMixin<CSSColorComponentValueImp>
 {
 public:
     // CSSColorComponentValue
-    short getRed() __attribute__((weak));
-    void setRed(short red) __attribute__((weak));
-    short getGreen() __attribute__((weak));
-    void setGreen(short green) __attribute__((weak));
-    short getBlue() __attribute__((weak));
-    void setBlue(short blue) __attribute__((weak));
-    float getAlpha() __attribute__((weak));
-    void setAlpha(float alpha) __attribute__((weak));
+    short getRed();
+    void setRed(short red);
+    short getGreen();
+    void setGreen(short green);
+    short getBlue();
+    void setBlue(short blue);
+    float getAlpha();
+    void setAlpha(float alpha);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

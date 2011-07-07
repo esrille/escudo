@@ -35,44 +35,44 @@ public:
     }
 
     // HTMLAreaElement
-    std::u16string getAlt() __attribute__((weak));
-    void setAlt(std::u16string alt) __attribute__((weak));
-    std::u16string getCoords() __attribute__((weak));
-    void setCoords(std::u16string coords) __attribute__((weak));
-    std::u16string getShape() __attribute__((weak));
-    void setShape(std::u16string shape) __attribute__((weak));
-    std::u16string getHref() __attribute__((weak));
-    void setHref(std::u16string href) __attribute__((weak));
-    std::u16string getTarget() __attribute__((weak));
-    void setTarget(std::u16string target) __attribute__((weak));
-    std::u16string getPing() __attribute__((weak));
-    void setPing(std::u16string ping) __attribute__((weak));
-    std::u16string getRel() __attribute__((weak));
-    void setRel(std::u16string rel) __attribute__((weak));
-    DOMTokenList getRelList() __attribute__((weak));
-    std::u16string getMedia() __attribute__((weak));
-    void setMedia(std::u16string media) __attribute__((weak));
-    std::u16string getHreflang() __attribute__((weak));
-    void setHreflang(std::u16string hreflang) __attribute__((weak));
-    std::u16string getType() __attribute__((weak));
-    void setType(std::u16string type) __attribute__((weak));
-    std::u16string getProtocol() __attribute__((weak));
-    void setProtocol(std::u16string protocol) __attribute__((weak));
-    std::u16string getHost() __attribute__((weak));
-    void setHost(std::u16string host) __attribute__((weak));
-    std::u16string getHostname() __attribute__((weak));
-    void setHostname(std::u16string hostname) __attribute__((weak));
-    std::u16string getPort() __attribute__((weak));
-    void setPort(std::u16string port) __attribute__((weak));
-    std::u16string getPathname() __attribute__((weak));
-    void setPathname(std::u16string pathname) __attribute__((weak));
-    std::u16string getSearch() __attribute__((weak));
-    void setSearch(std::u16string search) __attribute__((weak));
-    std::u16string getHash() __attribute__((weak));
-    void setHash(std::u16string hash) __attribute__((weak));
+    std::u16string getAlt();
+    void setAlt(std::u16string alt);
+    std::u16string getCoords();
+    void setCoords(std::u16string coords);
+    std::u16string getShape();
+    void setShape(std::u16string shape);
+    std::u16string getHref();
+    void setHref(std::u16string href);
+    std::u16string getTarget();
+    void setTarget(std::u16string target);
+    std::u16string getPing();
+    void setPing(std::u16string ping);
+    std::u16string getRel();
+    void setRel(std::u16string rel);
+    DOMTokenList getRelList();
+    std::u16string getMedia();
+    void setMedia(std::u16string media);
+    std::u16string getHreflang();
+    void setHreflang(std::u16string hreflang);
+    std::u16string getType();
+    void setType(std::u16string type);
+    std::u16string getProtocol();
+    void setProtocol(std::u16string protocol);
+    std::u16string getHost();
+    void setHost(std::u16string host);
+    std::u16string getHostname();
+    void setHostname(std::u16string hostname);
+    std::u16string getPort();
+    void setPort(std::u16string port);
+    std::u16string getPathname();
+    void setPathname(std::u16string pathname);
+    std::u16string getSearch();
+    void setSearch(std::u16string search);
+    std::u16string getHash();
+    void setHash(std::u16string hash);
     // HTMLAreaElement-8
-    bool getNoHref() __attribute__((weak));
-    void setNoHref(bool noHref) __attribute__((weak));
+    bool getNoHref();
+    void setNoHref(bool noHref);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

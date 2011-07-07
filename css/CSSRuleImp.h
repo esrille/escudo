@@ -28,11 +28,11 @@ class CSSRuleImp : public ObjectMixin<CSSRuleImp>
 {
 public:
     // CSSRule
-    virtual unsigned short getType() __attribute__((weak));
-    virtual std::u16string getCssText() __attribute__((weak));
-    virtual void setCssText(std::u16string cssText) __attribute__((weak));
-    virtual css::CSSRule getParentRule() __attribute__((weak));
-    virtual css::CSSStyleSheet getParentStyleSheet() __attribute__((weak));
+    virtual unsigned short getType();
+    virtual std::u16string getCssText();
+    virtual void setCssText(std::u16string cssText);
+    virtual css::CSSRule getParentRule();
+    virtual css::CSSStyleSheet getParentStyleSheet();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {
