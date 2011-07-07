@@ -525,7 +525,7 @@ org/w3c/dom/Node.h : $(idl_files)
 
 lib_LIBRARIES = libeshtml5.a libesfontmanager.a
 
-LDADD = -leshtml5 -lesfontmanager
+LDADD = libeshtml5.a libesfontmanager.a
 
 AM_CPPFLAGS = \
 	-std=gnu++0x \
@@ -538,7 +538,7 @@ AM_CPPFLAGS = \
 	-DLIBERATON_TTF=\"$(LIBERATON_TTF)\" \
 	-Wall
 
-AM_LDFLAGS = -L$(builddir) $(ICU_LIBS) $(FREETYPE_LIBS) -lpng -lglut -lGLU -lGL -lXext -lX11 -lm -lboost_regex -lboost_system -lboost_iostreams
+AM_LDFLAGS = $(ICU_LIBS) $(FREETYPE_LIBS) -lpng -lglut -lGLU -lGL -lXext -lX11 -lm -lboost_regex -lboost_system -lboost_iostreams
 
 AM_YFLAGS = -d -v -t
 
