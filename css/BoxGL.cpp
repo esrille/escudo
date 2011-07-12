@@ -33,7 +33,7 @@ namespace {
 
 std::map<uint8_t*, GLuint> texnames;
 
-GLuint addImage(uint8_t* image, unsigned width, unsigned heigth, unsigned repeat)
+GLuint addImage(uint8_t* image, unsigned width, unsigned heigth, unsigned repeat, GLenum format)
 {
     GLuint texname;
 
@@ -43,16 +43,16 @@ GLuint addImage(uint8_t* image, unsigned width, unsigned heigth, unsigned repeat
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, (repeat & 2) ? GL_REPEAT : GL_CLAMP);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, heigth, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, heigth, 0, format, GL_UNSIGNED_BYTE, image);
     texnames.insert(std::pair<uint8_t*, GLuint>(image, texname));
     return texname;
 }
 
-GLuint getTexname(uint8_t* image, unsigned width, unsigned height, unsigned repeat)
+GLuint getTexname(uint8_t* image, unsigned width, unsigned height, unsigned repeat, GLenum format)
 {
     std::map<uint8_t*, GLuint>::iterator it = texnames.find(image);
     if (it == texnames.end())
-        return addImage(image, width, height, repeat);
+        return addImage(image, width, height, repeat, format);
     return it->second;
 }
 
@@ -73,7 +73,7 @@ void BoxImage::render(ViewCSSImp* view, float x, float y, float width, float hei
     glScalef(1.0f / naturalWidth, 1.0f / naturalHeight, 0.0f);
     glMatrixMode(GL_MODELVIEW);
 
-    GLuint texname = getTexname(pixels, naturalWidth, naturalHeight, repeat);
+    GLuint texname = getTexname(pixels, naturalWidth, naturalHeight, repeat, format);
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, texname);
     glColor3ub(255, 255, 255);

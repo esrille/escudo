@@ -26,7 +26,6 @@
 #include <list>
 #include <string>
 
-
 #include "http/HTTPRequest.h"
 #include "css/CSSStyleDeclarationImp.h"
 
@@ -103,6 +102,7 @@ private:
     unsigned naturalWidth;
     unsigned naturalHeight;
     unsigned repeat;
+    unsigned format;
     mutable html::HTMLImageElement img;
     HttpRequest request;
 
@@ -110,15 +110,7 @@ private:
     void notify();
 
 public:
-    BoxImage(Box* box = 0) :
-        box(box),
-        state(Unavailable),
-        pixels(0),
-        naturalWidth(0),
-        naturalHeight(0),
-        repeat(0),
-        img(static_cast<html::HTMLImageElement*>(0) /* nullptr */) {
-    }
+    BoxImage(Box* box = 0);
     BoxImage(Box* box, const std::u16string& base, const std::u16string& url, unsigned repeat = 0);
     BoxImage(Box* box, const std::u16string& base, html::HTMLImageElement& img);
     virtual ~BoxImage() {

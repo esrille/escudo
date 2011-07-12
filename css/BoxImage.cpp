@@ -16,8 +16,11 @@
 
 #include "Box.h"
 
+#include <jpeglib.h>
 #include <png.h>
 #include <stdio.h>
+
+#include <GL/gl.h>
 
 #include <boost/bind.hpp>
 
@@ -33,7 +36,7 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 namespace {
 
-unsigned char* readAsPng(FILE* file, unsigned* widthPtr, unsigned* heightPtr)
+unsigned char* readAsPng(FILE* file, unsigned& width, unsigned& height)
 {
     png_byte header[8];
     if (fread(header, 1, 8, file) != 8 || png_sig_cmp(header, 0, 8))
@@ -62,8 +65,8 @@ unsigned char* readAsPng(FILE* file, unsigned* widthPtr, unsigned* heightPtr)
 
     png_read_info(png_ptr, info_ptr);
 
-    unsigned width = png_get_image_width(png_ptr, info_ptr);
-    unsigned height = png_get_image_height(png_ptr, info_ptr);
+    width = png_get_image_width(png_ptr, info_ptr);
+    height = png_get_image_height(png_ptr, info_ptr);
     unsigned bit_depth = png_get_bit_depth(png_ptr, info_ptr);
     unsigned color_type = png_get_color_type(png_ptr, info_ptr);
 
@@ -90,12 +93,63 @@ unsigned char* readAsPng(FILE* file, unsigned* widthPtr, unsigned* heightPtr)
     png_read_end(png_ptr, end_info);
     png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
 
-    *widthPtr = width;
-    *heightPtr = height;
+    return data;
+}
+
+unsigned char* readAsJpeg(FILE* file, unsigned& width, unsigned& height, unsigned& format)
+{
+    unsigned char sig[2];
+    if (fread(sig, 1, 2, file) != 2 || sig[0] != 0xFF || sig[1] != 0xD8) 
+        return 0;
+    rewind(file);
+
+    JSAMPARRAY img;
+    struct jpeg_decompress_struct cinfo;
+    struct jpeg_error_mgr jerr;
+    
+    cinfo.err = jpeg_std_error(&jerr);  // TODO: set our own error handdler
+    jpeg_create_decompress(&cinfo);
+    
+    jpeg_stdio_src(&cinfo, file);
+    jpeg_read_header(&cinfo, true);
+    width = cinfo.image_width;
+    height = cinfo.image_height;
+    jpeg_start_decompress(&cinfo);
+
+    unsigned char* data = (unsigned char*) malloc(height * width * cinfo.out_color_components);
+    img = (JSAMPARRAY) malloc(sizeof(JSAMPROW) * height);
+    for (unsigned i = 0; i < height; ++i) 
+        img[i] = (JSAMPROW) &data[cinfo.out_color_components * width * i];
+    
+    while(cinfo.output_scanline < cinfo.output_height) 
+        jpeg_read_scanlines(&cinfo,
+                            img + cinfo.output_scanline,
+                            cinfo.output_height - cinfo.output_scanline);
+    jpeg_finish_decompress(&cinfo);
+    jpeg_destroy_decompress(&cinfo);
+
+    free(img);
+    
+    if (cinfo.out_color_components == 1)
+        format = GL_LUMINANCE;
+    else
+        format = GL_RGB;
     return data;
 }
 
 }  // namespace
+
+BoxImage::BoxImage(Box* box) :
+    box(box),
+    state(Unavailable),
+    pixels(0),
+    naturalWidth(0),
+    naturalHeight(0),
+    repeat(0),
+    format(GL_RGBA),
+    img(static_cast<html::HTMLImageElement*>(0) /* nullptr */) 
+{
+}
 
 BoxImage::BoxImage(Box* box, const std::u16string& base, const std::u16string& url, unsigned repeat) :
     box(box),
@@ -104,6 +158,7 @@ BoxImage::BoxImage(Box* box, const std::u16string& base, const std::u16string& u
     naturalWidth(0),
     naturalHeight(0),
     repeat(repeat),
+    format(GL_RGBA),
     img(static_cast<html::HTMLImageElement*>(0) /* nullptr */),
     request(base)
 {
@@ -117,6 +172,7 @@ BoxImage::BoxImage(Box* box, const std::u16string& base, html::HTMLImageElement&
     naturalWidth(0),
     naturalHeight(0),
     repeat(0),
+    format(GL_RGBA),
     img(img),
     request(base)
 {
@@ -140,7 +196,11 @@ void BoxImage::open(const std::u16string& url)
         state = Broken;
         return;
     }
-    pixels = readAsPng(file, &naturalWidth, &naturalHeight);
+    pixels = readAsPng(file, naturalWidth, naturalHeight);
+    if (!pixels) {
+        rewind(file);
+        pixels = readAsJpeg(file, naturalWidth, naturalHeight, format);
+    }
     if (pixels)
         state = CompletelyAvailable;
     else

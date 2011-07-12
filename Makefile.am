@@ -538,7 +538,7 @@ AM_CPPFLAGS = \
 	-DLIBERATON_TTF=\"$(LIBERATON_TTF)\" \
 	-Wall
 
-AM_LDFLAGS = $(ICU_LIBS) $(FREETYPE_LIBS) -lpng -lglut -lGLU -lGL -lXext -lX11 -lm -lboost_regex -lboost_system -lboost_iostreams
+AM_LDFLAGS = $(ICU_LIBS) $(FREETYPE_LIBS) -ljpeg -lpng -lglut -lGLU -lGL -lXext -lX11 -lm -lboost_regex -lboost_system -lboost_iostreams
 
 AM_YFLAGS = -d -v -t
 
