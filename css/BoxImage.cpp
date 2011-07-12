@@ -211,8 +211,10 @@ void BoxImage::open(const std::u16string& url)
 void BoxImage::notify()
 {
     if (state == Sent) {
-        // TODO: update render tree!!
-        box->flags = 1;
+        if (request.getStatus() == 200)
+            box->flags = 1;  // for updating render tree.
+        else
+            state = Unavailable;
     }
 }
 
