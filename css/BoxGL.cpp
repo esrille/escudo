@@ -39,8 +39,8 @@ GLuint addImage(uint8_t* image, unsigned width, unsigned heigth, unsigned repeat
 
     glGenTextures(1, &texname);
     glBindTexture(GL_TEXTURE_2D, texname);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, (repeat & 1) ? GL_REPEAT : GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, (repeat & 2) ? GL_REPEAT : GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, (repeat & 1) ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, (repeat & 2) ? GL_REPEAT : GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, heigth, 0, format, GL_UNSIGNED_BYTE, image);
@@ -68,6 +68,9 @@ void deleteImage(uint8_t* image)
 
 void BoxImage::render(ViewCSSImp* view, float x, float y, float width, float height)
 {
+    if (state != CompletelyAvailable)
+        return;
+    
     glMatrixMode(GL_TEXTURE);
     glLoadIdentity();
     glScalef(1.0f / naturalWidth, 1.0f / naturalHeight, 0.0f);
@@ -115,11 +118,13 @@ void Box::renderBorder(ViewCSSImp* view)
 
     if (backgroundImage) {
         glPushMatrix();
-        glTranslatef(ll, tt, 0.0f);
-        if (getParentBox())
-            backgroundImage->render(view, 0, 0, rr - ll, bb - tt);
-        else {
+        if (getParentBox()) {
+            // TODO: check padding
+            glTranslatef(lr, tb, 0.0f);
+            backgroundImage->render(view, 0, 0, rl - lr, bt - tb);
+        } else {
             const ContainingBlock* containingBlock = getContainingBlock(view);
+            glTranslatef(ll, tt, 0.0f);
             backgroundImage->render(view, -ll, -tt, containingBlock->width, containingBlock->height);
         }
         glPopMatrix();
