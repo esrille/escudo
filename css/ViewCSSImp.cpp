@@ -76,7 +76,6 @@ namespace {
 ViewCSSImp::ViewCSSImp(Document document, css::CSSStyleSheet defaultStyleSheet) :
     document(document),
     defaultStyleSheet(defaultStyleSheet),
-    boxTree(0),
     dpi(96),
     mutationListener(boost::bind(&ViewCSSImp::handleMutation, this, _1))
 {
@@ -87,15 +86,13 @@ ViewCSSImp::ViewCSSImp(Document document, css::CSSStyleSheet defaultStyleSheet) 
 ViewCSSImp::~ViewCSSImp()
 {
     document.removeEventListener(u"DOMAttrModified", &mutationListener);
-    delete boxTree;
-    // TODO: more clean up code here...
 }
 
 Box* ViewCSSImp::lookupTarget(int& x, int& y)
 {
     if (!boxTree)
         return 0;
-    Box* boxParent = boxTree;
+    Box* boxParent = boxTree.get();
     while (Box* box = boxParent->toBox(x, y))
         boxParent = box;
     return boxParent;
@@ -324,12 +321,9 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
 // Lay out a tree box block-level boxes
 BlockLevelBox* ViewCSSImp::layOutBlockBoxes()
 {
-    if (boxTree) {
-        delete boxTree;
-        boxTree = 0;
-    }
+    floatMap.clear();
     boxTree = layOutBlockBoxes(document, 0, 0, 0);
-    return boxTree;
+    return boxTree.get();
 }
 
 BlockLevelBox* ViewCSSImp::layOut()
@@ -344,13 +338,13 @@ BlockLevelBox* ViewCSSImp::layOut()
         if (i->second->isAbsolutelyPositioned())
             i->second->layOutAbsolute(this, i->first);
     }
-    return boxTree;
+    return boxTree.get();
 }
 
 BlockLevelBox* ViewCSSImp::dump()
 {
     boxTree->dump(this);
-    return boxTree;
+    return boxTree.get();
 }
 
 CSSStyleDeclarationImp* ViewCSSImp::getStyle(Element elt, Nullable<std::u16string> pseudoElt)

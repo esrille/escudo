@@ -82,11 +82,10 @@ Box::Box(Node node) :
 
 Box::~Box()
 {
-    while (firstChild) {
+    while (0 < childCount) {
         Box* child = removeChild(firstChild);
-        delete child;
+        child->release_();
     }
-    assert(childCount == 0);
 }
 
 Box* Box::removeChild(Box* item)
@@ -116,6 +115,7 @@ Box* Box::insertBefore(Box* item, Box* after)
     else
         item->previousSibling->nextSibling = item;
     item->parentBox = this;
+    item->retain_();
     ++childCount;
     return item;
 }
@@ -131,6 +131,7 @@ Box* Box::appendChild(Box* item)
     item->nextSibling = 0;
     lastChild = item;
     item->parentBox = this;
+    item->retain_();
     ++childCount;
     return item;
 }

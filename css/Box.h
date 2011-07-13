@@ -26,6 +26,8 @@
 #include <list>
 #include <string>
 
+#include <boost/intrusive_ptr.hpp>
+
 #include "http/HTTPRequest.h"
 #include "css/CSSStyleDeclarationImp.h"
 
@@ -43,16 +45,18 @@ class BlockLevelBox;
 
 class ViewCSSImp;
 
-struct ContainingBlock
+class ContainingBlock : public ObjectMixin<ContainingBlock>
 {
-    float width;
-    float height;
-
+public:    
     ContainingBlock() :
         width(0.0f),
-        height(0.0f) {
+        height(0.0f) 
+    {
     }
     virtual ~ContainingBlock() {}
+
+    float width;
+    float height;
 };
 
 class FormattingContext
@@ -287,6 +291,8 @@ public:
     }
 };
 
+typedef boost::intrusive_ptr<Box> BoxPtr;
+
 // paragraph
 // ‘display’ of ‘block’, ‘list-item’, ‘table’, ‘table-*’ (i.e., all table boxes) or <template>.
 class BlockLevelBox : public Box
@@ -298,7 +304,7 @@ class BlockLevelBox : public Box
     float remainingHeight;
 
     // for abs boxes
-    ContainingBlock absoluteBlock;
+    Retained<ContainingBlock> absoluteBlock;
 
     // A block-level box may contain either line boxes or block-level boxes, but not both.
     std::list<Node> inlines;
@@ -385,6 +391,8 @@ public:
     }
 };
 
+typedef boost::intrusive_ptr<BlockLevelBox> BlockLevelBoxPtr;
+
 // line of text
 // ‘display’ of ‘inline’, ‘inline-block’, ‘inline-table’ or ‘ruby’.
 class LineBox : public Box
@@ -438,6 +446,8 @@ public:
     }
 };
 
+typedef boost::intrusive_ptr<LineBox> LineBoxPtr;
+
 // words inside a line
 class InlineLevelBox : public Box
 {
@@ -480,6 +490,8 @@ public:
         this->style = style;
     }
 };
+
+typedef boost::intrusive_ptr<InlineLevelBox> InlineLevelBoxPtr;
 
 }}}}  // org::w3c::dom::bootstrap
 

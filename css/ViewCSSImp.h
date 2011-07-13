@@ -45,9 +45,9 @@ class ViewCSSImp
     Document document;
     css::CSSStyleSheet defaultStyleSheet;
     std::map<Element, CSSStyleDeclarationPtr> map;
-    std::map<Node, BlockLevelBox*> floatMap;
-    BlockLevelBox* boxTree;
-    ContainingBlock initialContainingBlock;
+    std::map<Node, BlockLevelBoxPtr> floatMap;
+    BlockLevelBoxPtr boxTree;
+    Retained<ContainingBlock> initialContainingBlock;
 
     unsigned dpi;
     unsigned mediumFontSize;  // [px]
@@ -107,7 +107,7 @@ public:
         auto i = floatMap.find(node);
         if (i == floatMap.end())
             return 0;
-        return i->second;
+        return i->second.get();
     }
 
     unsigned getMediumFontSize() const {
