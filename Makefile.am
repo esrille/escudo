@@ -535,12 +535,19 @@ AM_CPPFLAGS = \
 	$(FREETYPE_CPPFLAGS) \
 	-DXP_UNIX \
 	-DYYERROR_VERBOSE \
-	-DLIBERATON_TTF=\"$(LIBERATON_TTF)\" \
 	-Wall
 
 AM_LDFLAGS = $(ICU_LIBS) $(FREETYPE_LIBS) -ljpeg -lpng -lglut -lGLU -lGL -lXext -lX11 -lm -lboost_regex -lboost_system -lboost_iostreams
 
 AM_YFLAGS = -d -v -t
+
+libesfontmanager_a_CPPFLAGS = \
+	$(AM_CPPFLAGS) \
+	-DLIBERATON_TTF=\"$(LIBERATON_TTF)\" \
+	-DHAVE_IPA_GOTHIC=\"$(HAVE_IPA_GOTHIC)\" \
+	-DHAVE_IPA_MINCHO=\"$(HAVE_IPA_MINCHO)\" \
+	-DHAVE_IPA_PGOTHIC=\"$(HAVE_IPA_PGOTHIC)\" \
+	-DHAVE_IPA_PMINCHO=\"$(HAVE_IPA_PMINCHO)\"
 
 libesfontmanager_a_SOURCES = \
 	font/FontManager.cpp \

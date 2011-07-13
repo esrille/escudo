@@ -38,5 +38,17 @@ AC_SEARCH_LIBS(JS_NewCompartmentAndGlobalObject, js mozjs185)
 AC_CHECK_FILE(/usr/share/fonts/liberation/LiberationSerif-Regular.ttf,[AC_SUBST(LIBERATON_TTF,/usr/share/fonts/liberation)])
 AC_CHECK_FILE(/usr/share/fonts/truetype/ttf-liberation/LiberationSerif-Regular.ttf,[AC_SUBST(LIBERATON_TTF,/usr/share/fonts/truetype/ttf-liberation)])
 
+# check for IPA fonts on Fedora
+AC_CHECK_FILE(/usr/share/fonts/ipa-gothic/ipag.ttf,[AC_SUBST(HAVE_IPA_GOTHIC,/usr/share/fonts/ipa-gothic/ipag.ttf)])
+AC_CHECK_FILE(/usr/share/fonts/ipa-mincho/ipam.ttf,[AC_SUBST(HAVE_IPA_MINCHO,/usr/share/fonts/ipa-mincho/ipam.ttf)])
+AC_CHECK_FILE(/usr/share/fonts/ipa-pgothic/ipagp.ttf,[AC_SUBST(HAVE_IPA_PGOTHIC,/usr/share/fonts/ipa-pgothic/ipagp.ttf)])
+AC_CHECK_FILE(/usr/share/fonts/ipa-pmincho/ipamp.ttf,[AC_SUBST(HAVE_IPA_PMINCHO,/usr/share/fonts/ipa-pmincho/ipamp.ttf)])
+
+# check for IPA fonts on Ubuntu
+AC_CHECK_FILE(/usr/share/fonts/truetype/takao/TakaoGothic.ttf,[AC_SUBST(HAVE_IPA_GOTHIC,/usr/share/fonts/truetype/takao/TakaoGothic.ttf)])
+AC_CHECK_FILE(/usr/share/fonts/truetype/takao/TakaoMincho.ttf,[AC_SUBST(HAVE_IPA_MINCHO,/usr/share/fonts/truetype/takao/TakaoGothic.ttf)])
+AC_CHECK_FILE(/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,[AC_SUBST(HAVE_IPA_PGOTHIC,/usr/share/fonts/truetype/takao/TakaoPGothic.ttf)])
+AC_CHECK_FILE(/usr/share/fonts/truetype/takao/TakaoPMincho.ttf,[AC_SUBST(HAVE_IPA_PMINCHO,/usr/share/fonts/truetype/takao/TakaoPMincho.ttf)])
+
 AC_OUTPUT
 

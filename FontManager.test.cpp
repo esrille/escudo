@@ -93,13 +93,16 @@ void display()
     y = renderStrings(serif, y);
     y = renderStrings(mono, y);
 
-    backend.getFontFace("/usr/share/fonts/sazanami/mincho/sazanami-mincho.ttf");
+    backend.getFontFace("/usr/share/fonts/ipa-pmincho/ipamp.ttf");
+    // backend.getFontFace("/usr/share/fonts/ipa-mincho/ipam.ttf");
+    // backend.getFontFace("/usr/share/fonts/ipa-pgothic/ipagp.ttf");
+    // backend.getFontFace("/usr/share/fonts/ipa-gothic/ipag.ttf");
     backend.getFontTexture(point);
 
     glPushMatrix();
     glTranslatef(24.0, y, 0.0);
     glScalef(48.0 / point, 48.0 / point, 1.0);
-    backend.renderString("こんにちは世界");
+    backend.renderString("こんにちは世界 Hello");
     glPopMatrix();
     y += 48.0;
 

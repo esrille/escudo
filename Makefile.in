@@ -88,8 +88,9 @@ AR = ar
 ARFLAGS = cru
 libesfontmanager_a_AR = $(AR) $(ARFLAGS)
 libesfontmanager_a_LIBADD =
-am_libesfontmanager_a_OBJECTS = FontManager.$(OBJEXT) \
-	FontDatabase.$(OBJEXT)
+am_libesfontmanager_a_OBJECTS =  \
+	libesfontmanager_a-FontManager.$(OBJEXT) \
+	libesfontmanager_a-FontDatabase.$(OBJEXT)
 libesfontmanager_a_OBJECTS = $(am_libesfontmanager_a_OBJECTS)
 libeshtml5_a_AR = $(AR) $(ARFLAGS)
 libeshtml5_a_LIBADD =
@@ -484,6 +485,10 @@ ECHO_T = @ECHO_T@
 EXEEXT = @EXEEXT@
 FREETYPE_CPPFLAGS = @FREETYPE_CPPFLAGS@
 FREETYPE_LIBS = @FREETYPE_LIBS@
+HAVE_IPA_GOTHIC = @HAVE_IPA_GOTHIC@
+HAVE_IPA_MINCHO = @HAVE_IPA_MINCHO@
+HAVE_IPA_PGOTHIC = @HAVE_IPA_PGOTHIC@
+HAVE_IPA_PMINCHO = @HAVE_IPA_PMINCHO@
 ICU_CPPFLAGS = @ICU_CPPFLAGS@
 ICU_LIBS = @ICU_LIBS@
 INSTALL = @INSTALL@
@@ -1080,11 +1085,18 @@ AM_CPPFLAGS = \
 	$(FREETYPE_CPPFLAGS) \
 	-DXP_UNIX \
 	-DYYERROR_VERBOSE \
-	-DLIBERATON_TTF=\"$(LIBERATON_TTF)\" \
 	-Wall
 
 AM_LDFLAGS = $(ICU_LIBS) $(FREETYPE_LIBS) -ljpeg -lpng -lglut -lGLU -lGL -lXext -lX11 -lm -lboost_regex -lboost_system -lboost_iostreams
 AM_YFLAGS = -d -v -t
+libesfontmanager_a_CPPFLAGS = \
+	$(AM_CPPFLAGS) \
+	-DLIBERATON_TTF=\"$(LIBERATON_TTF)\" \
+	-DHAVE_IPA_GOTHIC=\"$(HAVE_IPA_GOTHIC)\" \
+	-DHAVE_IPA_MINCHO=\"$(HAVE_IPA_MINCHO)\" \
+	-DHAVE_IPA_PGOTHIC=\"$(HAVE_IPA_PGOTHIC)\" \
+	-DHAVE_IPA_PMINCHO=\"$(HAVE_IPA_PMINCHO)\"
+
 libesfontmanager_a_SOURCES = \
 	font/FontManager.cpp \
 	font/FontManager.h \
@@ -1789,9 +1801,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Float64ArrayImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FocusEvent.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FocusEventImp.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FontDatabase.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FontDatabase.test.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FontManager.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FontManager.test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FormData.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FormDataImp.Po@am__quote@
@@ -2082,6 +2092,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XMLHttpRequestUpload.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XMLHttpRequestUploadImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bridge.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libesfontmanager_a-FontDatabase.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libesfontmanager_a-FontManager.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/utf.Po@am__quote@
 
 .cc.o:
@@ -2098,33 +2110,33 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXXCOMPILE) -c -o $@ `$(CYGPATH_W) '$<'`
 
-FontManager.o: font/FontManager.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FontManager.o -MD -MP -MF $(DEPDIR)/FontManager.Tpo -c -o FontManager.o `test -f 'font/FontManager.cpp' || echo '$(srcdir)/'`font/FontManager.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FontManager.Tpo $(DEPDIR)/FontManager.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='font/FontManager.cpp' object='FontManager.o' libtool=no @AMDEPBACKSLASH@
+libesfontmanager_a-FontManager.o: font/FontManager.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libesfontmanager_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libesfontmanager_a-FontManager.o -MD -MP -MF $(DEPDIR)/libesfontmanager_a-FontManager.Tpo -c -o libesfontmanager_a-FontManager.o `test -f 'font/FontManager.cpp' || echo '$(srcdir)/'`font/FontManager.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/libesfontmanager_a-FontManager.Tpo $(DEPDIR)/libesfontmanager_a-FontManager.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='font/FontManager.cpp' object='libesfontmanager_a-FontManager.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FontManager.o `test -f 'font/FontManager.cpp' || echo '$(srcdir)/'`font/FontManager.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libesfontmanager_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libesfontmanager_a-FontManager.o `test -f 'font/FontManager.cpp' || echo '$(srcdir)/'`font/FontManager.cpp
 
-FontManager.obj: font/FontManager.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FontManager.obj -MD -MP -MF $(DEPDIR)/FontManager.Tpo -c -o FontManager.obj `if test -f 'font/FontManager.cpp'; then $(CYGPATH_W) 'font/FontManager.cpp'; else $(CYGPATH_W) '$(srcdir)/font/FontManager.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FontManager.Tpo $(DEPDIR)/FontManager.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='font/FontManager.cpp' object='FontManager.obj' libtool=no @AMDEPBACKSLASH@
+libesfontmanager_a-FontManager.obj: font/FontManager.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libesfontmanager_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libesfontmanager_a-FontManager.obj -MD -MP -MF $(DEPDIR)/libesfontmanager_a-FontManager.Tpo -c -o libesfontmanager_a-FontManager.obj `if test -f 'font/FontManager.cpp'; then $(CYGPATH_W) 'font/FontManager.cpp'; else $(CYGPATH_W) '$(srcdir)/font/FontManager.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/libesfontmanager_a-FontManager.Tpo $(DEPDIR)/libesfontmanager_a-FontManager.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='font/FontManager.cpp' object='libesfontmanager_a-FontManager.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FontManager.obj `if test -f 'font/FontManager.cpp'; then $(CYGPATH_W) 'font/FontManager.cpp'; else $(CYGPATH_W) '$(srcdir)/font/FontManager.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libesfontmanager_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libesfontmanager_a-FontManager.obj `if test -f 'font/FontManager.cpp'; then $(CYGPATH_W) 'font/FontManager.cpp'; else $(CYGPATH_W) '$(srcdir)/font/FontManager.cpp'; fi`
 
-FontDatabase.o: font/FontDatabase.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FontDatabase.o -MD -MP -MF $(DEPDIR)/FontDatabase.Tpo -c -o FontDatabase.o `test -f 'font/FontDatabase.cpp' || echo '$(srcdir)/'`font/FontDatabase.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FontDatabase.Tpo $(DEPDIR)/FontDatabase.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='font/FontDatabase.cpp' object='FontDatabase.o' libtool=no @AMDEPBACKSLASH@
+libesfontmanager_a-FontDatabase.o: font/FontDatabase.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libesfontmanager_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libesfontmanager_a-FontDatabase.o -MD -MP -MF $(DEPDIR)/libesfontmanager_a-FontDatabase.Tpo -c -o libesfontmanager_a-FontDatabase.o `test -f 'font/FontDatabase.cpp' || echo '$(srcdir)/'`font/FontDatabase.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/libesfontmanager_a-FontDatabase.Tpo $(DEPDIR)/libesfontmanager_a-FontDatabase.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='font/FontDatabase.cpp' object='libesfontmanager_a-FontDatabase.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FontDatabase.o `test -f 'font/FontDatabase.cpp' || echo '$(srcdir)/'`font/FontDatabase.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libesfontmanager_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libesfontmanager_a-FontDatabase.o `test -f 'font/FontDatabase.cpp' || echo '$(srcdir)/'`font/FontDatabase.cpp
 
-FontDatabase.obj: font/FontDatabase.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FontDatabase.obj -MD -MP -MF $(DEPDIR)/FontDatabase.Tpo -c -o FontDatabase.obj `if test -f 'font/FontDatabase.cpp'; then $(CYGPATH_W) 'font/FontDatabase.cpp'; else $(CYGPATH_W) '$(srcdir)/font/FontDatabase.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/FontDatabase.Tpo $(DEPDIR)/FontDatabase.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='font/FontDatabase.cpp' object='FontDatabase.obj' libtool=no @AMDEPBACKSLASH@
+libesfontmanager_a-FontDatabase.obj: font/FontDatabase.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libesfontmanager_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libesfontmanager_a-FontDatabase.obj -MD -MP -MF $(DEPDIR)/libesfontmanager_a-FontDatabase.Tpo -c -o libesfontmanager_a-FontDatabase.obj `if test -f 'font/FontDatabase.cpp'; then $(CYGPATH_W) 'font/FontDatabase.cpp'; else $(CYGPATH_W) '$(srcdir)/font/FontDatabase.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/libesfontmanager_a-FontDatabase.Tpo $(DEPDIR)/libesfontmanager_a-FontDatabase.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='font/FontDatabase.cpp' object='libesfontmanager_a-FontDatabase.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FontDatabase.obj `if test -f 'font/FontDatabase.cpp'; then $(CYGPATH_W) 'font/FontDatabase.cpp'; else $(CYGPATH_W) '$(srcdir)/font/FontDatabase.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libesfontmanager_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libesfontmanager_a-FontDatabase.obj `if test -f 'font/FontDatabase.cpp'; then $(CYGPATH_W) 'font/FontDatabase.cpp'; else $(CYGPATH_W) '$(srcdir)/font/FontDatabase.cpp'; fi`
 
 bridge.o: js/bridge.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bridge.o -MD -MP -MF $(DEPDIR)/bridge.Tpo -c -o bridge.o `test -f 'js/bridge.cpp' || echo '$(srcdir)/'`js/bridge.cpp

@@ -99,7 +99,43 @@ FontInfo fontDatabase[] = {
             { LIBERATON_TTF "/LiberationMono-Regular.ttf", 400 },
             { LIBERATON_TTF "/LiberationMono-Bold.ttf", 700 },
         }
-    }
+    },
+#ifdef HAVE_IPA_GOTHIC
+    {
+        u"IPAPGothic",
+        CSSFontFamilyValueImp::SansSerif,
+        {
+            { HAVE_IPA_GOTHIC, 400 }
+        }
+    },
+#endif
+#ifdef HAVE_IPA_MINCHO
+    {
+        u"IPAPMincho",
+        CSSFontFamilyValueImp::Serif,
+        {
+            { HAVE_IPA_MINCHO, 400 }
+        }
+    },
+#endif
+#ifdef HAVE_IPA_PGOTHIC
+    {
+        u"IPAGothic",
+        CSSFontFamilyValueImp::Monospace,
+        {
+            { HAVE_IPA_PGOTHIC, 400 }
+        }
+    },
+#endif
+#ifdef HAVE_IPA_PMINCHO
+    {
+        u"IPAMincho",
+        CSSFontFamilyValueImp::Monospace,
+        {
+            { HAVE_IPA_PMINCHO, 400 }
+        }
+    },
+#endif
 };
 
 const int fontDatabaseSize = sizeof fontDatabase / sizeof fontDatabase[0];

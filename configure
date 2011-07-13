@@ -565,6 +565,10 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
+HAVE_IPA_PMINCHO
+HAVE_IPA_PGOTHIC
+HAVE_IPA_MINCHO
+HAVE_IPA_GOTHIC
 LIBERATON_TTF
 FREETYPE_LIBS
 FREETYPE_CPPFLAGS
@@ -4206,6 +4210,170 @@ fi
 $as_echo "$ac_cv_file__usr_share_fonts_truetype_ttf_liberation_LiberationSerif_Regular_ttf" >&6; }
 if test "x$ac_cv_file__usr_share_fonts_truetype_ttf_liberation_LiberationSerif_Regular_ttf" = xyes; then :
   LIBERATON_TTF=/usr/share/fonts/truetype/ttf-liberation
+
+fi
+
+
+# check for IPA fonts on Fedora
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/share/fonts/ipa-gothic/ipag.ttf" >&5
+$as_echo_n "checking for /usr/share/fonts/ipa-gothic/ipag.ttf... " >&6; }
+if ${ac_cv_file__usr_share_fonts_ipa_gothic_ipag_ttf+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "/usr/share/fonts/ipa-gothic/ipag.ttf"; then
+  ac_cv_file__usr_share_fonts_ipa_gothic_ipag_ttf=yes
+else
+  ac_cv_file__usr_share_fonts_ipa_gothic_ipag_ttf=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_share_fonts_ipa_gothic_ipag_ttf" >&5
+$as_echo "$ac_cv_file__usr_share_fonts_ipa_gothic_ipag_ttf" >&6; }
+if test "x$ac_cv_file__usr_share_fonts_ipa_gothic_ipag_ttf" = xyes; then :
+  HAVE_IPA_GOTHIC=/usr/share/fonts/ipa-gothic/ipag.ttf
+
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/share/fonts/ipa-mincho/ipam.ttf" >&5
+$as_echo_n "checking for /usr/share/fonts/ipa-mincho/ipam.ttf... " >&6; }
+if ${ac_cv_file__usr_share_fonts_ipa_mincho_ipam_ttf+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "/usr/share/fonts/ipa-mincho/ipam.ttf"; then
+  ac_cv_file__usr_share_fonts_ipa_mincho_ipam_ttf=yes
+else
+  ac_cv_file__usr_share_fonts_ipa_mincho_ipam_ttf=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_share_fonts_ipa_mincho_ipam_ttf" >&5
+$as_echo "$ac_cv_file__usr_share_fonts_ipa_mincho_ipam_ttf" >&6; }
+if test "x$ac_cv_file__usr_share_fonts_ipa_mincho_ipam_ttf" = xyes; then :
+  HAVE_IPA_MINCHO=/usr/share/fonts/ipa-mincho/ipam.ttf
+
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/share/fonts/ipa-pgothic/ipagp.ttf" >&5
+$as_echo_n "checking for /usr/share/fonts/ipa-pgothic/ipagp.ttf... " >&6; }
+if ${ac_cv_file__usr_share_fonts_ipa_pgothic_ipagp_ttf+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "/usr/share/fonts/ipa-pgothic/ipagp.ttf"; then
+  ac_cv_file__usr_share_fonts_ipa_pgothic_ipagp_ttf=yes
+else
+  ac_cv_file__usr_share_fonts_ipa_pgothic_ipagp_ttf=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_share_fonts_ipa_pgothic_ipagp_ttf" >&5
+$as_echo "$ac_cv_file__usr_share_fonts_ipa_pgothic_ipagp_ttf" >&6; }
+if test "x$ac_cv_file__usr_share_fonts_ipa_pgothic_ipagp_ttf" = xyes; then :
+  HAVE_IPA_PGOTHIC=/usr/share/fonts/ipa-pgothic/ipagp.ttf
+
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/share/fonts/ipa-pmincho/ipamp.ttf" >&5
+$as_echo_n "checking for /usr/share/fonts/ipa-pmincho/ipamp.ttf... " >&6; }
+if ${ac_cv_file__usr_share_fonts_ipa_pmincho_ipamp_ttf+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "/usr/share/fonts/ipa-pmincho/ipamp.ttf"; then
+  ac_cv_file__usr_share_fonts_ipa_pmincho_ipamp_ttf=yes
+else
+  ac_cv_file__usr_share_fonts_ipa_pmincho_ipamp_ttf=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_share_fonts_ipa_pmincho_ipamp_ttf" >&5
+$as_echo "$ac_cv_file__usr_share_fonts_ipa_pmincho_ipamp_ttf" >&6; }
+if test "x$ac_cv_file__usr_share_fonts_ipa_pmincho_ipamp_ttf" = xyes; then :
+  HAVE_IPA_PMINCHO=/usr/share/fonts/ipa-pmincho/ipamp.ttf
+
+fi
+
+
+# check for IPA fonts on Ubuntu
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/share/fonts/truetype/takao/TakaoGothic.ttf" >&5
+$as_echo_n "checking for /usr/share/fonts/truetype/takao/TakaoGothic.ttf... " >&6; }
+if ${ac_cv_file__usr_share_fonts_truetype_takao_TakaoGothic_ttf+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "/usr/share/fonts/truetype/takao/TakaoGothic.ttf"; then
+  ac_cv_file__usr_share_fonts_truetype_takao_TakaoGothic_ttf=yes
+else
+  ac_cv_file__usr_share_fonts_truetype_takao_TakaoGothic_ttf=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_share_fonts_truetype_takao_TakaoGothic_ttf" >&5
+$as_echo "$ac_cv_file__usr_share_fonts_truetype_takao_TakaoGothic_ttf" >&6; }
+if test "x$ac_cv_file__usr_share_fonts_truetype_takao_TakaoGothic_ttf" = xyes; then :
+  HAVE_IPA_GOTHIC=/usr/share/fonts/truetype/takao/TakaoGothic.ttf
+
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/share/fonts/truetype/takao/TakaoMincho.ttf" >&5
+$as_echo_n "checking for /usr/share/fonts/truetype/takao/TakaoMincho.ttf... " >&6; }
+if ${ac_cv_file__usr_share_fonts_truetype_takao_TakaoMincho_ttf+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "/usr/share/fonts/truetype/takao/TakaoMincho.ttf"; then
+  ac_cv_file__usr_share_fonts_truetype_takao_TakaoMincho_ttf=yes
+else
+  ac_cv_file__usr_share_fonts_truetype_takao_TakaoMincho_ttf=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_share_fonts_truetype_takao_TakaoMincho_ttf" >&5
+$as_echo "$ac_cv_file__usr_share_fonts_truetype_takao_TakaoMincho_ttf" >&6; }
+if test "x$ac_cv_file__usr_share_fonts_truetype_takao_TakaoMincho_ttf" = xyes; then :
+  HAVE_IPA_MINCHO=/usr/share/fonts/truetype/takao/TakaoGothic.ttf
+
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/share/fonts/truetype/takao/TakaoPGothic.ttf" >&5
+$as_echo_n "checking for /usr/share/fonts/truetype/takao/TakaoPGothic.ttf... " >&6; }
+if ${ac_cv_file__usr_share_fonts_truetype_takao_TakaoPGothic_ttf+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf"; then
+  ac_cv_file__usr_share_fonts_truetype_takao_TakaoPGothic_ttf=yes
+else
+  ac_cv_file__usr_share_fonts_truetype_takao_TakaoPGothic_ttf=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_share_fonts_truetype_takao_TakaoPGothic_ttf" >&5
+$as_echo "$ac_cv_file__usr_share_fonts_truetype_takao_TakaoPGothic_ttf" >&6; }
+if test "x$ac_cv_file__usr_share_fonts_truetype_takao_TakaoPGothic_ttf" = xyes; then :
+  HAVE_IPA_PGOTHIC=/usr/share/fonts/truetype/takao/TakaoPGothic.ttf
+
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/share/fonts/truetype/takao/TakaoPMincho.ttf" >&5
+$as_echo_n "checking for /usr/share/fonts/truetype/takao/TakaoPMincho.ttf... " >&6; }
+if ${ac_cv_file__usr_share_fonts_truetype_takao_TakaoPMincho_ttf+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "/usr/share/fonts/truetype/takao/TakaoPMincho.ttf"; then
+  ac_cv_file__usr_share_fonts_truetype_takao_TakaoPMincho_ttf=yes
+else
+  ac_cv_file__usr_share_fonts_truetype_takao_TakaoPMincho_ttf=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_share_fonts_truetype_takao_TakaoPMincho_ttf" >&5
+$as_echo "$ac_cv_file__usr_share_fonts_truetype_takao_TakaoPMincho_ttf" >&6; }
+if test "x$ac_cv_file__usr_share_fonts_truetype_takao_TakaoPMincho_ttf" = xyes; then :
+  HAVE_IPA_PMINCHO=/usr/share/fonts/truetype/takao/TakaoPMincho.ttf
 
 fi
 
