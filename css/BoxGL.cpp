@@ -64,6 +64,14 @@ void deleteImage(uint8_t* image)
     texnames.erase(it);
 }
 
+enum
+{
+    TOP,
+    RIGHT,
+    BOTTOM,
+    LEFT
+};
+
 }  // namespace
 
 void BoxImage::render(ViewCSSImp* view, float x, float y, float width, float height)
@@ -91,6 +99,151 @@ void BoxImage::render(ViewCSSImp* view, float x, float y, float width, float hei
             glVertex2f(x, y + height);
     glEnd();
     glDisable(GL_TEXTURE_2D);
+}
+
+void Box::renderBorderEdge(ViewCSSImp* view, int edge, unsigned borderStyle, unsigned color, 
+                           float a, float b, float c, float d, 
+                           float e, float f, float g, float h)
+{
+    if (borderStyle == CSSBorderStyleValueImp::None ||
+        borderStyle == CSSBorderStyleValueImp::Hidden)
+        return;
+
+    GLubyte red = color >> 16;
+    GLubyte green = color >> 8;
+    GLubyte blue = color;
+    GLubyte alpha = color >> 24;
+    
+    if (borderStyle == CSSBorderStyleValueImp::Double) {
+        float offset;
+        offset = (g - a) / 3;
+        float i = a + offset;
+        float m = g - offset;
+        offset = (h - b) / 3;
+        float j = b + offset;
+        float n = h - offset;
+        offset = (c - e) / 3;
+        float k = c - offset;
+        float o = e + offset;
+        offset = (f - d) / 3;
+        float l = d + offset;
+        float p = f - offset;
+        glColor4ub(red, green, blue, alpha);
+        glBegin(GL_QUADS);
+            glVertex2f(a, b);
+            glVertex2f(c, d);
+            glVertex2f(k, l);
+            glVertex2f(i, j);
+        glEnd();
+        glBegin(GL_QUADS);
+            glVertex2f(m, n);
+            glVertex2f(o, p);
+            glVertex2f(e, f);
+            glVertex2f(g, h);
+        glEnd();
+        return;
+    }
+    
+    if (borderStyle == CSSBorderStyleValueImp::Dotted ||
+        borderStyle == CSSBorderStyleValueImp::Dashed) {
+        glEnable(GL_LINE_STIPPLE);
+        glLineWidth(fabsf(g - a));
+        glLineStipple(fabsf(g - a), (borderStyle == CSSBorderStyleValueImp::Dotted) ? 0xaaaa : 0xcccc);
+        glBegin(GL_LINES);
+            glColor4ub(red, green, blue, alpha);
+            glVertex2f((a + g) / 2, (b + h) / 2);
+            glVertex2f((c + e) / 2, (d + f) / 2);
+        glEnd();        
+        glDisable(GL_LINE_STIPPLE);
+        return;
+    }
+    
+    if (borderStyle == CSSBorderStyleValueImp::Groove ||
+        borderStyle == CSSBorderStyleValueImp::Ridge) {
+        GLubyte redDark = std::max(red - 128, 0);
+        GLubyte greenDark = std::max(green - 128, 0);
+        GLubyte blueDark = std::max(blue - 128, 0);
+        GLubyte redBright = std::min(red + 128, 255);
+        GLubyte greenBright = std::min(green + 128, 255);
+        GLubyte blueBright = std::min(blue + 128, 255);
+        float offset;
+        offset = (g - a) / 2;
+        float i = a + offset;
+        offset = (h - b) / 2;
+        float j = b + offset;
+        offset = (c - e) / 2;
+        float k = c - offset;
+        offset = (f - d) / 2;
+        float l = d + offset;
+        if (borderStyle == CSSBorderStyleValueImp::Groove)
+            glColor4ub(redDark, greenDark, blueDark, alpha);
+        else
+            glColor4ub(redBright, greenBright, blueBright, alpha);
+        glBegin(GL_QUADS);
+            glVertex2f(a, b);
+            glVertex2f(c, d);
+            glVertex2f(k, l);
+            glVertex2f(i, j);
+        glEnd();
+        if (borderStyle == CSSBorderStyleValueImp::Groove)
+            glColor4ub(redBright, greenBright, blueBright, alpha);
+        else
+            glColor4ub(redDark, greenDark, blueDark, alpha);
+        glBegin(GL_QUADS);
+            glVertex2f(i, j);
+            glVertex2f(k, l);
+            glVertex2f(e, f);
+            glVertex2f(g, h);
+        glEnd();
+        return;
+    }
+
+    if (borderStyle == CSSBorderStyleValueImp::Inset ||
+        borderStyle == CSSBorderStyleValueImp::Outset) {
+        bool dark = false;
+        bool bright = false;
+        if (borderStyle == CSSBorderStyleValueImp::Inset) {
+            switch (edge) {
+            case TOP:
+            case LEFT:
+                dark = true;
+                break;;
+            case RIGHT:
+            case BOTTOM:
+                bright = true;
+                break;;
+            }
+        }
+        if (borderStyle == CSSBorderStyleValueImp::Outset) {
+            switch (edge) {
+            case TOP:
+            case LEFT:
+                bright = true;
+                break;;
+            case RIGHT:
+            case BOTTOM:
+                dark = true;
+                break;;
+            }
+        }
+        if (dark) {
+            red = std::max(red - 128, 0);
+            green = std::max(green - 128, 0);
+            blue = std::max(blue - 128, 0);
+        } else if (bright) {
+            red = std::min(red + 128, 255);
+            green = std::min(green + 128, 255);
+            blue = std::min(blue + 128, 255);
+        }
+    }
+
+    glColor4ub(red, green, blue, alpha);
+    glBegin(GL_QUADS);
+        glVertex2f(a, b);
+        glVertex2f(c, d);
+        glVertex2f(e, f);
+        glVertex2f(g, h);
+    glEnd();
 }
 
 void Box::renderBorder(ViewCSSImp* view)
@@ -130,48 +283,26 @@ void Box::renderBorder(ViewCSSImp* view)
         glPopMatrix();
     }
 
-    // assume solid for now
-    unsigned color;
-    if (borderTop) {
-        color = style->borderTopColor.getARGB();
-        glColor4ub(color >> 16, color >> 8, color, color >> 24);
-        glBegin(GL_QUADS);
-            glVertex2f(ll, tt);
-            glVertex2f(rr, tt);
-            glVertex2f(rl, tb);
-            glVertex2f(lr, tb);
-        glEnd();
-    }
-    if (borderRight) {
-        color = style->borderRightColor.getARGB();
-        glColor4ub(color >> 16, color >> 8, color, color >> 24);
-        glBegin(GL_QUADS);
-            glVertex2f(rr, tt);
-            glVertex2f(rr, bb);
-            glVertex2f(rl, bt);
-            glVertex2f(rl, tb);
-        glEnd();
-    }
-    if (borderBottom) {
-        color = style->borderBottomColor.getARGB();
-        glColor4ub(color >> 16, color >> 8, color, color >> 24);
-        glBegin(GL_QUADS);
-            glVertex2f(rr, bb);
-            glVertex2f(ll, bb);
-            glVertex2f(lr, bt);
-            glVertex2f(rl, bt);
-        glEnd();
-    }
-    if (borderLeft) {
-        color = style->borderLeftColor.getARGB();
-        glColor4ub(color >> 16, color >> 8, color, color >> 24);
-        glBegin(GL_QUADS);
-            glVertex2f(ll, bb);
-            glVertex2f(ll, tt);
-            glVertex2f(lr, tb);
-            glVertex2f(lr, bt);
-        glEnd();
-    }
+    if (borderTop)
+        renderBorderEdge(view, TOP,
+                         style->borderTopStyle.getValue(), 
+                         style->borderTopColor.getARGB(),
+                         ll, tt, rr, tt, rl, tb, lr, tb);
+    if (borderRight) 
+        renderBorderEdge(view, RIGHT,
+                         style->borderRightStyle.getValue(), 
+                         style->borderRightColor.getARGB(),
+                         rl, bt, rl, tb, rr, tt, rr, bb);
+    if (borderBottom) 
+        renderBorderEdge(view, BOTTOM,
+                         style->borderBottomStyle.getValue(), 
+                         style->borderBottomColor.getARGB(),
+                         lr, bt, rl, bt, rr, bb, ll, bb);
+    if (borderLeft) 
+        renderBorderEdge(view, LEFT,
+                         style->borderLeftStyle.getValue(), 
+                         style->borderLeftColor.getARGB(),
+                         ll, bb, ll, tt, lr, tb, lr, bt);
     glEnable(GL_TEXTURE_2D);
 }
 

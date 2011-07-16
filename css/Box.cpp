@@ -166,6 +166,22 @@ Box* Box::getNextSibling() const
     return nextSibling;
 }
 
+void Box::updatePadding()
+{
+    paddingTop = style->paddingTop.getPx();
+    paddingRight = style->paddingRight.getPx();
+    paddingBottom = style->paddingBottom.getPx();
+    paddingLeft = style->paddingLeft.getPx();
+}
+
+void Box::updateBorderWidth()
+{
+    borderTop = style->borderTopWidth.getPx();
+    borderRight = style->borderRightWidth.getPx();
+    borderBottom = style->borderBottomWidth.getPx();
+    borderLeft = style->borderLeftWidth.getPx();
+}
+
 const ContainingBlock* Box::getContainingBlock(ViewCSSImp* view) const
 {
     const Box* box = this;
@@ -340,17 +356,9 @@ void BlockLevelBox::resolveWidth(ViewCSSImp* view, const ContainingBlock* contai
     // marginLeft + borderLeftWidth + paddingLeft + width + paddingRight + borderRightWidth + marginRight
     // == containingBlock->width (- scrollbar width, if any)
     //
-
-    paddingTop = style->paddingTop.getPx();
-    paddingRight = style->paddingRight.getPx();
-    paddingBottom = style->paddingBottom.getPx();
-    paddingLeft = style->paddingLeft.getPx();
-
-    borderTop = style->borderTopWidth.getPx();
-    borderRight = style->borderRightWidth.getPx();
-    borderBottom = style->borderBottomWidth.getPx();
-    borderLeft = style->borderLeftWidth.getPx();
-
+    updatePadding();
+    updateBorderWidth();
+    
     int autoCount = 3;  // properties which can be auto are margins and width
     if (!style->marginLeft.isAuto()) {
         marginLeft = style->marginLeft.getPx();
@@ -782,6 +790,9 @@ void BlockLevelBox::resolveAbsoluteWidth(const ContainingBlock* containingBlock)
 {
     assert(style);
     backgroundColor = style->backgroundColor.getARGB();
+    
+    updatePadding();
+    updateBorderWidth();
 
     //
     // Calculate width
@@ -794,11 +805,6 @@ void BlockLevelBox::resolveAbsoluteWidth(const ContainingBlock* containingBlock)
         Width = 2u,
         Right = 1u
     };
-
-    paddingLeft = style->paddingLeft.getPx();
-    paddingRight = style->paddingRight.getPx();
-    borderLeft = style->borderLeftWidth.getPx();
-    borderRight = style->borderRightWidth.getPx();
 
     marginLeft = style->marginLeft.isAuto() ? 0.0f : style->marginLeft.getPx();
     marginRight = style->marginRight.isAuto() ? 0.0f : style->marginRight.getPx();
@@ -874,11 +880,6 @@ void BlockLevelBox::resolveAbsoluteWidth(const ContainingBlock* containingBlock)
         Height = 2u,
         Bottom = 1u
     };
-
-    paddingTop = style->paddingTop.getPx();
-    paddingBottom = style->paddingBottom.getPx();
-    borderTop = style->borderTopWidth.getPx();
-    borderBottom = style->borderBottomWidth.getPx();
 
     marginTop = style->marginTop.isAuto() ? 0.0f : style->marginTop.getPx();
     marginBottom = style->marginBottom.isAuto() ? 0.0f : style->marginBottom.getPx();
@@ -1027,15 +1028,8 @@ void InlineLevelBox::resolveWidth()
     if (!isAnonymous()) {
         backgroundColor = style->backgroundColor.getARGB();
 
-        paddingTop = style->paddingTop.getPx();
-        paddingRight = style->paddingRight.getPx();
-        paddingBottom= style->paddingBottom.getPx();
-        paddingLeft = style->paddingLeft.getPx();
-
-        borderTop = style->borderTopWidth.getPx();
-        borderRight = style->borderRightWidth.getPx();
-        borderBottom = style->borderBottomWidth.getPx();
-        borderLeft = style->borderLeftWidth.getPx();
+        updatePadding();
+        updateBorderWidth();
 
         marginTop = style->marginTop.isAuto() ? 0 : style->marginTop.getPx();
         marginRight = style->marginRight.isAuto() ? 0 : style->marginRight.getPx();

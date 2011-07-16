@@ -174,7 +174,7 @@ protected:
     float borderBottom;
     float borderLeft;
     float borderRight;
-
+    
     float offsetH;
     float offsetV;
 
@@ -189,6 +189,12 @@ protected:
 
     ViewCSSImp* shadow;
 
+    void updatePadding();
+    void updateBorderWidth();
+    
+    void renderBorderEdge(ViewCSSImp* view, int edge, unsigned borderStyle, unsigned color, 
+                          float a, float b, float c, float d, 
+                          float e, float f, float g, float h);
 public:
     Box(Node node);
     virtual ~Box();
