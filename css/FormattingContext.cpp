@@ -63,8 +63,13 @@ LineBox* FormattingContext::addLineBox(ViewCSSImp* view, BlockLevelBox* parentBo
         while (!floatNodes.empty()) {
             BlockLevelBox* floatBox = view->getFloatBox(floatNodes.front());
             float w = floatBox->getTotalWidth();
-            if (leftover < w)
+            if (leftover < w) {
+                if (left.empty() && right.empty()) {
+                    addFloat(floatBox, w);
+                    floatNodes.pop_front();
+                }
                 break;
+            }
             addFloat(floatBox, w);
             floatNodes.pop_front();
         }
@@ -137,7 +142,11 @@ void FormattingContext::nextLine(BlockLevelBox* parentBox)
         }
         lineBox->appendChild(*i);
     }
-    updateRemainingHeight(lineBox->getTotalHeight());
+    float lineHeight = lineBox->getTotalHeight();
+    if (lineHeight != 0.0f)
+        updateRemainingHeight(lineBox->getTotalHeight());
+    else 
+        clear(lineBox, 3);
     lineBox = 0;
     x = leftover = 0.0f;
 }
@@ -161,7 +170,7 @@ void FormattingContext::addFloat(BlockLevelBox* floatBox, float totalWidth)
     leftover -= totalWidth;
 }
 
-void FormattingContext::clear(BlockLevelBox* box, unsigned value)
+void FormattingContext::clear(Box* box, unsigned value)
 {
     if (!value)
         return;

@@ -87,7 +87,7 @@ public:
     bool shiftDownLineBox();
     void nextLine(BlockLevelBox* parentBox);
     void updateRemainingHeight(float height);
-    void clear(BlockLevelBox* box, unsigned value);
+    void clear(Box* box, unsigned value);
 };
 
 class BoxImage

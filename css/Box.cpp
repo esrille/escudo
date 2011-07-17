@@ -107,6 +107,8 @@ Box* Box::removeChild(Box* item)
 
 Box* Box::insertBefore(Box* item, Box* after)
 {
+    if (!after) 
+        return appendChild(item);
     item->previousSibling = after->previousSibling;
     item->nextSibling = after;
     after->previousSibling = item;
