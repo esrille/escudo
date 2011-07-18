@@ -46,6 +46,7 @@ public:
     HttpConnection* getConnection(const std::string& hostname, const std::string& port);
 
     void send(HttpRequest* request);
+    void abort(HttpRequest* request);
 
     template <typename ResolveHandler>
     void resolve(const boost::asio::ip::tcp::resolver::query& q, ResolveHandler handler) {
@@ -122,6 +123,8 @@ class HttpConnection
 
     void close();
     void retry();
+
+    void abort(HttpRequest* request);
 
 public:
     HttpConnection(const std::string& hostname, const std::string& port) :

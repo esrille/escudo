@@ -23,6 +23,7 @@
 
 #include "url/URI.h"
 #include "http/HTTPCache.h"
+#include "http/HTTPConnection.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -107,6 +108,13 @@ void HttpRequest::send()
 void HttpRequest::abort()
 {
     // TODO: implement more details.
+    clearHanndler();
+    if (cache) 
+        cache->abort(this);
+    else {
+        HttpConnectionManager& manager = HttpConnectionManager::getInstance();
+        manager.abort(this);
+    }
     readyState = UNSENT;
     errorFlag = false;
     request.clear();
@@ -117,7 +125,6 @@ void HttpRequest::abort()
         close(fdContent);
         fdContent = -1;
     }
-    cache = 0;
 }
 
 unsigned short HttpRequest::getStatus() const
@@ -151,8 +158,7 @@ HttpRequest::HttpRequest(const std::u16string base) :
 
 HttpRequest::~HttpRequest()
 {
-    if (0 <= fdContent)
-        close(fdContent);
+    abort();
 }
 
 }}}}  // org::w3c::dom::bootstrap

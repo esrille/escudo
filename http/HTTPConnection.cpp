@@ -38,15 +38,23 @@ void HttpConnection::sendRequest()
 void HttpConnection::done(bool error)
 {
     line.clear();
-    current->notify(error);
-
-    // TODO: error handling
-
-    current = 0;
-    if (!requests.empty()) {
-        current = requests.front();
-        requests.pop_front();
-        sendRequest();
+    if (current) {
+        current->notify(error);
+        current = 0;
+    }
+    if (!error) {
+        if (!requests.empty()) {
+            current = requests.front();
+            requests.pop_front();
+            sendRequest();
+        }
+    } else {
+        while (!requests.empty()) {
+            current = requests.front();
+            requests.pop_front();
+            current->notify(error);
+        }
+        current = 0;
     }
 }
 
@@ -88,8 +96,10 @@ void HttpConnection::handleConnect(const boost::system::error_code& err, boost::
 
     if (!err) {
         state = Connected;
-        sendRequest();
-        boost::asio::async_read(socket, response, boost::asio::transfer_at_least(1), boost::bind(&HttpConnection::handleRead, this, boost::asio::placeholders::error));
+        if (current) {
+            sendRequest();
+            boost::asio::async_read(socket, response, boost::asio::transfer_at_least(1), boost::bind(&HttpConnection::handleRead, this, boost::asio::placeholders::error));
+        }
         return;
     }
     if (endpointIterator != boost::asio::ip::tcp::resolver::iterator()) {
@@ -136,7 +146,7 @@ void HttpConnection::handleWriteRequest(const boost::system::error_code& err)
 {
     std::cerr << __func__ << ' ' << err <<  '\n';
 
-    if (!err) {
+    if (!err && current) {
         if (current->getRequestMessage().getVersion() < 10)
             state = ReadContent;
         else
@@ -426,6 +436,16 @@ void HttpConnection::send(HttpRequest* request)
                                                              boost::asio::placeholders::iterator));
 }
 
+void HttpConnection::abort(HttpRequest* request)
+{
+    if (current != request) {
+        requests.remove(request);
+        return;
+    }    
+    close();
+    done(true);
+}
+
 HttpConnection* HttpConnectionManager::getConnection(const std::string& hostname, const std::string& port)
 {
     for (auto i = connections.begin(); i != connections.end(); ++i) {
@@ -447,6 +467,17 @@ void HttpConnectionManager::send(HttpRequest* request)
     if (!conn)
         return;
     conn->send(request);
+}
+
+void HttpConnectionManager::abort(HttpRequest* request)
+{
+    URI uri(request->getRequestMessage().getURL());
+    std::string hostname = uri.getHostname();
+    std::string port = uri.getPort();
+    HttpConnection* conn = getConnection(hostname, port);
+    if (!conn)
+        return;
+    conn->abort(request);
 }
 
 }}}}  // org::w3c::dom::bootstrap

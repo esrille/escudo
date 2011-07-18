@@ -29,9 +29,8 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
- void HttpCache::notify(HttpRequest* request, bool error)
+void HttpCache::notify(HttpRequest* request, bool error)
 {
-    assert(current == request);
     current = 0;
 
     if (error || !response.update(request->getResponseMessage()))
@@ -111,6 +110,16 @@ HttpCache* HttpCache::send(HttpRequest* request)
     HttpConnectionManager& manager = HttpConnectionManager::getInstance();
     manager.send(request);
     return this;
+}
+
+void HttpCache::abort(HttpRequest* request)
+{
+    if (current != request) 
+        requests.remove(request);
+    else {
+        HttpConnectionManager& manager = HttpConnectionManager::getInstance();
+        manager.abort(request);
+    }
 }
 
 HttpCache* HttpCacheManager::getCache(const URL& url)

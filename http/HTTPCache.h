@@ -63,6 +63,7 @@ public:
     void invalidate();
     bool isFresh();
     HttpCache* send(HttpRequest* request);
+    void abort(HttpRequest* request);
 
     const HttpResponseMessage& getResponseMessage() const {
         return response;

@@ -86,6 +86,7 @@ Box::~Box()
         Box* child = removeChild(firstChild);
         child->release_();
     }
+    delete backgroundImage;
 }
 
 Box* Box::removeChild(Box* item)
