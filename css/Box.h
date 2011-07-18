@@ -385,7 +385,7 @@ public:
     // new anonymous box.
     BlockLevelBox* getAnonymousBox();
 
-    void resolveWidth(ViewCSSImp* view, const ContainingBlock* containingBlock);
+    void resolveWidth(ViewCSSImp* view, const ContainingBlock* containingBlock, float available = 0);
     virtual void layOut(ViewCSSImp* view, FormattingContext* context);
     virtual void render(ViewCSSImp* view);
     virtual void dump(ViewCSSImp* view, std::string indent = "");

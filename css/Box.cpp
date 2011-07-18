@@ -346,7 +346,7 @@ BlockLevelBox* BlockLevelBox::getAnonymousBox()
     return anonymousBox;
 }
 
-void BlockLevelBox::resolveWidth(ViewCSSImp* view, const ContainingBlock* containingBlock)
+void BlockLevelBox::resolveWidth(ViewCSSImp* view, const ContainingBlock* containingBlock, float available)
 {
     assert(style);
     backgroundColor = style->backgroundColor.getARGB();
@@ -373,6 +373,9 @@ void BlockLevelBox::resolveWidth(ViewCSSImp* view, const ContainingBlock* contai
     }
     if (!style->width.isAuto()) {
         width = style->width.getPx();
+        --autoCount;
+    } else if (available) {
+        width = available;
         --autoCount;
     }
     // if 0 == autoCount, the values are over-constrained; ignore marginRight if 'ltr'
@@ -734,7 +737,7 @@ void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
 
     if (!isAnonymous()) {
         style->resolve(view, containingBlock, element);
-        resolveWidth(view, containingBlock);
+        resolveWidth(view, containingBlock, style->isFloat() ? context->leftover : 0.0f);
     } else {
         // The properties of anonymous boxes are inherited from the enclosing non-anonymous box.
         // Theoretically, we are supposed to create a new style for this anonymous box, but
@@ -777,11 +780,16 @@ void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         }
     }
 
+    // simplified shrink-to-fit
+    if (style->isFloat() && style->width.isAuto()) {
+        width = 0.0f;
+        for (Box* child = getFirstChild(); child; child = child->getNextSibling())
+            width += child->getTotalWidth();
+    }
+
     if (height == 0) {
         for (Box* child = getFirstChild(); child; child = child->getNextSibling())
-            height += child->marginTop + child->borderTop + child->paddingTop +
-                      child->height +
-                      child->marginBottom + child->borderBottom + child->paddingBottom;
+            height += child->getTotalHeight();
     }
 
     // Now that 'height' is fixed, calculate 'left', 'right', 'top', and 'bottom'.
