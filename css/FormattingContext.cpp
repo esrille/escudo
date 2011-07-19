@@ -127,24 +127,24 @@ bool FormattingContext::shiftDownLineBox()
 void FormattingContext::nextLine(BlockLevelBox* parentBox)
 {
     assert(lineBox);
-    
+
     float availale = parentBox->width - getLeftEdge() - getRightEdge();
     float lineWidth = lineBox->getTotalWidth();
     switch (parentBox->textAlign) {
     case CSSTextAlignValueImp::Left:
         break;
     case CSSTextAlignValueImp::Right:
-        if (parentBox->firstChild) 
+        if (parentBox->firstChild)
             parentBox->firstChild->offsetH += availale - lineWidth;
         break;
     case CSSTextAlignValueImp::Center:
-        if (parentBox->firstChild) 
+        if (parentBox->firstChild)
             parentBox->firstChild->offsetH += (availale - lineWidth) / 2.0f;
         break;
     default:  // TODO: support Justify and Default
         break;
     }
-    
+
     for (auto i = left.rbegin(); i != left.rend(); ++i) {
         if ((*i)->edge <= lineBox->marginLeft)
             break;
@@ -161,10 +161,10 @@ void FormattingContext::nextLine(BlockLevelBox* parentBox)
         }
         lineBox->appendChild(*i);
     }
-    float lineHeight = lineBox->getTotalHeight();
-    if (lineHeight != 0.0f)
-        updateRemainingHeight(lineBox->getTotalHeight());
-    else 
+    float height = lineBox->getTotalHeight();
+    if (height != 0.0f)
+        updateRemainingHeight(height);
+    else
         clear(lineBox, 3);
     lineBox = 0;
     x = leftover = 0.0f;

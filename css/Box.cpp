@@ -108,7 +108,7 @@ Box* Box::removeChild(Box* item)
 
 Box* Box::insertBefore(Box* item, Box* after)
 {
-    if (!after) 
+    if (!after)
         return appendChild(item);
     item->previousSibling = after->previousSibling;
     item->nextSibling = after;
@@ -361,7 +361,7 @@ void BlockLevelBox::resolveWidth(ViewCSSImp* view, const ContainingBlock* contai
     //
     updatePadding();
     updateBorderWidth();
-    
+
     int autoCount = 3;  // properties which can be auto are margins and width
     if (!style->marginLeft.isAuto()) {
         marginLeft = style->marginLeft.getPx();
@@ -532,6 +532,7 @@ void BlockLevelBox::layOutText(ViewCSSImp* view, Text text, FormattingContext* c
             inlineLevelBox->marginRight = inlineLevelBox->paddingRight = inlineLevelBox->borderRight = blankRight = 0;
         }
         inlineLevelBox->height = font->getHeight(point);
+        inlineLevelBox->baseline += (activeStyle->lineHeight.getPx() - inlineLevelBox->height) / 2.0f;
         context->x += advanced + blankRight;
         context->lineBox->appendChild(inlineLevelBox);
         context->lineBox->height = std::max(context->lineBox->height, std::max(activeStyle->lineHeight.getPx(), inlineLevelBox->height));
@@ -734,7 +735,7 @@ void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     style = view->getStyle(element);
     if (!style)
         return;  // TODO error
-        
+
     if (!isAnonymous()) {
         style->resolve(view, containingBlock, element);
         resolveWidth(view, containingBlock, style->isFloat() ? context->leftover : 0.0f);
@@ -803,7 +804,7 @@ void BlockLevelBox::resolveAbsoluteWidth(const ContainingBlock* containingBlock)
 {
     assert(style);
     backgroundColor = style->backgroundColor.getARGB();
-    
+
     updatePadding();
     updateBorderWidth();
 
