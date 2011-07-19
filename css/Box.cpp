@@ -784,7 +784,7 @@ void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     if (style->isFloat() && style->width.isAuto()) {
         width = 0.0f;
         for (Box* child = getFirstChild(); child; child = child->getNextSibling())
-            width += child->getTotalWidth();
+            width = std::max(width, child->getTotalWidth());
     }
 
     if (height == 0) {
