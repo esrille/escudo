@@ -304,6 +304,8 @@ typedef boost::intrusive_ptr<Box> BoxPtr;
 class BlockLevelBox : public Box
 {
     friend class FormattingContext;
+    
+    unsigned textAlign;
 
     // for float box
     float edge;
@@ -322,6 +324,15 @@ class BlockLevelBox : public Box
     void layOutInline(ViewCSSImp* view, FormattingContext* context);
 
 public:
+    BlockLevelBox(Node node = 0, CSSStyleDeclarationImp* style = 0) :
+        Box(node),
+        textAlign(CSSTextAlignValueImp::Default),
+        edge(0.0f),
+        remainingHeight(0.0f) 
+    {
+        this->style = style;
+    }
+
     virtual unsigned getBoxType() const {
         return BLOCK_LEVEL_BOX;
     }
@@ -389,12 +400,6 @@ public:
     virtual void layOut(ViewCSSImp* view, FormattingContext* context);
     virtual void render(ViewCSSImp* view);
     virtual void dump(ViewCSSImp* view, std::string indent = "");
-    BlockLevelBox(Node node = 0, CSSStyleDeclarationImp* style = 0) :
-        Box(node),
-        edge(0.0f),
-        remainingHeight(0.0f) {
-        this->style = style;
-    }
 };
 
 typedef boost::intrusive_ptr<BlockLevelBox> BlockLevelBoxPtr;

@@ -734,7 +734,7 @@ void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     style = view->getStyle(element);
     if (!style)
         return;  // TODO error
-
+        
     if (!isAnonymous()) {
         style->resolve(view, containingBlock, element);
         resolveWidth(view, containingBlock, style->isFloat() ? context->leftover : 0.0f);
@@ -749,6 +749,8 @@ void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         width = containingBlock->width;
         height = containingBlock->height;
     }
+
+    textAlign = style->textAlign.getValue();
 
     // Collapse margins
     if (Box* parent = getParentBox()) {  // TODO: root exception

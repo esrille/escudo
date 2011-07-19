@@ -1307,6 +1307,9 @@ public:
         Justify,
         Default  // Left if direction is 'ltr', Right if direction is 'rtl'
     };
+    unsigned getValue() const {
+        return value;
+    }
     CSSTextAlignValueImp& setValue(unsigned value = Default) {
         this->value = value;
         return *this;

@@ -331,6 +331,7 @@ void BlockLevelBox::render(ViewCSSImp* view)
 void LineBox::render(ViewCSSImp* view)
 {
     glPushMatrix();
+    glTranslatef(offsetH, offsetV, 0.0f);
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
         child->render(view);
         if (!child->isAbsolutelyPositioned()) {

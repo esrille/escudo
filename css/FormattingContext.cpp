@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Esrille Inc.
+ * Copyright 2010, 2011 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
 
 #include "css/CSSStyleDeclarationImp.h"
 #include "css/ViewCSSImp.h"
+#include "CSSPropertyValueImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -126,6 +127,24 @@ bool FormattingContext::shiftDownLineBox()
 void FormattingContext::nextLine(BlockLevelBox* parentBox)
 {
     assert(lineBox);
+    
+    float availale = parentBox->width - getLeftEdge() - getRightEdge();
+    float lineWidth = lineBox->getTotalWidth();
+    switch (parentBox->textAlign) {
+    case CSSTextAlignValueImp::Left:
+        break;
+    case CSSTextAlignValueImp::Right:
+        if (parentBox->firstChild) 
+            parentBox->firstChild->offsetH += availale - lineWidth;
+        break;
+    case CSSTextAlignValueImp::Center:
+        if (parentBox->firstChild) 
+            parentBox->firstChild->offsetH += (availale - lineWidth) / 2.0f;
+        break;
+    default:  // TODO: support Justify and Default
+        break;
+    }
+    
     for (auto i = left.rbegin(); i != left.rend(); ++i) {
         if ((*i)->edge <= lineBox->marginLeft)
             break;
