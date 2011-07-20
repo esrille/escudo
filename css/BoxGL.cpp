@@ -39,8 +39,8 @@ GLuint addImage(uint8_t* image, unsigned width, unsigned heigth, unsigned repeat
 
     glGenTextures(1, &texname);
     glBindTexture(GL_TEXTURE_2D, texname);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, (repeat & 1) ? GL_REPEAT : GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, (repeat & 2) ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, (repeat & BoxImage::RepeatS) ? GL_REPEAT : (repeat & BoxImage::Clamp) ? GL_CLAMP_TO_EDGE : GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, (repeat & BoxImage::RepeatT) ? GL_REPEAT : (repeat & BoxImage::Clamp) ? GL_CLAMP_TO_EDGE : GL_CLAMP_TO_BORDER);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, heigth, 0, format, GL_UNSIGNED_BYTE, image);
@@ -270,6 +270,11 @@ void Box::renderBorder(ViewCSSImp* view)
     }
 
     if (backgroundImage) {
+        GLfloat border[] = { ((backgroundColor >> 16) & 0xff) / 255.0f,
+                             ((backgroundColor >> 8) & 0xff) / 255.0f,
+                             ((backgroundColor) & 0xff) / 255.0f,
+                             ((backgroundColor >> 24) & 0xff) / 255.0f };
+        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border);
         glPushMatrix();
         if (getParentBox()) {
             // TODO: check padding

@@ -173,7 +173,7 @@ BoxImage::BoxImage(Box* box, const std::u16string& base, html::HTMLImageElement&
     pixels(0),
     naturalWidth(0),
     naturalHeight(0),
-    repeat(0),
+    repeat(Clamp),
     format(GL_RGBA),
     img(img),
     request(base)

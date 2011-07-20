@@ -99,6 +99,10 @@ public:
     static const int CompletelyAvailable = 3;
     static const int Broken = 4;
 
+    static const unsigned RepeatS = 1;
+    static const unsigned RepeatT = 2;
+    static const unsigned Clamp = 4;
+
 private:
     Box* box;
     int state;
