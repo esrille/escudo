@@ -77,6 +77,10 @@ struct CSSNumericValue
         this->number = number;
         return *this;
     }
+    float getPx() const {
+        assert(unit == css::CSSPrimitiveValue::CSS_PX || number == 0.0f);
+        return number;
+    }
     short getIndex() const {
         if (unit == CSSParserTerm::CSS_TERM_INDEX)
             return index;
@@ -199,8 +203,7 @@ public:
     }
     void compute(ViewCSSImp* view, float fullSize, const CSSFontSizeValueImp& fontSize);
     float getPx() const {
-        assert(value.unit == css::CSSPrimitiveValue::CSS_PX || value.number == 0.0f);
-        return value.number;
+        return value.getPx();
     }
     CSSNumericValueImp(float number = 0.0f, unsigned short unit = css::CSSPrimitiveValue::CSS_NUMBER) :
         value(number, unit) {
@@ -246,8 +249,7 @@ public:
     }
     void compute(ViewCSSImp* view, float fullSize, const CSSFontSizeValueImp& fontSize);
     float getPx() const {
-        assert(length.unit == css::CSSPrimitiveValue::CSS_PX || length.number == 0.0f);
-        return length.number;
+        return length.getPx();
     }
     CSSAutoLengthValueImp() :
         length(0) {
@@ -634,8 +636,7 @@ public:
     }
     void compute(ViewCSSImp* view, const ContainingBlock* containingBlock, const CSSBorderStyleValueImp& borderStyle, const CSSFontSizeValueImp& fontSize);
     float getPx() const {
-        assert(width.unit == css::CSSPrimitiveValue::CSS_PX || width.number == 0.0f);
-        return width.number;
+        return width.getPx();
     }
     CSSBorderWidthValueImp() :
         width(Medium) {
@@ -1055,8 +1056,7 @@ public:
     }
     void compute(ViewCSSImp* view, CSSFontSizeValueImp* parentFontSize);
     float getPx() const {
-        assert(size.unit == css::CSSPrimitiveValue::CSS_PX || size.number == 0.0f);
-        return size.number;
+        return size.getPx();
     }
     CSSFontSizeValueImp() :
         size(Medium) {
@@ -1172,8 +1172,7 @@ public:
     }
     void compute(ViewCSSImp* view, const CSSFontSizeValueImp& fontSize);
     float getPx() const {
-        assert(value.unit == css::CSSPrimitiveValue::CSS_PX || value.number == 0.0f);
-        return value.number;
+        return value.getPx();
     }
     CSSLineHeightValueImp() :
         value(Normal) {
