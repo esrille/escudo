@@ -47,10 +47,10 @@ class ViewCSSImp;
 
 class ContainingBlock : public ObjectMixin<ContainingBlock>
 {
-public:    
+public:
     ContainingBlock() :
         width(0.0f),
-        height(0.0f) 
+        height(0.0f)
     {
     }
     virtual ~ContainingBlock() {}
@@ -120,6 +120,9 @@ public:
     virtual ~BoxImage() {
         delete pixels;
     }
+    int getState() const {
+        return state;
+    }
     unsigned getWidth() const {
         unsigned w = 0;
         if (img)
@@ -138,7 +141,7 @@ public:
     unsigned getNaturalHeight() const {
         return naturalHeight;
     }
-    void render(ViewCSSImp* view, float x, float y, float width, float height);
+    void render(ViewCSSImp* view, float x, float y, float width, float height, float left, float top);
 };
 
 class Box : public ContainingBlock
@@ -174,13 +177,15 @@ protected:
     float borderBottom;
     float borderLeft;
     float borderRight;
-    
+
     float offsetH;
     float offsetV;
 
     // background
     unsigned backgroundColor;
     BoxImage* backgroundImage;
+    float backgroundLeft;
+    float backgroundTop;
 
     CSSStyleDeclarationPtr style;
     FormattingContext* formattingContext;
@@ -191,9 +196,9 @@ protected:
 
     void updatePadding();
     void updateBorderWidth();
-    
-    void renderBorderEdge(ViewCSSImp* view, int edge, unsigned borderStyle, unsigned color, 
-                          float a, float b, float c, float d, 
+
+    void renderBorderEdge(ViewCSSImp* view, int edge, unsigned borderStyle, unsigned color,
+                          float a, float b, float c, float d,
                           float e, float f, float g, float h);
 public:
     Box(Node node);
@@ -232,6 +237,9 @@ public:
     float getTotalWidth() const {
         return marginLeft + borderLeft + paddingLeft + width + marginRight + borderRight + paddingRight;
     }
+    float getPaddingWidth() const {
+        return paddingLeft + width + marginRight;
+    }
     float getBlankTop() const {
         return marginTop + borderTop + paddingTop;
     }
@@ -240,6 +248,9 @@ public:
     }
     float getTotalHeight() const {
         return marginTop + borderTop + paddingTop + height + marginBottom + borderBottom + paddingBottom;
+    }
+    float getPaddingHeight() const {
+        return paddingTop + height + marginBottom;
     }
 
     virtual void toViewPort(const Box* box, float& x, float& y) const = 0;
@@ -304,7 +315,7 @@ typedef boost::intrusive_ptr<Box> BoxPtr;
 class BlockLevelBox : public Box
 {
     friend class FormattingContext;
-    
+
     unsigned textAlign;
 
     // for float box
@@ -328,7 +339,7 @@ public:
         Box(node),
         textAlign(CSSTextAlignValueImp::Default),
         edge(0.0f),
-        remainingHeight(0.0f) 
+        remainingHeight(0.0f)
     {
         this->style = style;
     }

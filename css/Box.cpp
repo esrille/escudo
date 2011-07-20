@@ -73,6 +73,8 @@ Box::Box(Node node) :
     offsetV(0.0f),
     backgroundColor(0x00000000),
     backgroundImage(0),
+    backgroundLeft(0.0f),
+    backgroundTop(0.0f),
     style(0),
     formattingContext(0),
     flags(0),
@@ -798,6 +800,12 @@ void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     // Now that 'height' is fixed, calculate 'left', 'right', 'top', and 'bottom'.
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
         child->resolveOffset(view);
+
+    if (backgroundImage && backgroundImage->getState() == BoxImage::CompletelyAvailable) {
+        style->backgroundPosition.compute(view, backgroundImage, style->fontSize, getPaddingWidth(), getPaddingHeight());
+        backgroundLeft = style->backgroundPosition.getLeftPx();
+        backgroundTop = style->backgroundPosition.getTopPx();
+    }
 }
 
 void BlockLevelBox::resolveAbsoluteWidth(const ContainingBlock* containingBlock)

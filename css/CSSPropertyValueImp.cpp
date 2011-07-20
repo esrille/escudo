@@ -379,6 +379,44 @@ void CSSBackgroundPositionValueImp::setValue(CSSStyleDeclarationImp* decl, CSSVa
     setValue(stack, stack.begin());
 }
 
+void CSSBackgroundPositionValueImp::compute(ViewCSSImp* view, BoxImage* image, const CSSFontSizeValueImp& fontSize, float width, float height)
+{
+    assert(image);
+    float h;
+    switch (horizontal.unit) {
+    case css::CSSPrimitiveValue::CSS_PERCENTAGE:
+        h = view->getPx(horizontal, width - image->getWidth());  // TODO: negative case
+        break;
+    case css::CSSPrimitiveValue::CSS_EMS:
+        h = view->getPx(horizontal, fontSize.getPx());
+        break;
+    case css::CSSPrimitiveValue::CSS_EXS:
+        h = view->getPx(horizontal, fontSize.getPx() * 0.5f);  // TODO fix 0.5
+        break;
+    default:
+        h = view->getPx(horizontal, width);
+        return;
+    }
+    horizontal.setValue(h, css::CSSPrimitiveValue::CSS_PX);
+
+    float v;
+    switch (vertical.unit) {
+    case css::CSSPrimitiveValue::CSS_PERCENTAGE:
+        v = view->getPx(vertical, height - image->getHeight());  // TODO: negative case
+        break;
+    case css::CSSPrimitiveValue::CSS_EMS:
+        v = view->getPx(vertical, fontSize.getPx());
+        break;
+    case css::CSSPrimitiveValue::CSS_EXS:
+        v = view->getPx(vertical, fontSize.getPx() * 0.5f);  // TODO fix 0.5
+        break;
+    default:
+        v = view->getPx(vertical, width);
+        return;
+    }
+    vertical.setValue(v, css::CSSPrimitiveValue::CSS_PX);
+}
+
 void CSSBackgroundShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
 {
     bool color = false;

@@ -34,6 +34,7 @@
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class ContainingBlock;
+class BoxImage;
 class CSSStyleDeclarationImp;
 class ViewCSSImp;
 
@@ -435,6 +436,13 @@ public:
     void specify(const CSSBackgroundPositionValueImp& specified) {
         horizontal.specify(specified.horizontal);
         vertical.specify(specified.vertical);
+    }
+    void compute(ViewCSSImp* view, BoxImage* image, const CSSFontSizeValueImp& fontSize, float width, float height);
+    float getLeftPx() const {
+        return horizontal.getPx();
+    }
+    float getTopPx() const {
+        return vertical.getPx();
     }
     CSSBackgroundPositionValueImp() :
         horizontal(0.0, css::CSSPrimitiveValue::CSS_PERCENTAGE),

@@ -74,11 +74,11 @@ enum
 
 }  // namespace
 
-void BoxImage::render(ViewCSSImp* view, float x, float y, float width, float height)
+void BoxImage::render(ViewCSSImp* view, float x, float y, float width, float height, float left, float top)
 {
     if (state != CompletelyAvailable)
         return;
-    
+
     glMatrixMode(GL_TEXTURE);
     glLoadIdentity();
     glScalef(1.0f / naturalWidth, 1.0f / naturalHeight, 0.0f);
@@ -89,20 +89,20 @@ void BoxImage::render(ViewCSSImp* view, float x, float y, float width, float hei
     glBindTexture(GL_TEXTURE_2D, texname);
     glColor3ub(255, 255, 255);
     glBegin(GL_QUADS);
-            glTexCoord2f(x, y);
+            glTexCoord2f(x - left, y - top);
             glVertex2f(x, y);
-            glTexCoord2f(x + width, y);
+            glTexCoord2f(x - left + width, y - top);
             glVertex2f(x + width, y);
-            glTexCoord2f(x + width, y + height);
+            glTexCoord2f(x - left + width, y - top + height);
             glVertex2f(x + width, y + height);
-            glTexCoord2f(x, y + height);
+            glTexCoord2f(x - left, y - top + height);
             glVertex2f(x, y + height);
     glEnd();
     glDisable(GL_TEXTURE_2D);
 }
 
-void Box::renderBorderEdge(ViewCSSImp* view, int edge, unsigned borderStyle, unsigned color, 
-                           float a, float b, float c, float d, 
+void Box::renderBorderEdge(ViewCSSImp* view, int edge, unsigned borderStyle, unsigned color,
+                           float a, float b, float c, float d,
                            float e, float f, float g, float h)
 {
     if (borderStyle == CSSBorderStyleValueImp::None ||
@@ -113,7 +113,7 @@ void Box::renderBorderEdge(ViewCSSImp* view, int edge, unsigned borderStyle, uns
     GLubyte green = color >> 8;
     GLubyte blue = color;
     GLubyte alpha = color >> 24;
-    
+
     if (borderStyle == CSSBorderStyleValueImp::Double) {
         float offset;
         offset = (g - a) / 3;
@@ -143,7 +143,7 @@ void Box::renderBorderEdge(ViewCSSImp* view, int edge, unsigned borderStyle, uns
         glEnd();
         return;
     }
-    
+
     if (borderStyle == CSSBorderStyleValueImp::Dotted ||
         borderStyle == CSSBorderStyleValueImp::Dashed) {
         glEnable(GL_LINE_STIPPLE);
@@ -153,11 +153,11 @@ void Box::renderBorderEdge(ViewCSSImp* view, int edge, unsigned borderStyle, uns
             glColor4ub(red, green, blue, alpha);
             glVertex2f((a + g) / 2, (b + h) / 2);
             glVertex2f((c + e) / 2, (d + f) / 2);
-        glEnd();        
+        glEnd();
         glDisable(GL_LINE_STIPPLE);
         return;
     }
-    
+
     if (borderStyle == CSSBorderStyleValueImp::Groove ||
         borderStyle == CSSBorderStyleValueImp::Ridge) {
         GLubyte redDark = std::max(red - 128, 0);
@@ -274,33 +274,33 @@ void Box::renderBorder(ViewCSSImp* view)
         if (getParentBox()) {
             // TODO: check padding
             glTranslatef(lr, tb, 0.0f);
-            backgroundImage->render(view, 0, 0, rl - lr, bt - tb);
+            backgroundImage->render(view, 0, 0, rl - lr, bt - tb, backgroundLeft, backgroundTop);
         } else {
             const ContainingBlock* containingBlock = getContainingBlock(view);
             glTranslatef(ll, tt, 0.0f);
-            backgroundImage->render(view, -ll, -tt, containingBlock->width, containingBlock->height);
+            backgroundImage->render(view, -ll, -tt, containingBlock->width, containingBlock->height, backgroundLeft, backgroundTop);
         }
         glPopMatrix();
     }
 
     if (borderTop)
         renderBorderEdge(view, TOP,
-                         style->borderTopStyle.getValue(), 
+                         style->borderTopStyle.getValue(),
                          style->borderTopColor.getARGB(),
                          ll, tt, rr, tt, rl, tb, lr, tb);
-    if (borderRight) 
+    if (borderRight)
         renderBorderEdge(view, RIGHT,
-                         style->borderRightStyle.getValue(), 
+                         style->borderRightStyle.getValue(),
                          style->borderRightColor.getARGB(),
                          rl, bt, rl, tb, rr, tt, rr, bb);
-    if (borderBottom) 
+    if (borderBottom)
         renderBorderEdge(view, BOTTOM,
-                         style->borderBottomStyle.getValue(), 
+                         style->borderBottomStyle.getValue(),
                          style->borderBottomColor.getARGB(),
                          lr, bt, rl, bt, rr, bb, ll, bb);
-    if (borderLeft) 
+    if (borderLeft)
         renderBorderEdge(view, LEFT,
-                         style->borderLeftStyle.getValue(), 
+                         style->borderLeftStyle.getValue(),
                          style->borderLeftColor.getARGB(),
                          ll, bb, ll, tt, lr, tb, lr, bt);
     glEnable(GL_TEXTURE_2D);
