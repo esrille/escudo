@@ -76,7 +76,7 @@ unsigned char* readAsPng(FILE* file, unsigned& width, unsigned& height, unsigned
         png_set_gray_to_rgb(png_ptr);
     if (bit_depth == 16)
         png_set_strip_16(png_ptr);
-    if (color_type == PNG_COLOR_TYPE_RGB)
+    if (color_type == PNG_COLOR_TYPE_RGB || color_type == PNG_COLOR_TYPE_GRAY)
         format = GL_RGB;
     else
         format = GL_RGBA;
