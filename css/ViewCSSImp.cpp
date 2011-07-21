@@ -338,6 +338,7 @@ BlockLevelBox* ViewCSSImp::layOut()
         if (i->second->isAbsolutelyPositioned())
             i->second->layOutAbsolute(this, i->first);
     }
+    boxTree->dump(this);
     return boxTree.get();
 }
 

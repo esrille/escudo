@@ -85,9 +85,9 @@ public:
     float getLeftRemainingHeight() const;
     float getRightRemainingHeight() const;
     bool shiftDownLineBox();
-    void nextLine(BlockLevelBox* parentBox);
+    void nextLine(BlockLevelBox* parentBox, bool moreFloats = false);
     void updateRemainingHeight(float height);
-    void clear(Box* box, unsigned value);
+    float clear(unsigned value);
 };
 
 class BoxImage

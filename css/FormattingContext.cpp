@@ -80,17 +80,22 @@ LineBox* FormattingContext::addLineBox(ViewCSSImp* view, BlockLevelBox* parentBo
 
 void FormattingContext::updateRemainingHeight(float h)
 {
-    for (auto i = left.begin(); i != left.end(); ++i) {
+    for (auto i = left.begin(); i != left.end();) {
         if (((*i)->remainingHeight -= h) <= 0.0f)
             i = left.erase(i);
+        else
+            ++i;
     }
-    for (auto i = right.begin(); i != right.end(); ++i) {
+    for (auto i = right.begin(); i != right.end();) {
         if (((*i)->remainingHeight -= h) <= 0.0f)
             i = right.erase(i);
+        else
+            ++i;
     }
 }
 
-// If there's a float, this will expand leftover by adding marginTop in lineBox down to the bottom of nearest float box.
+// If there's a float, shiftDownLineBox() will expand leftover by extending
+// marginTop in lineBox down to the bottom of the nearest float box.
 bool FormattingContext::shiftDownLineBox()
 {
     assert(lineBox);
@@ -124,7 +129,7 @@ bool FormattingContext::shiftDownLineBox()
 
 // Complete the current lineBox by adding float boxes if any.
 // Then update remainingHeight.
-void FormattingContext::nextLine(BlockLevelBox* parentBox)
+void FormattingContext::nextLine(BlockLevelBox* parentBox, bool moreFloats)
 {
     assert(lineBox);
 
@@ -164,8 +169,8 @@ void FormattingContext::nextLine(BlockLevelBox* parentBox)
     float height = lineBox->getTotalHeight();
     if (height != 0.0f)
         updateRemainingHeight(height);
-    else
-        clear(lineBox, 3);
+    else if (moreFloats)
+        lineBox->marginTop += clear(3);
     lineBox = 0;
     x = leftover = 0.0f;
 }
@@ -189,10 +194,10 @@ void FormattingContext::addFloat(BlockLevelBox* floatBox, float totalWidth)
     leftover -= totalWidth;
 }
 
-void FormattingContext::clear(Box* box, unsigned value)
+float FormattingContext::clear(unsigned value)
 {
     if (!value)
-        return;
+        return 0.0f;
     float h = 0.0f;
     if (value & 1) {  // clear left
         for (auto i = left.begin(); i != left.end(); ++i) {
@@ -209,8 +214,10 @@ void FormattingContext::clear(Box* box, unsigned value)
             h = std::max(h, (*i)->remainingHeight);
         }
     }
-    box->marginTop += h;
     updateRemainingHeight(h);
+    assert(!(value & 1) || left.empty());
+    assert(!(value & 2) || right.empty());
+    return h;
 }
 
 }}}}  // org::w3c::dom::bootstrap

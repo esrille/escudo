@@ -373,10 +373,12 @@ void BlockLevelBox::resolveWidth(ViewCSSImp* view, const ContainingBlock* contai
         marginRight = style->marginRight.getPx();
         --autoCount;
     }
+
     if (!style->width.isAuto()) {
         width = style->width.getPx();
         --autoCount;
     } else if (available) {
+        available -= paddingLeft + paddingRight + borderLeft + borderRight + marginLeft + marginRight;
         width = available;
         --autoCount;
     }
@@ -390,7 +392,7 @@ void BlockLevelBox::resolveWidth(ViewCSSImp* view, const ContainingBlock* contai
             marginRight = leftover;
         else
             width = leftover;
-    } else if (style->width.isAuto()) {
+    } else if (style->width.isAuto() && available == 0.0f) {
         if (style->marginLeft.isAuto())
             marginLeft = 0.0f;
         if (style->marginRight.isAuto())
@@ -674,10 +676,16 @@ void BlockLevelBox::layOutInlineReplaced(ViewCSSImp* view, Node node, Formatting
 void BlockLevelBox::layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floatBox, FormattingContext* context)
 {
     assert(floatBox->style);
+    bool first = false;
+    if (!context->lineBox) {
+        first = true;
+        if (!context->addLineBox(view, this))
+            return;   // TODO error
+    }
     floatBox->layOut(view, context);
     floatBox->remainingHeight = floatBox->getTotalHeight();
     float w = floatBox->getTotalWidth();
-    if (context->leftover < w) {  // TODO && there's at least one float
+    if (context->leftover < w && !first) {
         // Process this float box later in the other line box.
         context->floatNodes.push_back(node);
         return;
@@ -715,11 +723,6 @@ void BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context)
     }
     if (context->lineBox)
         context->nextLine(this);
-    // Layout remaining float boxes in context
-    while (!context->floatNodes.empty()) {
-        context->addLineBox(view, this);
-        context->nextLine(this);
-    }
 }
 
 void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
@@ -770,12 +773,19 @@ void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     context = updateFormattingContext(context);
     assert(context);
     context->updateRemainingHeight(getBlankTop());
-    context->clear(this, style->clear.getValue());
+    this->marginTop += context->clear(style->clear.getValue());
 
     if (hasInline())
         layOutInline(view, context);
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
         child->layOut(view, context);
+
+    // simplified shrink-to-fit
+    if (style->isFloat() && style->width.isAuto()) {
+        width = 0.0f;
+        for (Box* child = getFirstChild(); child; child = child->getNextSibling())
+            width = std::max(width, child->getTotalWidth());
+    }
 
     // Collapse marginBottom  // TODO: root exception
     if (height == 0 && borderBottom == 0 && paddingBottom == 0 /* && TODO: check clearance */) {
@@ -785,16 +795,18 @@ void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         }
     }
 
-    // simplified shrink-to-fit
-    if (style->isFloat() && style->width.isAuto()) {
-        width = 0.0f;
-        for (Box* child = getFirstChild(); child; child = child->getNextSibling())
-            width = std::max(width, child->getTotalWidth());
-    }
-
     if (height == 0) {
         for (Box* child = getFirstChild(); child; child = child->getNextSibling())
             height += child->getTotalHeight();
+    }
+
+    if (isFlowRoot()) {
+        this->height += context->clear(3);
+        // Layout remaining float boxes in context
+        while (!context->floatNodes.empty()) {
+            context->addLineBox(view, this);
+            context->nextLine(this, !context->floatNodes.empty());
+        }
     }
 
     // Now that 'height' is fixed, calculate 'left', 'right', 'top', and 'bottom'.
