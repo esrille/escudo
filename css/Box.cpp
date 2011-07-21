@@ -520,8 +520,16 @@ void BlockLevelBox::layOutText(ViewCSSImp* view, Text text, FormattingContext* c
         // And repeat this process until there's no more float box in the context.
         float advanced;
         size_t length;
+        bool linefeed;
+        linefeed = false;
         do {
             advanced = context->leftover;
+            if (data[0] == '\n') {
+                linefeed = true;
+                length = 1;
+                advanced = 0.0f;
+                break;
+            }
             length = font->fitText(data.c_str(), fitLength, point, context->leftover);
             if (0 < length) {
                 advanced -= context->leftover;
@@ -530,10 +538,12 @@ void BlockLevelBox::layOutText(ViewCSSImp* view, Text text, FormattingContext* c
         } while (context->shiftDownLineBox());
         // TODO: deal with overflow
 
-        inlineLevelBox->setData(font, point, data.substr(0, length));
-        inlineLevelBox->width = advanced;
-        if (!firstLetterStyle && length < data.length()) {  // TODO: firstLetterStyle : actually we are not sure if the following characters would fit in the same line box...
-            inlineLevelBox->marginRight = inlineLevelBox->paddingRight = inlineLevelBox->borderRight = blankRight = 0;
+        if (!linefeed) {
+            inlineLevelBox->setData(font, point, data.substr(0, length));
+            inlineLevelBox->width = advanced;
+            if (!firstLetterStyle && length < data.length()) {  // TODO: firstLetterStyle : actually we are not sure if the following characters would fit in the same line box...
+                inlineLevelBox->marginRight = inlineLevelBox->paddingRight = inlineLevelBox->borderRight = blankRight = 0;
+            }
         }
         inlineLevelBox->height = font->getHeight(point);
         inlineLevelBox->baseline += (activeStyle->lineHeight.getPx() - inlineLevelBox->height) / 2.0f;
@@ -544,8 +554,11 @@ void BlockLevelBox::layOutText(ViewCSSImp* view, Text text, FormattingContext* c
         context->lineBox->width += blankLeft + advanced + blankRight;
         position += length;
         data.erase(0, length);
-        if (data.length() == 0)  // layout done?
+        if (data.length() == 0) {  // layout done?
+            if (linefeed)
+                context->nextLine(this);
             break;
+        }
 
         if (firstLetterStyle) {
             firstLetterStyle = 0;
