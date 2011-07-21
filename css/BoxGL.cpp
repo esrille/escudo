@@ -81,7 +81,10 @@ void BoxImage::render(ViewCSSImp* view, float x, float y, float width, float hei
 
     glMatrixMode(GL_TEXTURE);
     glLoadIdentity();
-    glScalef(1.0f / naturalWidth, 1.0f / naturalHeight, 0.0f);
+    if (repeat & BoxImage::Clamp)
+        glScalef(1.0f / width, 1.0f / height, 0.0f);
+    else
+        glScalef(1.0f / naturalWidth, 1.0f / naturalHeight, 0.0f);
     glMatrixMode(GL_MODELVIEW);
 
     GLuint texname = getTexname(pixels, naturalWidth, naturalHeight, repeat, format);

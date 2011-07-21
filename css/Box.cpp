@@ -608,8 +608,10 @@ void BlockLevelBox::layOutInlineReplaced(ViewCSSImp* view, Node node, Formatting
         html::HTMLImageElement img = interface_cast<html::HTMLImageElement>(element);
         if (BoxImage* backgroundImage = new(std::nothrow) BoxImage(inlineLevelBox, view->getDocument().getDocumentURI(), img)) {
             inlineLevelBox->backgroundImage = backgroundImage;
-            inlineLevelBox->width = backgroundImage->getWidth();
-            inlineLevelBox->height = backgroundImage->getHeight();
+            if (style->width.isAuto())
+                inlineLevelBox->width = backgroundImage->getWidth();
+            if (style->height.isAuto())
+                inlineLevelBox->height = backgroundImage->getHeight();
         }
     } else if (tag == u"iframe") {
         html::HTMLIFrameElement iframe = interface_cast<html::HTMLIFrameElement>(element);
