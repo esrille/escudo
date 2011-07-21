@@ -43,8 +43,63 @@ struct CSSParserString
     ssize_t length;
 
     operator std::u16string() const {
-        return std::u16string(text, length);
+        const char16_t* end = text + length;
+        std::u16string string;
+        for (auto i = text; i < end; ++i) {
+            char16_t c = *i;
+            if (c != '\\') {
+                string += c;
+                continue;
+            }
+            if (end <= ++i) {
+                string += c;
+                break;
+            }
+            c = *i;
+            int x = isHexDigit(c);
+            if (!x) {
+                if (c != '\n')  // TODO: check '\r' as well?
+                    string += c;
+                continue;
+            }
+            // unescape
+            char32_t code = c - x;
+            int count;
+            for (count = 1; count < 6; ++count) {
+                if (end <= ++i)
+                    break;
+                c = *i;
+                x = isHexDigit(c);
+                if (x)
+                    code = code * 16 + (c - x);
+                else if (isSpace(c))
+                    break;
+                else {
+                    --i;
+                    break;
+                }
+            }
+            if (count == 6 && ++i < end) {
+                c = *i;
+                if (!isSpace(c))
+                    --i;
+            }
+            if (code) {
+                char16_t s[2];
+                if (char16_t* t = utf32to16(code, s)) {
+                    for (char16_t* p = s; p < t; ++p)
+                        string += *p;
+                }
+            } else {
+                while (0 < count--)
+                    string += u'0';
+                if (isSpace(c))
+                    string += c;
+            }
+        }
+        return string;
     }
+
     // returns 0x00FFFFFF upon an invalid #hex color
     unsigned toRGB() const {
         unsigned rgb = 0;
