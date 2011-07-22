@@ -313,7 +313,7 @@ void BlockLevelBox::dump(ViewCSSImp* view, std::string indent)
         std::cout << node.getNodeName();
     else
         std::cout << "anonymous";
-    std::cout << "]\n";
+    std::cout << "] (" << width << ", " << height << ")\n";
     indent += "    ";
     if (!getFirstChild() && hasInline()) {
         for (auto i = inlines.begin(); i != inlines.end(); ++i) {
@@ -822,6 +822,11 @@ void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
             context->addLineBox(view, this);
             context->nextLine(this, !context->floatNodes.empty());
         }
+    }
+
+    if (!isAnonymous()) {
+        width = std::max(width, style->minWidth.getPx());
+        height = std::max(height, style->minHeight.getPx());
     }
 
     // Now that 'height' is fixed, calculate 'left', 'right', 'top', and 'bottom'.

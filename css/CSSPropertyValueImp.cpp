@@ -261,7 +261,8 @@ void CSSNumericValueImp::compute(ViewCSSImp* view, float fullSize, const CSSFont
         w = view->getPx(value, fontSize.getPx() * 0.5f);  // TODO fix 0.5
         break;
     default:
-        return;
+        w = view->getPx(value);
+        break;
     }
     value.setValue(w, css::CSSPrimitiveValue::CSS_PX);
 }
@@ -282,7 +283,8 @@ void CSSAutoLengthValueImp::compute(ViewCSSImp* view, float fullSize, const CSSF
         w = view->getPx(length, fontSize.getPx() * 0.5f);  // TODO fix 0.5
         break;
     default:
-        return;
+        w = view->getPx(length);
+        break;
     }
     length.setValue(w, css::CSSPrimitiveValue::CSS_PX);
 }
@@ -394,8 +396,8 @@ void CSSBackgroundPositionValueImp::compute(ViewCSSImp* view, BoxImage* image, c
         h = view->getPx(horizontal, fontSize.getPx() * 0.5f);  // TODO fix 0.5
         break;
     default:
-        h = view->getPx(horizontal, width);
-        return;
+        h = view->getPx(horizontal);
+        break;
     }
     horizontal.setValue(h, css::CSSPrimitiveValue::CSS_PX);
 
@@ -411,8 +413,8 @@ void CSSBackgroundPositionValueImp::compute(ViewCSSImp* view, BoxImage* image, c
         v = view->getPx(vertical, fontSize.getPx() * 0.5f);  // TODO fix 0.5
         break;
     default:
-        v = view->getPx(vertical, width);
-        return;
+        v = view->getPx(vertical);
+        break;
     }
     vertical.setValue(v, css::CSSPrimitiveValue::CSS_PX);
 }
@@ -995,6 +997,7 @@ void CSSLineHeightValueImp::compute(ViewCSSImp* view, const CSSFontSizeValueImp&
         w = view->getPx(value, fontSize.getPx() * 0.5f);  // TODO fix 0.5
         break;
     default:
+        w = view->getPx(value);
         return;
     }
     value.setValue(w, css::CSSPrimitiveValue::CSS_PX);
@@ -1115,7 +1118,8 @@ void CSSVerticalAlignValueImp::compute(ViewCSSImp* view, const CSSFontSizeValueI
         w = view->getPx(value, fontSize.getPx() * 0.5f);  // TODO fix 0.5
         break;
     default:
-        return;
+        w = view->getPx(value);
+        break;
     }
     value.setValue(w, css::CSSPrimitiveValue::CSS_PX);
 }
