@@ -18,6 +18,7 @@
 
 #include "DocumentImp.h"
 #include "css/CSSParser.h"
+#include "css/CSSStyleDeclarationImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -71,6 +72,8 @@ void HTMLElementImp::blur()
 
 css::CSSStyleDeclaration HTMLElementImp::getStyle()
 {
+    if (!style)
+        style = new(std::nothrow) CSSStyleDeclarationImp;
     return style;
 }
 
