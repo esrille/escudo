@@ -118,4 +118,7 @@ public:
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv);
 };
 
+Any callFunction(Object thisObject, Object functionObject, int argc, Any* argv);
+Object* compileFunction(const std::u16string& body);
+
 #endif  // ESJSAPI_H_INCLUDED

@@ -551,3 +551,18 @@ void putGlobal(JSObject* global)
 {
     JS_RemoveObjectRoot(jscontext, &global);
 }
+
+void callFunction(html::Function function, events::Event event)
+{
+    Any arg(event);
+    Any result = callFunction(event.getTarget(), function, 1, &arg);
+    if (event.getType() == u"mouseover") {
+        if (result.toBoolean())
+            event.preventDefault();
+    } else if (html::BeforeUnloadEvent::hasInstance(event)) {
+        html::BeforeUnloadEvent unloadEvent = interface_cast<html::BeforeUnloadEvent>(event);
+        if (unloadEvent.getReturnValue().empty() && result.isString())
+            unloadEvent.setReturnValue(result.toString());
+    } else if (!result.toBoolean())
+        event.preventDefault();
+}
