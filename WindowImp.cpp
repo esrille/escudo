@@ -19,6 +19,7 @@
 #include <new>
 #include <iostream>
 #include <boost/version.hpp>
+#include <boost/bind.hpp>
 #include <boost/iostreams/stream.hpp>
 #include <boost/iostreams/device/file_descriptor.hpp>
 
@@ -31,6 +32,8 @@
 
 #include "KeyboardEventImp.h"
 #include "MouseEventImp.h"
+
+#include "js/Script.h"
 
 #include "Test.util.h"
 
@@ -156,6 +159,12 @@ bool WindowImp::poll()
             // Each HTML style element will have a style sheet.
             evalTree(window->getDocument());
             dumpTree(std::cerr, window->getDocument());
+
+            // load
+            if (EventImp* event = new(std::nothrow) EventImp) {
+                event->initEvent(u"load", false, false);
+                window->dispatchEvent(event);
+            }
 
             refreshView();
         } else if (boxTree && boxTree->isFlagged()) {
@@ -925,7 +934,11 @@ html::Function WindowImp::getOnload()
 
 void WindowImp::setOnload(html::Function onload)
 {
-    // TODO: implement me!
+    if (!window)
+        return;
+    window->addEventListener(u"load",
+                             new(std::nothrow) EventListenerImp(boost::bind(callFunction, onload, _1)),
+                             false);
 }
 
 html::Function WindowImp::getOnloadeddata()

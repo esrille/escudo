@@ -16,6 +16,8 @@
 
 #include "HTMLBodyElementImp.h"
 
+#include <org/w3c/dom/html/Window.h>
+
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 // Node
@@ -110,7 +112,7 @@ html::Function HTMLBodyElementImp::getOnload()
 
 void HTMLBodyElementImp::setOnload(html::Function onload)
 {
-    // TODO: implement me!
+    getOwnerDocument().getDefaultView().setOnload(onload);
 }
 
 html::Function HTMLBodyElementImp::getOnmessage()

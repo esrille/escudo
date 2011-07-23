@@ -21,6 +21,7 @@
 #include <js/esjsapi.h>
 
 #include "DocumentImp.h"
+#include "DocumentWindow.h"
 #include "EventImp.h"
 #include "NodeImp.h"
 
@@ -99,37 +100,43 @@ void EventTargetImp::removeEventListener(std::u16string type, events::EventListe
 bool EventTargetImp::dispatchEvent(events::Event evt)
 {
     EventImp* event = dynamic_cast<EventImp*>(evt.self());
-    NodeImp* node = dynamic_cast<NodeImp*>(this);
-    if (!event || !node)
+    if (!event)
         return false;
     event->setDispatchFlag(true);
     event->setTarget(this);
 
-    JS_SetGlobalObject(jscontext, static_cast<JSObject*>(node->getOwnerDocumentImp()->getGlobal()));
+    if (NodeImp* node = dynamic_cast<NodeImp*>(this)) {
+        JS_SetGlobalObject(jscontext, static_cast<JSObject*>(node->getOwnerDocumentImp()->getGlobal()));
 
-    if (!node->parentNode)
-        invoke(event);
-    else {
-        std::list<NodeImp*> eventPath;
-        for (NodeImp* ancestor = node->parentNode; ancestor; ancestor = ancestor->parentNode)
-            eventPath.push_front(ancestor);
-        event->setEventPhase(events::Event::CAPTURING_PHASE);
-        for (auto i = eventPath.begin(); i != eventPath.end(); ++i) {
-            if (event->getStopPropagationFlag())
-                break;
-            (*i)->invoke(event);
-        }
-        event->setEventPhase(events::Event::AT_TARGET);
-        if (!event->getStopPropagationFlag())
-            node->invoke(event);
-        if (event->getBubbles()) {
-            event->setEventPhase(events::Event::BUBBLING_PHASE);
-            for (auto i = eventPath.rbegin(); i != eventPath.rend(); ++i) {
+        if (!node->parentNode) {
+            event->setEventPhase(events::Event::AT_TARGET);
+            invoke(event);
+        } else {
+            std::list<NodeImp*> eventPath;
+            for (NodeImp* ancestor = node->parentNode; ancestor; ancestor = ancestor->parentNode)
+                eventPath.push_front(ancestor);
+            event->setEventPhase(events::Event::CAPTURING_PHASE);
+            for (auto i = eventPath.begin(); i != eventPath.end(); ++i) {
                 if (event->getStopPropagationFlag())
                     break;
                 (*i)->invoke(event);
             }
+            event->setEventPhase(events::Event::AT_TARGET);
+            if (!event->getStopPropagationFlag())
+                node->invoke(event);
+            if (event->getBubbles()) {
+                event->setEventPhase(events::Event::BUBBLING_PHASE);
+                for (auto i = eventPath.rbegin(); i != eventPath.rend(); ++i) {
+                    if (event->getStopPropagationFlag())
+                        break;
+                    (*i)->invoke(event);
+                }
+            }
         }
+    } else if (DocumentWindow* window = dynamic_cast<DocumentWindow*>(this)) {
+        JS_SetGlobalObject(jscontext, static_cast<JSObject*>(dynamic_cast<DocumentImp*>(window->getDocument().self())->getGlobal()));
+        event->setEventPhase(events::Event::AT_TARGET);
+        invoke(event);
     }
     event->setDispatchFlag(false);
     event->setEventPhase(events::Event::AT_TARGET);

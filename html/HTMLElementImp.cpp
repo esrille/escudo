@@ -19,6 +19,7 @@
 #include "DocumentImp.h"
 #include "css/CSSParser.h"
 #include "css/CSSStyleDeclarationImp.h"
+#include "js/esjsapi.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -41,10 +42,13 @@ HTMLElementImp::~HTMLElementImp()
 void HTMLElementImp::eval()
 {
     Nullable<std::u16string> attr = getAttribute(u"style");
-    if (!attr.hasValue())
-        return;
-    CSSParser parser;
-    style = parser.parseDeclarations(attr.value());
+    if (attr.hasValue()) {
+        CSSParser parser;
+        style = parser.parseDeclarations(attr.value());
+    }
+    attr = getAttribute(u"onload");
+    if (attr.hasValue())
+        setOnload(compileFunction(attr.value()));
 }
 
 // Node
