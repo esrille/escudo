@@ -32,16 +32,16 @@ namespace dom
 namespace bootstrap
 {
 
-void HistoryImp::update(Document document)
+void HistoryImp::update(const DocumentWindowPtr& window)
 {
     if (!sessionHistory.empty())
         sessionHistory.erase(sessionHistory.begin() + currentSession + 1, sessionHistory.end());
-    SessionHistoryEntry e(document);
+    SessionHistoryEntry e(window);
     sessionHistory.push_back(e);
     currentSession = getLength() - 1;
 
     for (auto i = sessionHistory.begin(); i != sessionHistory.end(); ++i)
-        std::cerr << i->document.getURL() << ' ';
+        std::cerr << i->window->getDocument().getURL() << ' ';
     std::cerr << '\n';
 }
 
@@ -61,7 +61,7 @@ void HistoryImp::go()
     if (sessionHistory.empty())
         return;
     SessionHistoryEntry& e = sessionHistory[currentSession];
-    e.document.getLocation().reload();
+    e.window->getDocument().getLocation().reload();
 }
 
 void HistoryImp::go(int delta)
@@ -80,7 +80,7 @@ void HistoryImp::go(int delta)
     if (nextSession != currentSession) {
         currentSession = nextSession;
         SessionHistoryEntry& e = sessionHistory[currentSession];
-        window->setDocument(e.document);
+        window->setDocumentWindow(e.window);
     }
 }
 

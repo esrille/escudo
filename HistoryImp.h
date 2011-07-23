@@ -21,11 +21,11 @@
 #include "config.h"
 #endif
 
-#include <org/w3c/dom/Document.h>
+#include <org/w3c/dom/html/History.h>
 
 #include <deque>
 
-#include <org/w3c/dom/html/History.h>
+#include "DocumentWindow.h"
 
 namespace org
 {
@@ -42,13 +42,13 @@ class HistoryImp : public ObjectMixin<HistoryImp>
 {
     struct SessionHistoryEntry
     {
-        Document document;
+        DocumentWindowPtr window;
 
-        SessionHistoryEntry(Document& document) :
-            document(document) {
+        SessionHistoryEntry(const DocumentWindowPtr& window) :
+            window(window) {
         }
         SessionHistoryEntry(const SessionHistoryEntry& other) :
-            document(other.document) {
+            window(other.window) {
         }
     };
 
@@ -63,7 +63,7 @@ public:
     }
 
     // Update the session history with the new page
-    void update(Document document);
+    void update(const DocumentWindowPtr& window);
 
     // History
     int getLength();

@@ -45,6 +45,7 @@
 
 #include <org/w3c/dom/css/CSSStyleSheet.h>
 
+#include "DocumentWindow.h"
 #include "EventTargetImp.h"
 #include "HistoryImp.h"
 #include "LocationImp.h"
@@ -59,7 +60,8 @@ class WindowImp : public ObjectMixin<WindowImp, EventTargetImp>
 {
     HttpRequest request;
     Retained<HistoryImp> history;
-    Document document;
+
+    DocumentWindowPtr window;
     ViewCSSImp* view;
     Box* boxTree;
 
@@ -90,7 +92,8 @@ public:
 
     bool poll();
     void render();
-    void setDocument(Document document);
+    void setDocumentWindow(const DocumentWindowPtr& window);
+    void refreshView();
 
     // mouse()
     //   button:

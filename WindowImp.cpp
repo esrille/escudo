@@ -55,7 +55,7 @@ void evalTree(Node node)
 WindowImp::WindowImp(WindowImp* parent) :
     request(parent ? parent->getLocation().getHref() : u""),
     history(this),
-    document(0),
+    window(0),
     view(0),
     boxTree(0),
     parent(parent),
@@ -80,21 +80,29 @@ WindowImp::~WindowImp()
     }
 }
 
-void WindowImp::setDocument(Document document)
+void WindowImp::refreshView()
 {
+    assert(window->getDocument());
+
     delete view;
 
-    view = new(std::nothrow) ViewCSSImp(document, getDOMImplementation()->getDefaultCSSStyleSheet());
+    view = new(std::nothrow) ViewCSSImp(window->getDocument(), getDOMImplementation()->getDefaultCSSStyleSheet());
     if (!view)
         return;
     view->cascade();
-    printComputedValues(document, view);  // for debug
+    printComputedValues(window->getDocument(), view);  // for debug
     view->setSize(width, height);
     boxTree = view->layOut();
 
     detail = 0;
 
     redisplay = true;
+}
+
+void WindowImp::setDocumentWindow(const DocumentWindowPtr& window)
+{
+    this->window = window;
+    refreshView();
 }
 
 bool WindowImp::poll()
@@ -118,19 +126,19 @@ bool WindowImp::poll()
     case HttpRequest::LOADING:
         break;
     case HttpRequest::DONE:
-        if (!document) {
+        if (!window->getDocument()) {
             if (!request.getErrorFlag()) {
                 // TODO: Check header
-                document = getDOMImplementation()->createDocument(u"", u"", 0);
+                window->setDocument(getDOMImplementation()->createDocument(u"", u"", 0));
             }
-            if (!document)
+            if (!window->getDocument())
                 break;
 
-            DocumentImp* imp = dynamic_cast<DocumentImp*>(document.self());
+            DocumentImp* imp = dynamic_cast<DocumentImp*>(window->getDocument().self());
             if (imp) {
                 imp->setDefaultView(this);
                 imp->setURL(request.getRequestMessage().getURL());
-                history.update(document);
+                history.update(window);
             }
 
 #if 104400 <= BOOST_VERSION
@@ -141,15 +149,15 @@ bool WindowImp::poll()
             stream.seekg(0, std::ios::beg);
             HTMLInputStream htmlInputStream(stream, "utf-8");  // TODO check header
             HTMLTokenizer tokenizer(&htmlInputStream);
-            HTMLParser parser(document, &tokenizer);
+            HTMLParser parser(window->getDocument(), &tokenizer);
             parser.mainLoop();  // TODO: run thin in background
 
             // Each HTML element will have a style attribute if there's the style content attribute.
             // Each HTML style element will have a style sheet.
-            evalTree(document);
-            dumpTree(std::cerr, document);
+            evalTree(window->getDocument());
+            dumpTree(std::cerr, window->getDocument());
 
-            setDocument(document);
+            refreshView();
         } else if (boxTree && boxTree->isFlagged()) {
             view->cascade();
             view->setSize(8.5f * 96, 11.0f * 96);  // US letter size, 96 DPI
@@ -244,6 +252,7 @@ void WindowImp::mouseMove(int x, int y, int modifiers)
 
 void WindowImp::keydown(unsigned charCode, unsigned keyCode, int modifiers)
 {
+    Document document = window->getDocument();
     if (!document)
         return;
     Element e = document.getActiveElement();
@@ -264,6 +273,7 @@ void WindowImp::keydown(unsigned charCode, unsigned keyCode, int modifiers)
 
 void WindowImp::keyup(unsigned charCode, unsigned keyCode, int modifiers)
 {
+    Document document = window->getDocument();
     if (!document)
         return;
     Element e = document.getActiveElement();
@@ -291,7 +301,7 @@ html::Window WindowImp::getSelf()
 
 Document WindowImp::getDocument()
 {
-    return document;
+    return window->getDocument();
 }
 
 html::Location WindowImp::getLocation()
@@ -335,7 +345,7 @@ html::Window WindowImp::getParent()
 html::Window WindowImp::open(std::u16string url, std::u16string target, std::u16string features, bool replace)
 {
     // TODO: add more details
-    document = 0;  // XXX
+    window = new(std::nothrow) DocumentWindow;
 
     if (url.empty())
         url = u"about:blank";
