@@ -77,11 +77,21 @@ bool HTMLScriptElementImp::execute()
     jsval rval;
     const char* filename = "";
     int lineno = 0;
-    Nullable<std::u16string> script = getTextContent();
-    if (!script.hasValue())
+    Nullable<std::u16string> content = getTextContent();
+    if (!content.hasValue())
         return false;
+    std::u16string script = content.value();
+    stripLeadingAndTrailingWhitespace(script);
+    size_t pos = 0;
+    size_t length = script.length();
+    if (script.compare(0, 4, u"<!--") == 0) {
+        pos = 4;
+        length -= 4;
+    }
+    if (3 <= length && script.compare(length - 3, 3, u"-->") == 0)
+        length -= 3;
     return JS_EvaluateUCScript(jscontext, static_cast<JSObject*>(getOwnerDocumentImp()->getGlobal()),
-                               reinterpret_cast<const jschar*>(script.value().c_str()), script.value().length(),
+                               reinterpret_cast<const jschar*>(script.c_str() + pos), length,
                                filename, lineno, &rval);
 }
 
