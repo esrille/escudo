@@ -326,6 +326,7 @@ public:
     void setParentRule(css::CSSRule parentRule) {
         this->parentRule = parentRule;
     }
+    bool setProperty(int id, CSSParserExpr* expr, const std::u16string& prio = u"");
     bool setProperty(std::u16string property, CSSParserExpr* expr, const std::u16string& prio = u"");
     void setColor(unsigned color) {
         this->color = color;

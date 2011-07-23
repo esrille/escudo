@@ -428,12 +428,9 @@ void CSSStyleDeclarationImp::resetProperty(unsigned id)
     propertySet.reset(id);
 }
 
-bool CSSStyleDeclarationImp::setProperty(std::u16string property, CSSParserExpr* expr, const std::u16string& prio)
+bool CSSStyleDeclarationImp::setProperty(int id, CSSParserExpr* expr, const std::u16string& prio)
 {
-    if (!expr)
-        return false;
-    toLower(property);
-    int id = getPropertyID(property);
+    assert(expr);
     if (id == Unknown) {
         // TODO: delete expr; ?
         return false;
@@ -459,6 +456,14 @@ bool CSSStyleDeclarationImp::setProperty(std::u16string property, CSSParserExpr*
     else
         setProperty(id);
     return true;
+}
+
+bool CSSStyleDeclarationImp::setProperty(std::u16string property, CSSParserExpr* expr, const std::u16string& prio)
+{
+    if (!expr)
+        return false;
+    toLower(property);
+    return setProperty(getPropertyID(property), expr, prio);
 }
 
 void CSSStyleDeclarationImp::specify(CSSStyleDeclarationImp* decl, unsigned id)
@@ -1278,7 +1283,7 @@ Nullable<std::u16string> CSSStyleDeclarationImp::getBackground()
 {
 }
 
-void CSSStyleDeclarationImp::CSSStyleDeclarationImp::setBackground(Nullable<std::u16string> background)
+void CSSStyleDeclarationImp::setBackground(Nullable<std::u16string> background)
 {
 }
 
@@ -1286,7 +1291,7 @@ Nullable<std::u16string> CSSStyleDeclarationImp::getBackgroundAttachment()
 {
 }
 
-void CSSStyleDeclarationImp::CSSStyleDeclarationImp::setBackgroundAttachment(Nullable<std::u16string> backgroundAttachment)
+void CSSStyleDeclarationImp::setBackgroundAttachment(Nullable<std::u16string> backgroundAttachment)
 {
 }
 
@@ -1608,6 +1613,16 @@ Nullable<std::u16string> CSSStyleDeclarationImp::getDisplay()
 
 void CSSStyleDeclarationImp::setDisplay(Nullable<std::u16string> display)
 {
+    if (display.hasValue()) {
+        std::u16string value = display.value();
+        stripLeadingAndTrailingWhitespace(value);
+        CSSParser parser;
+        CSSParserExpr* expr = parser.parseExpression(value);
+        if (expr) {
+            setProperty(Display, expr);
+            delete expr;
+        }
+    }
 }
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getElevation()
