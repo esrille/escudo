@@ -205,6 +205,7 @@ class CSSParser
     CSSTokenizer tokenizer;
     CSSStyleSheetImp* styleSheet;
     CSSStyleDeclarationImp* styleDeclaration;
+    CSSParserExpr* styleExpression;
     CSSMediaRuleImp* mediaRule;
 
     void reset(const std::u16string cssText) {
@@ -213,6 +214,7 @@ class CSSParser
 public:
     css::CSSStyleSheet parse(const std::u16string& cssText);
     css::CSSStyleDeclaration parseDeclarations(const std::u16string& cssDecl);
+    CSSParserExpr* parseExpression(const std::u16string& cssExpr);
 
     CSSTokenizer* getTokenizer() {
         return &tokenizer;
@@ -227,6 +229,13 @@ public:
         return styleDeclaration;
     }
 
+    void setExpression(CSSParserExpr* styleExpression) {
+        this->styleExpression = styleExpression;
+    }
+    CSSParserExpr* getExpression() {
+        return styleExpression;
+    }
+
     void setMediaRule(CSSMediaRuleImp* mediaRule) {
         this->mediaRule = mediaRule;
     }
@@ -237,6 +246,7 @@ public:
     CSSParser() :
         styleSheet(0),
         styleDeclaration(0),
+        styleExpression(0),
         mediaRule(0) {
     }
 };

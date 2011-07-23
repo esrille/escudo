@@ -40,6 +40,9 @@ start:
         mode = Normal;
         return START_DECLARATION_LIST;
         break;
+    case StartExpression:
+        mode = Normal;
+        return START_EXPRESSION;
     default:
         break;
     }

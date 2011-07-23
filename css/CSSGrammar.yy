@@ -60,6 +60,7 @@ int CSSlex(CSSParser* parser);
 
 %token START_STYLESHEET
 %token START_DECLARATION_LIST
+%token START_EXPRESSION
 
 %token END 0 "end of file"
 %token <number> ANGLE_DEG
@@ -146,7 +147,11 @@ int CSSlex(CSSParser* parser);
 
 start
   : START_STYLESHEET stylesheet
-  | START_DECLARATION_LIST declaration_list;
+  | START_DECLARATION_LIST declaration_list
+  | START_EXPRESSION expr {
+        parser->setExpression($2);
+    }
+  ;
 
 stylesheet
   : CHARSET_SYM optional_space STRING optional_space ';'

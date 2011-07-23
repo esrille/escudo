@@ -44,6 +44,13 @@ CSSStyleDeclaration CSSParser::parseDeclarations(const std::u16string& cssDecl)
     return styleDeclaration;
 }
 
+CSSParserExpr* CSSParser::parseExpression(const std::u16string& cssExpr)
+{
+    tokenizer.reset(cssExpr, CSSTokenizer::StartExpression);
+    CSSparse(this);
+    return getExpression();
+}
+
 std::u16string CSSParserExpr::getCssText()
 {
     std::u16string cssText;
