@@ -185,6 +185,9 @@ protected:
     float offsetH;
     float offsetV;
 
+    float x;  // in screen coord
+    float y;  // in screen coord
+
     // background
     unsigned backgroundColor;
     BoxImage* backgroundImage;

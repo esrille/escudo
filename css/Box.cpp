@@ -308,12 +308,12 @@ bool BlockLevelBox::isAbsolutelyPositioned() const
 
 void BlockLevelBox::dump(ViewCSSImp* view, std::string indent)
 {
-    std::cout << indent << "* block-level box [";
+    std::cout << indent << "* block-level box (" << static_cast<void*>(this) << ") [";
     if (node)
         std::cout << node.getNodeName();
     else
         std::cout << "anonymous";
-    std::cout << "] (" << width << ", " << height << ")\n";
+    std::cout << "] (" << x << ", " << y << "), (" << width << ", " << height << ")\n";
     indent += "    ";
     if (!getFirstChild() && hasInline()) {
         for (auto i = inlines.begin(); i != inlines.end(); ++i) {
@@ -1113,7 +1113,7 @@ void InlineLevelBox::resolveOffset(ViewCSSImp* view)
 
 void InlineLevelBox::dump(ViewCSSImp* view, std::string indent)
 {
-    std::cout << indent << "* inline-level box: \"" << data << "\"\n";
+    std::cout << indent << "* inline-level box (" << static_cast<void*>(this) << "): \"" << data << "\"\n";
     indent += "    ";
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
         child->dump(view, indent);

@@ -31,6 +31,14 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 namespace {
 
+enum
+{
+    TOP,
+    RIGHT,
+    BOTTOM,
+    LEFT
+};
+
 std::map<uint8_t*, GLuint> texnames;
 
 GLuint addImage(uint8_t* image, unsigned width, unsigned heigth, unsigned repeat, GLenum format)
@@ -64,13 +72,13 @@ void deleteImage(uint8_t* image)
     texnames.erase(it);
 }
 
-enum
+void getOriginScreenPosition(float& x, float& y)
 {
-    TOP,
-    RIGHT,
-    BOTTOM,
-    LEFT
-};
+    GLfloat m[16];
+    glGetFloatv(GL_MODELVIEW_MATRIX, m);
+    x = m[12];
+    y = glutGet(GLUT_WINDOW_HEIGHT) - m[13];
+}
 
 }  // namespace
 
@@ -318,19 +326,15 @@ void BlockLevelBox::render(ViewCSSImp* view)
 {
     glPushMatrix();
     glTranslatef(offsetH, offsetV, 0.0f);
+    getOriginScreenPosition(x, y);
     renderBorder(view);
-    glTranslatef(marginLeft + paddingLeft + borderLeft,
-                 marginTop + paddingTop + borderTop,
-                 0.0f);
+    glTranslatef(getBlankLeft(), getBlankTop(), 0.0f);
     if (shadow)
         shadow->render();
     else {
         for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
             child->render(view);
-            glTranslatef(0.0f,
-                        child->marginTop + child->borderTop + child->paddingTop +
-                        child->height +
-                        child->marginBottom + child->borderBottom + child->paddingBottom , 0.0f);
+            glTranslatef(0.0f, child->getTotalHeight(), 0.0f);
         }
     }
     glPopMatrix();
@@ -340,13 +344,11 @@ void LineBox::render(ViewCSSImp* view)
 {
     glPushMatrix();
     glTranslatef(offsetH, offsetV, 0.0f);
+    getOriginScreenPosition(x, y);
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
         child->render(view);
         if (!child->isAbsolutelyPositioned()) {
-            glTranslatef(child->marginLeft + child->borderLeft + child->paddingLeft +
-                         child->width +
-                         child->marginRight + child->borderRight + child->paddingRight,
-                         0.0f, 0.0f);
+            glTranslatef(child->getTotalWidth(), 0.0f, 0.0f);
         }
     }
     glPopMatrix();
@@ -357,9 +359,8 @@ void InlineLevelBox::render(ViewCSSImp* view)
     glPushMatrix();
     glTranslatef(offsetH, offsetV, 0.0f);
     renderBorder(view);
-    glTranslatef(marginLeft + paddingLeft + borderLeft,
-                 marginTop + paddingTop + borderTop,
-                 0.0f);
+    glTranslatef(getBlankLeft(), getBlankTop(), 0.0f);
+    getOriginScreenPosition(x, y);
     if (shadow)
         shadow->render();
     else if (getFirstChild())  // for inline-block
