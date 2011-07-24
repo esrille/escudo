@@ -121,9 +121,8 @@ public:
     BoxImage(Box* box = 0);
     BoxImage(Box* box, const std::u16string& base, const std::u16string& url, unsigned repeat = 0);
     BoxImage(Box* box, const std::u16string& base, html::HTMLImageElement& img);
-    virtual ~BoxImage() {
-        delete pixels;
-    }
+    ~BoxImage();
+
     int getState() const {
         return state;
     }

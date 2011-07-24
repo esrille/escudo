@@ -67,9 +67,10 @@ GLuint getTexname(uint8_t* image, unsigned width, unsigned height, unsigned repe
 void deleteImage(uint8_t* image)
 {
     std::map<uint8_t*, GLuint>::iterator it = texnames.find(image);
-    assert(it != texnames.end());
-    glDeleteTextures(1, &it->second);
-    texnames.erase(it);
+    if (it != texnames.end()) {
+        glDeleteTextures(1, &it->second);
+        texnames.erase(it);
+    }
 }
 
 void getOriginScreenPosition(float& x, float& y)
@@ -81,6 +82,13 @@ void getOriginScreenPosition(float& x, float& y)
 }
 
 }  // namespace
+
+BoxImage::~BoxImage()
+{
+    if (state == CompletelyAvailable)
+        deleteImage(pixels);
+    delete pixels;
+}
 
 void BoxImage::render(ViewCSSImp* view, float x, float y, float width, float height, float left, float top)
 {
