@@ -224,6 +224,15 @@ public:
         return shadow;
     }
 
+    Node getTargetNode() const {
+        const Box* box = this;
+        do {
+            if (box->node)
+                return box->node;
+        } while (box = box->parentBox);
+        return 0;
+    }
+
     Box* removeChild(Box* item);
     Box* insertBefore(Box* item, Box* after);
     Box* appendChild(Box* item);

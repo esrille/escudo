@@ -212,7 +212,7 @@ void WindowImp::mouse(int button, int up, int x, int y, int modifiers)
         event.initMouseEvent(up ? u"mouseup" : u"mousedown",
                             true, true, this, detail, x, y, x, y,
                             modifiers & 2, modifiers & 4, modifiers & 1, false, button, 0);
-        box->getNode().dispatchEvent(event);
+        box->getTargetNode().dispatchEvent(event);
     }
 
     if (!up || detail == 0)
@@ -226,7 +226,7 @@ void WindowImp::mouse(int button, int up, int x, int y, int modifiers)
         event.initMouseEvent(u"click",
                             true, true, this, detail, x, y, x, y,
                             modifiers & 2, modifiers & 4, modifiers & 1, false, button, 0);
-        box->getNode().dispatchEvent(event);
+        box->getTargetNode().dispatchEvent(event);
     }
 }
 
@@ -253,7 +253,7 @@ void WindowImp::mouseMove(int x, int y, int modifiers)
         event.initMouseEvent(u"mousemove",
                             true, true, this, detail, x, y, x, y,
                             modifiers & 2, modifiers & 4, modifiers & 1, false, 0, 0);
-        box->getNode().dispatchEvent(event);
+        box->getTargetNode().dispatchEvent(event);
     }
 }
 
