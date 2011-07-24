@@ -127,6 +127,7 @@ void DocumentImp::setDefaultView(WindowImp* view) {
     if (global) {
         view->setPrivate(global);
         JS_SetPrivate(jscontext, static_cast<JSObject*>(global), view);
+        JS_SetGlobalObject(jscontext, static_cast<JSObject*>(global));
     }
 }
 

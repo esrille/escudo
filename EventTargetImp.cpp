@@ -65,7 +65,7 @@ void EventTargetImp::addEventListener(std::u16string type, events::EventListener
     auto found = map.find(type);
     if (found == map.end()) {
         std::list<Listener> listeners;
-        listeners.push_back(item);
+        listeners.push_front(item);
         map.insert(std::pair<std::u16string, std::list<Listener>>(type, listeners));
         return;
     }
@@ -75,7 +75,7 @@ void EventTargetImp::addEventListener(std::u16string type, events::EventListener
         if (*i == item)
             return;
     }
-    listeners.push_back(item);
+    listeners.push_front(item);
 }
 
 void EventTargetImp::removeEventListener(std::u16string type, events::EventListener listener, bool useCapture)
@@ -102,12 +102,12 @@ bool EventTargetImp::dispatchEvent(events::Event evt)
     EventImp* event = dynamic_cast<EventImp*>(evt.self());
     if (!event)
         return false;
+
     event->setDispatchFlag(true);
     event->setTarget(this);
 
     if (NodeImp* node = dynamic_cast<NodeImp*>(this)) {
         JS_SetGlobalObject(jscontext, static_cast<JSObject*>(node->getOwnerDocumentImp()->getGlobal()));
-
         if (!node->parentNode) {
             event->setEventPhase(events::Event::AT_TARGET);
             invoke(event);

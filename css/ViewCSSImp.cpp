@@ -88,14 +88,13 @@ ViewCSSImp::~ViewCSSImp()
     document.removeEventListener(u"DOMAttrModified", &mutationListener);
 }
 
-Box* ViewCSSImp::lookupTarget(int& x, int& y)
+Box* ViewCSSImp::lookupTarget(int x, int y)
 {
     if (!boxTree)
         return 0;
-    Box* boxParent = boxTree.get();
-    while (Box* box = boxParent->toBox(x, y))
-        boxParent = box;
-    return boxParent;
+    if (Box* target = boxTree.get()->lookupTarget(x, y))
+        return target;
+    return boxTree.get();
 }
 
 void ViewCSSImp::handleMutation(events::Event event)
@@ -338,7 +337,6 @@ BlockLevelBox* ViewCSSImp::layOut()
         if (i->second->isAbsolutelyPositioned())
             i->second->layOutAbsolute(this, i->first);
     }
-    boxTree->dump(this);
     return boxTree.get();
 }
 

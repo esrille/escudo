@@ -20,6 +20,7 @@
 #include <org/w3c/dom/html/HTMLBodyElement.h>
 
 #include "CSSValueParser.h"
+#include "MutationEventImp.h"
 #include "ViewCSSImp.h"
 
 #include <iostream>
@@ -1621,6 +1622,13 @@ void CSSStyleDeclarationImp::setDisplay(Nullable<std::u16string> display)
         if (expr) {
             setProperty(Display, expr);
             delete expr;
+            if (owner) {
+                events::EventTarget target(owner);
+                events::MutationEvent event = new(std::nothrow) MutationEventImp;
+                event.initMutationEvent(u"DOMAttrModified",
+                                        true, false, this, u"", u"", u"display", events::MutationEvent::MODIFICATION);
+                target.dispatchEvent(event);
+            }
         }
     }
 }
@@ -2258,6 +2266,7 @@ void CSSStyleDeclarationImp::setZIndex(Nullable<std::u16string> zIndex)
 }
 
 CSSStyleDeclarationImp::CSSStyleDeclarationImp() :
+    owner(0),
     parentRule(0),
     resolved(false),
     box(0),

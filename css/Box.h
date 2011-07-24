@@ -235,6 +235,13 @@ public:
     Box* getPreviousSibling() const;
     Box* getNextSibling() const;
 
+    float getX() const {
+        return x;
+    }
+    float getY() const {
+        return y;
+    }
+
     float getBlankLeft() const {
         return marginLeft + borderLeft + paddingLeft;
     }
@@ -268,8 +275,6 @@ public:
         if (Box* box = getParentBox())
             box->toViewPort(this, x, y);
     }
-
-    virtual Box* toBox(int& x, int& y) const = 0;
 
     CSSStyleDeclarationImp* getStyle() const {
         return style.get();
@@ -312,6 +317,20 @@ public:
         for (const Box* i = firstChild; i; i = i->nextSibling)
             f |= i->isFlagged();
         return f;
+    }
+
+    bool isInside(int s, int t) const {
+        if (s < x || t < y || x + width <= s || y + height <= t)
+            return false;
+        return true;
+    }
+
+    Box* lookupTarget(int x, int y) {
+        for (Box* box = getFirstChild(); box; box = box->getNextSibling()) {
+            if (Box* target = box->lookupTarget(x, y))
+                return target;
+        }
+        return isInside(x, y) ? this : 0;
     }
 };
 
@@ -362,25 +381,6 @@ public:
             y += i->getTotalHeight();
         if (box = getParentBox())
             box->toViewPort(this, x, y);
-    }
-
-    virtual Box* toBox(int& x, int& y) const {
-        x -= offsetH + getBlankLeft();
-        y -= offsetV + getBlankTop();
-        int cy = 0;
-        int top = 0;
-        int bottom = 0;
-        for (auto i = getFirstChild(); i; i = i->getNextSibling()) {
-            int h = i->getTotalHeight();
-            top = cy + i->offsetV;
-            cy += h;
-            bottom = top + h;
-            if (top <= y && y < bottom) {
-                y -= top;
-                return i;  // TODO: check left, right as well.
-            }
-        }
-        return 0;
     }
 
     bool hasInline() const {
@@ -443,26 +443,6 @@ public:
             box->toViewPort(this, x, y);
     }
 
-    virtual Box* toBox(int& x, int& y) const {
-        int cx = 0;
-        int left = 0;
-        int right = 0;
-        for (auto i = getFirstChild(); i; i = i->getNextSibling()) {
-            if (i->isAbsolutelyPositioned())  // TODO: support absolutely positioned boxes
-                continue;
-            int w = i->getTotalWidth();
-            left = cx + i->offsetH;
-            cx += w;
-            right = left + w;
-            if (left <= x && x < right) {
-                x -= left;
-                return i;  // TODO: check top, bottom as well.
-            }
-        }
-        return 0;
-
-    }
-
     float getBaseline() const {
         return baseline;
     }
@@ -493,10 +473,6 @@ public:
     }
 
     virtual void toViewPort(const Box* box, float& x, float& y) const;
-
-    virtual Box* toBox(int& x, int& y) const {
-        return 0;
-    }
 
     virtual bool isAnonymous() const;
 

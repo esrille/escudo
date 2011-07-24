@@ -16,10 +16,13 @@
 
 #include "HTMLElementImp.h"
 
+#include <boost/bind.hpp>
+
 #include "DocumentImp.h"
 #include "css/CSSParser.h"
 #include "css/CSSStyleDeclarationImp.h"
 #include "js/esjsapi.h"
+#include "js/Script.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -45,7 +48,11 @@ void HTMLElementImp::eval()
     if (attr.hasValue()) {
         CSSParser parser;
         style = parser.parseDeclarations(attr.value());
+        parser.getStyleDeclaration()->setOwner(this);
     }
+    attr = getAttribute(u"onclick");
+    if (attr.hasValue())
+        setOnclick(compileFunction(attr.value()));
     attr = getAttribute(u"onload");
     if (attr.hasValue())
         setOnload(compileFunction(attr.value()));
@@ -76,8 +83,12 @@ void HTMLElementImp::blur()
 
 css::CSSStyleDeclaration HTMLElementImp::getStyle()
 {
-    if (!style)
-        style = new(std::nothrow) CSSStyleDeclarationImp;
+    if (!style) {
+        CSSStyleDeclarationImp* imp = new(std::nothrow) CSSStyleDeclarationImp;
+        if (imp)
+            imp->setOwner(this);
+        style = imp;
+    }
     return style;
 }
 
@@ -118,7 +129,9 @@ void HTMLElementImp::insertAdjacentHTML(std::u16string position, std::u16string 
 
 std::u16string HTMLElementImp::getId()
 {
-    // TODO: implement me!
+    Nullable<std::u16string> id = getAttribute(u"id");
+    if (id.hasValue())
+        return id.value();
     return u"";
 }
 
@@ -453,7 +466,9 @@ html::Function HTMLElementImp::getOnclick()
 
 void HTMLElementImp::setOnclick(html::Function onclick)
 {
-    // TODO: implement me!
+    addEventListener(u"click",
+                     new(std::nothrow) EventListenerImp(boost::bind(callFunction, onclick, _1)),
+                     false);
 }
 
 html::Function HTMLElementImp::getOncontextmenu()

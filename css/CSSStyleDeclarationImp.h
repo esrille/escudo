@@ -205,6 +205,7 @@ public:
     static const char16_t* getPseudoElementName(int id);
 
 private:
+    Object* owner;
     css::CSSRule parentRule;
     std::bitset<PropertyCount> propertySet;
     std::bitset<PropertyCount> importantSet;
@@ -321,6 +322,10 @@ public:
     ~CSSStyleDeclarationImp()
     {
         ;  //
+    }
+
+    void setOwner(Object* owner) {
+        this->owner = owner;
     }
 
     void setParentRule(css::CSSRule parentRule) {

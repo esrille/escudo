@@ -174,7 +174,7 @@ public:
         return px / dpi * 72;
     }
 
-    Box* lookupTarget(int& x, int& y);
+    Box* lookupTarget(int x, int y);
 
     CSSStyleDeclarationImp* getStyle(Element elt, Nullable<std::u16string> pseudoElt = Nullable<std::u16string>());
 

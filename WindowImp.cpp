@@ -181,8 +181,10 @@ bool WindowImp::poll()
 
 void WindowImp::render()
 {
-    if (view)
+    if (view) {
         view->render();
+        boxTree->dump(view);
+    }
 }
 
 void WindowImp::mouse(int button, int up, int x, int y, int modifiers)
@@ -191,8 +193,6 @@ void WindowImp::mouse(int button, int up, int x, int y, int modifiers)
         return;
 
     events::MouseEvent event(0);
-    int orgX = x;
-    int orgY = y;
 
     Box* box = view->lookupTarget(x, y);
     ViewCSSImp* shadow = box->getShadow();
@@ -217,8 +217,6 @@ void WindowImp::mouse(int button, int up, int x, int y, int modifiers)
 
     if (!up || detail == 0)
         return;
-    x = orgX;
-    y = orgY;
     Box* clickBox = view->lookupTarget(x, y);
     if (box != clickBox)
         return;
