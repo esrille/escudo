@@ -555,7 +555,7 @@ void putGlobal(JSObject* global)
 void callFunction(html::Function function, events::Event event)
 {
     Any arg(event);
-    Any result = callFunction(event.getTarget(), function, 1, &arg);
+    Any result = callFunction(event.getCurrentTarget(), function, 1, &arg);
     if (event.getType() == u"mouseover") {
         if (result.toBoolean())
             event.preventDefault();
