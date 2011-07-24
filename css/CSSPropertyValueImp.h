@@ -156,7 +156,7 @@ public:
         this->value = value;
         return *this;
     }
-    CSSListStyleTypeValueImp& setValue(CSSParserTerm* term ) {
+    CSSListStyleTypeValueImp& setValue(CSSParserTerm* term) {
         return setValue(term->getIndex());
     }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl = 0) {
@@ -1201,7 +1201,7 @@ public:
         this->value = value;
         return *this;
     }
-    CSSOverflowValueImp& setValue(CSSParserTerm* term ) {
+    CSSOverflowValueImp& setValue(CSSParserTerm* term) {
         return setValue(term->getIndex());
     }
     unsigned getValue() const {
@@ -1234,7 +1234,7 @@ public:
         this->value = value;
         return *this;
     }
-    CSSPageBreakValueImp& setValue(CSSParserTerm* term ) {
+    CSSPageBreakValueImp& setValue(CSSParserTerm* term) {
         return setValue(term->getIndex());
     }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
@@ -1321,7 +1321,7 @@ public:
         this->value = value;
         return *this;
     }
-    CSSTextAlignValueImp& setValue(CSSParserTerm* term ) {
+    CSSTextAlignValueImp& setValue(CSSParserTerm* term) {
         return setValue(term->getIndex());
     }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {

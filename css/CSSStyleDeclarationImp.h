@@ -388,6 +388,9 @@ public:
     static int getPropertyID(const std::u16string& ident);
     static const char16_t* getPropertyName(int propertyID);
 
+    void setProperty(int id, Nullable<std::u16string> value, const std::u16string& prio = u"");
+    std::u16string removeProperty(int id);
+
     // CSSStyleDeclaration
     virtual std::u16string getCssText();
     virtual void setCssText(std::u16string cssText);
