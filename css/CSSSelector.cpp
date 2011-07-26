@@ -40,7 +40,7 @@ inline bool contains(const std::u16string& s, const std::u16string& t)
         pos = s.find(t, pos);
         if (pos == std::u16string::npos)
             return false;
-        if ((pos == 0 || isSpace(s[pos])) && (pos + t.length() == s.length() || isSpace(t[pos])))
+        if ((pos == 0 || isSpace(s[pos - 1])) && (pos + t.length() == s.length() || isSpace(s[pos + t.length()])))
             return true;
         ++pos;
     }
