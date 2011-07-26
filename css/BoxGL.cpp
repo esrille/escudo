@@ -281,10 +281,18 @@ void Box::renderBorder(ViewCSSImp* view)
     if (backgroundColor != 0x00000000) {
         glColor4ub(backgroundColor >> 16, backgroundColor >> 8, backgroundColor, backgroundColor >> 24);
         glBegin(GL_QUADS);
-            glVertex2f(lr, tb);
-            glVertex2f(rl, tb);
-            glVertex2f(rl, bt);
-            glVertex2f(lr, bt);
+            if (getParentBox()) {
+                glVertex2f(lr, tb);
+                glVertex2f(rl, tb);
+                glVertex2f(rl, bt);
+                glVertex2f(lr, bt);
+            } else {
+                const ContainingBlock* containingBlock = getContainingBlock(view);
+                glVertex2f(0, 0);
+                glVertex2f(containingBlock->width, 0);
+                glVertex2f(containingBlock->width, containingBlock->height);
+                glVertex2f(0, containingBlock->height);
+            }
         glEnd();
     }
 
