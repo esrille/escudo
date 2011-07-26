@@ -216,6 +216,14 @@ CSSPropertyValueImp* CSSStyleDeclarationImp::getProperty(unsigned id)
         return &borderLeftWidth;
     case BorderWidth:
         return &borderWidth;
+    case BorderTop:
+        return &borderTop;
+    case BorderRight:
+        return &borderRight;
+    case BorderBottom:
+        return &borderBottom;
+    case BorderLeft:
+        return &borderLeft;
     case Border:
         return &border;
     case Clear:
@@ -557,6 +565,18 @@ void CSSStyleDeclarationImp::specify(CSSStyleDeclarationImp* decl, unsigned id)
     case BorderWidth:
         borderWidth.specify(this, decl);
         break;
+    case BorderTop:
+        borderTop.specify(this, decl);
+        break;
+    case BorderRight:
+        borderRight.specify(this, decl);
+        break;
+    case BorderBottom:
+        borderBottom.specify(this, decl);
+        break;
+    case BorderLeft:
+        borderLeft.specify(this, decl);
+        break;
     case Border:
         border.specify(this, decl);
         break;
@@ -813,10 +833,30 @@ void CSSStyleDeclarationImp::reset(unsigned id)
         borderLeftWidth.setValue();
         break;
     case BorderWidth:
+        reset(BorderTopWidth);
+        reset(BorderRightWidth);
+        reset(BorderBottomWidth);
+        reset(BorderLeftWidth);
+        break;
+    case BorderTop:
+        reset(BorderTopWidth);
         reset(BorderTopStyle);
+        reset(BorderTopColor);
+        break;
+    case BorderRight:
+        reset(BorderRightWidth);
         reset(BorderRightStyle);
+        reset(BorderRightColor);
+        break;
+    case BorderBottom:
+        reset(BorderBottomWidth);
         reset(BorderBottomStyle);
+        reset(BorderBottomColor);
+        break;
+    case BorderLeft:
+        reset(BorderLeftWidth);
         reset(BorderLeftStyle);
+        reset(BorderLeftColor);
         break;
     case Border:
         reset(BorderColor);
@@ -967,6 +1007,10 @@ void CSSStyleDeclarationImp::resetInheritedProperties()
         case BorderColor:
         case BorderStyle:
         case BorderWidth:
+        case BorderTop:
+        case BorderRight:
+        case BorderBottom:
+        case BorderLeft:
         case Border:
         case Margin:
         case Padding:
@@ -989,6 +1033,10 @@ void CSSStyleDeclarationImp::copy(CSSStyleDeclarationImp* parentStyle, unsigned 
     case BorderColor:
     case BorderStyle:
     case BorderWidth:
+    case BorderTop:
+    case BorderRight:
+    case BorderBottom:
+    case BorderLeft:
     case Border:
     case Margin:
     case Padding:
@@ -2431,6 +2479,10 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp() :
     backgroundColor(0),
     counterIncrement(1),
     counterReset(0),
+    borderTop(0),
+    borderRight(1),
+    borderBottom(2),
+    borderLeft(3),
     marginTop(0.0f, css::CSSPrimitiveValue::CSS_PX),
     marginRight(0.0f, css::CSSPrimitiveValue::CSS_PX),
     marginLeft(0.0f, css::CSSPrimitiveValue::CSS_PX),

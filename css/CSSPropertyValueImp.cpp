@@ -682,6 +682,170 @@ void CSSBorderWidthShorthandImp::specify(CSSStyleDeclarationImp* self, CSSStyleD
     self->borderLeftWidth.specify(decl->borderLeftWidth);
 }
 
+void CSSBorderValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
+{
+    bool style = false;
+    bool width = false;
+    bool color = false;
+    std::deque<CSSParserTerm*>& stack = parser->getStack();
+    for (auto i = stack.begin(); i != stack.end(); ++i) {
+        CSSParserTerm* term = *i;
+        if (term->propertyID == CSSStyleDeclarationImp::BorderStyle) {
+            style = true;
+            switch (index) {
+            case 0:
+                decl->borderTopStyle.setValue(term);
+                break;
+            case 1:
+                decl->borderRightStyle.setValue(term);
+                break;
+            case 2:
+                decl->borderBottomStyle.setValue(term);
+                break;
+            case 3:
+                decl->borderLeftStyle.setValue(term);
+                break;
+            default:
+                break;
+            }
+        } else if (term->propertyID == CSSStyleDeclarationImp::BorderWidth) {
+            width = true;
+            switch (index) {
+            case 0:
+                decl->borderTopWidth.setValue(term);
+                break;
+            case 1:
+                decl->borderRightWidth.setValue(term);
+                break;
+            case 2:
+                decl->borderBottomWidth.setValue(term);
+                break;
+            case 3:
+                decl->borderLeftWidth.setValue(term);
+                break;
+            default:
+                break;
+            }
+        } else {
+            color = true;
+            switch (index) {
+            case 0:
+                decl->borderTopColor.setValue(term);
+                break;
+            case 1:
+                decl->borderRightColor.setValue(term);
+                break;
+            case 2:
+                decl->borderBottomColor.setValue(term);
+                break;
+            case 3:
+                decl->borderLeftColor.setValue(term);
+                break;
+            default:
+                break;
+            }
+        }
+    }
+    if (!style) {
+        switch (index) {
+        case 0:
+            decl->borderTopStyle.setValue();
+            break;
+        case 1:
+            decl->borderRightStyle.setValue();
+            break;
+        case 2:
+            decl->borderBottomStyle.setValue();
+            break;
+        case 3:
+            decl->borderLeftStyle.setValue();
+            break;
+        default:
+            break;
+        }
+    }
+    if (!width) {
+        switch (index) {
+        case 0:
+            decl->borderTopWidth.setValue();
+            break;
+        case 1:
+            decl->borderRightWidth.setValue();
+            break;
+        case 2:
+            decl->borderBottomWidth.setValue();
+            break;
+        case 3:
+            decl->borderLeftWidth.setValue();
+            break;
+        default:
+            break;
+        }
+    }
+    if (!color) {
+        switch (index) {
+        case 0:
+            decl->borderTopColor.setValue();
+            break;
+        case 1:
+            decl->borderRightColor.setValue();
+            break;
+        case 2:
+            decl->borderBottomColor.setValue();
+            break;
+        case 3:
+            decl->borderLeftColor.setValue();
+            break;
+        default:
+            break;
+        }
+    }
+}
+
+std::u16string CSSBorderValueImp::getCssText(CSSStyleDeclarationImp* decl)
+{
+    switch (index) {
+    case 0:
+        return decl->borderTopWidth.getCssText(decl) + u' ' + decl->borderTopStyle.getCssText(decl) + u' ' + decl->borderTopColor.getCssText(decl);
+    case 1:
+        return decl->borderRightWidth.getCssText(decl) + u' ' + decl->borderRightStyle.getCssText(decl) + u' ' + decl->borderRightColor.getCssText(decl);
+    case 2:
+        return decl->borderBottomWidth.getCssText(decl) + u' ' + decl->borderBottomStyle.getCssText(decl) + u' ' + decl->borderBottomColor.getCssText(decl);
+    case 3:
+        return decl->borderLeftWidth.getCssText(decl) + u' ' + decl->borderLeftStyle.getCssText(decl) + u' ' + decl->borderLeftColor.getCssText(decl);
+    default:
+        return u"";
+    }
+}
+
+void CSSBorderValueImp::specify(CSSStyleDeclarationImp* self, CSSStyleDeclarationImp* decl)
+{
+    switch (index) {
+    case 0:
+        self->borderTopWidth.specify(decl->borderTopWidth);
+        self->borderTopStyle.specify(decl->borderTopStyle);
+        self->borderTopColor.specify(decl->borderTopColor);
+        break;
+    case 1:
+        self->borderRightWidth.specify(decl->borderRightWidth);
+        self->borderRightStyle.specify(decl->borderRightStyle);
+        self->borderRightColor.specify(decl->borderRightColor);
+        break;
+    case 2:
+        self->borderBottomWidth.specify(decl->borderBottomWidth);
+        self->borderBottomStyle.specify(decl->borderBottomStyle);
+        self->borderBottomColor.specify(decl->borderBottomColor);
+        break;
+    case 3:
+        self->borderLeftWidth.specify(decl->borderLeftWidth);
+        self->borderLeftStyle.specify(decl->borderLeftStyle);
+        self->borderLeftColor.specify(decl->borderLeftColor);
+        break;
+    default:
+        break;
+    }
+}
+
 void CSSBorderShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
 {
     bool style = false;

@@ -858,6 +858,10 @@ CSSValueParser::CSSValueParser(int propertyID) :
     case CSSStyleDeclarationImp::BorderWidth:
         rule = &borderWidth;
         break;
+    case CSSStyleDeclarationImp::BorderTop:
+    case CSSStyleDeclarationImp::BorderRight:
+    case CSSStyleDeclarationImp::BorderBottom:
+    case CSSStyleDeclarationImp::BorderLeft:
     case CSSStyleDeclarationImp::Border:
         rule = &border;
         break;

@@ -660,6 +660,19 @@ public:
     void specify(CSSStyleDeclarationImp* self, CSSStyleDeclarationImp* decl);
 };
 
+class CSSBorderValueImp : public CSSPropertyValueImp
+{
+    unsigned index;
+public:
+    CSSBorderValueImp(unsigned index) :
+        index(index)
+    {
+    }
+    virtual void setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
+    virtual std::u16string getCssText(CSSStyleDeclarationImp* decl);
+    void specify(CSSStyleDeclarationImp* self, CSSStyleDeclarationImp* decl);
+};
+
 class CSSBorderShorthandImp : public CSSPropertyValueImp
 {
 public:

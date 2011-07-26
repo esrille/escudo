@@ -253,6 +253,10 @@ public:
     CSSBorderWidthValueImp borderBottomWidth;
     CSSBorderWidthValueImp borderLeftWidth;
     CSSBorderWidthShorthandImp borderWidth;
+    CSSBorderValueImp borderTop;
+    CSSBorderValueImp borderRight;
+    CSSBorderValueImp borderBottom;
+    CSSBorderValueImp borderLeft;
     CSSBorderShorthandImp border;
     CSSAutoLengthValueImp bottom;
 
