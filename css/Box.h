@@ -308,7 +308,8 @@ public:
         return false;
     }
 
-    void resolveOffset(ViewCSSImp* view);
+    void resolveOffset(CSSStyleDeclarationImp* style);
+    virtual void resolveOffset(ViewCSSImp* view);
 
     virtual void layOut(ViewCSSImp* view, FormattingContext* context) {}
 
@@ -488,6 +489,7 @@ public:
         return baseline;
     }
     void resolveWidth();
+    virtual void resolveOffset(ViewCSSImp* view);
     void setData(FontTexture* font, float point, std::u16string data);
     std::u16string getData() const {
         return data;

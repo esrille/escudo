@@ -268,11 +268,8 @@ bool Box::isFlowOf(const Box* flowRoot) const
 
 // Calculate left, right, top, bottom for 'static' or 'relative' element.
 // TODO: rtl
-void Box::resolveOffset(ViewCSSImp* view)
+void Box::resolveOffset(CSSStyleDeclarationImp* style)
 {
-    if (isAnonymous())
-        return;
-
     assert(style->position.getValue() == CSSPositionValueImp::Relative ||
            style->position.getValue() == CSSPositionValueImp::Static);
 
@@ -289,6 +286,13 @@ void Box::resolveOffset(ViewCSSImp* view)
     else if (!style->bottom.isAuto())
         v = -style->bottom.getPx();
     offsetV += v;
+}
+
+void Box::resolveOffset(ViewCSSImp* view)
+{
+    if (isAnonymous())
+        return;
+    resolveOffset(getStyle());
 }
 
 bool BlockLevelBox::isFloat() const
@@ -1094,6 +1098,21 @@ void InlineLevelBox::resolveWidth()
         paddingTop = paddingRight = paddingBottom = paddingLeft = 0.0f;
         borderTop = borderRight = borderBottom = borderLeft = 0.0f;
         marginTop = marginRight = marginLeft = marginBottom = 0.0f;
+    }
+}
+
+// To deal with nested inline level boxes in the document tree, resolveOffset
+// is repeatedly applied to this inline level box up to the block-level box.
+void InlineLevelBox::resolveOffset(ViewCSSImp* view)
+{
+    CSSStyleDeclarationImp* s = getStyle();
+    Element element = getContainingElement(node);
+    while (s && s->display.isInlineLevel()) {
+        Box::resolveOffset(s);
+        element = element.getParentElement();
+        if (!element)
+            break;
+        s = view->getStyle(element);
     }
 }
 
