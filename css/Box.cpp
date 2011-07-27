@@ -1097,20 +1097,6 @@ void InlineLevelBox::resolveWidth()
     }
 }
 
-// Note inline-level boxes inherit their ancestors' offsets.
-void InlineLevelBox::resolveOffset(ViewCSSImp* view)
-{
-    CSSStyleDeclarationImp* s = getStyle();
-    Element element = getContainingElement(node);
-    while (s && s->display.isInlineLevel()) {
-        Box::resolveOffset(view);
-        element = element.getParentElement();
-        if (!element)
-            break;
-        s = view->getStyle(element);
-    }
-}
-
 void InlineLevelBox::dump(ViewCSSImp* view, std::string indent)
 {
     std::cout << indent << "* inline-level box (" << static_cast<void*>(this) << "): \"" << data << "\"\n";
