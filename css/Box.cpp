@@ -336,7 +336,7 @@ void BlockLevelBox::dump(ViewCSSImp* view, std::string indent)
 BlockLevelBox* BlockLevelBox::getAnonymousBox()
 {
     BlockLevelBox* anonymousBox;
-    if (firstChild && firstChild->isAnonymous()) {
+    if (hasAnonymousBox()) {
         anonymousBox = dynamic_cast<BlockLevelBox*>(firstChild);
         if (anonymousBox)
             return anonymousBox;

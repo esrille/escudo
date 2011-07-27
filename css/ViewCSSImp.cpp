@@ -184,26 +184,28 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Text text, BlockLevelBox* parentBox,
         parentBox->insertInline(text);
         return 0;
     }
-    std::u16string data;
-    bool whiteSpace = true;
-    switch (style->whiteSpace.getValue()) {
-    case CSSWhiteSpaceValueImp::Normal:
-    case CSSWhiteSpaceValueImp::Nowrap:
-    case CSSWhiteSpaceValueImp::PreLine:
+    if (!parentBox->hasAnonymousBox()) {
         // cf. http://www.w3.org/TR/CSS2/visuren.html#anonymous
         // White space content that would subsequently be collapsed
         // away according to the 'white-space' property does not
         // generate any anonymous inline boxes.
-        data = text.getData();  // TODO: make this faster
-        for (auto i = data.begin(); i != data.end(); ++i) {
-            if (!isSpace(*i)) {
-                whiteSpace = false;
-                break;
+        std::u16string data;
+        bool whiteSpace = true;
+        switch (style->whiteSpace.getValue()) {
+        case CSSWhiteSpaceValueImp::Normal:
+        case CSSWhiteSpaceValueImp::Nowrap:
+        case CSSWhiteSpaceValueImp::PreLine:
+            data = text.getData();  // TODO: make this faster
+            for (auto i = data.begin(); i != data.end(); ++i) {
+                if (!isSpace(*i)) {
+                    whiteSpace = false;
+                    break;
+                }
             }
+            if (whiteSpace)
+                return 0;
+            break;
         }
-        if (whiteSpace)
-            return 0;
-        break;
     }
     if (BlockLevelBox* anonymousBox = parentBox->getAnonymousBox()) {
         anonymousBox->insertInline(text);

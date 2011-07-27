@@ -421,6 +421,10 @@ public:
     // Gets the first child box which is an anonymous box. Creates one if there's none
     // even if there's no children; if so, the existing texts are moved to the
     // new anonymous box.
+    bool hasAnonymousBox()
+    {
+        return firstChild && firstChild->isAnonymous();
+    }
     BlockLevelBox* getAnonymousBox();
 
     void resolveWidth(ViewCSSImp* view, const ContainingBlock* containingBlock, float available = 0);
