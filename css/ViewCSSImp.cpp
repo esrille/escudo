@@ -104,7 +104,7 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle)
         map[element] = style;
         DeclarationSet set;
         findDeclarations(set, element, defaultStyleSheet.getCssRules());
-        for (auto i = set.rbegin(); i != set.rend(); ++i) {
+        for (auto i = set.begin(); i != set.end(); ++i) {
             if (CSSStyleDeclarationImp* pseudo = style->createPseudoElementStyle((*i).pseudoElementID))
                 pseudo->specify((*i).decl);
         }
@@ -116,11 +116,11 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle)
             if (CSSStyleSheetImp* imp = dynamic_cast<CSSStyleSheetImp*>(sheet.self()))
                 findDeclarations(set, element, imp->getCssRules());
         }
-        for (auto i = set.rbegin(); i != set.rend(); ++i) {
+        for (auto i = set.begin(); i != set.end(); ++i) {
             if (CSSStyleDeclarationImp* pseudo = style->createPseudoElementStyle((*i).pseudoElementID))
                 pseudo->specify((*i).decl);
         }
-        for (auto i = set.rbegin(); i != set.rend(); ++i) {
+        for (auto i = set.begin(); i != set.end(); ++i) {
             if (CSSStyleDeclarationImp* pseudo = style->createPseudoElementStyle((*i).pseudoElementID))
                 pseudo->specifyImportant((*i).decl);
         }
