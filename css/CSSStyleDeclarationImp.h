@@ -32,6 +32,7 @@
 
 #include "CSSParser.h"
 #include "CSSPropertyValueImp.h"
+#include "CSSSelector.h"
 #include "CSSRuleImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
@@ -187,23 +188,6 @@ public:
         MaxProperties
     };
 
-    // Pseudo-element index
-    enum
-    {
-        NonPseudo,
-        FirstLine,
-        FirstLetter,
-        Before,
-        After,
-
-        MaxPseudoElements
-    };
-
-    static int getPseudoElementID(const std::u16string& name);
-    static int getPseudoClassID(const std::u16string& name);
-    static const char16_t* getPseudoClassName(int id);
-    static const char16_t* getPseudoElementName(int id);
-
 private:
     Object* owner;
     css::CSSRule parentRule;
@@ -215,7 +199,7 @@ private:
     Box* box;
     Box* lastBox;  // for inline
 
-    CSSStyleDeclarationPtr pseudoElements[MaxPseudoElements];
+    CSSStyleDeclarationPtr pseudoElements[CSSPseudoElementSelector::MaxPseudoElements];
 
     void specify(CSSStyleDeclarationImp* decl, unsigned id);
     void specify(CSSStyleDeclarationImp* decl, const std::bitset<PropertyCount>& set);
@@ -343,17 +327,8 @@ public:
 
     CSSPropertyValueImp* getProperty(unsigned id);
 
-    CSSStyleDeclarationImp* getPseudoElementStyle(int id) {
-        assert(0 <= id && id < MaxPseudoElements);
-        return pseudoElements[id].get();
-    }
-    CSSStyleDeclarationImp* getPseudoElementStyle(const std::u16string& name) {
-        int id = getPseudoElementID(name);
-        if (0 <= id)
-            return pseudoElements[id].get();
-        return 0;
-    }
-
+    CSSStyleDeclarationImp* getPseudoElementStyle(int id);
+    CSSStyleDeclarationImp* getPseudoElementStyle(const std::u16string& name);
     CSSStyleDeclarationImp* createPseudoElementStyle(int id);
 
     void specify(CSSStyleDeclarationImp* style);

@@ -263,24 +263,61 @@ public:
     };
     static CSSPseudoSelector* createPseudoSelector(int type, const std::u16string& ident);
     static CSSPseudoSelector* createPseudoSelector(int type, const CSSParserTerm& function);
+
+    static int getPseudoClassID(const std::u16string& name);
+    static const char16_t* getPseudoClassName(int id);
+    static int getPseudoElementID(const std::u16string& name);
+    static const char16_t* getPseudoElementName(int id);
 };
 
 // :
 class CSSPseudoClassSelector : public CSSPseudoSelector
 {
+    int id;
+
 public:
-    CSSPseudoClassSelector(const std::u16string& ident) :
-        CSSPseudoSelector(ident) {
-    }
-    CSSPseudoClassSelector(const CSSParserTerm& function) :
-        CSSPseudoSelector(function) {
-    }
+    // Pseudo-class id
+    // The order needs to be in sync with pseudoClassNames[]
+    enum
+    {
+        // CSS 2.1
+        Link,
+        Visited,
+        Hover,
+        Active,
+        Focus,
+        Lang,
+        FirstChild,
+        // CSS 3
+        LastChild,
+        Target,
+        Enabled,
+        Disabled,
+        Checked,
+        Indeterminate,
+        Root,
+        Empty,
+        FirstOfType,
+        LastOfType,
+        OnlyChild,
+        OnlyOfType,
+
+        MaxPseudoClasses
+    };
+
+    CSSPseudoClassSelector(const std::u16string& ident, int id = -1);
+    CSSPseudoClassSelector(const CSSParserTerm& function);
     virtual void serialize(std::u16string& text) {
         text += u':';
         CSSPseudoSelector::serialize(text);
     }
     virtual CSSSpecificity getSpecificity() {
         return CSSSpecificity(0, 0, 1, 0);
+    }
+    virtual bool match(Element element);
+
+    unsigned getID() const {
+        return id;
     }
 };
 
@@ -303,7 +340,21 @@ public:
 class CSSPseudoElementSelector : public CSSPseudoSelector
 {
     int id;
+
 public:
+    // Pseudo-element id
+    // The order needs to be in sync with pseudoElementNames[]
+    enum
+    {
+        NonPseudo,
+        FirstLine,
+        FirstLetter,
+        Before,
+        After,
+
+        MaxPseudoElements
+    };
+
     CSSPseudoElementSelector(int id);
     virtual void serialize(std::u16string& text) {
         text += u"::";

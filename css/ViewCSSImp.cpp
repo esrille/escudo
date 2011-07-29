@@ -269,7 +269,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
         }
     }
 
-    if (CSSStyleDeclarationImp* afterStyle = style->getPseudoElementStyle(CSSStyleDeclarationImp::After)) {
+    if (CSSStyleDeclarationImp* afterStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::After)) {
         afterStyle->compute(this, style, element);
         if (Element after = afterStyle->content.eval(document, element)) {
             map[after] = afterStyle;
@@ -292,7 +292,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
         currentBox = 0;
     }
 
-    if (CSSStyleDeclarationImp* beforeStyle = style->getPseudoElementStyle(CSSStyleDeclarationImp::Before)) {
+    if (CSSStyleDeclarationImp* beforeStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::Before)) {
         beforeStyle->compute(this, style, element);
         if (Element before = beforeStyle->content.eval(document, element)) {
             map[before] = beforeStyle;

@@ -458,9 +458,9 @@ void BlockLevelBox::layOutText(ViewCSSImp* view, Text text, FormattingContext* c
                 Box* box = this;
                 for (;;) {
                     if (CSSStyleDeclarationImp* s = box->getStyle()) {
-                        if (CSSStyleDeclarationImp* p = s->getPseudoElementStyle(CSSStyleDeclarationImp::FirstLine))
+                        if (CSSStyleDeclarationImp* p = s->getPseudoElementStyle(CSSPseudoElementSelector::FirstLine))
                             firstLineStyles.push_front(p);
-                        if (CSSStyleDeclarationImp* p = s->getPseudoElementStyle(CSSStyleDeclarationImp::FirstLetter))
+                        if (CSSStyleDeclarationImp* p = s->getPseudoElementStyle(CSSPseudoElementSelector::FirstLetter))
                             firstLetterStyles.push_front(p);
                     }
                     Box* parent = box->getParentBox();
@@ -475,7 +475,7 @@ void BlockLevelBox::layOutText(ViewCSSImp* view, Text text, FormattingContext* c
                         parentStyle = *i;
                     }
                     firstLineStyle = firstLineStyles.back();
-                    CSSStyleDeclarationImp* p = style->createPseudoElementStyle(CSSStyleDeclarationImp::FirstLine);
+                    CSSStyleDeclarationImp* p = style->createPseudoElementStyle(CSSPseudoElementSelector::FirstLine);
                     assert(p);  // TODO
                     p->specify(firstLineStyle);
                     firstLineStyle = p;
@@ -487,7 +487,7 @@ void BlockLevelBox::layOutText(ViewCSSImp* view, Text text, FormattingContext* c
                         parentStyle = *i;
                     }
                     firstLetterStyle = firstLetterStyles.back();
-                    CSSStyleDeclarationImp* p = style->createPseudoElementStyle(CSSStyleDeclarationImp::FirstLetter);
+                    CSSStyleDeclarationImp* p = style->createPseudoElementStyle(CSSPseudoElementSelector::FirstLetter);
                     assert(p);  // TODO
                     p->specify(firstLetterStyle);
                     firstLetterStyle = p;

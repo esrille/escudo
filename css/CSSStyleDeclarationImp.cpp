@@ -1225,8 +1225,22 @@ bool CSSStyleDeclarationImp::isFlowRoot() const
            /* TODO || and more conditions... */
 }
 
+CSSStyleDeclarationImp* CSSStyleDeclarationImp::getPseudoElementStyle(int id)
+{
+    assert(0 <= id && id < CSSPseudoElementSelector::MaxPseudoElements);
+    return pseudoElements[id].get();
+}
+
+CSSStyleDeclarationImp* CSSStyleDeclarationImp::getPseudoElementStyle(const std::u16string& name)
+{
+    int id = CSSPseudoElementSelector::getPseudoElementID(name);
+    if (0 <= id)
+        return pseudoElements[id].get();
+    return 0;
+}
+
 CSSStyleDeclarationImp* CSSStyleDeclarationImp::createPseudoElementStyle(int id) {
-    assert(0 <= id && id < MaxPseudoElements);
+    assert(0 <= id && id < CSSPseudoElementSelector::MaxPseudoElements);
     CSSStyleDeclarationImp* style = pseudoElements[id].get();
     if (!style) {
         if (style = new(std::nothrow) CSSStyleDeclarationImp)
@@ -2536,8 +2550,8 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp() :
     };
     for (unsigned i = 0; i < sizeof defaultInherit / sizeof defaultInherit[0]; ++i)
         setInherit(defaultInherit[i]);
-    pseudoElements[NonPseudo] = this;
-    for (int i = 1; i < MaxPseudoElements; ++i)
+    pseudoElements[CSSPseudoElementSelector::NonPseudo] = this;
+    for (int i = 1; i < CSSPseudoElementSelector::MaxPseudoElements; ++i)
         pseudoElements[i] = 0;
 }
 
@@ -2546,71 +2560,6 @@ const char16_t* CSSStyleDeclarationImp::getPropertyName(int propertyID)
     if (propertyID < 0 || PropertyCount <= propertyID)
         return PropertyNames[0];
     return PropertyNames[propertyID];
-}
-
-namespace
-{
-
-const char16_t* pseudoElementNames[] = {
-    u"",
-    u"first-line",
-    u"first-letter",
-    u"before",
-    u"after"
-};
-
-const char16_t* pseudoClassNames[] = {
-    u"link",
-    u"visited",
-    u"hover",
-    u"active",
-    u"focus",
-    u"target",
-    u"lang",
-    u"enabled",
-    u"disabled",
-    u"checked",
-    u"indeterminate",
-    u"root",
-    u"first-child",
-    u"last-child",
-    u"first-of-type",
-    u"last-of-type",
-    u"only-child",
-    u"only-of-type",
-    u"empty"
-};
-
-const char16_t* pseudoFunctionalClassNames[] = {
-    u"nth-child",
-    u"nth-last-child",
-    u"nth-of-type",
-    u"nth-last-of-type",
-};
-
-}
-
-int CSSStyleDeclarationImp::getPseudoElementID(const std::u16string& name)
-{
-    for (unsigned id = 0; id < MaxPseudoElements; ++id) {
-        if (name == pseudoElementNames[id])
-            return id;
-    }
-    return -1;
-}
-
-const char16_t* CSSStyleDeclarationImp::getPseudoElementName(int id)
-{
-    if (0 <= id)
-        return pseudoElementNames[id];
-    return 0;
-}
-
-const char16_t* CSSStyleDeclarationImp::getPseudoClassName(int id)
-{
-    if (0 <= id)
-        return pseudoClassNames[id];
-    return 0;
 }
 
 }}}}  // org::w3c::dom::bootstrap

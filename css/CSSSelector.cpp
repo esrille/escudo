@@ -19,6 +19,7 @@
 #include <assert.h>
 
 #include <org/w3c/dom/Element.h>
+#include <org/w3c/dom/html/HTMLAnchorElement.h>
 
 #include "CSSStyleDeclarationImp.h"
 
@@ -276,6 +277,19 @@ CSSSelector* CSSSelectorsGroup::match(Element e)
     return 0;
 }
 
+bool CSSPseudoClassSelector::match(Element element)
+{
+    switch (id) {
+    case Link:
+    case Visited:
+        if (html::HTMLAnchorElement::hasInstance(element))
+            return true;
+        break;
+    default:
+        return false;
+    }
+}
+
 CSSPseudoElementSelector* CSSPrimarySelector::getPseudoElement() const {
     if (chain.empty())
         return 0;
@@ -290,8 +304,20 @@ CSSPseudoElementSelector* CSSSelector::getPseudoElement() const {
     return simpleSelectors.back()->getPseudoElement();
 }
 
+CSSPseudoClassSelector::CSSPseudoClassSelector(const std::u16string& ident, int id) :
+    CSSPseudoSelector(getPseudoClassName(id)),
+    id(id)
+{
+}
+
+CSSPseudoClassSelector::CSSPseudoClassSelector(const CSSParserTerm& function) :
+    CSSPseudoSelector(function),
+    id(-1)
+{
+}
+
 CSSPseudoElementSelector::CSSPseudoElementSelector(int id) :
-    CSSPseudoSelector(CSSStyleDeclarationImp::getPseudoElementName(id)),
+    CSSPseudoSelector(getPseudoElementName(id)),
     id(id)
 {
 }
@@ -306,10 +332,12 @@ CSSPseudoSelector* CSSPseudoSelector::createPseudoSelector(int type, const std::
     int id = -1;
     switch (type) {
     case PseudoClass:
-        return new(std::nothrow) CSSPseudoClassSelector(ident);
+        id = getPseudoClassID(ident);
+        if (0 <= id)
+            return new(std::nothrow) CSSPseudoClassSelector(ident, id);
         break;
     case PseudoElement:
-        id = CSSStyleDeclarationImp::getPseudoElementID(ident);
+        id = getPseudoElementID(ident);
         if (0 <= id)
             return new(std::nothrow) CSSPseudoElementSelector(id);
         break;
@@ -331,6 +359,83 @@ CSSPseudoSelector* CSSPseudoSelector::createPseudoSelector(int type, const CSSPa
     default:
         break;
     }
+    return 0;
+}
+
+namespace
+{
+
+const char16_t* pseudoElementNames[] = {
+    u"",
+    u"first-line",
+    u"first-letter",
+    u"before",
+    u"after"
+};
+
+const char16_t* pseudoClassNames[] = {
+    // CSS 2.1
+    u"link",
+    u"visited",
+    u"hover",
+    u"active",
+    u"focus",
+    u"lang",
+    u"first-child",
+    // CSS 3
+    u"last-child",
+    u"target",
+    u"enabled",
+    u"disabled",
+    u"checked",
+    u"indeterminate",
+    u"root",
+    u"empty",
+    u"first-of-type",
+    u"last-of-type",
+    u"only-child",
+    u"only-of-type",
+};
+
+const char16_t* pseudoFunctionalClassNames[] = {
+    // CSS 3
+    u"nth-child",
+    u"nth-last-child",
+    u"nth-of-type",
+    u"nth-last-of-type",
+};
+
+}
+
+int CSSPseudoSelector::getPseudoElementID(const std::u16string& name)
+{
+    for (unsigned id = 0; id < CSSPseudoElementSelector::MaxPseudoElements; ++id) {
+        if (name == pseudoElementNames[id])
+            return id;
+    }
+    return -1;
+}
+
+int CSSPseudoSelector::getPseudoClassID(const std::u16string& name)
+{
+    for (unsigned id = 0; id < CSSPseudoClassSelector::MaxPseudoClasses; ++id) {
+        if (name == pseudoClassNames[id])
+            return id;
+    }
+    return -1;
+}
+
+const char16_t* CSSPseudoSelector::getPseudoElementName(int id)
+{
+    if (0 <= id && id < CSSPseudoElementSelector::MaxPseudoElements)
+        return pseudoElementNames[id];
+    return 0;
+}
+
+const char16_t* CSSPseudoSelector::getPseudoClassName(int id)
+{
+    if (0 <= id && id < CSSPseudoClassSelector::MaxPseudoClasses)
+        return pseudoClassNames[id];
     return 0;
 }
 
