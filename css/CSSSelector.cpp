@@ -287,7 +287,7 @@ CSSPseudoElementSelector* CSSPrimarySelector::getPseudoElement() const {
 CSSPseudoElementSelector* CSSSelector::getPseudoElement() const {
     if (simpleSelectors.empty())
         return 0;
-    simpleSelectors.back()->getPseudoElement();
+    return simpleSelectors.back()->getPseudoElement();
 }
 
 CSSPseudoElementSelector::CSSPseudoElementSelector(int id) :
