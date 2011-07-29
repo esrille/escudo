@@ -31,51 +31,10 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
-namespace {
-    struct PrioritizedDeclaration
-    {
-        unsigned priority;
-        CSSStyleDeclarationImp* decl;
-        unsigned pseudoElementID;
-
-        PrioritizedDeclaration(unsigned priority, CSSStyleDeclarationImp* decl, unsigned pseudoElementID) :
-            priority(priority),
-            decl(decl),
-            pseudoElementID(pseudoElementID)
-        {
-        }
-        bool operator <(const PrioritizedDeclaration& decl) const
-        {
-            return priority < decl.priority;
-        }
-    };
-
-    typedef std::multiset<PrioritizedDeclaration> DeclarationSet;
-
-    void findDeclarations(DeclarationSet& set, Element element, css::CSSRuleList list)
-    {
-        if (!list)
-            return;
-        unsigned int size = list.getLength();
-        for (unsigned int i = 0; i < size; ++i) {
-            css::CSSRule rule = list.getElement(i);
-            if (CSSStyleRuleImp* imp = dynamic_cast<CSSStyleRuleImp*>(rule.self())) {
-                CSSSelector* selector = imp->match(element);
-                if (!selector)
-                    continue;
-                unsigned pseudoElementID = 0;
-                if (CSSPseudoElementSelector* pseudo = selector->getPseudoElement())
-                    pseudoElementID = pseudo->getID();
-                PrioritizedDeclaration decl(imp->getLastSpecificity(), dynamic_cast<CSSStyleDeclarationImp*>(imp->getStyle().self()), pseudoElementID);
-                set.insert(decl);
-            }
-        }
-    }
-}
-
 ViewCSSImp::ViewCSSImp(Document document, css::CSSStyleSheet defaultStyleSheet) :
     document(document),
     defaultStyleSheet(defaultStyleSheet),
+    hovered(0),
     dpi(96),
     mutationListener(boost::bind(&ViewCSSImp::handleMutation, this, _1))
 {
@@ -97,10 +56,39 @@ Box* ViewCSSImp::lookupTarget(int x, int y)
     return boxTree.get();
 }
 
+bool ViewCSSImp::isHovered(Node node)
+{
+    for (Node i = hovered; i; i = i.getParentNode()) {
+        if (node == i)
+            return true;
+    }
+    return false;
+}
+
 void ViewCSSImp::handleMutation(events::Event event)
 {
     if (boxTree)
         boxTree->setFlags(1);
+}
+
+void ViewCSSImp::findDeclarations(DeclarationSet& set, Element element, css::CSSRuleList list)
+{
+    if (!list)
+        return;
+    unsigned int size = list.getLength();
+    for (unsigned int i = 0; i < size; ++i) {
+        css::CSSRule rule = list.getElement(i);
+        if (CSSStyleRuleImp* imp = dynamic_cast<CSSStyleRuleImp*>(rule.self())) {
+            CSSSelector* selector = imp->match(element, this);
+            if (!selector)
+                continue;
+            unsigned pseudoElementID = 0;
+            if (CSSPseudoElementSelector* pseudo = selector->getPseudoElement())
+                pseudoElementID = pseudo->getID();
+            PrioritizedDeclaration decl(imp->getLastSpecificity(), dynamic_cast<CSSStyleDeclarationImp*>(imp->getStyle().self()), pseudoElementID);
+            set.insert(decl);
+        }
+    }
 }
 
 void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle)

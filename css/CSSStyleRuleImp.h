@@ -29,6 +29,8 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
+class ViewCSSImp;
+
 class CSSStyleRuleImp : public ObjectMixin<CSSStyleRuleImp, CSSRuleImp>
 {
     CSSSelectorsGroup* selectorsGroup;
@@ -37,7 +39,7 @@ class CSSStyleRuleImp : public ObjectMixin<CSSStyleRuleImp, CSSRuleImp>
 public:
     CSSStyleRuleImp(CSSSelectorsGroup* selectorsGroup, css::CSSStyleDeclaration styleDeclaration);
 
-    CSSSelector* match(Element element);
+    CSSSelector* match(Element element, ViewCSSImp* view);
     CSSSpecificity getLastSpecificity() {  // of the last matched selector
         return selectorsGroup->getLastSpecificity();
     }

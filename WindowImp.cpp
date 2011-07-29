@@ -246,6 +246,8 @@ void WindowImp::mouseMove(int x, int y, int modifiers)
         }
     }
 
+    view->setHovered(box->getTargetNode());
+
     // mousemove
     events::MouseEvent event(0);
     if (event = new(std::nothrow) MouseEventImp) {
@@ -253,7 +255,7 @@ void WindowImp::mouseMove(int x, int y, int modifiers)
         event.initMouseEvent(u"mousemove",
                             true, true, this, detail, x, y, x, y,
                             modifiers & 2, modifiers & 4, modifiers & 1, false, 0, 0);
-        box->getTargetNode().dispatchEvent(event);
+        view->getHovered().dispatchEvent(event);
     }
 }
 

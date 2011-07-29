@@ -22,6 +22,7 @@
 #include <org/w3c/dom/html/HTMLAnchorElement.h>
 
 #include "CSSStyleDeclarationImp.h"
+#include "ViewCSSImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -149,7 +150,7 @@ CSSSpecificity CSSSelector::getSpecificity()
     return specificity;
 }
 
-bool CSSPrimarySelector::match(Element e)
+bool CSSPrimarySelector::match(Element e, ViewCSSImp* view)
 {
     if (name != u"*") {
         if (e.getLocalName() != name)
@@ -160,13 +161,13 @@ bool CSSPrimarySelector::match(Element e)
         }
     }
     for (auto i = chain.begin(); i != chain.end(); ++i) {
-        if (!(*i)->match(e))
+        if (!(*i)->match(e, view))
             return false;
     }
     return true;
 }
 
-bool CSSIDSelector::match(Element e)
+bool CSSIDSelector::match(Element e, ViewCSSImp* view)
 {
     Nullable<std::u16string> id = e.getAttribute(u"id");
     if (!id.hasValue())
@@ -174,7 +175,7 @@ bool CSSIDSelector::match(Element e)
     return id.value() == name;  // TODO: ignore case
 }
 
-bool CSSClassSelector::match(Element e)
+bool CSSClassSelector::match(Element e, ViewCSSImp* view)
 {
     Nullable<std::u16string> classes = e.getAttribute(u"class");
     if (!classes.hasValue())
@@ -182,7 +183,7 @@ bool CSSClassSelector::match(Element e)
     return contains(classes.value(), name);  // TODO: ignore case
 }
 
-bool CSSAttributeSelector::match(Element e)
+bool CSSAttributeSelector::match(Element e, ViewCSSImp* view)
 {
     Nullable<std::u16string> attr = e.getAttribute(name);
     if (!attr.hasValue())
@@ -217,13 +218,13 @@ bool CSSAttributeSelector::match(Element e)
     }
 }
 
-bool CSSSelector::match(Element e)
+bool CSSSelector::match(Element e, ViewCSSImp* view)
 {
     if (!e || simpleSelectors.size() == 0)
         return false;
 
     auto i = simpleSelectors.rbegin();
-    if (!(*i)->match(e))
+    if (!(*i)->match(e, view))
         return false;
     int combinator = (*i)->getCombinator();
     ++i;
@@ -231,7 +232,7 @@ bool CSSSelector::match(Element e)
         switch (combinator) {
         case CSSPrimarySelector::Descendant:
             while (e = e.getParentElement()) {  // TODO: do we need to retry from here upon failure?
-                if ((*i)->match(e))
+                if ((*i)->match(e, view))
                     break;
             }
             if (!e)
@@ -239,17 +240,17 @@ bool CSSSelector::match(Element e)
             break;
         case CSSPrimarySelector::Child:
             e = e.getParentElement();
-            if (!(*i)->match(e))
+            if (!(*i)->match(e, view))
                 return false;
             break;
         case CSSPrimarySelector::AdjacentSibling:
             e = e.getPreviousElementSibling();
-            if (!(*i)->match(e))
+            if (!(*i)->match(e, view))
                 return false;
             break;
         case CSSPrimarySelector::GeneralSibling:
             while (e = e.getPreviousElementSibling()) {
-                if ((*i)->match(e))
+                if ((*i)->match(e, view))
                     break;
             }
             if (!e)
@@ -265,11 +266,11 @@ bool CSSSelector::match(Element e)
     return true;
 }
 
-CSSSelector* CSSSelectorsGroup::match(Element e)
+CSSSelector* CSSSelectorsGroup::match(Element e, ViewCSSImp* view)
 {
     specificity = CSSSpecificity();
     for (auto i = selectors.begin(); i != selectors.end(); ++i) {
-        if ((*i)->match(e)) {
+        if ((*i)->match(e, view)) {
             specificity = (*i)->getSpecificity();
             return *i;
         }
@@ -277,7 +278,7 @@ CSSSelector* CSSSelectorsGroup::match(Element e)
     return 0;
 }
 
-bool CSSPseudoClassSelector::match(Element element)
+bool CSSPseudoClassSelector::match(Element element, ViewCSSImp* view)
 {
     switch (id) {
     case Link:
@@ -285,9 +286,14 @@ bool CSSPseudoClassSelector::match(Element element)
         if (html::HTMLAnchorElement::hasInstance(element))
             return true;
         break;
+    case Hover:
+        if (view->isHovered(element))
+            return true;
+        break;
     default:
-        return false;
+        break;
     }
+    return false;
 }
 
 CSSPseudoElementSelector* CSSPrimarySelector::getPseudoElement() const {

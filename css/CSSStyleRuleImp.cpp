@@ -21,10 +21,10 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 using namespace css;
 
-CSSSelector* CSSStyleRuleImp::match(dom::Element element)
+CSSSelector* CSSStyleRuleImp::match(dom::Element element, ViewCSSImp* view)
 {
     if (selectorsGroup)
-        return selectorsGroup->match(element);
+        return selectorsGroup->match(element, view);
     return 0;
 }
 

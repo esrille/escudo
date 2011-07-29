@@ -42,12 +42,34 @@ class ViewCSSImp
 {
     friend class BlockLevelBox; // TODO just for layOutInlineReplaced for now...
 
+    struct PrioritizedDeclaration
+    {
+        unsigned priority;
+        CSSStyleDeclarationImp* decl;
+        unsigned pseudoElementID;
+
+        PrioritizedDeclaration(unsigned priority, CSSStyleDeclarationImp* decl, unsigned pseudoElementID) :
+            priority(priority),
+            decl(decl),
+            pseudoElementID(pseudoElementID)
+        {
+        }
+        bool operator <(const PrioritizedDeclaration& decl) const
+        {
+            return priority < decl.priority;
+        }
+    };
+
+    typedef std::multiset<PrioritizedDeclaration> DeclarationSet;
+
     Document document;
     css::CSSStyleSheet defaultStyleSheet;
     std::map<Element, CSSStyleDeclarationPtr> map;
     std::map<Node, BlockLevelBoxPtr> floatMap;
     BlockLevelBoxPtr boxTree;
     Retained<ContainingBlock> initialContainingBlock;
+
+    Node hovered;
 
     unsigned dpi;
     unsigned mediumFontSize;  // [px]
@@ -58,6 +80,7 @@ class ViewCSSImp
     Retained<EventListenerImp> mutationListener;
     void handleMutation(events::Event event);
 
+    void findDeclarations(DeclarationSet& set, Element element, css::CSSRuleList list);
     void cascade(Node node, CSSStyleDeclarationImp* parentStyle = 0);
 
     BlockLevelBox* layOutBlockBoxes(Node node, BlockLevelBox* parentBox, BlockLevelBox* siblingBox, CSSStyleDeclarationImp* style);
@@ -175,6 +198,18 @@ public:
     }
 
     Box* lookupTarget(int x, int y);
+
+    Node getHovered() const {
+        return hovered;
+    }
+    void setHovered(Node node) {
+        if (hovered != node) {
+            if (boxTree)
+                boxTree->setFlags(1);
+        }
+        hovered = node;
+    }
+    bool isHovered(Node node);
 
     CSSStyleDeclarationImp* getStyle(Element elt, Nullable<std::u16string> pseudoElt = Nullable<std::u16string>());
 

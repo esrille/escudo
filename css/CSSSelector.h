@@ -35,6 +35,8 @@ namespace org { namespace w3c { namespace dom {
 
 namespace bootstrap {
 
+class ViewCSSImp;
+
 class CSSSpecificity
 {
     unsigned char a;
@@ -97,7 +99,7 @@ public:
         text += CSSSerializeIdentifier(name);
     }
     virtual CSSSpecificity getSpecificity() = 0;
-    virtual bool match(Element element) {
+    virtual bool match(Element element, ViewCSSImp* view) {
         return false;
     }
 };
@@ -153,7 +155,7 @@ public:
     }
     virtual void serialize(std::u16string& text);
     virtual CSSSpecificity getSpecificity();
-    virtual bool match(Element element);
+    virtual bool match(Element element, ViewCSSImp* view);
 
     CSSPseudoElementSelector* getPseudoElement() const;
 };
@@ -171,7 +173,7 @@ public:
     virtual CSSSpecificity getSpecificity() {
         return CSSSpecificity(0, 1, 0, 0);
     }
-    virtual bool match(Element element);
+    virtual bool match(Element element, ViewCSSImp* view);
 };
 
 // '.' IDENT
@@ -187,7 +189,7 @@ public:
     virtual CSSSpecificity getSpecificity() {
             return CSSSpecificity(0, 0, 1, 0);
     }
-    virtual bool match(Element element);
+    virtual bool match(Element element, ViewCSSImp* view);
 };
 
 class CSSAttributeSelector : public CSSSimpleSelector
@@ -235,7 +237,7 @@ public:
     virtual CSSSpecificity getSpecificity() {
             return CSSSpecificity(0, 0, 1, 0);
     }
-    virtual bool match(Element element);
+    virtual bool match(Element element, ViewCSSImp* view);
 };
 
 class CSSPseudoSelector : public CSSSimpleSelector
@@ -314,7 +316,7 @@ public:
     virtual CSSSpecificity getSpecificity() {
         return CSSSpecificity(0, 0, 1, 0);
     }
-    virtual bool match(Element element);
+    virtual bool match(Element element, ViewCSSImp* view);
 
     unsigned getID() const {
         return id;
@@ -363,7 +365,7 @@ public:
     virtual CSSSpecificity getSpecificity() {
         return CSSSpecificity(0, 0, 0, 1);
     }
-    virtual bool match(Element element) {
+    virtual bool match(Element element, ViewCSSImp* view) {
         return true;
     }
 
@@ -407,7 +409,7 @@ public:
     void serialize(std::u16string& text);
     CSSSpecificity getSpecificity();
 
-    bool match(Element element);
+    bool match(Element element, ViewCSSImp* view);
     CSSPseudoElementSelector* getPseudoElement() const;
 };
 
@@ -424,7 +426,7 @@ public:
             selectors.push_back(selector);
     }
     void serialize(std::u16string& text);
-    CSSSelector* match(Element element);
+    CSSSelector* match(Element element, ViewCSSImp* view);
     CSSSpecificity getLastSpecificity() {  // of the last matched selector
         return specificity;
     }
