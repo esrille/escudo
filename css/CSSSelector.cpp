@@ -282,7 +282,6 @@ bool CSSPseudoClassSelector::match(Element element, ViewCSSImp* view)
 {
     switch (id) {
     case Link:
-    case Visited:
         if (html::HTMLAnchorElement::hasInstance(element))
             return true;
         break;
