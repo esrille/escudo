@@ -1371,6 +1371,9 @@ public:
             decoration |= (*i)->getIndex();
         setValue(decoration);
     }
+    unsigned getValue() const {
+        return value;
+    }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
         if (value == 0)
             return Options[0];

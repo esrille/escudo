@@ -168,8 +168,8 @@ void Box::renderBorderEdge(ViewCSSImp* view, int edge, unsigned borderStyle, uns
         glEnable(GL_LINE_STIPPLE);
         glLineWidth(fabsf(g - a));
         glLineStipple(fabsf(g - a), (borderStyle == CSSBorderStyleValueImp::Dotted) ? 0xaaaa : 0xcccc);
+        glColor4ub(red, green, blue, alpha);
         glBegin(GL_LINES);
-            glColor4ub(red, green, blue, alpha);
             glVertex2f((a + g) / 2, (b + h) / 2);
             glVertex2f((c + e) / 2, (d + f) / 2);
         glEnd();
@@ -363,9 +363,8 @@ void LineBox::render(ViewCSSImp* view)
     getOriginScreenPosition(x, y);
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
         child->render(view);
-        if (!child->isAbsolutelyPositioned()) {
+        if (!child->isAbsolutelyPositioned())
             glTranslatef(child->getTotalWidth(), 0.0f, 0.0f);
-        }
     }
     glPopMatrix();
 }
@@ -383,10 +382,28 @@ void InlineLevelBox::render(ViewCSSImp* view)
         getFirstChild()->render(view);
     else if (0 < data.length()) {
         glTranslatef(0.0f, baseline, 0.0f);
-        glScalef(point / font->getPoint(), point / font->getPoint(), 1.0);
-        unsigned color = getStyle()->color.getARGB();
-        glColor4ub(color >> 16, color >> 8, color, color >> 24);
-        font->renderText(data.c_str(), data.length());
+        glPushMatrix();
+            glScalef(point / font->getPoint(), point / font->getPoint(), 1.0);
+            unsigned color = getStyle()->color.getARGB();
+            glColor4ub(color >> 16, color >> 8, color, color >> 24);
+            font->renderText(data.c_str(), data.length());
+        glPopMatrix();
+        if (getStyle()->textDecorationContext.hasDecoration()) {
+            unsigned lineDecoration = getStyle()->textDecorationContext.decoration;
+            glDisable(GL_TEXTURE_2D);
+            LineBox* lineBox = dynamic_cast<LineBox*>(getParentBox());
+            assert(lineBox);
+            glLineWidth(lineBox->getUnderlineThickness());
+            unsigned color = getStyle()->textDecorationContext.color;
+            glColor4ub(color >> 16, color >> 8, color, color >> 24);
+            if (lineDecoration & CSSTextDecorationValueImp::Underline) {
+                glBegin(GL_LINES);
+                    glVertex2f(0.0f, lineBox->getUnderlinePosition());
+                    glVertex2f(getTotalWidth(), lineBox->getUnderlinePosition());
+                glEnd();
+            }
+            glEnable(GL_TEXTURE_2D);
+        }
     }
     glPopMatrix();
 }

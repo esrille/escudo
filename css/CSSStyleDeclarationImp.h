@@ -188,6 +188,30 @@ public:
         MaxProperties
     };
 
+    struct TextDecorationContext
+    {
+        unsigned color;      // from CSSColor::getARGB()
+        unsigned decoration; // from CSSTextDecorationValueImp::getValue()
+
+        TextDecorationContext() :
+            color(0),
+            decoration(CSSTextDecorationValueImp::None)
+        {
+        }
+        TextDecorationContext(const TextDecorationContext& other) :
+            color(other.color),
+            decoration(other.decoration)
+        {
+        }
+        bool hasDecoration() const {
+            return decoration != CSSTextDecorationValueImp::None;
+        }
+        void update(CSSStyleDeclarationImp* style) {
+            color = style->color.getARGB();
+            decoration = style->textDecoration.getValue();
+        }
+    };
+
 private:
     Object* owner;
     css::CSSRule parentRule;
@@ -304,6 +328,8 @@ public:
     CSSAutoLengthValueImp width;
 
     CSSZIndexValueImp zIndex;
+
+    TextDecorationContext textDecorationContext;
 
 public:
     CSSStyleDeclarationImp();

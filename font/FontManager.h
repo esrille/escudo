@@ -205,6 +205,14 @@ public:
         return ascender * point / this->point / 64.0f;
     }
 
+    float getUnderlinePosition(float point) const {
+        return -face->face->underline_position * point / this->point / 64.0f;
+    }
+
+    float getUnderlineThickness(float point) const {
+        return -face->face->underline_thickness * point / this->point / 64.0f;
+    }
+
     static const int Width = 1024;
     static const int Height = 1024;
     static const int Offset = 1;

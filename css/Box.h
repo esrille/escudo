@@ -376,7 +376,7 @@ public:
         edge(0.0f),
         remainingHeight(0.0f)
     {
-        this->style = style;
+        setStyle(style);
     }
 
     virtual unsigned getBoxType() const {
@@ -442,7 +442,19 @@ class LineBox : public Box
     friend class BlockLevelBox ;
 
     float baseline;
+    float underlinePosition;
+    float underlineThickness;
+
 public:
+    LineBox(CSSStyleDeclarationImp* style) :
+        Box(0),
+        baseline(0.0f),
+        underlinePosition(0.0f),
+        underlineThickness(1.0f)
+    {
+        setStyle(style);
+    }
+
     virtual unsigned getBoxType() const {
         return LINE_BOX;
     }
@@ -459,13 +471,16 @@ public:
     float getBaseline() const {
         return baseline;
     }
+    float getUnderlinePosition() const {
+        return underlinePosition;
+    }
+    float getUnderlineThickness() const {
+        return underlineThickness;
+    }
+
     virtual void layOut(ViewCSSImp* view, FormattingContext* context);
     virtual void render(ViewCSSImp* view);
     virtual void dump(ViewCSSImp* view, std::string indent);
-    LineBox() :
-        Box(0),
-        baseline(0.0f) {
-    }
 };
 
 typedef boost::intrusive_ptr<LineBox> LineBoxPtr;
@@ -481,7 +496,16 @@ class InlineLevelBox : public Box
     std::u16string data;
 
 public:
-    virtual unsigned getBoxType() const {
+    InlineLevelBox(Node node, CSSStyleDeclarationImp* style) :
+        Box(node),
+        font(0),
+        point(0.0f),
+        baseline(0.0f)
+    {
+        setStyle(style);
+    }
+
+virtual unsigned getBoxType() const {
         return INLINE_LEVEL_BOX;
     }
 
@@ -500,13 +524,6 @@ public:
     }
     virtual void render(ViewCSSImp* view);
     virtual void dump(ViewCSSImp* view, std::string indent);
-    InlineLevelBox(Node node, CSSStyleDeclarationImp* style) :
-        Box(node),
-        font(0),
-        point(0.0f),
-        baseline(0.0f) {
-        this->style = style;
-    }
 };
 
 typedef boost::intrusive_ptr<InlineLevelBox> InlineLevelBoxPtr;

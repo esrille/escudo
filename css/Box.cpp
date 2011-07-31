@@ -552,10 +552,13 @@ void BlockLevelBox::layOutText(ViewCSSImp* view, Text text, FormattingContext* c
         inlineLevelBox->height = font->getHeight(point);
         inlineLevelBox->baseline += (activeStyle->lineHeight.getPx() - inlineLevelBox->height) / 2.0f;
         context->x += advanced + blankRight;
-        context->lineBox->appendChild(inlineLevelBox);
-        context->lineBox->height = std::max(context->lineBox->height, std::max(activeStyle->lineHeight.getPx(), inlineLevelBox->height));
-        context->lineBox->baseline = std::max(context->lineBox->baseline, inlineLevelBox->baseline);
-        context->lineBox->width += blankLeft + advanced + blankRight;
+        LineBox* lineBox = context->lineBox;
+        lineBox->appendChild(inlineLevelBox);
+        lineBox->height = std::max(lineBox->height, std::max(activeStyle->lineHeight.getPx(), inlineLevelBox->height));
+        lineBox->baseline = std::max(lineBox->baseline, inlineLevelBox->baseline);
+        lineBox->width += blankLeft + advanced + blankRight;
+        lineBox->underlinePosition = std::max(lineBox->underlinePosition, font->getUnderlinePosition(point));
+        lineBox->underlineThickness = std::max(lineBox->underlineThickness, font->getUnderlineThickness(point));
         position += length;
         data.erase(0, length);
         if (data.length() == 0) {  // layout done?
@@ -686,10 +689,11 @@ void BlockLevelBox::layOutInlineReplaced(ViewCSSImp* view, Node node, Formatting
     // TODO: deal with overflow
 
     context->x += inlineLevelBox->width + blankRight;
-    context->lineBox->appendChild(inlineLevelBox);
-    context->lineBox->height = std::max(context->lineBox->height, inlineLevelBox->height);  // TODO: marginTop, etc.???
-    context->lineBox->baseline = std::max(context->lineBox->baseline, inlineLevelBox->baseline);
-    context->lineBox->width += blankLeft + inlineLevelBox->width + blankRight;
+    LineBox* lineBox = context->lineBox;
+    lineBox->appendChild(inlineLevelBox);
+    lineBox->height = std::max(lineBox->height, inlineLevelBox->height);  // TODO: marginTop, etc.???
+    lineBox->baseline = std::max(lineBox->baseline, inlineLevelBox->baseline);
+    lineBox->width += blankLeft + inlineLevelBox->width + blankRight;
 }
 
 void BlockLevelBox::layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floatBox, FormattingContext* context)
@@ -1073,7 +1077,8 @@ bool InlineLevelBox::isAnonymous() const
     return !style || !style->display.isInlineLevel();
 }
 
-void InlineLevelBox::setData(FontTexture* font, float point, std::u16string data) {
+void InlineLevelBox::setData(FontTexture* font, float point, std::u16string data)
+{
     this->font = font;
     this->point = point;
     this->data = data;

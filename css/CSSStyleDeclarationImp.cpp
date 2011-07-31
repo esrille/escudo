@@ -1082,6 +1082,13 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
         }
     }
 
+    if (isFloat() || isAbsolutelyPositioned() || !parentStyle)  // TODO or the contents of atomic inline-level descendants such as inline blocks and inline tables.
+        textDecorationContext.update(this);
+    else if (parentStyle->textDecorationContext.hasDecoration())
+        textDecorationContext = parentStyle->textDecorationContext;
+    else
+        textDecorationContext.update(this);
+
     // Note the parent style of a pseudo element style is not always the corresponding element's style.
     // It will be computed layter by layout().
 }

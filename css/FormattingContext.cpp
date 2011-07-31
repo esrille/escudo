@@ -50,7 +50,8 @@ float FormattingContext::getRightRemainingHeight() const {
 
 LineBox* FormattingContext::addLineBox(ViewCSSImp* view, BlockLevelBox* parentBox) {
     assert(!lineBox);
-    lineBox = new(std::nothrow) LineBox;
+    assert(parentBox);
+    lineBox = new(std::nothrow) LineBox(parentBox->getStyle());
     if (lineBox) {
         parentBox->appendChild(lineBox);
         x = getLeftEdge();
