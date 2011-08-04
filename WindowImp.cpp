@@ -295,6 +295,24 @@ void WindowImp::keyup(unsigned charCode, unsigned keyCode, int modifiers)
 }
 
 //
+// CSSOM View support operations
+//
+
+Element WindowImp::elementFromPoint(float x, float y)
+{
+    if (!view)
+        return 0;
+    if (x < 0.0f || width < x || y < 0.0f || height < y)
+        return 0;
+    Box* box = view->boxFromPoint(x, y);
+    for (Node node = box->getTargetNode(); node; node = node.getParentNode()) {
+        if (node.getNodeType() == Node::ELEMENT_NODE)
+            return interface_cast<Element>(node);
+    }
+    return 0;
+}
+
+//
 // html::Window - implemented
 //
 

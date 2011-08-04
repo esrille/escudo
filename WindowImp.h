@@ -119,6 +119,12 @@ public:
     void keydown(unsigned charCode, unsigned keyCode, int modifiers);
     void keyup(unsigned charCode, unsigned keyCode, int modifiers);
 
+    // CSSOM View support operations
+    // Maybe we should keep the old DocumentView interface
+    // to make these operations usable via the formal way from
+    // DocumentImp.
+    Element elementFromPoint(float x, float y);
+
     // Window customized
     html::Window open(std::u16string url = u"about:blank", std::u16string target = u"_blank", std::u16string features = u"", bool replace = false);
 

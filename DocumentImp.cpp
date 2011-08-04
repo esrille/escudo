@@ -1492,8 +1492,9 @@ void DocumentImp::enableStyleSheetsForSet(Nullable<std::u16string> name)
 
 Element DocumentImp::elementFromPoint(float x, float y)
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    if (!defaultView)
+        return 0;
+    return defaultView->elementFromPoint(x, y);
 }
 
 CaretPosition DocumentImp::caretPositionFromPoint(float x, float y)
