@@ -334,9 +334,9 @@ public:
         return true;
     }
 
-    Box* lookupTarget(int x, int y) {
+    Box* boxFromPoint(int x, int y) {
         for (Box* box = getFirstChild(); box; box = box->getNextSibling()) {
-            if (Box* target = box->lookupTarget(x, y))
+            if (Box* target = box->boxFromPoint(x, y))
                 return target;
         }
         return isInside(x, y) ? this : 0;

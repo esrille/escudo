@@ -194,7 +194,7 @@ void WindowImp::mouse(int button, int up, int x, int y, int modifiers)
 
     events::MouseEvent event(0);
 
-    Box* box = view->lookupTarget(x, y);
+    Box* box = view->boxFromPoint(x, y);
     ViewCSSImp* shadow = box->getShadow();
     if (shadow) {
         html::Window child = shadow->getDocument().getDefaultView();
@@ -217,7 +217,7 @@ void WindowImp::mouse(int button, int up, int x, int y, int modifiers)
 
     if (!up || detail == 0)
         return;
-    Box* clickBox = view->lookupTarget(x, y);
+    Box* clickBox = view->boxFromPoint(x, y);
     if (box != clickBox)
         return;
 
@@ -235,7 +235,7 @@ void WindowImp::mouseMove(int x, int y, int modifiers)
     if (!view)
         return;
 
-    Box* box = view->lookupTarget(x, y);
+    Box* box = view->boxFromPoint(x, y);
     ViewCSSImp* shadow = box->getShadow();
     if (shadow) {
         html::Window child = shadow->getDocument().getDefaultView();

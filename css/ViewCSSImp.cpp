@@ -47,11 +47,11 @@ ViewCSSImp::~ViewCSSImp()
     document.removeEventListener(u"DOMAttrModified", &mutationListener);
 }
 
-Box* ViewCSSImp::lookupTarget(int x, int y)
+Box* ViewCSSImp::boxFromPoint(int x, int y)
 {
     if (!boxTree)
         return 0;
-    if (Box* target = boxTree.get()->lookupTarget(x, y))
+    if (Box* target = boxTree.get()->boxFromPoint(x, y))
         return target;
     return boxTree.get();
 }

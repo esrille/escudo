@@ -197,7 +197,7 @@ public:
         return px / dpi * 72;
     }
 
-    Box* lookupTarget(int x, int y);
+    Box* boxFromPoint(int x, int y);
 
     Node getHovered() const {
         return hovered;
