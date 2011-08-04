@@ -110,7 +110,6 @@ generated_headers = \
 	org/w3c/dom/html/BarProp.h \
 	org/w3c/dom/html/BeforeUnloadEvent.h \
 	org/w3c/dom/html/BlobCallback.h \
-	org/w3c/dom/html/BooleanCallback.h \
 	org/w3c/dom/html/CanvasGradient.h \
 	org/w3c/dom/html/CanvasPattern.h \
 	org/w3c/dom/html/CanvasPixelArray.h \
@@ -201,6 +200,8 @@ generated_headers = \
 	org/w3c/dom/html/History.h \
 	org/w3c/dom/html/ImageData.h \
 	org/w3c/dom/html/Location.h \
+	org/w3c/dom/html/MediaQueryList.h \
+	org/w3c/dom/html/MediaQueryListListener.h \
 	org/w3c/dom/html/MessageChannel.h \
 	org/w3c/dom/html/MessageEvent.h \
 	org/w3c/dom/html/MessagePort.h \
@@ -210,7 +211,6 @@ generated_headers = \
 	org/w3c/dom/html/PropertyNodeList.h \
 	org/w3c/dom/html/RadioNodeList.h \
 	org/w3c/dom/html/Screen.h \
-	org/w3c/dom/html/StyleMedia.h \
 	org/w3c/dom/html/TextMetrics.h \
 	org/w3c/dom/html/TimeRanges.h \
 	org/w3c/dom/html/Transferable.h \
@@ -352,7 +352,6 @@ generated_sources = \
 	org/w3c/dom/html/BarProp.cpp \
 	org/w3c/dom/html/BeforeUnloadEvent.cpp \
 	org/w3c/dom/html/BlobCallback.cpp \
-	org/w3c/dom/html/BooleanCallback.cpp \
 	org/w3c/dom/html/CanvasGradient.cpp \
 	org/w3c/dom/html/CanvasPattern.cpp \
 	org/w3c/dom/html/CanvasPixelArray.cpp \
@@ -443,6 +442,8 @@ generated_sources = \
 	org/w3c/dom/html/History.cpp \
 	org/w3c/dom/html/ImageData.cpp \
 	org/w3c/dom/html/Location.cpp \
+	org/w3c/dom/html/MediaQueryList.cpp \
+	org/w3c/dom/html/MediaQueryListListener.cpp \
 	org/w3c/dom/html/MessageChannel.cpp \
 	org/w3c/dom/html/MessageEvent.cpp \
 	org/w3c/dom/html/MessagePort.cpp \
@@ -452,7 +453,6 @@ generated_sources = \
 	org/w3c/dom/html/PropertyNodeList.cpp \
 	org/w3c/dom/html/RadioNodeList.cpp \
 	org/w3c/dom/html/Screen.cpp \
-	org/w3c/dom/html/StyleMedia.cpp \
 	org/w3c/dom/html/TextMetrics.cpp \
 	org/w3c/dom/html/TimeRanges.cpp \
 	org/w3c/dom/html/Transferable.cpp \
@@ -643,8 +643,6 @@ libeshtml5_a_SOURCES += \
 	BeforeUnloadEventImp.h \
 	BlobImp.cpp \
 	BlobImp.h \
-	BooleanCallbackImp.cpp \
-	BooleanCallbackImp.h \
 	CaretPositionImp.cpp \
 	CaretPositionImp.h \
 	CharacterDataImp.cpp \
@@ -713,6 +711,10 @@ libeshtml5_a_SOURCES += \
 	MediaErrorImp.h \
 	MediaListImp.cpp \
 	MediaListImp.h \
+	MediaQueryListImp.cpp \
+	MediaQueryListImp.h \
+	MediaQueryListListenerImp.cpp \
+	MediaQueryListListenerImp.h \
 	MessageChannelImp.cpp \
 	MessageChannelImp.h \
 	MessageEventImp.cpp \
@@ -750,8 +752,6 @@ libeshtml5_a_SOURCES += \
 	RangeImp.h \
 	ScreenImp.cpp \
 	ScreenImp.h \
-	StyleMediaImp.cpp \
-	StyleMediaImp.h \
 	StyleSheetImp.cpp \
 	StyleSheetImp.h \
 	TextEventImp.cpp \

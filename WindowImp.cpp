@@ -1371,7 +1371,7 @@ css::CSSStyleDeclaration WindowImp::getComputedStyle(Element elt, std::u16string
     return static_cast<Object*>(0);
 }
 
-html::StyleMedia WindowImp::getStyleMedia()
+html::MediaQueryList WindowImp::matchMedia(std::u16string media_query_list)
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
@@ -1395,7 +1395,19 @@ int WindowImp::getInnerHeight()
     return 0;
 }
 
+int WindowImp::getScrollX()
+{
+    // TODO: implement me!
+    return 0;
+}
+
 int WindowImp::getPageXOffset()
+{
+    // TODO: implement me!
+    return 0;
+}
+
+int WindowImp::getScrollY()
 {
     // TODO: implement me!
     return 0;

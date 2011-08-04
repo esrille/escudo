@@ -27,7 +27,6 @@
 #include "BarPropImp.h"
 #include "BeforeUnloadEventImp.h"
 #include "BlobImp.h"
-#include "BooleanCallbackImp.h"
 #include "CaretPositionImp.h"
 #include "CharacterDataImp.h"
 #include "ClientRectImp.h"
@@ -62,6 +61,8 @@
 #include "LocationImp.h"
 #include "MediaErrorImp.h"
 #include "MediaListImp.h"
+#include "MediaQueryListImp.h"
+#include "MediaQueryListListenerImp.h"
 #include "MessageChannelImp.h"
 #include "MessageEventImp.h"
 #include "MessagePortImp.h"
@@ -81,7 +82,6 @@
 #include "PropertyNodeListImp.h"
 #include "RangeImp.h"
 #include "ScreenImp.h"
-#include "StyleMediaImp.h"
 #include "StyleSheetImp.h"
 #include "TextEventImp.h"
 #include "TextImp.h"
@@ -275,7 +275,6 @@ void registerClasses(JSContext* cx, JSObject* global)
     ApplicationCacheImp::setStaticPrivate(new NativeClass(cx, global, ApplicationCacheImp::getMetaData()));
     BarPropImp::setStaticPrivate(new NativeClass(cx, global, BarPropImp::getMetaData()));
     BlobImp::setStaticPrivate(new NativeClass(cx, global, BlobImp::getMetaData()));
-    BooleanCallbackImp::setStaticPrivate(new NativeClass(cx, global, BooleanCallbackImp::getMetaData()));
     CanvasGradientImp::setStaticPrivate(new NativeClass(cx, global, CanvasGradientImp::getMetaData()));
     CanvasPatternImp::setStaticPrivate(new NativeClass(cx, global, CanvasPatternImp::getMetaData()));
     CanvasPixelArrayImp::setStaticPrivate(new NativeClass(cx, global, CanvasPixelArrayImp::getMetaData()));
@@ -298,6 +297,8 @@ void registerClasses(JSContext* cx, JSObject* global)
     ImageDataImp::setStaticPrivate(new NativeClass(cx, global, ImageDataImp::getMetaData()));
     LinkStyleImp::setStaticPrivate(new NativeClass(cx, global, LinkStyleImp::getMetaData()));
     MediaErrorImp::setStaticPrivate(new NativeClass(cx, global, MediaErrorImp::getMetaData()));
+    MediaQueryListImp::setStaticPrivate(new NativeClass(cx, global, MediaQueryListImp::getMetaData()));
+    MediaQueryListListenerImp::setStaticPrivate(new NativeClass(cx, global, MediaQueryListListenerImp::getMetaData()));
     MessageChannelImp::setStaticPrivate(new NativeClass(cx, global, MessageChannelImp::getMetaData()));
     MessagePortImp::setStaticPrivate(new NativeClass(cx, global, MessagePortImp::getMetaData()));
     // NameListImp::setStaticPrivate(new NativeClass(cx, global, NameListImp::getMetaData()));
@@ -310,7 +311,6 @@ void registerClasses(JSContext* cx, JSObject* global)
     RangeImp::setStaticPrivate(new NativeClass(cx, global, RangeImp::getMetaData()));
     RectImp::setStaticPrivate(new NativeClass(cx, global, RectImp::getMetaData()));
     ScreenImp::setStaticPrivate(new NativeClass(cx, global, ScreenImp::getMetaData()));
-    StyleMediaImp::setStaticPrivate(new NativeClass(cx, global, StyleMediaImp::getMetaData()));
     TextMetricsImp::setStaticPrivate(new NativeClass(cx, global, TextMetricsImp::getMetaData()));
     TimeRangesImp::setStaticPrivate(new NativeClass(cx, global, TimeRangesImp::getMetaData()));
     TreeWalkerImp::setStaticPrivate(new NativeClass(cx, global, TreeWalkerImp::getMetaData()));

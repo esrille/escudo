@@ -24,7 +24,7 @@
 #include <org/w3c/dom/html/Window.h>
 
 #include <org/w3c/dom/css/CSSStyleDeclaration.h>
-#include <org/w3c/dom/html/StyleMedia.h>
+#include <org/w3c/dom/html/MediaQueryList.h>
 #include <org/w3c/dom/html/Screen.h>
 #include <org/w3c/dom/events/Event.h>
 #include <org/w3c/dom/events/EventListener.h>
@@ -316,11 +316,13 @@ public:
     css::CSSStyleDeclaration getComputedStyle(Element elt);
     css::CSSStyleDeclaration getComputedStyle(Element elt, std::u16string pseudoElt);
     // Window-5
-    html::StyleMedia getStyleMedia();
+    html::MediaQueryList matchMedia(std::u16string media_query_list);
     html::Screen getScreen();
     int getInnerWidth();
     int getInnerHeight();
+    int getScrollX();
     int getPageXOffset();
+    int getScrollY();
     int getPageYOffset();
     void scroll(int x, int y);
     void scrollTo(int x, int y);

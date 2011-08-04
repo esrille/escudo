@@ -341,6 +341,11 @@ views::ClientRect ElementImp::getBoundingClientRect()
     return static_cast<Object*>(0);
 }
 
+void ElementImp::scrollIntoView(bool top)
+{
+    // TODO: implement me!
+}
+
 int ElementImp::getScrollTop()
 {
     // TODO: implement me!

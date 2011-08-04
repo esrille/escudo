@@ -3,7 +3,7 @@
  *
  * CSSOM View Module IDL definitions scraped from the W3C specification, revised for esidl.
  *
- * Original W3C Editor's Draft 13 August 2010:
+ * Original W3C Working Draft 4 August 2011:
  *
  *   http://dev.w3.org/csswg/cssom-view/
  */
@@ -11,14 +11,18 @@
 module html
 {
 
-[Supplemental] interface Window {
-  readonly attribute StyleMedia styleMedia;
+partial interface Window {
+  MediaQueryList matchMedia(DOMString media_query_list);
   readonly attribute Screen screen;
 
   // viewport
   readonly attribute long innerWidth;
   readonly attribute long innerHeight;
+
+  // viewport scrolling
+  readonly attribute long scrollX;
   readonly attribute long pageXOffset;
+  readonly attribute long scrollY;
   readonly attribute long pageYOffset;
   void scroll(long x, long y);
   void scrollTo(long x, long y);
@@ -31,17 +35,16 @@ module html
   readonly attribute long outerHeight;
 };
 
-interface StyleMedia {
-  readonly attribute DOMString type;
-  boolean matchMedia(DOMString mq_list);
-
-  void addMediaListener(DOMString mq_list, BooleanCallback mq_callback);
-  void removeMediaListener(DOMString mq_list, BooleanCallback mq_callback);
+interface MediaQueryList {
+  readonly attribute DOMString media;
+  readonly attribute boolean matches;
+  void addListener(MediaQueryListListener listener);
+  void removeListener(MediaQueryListListener listener);
 };
 
-[Callback=FunctionOnly, NoInterfaceObject]
-interface BooleanCallback {
-  void handleEvent(boolean arg);
+[Callback, NoInterfaceObject]
+interface MediaQueryListListener {
+  void handleChange(MediaQueryList mql);
 };
 
 interface Screen {
@@ -62,21 +65,22 @@ typedef views::ClientRectList ClientRectList;
 typedef views::ClientRect ClientRect;
 typedef ranges::Range Range;
 
-[Supplemental] interface Document {
-  Element elementFromPoint(float x, float y);
-  CaretPosition caretPositionFromPoint(float x, float y);
+partial interface Document {
+  Element? elementFromPoint(float x, float y);
+  CaretPosition? caretPositionFromPoint(float x, float y);
 };
 
 interface CaretPosition {
   readonly attribute Node offsetNode;
   readonly attribute unsigned long offset;
-  readonly attribute Range range;
 };
 
-[Supplemental] interface Element {
+partial interface Element {
   ClientRectList getClientRects();
   ClientRect getBoundingClientRect();
 
+  // scrolling
+  void scrollIntoView(optional boolean top);
            attribute long scrollTop;   // scroll on setting
            attribute long scrollLeft;  // scroll on setting
   readonly attribute long scrollWidth;
@@ -95,7 +99,7 @@ module html
 
 typedef dom::Element Element;
 
-[Supplemental] interface HTMLElement {
+partial interface HTMLElement {
   readonly attribute Element offsetParent;
   readonly attribute long offsetTop;
   readonly attribute long offsetLeft;
@@ -111,7 +115,7 @@ module ranges
 typedef views::ClientRectList ClientRectList;
 typedef views::ClientRect ClientRect;
 
-[Supplemental] interface Range {
+partial interface Range {
   ClientRectList getClientRects();
   ClientRect getBoundingClientRect();
 };
@@ -121,7 +125,7 @@ typedef views::ClientRect ClientRect;
 module events
 {
 
-[Supplemental] interface MouseEvent {
+partial interface MouseEvent {
   // readonly attribute long screenX;
   // readonly attribute long screenY;
 
@@ -155,5 +159,6 @@ interface ClientRect {
   readonly attribute float width;
   readonly attribute float height;
 };
+
 
 };

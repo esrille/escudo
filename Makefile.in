@@ -110,12 +110,11 @@ am_libeshtml5_a_OBJECTS = Any.$(OBJEXT) utf.$(OBJEXT) \
 	Test.util.$(OBJEXT) Test.glut.$(OBJEXT) \
 	ApplicationCacheImp.$(OBJEXT) AttrImp.$(OBJEXT) \
 	BarPropImp.$(OBJEXT) BeforeUnloadEventImp.$(OBJEXT) \
-	BlobImp.$(OBJEXT) BooleanCallbackImp.$(OBJEXT) \
-	CaretPositionImp.$(OBJEXT) CharacterDataImp.$(OBJEXT) \
-	ClientRectImp.$(OBJEXT) ClientRectListImp.$(OBJEXT) \
-	CommentImp.$(OBJEXT) CompositionEventImp.$(OBJEXT) \
-	CustomEventImp.$(OBJEXT) CustomEventInitImp.$(OBJEXT) \
-	DOMImplementationImp.$(OBJEXT) \
+	BlobImp.$(OBJEXT) CaretPositionImp.$(OBJEXT) \
+	CharacterDataImp.$(OBJEXT) ClientRectImp.$(OBJEXT) \
+	ClientRectListImp.$(OBJEXT) CommentImp.$(OBJEXT) \
+	CompositionEventImp.$(OBJEXT) CustomEventImp.$(OBJEXT) \
+	CustomEventInitImp.$(OBJEXT) DOMImplementationImp.$(OBJEXT) \
 	DOMSettableTokenListImp.$(OBJEXT) DOMStringListImp.$(OBJEXT) \
 	DOMStringMapImp.$(OBJEXT) DOMTokenListImp.$(OBJEXT) \
 	DocumentFragmentImp.$(OBJEXT) DocumentImp.$(OBJEXT) \
@@ -128,6 +127,8 @@ am_libeshtml5_a_OBJECTS = Any.$(OBJEXT) utf.$(OBJEXT) \
 	HistoryImp.$(OBJEXT) KeyboardEventImp.$(OBJEXT) \
 	LinkStyleImp.$(OBJEXT) LocationImp.$(OBJEXT) \
 	MediaErrorImp.$(OBJEXT) MediaListImp.$(OBJEXT) \
+	MediaQueryListImp.$(OBJEXT) \
+	MediaQueryListListenerImp.$(OBJEXT) \
 	MessageChannelImp.$(OBJEXT) MessageEventImp.$(OBJEXT) \
 	MessagePortImp.$(OBJEXT) MouseEventImp.$(OBJEXT) \
 	MutationEventImp.$(OBJEXT) MutationNameEventImp.$(OBJEXT) \
@@ -136,9 +137,9 @@ am_libeshtml5_a_OBJECTS = Any.$(OBJEXT) utf.$(OBJEXT) \
 	NodeListImp.$(OBJEXT) PageTransitionEventImp.$(OBJEXT) \
 	PopStateEventImp.$(OBJEXT) ProcessingInstructionImp.$(OBJEXT) \
 	ProgressEventImp.$(OBJEXT) PropertyNodeListImp.$(OBJEXT) \
-	RangeImp.$(OBJEXT) ScreenImp.$(OBJEXT) StyleMediaImp.$(OBJEXT) \
-	StyleSheetImp.$(OBJEXT) TextEventImp.$(OBJEXT) \
-	TextImp.$(OBJEXT) TreeWalkerImp.$(OBJEXT) UIEventImp.$(OBJEXT) \
+	RangeImp.$(OBJEXT) ScreenImp.$(OBJEXT) StyleSheetImp.$(OBJEXT) \
+	TextEventImp.$(OBJEXT) TextImp.$(OBJEXT) \
+	TreeWalkerImp.$(OBJEXT) UIEventImp.$(OBJEXT) \
 	UndoManagerEventImp.$(OBJEXT) UndoManagerImp.$(OBJEXT) \
 	WheelEventImp.$(OBJEXT) WindowImp.$(OBJEXT) \
 	CSS2PropertiesImp.$(OBJEXT) CSSCharsetRuleImp.$(OBJEXT) \
@@ -269,40 +270,39 @@ am__objects_1 = AnonXMLHttpRequest.$(OBJEXT) Attr.$(OBJEXT) \
 	FileList.$(OBJEXT) FileReader.$(OBJEXT) \
 	FileReaderSync.$(OBJEXT) ApplicationCache.$(OBJEXT) \
 	BarProp.$(OBJEXT) BeforeUnloadEvent.$(OBJEXT) \
-	BlobCallback.$(OBJEXT) BooleanCallback.$(OBJEXT) \
-	CanvasGradient.$(OBJEXT) CanvasPattern.$(OBJEXT) \
-	CanvasPixelArray.$(OBJEXT) CanvasRenderingContext2D.$(OBJEXT) \
-	DataTransfer.$(OBJEXT) DataTransferItem.$(OBJEXT) \
-	DataTransferItemList.$(OBJEXT) DragEvent.$(OBJEXT) \
-	Function.$(OBJEXT) HTMLAllCollection.$(OBJEXT) \
-	HTMLAnchorElement.$(OBJEXT) HTMLAppletElement.$(OBJEXT) \
-	HTMLAreaElement.$(OBJEXT) HTMLAudioElement.$(OBJEXT) \
-	HTMLBRElement.$(OBJEXT) HTMLBaseElement.$(OBJEXT) \
-	HTMLBaseFontElement.$(OBJEXT) HTMLBodyElement.$(OBJEXT) \
-	HTMLButtonElement.$(OBJEXT) HTMLCanvasElement.$(OBJEXT) \
-	HTMLCollection.$(OBJEXT) HTMLCommandElement.$(OBJEXT) \
-	HTMLDListElement.$(OBJEXT) HTMLDataListElement.$(OBJEXT) \
-	HTMLDetailsElement.$(OBJEXT) HTMLDirectoryElement.$(OBJEXT) \
-	HTMLDivElement.$(OBJEXT) HTMLDocument.$(OBJEXT) \
-	HTMLElement.$(OBJEXT) HTMLEmbedElement.$(OBJEXT) \
-	HTMLFieldSetElement.$(OBJEXT) HTMLFontElement.$(OBJEXT) \
-	HTMLFormControlsCollection.$(OBJEXT) HTMLFormElement.$(OBJEXT) \
-	HTMLFrameElement.$(OBJEXT) HTMLFrameSetElement.$(OBJEXT) \
-	HTMLHRElement.$(OBJEXT) HTMLHeadElement.$(OBJEXT) \
-	HTMLHeadingElement.$(OBJEXT) HTMLHtmlElement.$(OBJEXT) \
-	HTMLIFrameElement.$(OBJEXT) HTMLImageElement.$(OBJEXT) \
-	HTMLInputElement.$(OBJEXT) HTMLKeygenElement.$(OBJEXT) \
-	HTMLLIElement.$(OBJEXT) HTMLLabelElement.$(OBJEXT) \
-	HTMLLegendElement.$(OBJEXT) HTMLLinkElement.$(OBJEXT) \
-	HTMLMapElement.$(OBJEXT) HTMLMarqueeElement.$(OBJEXT) \
-	HTMLMediaElement.$(OBJEXT) HTMLMenuElement.$(OBJEXT) \
-	HTMLMetaElement.$(OBJEXT) HTMLMeterElement.$(OBJEXT) \
-	HTMLModElement.$(OBJEXT) HTMLOListElement.$(OBJEXT) \
-	HTMLObjectElement.$(OBJEXT) HTMLOptGroupElement.$(OBJEXT) \
-	HTMLOptionElement.$(OBJEXT) HTMLOptionsCollection.$(OBJEXT) \
-	HTMLOutputElement.$(OBJEXT) HTMLParagraphElement.$(OBJEXT) \
-	HTMLParamElement.$(OBJEXT) HTMLPreElement.$(OBJEXT) \
-	HTMLProgressElement.$(OBJEXT) \
+	BlobCallback.$(OBJEXT) CanvasGradient.$(OBJEXT) \
+	CanvasPattern.$(OBJEXT) CanvasPixelArray.$(OBJEXT) \
+	CanvasRenderingContext2D.$(OBJEXT) DataTransfer.$(OBJEXT) \
+	DataTransferItem.$(OBJEXT) DataTransferItemList.$(OBJEXT) \
+	DragEvent.$(OBJEXT) Function.$(OBJEXT) \
+	HTMLAllCollection.$(OBJEXT) HTMLAnchorElement.$(OBJEXT) \
+	HTMLAppletElement.$(OBJEXT) HTMLAreaElement.$(OBJEXT) \
+	HTMLAudioElement.$(OBJEXT) HTMLBRElement.$(OBJEXT) \
+	HTMLBaseElement.$(OBJEXT) HTMLBaseFontElement.$(OBJEXT) \
+	HTMLBodyElement.$(OBJEXT) HTMLButtonElement.$(OBJEXT) \
+	HTMLCanvasElement.$(OBJEXT) HTMLCollection.$(OBJEXT) \
+	HTMLCommandElement.$(OBJEXT) HTMLDListElement.$(OBJEXT) \
+	HTMLDataListElement.$(OBJEXT) HTMLDetailsElement.$(OBJEXT) \
+	HTMLDirectoryElement.$(OBJEXT) HTMLDivElement.$(OBJEXT) \
+	HTMLDocument.$(OBJEXT) HTMLElement.$(OBJEXT) \
+	HTMLEmbedElement.$(OBJEXT) HTMLFieldSetElement.$(OBJEXT) \
+	HTMLFontElement.$(OBJEXT) HTMLFormControlsCollection.$(OBJEXT) \
+	HTMLFormElement.$(OBJEXT) HTMLFrameElement.$(OBJEXT) \
+	HTMLFrameSetElement.$(OBJEXT) HTMLHRElement.$(OBJEXT) \
+	HTMLHeadElement.$(OBJEXT) HTMLHeadingElement.$(OBJEXT) \
+	HTMLHtmlElement.$(OBJEXT) HTMLIFrameElement.$(OBJEXT) \
+	HTMLImageElement.$(OBJEXT) HTMLInputElement.$(OBJEXT) \
+	HTMLKeygenElement.$(OBJEXT) HTMLLIElement.$(OBJEXT) \
+	HTMLLabelElement.$(OBJEXT) HTMLLegendElement.$(OBJEXT) \
+	HTMLLinkElement.$(OBJEXT) HTMLMapElement.$(OBJEXT) \
+	HTMLMarqueeElement.$(OBJEXT) HTMLMediaElement.$(OBJEXT) \
+	HTMLMenuElement.$(OBJEXT) HTMLMetaElement.$(OBJEXT) \
+	HTMLMeterElement.$(OBJEXT) HTMLModElement.$(OBJEXT) \
+	HTMLOListElement.$(OBJEXT) HTMLObjectElement.$(OBJEXT) \
+	HTMLOptGroupElement.$(OBJEXT) HTMLOptionElement.$(OBJEXT) \
+	HTMLOptionsCollection.$(OBJEXT) HTMLOutputElement.$(OBJEXT) \
+	HTMLParagraphElement.$(OBJEXT) HTMLParamElement.$(OBJEXT) \
+	HTMLPreElement.$(OBJEXT) HTMLProgressElement.$(OBJEXT) \
 	HTMLPropertiesCollection.$(OBJEXT) HTMLQuoteElement.$(OBJEXT) \
 	HTMLScriptElement.$(OBJEXT) HTMLSelectElement.$(OBJEXT) \
 	HTMLSourceElement.$(OBJEXT) HTMLSpanElement.$(OBJEXT) \
@@ -317,16 +317,16 @@ am__objects_1 = AnonXMLHttpRequest.$(OBJEXT) Attr.$(OBJEXT) \
 	HTMLUnknownElement.$(OBJEXT) HTMLVideoElement.$(OBJEXT) \
 	HashChangeEvent.$(OBJEXT) History.$(OBJEXT) \
 	ImageData.$(OBJEXT) Location.$(OBJEXT) \
+	MediaQueryList.$(OBJEXT) MediaQueryListListener.$(OBJEXT) \
 	MessageChannel.$(OBJEXT) MessageEvent.$(OBJEXT) \
 	MessagePort.$(OBJEXT) Navigator.$(OBJEXT) \
 	PageTransitionEvent.$(OBJEXT) PopStateEvent.$(OBJEXT) \
 	PropertyNodeList.$(OBJEXT) RadioNodeList.$(OBJEXT) \
-	Screen.$(OBJEXT) StyleMedia.$(OBJEXT) TextMetrics.$(OBJEXT) \
-	TimeRanges.$(OBJEXT) Transferable.$(OBJEXT) \
-	UndoManager.$(OBJEXT) UndoManagerEvent.$(OBJEXT) \
-	ValidityState.$(OBJEXT) Window.$(OBJEXT) \
-	DocumentRange.$(OBJEXT) Range.$(OBJEXT) LinkStyle.$(OBJEXT) \
-	MediaList.$(OBJEXT) StyleSheet.$(OBJEXT) \
+	Screen.$(OBJEXT) TextMetrics.$(OBJEXT) TimeRanges.$(OBJEXT) \
+	Transferable.$(OBJEXT) UndoManager.$(OBJEXT) \
+	UndoManagerEvent.$(OBJEXT) ValidityState.$(OBJEXT) \
+	Window.$(OBJEXT) DocumentRange.$(OBJEXT) Range.$(OBJEXT) \
+	LinkStyle.$(OBJEXT) MediaList.$(OBJEXT) StyleSheet.$(OBJEXT) \
 	DocumentTraversal.$(OBJEXT) NodeFilter.$(OBJEXT) \
 	NodeIterator.$(OBJEXT) TreeWalker.$(OBJEXT) \
 	ArrayBuffer.$(OBJEXT) ArrayBufferView.$(OBJEXT) \
@@ -669,7 +669,6 @@ generated_headers = \
 	org/w3c/dom/html/BarProp.h \
 	org/w3c/dom/html/BeforeUnloadEvent.h \
 	org/w3c/dom/html/BlobCallback.h \
-	org/w3c/dom/html/BooleanCallback.h \
 	org/w3c/dom/html/CanvasGradient.h \
 	org/w3c/dom/html/CanvasPattern.h \
 	org/w3c/dom/html/CanvasPixelArray.h \
@@ -760,6 +759,8 @@ generated_headers = \
 	org/w3c/dom/html/History.h \
 	org/w3c/dom/html/ImageData.h \
 	org/w3c/dom/html/Location.h \
+	org/w3c/dom/html/MediaQueryList.h \
+	org/w3c/dom/html/MediaQueryListListener.h \
 	org/w3c/dom/html/MessageChannel.h \
 	org/w3c/dom/html/MessageEvent.h \
 	org/w3c/dom/html/MessagePort.h \
@@ -769,7 +770,6 @@ generated_headers = \
 	org/w3c/dom/html/PropertyNodeList.h \
 	org/w3c/dom/html/RadioNodeList.h \
 	org/w3c/dom/html/Screen.h \
-	org/w3c/dom/html/StyleMedia.h \
 	org/w3c/dom/html/TextMetrics.h \
 	org/w3c/dom/html/TimeRanges.h \
 	org/w3c/dom/html/Transferable.h \
@@ -911,7 +911,6 @@ generated_sources = \
 	org/w3c/dom/html/BarProp.cpp \
 	org/w3c/dom/html/BeforeUnloadEvent.cpp \
 	org/w3c/dom/html/BlobCallback.cpp \
-	org/w3c/dom/html/BooleanCallback.cpp \
 	org/w3c/dom/html/CanvasGradient.cpp \
 	org/w3c/dom/html/CanvasPattern.cpp \
 	org/w3c/dom/html/CanvasPixelArray.cpp \
@@ -1002,6 +1001,8 @@ generated_sources = \
 	org/w3c/dom/html/History.cpp \
 	org/w3c/dom/html/ImageData.cpp \
 	org/w3c/dom/html/Location.cpp \
+	org/w3c/dom/html/MediaQueryList.cpp \
+	org/w3c/dom/html/MediaQueryListListener.cpp \
 	org/w3c/dom/html/MessageChannel.cpp \
 	org/w3c/dom/html/MessageEvent.cpp \
 	org/w3c/dom/html/MessagePort.cpp \
@@ -1011,7 +1012,6 @@ generated_sources = \
 	org/w3c/dom/html/PropertyNodeList.cpp \
 	org/w3c/dom/html/RadioNodeList.cpp \
 	org/w3c/dom/html/Screen.cpp \
-	org/w3c/dom/html/StyleMedia.cpp \
 	org/w3c/dom/html/TextMetrics.cpp \
 	org/w3c/dom/html/TimeRanges.cpp \
 	org/w3c/dom/html/Transferable.cpp \
@@ -1131,8 +1131,7 @@ libeshtml5_a_SOURCES = Object.h ObjectArrayImp.h Any.cpp Any.h \
 	Test.util.cpp Test.glut.cpp ApplicationCacheImp.cpp \
 	ApplicationCacheImp.h AttrImp.cpp AttrImp.h BarPropImp.cpp \
 	BarPropImp.h BeforeUnloadEventImp.cpp BeforeUnloadEventImp.h \
-	BlobImp.cpp BlobImp.h BooleanCallbackImp.cpp \
-	BooleanCallbackImp.h CaretPositionImp.cpp CaretPositionImp.h \
+	BlobImp.cpp BlobImp.h CaretPositionImp.cpp CaretPositionImp.h \
 	CharacterDataImp.cpp CharacterDataImp.h ClientRectImp.cpp \
 	ClientRectImp.h ClientRectListImp.cpp ClientRectListImp.h \
 	CommentImp.cpp CommentImp.h CompositionEventImp.cpp \
@@ -1156,6 +1155,8 @@ libeshtml5_a_SOURCES = Object.h ObjectArrayImp.h Any.cpp Any.h \
 	KeyboardEventImp.h LinkStyleImp.cpp LinkStyleImp.h \
 	LocationImp.cpp LocationImp.h MediaErrorImp.cpp \
 	MediaErrorImp.h MediaListImp.cpp MediaListImp.h \
+	MediaQueryListImp.cpp MediaQueryListImp.h \
+	MediaQueryListListenerImp.cpp MediaQueryListListenerImp.h \
 	MessageChannelImp.cpp MessageChannelImp.h MessageEventImp.cpp \
 	MessageEventImp.h MessagePortImp.cpp MessagePortImp.h \
 	MouseEventImp.cpp MouseEventImp.h MutationEventImp.cpp \
@@ -1169,8 +1170,7 @@ libeshtml5_a_SOURCES = Object.h ObjectArrayImp.h Any.cpp Any.h \
 	ProcessingInstructionImp.h ProgressEventImp.cpp \
 	ProgressEventImp.h PropertyNodeListImp.cpp \
 	PropertyNodeListImp.h RangeImp.cpp RangeImp.h ScreenImp.cpp \
-	ScreenImp.h StyleMediaImp.cpp StyleMediaImp.h \
-	StyleSheetImp.cpp StyleSheetImp.h TextEventImp.cpp \
+	ScreenImp.h StyleSheetImp.cpp StyleSheetImp.h TextEventImp.cpp \
 	TextEventImp.h TextImp.cpp TextImp.h TreeWalkerImp.cpp \
 	TreeWalkerImp.h UIEventImp.cpp UIEventImp.h \
 	UndoManagerEventImp.cpp UndoManagerEventImp.h \
@@ -1637,8 +1637,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Blob.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BlobCallback.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BlobImp.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BooleanCallback.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BooleanCallbackImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Box.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Box.test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BoxGL.Po@am__quote@
@@ -2000,6 +1998,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MediaErrorImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MediaList.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MediaListImp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MediaQueryList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MediaQueryListImp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MediaQueryListListener.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MediaQueryListListenerImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageChannel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageChannelImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageEvent.Po@am__quote@
@@ -2044,8 +2046,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ScreenImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Script.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Script.test.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StyleMedia.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StyleMediaImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StyleSheet.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StyleSheetImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Test.glut.Po@am__quote@
@@ -5666,20 +5666,6 @@ BlobCallback.obj: org/w3c/dom/html/BlobCallback.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o BlobCallback.obj `if test -f 'org/w3c/dom/html/BlobCallback.cpp'; then $(CYGPATH_W) 'org/w3c/dom/html/BlobCallback.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/html/BlobCallback.cpp'; fi`
 
-BooleanCallback.o: org/w3c/dom/html/BooleanCallback.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT BooleanCallback.o -MD -MP -MF $(DEPDIR)/BooleanCallback.Tpo -c -o BooleanCallback.o `test -f 'org/w3c/dom/html/BooleanCallback.cpp' || echo '$(srcdir)/'`org/w3c/dom/html/BooleanCallback.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/BooleanCallback.Tpo $(DEPDIR)/BooleanCallback.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/html/BooleanCallback.cpp' object='BooleanCallback.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o BooleanCallback.o `test -f 'org/w3c/dom/html/BooleanCallback.cpp' || echo '$(srcdir)/'`org/w3c/dom/html/BooleanCallback.cpp
-
-BooleanCallback.obj: org/w3c/dom/html/BooleanCallback.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT BooleanCallback.obj -MD -MP -MF $(DEPDIR)/BooleanCallback.Tpo -c -o BooleanCallback.obj `if test -f 'org/w3c/dom/html/BooleanCallback.cpp'; then $(CYGPATH_W) 'org/w3c/dom/html/BooleanCallback.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/html/BooleanCallback.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/BooleanCallback.Tpo $(DEPDIR)/BooleanCallback.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/html/BooleanCallback.cpp' object='BooleanCallback.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o BooleanCallback.obj `if test -f 'org/w3c/dom/html/BooleanCallback.cpp'; then $(CYGPATH_W) 'org/w3c/dom/html/BooleanCallback.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/html/BooleanCallback.cpp'; fi`
-
 CanvasGradient.o: org/w3c/dom/html/CanvasGradient.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT CanvasGradient.o -MD -MP -MF $(DEPDIR)/CanvasGradient.Tpo -c -o CanvasGradient.o `test -f 'org/w3c/dom/html/CanvasGradient.cpp' || echo '$(srcdir)/'`org/w3c/dom/html/CanvasGradient.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/CanvasGradient.Tpo $(DEPDIR)/CanvasGradient.Po
@@ -6940,6 +6926,34 @@ Location.obj: org/w3c/dom/html/Location.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Location.obj `if test -f 'org/w3c/dom/html/Location.cpp'; then $(CYGPATH_W) 'org/w3c/dom/html/Location.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/html/Location.cpp'; fi`
 
+MediaQueryList.o: org/w3c/dom/html/MediaQueryList.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MediaQueryList.o -MD -MP -MF $(DEPDIR)/MediaQueryList.Tpo -c -o MediaQueryList.o `test -f 'org/w3c/dom/html/MediaQueryList.cpp' || echo '$(srcdir)/'`org/w3c/dom/html/MediaQueryList.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/MediaQueryList.Tpo $(DEPDIR)/MediaQueryList.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/html/MediaQueryList.cpp' object='MediaQueryList.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MediaQueryList.o `test -f 'org/w3c/dom/html/MediaQueryList.cpp' || echo '$(srcdir)/'`org/w3c/dom/html/MediaQueryList.cpp
+
+MediaQueryList.obj: org/w3c/dom/html/MediaQueryList.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MediaQueryList.obj -MD -MP -MF $(DEPDIR)/MediaQueryList.Tpo -c -o MediaQueryList.obj `if test -f 'org/w3c/dom/html/MediaQueryList.cpp'; then $(CYGPATH_W) 'org/w3c/dom/html/MediaQueryList.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/html/MediaQueryList.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/MediaQueryList.Tpo $(DEPDIR)/MediaQueryList.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/html/MediaQueryList.cpp' object='MediaQueryList.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MediaQueryList.obj `if test -f 'org/w3c/dom/html/MediaQueryList.cpp'; then $(CYGPATH_W) 'org/w3c/dom/html/MediaQueryList.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/html/MediaQueryList.cpp'; fi`
+
+MediaQueryListListener.o: org/w3c/dom/html/MediaQueryListListener.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MediaQueryListListener.o -MD -MP -MF $(DEPDIR)/MediaQueryListListener.Tpo -c -o MediaQueryListListener.o `test -f 'org/w3c/dom/html/MediaQueryListListener.cpp' || echo '$(srcdir)/'`org/w3c/dom/html/MediaQueryListListener.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/MediaQueryListListener.Tpo $(DEPDIR)/MediaQueryListListener.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/html/MediaQueryListListener.cpp' object='MediaQueryListListener.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MediaQueryListListener.o `test -f 'org/w3c/dom/html/MediaQueryListListener.cpp' || echo '$(srcdir)/'`org/w3c/dom/html/MediaQueryListListener.cpp
+
+MediaQueryListListener.obj: org/w3c/dom/html/MediaQueryListListener.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MediaQueryListListener.obj -MD -MP -MF $(DEPDIR)/MediaQueryListListener.Tpo -c -o MediaQueryListListener.obj `if test -f 'org/w3c/dom/html/MediaQueryListListener.cpp'; then $(CYGPATH_W) 'org/w3c/dom/html/MediaQueryListListener.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/html/MediaQueryListListener.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/MediaQueryListListener.Tpo $(DEPDIR)/MediaQueryListListener.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/html/MediaQueryListListener.cpp' object='MediaQueryListListener.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MediaQueryListListener.obj `if test -f 'org/w3c/dom/html/MediaQueryListListener.cpp'; then $(CYGPATH_W) 'org/w3c/dom/html/MediaQueryListListener.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/html/MediaQueryListListener.cpp'; fi`
+
 MessageChannel.o: org/w3c/dom/html/MessageChannel.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MessageChannel.o -MD -MP -MF $(DEPDIR)/MessageChannel.Tpo -c -o MessageChannel.o `test -f 'org/w3c/dom/html/MessageChannel.cpp' || echo '$(srcdir)/'`org/w3c/dom/html/MessageChannel.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/MessageChannel.Tpo $(DEPDIR)/MessageChannel.Po
@@ -7065,20 +7079,6 @@ Screen.obj: org/w3c/dom/html/Screen.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/html/Screen.cpp' object='Screen.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Screen.obj `if test -f 'org/w3c/dom/html/Screen.cpp'; then $(CYGPATH_W) 'org/w3c/dom/html/Screen.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/html/Screen.cpp'; fi`
-
-StyleMedia.o: org/w3c/dom/html/StyleMedia.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT StyleMedia.o -MD -MP -MF $(DEPDIR)/StyleMedia.Tpo -c -o StyleMedia.o `test -f 'org/w3c/dom/html/StyleMedia.cpp' || echo '$(srcdir)/'`org/w3c/dom/html/StyleMedia.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/StyleMedia.Tpo $(DEPDIR)/StyleMedia.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/html/StyleMedia.cpp' object='StyleMedia.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o StyleMedia.o `test -f 'org/w3c/dom/html/StyleMedia.cpp' || echo '$(srcdir)/'`org/w3c/dom/html/StyleMedia.cpp
-
-StyleMedia.obj: org/w3c/dom/html/StyleMedia.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT StyleMedia.obj -MD -MP -MF $(DEPDIR)/StyleMedia.Tpo -c -o StyleMedia.obj `if test -f 'org/w3c/dom/html/StyleMedia.cpp'; then $(CYGPATH_W) 'org/w3c/dom/html/StyleMedia.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/html/StyleMedia.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/StyleMedia.Tpo $(DEPDIR)/StyleMedia.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/html/StyleMedia.cpp' object='StyleMedia.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o StyleMedia.obj `if test -f 'org/w3c/dom/html/StyleMedia.cpp'; then $(CYGPATH_W) 'org/w3c/dom/html/StyleMedia.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/html/StyleMedia.cpp'; fi`
 
 TextMetrics.o: org/w3c/dom/html/TextMetrics.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT TextMetrics.o -MD -MP -MF $(DEPDIR)/TextMetrics.Tpo -c -o TextMetrics.o `test -f 'org/w3c/dom/html/TextMetrics.cpp' || echo '$(srcdir)/'`org/w3c/dom/html/TextMetrics.cpp

@@ -89,6 +89,7 @@ public:
     // Element-3
     virtual views::ClientRectList getClientRects();
     virtual views::ClientRect getBoundingClientRect();
+    virtual void scrollIntoView(bool top = true);
     virtual int getScrollTop();
     virtual void setScrollTop(int scrollTop);
     virtual int getScrollLeft();
