@@ -19,3 +19,7 @@
 #undef PACKAGE_VERSION
 
 #include <Object.h>
+
+#if 4 < __GNUC__ || __GNUC__ == 4 && 6 <= __GNUC_MINOR__
+#define HAVE_NULLPTR 1
+#endif

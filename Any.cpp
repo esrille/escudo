@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <assert.h>
 #include <ctype.h>
 #include <float.h>
@@ -22,8 +26,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
-
-#include <Object.h>
 
 namespace {
 
@@ -249,6 +251,8 @@ std::u16string Any::toString() const
 double Any::toNumber() const
 {
     switch (type) {
+    case Undefined:
+        return NAN;
     case Bool:
     case Int32:
         return heap.i32;

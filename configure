@@ -4013,6 +4013,7 @@ ac_config_files="$ac_config_files Makefile"
 
 
 
+
 # check for icu-config
 # Extract the first word of "icu-config", so it can be a program name with args.
 set dummy icu-config; ac_word=$2

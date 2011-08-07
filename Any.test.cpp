@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <iostream>
 #include <math.h>
 
-#include "Object.h"
-#include "Any.h"
-#include "css/CSSSerialize.h"
+#include "utf.h"
 
 int check(bool cond)
 {
@@ -43,7 +45,6 @@ Any testRet()
 
 int testAssign()
 {
-    int v = 3.0;
     Any z;
     z = testRet();
     return static_cast<int>(z);
@@ -51,8 +52,36 @@ int testAssign()
 
 int main()
 {
-    Any x;
     int result = 0;
+
+    Any x;
+    std::cout << "undefined: " << x.isUndefined() << '\n';
+    result += check(x.isUndefined());
+
+    Any e(static_cast<Object*>(0));
+    std::cout << "null: " << e.isNull() << '\n';
+    result += check(e.isNull());
+    std::cout << "null: " << e.isNull() << '\n';
+
+    Object o;
+    x = o;
+    std::cout << "object: " << x.isObject() << '\n';
+    std::cout << "null: " << x.isNull() << '\n';
+    result += check(!x.isObject());
+    result += check(x.isNull());
+
+    Any g(0);
+    std::cout << "g: " << g.getType() << '\n';
+#ifdef HAVE_NULLPTR
+    Any h(nullptr);
+    std::cout << "h: " << h.getType() << '\n';
+#endif
+    Any i(static_cast<char*>(0));
+    std::cout << "i: " << i.getType() << '\n';
+    Any j(static_cast<const char*>(0));
+    std::cout << "j: " << j.getType() << '\n';
+    Any k(j);
+    std::cout << "k: " << k.getType() << '\n';
 
     x = 3.14;
     std::cout << static_cast<int>(x) << '\n';
@@ -95,13 +124,6 @@ int main()
     std::cout << n.toBoolean() << ' ' << static_cast<bool>(n) << '\n';
     n = (double) NAN;
     std::cout << n.toBoolean() << ' ' << static_cast<bool>(n) << '\n';
-
-    Object o;
-    x = o;
-    result += check(x.isObject());
-
-    x = &o;
-    result += check(x.isObject());
 
     result += testAssign();
 

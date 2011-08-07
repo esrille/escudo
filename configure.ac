@@ -10,6 +10,9 @@ AC_CONFIG_HEADER(config.h)
 AC_CONFIG_FILES(Makefile)
 
 AH_BOTTOM([#include <Object.h>])
+AH_BOTTOM([#if 4 < __GNUC__ || __GNUC__ == 4 && 6 <= __GNUC_MINOR__
+#define HAVE_NULLPTR 1
+#endif])
 
 # check for icu-config
 AC_PATH_PROG(icu_config, icu-config, no)

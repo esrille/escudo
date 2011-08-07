@@ -68,8 +68,10 @@ Object* convert(JSContext* cx, JSObject* obj)
 
 Any convert(JSContext* cx, jsval& v)
 {
-    if (JSVAL_IS_NULL(v))
+    if (JSVAL_IS_VOID(v))
         return Any();
+    if (JSVAL_IS_NULL(v))
+        return Any(static_cast<Object*>(0));
     if (JSVAL_IS_INT(v))
         return JSVAL_TO_INT(v);
     if (JSVAL_IS_DOUBLE(v))
@@ -102,7 +104,9 @@ JSObject* convert(JSContext* cx, Object* obj)
 jsval convert(JSContext* cx, Any& v)
 {
     switch (v.getType()) {
-    case Any::Empty:
+    case Any::Undefined:
+        return JSVAL_VOID;
+    case Any::Null:
         return JSVAL_NULL;
     case Any::Bool:
         return BOOLEAN_TO_JSVAL(static_cast<bool>(v));
