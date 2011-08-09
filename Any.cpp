@@ -111,6 +111,16 @@ std::u16string toString(double value)
     return text;
 }
 
+std::u16string toString(Object* object)
+{
+    if (!object)
+        return u"null";
+    Any result = object->message_(0, 0, Object::STRINGIFY_, 0);
+    if (result.isString())
+        return result.toString();
+    return u"";
+}
+
 double toNumber(const std::u16string& value)
 {
     char16_t c = 0;
@@ -239,6 +249,9 @@ std::u16string Any::toString() const
     case Dynamic:
         if (vtable->getType() == typeid(std::u16string))
             return *reinterpret_cast<const std::u16string*>(&heap);
+        if (vtable->getType() == typeid(Object))
+            return ::toString(const_cast<Object*>(reinterpret_cast<const Object*>(&heap)->self()));
+        break;
     default:
         break;
     }
