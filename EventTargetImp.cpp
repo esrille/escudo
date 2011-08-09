@@ -107,7 +107,7 @@ bool EventTargetImp::dispatchEvent(events::Event evt)
     event->setTarget(this);
 
     if (NodeImp* node = dynamic_cast<NodeImp*>(this)) {
-        JS_SetGlobalObject(jscontext, static_cast<JSObject*>(node->getOwnerDocumentImp()->getGlobal()));
+        node->getOwnerDocumentImp()->activate();
         if (!node->parentNode) {
             event->setEventPhase(events::Event::AT_TARGET);
             invoke(event);
@@ -134,7 +134,7 @@ bool EventTargetImp::dispatchEvent(events::Event evt)
             }
         }
     } else if (DocumentWindow* window = dynamic_cast<DocumentWindow*>(this)) {
-        JS_SetGlobalObject(jscontext, static_cast<JSObject*>(dynamic_cast<DocumentImp*>(window->getDocument().self())->getGlobal()));
+        window->activate();
         event->setEventPhase(events::Event::AT_TARGET);
         invoke(event);
     }

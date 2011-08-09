@@ -102,33 +102,20 @@ DocumentImp::DocumentImp(const std::u16string& url) :
     doctype(0),
     mode(NoQuirksMode),
     compatMode(u"CSS1Compat"),
-    global(0),
     defaultView(0),
     activeElement(0),
     clickListener(boost::bind(&DocumentImp::handleClick, this, _1))
 {
     nodeName = u"#document";
     addEventListener(u"click", &clickListener);
-
-    // Set up global
-    global = newGlobal();
 }
 
 DocumentImp::~DocumentImp()
 {
-    if (global) {
-        ::putGlobal(static_cast<JSObject*>(global));
-        global = 0;
-    }
 }
 
 void DocumentImp::setDefaultView(WindowImp* view) {
     defaultView = view;
-    if (global) {
-        view->setPrivate(global);
-        JS_SetPrivate(jscontext, static_cast<JSObject*>(global), view);
-        JS_SetGlobalObject(jscontext, static_cast<JSObject*>(global));
-    }
 }
 
 void DocumentImp::setURL(const std::u16string& url)
@@ -139,6 +126,12 @@ void DocumentImp::setURL(const std::u16string& url)
 void DocumentImp::setFocus(ElementImp* element)
 {
     activeElement = element;
+}
+
+void DocumentImp::activate()
+{
+    if (defaultView)
+        defaultView->activate();
 }
 
 void DocumentImp::handleClick(events::Event event)

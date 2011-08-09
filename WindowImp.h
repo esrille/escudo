@@ -95,6 +95,8 @@ public:
     void setDocumentWindow(const DocumentWindowPtr& window);
     void refreshView();
 
+    bool activate();
+
     // mouse()
     //   button:
     //     0: left (primary)

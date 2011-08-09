@@ -33,8 +33,6 @@
 #include "KeyboardEventImp.h"
 #include "MouseEventImp.h"
 
-#include "js/Script.h"
-
 #include "Test.util.h"
 
 #include "http/HTTPConnection.h"
@@ -81,6 +79,15 @@ WindowImp::~WindowImp()
             }
         }
     }
+}
+
+bool WindowImp::activate()
+{
+    if (window) {
+        window->activate(this);
+        return true;
+    }
+    return false;
 }
 
 void WindowImp::refreshView()
@@ -134,7 +141,7 @@ bool WindowImp::poll()
                 // TODO: Check header
                 window->setDocument(getDOMImplementation()->createDocument(u"", u"", 0));
             }
-            if (!window->getDocument())
+            if (!activate())
                 break;
 
             DocumentImp* imp = dynamic_cast<DocumentImp*>(window->getDocument().self());

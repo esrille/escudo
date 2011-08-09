@@ -90,7 +90,8 @@ bool HTMLScriptElementImp::execute()
     }
     if (3 <= length && script.compare(length - 3, 3, u"-->") == 0)
         length -= 3;
-    return JS_EvaluateUCScript(jscontext, static_cast<JSObject*>(getOwnerDocumentImp()->getGlobal()),
+    getOwnerDocumentImp()->activate();
+    return JS_EvaluateUCScript(jscontext, JS_GetGlobalObject(jscontext),
                                reinterpret_cast<const jschar*>(script.c_str() + pos), length,
                                filename, lineno, &rval);
 }

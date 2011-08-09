@@ -26,26 +26,32 @@
 #include <boost/intrusive_ptr.hpp>
 
 #include "EventTargetImp.h"
+#include "js/Script.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
+
+class WindowImp;
 
 // DocumentWindow implements the Window object
 class DocumentWindow : public EventTargetImp
 {
     Document document;
+    void* global;       // JS global object for the document
+
+    DocumentWindow(const DocumentWindow& window);
 
 public:
     DocumentWindow() :
-        document(0)
+        document(0),
+        global(0)
     {
     }
-    DocumentWindow(const Document& document) :
-        document(document)
+    ~DocumentWindow()
     {
-    }
-    DocumentWindow(const DocumentWindow& window) :
-        document(window.document)
-    {
+        if (global) {
+            putGlobal(static_cast<JSObject*>(global));
+            global = 0;
+        }
     }
 
     Document getDocument() const {
@@ -53,7 +59,20 @@ public:
     }
     void setDocument(const Document& document) {
         this->document = document;
+        if (global)
+            putGlobal(static_cast<JSObject*>(global));
+        global = newGlobal();
     }
+
+    void* getGlobal() {
+        return global;
+    }
+    void setGlobal(void* g) {
+        global = g;
+    }
+
+    void activate();
+    void activate(WindowImp* proxy);
 };
 
 typedef boost::intrusive_ptr<DocumentWindow> DocumentWindowPtr;

@@ -575,6 +575,8 @@ libeshtml5_a_SOURCES = \
 	TextIterator.h \
 	U16InputStream.cpp \
 	U16InputStream.h \
+	DocumentWindow.cpp \
+	DocumentWindow.h \
 	js/esjsapi.h \
 	js/bridge.cpp \
 	js/Script.cpp \
