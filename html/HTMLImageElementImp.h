@@ -24,22 +24,26 @@
 #include <org/w3c/dom/html/HTMLImageElement.h>
 #include "HTMLElementImp.h"
 
-#include <org/w3c/dom/html/HTMLElement.h>
-#include <org/w3c/dom/html/HTMLImageElement.h>
-
-#include "HTMLElementImp.h"
+#include "http/HTTPRequest.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class HTMLImageElementImp : public ObjectMixin<HTMLImageElementImp, HTMLElementImp>
 {
+    HttpRequest* request;
+
 public:
     HTMLImageElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"img") {
+        ObjectMixin(ownerDocument, u"img"),
+        request(0) {
     }
     HTMLImageElementImp(HTMLImageElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
+        ObjectMixin(org, deep),
+        request(0) {  // TODO: XXX
     }
+    ~HTMLImageElementImp();
+
+    virtual void eval();
 
     // Node
     virtual Node cloneNode(bool deep);

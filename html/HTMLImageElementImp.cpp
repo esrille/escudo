@@ -18,6 +18,22 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
+HTMLImageElementImp::~HTMLImageElementImp()
+{
+    delete request;
+}
+
+void HTMLImageElementImp::eval()
+{
+    HTMLElementImp::eval();
+
+    request = new(std::nothrow) HttpRequest(getOwnerDocument().getDocumentURI());
+    if (request) {
+        request->open(u"GET", getSrc());
+        request->send();
+    }
+}
+
 // Node
 Node HTMLImageElementImp::cloneNode(bool deep)
 {
