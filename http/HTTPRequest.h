@@ -52,7 +52,7 @@ private:
     boost::function<void (void)> handler;
 
 public:
-    HttpRequest(const std::u16string base = u"");
+    HttpRequest(const std::u16string& base = u"");
     ~HttpRequest();
 
     void constructResponseFromCache();

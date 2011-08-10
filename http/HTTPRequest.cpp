@@ -109,7 +109,7 @@ void HttpRequest::abort()
 {
     // TODO: implement more details.
     clearHanndler();
-    if (cache) 
+    if (cache)
         cache->abort(this);
     else {
         HttpConnectionManager& manager = HttpConnectionManager::getInstance();
@@ -147,7 +147,7 @@ const std::string& HttpRequest::getAllResponseHeaders() const
     return response.getAllResponseHeaders();
 }
 
-HttpRequest::HttpRequest(const std::u16string base) :
+HttpRequest::HttpRequest(const std::u16string& base) :
     base(base),
     readyState(UNSENT),
     errorFlag(false),

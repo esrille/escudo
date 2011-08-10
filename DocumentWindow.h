@@ -31,12 +31,14 @@
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class WindowImp;
+class HttpRequest;
 
 // DocumentWindow implements the Window object
 class DocumentWindow : public EventTargetImp
 {
     Document document;
     void* global;       // JS global object for the document
+    std::list<HttpRequest*> cache;
 
     DocumentWindow(const DocumentWindow& window);
 
@@ -46,13 +48,7 @@ public:
         global(0)
     {
     }
-    ~DocumentWindow()
-    {
-        if (global) {
-            putGlobal(static_cast<JSObject*>(global));
-            global = 0;
-        }
-    }
+    ~DocumentWindow();
 
     Document getDocument() const {
         return document;
@@ -73,6 +69,8 @@ public:
 
     void activate();
     void activate(WindowImp* proxy);
+
+    void preload(const std::u16string& base, const std::u16string& url);
 };
 
 typedef boost::intrusive_ptr<DocumentWindow> DocumentWindowPtr;

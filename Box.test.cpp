@@ -100,7 +100,9 @@ int main(int argc, char** argv)
     dumpTree(std::cout, document);
 
     // create the default view
-    ViewCSSImp* view = new ViewCSSImp(document, defaultStyleSheet);
+    DocumentWindowPtr window = new(std::nothrow) DocumentWindow;
+    window->setDocument(document);
+    ViewCSSImp* view = new ViewCSSImp(window, defaultStyleSheet);
     view->cascade();
     view->setSize(8.5f * 96, 11.0f * 96);  // US letter size, 96 DPI
 

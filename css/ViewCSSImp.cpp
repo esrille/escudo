@@ -31,20 +31,20 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
-ViewCSSImp::ViewCSSImp(Document document, css::CSSStyleSheet defaultStyleSheet) :
-    document(document),
+ViewCSSImp::ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyleSheet) :
+    window(window),
     defaultStyleSheet(defaultStyleSheet),
     hovered(0),
     dpi(96),
     mutationListener(boost::bind(&ViewCSSImp::handleMutation, this, _1))
 {
     setMediumFontSize(16);
-    document.addEventListener(u"DOMAttrModified", &mutationListener);
+    getDocument().addEventListener(u"DOMAttrModified", &mutationListener);
 }
 
 ViewCSSImp::~ViewCSSImp()
 {
-    document.removeEventListener(u"DOMAttrModified", &mutationListener);
+    getDocument().removeEventListener(u"DOMAttrModified", &mutationListener);
 }
 
 Box* ViewCSSImp::boxFromPoint(int x, int y)
@@ -259,7 +259,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
 
     if (CSSStyleDeclarationImp* afterStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::After)) {
         afterStyle->compute(this, style, element);
-        if (Element after = afterStyle->content.eval(document, element)) {
+        if (Element after = afterStyle->content.eval(getDocument(), element)) {
             map[after] = afterStyle;
             if (BlockLevelBox* box = layOutBlockBoxes(after, currentBox, childBox, style))
                 childBox = box;
@@ -282,7 +282,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
 
     if (CSSStyleDeclarationImp* beforeStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::Before)) {
         beforeStyle->compute(this, style, element);
-        if (Element before = beforeStyle->content.eval(document, element)) {
+        if (Element before = beforeStyle->content.eval(getDocument(), element)) {
             map[before] = beforeStyle;
             if (BlockLevelBox* box = layOutBlockBoxes(before, currentBox, childBox, style))
                 childBox = box;
@@ -311,7 +311,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
 BlockLevelBox* ViewCSSImp::layOutBlockBoxes()
 {
     floatMap.clear();
-    boxTree = layOutBlockBoxes(document, 0, 0, 0);
+    boxTree = layOutBlockBoxes(getDocument(), 0, 0, 0);
     return boxTree.get();
 }
 

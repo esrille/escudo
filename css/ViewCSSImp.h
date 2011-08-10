@@ -24,6 +24,7 @@
 #include <map>
 #include <set>
 
+#include "DocumentWindow.h"
 #include "ElementImp.h"
 #include "EventListenerImp.h"
 
@@ -62,7 +63,7 @@ class ViewCSSImp
 
     typedef std::multiset<PrioritizedDeclaration> DeclarationSet;
 
-    Document document;
+    DocumentWindowPtr window;
     css::CSSStyleSheet defaultStyleSheet;
     std::map<Element, CSSStyleDeclarationPtr> map;
     std::map<Node, BlockLevelBoxPtr> floatMap;
@@ -88,16 +89,21 @@ class ViewCSSImp
     BlockLevelBox* layOutBlockBoxes(Element element, BlockLevelBox* parentBox, BlockLevelBox* siblingBox, CSSStyleDeclarationImp* style);
 
 public:
-    ViewCSSImp(Document document, css::CSSStyleSheet defaultStyleSheet);
+    ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyleSheet);
     ~ViewCSSImp();
 
     Document getDocument() const {
-        return document;
+        return window->getDocument();
     }
 
     void cascade() {
         map.clear();
-        cascade(document, 0);
+        cascade(getDocument(), 0);
+    }
+
+    void preload(const std::u16string& base, const std::u16string& url) {
+        if (window)
+            window->preload(base, url);
     }
 
     BlockLevelBox* layOutBlockBoxes();

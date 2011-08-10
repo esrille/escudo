@@ -96,7 +96,7 @@ void WindowImp::refreshView()
 
     delete view;
 
-    view = new(std::nothrow) ViewCSSImp(window->getDocument(), getDOMImplementation()->getDefaultCSSStyleSheet());
+    view = new(std::nothrow) ViewCSSImp(window, getDOMImplementation()->getDefaultCSSStyleSheet());
     if (!view)
         return;
     view->cascade();

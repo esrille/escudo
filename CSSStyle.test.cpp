@@ -121,7 +121,9 @@ int main(int argc, char** argv)
     eval(document);
 
     // create the default view
-    ViewCSSImp* view = new ViewCSSImp(document, defaultStyleSheet);
+    DocumentWindowPtr window = new(std::nothrow) DocumentWindow;
+    window->setDocument(document);
+    ViewCSSImp* view = new ViewCSSImp(window, defaultStyleSheet);
     view->cascade();
     printComputedValues(document, view);
 

@@ -80,7 +80,9 @@ int main(int argc, char** argv)
     dumpTree(std::cout, document);
 
     // create the default view
-    view = new ViewCSSImp(document, getDOMImplementation()->getDefaultCSSStyleSheet());
+    DocumentWindowPtr window = new(std::nothrow) DocumentWindow;
+    window->setDocument(document);
+    view = new ViewCSSImp(window, getDOMImplementation()->getDefaultCSSStyleSheet());
     view->cascade();
 
     // printComputedValues(document, view);

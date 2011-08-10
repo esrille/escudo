@@ -356,8 +356,10 @@ void BlockLevelBox::resolveWidth(ViewCSSImp* view, const ContainingBlock* contai
 {
     assert(style);
     backgroundColor = style->backgroundColor.getARGB();
-    if (!style->backgroundImage.isNone())
+    if (!style->backgroundImage.isNone()) {
+        view->preload(view->getDocument().getDocumentURI(), style->backgroundImage.getValue());
         backgroundImage = new(std::nothrow) BoxImage(this, view->getDocument().getDocumentURI(), style->backgroundImage.getValue(), style->backgroundRepeat.getValue());
+    }
 
     //
     // Calculate width
