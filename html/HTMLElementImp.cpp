@@ -129,10 +129,7 @@ void HTMLElementImp::insertAdjacentHTML(std::u16string position, std::u16string 
 
 std::u16string HTMLElementImp::getId()
 {
-    Nullable<std::u16string> id = getAttribute(u"id");
-    if (id.hasValue())
-        return id.value();
-    return u"";
+    return getAttribute(u"id");
 }
 
 void HTMLElementImp::setId(std::u16string id)

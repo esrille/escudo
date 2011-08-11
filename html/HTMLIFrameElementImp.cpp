@@ -53,10 +53,7 @@ HTMLIFrameElementImp::~HTMLIFrameElementImp()
 
 std::u16string HTMLIFrameElementImp::getSrc()
 {
-    Nullable<std::u16string> src = getAttribute(u"src");
-    if (src.hasValue())
-        return src.value();
-    return u"";
+    return getAttribute(u"src");
 }
 
 void HTMLIFrameElementImp::setSrc(std::u16string src)
@@ -110,10 +107,7 @@ void HTMLIFrameElementImp::setSeamless(bool seamless)
 
 std::u16string HTMLIFrameElementImp::getWidth()
 {
-    Nullable<std::u16string> src = getAttribute(u"width");
-    if (src.hasValue())
-        return src.value();
-    return u"";
+    return getAttribute(u"width");
 }
 
 void HTMLIFrameElementImp::setWidth(std::u16string width)
@@ -123,10 +117,7 @@ void HTMLIFrameElementImp::setWidth(std::u16string width)
 
 std::u16string HTMLIFrameElementImp::getHeight()
 {
-    Nullable<std::u16string> src = getAttribute(u"height");
-    if (src.hasValue())
-        return src.value();
-    return u"";
+    return getAttribute(u"height");
 }
 
 void HTMLIFrameElementImp::setHeight(std::u16string height)

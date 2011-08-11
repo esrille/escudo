@@ -49,6 +49,8 @@ public:
         return value_;
     }
 
+    operator std::u16string() const;
+
     Nullable() :
         hasValue_(false)
     {
@@ -76,7 +78,7 @@ template<>
 template<>
 inline Nullable<std::string>::Nullable(const char* str)
 {
-    if (!str) 
+    if (!str)
         hasValue_ = false;
     else {
         hasValue_ = true;
@@ -94,6 +96,19 @@ inline Nullable<std::u16string>::Nullable(const char16_t* str)
         hasValue_ = true;
         value_ = str;
     }
+}
+
+// Note maybe it is a bit arguable whether we should have this
+// conversion operator. The primary use case of this is to call
+// ElementImp::getAttribute from Element's subclasses with a
+// specific qualified name.
+template<>
+inline Nullable<std::u16string>::operator std::u16string() const
+{
+    if (hasValue_)
+        return value_;
+    else
+        return u"";
 }
 
 #endif  // ES_NULLABLE_H_INCLUDED

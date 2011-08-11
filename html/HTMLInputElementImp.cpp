@@ -430,10 +430,7 @@ void HTMLInputElementImp::setDefaultValue(std::u16string defaultValue)
 
 std::u16string HTMLInputElementImp::getValue()
 {
-    Nullable<std::u16string> src = getAttribute(u"value");
-    if (src.hasValue())
-        return src.value();
-    return u"";
+    return getAttribute(u"value");
 }
 
 void HTMLInputElementImp::setValue(std::u16string value)

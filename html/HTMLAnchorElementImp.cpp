@@ -57,10 +57,7 @@ HTMLAnchorElementImp::~HTMLAnchorElementImp()
 
 std::u16string HTMLAnchorElementImp::getHref()
 {
-    Nullable<std::u16string> src = getAttribute(u"href");
-    if (src.hasValue())
-        return src.value();
-    return u"";
+    return getAttribute(u"href");
 }
 
 void HTMLAnchorElementImp::setHref(std::u16string href)

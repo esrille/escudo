@@ -55,10 +55,7 @@ void HTMLImageElementImp::setAlt(std::u16string alt)
 
 std::u16string HTMLImageElementImp::getSrc()
 {
-    Nullable<std::u16string> src = getAttribute(u"src");
-    if (src.hasValue())
-        return src.value();
-    return u"";
+    return getAttribute(u"src");
 }
 
 void HTMLImageElementImp::setSrc(std::u16string src)
