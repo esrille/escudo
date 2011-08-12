@@ -91,6 +91,7 @@
 #include "WindowImp.h"
 #include "ObjectArrayImp.h"
 
+#include "EventImp.h"
 #include "js/esjsapi.h"
 #include "js/Script.h"
 
@@ -101,7 +102,9 @@ DocumentImp::DocumentImp(const std::u16string& url) :
     ObjectMixin(static_cast<DocumentImp*>(0) /*nullptr */),
     doctype(0),
     mode(NoQuirksMode),
+    readyState(u"loading"),
     compatMode(u"CSS1Compat"),
+    loadEventDelayCount(1),
     defaultView(0),
     activeElement(0),
     clickListener(boost::bind(&DocumentImp::handleClick, this, _1))
@@ -117,6 +120,19 @@ DocumentImp::~DocumentImp()
 void DocumentImp::setDefaultView(WindowImp* view)
 {
     defaultView = view;
+}
+
+void DocumentImp::setReadyState(const std::u16string& readyState)
+{
+    this->readyState = readyState;
+    if (readyState == u"complete") {
+        if (defaultView) {
+            if (EventImp* event = new(std::nothrow) EventImp) {
+                event->initEvent(u"load", false, false);
+                defaultView->dispatchEvent(event);
+            }
+        }
+    }
 }
 
 void DocumentImp::addStyleSheet(stylesheets::StyleSheet sheet) {
@@ -139,6 +155,13 @@ void DocumentImp::activate()
 {
     if (defaultView)
         defaultView->activate();
+}
+
+unsigned DocumentImp::decrementLoadEventDelayCount() {
+    assert(0 < loadEventDelayCount);
+    if (--loadEventDelayCount == 0)
+        setReadyState(u"complete");
+    return loadEventDelayCount;
 }
 
 void DocumentImp::handleClick(events::Event event)

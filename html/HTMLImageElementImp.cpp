@@ -16,6 +16,10 @@
 
 #include "HTMLImageElementImp.h"
 
+#include <boost/bind.hpp>
+
+#include "DocumentImp.h"
+
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 HTMLImageElementImp::~HTMLImageElementImp()
@@ -27,11 +31,20 @@ void HTMLImageElementImp::eval()
 {
     HTMLElementImp::eval();
 
-    request = new(std::nothrow) HttpRequest(getOwnerDocument().getDocumentURI());
+    DocumentImp* document = getOwnerDocumentImp();
+    request = new(std::nothrow) HttpRequest(document->getDocumentURI());
     if (request) {
         request->open(u"GET", getSrc());
+        request->setHanndler(boost::bind(&HTMLImageElementImp::notify, this));
+        document->incrementLoadEventDelayCount();
         request->send();
     }
+}
+
+void HTMLImageElementImp::notify()
+{
+    DocumentImp* document = getOwnerDocumentImp();
+    document->decrementLoadEventDelayCount();
 }
 
 // Node

@@ -71,6 +71,7 @@ class DocumentImp : public ObjectMixin<DocumentImp, NodeImp>
     std::u16string readyState;
     std::u16string compatMode;
     std::deque<stylesheets::StyleSheet> styleSheets;
+    unsigned loadEventDelayCount;
 
     WindowImp* defaultView;
 
@@ -99,9 +100,7 @@ public:
         this->mode = mode;
     }
 
-    void setReadyState(const std::u16string readyState) {
-        this->readyState = readyState;
-    }
+    void setReadyState(const std::u16string& readyState);
 
     void addStyleSheet(stylesheets::StyleSheet sheet);
 
@@ -113,6 +112,11 @@ public:
     void setFocus(ElementImp* element);
 
     void activate();
+
+    unsigned incrementLoadEventDelayCount() {
+        return ++loadEventDelayCount;
+    }
+    unsigned decrementLoadEventDelayCount();
 
     // Node - override
     virtual unsigned short getNodeType();

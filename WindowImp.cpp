@@ -173,11 +173,12 @@ bool WindowImp::poll()
             evalTree(window->getDocument());
             dumpTree(std::cerr, window->getDocument());
 
-            // load
             if (EventImp* event = new(std::nothrow) EventImp) {
-                event->initEvent(u"load", false, false);
-                window->dispatchEvent(event);
+                event->initEvent(u"DOMContentLoaded", true, false);
+                imp->dispatchEvent(event);
             }
+
+            imp->decrementLoadEventDelayCount();
 
             refreshView();
         } else if (boxTree && boxTree->isFlagged()) {
@@ -1489,30 +1490,23 @@ int WindowImp::getOuterHeight()
     return 0;
 }
 
-void WindowImp::addEventListener(std::u16string type, events::EventListener listener)
-{
-    // TODO: implement me!
-}
-
 void WindowImp::addEventListener(std::u16string type, events::EventListener listener, bool capture)
 {
-    // TODO: implement me!
-}
-
-void WindowImp::removeEventListener(std::u16string type, events::EventListener listener)
-{
-    // TODO: implement me!
+    if (window)
+        window->addEventListener(type, listener, capture);
 }
 
 void WindowImp::removeEventListener(std::u16string type, events::EventListener listener, bool capture)
 {
-    // TODO: implement me!
+    if (window)
+        window->removeEventListener(type, listener, capture);
 }
 
 bool WindowImp::dispatchEvent(events::Event event)
 {
-    // TODO: implement me!
-    return 0;
+    if (window)
+        return window->dispatchEvent(event);
+    return false;
 }
 
 std::u16string WindowImp::btoa(std::u16string btoa)

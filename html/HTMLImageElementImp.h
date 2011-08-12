@@ -44,6 +44,7 @@ public:
     ~HTMLImageElementImp();
 
     virtual void eval();
+    void notify();
 
     // Node
     virtual Node cloneNode(bool deep);

@@ -56,7 +56,7 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 class Box;
 class ViewCSSImp;
 
-class WindowImp : public ObjectMixin<WindowImp, EventTargetImp>
+class WindowImp : public ObjectMixin<WindowImp>
 {
     HttpRequest request;
     Retained<HistoryImp> history;
@@ -342,10 +342,8 @@ public:
     int getOuterWidth();
     int getOuterHeight();
     // EventTarget
-    void addEventListener(std::u16string type, events::EventListener listener);
-    void addEventListener(std::u16string type, events::EventListener listener, bool capture);
-    void removeEventListener(std::u16string type, events::EventListener listener);
-    void removeEventListener(std::u16string type, events::EventListener listener, bool capture);
+    void addEventListener(std::u16string type, events::EventListener listener, bool capture = false);
+    void removeEventListener(std::u16string type, events::EventListener listener, bool capture = false);
     bool dispatchEvent(events::Event event);
     // WindowBase64
     std::u16string btoa(std::u16string btoa);

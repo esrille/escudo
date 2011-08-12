@@ -56,10 +56,12 @@ void HTMLLinkElementImp::eval()
         // TODO: check type
         if (!getAttribute(u"title").hasValue()) {
             // non-alternate style sheet
-            request = new(std::nothrow) HttpRequest(getOwnerDocument().getDocumentURI());
+            DocumentImp* document = getOwnerDocumentImp();
+            request = new(std::nothrow) HttpRequest(document->getDocumentURI());
             if (request) {
                 request->open(u"GET", href);
                 request->setHanndler(boost::bind(&HTMLLinkElementImp::notify, this));
+                document->incrementLoadEventDelayCount();
                 request->send();
             }
         }
@@ -68,6 +70,7 @@ void HTMLLinkElementImp::eval()
 
 void HTMLLinkElementImp::notify()
 {
+    DocumentImp* document = getOwnerDocumentImp();
     if (request->getStatus() == 200) {
 #if 104400 <= BOOST_VERSION
         boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request->getContentDescriptor(), boost::iostreams::never_close_handle);
@@ -77,9 +80,9 @@ void HTMLLinkElementImp::notify()
         CSSParser parser;
         CSSInputStream cssStream(stream, "utf-8");  // TODO detect encode
         styleSheet = parser.parse(cssStream);
-        if (DocumentImp* document = getOwnerDocumentImp())
-            document->addStyleSheet(styleSheet);
+        document->addStyleSheet(styleSheet);
     }
+    document->decrementLoadEventDelayCount();
 }
 
 // Node

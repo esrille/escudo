@@ -107,7 +107,10 @@ bool EventTargetImp::dispatchEvent(events::Event evt)
     event->setTarget(this);
 
     if (NodeImp* node = dynamic_cast<NodeImp*>(this)) {
-        node->getOwnerDocumentImp()->activate();
+        if (DocumentImp* document = dynamic_cast<DocumentImp*>(node))
+            document->activate();
+        else if (DocumentImp* document = node->getOwnerDocumentImp())
+            document->activate();
         if (!node->parentNode) {
             event->setEventPhase(events::Event::AT_TARGET);
             invoke(event);
