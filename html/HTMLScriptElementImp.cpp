@@ -18,10 +18,16 @@
 
 #include <iostream>
 
+#include <boost/bind.hpp>
+#include <boost/version.hpp>
+#include <boost/iostreams/stream.hpp>
+#include <boost/iostreams/device/file_descriptor.hpp>
+
 #include "utf.h"
 #include "DocumentImp.h"
 #include "HTMLScriptElementImp.h"
 #include "js/esjsapi.h"
+#include "U16InputStream.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -31,7 +37,8 @@ HTMLScriptElementImp::HTMLScriptElementImp(DocumentImp* ownerDocument) :
     parserInserted(false),
     wasParserInserted(false),
     forceAsync(true),
-    readyToBeParserExecuted(false)
+    readyToBeParserExecuted(false),
+    request(0)
 {
 }
 
@@ -41,7 +48,8 @@ HTMLScriptElementImp::HTMLScriptElementImp(HTMLScriptElementImp* org, bool deep)
     parserInserted(false),
     wasParserInserted(false),
     forceAsync(true),
-    readyToBeParserExecuted(false)
+    readyToBeParserExecuted(false),
+    request(0)  // TODO XXX
 {
 }
 
@@ -67,7 +75,48 @@ bool HTMLScriptElementImp::prepare()
 
     // TODO s
 
+    if (hasAttribute(u"src")) {
+        std::u16string src = getSrc();
+        if (src.empty()) {
+            // TODO: fire the error event
+            return false;
+        }
+
+        DocumentImp* document = getOwnerDocumentImp();
+        request = new(std::nothrow) HttpRequest(document->getDocumentURI());
+        if (request) {
+            request->open(u"GET", src);
+            request->setHanndler(boost::bind(&HTMLScriptElementImp::notify, this));
+            document->incrementLoadEventDelayCount();
+            request->send();
+        }
+
+        return true;
+    }
+
     return execute();
+}
+
+void HTMLScriptElementImp::notify()
+{
+    DocumentImp* document = getOwnerDocumentImp();
+    if (request->getStatus() == 200) {
+#if 104400 <= BOOST_VERSION
+        boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request->getContentDescriptor(), boost::iostreams::never_close_handle);
+#else
+        boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request->getContentDescriptor(), false);
+#endif
+        U16InputStream u16stream(stream, "utf-8");  // TODO detect encode
+        std::u16string script = u16stream;
+        jsval rval;
+        const char* filename = "";
+        int lineno = 0;
+        document->activate();
+        JS_EvaluateUCScript(jscontext, JS_GetGlobalObject(jscontext),
+                            reinterpret_cast<const jschar*>(script.c_str()), script.length(),
+                            filename, lineno, &rval);
+    }
+    document->decrementLoadEventDelayCount();
 }
 
 bool HTMLScriptElementImp::execute()
@@ -105,8 +154,7 @@ Node HTMLScriptElementImp::cloneNode(bool deep)
 // HTMLScriptElement
 std::u16string HTMLScriptElementImp::getSrc()
 {
-    // TODO: implement me!
-    return u"";
+    return getAttribute(u"src");
 }
 
 void HTMLScriptElementImp::setSrc(std::u16string src)

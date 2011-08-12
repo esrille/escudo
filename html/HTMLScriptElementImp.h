@@ -21,6 +21,7 @@
 #include <org/w3c/dom/html/HTMLScriptElement.h>
 
 #include "HTMLElementImp.h"
+#include "http/HTTPRequest.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -31,10 +32,15 @@ class HTMLScriptElementImp : public ObjectMixin<HTMLScriptElementImp, HTMLElemen
     bool wasParserInserted;
     bool forceAsync;
     bool readyToBeParserExecuted;
+    HttpRequest* request;
 
 public:
+    HTMLScriptElementImp(DocumentImp* ownerDocument);
+    HTMLScriptElementImp(HTMLScriptElementImp* org, bool deep);
+
     bool execute();
     bool prepare();
+    void notify();
 
     // Node
     virtual Node cloneNode(bool deep);
@@ -66,9 +72,6 @@ public:
     {
         return html::HTMLScriptElement::getMetaData();
     }
-
-    HTMLScriptElementImp(DocumentImp* ownerDocument);
-    HTMLScriptElementImp(HTMLScriptElementImp* org, bool deep);
 };
 
 }}}}  // org::w3c::dom::bootstrap
