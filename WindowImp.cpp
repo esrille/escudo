@@ -81,6 +81,12 @@ WindowImp::~WindowImp()
     }
 }
 
+void WindowImp::setFlagsToBoxTree(unsigned f)
+{
+    if (boxTree)
+        boxTree->setFlags(f);
+}
+
 bool WindowImp::activate()
 {
     if (window) {

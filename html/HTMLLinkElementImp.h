@@ -25,12 +25,23 @@
 #include <org/w3c/dom/DOMSettableTokenList.h>
 
 #include "HTMLElementImp.h"
+#include "http/HTTPRequest.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class HTMLLinkElementImp : public ObjectMixin<HTMLLinkElementImp, HTMLElementImp>
 {
+    HttpRequest* request;
+    stylesheets::StyleSheet styleSheet;
+
 public:
+    HTMLLinkElementImp(DocumentImp* ownerDocument);
+    HTMLLinkElementImp(HTMLLinkElementImp* org, bool deep);
+    ~HTMLLinkElementImp();
+
+    virtual void eval();
+    void notify();
+
     // Node
     virtual Node cloneNode(bool deep);
 
@@ -68,13 +79,6 @@ public:
     static const char* const getMetaData()
     {
         return html::HTMLLinkElement::getMetaData();
-    }
-
-    HTMLLinkElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"link") {
-    }
-    HTMLLinkElementImp(HTMLLinkElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
     }
 };
 

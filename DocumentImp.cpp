@@ -114,8 +114,15 @@ DocumentImp::~DocumentImp()
 {
 }
 
-void DocumentImp::setDefaultView(WindowImp* view) {
+void DocumentImp::setDefaultView(WindowImp* view)
+{
     defaultView = view;
+}
+
+void DocumentImp::addStyleSheet(stylesheets::StyleSheet sheet) {
+    styleSheets.push_back(sheet);
+    if (defaultView)
+        defaultView->setFlagsToBoxTree(1);
 }
 
 void DocumentImp::setURL(const std::u16string& url)

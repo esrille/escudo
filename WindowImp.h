@@ -90,6 +90,8 @@ public:
         return view;
     }
 
+    void setFlagsToBoxTree(unsigned f);
+
     bool poll();
     void render();
     void setDocumentWindow(const DocumentWindowPtr& window);

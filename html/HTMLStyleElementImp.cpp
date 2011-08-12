@@ -33,7 +33,7 @@ void HTMLStyleElementImp::eval()
     }
     CSSParser parser;
     styleSheet = parser.parse(content);
-    if (DocumentImp* document = dynamic_cast<DocumentImp*>(getOwnerDocument().self()))
+    if (DocumentImp* document = getOwnerDocumentImp())
         document->addStyleSheet(styleSheet);
 }
 

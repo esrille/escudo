@@ -103,9 +103,7 @@ public:
         this->readyState = readyState;
     }
 
-    void addStyleSheet(stylesheets::StyleSheet sheet) {
-        styleSheets.push_back(sheet);
-    }
+    void addStyleSheet(stylesheets::StyleSheet sheet);
 
     void setURL(const std::u16string& url);
 
