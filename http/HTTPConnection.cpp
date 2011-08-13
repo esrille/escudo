@@ -182,8 +182,9 @@ void HttpConnection::readStatusLine(const boost::system::error_code& err)
         line += std::string(start, eol - start);
         response.consume(eol - start);
         start = line.c_str();
-        end = start + line.length();
+        eol = start + line.length();
     }
+    // std::cerr << __func__ << ": " <<  std::string(start, eol - start) << '\n';
     const char* statusLine = current->getResponseMessage().parseStatusLine(start, eol);
     if (!statusLine) {
         close();
@@ -225,9 +226,10 @@ void HttpConnection::readHead(const boost::system::error_code& err)
             line += std::string(start, eol - start);
             response.consume(eol - start);
             start = line.c_str();
-            end = start + line.length();
+            eol = start + line.length();
         }
-        const char* header = parseCRLF(start, end);
+        // std::cerr << __func__ << ": " <<  std::string(start, eol - start) << '\n';
+        const char* header = parseCRLF(start, eol);
         if (*header == '\n') {
             if (line.empty())
                 response.consume(eol - start);
