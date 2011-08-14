@@ -260,7 +260,7 @@ public:
         return marginLeft + borderLeft + paddingLeft + width + marginRight + borderRight + paddingRight;
     }
     float getPaddingWidth() const {
-        return paddingLeft + width + marginRight;
+        return paddingLeft + width + paddingRight;
     }
     float getBlankTop() const {
         return marginTop + borderTop + paddingTop;
@@ -272,7 +272,7 @@ public:
         return marginTop + borderTop + paddingTop + height + marginBottom + borderBottom + paddingBottom;
     }
     float getPaddingHeight() const {
-        return paddingTop + height + marginBottom;
+        return paddingTop + height + paddingBottom;
     }
 
     virtual void toViewPort(const Box* box, float& x, float& y) const = 0;
