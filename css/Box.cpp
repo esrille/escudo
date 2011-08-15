@@ -225,15 +225,20 @@ void BlockLevelBox::setContainingBlock(ViewCSSImp* view)
                 float l = -box->paddingLeft;
                 box->toViewPort(l, t);
                 if (box->getBoxType() == BLOCK_LEVEL_BOX) {
-                    absoluteBlock.width = box->paddingLeft + box->width + box->paddingRight;
-                    absoluteBlock.height = box->paddingTop + box->height + box->paddingBottom;
+                    absoluteBlock.width = box->getPaddingWidth();
+                    absoluteBlock.height = box->getPaddingHeight();
                 } else {
                     assert(box->getBoxType() == INLINE_LEVEL_BOX);
-                    float b = style->lastBox->height + style->lastBox->paddingBottom;
-                    float r = style->lastBox->width + style->lastBox->paddingRight;
-                    style->lastBox->toViewPort(r, b);
-                    absoluteBlock.width = r - l;
-                    absoluteBlock.height = t - b;
+                    if (Box* inlineBlock = box->getFirstChild()) {
+                        absoluteBlock.width = inlineBlock->getPaddingWidth();
+                        absoluteBlock.height = inlineBlock->getPaddingHeight();
+                    } else {
+                        float b = style->lastBox->height + style->lastBox->paddingBottom;
+                        float r = style->lastBox->width + style->lastBox->paddingRight;
+                        style->lastBox->toViewPort(r, b);
+                        absoluteBlock.width = r - l;
+                        absoluteBlock.height = t - b;
+                    }
                 }
                 offsetH += l;
                 offsetV += t;
@@ -431,7 +436,6 @@ void BlockLevelBox::layOutText(ViewCSSImp* view, Text text, FormattingContext* c
     if (!style)
         return;  // TODO error
     style->resolve(view, this, element);
-
     std::u16string data = text.getData();
     if (style->processWhiteSpace(data, context->prevChar) == 0)
         return;
@@ -542,7 +546,10 @@ void BlockLevelBox::layOutText(ViewCSSImp* view, Text text, FormattingContext* c
                 break;
             }
         } while (context->shiftDownLineBox());
-        // TODO: deal with overflow
+
+        // TODO: deal with overflow in a better way than the following two line:
+        if (length == 0)
+            length = data.length();
 
         if (!linefeed) {
             inlineLevelBox->setData(font, point, data.substr(0, length));
@@ -668,6 +675,24 @@ void BlockLevelBox::layOutInlineReplaced(ViewCSSImp* view, Node node, Formatting
                 box->layOut(view, context);
             }
         }
+    } else {
+        assert(style->isInlineBlock());
+        // Create a BlockLevelBox and make it a child of inlineLevelBox.
+        if (BlockLevelBox* inlineBlock = new(std::nothrow) BlockLevelBox(element, style)) {
+            inlineBlock->establishFormattingContext();
+            style->addBox(inlineBlock);
+            inlineLevelBox->appendChild(inlineBlock);
+            BlockLevelBox* childBox = 0;
+            for (Node child = element.getLastChild(); child; child = child.getPreviousSibling()) {
+                if (BlockLevelBox* box = view->layOutBlockBoxes(child, inlineBlock, childBox, style))
+                    childBox = box;
+            }
+            inlineBlock->layOut(view, context);
+            if (style->width.isAuto())
+                inlineLevelBox->width = inlineBlock->getTotalWidth();
+            if (style->height.isAuto())
+                inlineLevelBox->height = inlineBlock->getTotalHeight();
+        }
     }
 
     // TODO: calc inlineLevelBox->width and height with intrinsic values.
@@ -733,21 +758,32 @@ void BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context)
 {
     assert(!hasChildBoxes());
     for (auto i = inlines.begin(); i != inlines.end(); ++i) {
-        if ((*i).getNodeType() == Node::TEXT_NODE) {
-            Text text = interface_cast<Text>(*i);
-            layOutText(view, text, context);
-        } else if (BlockLevelBox* box = view->getFloatBox(*i)) {
+        if (BlockLevelBox* box = view->getFloatBox(*i)) {
             if (box->isFloat())
                 layOutFloat(view, *i, box, context);
             else if (box->isAbsolutelyPositioned())
                 layOutAbsolute(view, *i, box, context);
+        } else if ((*i).getNodeType() == Node::TEXT_NODE) {
+            Text text = interface_cast<Text>(*i);
+            layOutText(view, text, context);
         } else {
-            // TODO: At this point, *i should be a replaced element, but it could be of other types as we develop...
+            // At this point, *i should be a replaced element or an inline block element.
+            // TODO: it could be of other types as we develop...
             layOutInlineReplaced(view, *i, context);
         }
     }
     if (context->lineBox)
         context->nextLine(this);
+}
+
+// TODO for a more complete implementation, see,
+//      http://groups.google.com/group/netscape.public.mozilla.layout/msg/0455a21b048ffac3?pli=1
+float BlockLevelBox::shrinkToFit()
+{
+    width = 0.0f;
+    for (Box* child = getFirstChild(); child; child = child->getNextSibling())
+        width = std::max(width, child->shrinkToFit());
+    return width;
 }
 
 void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
@@ -768,7 +804,8 @@ void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
 
     if (!isAnonymous()) {
         style->resolve(view, containingBlock, element);
-        resolveWidth(view, containingBlock, style->isFloat() ? context->leftover : 0.0f);
+        resolveWidth(view, containingBlock,
+                     (style->isInlineBlock() || style->isFloat()) ? context->leftover : 0.0f);
     } else {
         // The properties of anonymous boxes are inherited from the enclosing non-anonymous box.
         // Theoretically, we are supposed to create a new style for this anonymous box, but
@@ -778,7 +815,7 @@ void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         borderTop = borderRight = borderBottom = borderLeft = 0.0f;
         marginTop = marginRight = marginLeft = marginBottom = 0.0f;
         width = containingBlock->width;
-        height = containingBlock->height;
+        height = 0.0f;
     }
 
     textAlign = style->textAlign.getValue();
@@ -806,11 +843,8 @@ void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         child->layOut(view, context);
 
     // simplified shrink-to-fit
-    if (style->isFloat() && style->width.isAuto()) {
-        width = 0.0f;
-        for (Box* child = getFirstChild(); child; child = child->getNextSibling())
-            width = std::max(width, child->getTotalWidth());
-    }
+    if ((style->isInlineBlock() || style->isFloat()) && style->width.isAuto())
+        shrinkToFit();
 
     // Collapse marginBottom  // TODO: root exception
     if (height == 0 && borderBottom == 0 && paddingBottom == 0 /* && TODO: check clearance */) {
@@ -1070,8 +1104,7 @@ void LineBox::dump(ViewCSSImp* view, std::string indent)
 
 void InlineLevelBox::toViewPort(const Box* box, float& x, float& y) const
 {
-    // error
-    assert(0);
+    //assert(0);
 }
 
 bool InlineLevelBox::isAnonymous() const

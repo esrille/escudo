@@ -31,6 +31,18 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
+namespace {
+
+bool isReplacedElement(Element& element)
+{
+    std::u16string tag = element.getLocalName();  // TODO: Check HTML namespace
+    if (tag == u"img" || tag == u"iframe" || tag == u"video" || tag == u"input")  // TODO: more tags to come...
+        return true;
+    return false;
+}
+
+}
+
 ViewCSSImp::ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyleSheet) :
     window(window),
     defaultStyleSheet(defaultStyleSheet),
@@ -242,19 +254,15 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
             if (!currentBox->establishFormattingContext())
                 return 0;  // TODO error
         }
-    } else {
-        std::u16string tag = element.getLocalName();  // TODO: Check HTML namespace
-        if (tag == u"img" || tag == u"iframe" || tag == u"video" || tag == u"input") {  // TODO: more tags to come...
-            // Replaced element
-            assert(currentBox);
-            if (!currentBox->hasChildBoxes())
-                currentBox->insertInline(element);
-            else if (BlockLevelBox* anonymousBox = currentBox->getAnonymousBox()) {
-                anonymousBox->insertInline(element);
-                return anonymousBox;
-            }
-            return currentBox;
+    } else if (isReplacedElement(element) || style->isInlineBlock()) {
+        assert(currentBox);
+        if (!currentBox->hasChildBoxes())
+            currentBox->insertInline(element);
+        else if (BlockLevelBox* anonymousBox = currentBox->getAnonymousBox()) {
+            anonymousBox->insertInline(element);
+            return anonymousBox;
         }
+        return currentBox;
     }
 
     if (CSSStyleDeclarationImp* afterStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::After)) {

@@ -275,6 +275,10 @@ public:
         return paddingTop + height + paddingBottom;
     }
 
+    virtual float shrinkToFit() {
+        return getTotalWidth();
+    };
+
     virtual void toViewPort(const Box* box, float& x, float& y) const = 0;
     void toViewPort(float& x, float& y) const {
         // TODO: make this work for abs box as well
@@ -382,6 +386,8 @@ public:
     virtual unsigned getBoxType() const {
         return BLOCK_LEVEL_BOX;
     }
+
+    virtual float shrinkToFit();
 
     virtual void toViewPort(const Box* box, float& x, float& y) const {
         x += offsetH + getBlankLeft();

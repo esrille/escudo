@@ -434,14 +434,14 @@ const char16_t* CSSPseudoSelector::getPseudoElementName(int id)
 {
     if (0 <= id && id < CSSPseudoElementSelector::MaxPseudoElements)
         return pseudoElementNames[id];
-    return 0;
+    return u"";
 }
 
 const char16_t* CSSPseudoSelector::getPseudoClassName(int id)
 {
     if (0 <= id && id < CSSPseudoClassSelector::MaxPseudoClasses)
         return pseudoClassNames[id];
-    return 0;
+    return u"";
 }
 
 }}}}  // org::w3c::dom::bootstrap

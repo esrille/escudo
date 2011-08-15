@@ -375,6 +375,10 @@ public:
 
     bool isFlowRoot() const;
 
+    bool isInlineBlock() const {
+        return display.getValue() == CSSDisplayValueImp::InlineBlock;
+    }
+
     bool isFloat() const {
         return float_.getValue() != CSSFloatValueImp::None;
     }
