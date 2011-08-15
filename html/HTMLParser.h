@@ -429,6 +429,9 @@ class HTMLParser
         return element;
     }
     Element popElement() {
+        assert(!openElementStack.empty());
+        if (openElementStack.empty())
+            return 0;
         Element top = openElementStack.back();
         openElementStack.pop_back();
         return top;
