@@ -28,6 +28,8 @@
 std::ostream& operator<<(std::ostream& stream, org::w3c::dom::Node node);
 void dumpTree(std::ostream& result, org::w3c::dom::Node node, std::string indent = "");
 
+void dumpStyleSheet(std::ostream& result, org::w3c::dom::css::CSSStyleSheet sheet);
+
 void printComputedValues(org::w3c::dom::Node node, org::w3c::dom::bootstrap::ViewCSSImp* view, std::string indent = "");
 
 org::w3c::dom::css::CSSStyleSheet loadDefaultSheet(std::istream& stream);

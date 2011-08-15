@@ -34,6 +34,11 @@ unsigned short CSSStyleRuleImp::getType()
     return CSSRule::STYLE_RULE;
 }
 
+std::u16string CSSStyleRuleImp::getCssText()
+{
+    return getSelectorText() + u": " + styleDeclaration.getCssText();
+}
+
 // CSSStyleRule
 std::u16string CSSStyleRuleImp::getSelectorText()
 {

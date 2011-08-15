@@ -46,6 +46,7 @@ public:
 
     // CSSRule
     virtual unsigned short getType();
+    virtual std::u16string getCssText();
 
     // CSSStyleRule
     std::u16string getSelectorText();

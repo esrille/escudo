@@ -79,6 +79,16 @@ void dumpTree(std::ostream& result, Node node, std::string indent)
     }
 }
 
+void dumpStyleSheet(std::ostream& result, css::CSSStyleSheet sheet)
+{
+    css::CSSRuleList list = sheet.getCssRules();
+    unsigned length = list.getLength();
+    for (unsigned i = 0; i < length; ++i) {
+        css::CSSRule rule = list.getElement(i);
+        result << rule.getCssText() << '\n';
+    }
+}
+
 void printComputedValues(Node node, ViewCSSImp* view, std::string indent)
 {
     while (node) {
