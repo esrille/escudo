@@ -1161,40 +1161,41 @@ void CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* co
 size_t CSSStyleDeclarationImp::processWhiteSpace(std::u16string& data, char16_t& prevChar)
 {
     unsigned prop = whiteSpace.getValue();
-    std::u16string::iterator i;
     switch (prop) {
     case CSSWhiteSpaceValueImp::Normal:
     case CSSWhiteSpaceValueImp::Nowrap:
     case CSSWhiteSpaceValueImp::PreLine:
-        i = data.begin();
-        while (i != data.end()) {
-            if (*i == '\n') {  // linefeed
-                auto j = i;
-                while (j != data.begin() && isSpace(*j))
-                    --j;
+        for (int i = 0; i < data.length();) {
+            char16_t c = data[i];
+            if (c == '\n') {  // linefeed
+                int j;
+                for (j = i - 1; 0 <= j && isSpace(data[j]); --j)
+                    ;
                 ++j;
-                if (j < i)
-                    i = data.erase(j, i);
-                j = i + 1;
-                while (j != data.end() && isSpace(*j))
-                    ++j;
+                if (j < i) {
+                    data.erase(j, i - j);
+                    i = j;
+                }
+                for (j = i + 1; j < data.length() && isSpace(data[j]); ++j)
+                    ;
+                --j;
                 if (i < j)
-                    data.erase(i + 1, j);
+                    data.erase(i + 1, j - i);
                 switch (prop) {
                 case CSSWhiteSpaceValueImp::Normal:
                 case CSSWhiteSpaceValueImp::Nowrap:
-                    *i = ' ';
+                    c = data[i] = ' ';
                     break;
                 }
             }
             // tab, and space following another space
-            if (*i == '\t')
-                *i = ' ';
-            if (*i == ' ' && prevChar == ' ') {
-                i = data.erase(i);
+            if (c == '\t')
+                data[i] = ' ';
+            if (c == ' ' && prevChar == ' ') {
+                data.erase(i, 1);
                 continue;  // do not increment i.
             }
-            prevChar = *i;
+            prevChar = c;
             ++i;
         }
         break;
