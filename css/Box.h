@@ -373,6 +373,16 @@ class BlockLevelBox : public Box
     void layOutAbsolute(ViewCSSImp* view, Node node, BlockLevelBox* absBox, FormattingContext* context);  // 1st pass
     void layOutInline(ViewCSSImp* view, FormattingContext* context);
 
+    // resolveAbsoluteWidth's return values
+    enum {
+        Left = 4u,
+        Width = 2u,
+        Right = 1u,
+        Top = 32u,
+        Height = 16u,
+        Bottom = 8u
+    };
+
 public:
     BlockLevelBox(Node node = 0, CSSStyleDeclarationImp* style = 0) :
         Box(node),
@@ -421,7 +431,7 @@ public:
     }
     void setContainingBlock(ViewCSSImp* view);
 
-    void resolveAbsoluteWidth(const ContainingBlock* containingBlock);
+    unsigned resolveAbsoluteWidth(const ContainingBlock* containingBlock, float& right, float& bottom);
     void layOutAbsolute(ViewCSSImp* view, Node node);  // 2nd pass
 
     // Gets the first child box which is an anonymous box. Creates one if there's none
