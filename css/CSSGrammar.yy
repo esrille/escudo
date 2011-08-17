@@ -346,6 +346,7 @@ declaration
         if (CSSStyleDeclarationImp* decl = parser->getStyleDeclaration())
             decl->setProperty($1, $4);
     }
+  | error
   | /* empty */
   ;
 prio

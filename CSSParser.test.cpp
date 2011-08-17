@@ -85,18 +85,6 @@ int main(int argc, char** argv)
 {
     CSSSerializeControl.serializeSpecificity = false;
 
-    if (1 < argc) {
-        for (int i = 1; i < argc; ++i) {
-            std::ifstream stream(argv[i]);
-            if (!stream) {
-                std::cerr << "error: cannot open " << argv[i] << ".\n";
-                continue;
-            }
-            test(stream);
-        }
-        return EXIT_SUCCESS;
-    }
-
     // test selectors
     test("h1 { color: red }");
     test("* { color: red }");
@@ -233,5 +221,13 @@ int main(int argc, char** argv)
     test("LI.red.level    /* a=0 b=2 c=1 -> specificity =   201 */ {}");
     test("#x34y           /* a=1 b=0 c=0 -> specificity = 10000 */ {}");
     test("#s12:not(FOO)   /* a=1 b=0 c=1 -> specificity = 10001 */ {}");
+
+    // test syntax errors
+    test("#g0{ color: red; filter: alpha(opacity=100) }");
+    test(".g1{ color: red; filter:progid:DXImageTransform.Microsoft.Blur(pixelradius=5) }");
+    test(".g2{ color: red; *opacity: 1 }");
+    test(".g3{ color: red; -ms-filter: \"progid:DXImageTransform.Microsoft.Blur(pixelradius=5)\" }");
+    test(".g4{ color: red; opacity: 1\\0/; }");
+
     return 0;
 }
