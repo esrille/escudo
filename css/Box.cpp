@@ -389,12 +389,14 @@ void BlockLevelBox::resolveWidth(ViewCSSImp* view, const ContainingBlock* contai
         width = style->width.getPx();
         --autoCount;
     } else if (available) {
-        available -= paddingLeft + paddingRight + borderLeft + borderRight + marginLeft + marginRight;
+        available -= getBlankLeft() + getBlankRight();
         width = available;
         --autoCount;
     }
     // if 0 == autoCount, the values are over-constrained; ignore marginRight if 'ltr'
-    float leftover = containingBlock->width - paddingLeft - paddingRight - borderLeft - borderRight - marginLeft - marginRight - width;
+    float leftover = 0.0f;
+    if (!available)
+        leftover = containingBlock->width - getTotalWidth();
     // if leftover < 0, follow overflow
     if (autoCount == 1) {
         if (style->marginLeft.isAuto())
@@ -776,13 +778,26 @@ void BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context)
         context->nextLine(this);
 }
 
+float Box::shrinkToFit()
+{
+    return getPaddingWidth();
+}
+
 // TODO for a more complete implementation, see,
 //      http://groups.google.com/group/netscape.public.mozilla.layout/msg/0455a21b048ffac3?pli=1
 float BlockLevelBox::shrinkToFit()
 {
+    float prev = width;
     width = 0.0f;
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
         width = std::max(width, child->shrinkToFit());
+    float shrink = prev - width;
+    if (0.0f < shrink && textAlign != CSSTextAlignValueImp::Left) {
+        for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
+            if (LineBox* line = dynamic_cast<LineBox*>(child))
+                line->realignText(this, shrink);
+        }
+    }
     return width;
 }
 
@@ -1094,10 +1109,29 @@ void LineBox::layOut(ViewCSSImp* view, FormattingContext* context)
 
 void LineBox::dump(ViewCSSImp* view, std::string indent)
 {
-    std::cout << indent << "* line box:\n";
+    std::cout << indent << "* line box: (" << x << ", " << y << "), (" << getTotalWidth() << ", " << getTotalHeight() << ")\n";
     indent += "    ";
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
         child->dump(view, indent);
+}
+
+void LineBox::realignText(BlockLevelBox* parentBox, float shrink)
+{
+    shrink -= marginRight;
+    if (shrink <= 0.0f)
+        return;
+    switch (parentBox->getTextAlign()) {
+    case CSSTextAlignValueImp::Left:
+        break;
+    case CSSTextAlignValueImp::Right:
+        offsetH -= shrink;
+        break;
+    case CSSTextAlignValueImp::Center:
+        offsetH -= shrink / 2.0f;
+        break;
+    default:  // TODO: support Justify and Default
+        break;
+    }
 }
 
 void InlineLevelBox::toViewPort(const Box* box, float& x, float& y) const
@@ -1156,7 +1190,9 @@ void InlineLevelBox::resolveOffset(ViewCSSImp* view)
 
 void InlineLevelBox::dump(ViewCSSImp* view, std::string indent)
 {
-    std::cout << indent << "* inline-level box (" << static_cast<void*>(this) << "): \"" << data << "\"\n";
+    std::cout << indent << "* inline-level box (" << static_cast<void*>(this) << "): (" <<
+        x << ", " << y << "), (" << getTotalWidth() << ", " << getTotalHeight() << ") \"" <<
+        data << "\"\n";
     indent += "    ";
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
         child->dump(view, indent);

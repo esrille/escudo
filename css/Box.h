@@ -275,9 +275,7 @@ public:
         return paddingTop + height + paddingBottom;
     }
 
-    virtual float shrinkToFit() {
-        return getTotalWidth();
-    };
+    virtual float shrinkToFit();
 
     virtual void toViewPort(const Box* box, float& x, float& y) const = 0;
     void toViewPort(float& x, float& y) const {
@@ -408,6 +406,10 @@ public:
             box->toViewPort(this, x, y);
     }
 
+    unsigned getTextAlign() const {
+        return textAlign;
+    }
+
     bool hasInline() const {
         return !inlines.empty();
     }
@@ -497,6 +499,8 @@ public:
     virtual void layOut(ViewCSSImp* view, FormattingContext* context);
     virtual void render(ViewCSSImp* view);
     virtual void dump(ViewCSSImp* view, std::string indent);
+
+    void realignText(BlockLevelBox* parentBox, float shrink);
 };
 
 typedef boost::intrusive_ptr<LineBox> LineBoxPtr;

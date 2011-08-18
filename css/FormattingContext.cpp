@@ -57,10 +57,6 @@ LineBox* FormattingContext::addLineBox(ViewCSSImp* view, BlockLevelBox* parentBo
         x = getLeftEdge();
         leftover = parentBox->width - getLeftEdge() - getRightEdge();
 
-        // Set marginLeft and marginRight to the current values.
-        lineBox->marginLeft = getLeftEdge();
-        lineBox->marginRight = getRightEdge();
-
         // if floatNodes is not empty, append float boxes as much as possible.
         while (!floatNodes.empty()) {
             BlockLevelBox* floatBox = view->getFloatBox(floatNodes.front());
@@ -75,6 +71,10 @@ LineBox* FormattingContext::addLineBox(ViewCSSImp* view, BlockLevelBox* parentBo
             addFloat(floatBox, w);
             floatNodes.pop_front();
         }
+
+        // Set marginLeft and marginRight to the current values.
+        lineBox->marginLeft = getLeftEdge();
+        lineBox->marginRight = getRightEdge();
     }
     return lineBox;
 }
@@ -133,19 +133,18 @@ bool FormattingContext::shiftDownLineBox()
 void FormattingContext::nextLine(BlockLevelBox* parentBox, bool moreFloats)
 {
     assert(lineBox);
+    assert(lineBox == parentBox->lastChild);
 
     float availale = parentBox->width - getLeftEdge() - getRightEdge();
-    float lineWidth = lineBox->getTotalWidth();
+    float lineWidth = lineBox->getPaddingWidth();
     switch (parentBox->textAlign) {
     case CSSTextAlignValueImp::Left:
         break;
     case CSSTextAlignValueImp::Right:
-        if (parentBox->firstChild)
-            parentBox->firstChild->offsetH += availale - lineWidth;
+        lineBox->offsetH += availale - lineWidth;
         break;
     case CSSTextAlignValueImp::Center:
-        if (parentBox->firstChild)
-            parentBox->firstChild->offsetH += (availale - lineWidth) / 2.0f;
+        lineBox->offsetH += (availale - lineWidth) / 2.0f;
         break;
     default:  // TODO: support Justify and Default
         break;
