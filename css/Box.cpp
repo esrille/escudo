@@ -322,7 +322,7 @@ void BlockLevelBox::dump(ViewCSSImp* view, std::string indent)
         std::cout << node.getNodeName();
     else
         std::cout << "anonymous";
-    std::cout << "] (" << x << ", " << y << "), (" << width << ", " << height << ")\n";
+    std::cout << "] (" << x << ", " << y << "), (" << getTotalWidth() << ", " << getTotalHeight() << ")\n";
     indent += "    ";
     if (!getFirstChild() && hasInline()) {
         for (auto i = inlines.begin(); i != inlines.end(); ++i) {
