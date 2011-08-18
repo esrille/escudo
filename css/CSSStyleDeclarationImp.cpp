@@ -308,6 +308,8 @@ CSSPropertyValueImp* CSSStyleDeclarationImp::getProperty(unsigned id)
         return &whiteSpace;
     case ZIndex:
         return &zIndex;
+    case HtmlAlign:
+        return &htmlAlign;
     default:
         return 0;
     }
@@ -703,6 +705,9 @@ void CSSStyleDeclarationImp::specify(CSSStyleDeclarationImp* decl, unsigned id)
     case ZIndex:
         zIndex.specify(decl->zIndex);
         break;
+    case HtmlAlign:
+        htmlAlign.specify(decl->htmlAlign);
+        break;
     default:
         break;
     }
@@ -992,6 +997,8 @@ void CSSStyleDeclarationImp::reset(unsigned id)
     case ZIndex:
         zIndex.setValue();
         break;
+    case HtmlAlign:
+        htmlAlign.setValue();
     default:
         break;
     }
@@ -1059,8 +1066,23 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
 {
     if (!parentStyle)  // is it the root element?
         resetInheritedProperties();
-    else
+    else {
         copyInheritedProperties(parentStyle);
+        switch (parentStyle->htmlAlign.getValue()) {
+        case HTMLAlignValueImp::Left:
+            marginLeft.setValue(0.0f, css::CSSPrimitiveValue::CSS_PX);
+            marginRight.setValue();
+            break;
+        case HTMLAlignValueImp::Center:
+            marginLeft.setValue();
+            marginRight.setValue();
+            break;
+        case HTMLAlignValueImp::Right:
+            marginLeft.setValue();
+            marginRight.setValue(0.0f, css::CSSPrimitiveValue::CSS_PX);
+            break;
+        }
+    }
     display.compute(this, element);  // TODO: we need to keep the original value for absolute box
     fontSize.compute(view, parentStyle ? &parentStyle->fontSize : 0);
     lineHeight.compute(view, fontSize);
@@ -1080,6 +1102,18 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
             parentStyle->background.specify(parentStyle, this);
             background.reset(this);
         }
+    }
+
+    switch (htmlAlign.getValue()) {
+    case HTMLAlignValueImp::Left:
+        textAlign.setValue(CSSTextAlignValueImp::Left);
+        break;
+    case HTMLAlignValueImp::Center:
+        textAlign.setValue(CSSTextAlignValueImp::Center);
+        break;
+    case HTMLAlignValueImp::Right:
+        textAlign.setValue(CSSTextAlignValueImp::Right);
+        break;
     }
 
     if (isFloat() || isAbsolutelyPositioned() || !parentStyle)  // TODO or the contents of atomic inline-level descendants such as inline blocks and inline tables.
@@ -1265,7 +1299,7 @@ std::u16string CSSStyleDeclarationImp::getCssText()
 {
     std::u16string text;
     std::u16string separator;
-    for (size_t i = 0; i < PropertyCount; ++i) {
+    for (size_t i = 0; i < MaxCSSProperties; ++i) {
         if (propertySet.test(i) || importantSet.test(i)) {
             if (inheritSet.test(i))
                 text += separator + getPropertyName(i) + u": inherit";
@@ -2492,6 +2526,30 @@ void CSSStyleDeclarationImp::setZIndex(Nullable<std::u16string> zIndex)
     setProperty(ZIndex, zIndex);
 }
 
+Nullable<std::u16string> CSSStyleDeclarationImp::getHTMLAlign()
+{
+}
+
+void CSSStyleDeclarationImp::setHTMLAlign(Nullable<std::u16string> align)
+{
+    unsigned a = HTMLAlignValueImp::None;
+    if (align.hasValue()) {
+        std::u16string value = align.value();
+        toLower(value);
+        if (value == u"left")
+            a = HTMLAlignValueImp::Left;
+        else if (value == u"center")
+            a = HTMLAlignValueImp::Center;
+        else if (value == u"right")
+            a = HTMLAlignValueImp::Right;
+        else
+            return;
+    }
+    htmlAlign.setValue(a);
+    resetInherit(HtmlAlign);
+    setProperty(HtmlAlign);
+}
+
 CSSStyleDeclarationImp::CSSStyleDeclarationImp() :
     owner(0),
     parentRule(0),
@@ -2554,7 +2612,9 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp() :
         Volume,
         WhiteSpace,
         Widows,
-        WordSpacing
+        WordSpacing,
+
+        HtmlAlign
     };
     for (unsigned i = 0; i < sizeof defaultInherit / sizeof defaultInherit[0]; ++i)
         setInherit(defaultInherit[i]);

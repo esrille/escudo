@@ -51,10 +51,7 @@ public:
     }
     ElementImp(ElementImp* org, bool deep);
 
-    void setAttributes(const std::deque<Attr>& attributes) {
-        this->attributes = attributes;
-    }
-
+    void setAttributes(const std::deque<Attr>& attributes);
     ElementImp* getNextElement();
 
     // Node

@@ -1565,6 +1565,41 @@ public:
     }
 };
 
+class HTMLAlignValueImp : public CSSPropertyValueImp
+{
+    unsigned value;
+public:
+    enum {
+        None,
+        Left,
+        Center,
+        Right
+    };
+    HTMLAlignValueImp& setValue(unsigned value = None) {
+        this->value = value;
+        return *this;
+    }
+    unsigned getValue() const {
+        return value;
+    }
+    virtual std::u16string getCssText(CSSStyleDeclarationImp* decl = 0) {
+        return u"";
+    }
+    bool operator==(const HTMLAlignValueImp& style) const {
+        return value == style.value;
+    }
+    bool operator!=(const HTMLAlignValueImp& style) const {
+        return value != style.value;
+    }
+    void specify(const HTMLAlignValueImp& specified) {
+        value = specified.value;
+    }
+    HTMLAlignValueImp(unsigned initial = None) :
+        value(initial)
+    {
+    }
+};
+
 }}}}  // org::w3c::dom::bootstrap
 
 #endif  // CSSSPROPERTYVALUE_IMP_H

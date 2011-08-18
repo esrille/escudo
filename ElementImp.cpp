@@ -52,14 +52,16 @@ public:
     }
 };
 
-unsigned int ElementImp::getChildElementCount()
+void ElementImp::setAttributes(const std::deque<Attr>& attributes)
 {
-    unsigned int count = 0;
-    for (NodeImp* n = this->firstChild; n; n = n->nextSibling) {
-        if (dynamic_cast<ElementImp*>(n))
-            ++count;
+    if (this->attributes.empty()) {
+        this->attributes = attributes;
+        return;
     }
-    return count;
+    for (auto i = attributes.begin(); i != attributes.end(); ++i) {
+        Attr attr = *i;
+        setAttributeNS(attr.getNamespaceURI(), attr.getName(), attr.getValue());
+    }
 }
 
 ElementImp* ElementImp::getNextElement()
@@ -327,6 +329,16 @@ Element ElementImp::getNextElementSibling()
             return n;
     }
     return 0;
+}
+
+unsigned int ElementImp::getChildElementCount()
+{
+    unsigned int count = 0;
+    for (NodeImp* n = this->firstChild; n; n = n->nextSibling) {
+        if (dynamic_cast<ElementImp*>(n))
+            ++count;
+    }
+    return count;
 }
 
 views::ClientRectList ElementImp::getClientRects()

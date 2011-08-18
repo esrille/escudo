@@ -56,8 +56,6 @@ class CSSStyleDeclarationImp : public ObjectMixin<CSSStyleDeclarationImp>
 
     friend class BlockLevelBox;
 
-    static const size_t PropertyCount = 122 + 1;  // including Unknown
-    static const char16_t* PropertyNames[PropertyCount];
 public:
     enum
     {
@@ -185,7 +183,11 @@ public:
         WordSpacing,    // "word-spacing"
         ZIndex, // "z-index"
 
-        MaxProperties
+        MaxCSSProperties,
+
+        HtmlAlign = MaxCSSProperties, // "align"
+
+        MaxProperties  // including Unknown
     };
 
     struct TextDecorationContext
@@ -213,6 +215,9 @@ public:
     };
 
 private:
+    static const size_t PropertyCount = MaxProperties;
+    static const char16_t* PropertyNames[PropertyCount];
+
     Object* owner;
     css::CSSRule parentRule;
     std::bitset<PropertyCount> propertySet;
@@ -328,6 +333,8 @@ public:
     CSSAutoLengthValueImp width;
 
     CSSZIndexValueImp zIndex;
+
+    HTMLAlignValueImp htmlAlign;
 
     TextDecorationContext textDecorationContext;
 
@@ -657,6 +664,10 @@ public:
     virtual void setWordSpacing(Nullable<std::u16string> wordSpacing);
     virtual Nullable<std::u16string> getZIndex();
     virtual void setZIndex(Nullable<std::u16string> zIndex);
+
+    Nullable<std::u16string> getHTMLAlign();
+    void setHTMLAlign(Nullable<std::u16string> align);
+
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

@@ -436,6 +436,12 @@ Element DocumentImp::createElement(std::u16string localName)
     if (localName == u"menu")
         return new(std::nothrow) HTMLMenuElementImp(this);
 
+    // Deprecated elements
+    if (localName == u"center") {  // shorthand for DIV align=center
+        HTMLDivElementImp* div = new(std::nothrow) HTMLDivElementImp(this, localName);
+        return div;
+    }
+
     return new(std::nothrow) HTMLUnknownElementImp(this, localName);
 }
 
