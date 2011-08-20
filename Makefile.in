@@ -103,8 +103,9 @@ am_libeshtml5_a_OBJECTS = Any.$(OBJEXT) utf.$(OBJEXT) \
 	HTMLInputStream.$(OBJEXT) HTMLParser.$(OBJEXT) \
 	HTMLTokenizer.$(OBJEXT) Box.$(OBJEXT) BoxGL.$(OBJEXT) \
 	BoxImage.$(OBJEXT) FormattingContext.$(OBJEXT) \
-	CSSPropertyValueImp.$(OBJEXT) CSSSerialize.$(OBJEXT) \
-	CSSGrammar.$(OBJEXT) CSSSelector.$(OBJEXT) CSSParser.$(OBJEXT) \
+	StackingContext.$(OBJEXT) CSSPropertyValueImp.$(OBJEXT) \
+	CSSSerialize.$(OBJEXT) CSSGrammar.$(OBJEXT) \
+	CSSSelector.$(OBJEXT) CSSParser.$(OBJEXT) \
 	CSSValueParser.$(OBJEXT) CSSInputStream.$(OBJEXT) \
 	ViewCSSImp.$(OBJEXT) ViewCSSImpGL.$(OBJEXT) \
 	Test.util.$(OBJEXT) Test.glut.$(OBJEXT) \
@@ -1121,29 +1122,30 @@ libeshtml5_a_SOURCES = Object.h ObjectArrayImp.h Any.cpp Any.h \
 	html/HTMLInputStream.h html/HTMLParser.cpp html/HTMLParser.h \
 	html/HTMLTokenizer.cpp html/HTMLTokenizer.h css/Box.cpp \
 	css/Box.h css/BoxGL.cpp css/BoxImage.cpp \
-	css/FormattingContext.cpp css/CSSColor.re \
-	css/CSSPropertyNames.re css/CSSPropertyValueImp.cpp \
-	css/CSSPropertyValueImp.h css/CSSSerialize.cpp \
-	css/CSSSerialize.h css/CSSGrammar.yy css/CSSSelector.cpp \
-	css/CSSSelector.h css/CSSTokenizer.re css/CSSParser.cpp \
-	css/CSSParser.h css/CSSValueParser.cpp css/CSSValueParser.h \
-	css/CSSInputStream.cpp css/CSSInputStream.h css/ViewCSSImp.cpp \
-	css/ViewCSSImp.h css/ViewCSSImpGL.cpp Test.util.h \
-	Test.util.cpp Test.glut.cpp ApplicationCacheImp.cpp \
-	ApplicationCacheImp.h AttrImp.cpp AttrImp.h BarPropImp.cpp \
-	BarPropImp.h BeforeUnloadEventImp.cpp BeforeUnloadEventImp.h \
-	BlobImp.cpp BlobImp.h CaretPositionImp.cpp CaretPositionImp.h \
-	CharacterDataImp.cpp CharacterDataImp.h ClientRectImp.cpp \
-	ClientRectImp.h ClientRectListImp.cpp ClientRectListImp.h \
-	CommentImp.cpp CommentImp.h CompositionEventImp.cpp \
-	CompositionEventImp.h CustomEventImp.cpp CustomEventImp.h \
-	CustomEventInitImp.cpp CustomEventInitImp.h \
-	DOMImplementationImp.cpp DOMImplementationImp.h \
-	DOMSettableTokenListImp.cpp DOMSettableTokenListImp.h \
-	DOMStringListImp.cpp DOMStringListImp.h DOMStringMapImp.cpp \
-	DOMStringMapImp.h DOMTokenListImp.cpp DOMTokenListImp.h \
-	DocumentFragmentImp.cpp DocumentFragmentImp.h DocumentImp.cpp \
-	DocumentImp.h DocumentRangeImp.cpp DocumentRangeImp.h \
+	css/FormattingContext.cpp css/StackingContext.cpp \
+	css/StackingContext.h css/CSSColor.re css/CSSPropertyNames.re \
+	css/CSSPropertyValueImp.cpp css/CSSPropertyValueImp.h \
+	css/CSSSerialize.cpp css/CSSSerialize.h css/CSSGrammar.yy \
+	css/CSSSelector.cpp css/CSSSelector.h css/CSSTokenizer.re \
+	css/CSSParser.cpp css/CSSParser.h css/CSSValueParser.cpp \
+	css/CSSValueParser.h css/CSSInputStream.cpp \
+	css/CSSInputStream.h css/ViewCSSImp.cpp css/ViewCSSImp.h \
+	css/ViewCSSImpGL.cpp Test.util.h Test.util.cpp Test.glut.cpp \
+	ApplicationCacheImp.cpp ApplicationCacheImp.h AttrImp.cpp \
+	AttrImp.h BarPropImp.cpp BarPropImp.h BeforeUnloadEventImp.cpp \
+	BeforeUnloadEventImp.h BlobImp.cpp BlobImp.h \
+	CaretPositionImp.cpp CaretPositionImp.h CharacterDataImp.cpp \
+	CharacterDataImp.h ClientRectImp.cpp ClientRectImp.h \
+	ClientRectListImp.cpp ClientRectListImp.h CommentImp.cpp \
+	CommentImp.h CompositionEventImp.cpp CompositionEventImp.h \
+	CustomEventImp.cpp CustomEventImp.h CustomEventInitImp.cpp \
+	CustomEventInitImp.h DOMImplementationImp.cpp \
+	DOMImplementationImp.h DOMSettableTokenListImp.cpp \
+	DOMSettableTokenListImp.h DOMStringListImp.cpp \
+	DOMStringListImp.h DOMStringMapImp.cpp DOMStringMapImp.h \
+	DOMTokenListImp.cpp DOMTokenListImp.h DocumentFragmentImp.cpp \
+	DocumentFragmentImp.h DocumentImp.cpp DocumentImp.h \
+	DocumentRangeImp.cpp DocumentRangeImp.h \
 	DocumentTraversalImp.cpp DocumentTraversalImp.h \
 	DocumentTypeImp.cpp DocumentTypeImp.h DragEventImp.cpp \
 	DragEventImp.h ElementImp.cpp ElementImp.h EventImp.cpp \
@@ -2048,6 +2050,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ScreenImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Script.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Script.test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StackingContext.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StyleSheet.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StyleSheetImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Test.glut.Po@am__quote@
@@ -2391,6 +2394,20 @@ FormattingContext.obj: css/FormattingContext.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='css/FormattingContext.cpp' object='FormattingContext.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FormattingContext.obj `if test -f 'css/FormattingContext.cpp'; then $(CYGPATH_W) 'css/FormattingContext.cpp'; else $(CYGPATH_W) '$(srcdir)/css/FormattingContext.cpp'; fi`
+
+StackingContext.o: css/StackingContext.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT StackingContext.o -MD -MP -MF $(DEPDIR)/StackingContext.Tpo -c -o StackingContext.o `test -f 'css/StackingContext.cpp' || echo '$(srcdir)/'`css/StackingContext.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/StackingContext.Tpo $(DEPDIR)/StackingContext.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='css/StackingContext.cpp' object='StackingContext.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o StackingContext.o `test -f 'css/StackingContext.cpp' || echo '$(srcdir)/'`css/StackingContext.cpp
+
+StackingContext.obj: css/StackingContext.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT StackingContext.obj -MD -MP -MF $(DEPDIR)/StackingContext.Tpo -c -o StackingContext.obj `if test -f 'css/StackingContext.cpp'; then $(CYGPATH_W) 'css/StackingContext.cpp'; else $(CYGPATH_W) '$(srcdir)/css/StackingContext.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/StackingContext.Tpo $(DEPDIR)/StackingContext.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='css/StackingContext.cpp' object='StackingContext.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o StackingContext.obj `if test -f 'css/StackingContext.cpp'; then $(CYGPATH_W) 'css/StackingContext.cpp'; else $(CYGPATH_W) '$(srcdir)/css/StackingContext.cpp'; fi`
 
 CSSPropertyValueImp.o: css/CSSPropertyValueImp.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT CSSPropertyValueImp.o -MD -MP -MF $(DEPDIR)/CSSPropertyValueImp.Tpo -c -o CSSPropertyValueImp.o `test -f 'css/CSSPropertyValueImp.cpp' || echo '$(srcdir)/'`css/CSSPropertyValueImp.cpp

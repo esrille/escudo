@@ -21,6 +21,7 @@
 
 #include <stdio.h>
 
+#include "StackingContext.h"
 #include "CSSStyleDeclarationImp.h"
 #include "ViewCSSImp.h"
 
@@ -267,6 +268,9 @@ void Box::renderBorderEdge(ViewCSSImp* view, int edge, unsigned borderStyle, uns
 
 void Box::renderBorder(ViewCSSImp* view)
 {
+    glPushMatrix();
+    glTranslatef(0.0f, 0.0f, positioned ? stackingContext->getZ1() : stackingContext->getZ3());
+
     glDisable(GL_TEXTURE_2D);
 
     float ll = marginLeft;
@@ -336,10 +340,14 @@ void Box::renderBorder(ViewCSSImp* view)
                          style->borderLeftColor.getARGB(),
                          ll, bb, ll, tt, lr, tb, lr, bt);
     glEnable(GL_TEXTURE_2D);
+
+    glPopMatrix();
 }
 
 void BlockLevelBox::render(ViewCSSImp* view)
 {
+    if (!stackingContext)
+        return;
     glPushMatrix();
     glTranslatef(offsetH, offsetV, 0.0f);
     getOriginScreenPosition(x, y);
@@ -371,6 +379,7 @@ void LineBox::render(ViewCSSImp* view)
 
 void InlineLevelBox::render(ViewCSSImp* view)
 {
+    assert(stackingContext);
     glPushMatrix();
     glTranslatef(offsetH, offsetV, 0.0f);
     renderBorder(view);
@@ -381,7 +390,7 @@ void InlineLevelBox::render(ViewCSSImp* view)
     else if (getFirstChild())  // for inline-block
         getFirstChild()->render(view);
     else if (0 < data.length()) {
-        glTranslatef(0.0f, baseline, 0.0f);
+        glTranslatef(0.0f, baseline, stackingContext->getZ3());
         glPushMatrix();
             glScalef(point / font->getPoint(), point / font->getPoint(), 1.0);
             unsigned color = getStyle()->color.getARGB();

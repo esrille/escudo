@@ -28,6 +28,7 @@
 #include "DocumentImp.h"
 
 #include "Box.h"
+#include "StackingContext.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -46,6 +47,7 @@ bool isReplacedElement(Element& element)
 ViewCSSImp::ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyleSheet) :
     window(window),
     defaultStyleSheet(defaultStyleSheet),
+    stackingContexts(0),
     hovered(0),
     dpi(96),
     mutationListener(boost::bind(&ViewCSSImp::handleMutation, this, _1))
@@ -101,6 +103,14 @@ void ViewCSSImp::findDeclarations(DeclarationSet& set, Element element, css::CSS
             set.insert(decl);
         }
     }
+}
+
+void ViewCSSImp::cascade()
+{
+    map.clear();
+    delete stackingContexts;
+    stackingContexts = 0;
+    cascade(getDocument(), 0);
 }
 
 void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle)
@@ -334,6 +344,10 @@ BlockLevelBox* ViewCSSImp::layOut()
     for (auto i = floatMap.begin(); i != floatMap.end(); ++i) {
         if (i->second->isAbsolutelyPositioned())
             i->second->layOutAbsolute(this, i->first);
+    }
+    if (stackingContexts) {
+        stackingContexts->eval();
+        stackingContexts->dump();
     }
     return boxTree.get();
 }

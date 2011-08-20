@@ -19,6 +19,7 @@
 #include <org/w3c/dom/Element.h>
 #include <org/w3c/dom/html/HTMLBodyElement.h>
 
+#include "StackingContext.h"
 #include "CSSValueParser.h"
 #include "MutationEventImp.h"
 #include "ViewCSSImp.h"
@@ -1122,6 +1123,18 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
         textDecorationContext = parentStyle->textDecorationContext;
     else
         textDecorationContext.update(this);
+
+    if (!parentStyle) {
+        assert(view->getStackingContexts() == 0);
+        view->setStackingContexts(new(std::nothrow) StackingContext(zIndex.getValue()));
+        stackingContext = view->getStackingContexts();
+    } else if (isPositioned()) {
+        if (zIndex.isAuto())
+            stackingContext = parentStyle->stackingContext->getAuto();
+        else
+            stackingContext = parentStyle->stackingContext->addContext(zIndex.getValue());
+    } else
+        stackingContext = parentStyle->stackingContext;
 
     // Note the parent style of a pseudo element style is not always the corresponding element's style.
     // It will be computed layter by layout().
@@ -2556,6 +2569,7 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp() :
     resolved(false),
     box(0),
     lastBox(0),
+    stackingContext(0),
     backgroundColor(0),
     counterIncrement(1),
     counterReset(0),

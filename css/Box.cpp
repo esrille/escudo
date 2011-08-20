@@ -71,6 +71,10 @@ Box::Box(Node node) :
     borderRight(0.0f),
     offsetH(0.0f),
     offsetV(0.0f),
+    positioned(false),
+    stackingContext(0),
+    x(0.0f),
+    y(0.0f),
     backgroundColor(0x00000000),
     backgroundImage(0),
     backgroundLeft(0.0f),
@@ -831,6 +835,7 @@ void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         marginTop = marginRight = marginLeft = marginBottom = 0.0f;
         width = containingBlock->width;
         height = 0.0f;
+        stackingContext = style->getStackingContext();
     }
 
     textAlign = style->textAlign.getValue();

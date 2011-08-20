@@ -30,7 +30,7 @@ void reshape(int w, int h)
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluOrtho2D(0, w, 0, h);
+    glOrtho(0, w, 0, h, -1000.0, 1.0);
 
     glMatrixMode(GL_TEXTURE);
     glLoadIdentity();
@@ -187,8 +187,9 @@ void init(int argc, char* argv[])
     glutDisplayFunc(display);
     glClearColor(1.0, 1.0, 1.0, 1.0);
     glEnable(GL_TEXTURE_2D);
+    glDepthFunc(GL_LEQUAL);
     glDisable(GL_CULL_FACE);
-    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_DEPTH_TEST);
     glDisable(GL_ALPHA_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

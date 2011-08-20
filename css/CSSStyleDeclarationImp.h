@@ -38,6 +38,7 @@
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class Box;
+class StackingContext;
 class CSSStyleDeclarationImp;
 
 typedef boost::intrusive_ptr<CSSStyleDeclarationImp> CSSStyleDeclarationPtr;
@@ -227,6 +228,7 @@ private:
 
     Box* box;
     Box* lastBox;  // for inline
+    StackingContext* stackingContext;
 
     CSSStyleDeclarationPtr pseudoElements[CSSPseudoElementSelector::MaxPseudoElements];
 
@@ -393,12 +395,19 @@ public:
         return position.getValue() == CSSPositionValueImp::Absolute ||
                position.getValue() == CSSPositionValueImp::Fixed;
     }
+    bool isPositioned() const {
+        return position.getValue() != CSSPositionValueImp::Static;
+    }
 
     void addBox(Box* box) {
         if (!this->box)
             this->box = lastBox = box;
         else
             lastBox = box;
+    }
+
+    StackingContext* getStackingContext() const {
+        return stackingContext;
     }
 
     static int getPropertyID(const std::u16string& ident);

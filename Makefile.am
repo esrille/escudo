@@ -610,6 +610,8 @@ libeshtml5_a_SOURCES = \
 	css/BoxGL.cpp \
 	css/BoxImage.cpp \
 	css/FormattingContext.cpp \
+	css/StackingContext.cpp \
+	css/StackingContext.h \
 	css/CSSColor.re \
 	css/CSSPropertyNames.re \
 	css/CSSPropertyValueImp.cpp \

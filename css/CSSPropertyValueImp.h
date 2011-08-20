@@ -1544,6 +1544,12 @@ public:
             return setValue(true);
         return setValue(false, static_cast<int>(term->getNumber()));
     }
+    bool isAuto() const {
+        return auto_;
+    }
+    int getValue() const {
+        return isAuto() ? 0 : index;
+    }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
         if (auto_)
             return u"auto";

@@ -39,6 +39,8 @@ class Document;
 
 namespace bootstrap {
 
+class StackingContext;
+
 class ViewCSSImp
 {
     friend class BlockLevelBox; // TODO just for layOutInlineReplaced for now...
@@ -69,6 +71,7 @@ class ViewCSSImp
     std::map<Node, BlockLevelBoxPtr> floatMap;
     BlockLevelBoxPtr boxTree;
     Retained<ContainingBlock> initialContainingBlock;
+    StackingContext* stackingContexts;
 
     Node hovered;
 
@@ -96,10 +99,7 @@ public:
         return window->getDocument();
     }
 
-    void cascade() {
-        map.clear();
-        cascade(getDocument(), 0);
-    }
+    void cascade();
 
     void preload(const std::u16string& base, const std::u16string& url) {
         if (window)
@@ -122,6 +122,13 @@ public:
     }
     const ContainingBlock* getInitialContainingBlock() const {
         return &initialContainingBlock;
+    }
+
+    StackingContext* getStackingContexts() const {
+        return stackingContexts;
+    }
+    void setStackingContexts(StackingContext* contexts) {
+        stackingContexts = contexts;
     }
 
     unsigned getDPI() const {

@@ -42,6 +42,7 @@ namespace bootstrap {
 class Box;
 class LineBox;
 class BlockLevelBox;
+class StackingContext;
 
 class ViewCSSImp;
 
@@ -184,6 +185,9 @@ protected:
     float offsetH;
     float offsetV;
 
+    bool positioned;
+    StackingContext* stackingContext;
+
     float x;  // in screen coord
     float y;  // in screen coord
 
@@ -291,6 +295,10 @@ public:
     }
     void setStyle(CSSStyleDeclarationImp* style) {
         this->style = style;
+        if (style) {
+            positioned = style->isPositioned();
+            stackingContext = style->getStackingContext();
+        }
     }
 
     virtual const ContainingBlock* getContainingBlock(ViewCSSImp* view) const;

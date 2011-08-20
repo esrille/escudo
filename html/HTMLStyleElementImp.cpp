@@ -20,6 +20,8 @@
 #include "TextImp.h"
 #include "DocumentImp.h"
 
+#include "Test.util.h"
+
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 void HTMLStyleElementImp::eval()
@@ -33,6 +35,9 @@ void HTMLStyleElementImp::eval()
     }
     CSSParser parser;
     styleSheet = parser.parse(content);
+
+    dumpStyleSheet(std::cerr, styleSheet.self());
+
     if (DocumentImp* document = getOwnerDocumentImp())
         document->addStyleSheet(styleSheet);
 }
