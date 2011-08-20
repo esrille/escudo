@@ -81,6 +81,13 @@ class ViewCSSImp
     static const unsigned MaxFontSizes = 8;
     float fontSizeTable[MaxFontSizes];
 
+    enum
+    {
+        BlockMode,
+        InlineMode
+    };
+    unsigned renderMode;
+
     Retained<EventListenerImp> mutationListener;
     void handleMutation(events::Event event);
 
@@ -110,9 +117,20 @@ public:
     BlockLevelBox* layOut();
     BlockLevelBox* dump();
 
+    bool isBlockMode() const {
+        return renderMode == BlockMode;
+    }
+    bool isInlineMode() const {
+        return renderMode == InlineMode;
+    }
+
     void render() {
-        if (boxTree)
+        if (boxTree) {
+            renderMode = BlockMode;
             boxTree->render(this);
+            renderMode = InlineMode;
+            boxTree->render(this);
+        }
     }
 
     // For the containing block of the root element's top-level boxes, we need to explicitly specify the size of the box.

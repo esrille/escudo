@@ -351,7 +351,8 @@ void BlockLevelBox::render(ViewCSSImp* view)
     glPushMatrix();
     glTranslatef(offsetH, offsetV, 0.0f);
     getOriginScreenPosition(x, y);
-    renderBorder(view);
+    if (view->isBlockMode())
+        renderBorder(view);
     glTranslatef(getBlankLeft(), getBlankTop(), 0.0f);
     if (shadow)
         shadow->render();
@@ -382,14 +383,15 @@ void InlineLevelBox::render(ViewCSSImp* view)
     assert(stackingContext);
     glPushMatrix();
     glTranslatef(offsetH, offsetV, 0.0f);
-    renderBorder(view);
+    if (view->isInlineMode())
+        renderBorder(view);
     glTranslatef(getBlankLeft(), getBlankTop(), 0.0f);
     getOriginScreenPosition(x, y);
     if (shadow)
         shadow->render();
     else if (getFirstChild())  // for inline-block
         getFirstChild()->render(view);
-    else if (0 < data.length()) {
+    else if (view->isInlineMode() && 0 < data.length()) {
         glTranslatef(0.0f, baseline, stackingContext->getZ3());
         glPushMatrix();
             glScalef(point / font->getPoint(), point / font->getPoint(), 1.0);
