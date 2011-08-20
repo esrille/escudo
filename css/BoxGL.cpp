@@ -129,10 +129,13 @@ void Box::renderBorderEdge(ViewCSSImp* view, int edge, unsigned borderStyle, uns
         borderStyle == CSSBorderStyleValueImp::Hidden)
         return;
 
+    if (color == 0x00000000)
+        return;
+
+    GLubyte alpha = color >> 24;
     GLubyte red = color >> 16;
     GLubyte green = color >> 8;
     GLubyte blue = color;
-    GLubyte alpha = color >> 24;
 
     if (borderStyle == CSSBorderStyleValueImp::Double) {
         float offset;
