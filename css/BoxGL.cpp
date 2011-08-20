@@ -395,7 +395,9 @@ void InlineLevelBox::render(ViewCSSImp* view)
             glScalef(point / font->getPoint(), point / font->getPoint(), 1.0);
             unsigned color = getStyle()->color.getARGB();
             glColor4ub(color >> 16, color >> 8, color, color >> 24);
+            glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
             font->renderText(data.c_str(), data.length());
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glPopMatrix();
         if (getStyle()->textDecorationContext.hasDecoration()) {
             unsigned lineDecoration = getStyle()->textDecorationContext.decoration;
