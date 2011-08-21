@@ -261,7 +261,10 @@ public:
         return marginRight + borderRight + paddingRight;
     }
     float getTotalWidth() const {
-        return marginLeft + borderLeft + paddingLeft + width + marginRight + borderRight + paddingRight;
+        return marginLeft + borderLeft + paddingLeft + width + paddingRight + borderRight + marginRight;
+    }
+    float getBorderWidth() const {
+        return borderLeft + paddingLeft + width + paddingRight + borderRight;
     }
     float getPaddingWidth() const {
         return paddingLeft + width + paddingRight;
@@ -273,13 +276,17 @@ public:
         return marginBottom + borderBottom + paddingBottom;
     }
     float getTotalHeight() const {
-        return marginTop + borderTop + paddingTop + height + marginBottom + borderBottom + paddingBottom;
+        return marginTop + borderTop + paddingTop + height + paddingBottom + borderBottom + marginBottom;
+    }
+    float getBorderHeight() const {
+        return borderTop + paddingTop + height + paddingBottom + borderBottom;
     }
     float getPaddingHeight() const {
         return paddingTop + height + paddingBottom;
     }
 
-    virtual float shrinkToFit();
+    virtual float shrinkTo();
+    virtual void fit(float w);
 
     virtual void toViewPort(const Box* box, float& x, float& y) const = 0;
     void toViewPort(float& x, float& y) const {
@@ -403,7 +410,9 @@ public:
         return BLOCK_LEVEL_BOX;
     }
 
-    virtual float shrinkToFit();
+    void shrinkToFit();
+    virtual float shrinkTo();
+    virtual void fit(float w);
 
     virtual void toViewPort(const Box* box, float& x, float& y) const {
         x += offsetH + getBlankLeft();

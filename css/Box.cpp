@@ -388,7 +388,6 @@ void BlockLevelBox::resolveWidth(ViewCSSImp* view, const ContainingBlock* contai
         marginRight = style->marginRight.getPx();
         --autoCount;
     }
-
     if (!style->width.isAuto()) {
         width = style->width.getPx();
         --autoCount;
@@ -782,27 +781,81 @@ void BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context)
         context->nextLine(this);
 }
 
-float Box::shrinkToFit()
-{
-    return getPaddingWidth();
-}
-
 // TODO for a more complete implementation, see,
 //      http://groups.google.com/group/netscape.public.mozilla.layout/msg/0455a21b048ffac3?pli=1
-float BlockLevelBox::shrinkToFit()
+
+void BlockLevelBox::shrinkToFit()
 {
-    float prev = width;
-    width = 0.0f;
-    for (Box* child = getFirstChild(); child; child = child->getNextSibling())
-        width = std::max(width, child->shrinkToFit());
-    float shrink = prev - width;
-    if (0.0f < shrink && textAlign != CSSTextAlignValueImp::Left) {
-        for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
-            if (LineBox* line = dynamic_cast<LineBox*>(child))
-                line->realignText(this, shrink);
+    fit(shrinkTo());
+}
+
+// returns the minimum total width
+float Box::shrinkTo()
+{
+    return getTotalWidth();
+}
+
+float BlockLevelBox::shrinkTo()
+{
+    int autoCount = 3;
+    float min = 0.0f;
+    if (style && !style->width.isAuto()) {
+        --autoCount;
+        min = style->width.getPx();
+    } else {
+        for (Box* child = getFirstChild(); child; child = child->getNextSibling())
+            min = std::max(min, child->shrinkTo());
+    }
+    min += borderLeft + paddingLeft + paddingRight + borderRight;
+    if (style) {
+        if (!style->marginLeft.isAuto()) {
+            --autoCount;
+            min += style->marginLeft.getPx();
+        }
+        if (!style->marginRight.isAuto()) {
+            --autoCount;
+            if (0 < autoCount)
+                min += style->marginRight.getPx();
         }
     }
-    return width;
+    return min;
+}
+
+void Box::fit(float w)
+{
+}
+
+void BlockLevelBox::fit(float w)
+{
+    if (getTotalWidth() <= w)
+        return;
+    int autoCount = 3;
+    float newWidth = w;
+
+    if (style) {
+        if (!style->width.isAuto()) {
+            --autoCount;
+            newWidth = style->width.getPx();
+        }
+        if (!style->marginLeft.isAuto()) {
+            --autoCount;
+            newWidth -= style->marginLeft.getPx();
+        }
+        if (!style->marginRight.isAuto()) {
+            --autoCount;
+            if (0 < autoCount)
+                newWidth -= style->marginRight.getPx();
+        }
+    }
+    newWidth -= borderLeft + paddingLeft + paddingRight + borderRight;
+    float shrink = width - newWidth;
+    width = newWidth;
+    for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
+        if (LineBox* line = dynamic_cast<LineBox*>(child))
+            line->realignText(this, shrink);
+        else
+            child->fit(w);
+    }
 }
 
 void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
