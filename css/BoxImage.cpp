@@ -74,6 +74,10 @@ unsigned char* readAsPng(FILE* file, unsigned& width, unsigned& height, unsigned
         png_set_palette_to_rgb(png_ptr);
     if (color_type == PNG_COLOR_TYPE_GRAY || color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
         png_set_gray_to_rgb(png_ptr);
+    if (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS)) {
+        png_set_tRNS_to_alpha(png_ptr);
+        color_type = GL_RGBA;
+    }
     if (bit_depth == 16)
         png_set_strip_16(png_ptr);
     switch (color_type) {
