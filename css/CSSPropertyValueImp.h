@@ -717,6 +717,7 @@ class CSSColorValueImp : public CSSPropertyValueImp
 {
     unsigned value;
 public:
+    static const unsigned Transparent = 0x00000000u;
     CSSColorValueImp& setValue(unsigned color = 0xff000000) {
         value = color;
         return *this;

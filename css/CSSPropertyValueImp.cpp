@@ -447,7 +447,7 @@ void CSSBackgroundShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueP
         }
     }
     if (!color)
-        decl->backgroundColor.setValue();
+        decl->backgroundColor.setValue(CSSColorValueImp::Transparent);
     if (!attachment)
         decl->backgroundAttachment.setValue();
     if (!repeat)
@@ -479,7 +479,7 @@ void CSSBackgroundShorthandImp::specify(CSSStyleDeclarationImp* self, CSSStyleDe
 
 void CSSBackgroundShorthandImp::reset(CSSStyleDeclarationImp* self)
 {
-    self->backgroundColor.setValue(0u);
+    self->backgroundColor.setValue(CSSColorValueImp::Transparent);
     self->backgroundImage.setValue();
     self->backgroundRepeat.setValue();
     self->backgroundAttachment.setValue();

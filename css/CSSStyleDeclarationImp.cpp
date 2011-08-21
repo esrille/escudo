@@ -2570,7 +2570,7 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp() :
     box(0),
     lastBox(0),
     stackingContext(0),
-    backgroundColor(0),
+    backgroundColor(CSSColorValueImp::Transparent),
     counterIncrement(1),
     counterReset(0),
     borderTop(0),
