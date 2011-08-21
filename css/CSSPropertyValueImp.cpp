@@ -50,10 +50,10 @@ const char16_t* CSSBackgroundAttachmentValueImp::Options[] = {
 };
 
 const char16_t* CSSBackgroundRepeatValueImp::Options[] = {
-    u"repeat",
+    u"no-repeat",
     u"repeat-x",
     u"repeat-y",
-    u"no-repeat"
+    u"repeat"
 };
 
 const char16_t* CSSBorderCollapseValueImp::Options[] = {
