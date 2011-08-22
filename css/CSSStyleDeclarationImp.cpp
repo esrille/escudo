@@ -1067,23 +1067,8 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
 {
     if (!parentStyle)  // is it the root element?
         resetInheritedProperties();
-    else {
+    else
         copyInheritedProperties(parentStyle);
-        switch (parentStyle->htmlAlign.getValue()) {
-        case HTMLAlignValueImp::Left:
-            marginLeft.setValue(0.0f, css::CSSPrimitiveValue::CSS_PX);
-            marginRight.setValue();
-            break;
-        case HTMLAlignValueImp::Center:
-            marginLeft.setValue();
-            marginRight.setValue();
-            break;
-        case HTMLAlignValueImp::Right:
-            marginLeft.setValue();
-            marginRight.setValue(0.0f, css::CSSPrimitiveValue::CSS_PX);
-            break;
-        }
-    }
     display.compute(this, element);  // TODO: we need to keep the original value for absolute box
     fontSize.compute(view, parentStyle ? &parentStyle->fontSize : 0);
     lineHeight.compute(view, fontSize);
@@ -1169,6 +1154,24 @@ void CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* co
             copy(parentStyle, CSSStyleDeclarationImp::BorderRightWidth);
             copy(parentStyle, CSSStyleDeclarationImp::BorderBottomWidth);
             copy(parentStyle, CSSStyleDeclarationImp::BorderLeftWidth);
+
+            if (!propertySet.test(Margin) && !propertySet.test(MarginLeft) && !propertySet.test(MarginRight)) {
+                switch (parentStyle->htmlAlign.getValue()) {
+                case HTMLAlignValueImp::Left:
+                    marginLeft.setValue(0.0f, css::CSSPrimitiveValue::CSS_PX);
+                    marginRight.setValue();
+                    break;
+                case HTMLAlignValueImp::Center:
+                    marginLeft.setValue();
+                    marginRight.setValue();
+                    break;
+                case HTMLAlignValueImp::Right:
+                    marginLeft.setValue();
+                    marginRight.setValue(0.0f, css::CSSPrimitiveValue::CSS_PX);
+                    break;
+                }
+            }
+
         }
     }
 
