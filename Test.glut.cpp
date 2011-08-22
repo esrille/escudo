@@ -44,7 +44,6 @@ void reshape(int w, int h)
 void display()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glColor3f(0.0, 0.0, 0.0);
     if (WindowImp* imp = static_cast<WindowImp*>(window.self()))
         imp->render();
     glutSwapBuffers();  // This would block until the sync happens
@@ -180,7 +179,15 @@ void timer(int value)
 void init(int argc, char* argv[])
 {
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+
+    GLint buffers, samples;
+    glGetIntegerv(GL_SAMPLE_BUFFERS, &buffers);
+    glGetIntegerv(GL_SAMPLES, &samples);
+    std::cout << "GL_SAMPLE_BUFFERS = " << buffers << ", GL_SAMPLES = " << samples << '\n';
+    if (1 <= GL_SAMPLE_BUFFERS && 2 <= samples)
+        glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
+    else
+        glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
     glutInitWindowSize(816, 1056);
     glutCreateWindow(argv[0]);
     glutReshapeFunc(reshape);
@@ -203,4 +210,8 @@ void init(int argc, char* argv[])
     glutPassiveMotionFunc(mouseMove);
     glutTimerFunc(50, timer, 0);
     glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
+    if (1 <= GL_SAMPLE_BUFFERS && 2 <= samples) {
+        glEnable(GL_MULTISAMPLE);
+        glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
+    }
 }

@@ -107,18 +107,20 @@ void BoxImage::render(ViewCSSImp* view, float x, float y, float width, float hei
     GLuint texname = getTexname(pixels, naturalWidth, naturalHeight, repeat, format);
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, texname);
-    glColor3ub(255, 255, 255);
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    glEnable(GL_TEXTURE_2D);
     glBegin(GL_QUADS);
-            glTexCoord2f(x - left, y - top);
-            glVertex2f(x, y);
-            glTexCoord2f(x - left + width, y - top);
-            glVertex2f(x + width, y);
-            glTexCoord2f(x - left + width, y - top + height);
-            glVertex2f(x + width, y + height);
-            glTexCoord2f(x - left, y - top + height);
-            glVertex2f(x, y + height);
+        glTexCoord2f(x - left, y - top);
+        glVertex2f(x, y);
+        glTexCoord2f(x - left + width, y - top);
+        glVertex2f(x + width, y);
+        glTexCoord2f(x - left + width, y - top + height);
+        glVertex2f(x + width, y + height);
+        glTexCoord2f(x - left, y - top + height);
+        glVertex2f(x, y + height);
     glEnd();
     glDisable(GL_TEXTURE_2D);
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 }
 
 void Box::renderBorderEdge(ViewCSSImp* view, int edge, unsigned borderStyle, unsigned color,
@@ -342,8 +344,8 @@ void Box::renderBorder(ViewCSSImp* view)
                          style->borderLeftStyle.getValue(),
                          style->borderLeftColor.getARGB(),
                          ll, bb, ll, tt, lr, tb, lr, bt);
-    glEnable(GL_TEXTURE_2D);
 
+    glEnable(GL_TEXTURE_2D);
     glPopMatrix();
 }
 
@@ -354,8 +356,7 @@ void BlockLevelBox::render(ViewCSSImp* view)
     glPushMatrix();
     glTranslatef(offsetH, offsetV, 0.0f);
     getOriginScreenPosition(x, y);
-    if (view->isBlockMode())
-        renderBorder(view);
+    renderBorder(view);
     glTranslatef(getBlankLeft(), getBlankTop(), 0.0f);
     if (shadow)
         shadow->render();
@@ -386,15 +387,14 @@ void InlineLevelBox::render(ViewCSSImp* view)
     assert(stackingContext);
     glPushMatrix();
     glTranslatef(offsetH, offsetV, 0.0f);
-    if (view->isInlineMode())
-        renderBorder(view);
+    renderBorder(view);
     glTranslatef(getBlankLeft(), getBlankTop(), 0.0f);
     getOriginScreenPosition(x, y);
     if (shadow)
         shadow->render();
     else if (getFirstChild())  // for inline-block
         getFirstChild()->render(view);
-    else if (view->isInlineMode() && 0 < data.length()) {
+    else if (0 < data.length()) {
         glTranslatef(0.0f, baseline, stackingContext->getZ3());
         glPushMatrix();
             glScalef(point / font->getPoint(), point / font->getPoint(), 1.0);

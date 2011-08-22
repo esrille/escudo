@@ -105,6 +105,12 @@ void ViewCSSImp::findDeclarations(DeclarationSet& set, Element element, css::CSS
     }
 }
 
+void ViewCSSImp::render()
+{
+    if (boxTree)
+        boxTree->render(this);
+}
+
 void ViewCSSImp::cascade()
 {
     map.clear();

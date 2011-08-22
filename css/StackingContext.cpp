@@ -95,6 +95,8 @@ StackingContext::~StackingContext()
 
 StackingContext* StackingContext::getAuto()
 {
+    if (zIndex == 0)
+        return this;
     if (!zero)
         zero = addContext(0);
     return zero;
