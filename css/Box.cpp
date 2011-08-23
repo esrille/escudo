@@ -695,8 +695,14 @@ void BlockLevelBox::layOutInlineReplaced(ViewCSSImp* view, Node node, Formatting
             inlineBlock->layOut(view, context);
             if (style->width.isAuto())
                 inlineLevelBox->width = inlineBlock->getTotalWidth();
+            inlineLevelBox->marginLeft = inlineLevelBox->marginRight =
+            inlineLevelBox->borderLeft = inlineLevelBox->borderRight =
+            inlineLevelBox->paddingLeft = inlineLevelBox->paddingRight = 0.0f;
             if (style->height.isAuto())
                 inlineLevelBox->height = inlineBlock->getTotalHeight();
+            inlineLevelBox->marginTop = inlineLevelBox->marginBottom =
+            inlineLevelBox->borderTop = inlineLevelBox->borderBottom =
+            inlineLevelBox->paddingTop = inlineLevelBox->paddingBottom = 0.0f;
         }
     }
 
@@ -1213,12 +1219,10 @@ void InlineLevelBox::setData(FontTexture* font, float point, std::u16string data
 void InlineLevelBox::resolveWidth()
 {
     // The ‘width’ and ‘height’ properties do not apply.
-    if (!isAnonymous()) {
+    if (!isAnonymous() && style->display.getValue() == CSSDisplayValueImp::Inline) {
         backgroundColor = style->backgroundColor.getARGB();
-
         updatePadding();
         updateBorderWidth();
-
         marginTop = style->marginTop.isAuto() ? 0 : style->marginTop.getPx();
         marginRight = style->marginRight.isAuto() ? 0 : style->marginRight.getPx();
         marginLeft = style->marginLeft.isAuto() ? 0 : style->marginLeft.getPx();

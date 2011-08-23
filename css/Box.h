@@ -542,7 +542,7 @@ public:
         setStyle(style);
     }
 
-virtual unsigned getBoxType() const {
+    virtual unsigned getBoxType() const {
         return INLINE_LEVEL_BOX;
     }
 
