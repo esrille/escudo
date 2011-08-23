@@ -693,21 +693,23 @@ void BlockLevelBox::layOutInlineReplaced(ViewCSSImp* view, Node node, Formatting
                     childBox = box;
             }
             inlineBlock->layOut(view, context);
-            if (style->width.isAuto())
-                inlineLevelBox->width = inlineBlock->getTotalWidth();
+            inlineLevelBox->width = inlineBlock->getTotalWidth();
             inlineLevelBox->marginLeft = inlineLevelBox->marginRight =
             inlineLevelBox->borderLeft = inlineLevelBox->borderRight =
             inlineLevelBox->paddingLeft = inlineLevelBox->paddingRight = 0.0f;
-            if (style->height.isAuto())
-                inlineLevelBox->height = inlineBlock->getTotalHeight();
+
+            inlineLevelBox->height = inlineBlock->getTotalHeight();
             inlineLevelBox->marginTop = inlineLevelBox->marginBottom =
             inlineLevelBox->borderTop = inlineLevelBox->borderBottom =
             inlineLevelBox->paddingTop = inlineLevelBox->paddingBottom = 0.0f;
+
+            inlineLevelBox->baseline = inlineBlock->getBlankTop() + inlineBlock->height;
         }
     }
 
     // TODO: calc inlineLevelBox->width and height with intrinsic values.
-    inlineLevelBox->baseline = inlineLevelBox->height;  // TODO
+    if (inlineLevelBox->baseline == 0.0f)
+        inlineLevelBox->baseline = inlineLevelBox->getBlankTop() + inlineLevelBox->height;  // TODO
 
     float blankLeft = inlineLevelBox->getBlankLeft();
     float blankRight = inlineLevelBox->getBlankRight();
