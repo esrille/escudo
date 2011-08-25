@@ -388,7 +388,10 @@ void BlockLevelBox::dump(ViewCSSImp* view, std::string indent)
         std::cout << node.getNodeName();
     else
         std::cout << "anonymous";
-    std::cout << "] (" << x << ", " << y << "), (" << getTotalWidth() << ", " << getTotalHeight() << ")\n";
+    std::cout << "] (" << x << ", " << y << "), (" << getTotalWidth() << ", " << getTotalHeight() << ") " <<
+    "m:" << marginTop << '-' << marginRight << '-' << marginBottom << '-' << marginLeft << ' ' <<
+    "p:" << paddingTop << '-' <<  paddingRight << '-'<< paddingBottom<< '-' << paddingLeft << ' ' <<
+    "b:" << borderTop << '-' <<  borderRight << '-' << borderBottom<< '-' << borderLeft << '\n';
     indent += "    ";
     if (!getFirstChild() && hasInline()) {
         for (auto i = inlines.begin(); i != inlines.end(); ++i) {
@@ -892,7 +895,7 @@ void BlockLevelBox::fit(float w)
         if (LineBox* line = dynamic_cast<LineBox*>(child))
             line->realignText(this, shrink);
         else
-            child->fit(w);
+            child->fit(width);
     }
 }
 
@@ -953,7 +956,6 @@ void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
         child->layOut(view, context);
 
-    // simplified shrink-to-fit
     if ((style->isInlineBlock() || style->isFloat()) && style->width.isAuto())
         shrinkToFit();
 

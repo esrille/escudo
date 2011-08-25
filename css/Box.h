@@ -170,17 +170,17 @@ protected:
     unsigned int childCount;
 
     float marginTop;
+    float marginRight;
     float marginBottom;
     float marginLeft;
-    float marginRight;
     float paddingTop;
+    float paddingRight;
     float paddingBottom;
     float paddingLeft;
-    float paddingRight;
     float borderTop;
+    float borderRight;
     float borderBottom;
     float borderLeft;
-    float borderRight;
 
     float offsetH;
     float offsetV;
