@@ -488,7 +488,7 @@ public:
     virtual void setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
     void reset(CSSStyleDeclarationImp* self);
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl);
-    void specify(CSSStyleDeclarationImp* self, CSSStyleDeclarationImp* decl);
+    void specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl);
 };
 
 class CSSBorderSpacingValueImp : public CSSPropertyValueImp
@@ -555,7 +555,7 @@ class CSSBorderColorShorthandImp : public CSSPropertyValueImp
 public:
     virtual void setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl);
-    void specify(CSSStyleDeclarationImp* self, CSSStyleDeclarationImp* decl);
+    void specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl);
 };
 
 class CSSBorderStyleValueImp : public CSSPropertyValueImp
@@ -607,7 +607,7 @@ class CSSBorderStyleShorthandImp : public CSSPropertyValueImp
 public:
     virtual void setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl);
-    void specify(CSSStyleDeclarationImp* self, CSSStyleDeclarationImp* decl);
+    void specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl);
 };
 
 class CSSBorderWidthValueImp : public CSSPropertyValueImp
@@ -657,7 +657,7 @@ class CSSBorderWidthShorthandImp : public CSSPropertyValueImp
 public:
     virtual void setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl);
-    void specify(CSSStyleDeclarationImp* self, CSSStyleDeclarationImp* decl);
+    void specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl);
 };
 
 class CSSBorderValueImp : public CSSPropertyValueImp
@@ -670,7 +670,7 @@ public:
     }
     virtual void setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl);
-    void specify(CSSStyleDeclarationImp* self, CSSStyleDeclarationImp* decl);
+    void specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl);
 };
 
 class CSSBorderShorthandImp : public CSSPropertyValueImp
@@ -678,7 +678,7 @@ class CSSBorderShorthandImp : public CSSPropertyValueImp
 public:
     virtual void setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl);
-    void specify(CSSStyleDeclarationImp* self, CSSStyleDeclarationImp* decl);
+    void specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl);
 };
 
 class CSSClearValueImp : public CSSPropertyValueImp
@@ -1268,7 +1268,7 @@ class CSSMarginShorthandImp : public CSSPropertyValueImp
 public:
     virtual void setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl);
-    void specify(CSSStyleDeclarationImp* self, CSSStyleDeclarationImp* decl);
+    void specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl);
 };
 
 class CSSPaddingShorthandImp : public CSSPropertyValueImp
@@ -1276,7 +1276,7 @@ class CSSPaddingShorthandImp : public CSSPropertyValueImp
 public:
     virtual void setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl);
-    void specify(CSSStyleDeclarationImp* self, CSSStyleDeclarationImp* decl);
+    void specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl);
 };
 
 class CSSPositionValueImp : public CSSPropertyValueImp
@@ -1569,6 +1569,97 @@ public:
     CSSZIndexValueImp() :
         auto_(true),
         index(0) {
+    }
+};
+
+class CSSBindingValueImp : public CSSPropertyValueImp
+{
+    unsigned value;
+public:
+    enum {
+        None,
+        Button,
+        Details,  // block
+        InputTextfield,
+        InputPassword,
+        InputDatetime,
+        InputDate,
+        InputMonth,
+        InputWeek,
+        InputTime,
+        InputDatetimeLocal,
+        InputNumber,
+        InputRange,
+        InputColor,
+        InputCheckbox,
+        InputRadio,
+        InputFile,
+        InputButton,
+        Marquee,
+        Meter,
+        Progress,
+        Select,  // multi-select list box
+        Textarea,
+        Keygen,
+        Time,  // inline?
+    };
+    CSSBindingValueImp& setValue(unsigned value = None) {
+        this->value = value;
+        return *this;
+    }
+    CSSBindingValueImp& setValue(CSSParserTerm* term) {
+        return setValue(term->getIndex());
+    }
+    unsigned getValue() const {
+        return value;
+    }
+    virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
+        return Options[value];
+    }
+    void specify(const CSSBindingValueImp& specified) {
+        value = specified.value;
+    }
+    CSSBindingValueImp(unsigned initial = None) :
+        value(initial) {
+    }
+    static const char16_t* Options[];
+
+    bool isBlockLevel() const {
+        switch (value) {
+        case Details:
+            return true;
+        default:
+            return false;
+        }
+    }
+    bool isInlineBlock() const {
+        switch (value) {
+        case Button:
+        case InputTextfield:
+        case InputPassword:
+        case InputDatetime:
+        case InputDate:
+        case InputMonth:
+        case InputWeek:
+        case InputTime:
+        case InputDatetimeLocal:
+        case InputNumber:
+        case InputRange:
+        case InputColor:
+        case InputCheckbox:
+        case InputRadio:
+        case InputFile:
+        case InputButton:
+        case Marquee:
+        case Meter:
+        case Progress:
+        case Select:  // multi-select list box
+        case Textarea:
+        case Keygen:
+            break;
+        default:
+            return false;
+        }
     }
 };
 

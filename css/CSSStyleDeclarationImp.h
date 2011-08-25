@@ -184,6 +184,8 @@ public:
         WordSpacing,    // "word-spacing"
         ZIndex, // "z-index"
 
+        Binding, // "binding" - Behavioral Extensions to CSS
+
         MaxCSSProperties,
 
         HtmlAlign = MaxCSSProperties, // "align"
@@ -232,8 +234,8 @@ private:
 
     CSSStyleDeclarationPtr pseudoElements[CSSPseudoElementSelector::MaxPseudoElements];
 
-    void specify(CSSStyleDeclarationImp* decl, unsigned id);
-    void specify(CSSStyleDeclarationImp* decl, const std::bitset<PropertyCount>& set);
+    void specify(const CSSStyleDeclarationImp* decl, unsigned id);
+    void specify(const CSSStyleDeclarationImp* decl, const std::bitset<PropertyCount>& set);
 
     void setInherit(unsigned id);
     void resetInherit(unsigned id);
@@ -335,6 +337,7 @@ public:
     CSSAutoLengthValueImp width;
 
     CSSZIndexValueImp zIndex;
+    CSSBindingValueImp binding;
 
     HTMLAlignValueImp htmlAlign;
 
@@ -342,6 +345,7 @@ public:
 
 public:
     CSSStyleDeclarationImp();
+    CSSStyleDeclarationImp(const CSSStyleDeclarationImp& other);
     ~CSSStyleDeclarationImp()
     {
         ;  //
@@ -366,14 +370,14 @@ public:
     CSSStyleDeclarationImp* getPseudoElementStyle(const std::u16string& name);
     CSSStyleDeclarationImp* createPseudoElementStyle(int id);
 
-    void specify(CSSStyleDeclarationImp* style);
-    void specifyImportant(CSSStyleDeclarationImp* style);
+    void specify(const CSSStyleDeclarationImp* style);
+    void specifyImportant(const CSSStyleDeclarationImp* style);
 
     void reset(unsigned id);
     void resetInheritedProperties();
 
-    void copy(CSSStyleDeclarationImp* parentStyle, unsigned id);
-    void copyInheritedProperties(CSSStyleDeclarationImp* parentStyle);
+    void copy(const CSSStyleDeclarationImp* parentStyle, unsigned id);
+    void copyInheritedProperties(const CSSStyleDeclarationImp* parentStyle);
 
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle, Element element);
 
@@ -384,8 +388,11 @@ public:
 
     bool isFlowRoot() const;
 
+    bool isBlockLevel() const {
+        return display.isBlockLevel() || binding.isBlockLevel();
+    }
     bool isInlineBlock() const {
-        return display.getValue() == CSSDisplayValueImp::InlineBlock;
+        return display.getValue() == CSSDisplayValueImp::InlineBlock || binding.isInlineBlock();
     }
 
     bool isFloat() const {

@@ -264,6 +264,8 @@ class CSSValueParser
     static CSSValueRule whiteSpace;
     static CSSValueRule zIndex;
 
+    static CSSValueRule binding;
+
     int propertyID;
     CSSValueRule* rule;
     CSSParserExpr* expr;

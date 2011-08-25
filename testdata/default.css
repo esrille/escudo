@@ -1,9 +1,9 @@
-[hidden], area, base, 
-basefont, command, datalist, 
-head, input[type=hidden], 
-link, menu[type=context], 
+[hidden], area, base,
+basefont, command, datalist,
+head, input[type=hidden],
+link, menu[type=context],
 meta, noembed, noframes,
-param, rp, script, source, 
+param, rp, script, source,
 style, track, title { display: none; }
 
 html, address,
@@ -78,6 +78,34 @@ BDO[DIR="rtl"]  { direction: rtl; unicode-bidi: bidi-override }
 
 *[DIR="ltr"]    { direction: ltr; unicode-bidi: embed }
 *[DIR="rtl"]    { direction: rtl; unicode-bidi: embed }
+
+/* Bindings */
+button { binding: button; }
+details { binding: details; }
+input { binding: input-textfield; }
+input[type=password] { binding: input-password; } /* case-insensitive */
+input[type=datetime] { binding: input-datetime; } /* case-insensitive */
+input[type=date] { binding: input-date; } /* case-insensitive */
+input[type=month] { binding: input-month; } /* case-insensitive */
+input[type=week] { binding: input-week; } /* case-insensitive */
+input[type=time] { binding: input-time; } /* case-insensitive */
+input[type=datetime-local] { binding: input-datetime-local; } /* case-insensitive */
+input[type=number] { binding: input-number; } /* case-insensitive */
+input[type=range] { binding: input-range; } /* case-insensitive */
+input[type=color] { binding: input-color; } /* case-insensitive */
+input[type=checkbox] { binding: input-checkbox; } /* case-insensitive */
+input[type=radio] { binding: input-radio; } /* case-insensitive */
+input[type=file] { binding: input-file; } /* case-insensitive */
+input[type=submit], input[type=reset], input[type=button] { /* case-insensitive */
+  binding: input-button;
+}
+marquee { binding: marquee; }
+meter { binding: meter; }
+progress { binding: progress; }
+select { binding: select; }
+textarea { binding: textarea; white-space: pre-wrap; }
+keygen { binding: keygen; }
+time[datetime] { binding: time; }
 
 @media print {
   h1            { page-break-before: always }

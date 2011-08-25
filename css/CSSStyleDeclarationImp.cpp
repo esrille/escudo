@@ -154,6 +154,8 @@ const char16_t* CSSStyleDeclarationImp::PropertyNames[PropertyCount] = {
     u"width",
     u"word-spacing",
     u"z-index",
+
+    u"binding",
 };
 
 CSSPropertyValueImp* CSSStyleDeclarationImp::getProperty(unsigned id)
@@ -309,6 +311,8 @@ CSSPropertyValueImp* CSSStyleDeclarationImp::getProperty(unsigned id)
         return &whiteSpace;
     case ZIndex:
         return &zIndex;
+    case Binding:
+        return &binding;
     case HtmlAlign:
         return &htmlAlign;
     default:
@@ -478,7 +482,7 @@ bool CSSStyleDeclarationImp::setProperty(std::u16string property, CSSParserExpr*
     return setProperty(getPropertyID(property), expr, prio);
 }
 
-void CSSStyleDeclarationImp::specify(CSSStyleDeclarationImp* decl, unsigned id)
+void CSSStyleDeclarationImp::specify(const CSSStyleDeclarationImp* decl, unsigned id)
 {
     switch (id) {
     case Top:
@@ -706,6 +710,9 @@ void CSSStyleDeclarationImp::specify(CSSStyleDeclarationImp* decl, unsigned id)
     case ZIndex:
         zIndex.specify(decl->zIndex);
         break;
+    case Binding:
+        binding.specify(decl->binding);
+        break;
     case HtmlAlign:
         htmlAlign.specify(decl->htmlAlign);
         break;
@@ -714,7 +721,7 @@ void CSSStyleDeclarationImp::specify(CSSStyleDeclarationImp* decl, unsigned id)
     }
 }
 
-void CSSStyleDeclarationImp::specify(CSSStyleDeclarationImp* decl, const std::bitset<PropertyCount>& set)
+void CSSStyleDeclarationImp::specify(const CSSStyleDeclarationImp* decl, const std::bitset<PropertyCount>& set)
 {
     for (unsigned id = 1; id < MaxProperties; ++id) {
         if (!set.test(id))
@@ -729,13 +736,13 @@ void CSSStyleDeclarationImp::specify(CSSStyleDeclarationImp* decl, const std::bi
     }
 }
 
-void CSSStyleDeclarationImp::specify(CSSStyleDeclarationImp* style)
+void CSSStyleDeclarationImp::specify(const CSSStyleDeclarationImp* style)
 {
     if (style)
         specify(style, style->propertySet);
 }
 
-void CSSStyleDeclarationImp::specifyImportant(CSSStyleDeclarationImp* style)
+void CSSStyleDeclarationImp::specifyImportant(const CSSStyleDeclarationImp* style)
 {
     if (style)
         specify(style, style->importantSet);
@@ -998,6 +1005,9 @@ void CSSStyleDeclarationImp::reset(unsigned id)
     case ZIndex:
         zIndex.setValue();
         break;
+    case Binding:
+        binding.setValue();
+        break;
     case HtmlAlign:
         htmlAlign.setValue();
     default:
@@ -1031,7 +1041,7 @@ void CSSStyleDeclarationImp::resetInheritedProperties()
     }
 }
 
-void CSSStyleDeclarationImp::copy(CSSStyleDeclarationImp* parentStyle, unsigned id)
+void CSSStyleDeclarationImp::copy(const CSSStyleDeclarationImp* parentStyle, unsigned id)
 {
     assert(parentStyle);
     if (!inheritSet.test(id))
@@ -1056,7 +1066,7 @@ void CSSStyleDeclarationImp::copy(CSSStyleDeclarationImp* parentStyle, unsigned 
     }
 }
 
-void CSSStyleDeclarationImp::copyInheritedProperties(CSSStyleDeclarationImp* parentStyle)
+void CSSStyleDeclarationImp::copyInheritedProperties(const CSSStyleDeclarationImp* parentStyle)
 {
     assert(parentStyle);
     for (unsigned id = 1; id < MaxProperties; ++id)
@@ -1336,6 +1346,9 @@ std::u16string CSSStyleDeclarationImp::getCssText()
 
 void CSSStyleDeclarationImp::setCssText(std::u16string cssText)
 {
+    CSSParser parser;
+    parser.setStyleDeclaration(this);
+    parser.parseDeclarations(cssText);
 }
 
 unsigned int CSSStyleDeclarationImp::getLength()
@@ -2638,6 +2651,32 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp() :
     pseudoElements[CSSPseudoElementSelector::NonPseudo] = this;
     for (int i = 1; i < CSSPseudoElementSelector::MaxPseudoElements; ++i)
         pseudoElements[i] = 0;
+}
+
+CSSStyleDeclarationImp::CSSStyleDeclarationImp(const CSSStyleDeclarationImp& other) :
+    owner(0),
+    parentRule(0),
+    resolved(false),
+    box(0),
+    lastBox(0),
+    stackingContext(0),
+    backgroundColor(CSSColorValueImp::Transparent),
+    counterIncrement(1),
+    counterReset(0),
+    borderTop(0),
+    borderRight(1),
+    borderBottom(2),
+    borderLeft(3),
+    marginTop(0.0f, css::CSSPrimitiveValue::CSS_PX),
+    marginRight(0.0f, css::CSSPrimitiveValue::CSS_PX),
+    marginLeft(0.0f, css::CSSPrimitiveValue::CSS_PX),
+    marginBottom(0.0f, css::CSSPrimitiveValue::CSS_PX),
+    minHeight(0.0f, css::CSSPrimitiveValue::CSS_PX),
+    minWidth(0.0f, css::CSSPrimitiveValue::CSS_PX),
+    textIndent(0.0f, css::CSSPrimitiveValue::CSS_PX)
+{
+    for (unsigned id = 1; id < MaxProperties; ++id)
+        copy(&other, id);
 }
 
 const char16_t* CSSStyleDeclarationImp::getPropertyName(int propertyID)

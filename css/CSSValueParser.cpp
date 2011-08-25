@@ -104,6 +104,8 @@ CSSValueRule CSSValueParser::visibility;
 CSSValueRule CSSValueParser::whiteSpace;
 CSSValueRule CSSValueParser::zIndex;
 
+CSSValueRule CSSValueParser::binding;
+
 void CSSValueParser::initializeRules()
 {
     angle = CSSValueRule(CSSValueRule::Angle);
@@ -472,6 +474,33 @@ void CSSValueParser::initializeRules()
     zIndex
         = CSSValueRule(u"auto", 0)
         | integer;
+
+    binding
+        = CSSValueRule(u"none", CSSBindingValueImp::None)
+        | CSSValueRule(u"button", CSSBindingValueImp::Button)
+        | CSSValueRule(u"details", CSSBindingValueImp::Details)
+        | CSSValueRule(u"input-textfield", CSSBindingValueImp::InputTextfield)
+        | CSSValueRule(u"input-password", CSSBindingValueImp::InputPassword)
+        | CSSValueRule(u"input-datetime", CSSBindingValueImp::InputDatetime)
+        | CSSValueRule(u"input-date", CSSBindingValueImp::InputDate)
+        | CSSValueRule(u"input-month", CSSBindingValueImp::InputMonth)
+        | CSSValueRule(u"input-week", CSSBindingValueImp::InputWeek)
+        | CSSValueRule(u"input-time", CSSBindingValueImp::InputTime)
+        | CSSValueRule(u"input-datetime-local", CSSBindingValueImp::InputDatetimeLocal)
+        | CSSValueRule(u"input-number", CSSBindingValueImp::InputNumber)
+        | CSSValueRule(u"input-range", CSSBindingValueImp::InputRange)
+        | CSSValueRule(u"input-color", CSSBindingValueImp::InputColor)
+        | CSSValueRule(u"input-checkbox", CSSBindingValueImp::InputCheckbox)
+        | CSSValueRule(u"input-radio", CSSBindingValueImp::InputRadio)
+        | CSSValueRule(u"input-file", CSSBindingValueImp::InputFile)
+        | CSSValueRule(u"input-button", CSSBindingValueImp::InputButton)
+        | CSSValueRule(u"marquee", CSSBindingValueImp::Marquee)
+        | CSSValueRule(u"meter", CSSBindingValueImp::Meter)
+        | CSSValueRule(u"progress", CSSBindingValueImp::Progress)
+        | CSSValueRule(u"select", CSSBindingValueImp::Select)
+        | CSSValueRule(u"textarea", CSSBindingValueImp::Textarea)
+        | CSSValueRule(u"keygen", CSSBindingValueImp::Keygen)
+        | CSSValueRule(u"time", CSSBindingValueImp::Time);
 }
 
 CSSValueRule::operator std::u16string() const
@@ -969,6 +998,9 @@ CSSValueParser::CSSValueParser(int propertyID) :
         break;
     case CSSStyleDeclarationImp::ZIndex:
         rule = &zIndex;
+        break;
+    case CSSStyleDeclarationImp::Binding:
+        rule = &binding;
         break;
     default:
         rule = 0;

@@ -16,17 +16,18 @@
 
 #include "Box.h"
 
+#include <algorithm>
+#include <new>
+#include <iostream>
+
 #include <Object.h>
 #include <org/w3c/dom/Document.h>
 #include <org/w3c/dom/Element.h>
 #include <org/w3c/dom/Text.h>
+#include <org/w3c/dom/html/HTMLDivElement.h>
 #include <org/w3c/dom/html/HTMLIFrameElement.h>
 #include <org/w3c/dom/html/HTMLImageElement.h>
 #include <org/w3c/dom/html/HTMLInputElement.h>
-
-#include <algorithm>
-#include <new>
-#include <iostream>
 
 #include "CSSSerialize.h"
 #include "CSSStyleDeclarationImp.h"
@@ -302,6 +303,67 @@ void Box::resolveOffset(ViewCSSImp* view)
     if (isAnonymous())
         return;
     resolveOffset(getStyle());
+}
+
+BlockLevelBox* Box::expandBinding(ViewCSSImp* view, Element element, CSSStyleDeclarationImp* style)
+{
+    assert(style->isInlineBlock());
+
+    BlockLevelBox* inlineBlock = 0;
+    switch (style->binding.getValue()) {
+    case CSSBindingValueImp::InputTextfield: {
+        html::HTMLInputElement input = interface_cast<html::HTMLInputElement>(element);
+        html::HTMLDivElement div = interface_cast<html::HTMLDivElement>(view->getDocument().createElement(u"div"));
+        Text text = view->getDocument().createTextNode(input.getValue());
+        if (div && text) {
+            div.appendChild(text);
+            css::CSSStyleDeclaration divStyle = div.getStyle();
+            divStyle.setCssText(u"display: block; border-style: solid; border-width: thin; height: 1.2em");
+            CSSStyleDeclarationImp* imp = dynamic_cast<CSSStyleDeclarationImp*>(divStyle.self());
+            if (imp) {
+                imp->specify(style);
+                imp->specifyImportant(style);
+            }
+            divStyle.setDisplay(u"block");
+            view->cascade(div, style);
+            inlineBlock = view->layOutBlockBoxes(div, 0, 0, 0);
+        }
+        break;
+    }
+    case CSSBindingValueImp::InputButton: {
+        html::HTMLInputElement input = interface_cast<html::HTMLInputElement>(element);
+        html::HTMLDivElement div = interface_cast<html::HTMLDivElement>(view->getDocument().createElement(u"div"));
+        Text text = view->getDocument().createTextNode(input.getValue());
+        if (div && text) {
+            div.appendChild(text);
+            css::CSSStyleDeclaration divStyle = div.getStyle();
+            divStyle.setCssText(u"float: left; border-style: outset; border-width: thin; height: 1.2em");
+            CSSStyleDeclarationImp* imp = dynamic_cast<CSSStyleDeclarationImp*>(divStyle.self());
+            if (imp) {
+                imp->specify(style);
+                imp->specifyImportant(style);
+            }
+            divStyle.setLineHeight(utfconv(std::to_string(style->height.getPx())) + u"px");  // TODO:
+            divStyle.setDisplay(u"block");
+            view->cascade(div, style);
+            inlineBlock = view->layOutBlockBoxes(div, 0, 0, 0);
+        }
+        break;
+    }
+    default:
+        // Create a BlockLevelBox and make it a child of inlineLevelBox.
+        if (inlineBlock = new(std::nothrow) BlockLevelBox(element, style)) {
+            inlineBlock->establishFormattingContext();
+            style->addBox(inlineBlock);
+            BlockLevelBox* childBox = 0;
+            for (Node child = element.getLastChild(); child; child = child.getPreviousSibling()) {
+                if (BlockLevelBox* box = view->layOutBlockBoxes(child, inlineBlock, childBox, style))
+                    childBox = box;
+            }
+        }
+        break;
+    }
+    return inlineBlock;
 }
 
 bool BlockLevelBox::isFloat() const
@@ -659,52 +721,20 @@ void BlockLevelBox::layOutInlineReplaced(ViewCSSImp* view, Node node, Formatting
             if (!src.empty() && !imp->getDocument())
                 iframe.setSrc(src);
         }
-    } else if (tag == u"input") {
-        // TODO: assume text for now...
-        html::HTMLInputElement input = interface_cast<html::HTMLInputElement>(element);
-        Element div = view->getDocument().createElement(u"div");
-        Text text = view->getDocument().createTextNode(input.getValue());
-        if (div && text) {
-            div.appendChild(text);
+    } else if (BlockLevelBox* inlineBlock = expandBinding(view, element, style)) {
+        inlineLevelBox->appendChild(inlineBlock);
+        inlineBlock->layOut(view, context);
+        inlineLevelBox->width = inlineBlock->getTotalWidth();
+        inlineLevelBox->marginLeft = inlineLevelBox->marginRight =
+        inlineLevelBox->borderLeft = inlineLevelBox->borderRight =
+        inlineLevelBox->paddingLeft = inlineLevelBox->paddingRight = 0.0f;
 
-            // Create the shadow DOM style on the fly (TODO: at least for now...)
-            CSSParser parser;
-            parser.parseDeclarations(u"display: block; border-style: solid; border-width: thin;");
-            CSSStyleDeclarationImp* divStyle = parser.getStyleDeclaration();
-            divStyle->compute(view, style, div);
-            divStyle->height.setValue(style->lineHeight.getPx(), css::CSSPrimitiveValue::CSS_PX);
-            view->map[div] = divStyle;
+        inlineLevelBox->height = inlineBlock->getTotalHeight();
+        inlineLevelBox->marginTop = inlineLevelBox->marginBottom =
+        inlineLevelBox->borderTop = inlineLevelBox->borderBottom =
+        inlineLevelBox->paddingTop = inlineLevelBox->paddingBottom = 0.0f;
 
-            if (BlockLevelBox* box = view->layOutBlockBoxes(div, 0, 0, 0)) {
-                inlineLevelBox->appendChild(box);
-                box->layOut(view, context);
-            }
-        }
-    } else {
-        assert(style->isInlineBlock());
-        // Create a BlockLevelBox and make it a child of inlineLevelBox.
-        if (BlockLevelBox* inlineBlock = new(std::nothrow) BlockLevelBox(element, style)) {
-            inlineBlock->establishFormattingContext();
-            style->addBox(inlineBlock);
-            inlineLevelBox->appendChild(inlineBlock);
-            BlockLevelBox* childBox = 0;
-            for (Node child = element.getLastChild(); child; child = child.getPreviousSibling()) {
-                if (BlockLevelBox* box = view->layOutBlockBoxes(child, inlineBlock, childBox, style))
-                    childBox = box;
-            }
-            inlineBlock->layOut(view, context);
-            inlineLevelBox->width = inlineBlock->getTotalWidth();
-            inlineLevelBox->marginLeft = inlineLevelBox->marginRight =
-            inlineLevelBox->borderLeft = inlineLevelBox->borderRight =
-            inlineLevelBox->paddingLeft = inlineLevelBox->paddingRight = 0.0f;
-
-            inlineLevelBox->height = inlineBlock->getTotalHeight();
-            inlineLevelBox->marginTop = inlineLevelBox->marginBottom =
-            inlineLevelBox->borderTop = inlineLevelBox->borderBottom =
-            inlineLevelBox->paddingTop = inlineLevelBox->paddingBottom = 0.0f;
-
-            inlineLevelBox->baseline = inlineBlock->getBlankTop() + inlineBlock->height;
-        }
+        inlineLevelBox->baseline = inlineBlock->getBlankTop() + inlineBlock->height;
     }
 
     // TODO: calc inlineLevelBox->width and height with intrinsic values.

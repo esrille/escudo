@@ -36,7 +36,8 @@ CSSStyleSheet CSSParser::parse(const std::u16string& cssText)
 
 CSSStyleDeclaration CSSParser::parseDeclarations(const std::u16string& cssDecl)
 {
-    styleDeclaration = new(std::nothrow) CSSStyleDeclarationImp;
+    if (!styleDeclaration)
+        styleDeclaration = new(std::nothrow) CSSStyleDeclarationImp;
     if (!styleDeclaration)
         return 0;
     tokenizer.reset(cssDecl, CSSTokenizer::StartDeclarationList);

@@ -43,8 +43,6 @@ class StackingContext;
 
 class ViewCSSImp
 {
-    friend class BlockLevelBox; // TODO just for layOutInlineReplaced for now...
-
     struct PrioritizedDeclaration
     {
         unsigned priority;
@@ -85,11 +83,6 @@ class ViewCSSImp
     void handleMutation(events::Event event);
 
     void findDeclarations(DeclarationSet& set, Element element, css::CSSRuleList list);
-    void cascade(Node node, CSSStyleDeclarationImp* parentStyle = 0);
-
-    BlockLevelBox* layOutBlockBoxes(Node node, BlockLevelBox* parentBox, BlockLevelBox* siblingBox, CSSStyleDeclarationImp* style);
-    BlockLevelBox* layOutBlockBoxes(Text text, BlockLevelBox* parentBox, BlockLevelBox* siblingBox, CSSStyleDeclarationImp* style);
-    BlockLevelBox* layOutBlockBoxes(Element element, BlockLevelBox* parentBox, BlockLevelBox* siblingBox, CSSStyleDeclarationImp* style);
 
 public:
     ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyleSheet);
@@ -100,12 +93,16 @@ public:
     }
 
     void cascade();
+    void cascade(Node node, CSSStyleDeclarationImp* parentStyle = 0);
 
     void preload(const std::u16string& base, const std::u16string& url) {
         if (window)
             window->preload(base, url);
     }
 
+    BlockLevelBox* layOutBlockBoxes(Node node, BlockLevelBox* parentBox, BlockLevelBox* siblingBox, CSSStyleDeclarationImp* style);
+    BlockLevelBox* layOutBlockBoxes(Text text, BlockLevelBox* parentBox, BlockLevelBox* siblingBox, CSSStyleDeclarationImp* style);
+    BlockLevelBox* layOutBlockBoxes(Element element, BlockLevelBox* parentBox, BlockLevelBox* siblingBox, CSSStyleDeclarationImp* style);
     BlockLevelBox* layOutBlockBoxes();
     BlockLevelBox* layOut();
     BlockLevelBox* dump();

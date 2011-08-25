@@ -247,6 +247,34 @@ const char16_t* CSSWhiteSpaceValueImp::Options[] = {
     u"pre-line"
 };
 
+const char16_t* CSSBindingValueImp::Options[] = {
+    u"none",
+    u"button",
+    u"details",
+    u"input-textfield",
+    u"input-password",
+    u"input-datetime",
+    u"input-date",
+    u"input-month",
+    u"input-week",
+    u"input-time",
+    u"input-datetime-local",
+    u"input-number",
+    u"input-range",
+    u"input-color",
+    u"input-checkbox",
+    u"input-radio",
+    u"input-file",
+    u"input-button",
+    u"marquee",
+    u"meter",
+    u"progress",
+    u"select",
+    u"textarea",
+    u"keygen",
+    u"time",
+};
+
 // fullSize is either containingBlock->width or containingBlock->height
 void CSSNumericValueImp::compute(ViewCSSImp* view, float fullSize, const CSSFontSizeValueImp& fontSize) {
     float w;
@@ -467,7 +495,7 @@ std::u16string CSSBackgroundShorthandImp::getCssText(CSSStyleDeclarationImp* dec
            decl->backgroundPosition.getCssText(decl);
 }
 
-void CSSBackgroundShorthandImp::specify(CSSStyleDeclarationImp* self, CSSStyleDeclarationImp* decl)
+void CSSBackgroundShorthandImp::specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl)
 {
     self->backgroundColor.specify(decl->backgroundColor);
     self->backgroundImage.specify(decl->backgroundImage);
@@ -529,7 +557,7 @@ std::u16string CSSBorderColorShorthandImp::getCssText(CSSStyleDeclarationImp* de
     return decl->borderTopColor.getCssText(decl);
 }
 
-void CSSBorderColorShorthandImp::specify(CSSStyleDeclarationImp* self, CSSStyleDeclarationImp* decl)
+void CSSBorderColorShorthandImp::specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl)
 {
     self->borderTopColor.specify(decl->borderTopColor);
     self->borderRightColor.specify(decl->borderRightColor);
@@ -580,7 +608,7 @@ std::u16string CSSBorderStyleShorthandImp::getCssText(CSSStyleDeclarationImp* de
     return decl->borderTopStyle.getCssText(decl);
 }
 
-void CSSBorderStyleShorthandImp::specify(CSSStyleDeclarationImp* self, CSSStyleDeclarationImp* decl)
+void CSSBorderStyleShorthandImp::specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl)
 {
     self->borderTopStyle.specify(decl->borderTopStyle);
     self->borderRightStyle.specify(decl->borderRightStyle);
@@ -674,7 +702,7 @@ std::u16string CSSBorderWidthShorthandImp::getCssText(CSSStyleDeclarationImp* de
     return decl->borderTopWidth.getCssText(decl);
 }
 
-void CSSBorderWidthShorthandImp::specify(CSSStyleDeclarationImp* self, CSSStyleDeclarationImp* decl)
+void CSSBorderWidthShorthandImp::specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl)
 {
     self->borderTopWidth.specify(decl->borderTopWidth);
     self->borderRightWidth.specify(decl->borderRightWidth);
@@ -818,7 +846,7 @@ std::u16string CSSBorderValueImp::getCssText(CSSStyleDeclarationImp* decl)
     }
 }
 
-void CSSBorderValueImp::specify(CSSStyleDeclarationImp* self, CSSStyleDeclarationImp* decl)
+void CSSBorderValueImp::specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl)
 {
     switch (index) {
     case 0:
@@ -880,7 +908,7 @@ std::u16string CSSBorderShorthandImp::getCssText(CSSStyleDeclarationImp* decl)
            decl->borderColor.getCssText(decl);
 }
 
-void CSSBorderShorthandImp::specify(CSSStyleDeclarationImp* self, CSSStyleDeclarationImp* decl)
+void CSSBorderShorthandImp::specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl)
 {
     self->borderWidth.specify(self, decl);
     self->borderStyle.specify(self, decl);
@@ -1210,7 +1238,7 @@ std::u16string CSSMarginShorthandImp::getCssText(CSSStyleDeclarationImp* decl)
     return decl->marginTop.getCssText(decl);
 }
 
-void CSSMarginShorthandImp::specify(CSSStyleDeclarationImp* self, CSSStyleDeclarationImp* decl)
+void CSSMarginShorthandImp::specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl)
 {
     self->marginTop.specify(decl->marginTop);
     self->marginRight.specify(decl->marginRight);
@@ -1261,7 +1289,7 @@ std::u16string CSSPaddingShorthandImp::getCssText(CSSStyleDeclarationImp* decl)
     return decl->paddingTop.getCssText(decl);
 }
 
-void CSSPaddingShorthandImp::specify(CSSStyleDeclarationImp* self, CSSStyleDeclarationImp* decl)
+void CSSPaddingShorthandImp::specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl)
 {
     self->paddingTop.specify(decl->paddingTop);
     self->paddingRight.specify(decl->paddingRight);

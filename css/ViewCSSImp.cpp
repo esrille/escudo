@@ -37,7 +37,7 @@ namespace {
 bool isReplacedElement(Element& element)
 {
     std::u16string tag = element.getLocalName();  // TODO: Check HTML namespace
-    if (tag == u"img" || tag == u"iframe" || tag == u"video" || tag == u"input")  // TODO: more tags to come...
+    if (tag == u"img" || tag == u"iframe" || tag == u"video")  // TODO: more tags to come...
         return true;
     return false;
 }
@@ -246,7 +246,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
             return 0;  // TODO: error
         style->addBox(currentBox);
         // Do not insert currentBox into parentBox
-    } else if (runIn || style->display.isBlockLevel()) {
+    } else if (style->isBlockLevel() || runIn) {
         // Create a temporary block-level box for the run-in box, too.
         if (parentBox && parentBox->hasInline()) {
             if (!parentBox->getAnonymousBox())
@@ -270,7 +270,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
             if (!currentBox->establishFormattingContext())
                 return 0;  // TODO error
         }
-    } else if (isReplacedElement(element) || style->isInlineBlock()) {
+    } else if (style->isInlineBlock() || isReplacedElement(element)) {
         assert(currentBox);
         if (!currentBox->hasChildBoxes())
             currentBox->insertInline(element);
