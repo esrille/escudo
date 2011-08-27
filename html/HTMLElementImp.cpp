@@ -134,51 +134,47 @@ std::u16string HTMLElementImp::getId()
 
 void HTMLElementImp::setId(std::u16string id)
 {
-    // TODO: implement me!
+    setAttribute(u"id", id);
 }
 
 std::u16string HTMLElementImp::getTitle()
 {
-    // TODO: implement me!
-    return u"";
+    return getAttribute(u"title");
 }
 
 void HTMLElementImp::setTitle(std::u16string title)
 {
-    // TODO: implement me!
+    setAttribute(u"title", title);
 }
 
 std::u16string HTMLElementImp::getLang()
 {
-    // TODO: implement me!
-    return u"";
+    return getAttribute(u"lang");
 }
 
 void HTMLElementImp::setLang(std::u16string lang)
 {
-    // TODO: implement me!
+    setAttribute(u"lang", lang);
 }
 
 std::u16string HTMLElementImp::getDir()
 {
-    // TODO: implement me!
-    return u"";
+    return getAttribute(u"dir");
 }
 
 void HTMLElementImp::setDir(std::u16string dir)
 {
-    // TODO: implement me!
+    setAttribute(u"dir", dir);
 }
 
 std::u16string HTMLElementImp::getClassName()
 {
-    // TODO: implement me!
-    return u"";
+    return getAttribute(u"class");
 }
 
 void HTMLElementImp::setClassName(std::u16string className)
 {
-    // TODO: implement me!
+    setAttribute(u"class", className);
 }
 
 DOMTokenList HTMLElementImp::getClassList()
