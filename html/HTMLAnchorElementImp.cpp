@@ -32,6 +32,8 @@ namespace bootstrap
 
 void HTMLAnchorElementImp::handleClick(events::Event event)
 {
+    if (event.getDefaultPrevented())
+        return;
     std::u16string href = getHref();
     if (!href.empty())
         getOwnerDocument().setLocation(href);
