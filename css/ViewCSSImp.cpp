@@ -30,6 +30,8 @@
 #include "Box.h"
 #include "StackingContext.h"
 
+#include "Test.util.h"
+
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 namespace {
@@ -117,6 +119,8 @@ void ViewCSSImp::cascade()
     delete stackingContexts;
     stackingContexts = 0;
     cascade(getDocument(), 0);
+
+    printComputedValues(getDocument(), this);  // for debug
 }
 
 void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle)
@@ -124,6 +128,7 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle)
     CSSStyleDeclarationImp* style = 0;
     if (node.getNodeType() == Node::ELEMENT_NODE) {
         Element element = interface_cast<Element>(node);
+
         style = new(std::nothrow) CSSStyleDeclarationImp;
         if (!style) {
             map.erase(element);
@@ -230,7 +235,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Text text, BlockLevelBox* parentBox,
     return 0;
 }
 
-BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* parentBox, BlockLevelBox* siblingBox, CSSStyleDeclarationImp* style)
+BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* parentBox, BlockLevelBox* siblingBox, CSSStyleDeclarationImp* style, bool asBlock)
 {
     style = map[element].get();
     if (!style || style->display.isNone())
@@ -246,7 +251,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
             return 0;  // TODO: error
         style->addBox(currentBox);
         // Do not insert currentBox into parentBox
-    } else if (style->isBlockLevel() || runIn) {
+    } else if (style->isBlockLevel() || runIn || asBlock) {
         // Create a temporary block-level box for the run-in box, too.
         if (parentBox && parentBox->hasInline()) {
             if (!parentBox->getAnonymousBox())
@@ -346,11 +351,21 @@ BlockLevelBox* ViewCSSImp::layOut()
         return 0;
     // Expand line boxes and inline-level boxes in each block-level box
     boxTree->layOut(this, 0);
-    // Lay out absolute boxes
-    for (auto i = floatMap.begin(); i != floatMap.end(); ++i) {
-        if (i->second->isAbsolutelyPositioned())
-            i->second->layOutAbsolute(this, i->first);
+
+    // Lay out absolute boxes.
+    // Since absolute boxes could be created by layOutAbsolute() itself,
+    // we cannot simply iterate over floatMap.
+    // TODO: refine the code
+    std::map<Node, BlockLevelBoxPtr> tmp;
+    while (!floatMap.empty()) {
+        auto i = floatMap.begin();
+        BlockLevelBoxPtr box = i->second;
+        if (box->isAbsolutelyPositioned())
+            box->layOutAbsolute(this, i->first);
+        tmp.insert(*i);
+        floatMap.erase(i);
     }
+    floatMap.swap(tmp);
     if (stackingContexts) {
         stackingContexts->eval();
         stackingContexts->dump();

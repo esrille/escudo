@@ -307,7 +307,10 @@ void Box::resolveOffset(ViewCSSImp* view)
 
 BlockLevelBox* Box::expandBinding(ViewCSSImp* view, Element element, CSSStyleDeclarationImp* style)
 {
-    assert(style->isInlineBlock());
+    if (!style->isInlineBlock()) {
+        // TODO: This line should not be reached but currently it is as absolute boxes are created lazily.
+        return 0;
+    }
 
     BlockLevelBox* inlineBlock = 0;
     switch (style->binding.getValue()) {
@@ -352,15 +355,7 @@ BlockLevelBox* Box::expandBinding(ViewCSSImp* view, Element element, CSSStyleDec
     }
     default:
         // Create a BlockLevelBox and make it a child of inlineLevelBox.
-        if (inlineBlock = new(std::nothrow) BlockLevelBox(element, style)) {
-            inlineBlock->establishFormattingContext();
-            style->addBox(inlineBlock);
-            BlockLevelBox* childBox = 0;
-            for (Node child = element.getLastChild(); child; child = child.getPreviousSibling()) {
-                if (BlockLevelBox* box = view->layOutBlockBoxes(child, inlineBlock, childBox, style))
-                    childBox = box;
-            }
-        }
+        inlineBlock = view->layOutBlockBoxes(element, 0, 0, 0, true);
         break;
     }
     return inlineBlock;
@@ -383,12 +378,14 @@ bool BlockLevelBox::isAbsolutelyPositioned() const
 
 void BlockLevelBox::dump(ViewCSSImp* view, std::string indent)
 {
-    std::cout << indent << "* block-level box (" << static_cast<void*>(this) << ") [";
-    if (node)
-        std::cout << node.getNodeName();
-    else
-        std::cout << "anonymous";
-    std::cout << "] (" << x << ", " << y << "), (" << getTotalWidth() << ", " << getTotalHeight() << ") " <<
+    std::cout << indent << "* block-level box (" << static_cast<void*>(this);
+    if (!node)
+        std::cout << ") [anonymous]";
+    else {
+        std::cout << ':' << node.self() << ')';
+        std::cout << " [" << node.getNodeName() << ']';
+    }
+    std::cout << " (" << x << ", " << y << "), (" << getTotalWidth() << ", " << getTotalHeight() << ") " <<
     "m:" << marginTop << '-' << marginRight << '-' << marginBottom << '-' << marginLeft << ' ' <<
     "p:" << paddingTop << '-' <<  paddingRight << '-'<< paddingBottom<< '-' << paddingLeft << ' ' <<
     "b:" << borderTop << '-' <<  borderRight << '-' << borderBottom<< '-' << borderLeft << '\n';
@@ -738,7 +735,8 @@ void BlockLevelBox::layOutInlineReplaced(ViewCSSImp* view, Node node, Formatting
         inlineLevelBox->paddingTop = inlineLevelBox->paddingBottom = 0.0f;
 
         inlineLevelBox->baseline = inlineBlock->getBlankTop() + inlineBlock->height;
-    }
+    } else
+        return;  // TODO
 
     // TODO: calc inlineLevelBox->width and height with intrinsic values.
     if (inlineLevelBox->baseline == 0.0f)
@@ -1148,14 +1146,14 @@ unsigned BlockLevelBox::resolveAbsoluteWidth(const ContainingBlock* containingBl
 void BlockLevelBox::layOutAbsolute(ViewCSSImp* view, Node node)
 {
     assert(isAbsolutelyPositioned());
-    setContainingBlock(view);
-    const ContainingBlock* containingBlock = &absoluteBlock;
-
     Element element = getContainingElement(node);
     if (!element)
         return;  // TODO error
     if (!style)
         return;  // TODO error
+
+    setContainingBlock(view);
+    const ContainingBlock* containingBlock = &absoluteBlock;
 
     style->resolve(view, containingBlock, element);
     float right;
@@ -1234,7 +1232,10 @@ void LineBox::realignText(BlockLevelBox* parentBox, float shrink)
 
 void InlineLevelBox::toViewPort(const Box* box, float& x, float& y) const
 {
-    //assert(0);
+    // In the case of the inline-block, InlineLevelBox holds a block-level box
+    // as its only child.
+    if (Box* box = getParentBox())
+        box->toViewPort(this, x, y);
 }
 
 bool InlineLevelBox::isAnonymous() const
