@@ -207,7 +207,7 @@ float FontTexture::measureText(const char16_t* text, float point)
     return width / 64.0f * point / this->point;
 }
 
-size_t FontTexture::fitText(const char16_t* text, size_t length, float point, float& leftover)
+size_t FontTexture::fitText(const char16_t* text, size_t length, float point, float& leftover, size_t* next, float* required)
 {
     const float scale = point / this->point / 64.0f;
     char32_t u;
@@ -224,8 +224,13 @@ size_t FontTexture::fitText(const char16_t* text, size_t length, float point, fl
             advance += glyph->advance;
         }
         advance *= scale;
-        if (leftover < advance)
+        if (leftover < advance) {
+            if (next)
+                *next = pos;
+            if (required)
+                *required = advance;
             break;
+        }
         leftover -= advance;
         posLast = pos;
     }
