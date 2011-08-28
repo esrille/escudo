@@ -245,6 +245,10 @@ void BlockLevelBox::setContainingBlock(ViewCSSImp* view)
                         absoluteBlock.height = t - b;
                     }
                 }
+
+                // TODO: overflow
+                absoluteBlock.width = view->getInitialContainingBlock()->width - x;
+
                 offsetH += l;
                 offsetV += t;
                 return;
@@ -599,6 +603,8 @@ void BlockLevelBox::layOutText(ViewCSSImp* view, Text text, FormattingContext* c
         size_t length;
         bool linefeed;
         linefeed = false;
+        size_t next = 1;
+        float required = 0.0f;
         do {
             advanced = context->leftover;
             if (data[0] == '\n') {
@@ -607,16 +613,17 @@ void BlockLevelBox::layOutText(ViewCSSImp* view, Text text, FormattingContext* c
                 advanced = 0.0f;
                 break;
             }
-            length = font->fitText(data.c_str(), fitLength, point, context->leftover);
+            length = font->fitText(data.c_str(), fitLength, point, context->leftover, &next, &required);
             if (0 < length) {
                 advanced -= context->leftover;
                 break;
             }
         } while (context->shiftDownLineBox());
-
-        // TODO: deal with overflow in a better way than the following two line:
-        if (length == 0)
-            length = data.length();
+        if (length == 0) {
+            context->leftover -= required;
+            advanced -= context->leftover;
+            length = next;
+        }
 
         if (!linefeed) {
             inlineLevelBox->setData(font, point, data.substr(0, length));
@@ -951,8 +958,11 @@ void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
 
     if (hasInline())
         layOutInline(view, context);
-    for (Box* child = getFirstChild(); child; child = child->getNextSibling())
+    for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
         child->layOut(view, context);
+        // TODO: overflow
+        width = std::max(width, child->getTotalWidth());
+    }
 
     if ((style->isInlineBlock() || style->isFloat()) && style->width.isAuto())
         shrinkToFit();
@@ -985,13 +995,27 @@ void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     }
 
     // Now that 'height' is fixed, calculate 'left', 'right', 'top', and 'bottom'.
-    for (Box* child = getFirstChild(); child; child = child->getNextSibling())
+    for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
         child->resolveOffset(view);
+        child->adjustWidth();
+    }
 
     if (backgroundImage && backgroundImage->getState() == BoxImage::CompletelyAvailable) {
         style->backgroundPosition.compute(view, backgroundImage, style->fontSize, getPaddingWidth(), getPaddingHeight());
         backgroundLeft = style->backgroundPosition.getLeftPx();
         backgroundTop = style->backgroundPosition.getTopPx();
+    }
+}
+
+void BlockLevelBox::adjustWidth()
+{
+    if (parentBox) {
+        float diff = parentBox->width - getTotalWidth();
+        if (0.0f < diff) {
+            width += diff;
+            for (Box* child = getFirstChild(); child; child = child->getNextSibling())
+                child->adjustWidth();
+        }
     }
 }
 
@@ -1165,8 +1189,11 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view, Node node)
 
     if (hasInline())
         layOutInline(view, context);
-    for (Box* child = getFirstChild(); child; child = child->getNextSibling())
+    for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
         child->layOut(view, context);
+        // TODO: overflow
+        width = std::max(width, child->getTotalWidth());
+    }
 
     if (autoMask & Width) {
         shrinkToFit();
@@ -1186,8 +1213,10 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view, Node node)
     }
 
     // Now that 'height' is fixed, calculate 'left', 'right', 'top', and 'bottom'.
-    for (Box* child = getFirstChild(); child; child = child->getNextSibling())
+    for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
         child->resolveOffset(view);
+        child->adjustWidth();
+    }
 }
 
 void LineBox::layOut(ViewCSSImp* view, FormattingContext* context)

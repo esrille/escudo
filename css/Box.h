@@ -328,6 +328,8 @@ public:
     void resolveOffset(CSSStyleDeclarationImp* style);
     virtual void resolveOffset(ViewCSSImp* view);
 
+    virtual void adjustWidth() {}
+
     virtual void layOut(ViewCSSImp* view, FormattingContext* context) {}
 
     virtual void render(ViewCSSImp* view) = 0;
@@ -466,6 +468,7 @@ public:
     BlockLevelBox* getAnonymousBox();
 
     void resolveWidth(ViewCSSImp* view, const ContainingBlock* containingBlock, float available = 0);
+    virtual void adjustWidth();
     virtual void layOut(ViewCSSImp* view, FormattingContext* context);
     virtual void render(ViewCSSImp* view);
     virtual void dump(ViewCSSImp* view, std::string indent = "");
