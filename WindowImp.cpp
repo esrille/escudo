@@ -106,7 +106,6 @@ void WindowImp::refreshView()
     if (!view)
         return;
     view->cascade();
-    printComputedValues(window->getDocument(), view);  // for debug
     view->setSize(width, height);
     boxTree = view->layOut();
 
@@ -1393,14 +1392,16 @@ void WindowImp::setOnwaiting(html::Function onwaiting)
 
 css::CSSStyleDeclaration WindowImp::getComputedStyle(Element elt)
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    if (!view)
+        return 0;
+    return view->getStyle(elt);
 }
 
 css::CSSStyleDeclaration WindowImp::getComputedStyle(Element elt, std::u16string pseudoElt)
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    if (!view)
+        return 0;
+    return view->getStyle(elt, pseudoElt);
 }
 
 html::MediaQueryList WindowImp::matchMedia(std::u16string media_query_list)
