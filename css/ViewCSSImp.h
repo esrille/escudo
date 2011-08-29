@@ -178,6 +178,8 @@ public:
     // length
     float getPx(CSSNumericValue& n, float reference = 0.0f) {
         switch (n.unit) {
+        case css::CSSPrimitiveValue::CSS_NUMBER:
+            return n.number;
         case css::CSSPrimitiveValue::CSS_PERCENTAGE:
             return reference * n.number / 100.0f;
         case css::CSSPrimitiveValue::CSS_EMS:
@@ -196,8 +198,7 @@ public:
         case css::CSSPrimitiveValue::CSS_PC:
             return n.number * 12 / 72 * dpi;
         default:
-            // TODO: error
-            return 0.0f;
+            return NAN;  // TODO: error
         }
     }
     float getPointFromPx(float px) {

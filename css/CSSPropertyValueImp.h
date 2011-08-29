@@ -27,6 +27,7 @@
 #include <org/w3c/dom/Element.h>
 
 #include <assert.h>  // TODO
+#include <math.h>
 
 #include "CSSValueParser.h"
 #include "CSSSerialize.h"
@@ -73,6 +74,7 @@ struct CSSNumericValue
         return *this;
     }
     CSSNumericValue& setValue(float number, unsigned short unit = css::CSSPrimitiveValue::CSS_NUMBER) {
+        assert(!isnan(number));
         this->unit = unit;
         this->index = -1;
         this->number = number;

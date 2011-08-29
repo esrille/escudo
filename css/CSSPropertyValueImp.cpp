@@ -279,6 +279,8 @@ const char16_t* CSSBindingValueImp::Options[] = {
 void CSSNumericValueImp::compute(ViewCSSImp* view, float fullSize, const CSSFontSizeValueImp& fontSize) {
     float w;
     switch (value.unit) {
+    case CSSParserTerm::CSS_TERM_INDEX:
+        return;
     case css::CSSPrimitiveValue::CSS_PERCENTAGE:
         w = view->getPx(value, fullSize);
         break;
@@ -616,7 +618,9 @@ void CSSBorderStyleShorthandImp::specify(CSSStyleDeclarationImp* self, const CSS
     self->borderLeftStyle.specify(decl->borderLeftStyle);
 }
 
-void CSSBorderWidthValueImp::compute(ViewCSSImp* view, const ContainingBlock* containingBlock, const CSSBorderStyleValueImp& borderStyle, const CSSFontSizeValueImp& fontSize) {    switch (borderStyle.getValue()) {
+void CSSBorderWidthValueImp::compute(ViewCSSImp* view, const ContainingBlock* containingBlock, const CSSBorderStyleValueImp& borderStyle, const CSSFontSizeValueImp& fontSize)
+{
+    switch (borderStyle.getValue()) {
     case CSSBorderStyleValueImp::None:
     case CSSBorderStyleValueImp::Hidden:
         width.setValue(0.0f, css::CSSPrimitiveValue::CSS_PX);
@@ -1300,6 +1304,8 @@ void CSSPaddingShorthandImp::specify(CSSStyleDeclarationImp* self, const CSSStyl
 void CSSVerticalAlignValueImp::compute(ViewCSSImp* view, const CSSFontSizeValueImp& fontSize, const CSSLineHeightValueImp& lineHeight) {
     float w;
     switch (value.unit) {
+    case CSSParserTerm::CSS_TERM_INDEX:
+        return;
     case css::CSSPrimitiveValue::CSS_PERCENTAGE:
         w = view->getPx(value, lineHeight.getPx());
         break;
