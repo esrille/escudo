@@ -36,6 +36,8 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class ContainingBlock;
 class BoxImage;
+class LineBox;
+class InlineLevelBox;
 class CSSStyleDeclarationImp;
 class ViewCSSImp;
 
@@ -1459,6 +1461,7 @@ public:
         value.specify(specified.value);
     }
     void compute(ViewCSSImp* view, const CSSFontSizeValueImp& fontSize, const CSSLineHeightValueImp& lineHeight);
+    float getOffset(LineBox* line, InlineLevelBox* text) const;
     CSSVerticalAlignValueImp() :
         value(Baseline) {
     }

@@ -20,6 +20,7 @@
 
 #include "CSSStyleDeclarationImp.h"
 #include "ViewCSSImp.h"
+#include "Box.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -1321,5 +1322,28 @@ void CSSVerticalAlignValueImp::compute(ViewCSSImp* view, const CSSFontSizeValueI
     }
     value.setValue(w, css::CSSPrimitiveValue::CSS_PX);
 }
+
+float CSSVerticalAlignValueImp::getOffset(LineBox* line, InlineLevelBox* text) const
+{
+    switch (value.getIndex()) {
+    case Top:
+        return 0.0f;
+    case Baseline:
+        return line->getBaseline() - text->getBaseline();
+    case Bottom:
+        return line->getHeight() - text->getHeight();
+    case Sub:
+    case Super:
+    case TextTop:
+    case Middle:
+    case TextBottom:
+        // TODO: implement me!
+        return line->getBaseline() - text->getBaseline();
+    default:
+        assert(value.unit == css::CSSPrimitiveValue::CSS_PX);
+        return line->getBaseline() - text->getBaseline() - value.getPx();
+    }
+}
+
 
 }}}}  // org::w3c::bootstrap

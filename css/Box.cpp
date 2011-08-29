@@ -1221,14 +1221,14 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view, Node node)
 
 void LineBox::layOut(ViewCSSImp* view, FormattingContext* context)
 {
-    // Process 'vertical-align'
-    // TODO: assume baseline for now
     for (Box* box = getFirstChild(); box; box = box->getNextSibling()) {
         if (box->isAbsolutelyPositioned())
             continue;
         box->resolveOffset(view);
-        if (InlineLevelBox* inlineBox = dynamic_cast<InlineLevelBox*>(box))
-            inlineBox->marginTop += getBaseline() - inlineBox->getBaseline();
+        if (InlineLevelBox* inlineBox = dynamic_cast<InlineLevelBox*>(box)) {
+            if (CSSStyleDeclarationImp* style = box->getStyle())
+                inlineBox->offsetV += style->verticalAlign.getOffset(this, inlineBox);
+        }
     }
 }
 

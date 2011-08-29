@@ -58,6 +58,13 @@ public:
 
     float width;
     float height;
+
+    float getWidth() const {
+        return width;
+    }
+    float getHeight() const {
+        return height;
+    }
 };
 
 class FormattingContext
