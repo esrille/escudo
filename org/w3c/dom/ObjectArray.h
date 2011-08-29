@@ -103,11 +103,11 @@ public:
     }
     static bool hasInstance(Object& object)
     {
-        return static_cast<bool>(object.message_(0, getPrefixedName(), IS_KIND_OF_, 0));
+        return object.message_(0, getPrefixedName(), IS_KIND_OF_, 0).toBoolean();
     }
     static bool hasInstance(Object* object)
     {
-        return object && static_cast<bool>(object->message_(0, getPrefixedName(), IS_KIND_OF_, 0));
+        return object && object->message_(0, getPrefixedName(), IS_KIND_OF_, 0).toBoolean();
     }
 };
 

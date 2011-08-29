@@ -169,7 +169,7 @@ bool hasProperty(ObjectImp* native, const std::u16string& name)
         return false;
     // It seems specialGetter, etc. are not called for predefined properties; so just check operatons.
     Any result = native->message_(hash, 0, Object::HAS_OPERATION_, 0);
-    return static_cast<bool>(result);
+    return result.toBoolean();
 }
 
 std::u16string toString(JSContext* cx, jsid id)
@@ -191,7 +191,7 @@ JSBool specialOp(JSContext* cx, JSObject* obj, jsid id, jsval* vp, int argc)
     else if (JSID_IS_STRING(id)) {
         std::u16string name = toString(cx, id);
         if (hasProperty(native, name))
-                return JS_PropertyStub(cx, obj, id, vp);
+            return JS_PropertyStub(cx, obj, id, vp);
         argument = name;
     } else
         return JS_PropertyStub(cx, obj, id, vp);
