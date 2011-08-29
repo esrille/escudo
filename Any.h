@@ -202,7 +202,23 @@ private:
     }
 
     template<typename T>
-    T cast(typename std::enable_if<std::is_arithmetic<T>::value>::type* = 0) const {
+    T cast(typename std::enable_if<std::is_same<bool, T>::value>::type* = 0) const {
+        return toBoolean();
+    }
+
+    template<typename T>
+    T cast(typename std::enable_if<std::is_same<std::u16string, T>::value>::type* = 0) const {
+        return toString();
+    }
+
+    template<typename T>
+    T cast(typename std::enable_if<std::is_base_of<Object, T>::value>::type* = 0) const {
+        return toObject();
+    }
+
+    template<typename T>
+    T cast(typename std::enable_if<std::is_arithmetic<T>::value>::type* = 0,
+           typename std::enable_if<!std::is_same<bool, T>::value>::type* = 0) const {
         switch (type) {
         case Bool:
         case Int32:
@@ -223,16 +239,9 @@ private:
     }
 
     template<typename T>
-    const T cast(typename std::enable_if<std::is_base_of<Object, T>::value>::type* = 0) const {
-        if (isObject())
-            return toObject();
-        if (type == Null)
-            return 0;
-        throw std::bad_cast();
-    }
-
-    template<typename T>
-    const T cast(typename std::enable_if<!std::is_base_of<Object, T>::value && !std::is_arithmetic<T>::value>::type* = 0) const {
+    T cast(typename std::enable_if<!std::is_base_of<Object, T>::value>::type* = 0,
+           typename std::enable_if<!std::is_same<std::u16string, T>::value>::type* = 0,
+           typename std::enable_if<!std::is_arithmetic<T>::value>::type* = 0) const {
         if (type == Dynamic && vtable->getType() == typeid(T))
             return *reinterpret_cast<const T*>(&heap);
         throw std::bad_cast();
