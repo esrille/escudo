@@ -35,6 +35,7 @@
 #include "html/HTMLBRElementImp.h"
 #include "html/HTMLButtonElementImp.h"
 #include "html/HTMLCanvasElementImp.h"
+#include "html/HTMLCollectionImp.h"
 #include "html/HTMLCommandElementImp.h"
 #include "html/HTMLDataListElementImp.h"
 #include "html/HTMLDetailsElementImp.h"
@@ -579,8 +580,40 @@ std::u16string DocumentImp::getReadyState()
 
 Any DocumentImp::getElement(std::u16string name)
 {
-    // TODO: implement me!
-    return 0;
+    Element e = getDocumentElement();
+    if (!e)
+        return 0;
+    ElementImp* i = dynamic_cast<ElementImp*>(e.self());
+    if (!i)
+        return 0;
+    HTMLCollectionImp* collection = new(std::nothrow) HTMLCollectionImp;
+    if (!collection)
+        return 0;
+    std::u16string tag;
+    while (i) {
+        tag = i->getTagName();
+        // TODO: check applet, embed, and object, too.
+        if (tag == u"form" || tag == u"iframe" || tag == u"img") {
+            Nullable<std::u16string> n = i->getAttribute(u"name");
+            if (n.hasValue() && name == n.value())
+                collection->addItem(name, i);
+        }
+        i = i->getNextElement();
+    }
+    switch (collection->getLength()) {
+    case 0:
+        delete collection;
+        return 0;
+    case 1:
+        e = collection->item(0);
+        delete collection;
+        if (tag == u"iframe")
+            return interface_cast<html::HTMLIFrameElement>(e).getContentWindow();
+        else
+            return e;
+    default:
+        return collection;
+    }
 }
 
 std::u16string DocumentImp::getTitle()
