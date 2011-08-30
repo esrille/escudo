@@ -52,7 +52,7 @@ public:
     ElementImp(ElementImp* org, bool deep);
 
     void setAttributes(const std::deque<Attr>& attributes);
-    ElementImp* getNextElement();
+    ElementImp* getNextElement(ElementImp* root = 0);
 
     // Node
     virtual unsigned short getNodeType();

@@ -64,21 +64,21 @@ void ElementImp::setAttributes(const std::deque<Attr>& attributes)
     }
 }
 
-ElementImp* ElementImp::getNextElement()
+ElementImp* ElementImp::getNextElement(ElementImp* root)
 {
     NodeImp* n = this;
     for (auto i = n->firstChild; i; i = i->nextSibling) {
         if (i->getNodeType() == Node::ELEMENT_NODE)
             return dynamic_cast<ElementImp*>(i);
     }
-    do {
+    while (n != root) {
         while (n->nextSibling) {
             n = n->nextSibling;
             if (n->getNodeType() == Node::ELEMENT_NODE)
                 return dynamic_cast<ElementImp*>(n);
         }
         n = n->parentNode;
-    } while (n);
+    }
     return 0;
 }
 
