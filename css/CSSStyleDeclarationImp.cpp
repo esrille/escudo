@@ -1100,18 +1100,6 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
         }
     }
 
-    switch (htmlAlign.getValue()) {
-    case HTMLAlignValueImp::Left:
-        textAlign.setValue(CSSTextAlignValueImp::Left);
-        break;
-    case HTMLAlignValueImp::Center:
-        textAlign.setValue(CSSTextAlignValueImp::Center);
-        break;
-    case HTMLAlignValueImp::Right:
-        textAlign.setValue(CSSTextAlignValueImp::Right);
-        break;
-    }
-
     if (isFloat() || isAbsolutelyPositioned() || !parentStyle)  // TODO or the contents of atomic inline-level descendants such as inline blocks and inline tables.
         textDecorationContext.update(this);
     else if (parentStyle->textDecorationContext.hasDecoration())
@@ -1181,7 +1169,19 @@ void CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* co
                     break;
                 }
             }
-
+            if (!propertySet.test(TextAlign)) {
+                switch (htmlAlign.getValue()) {
+                case HTMLAlignValueImp::Left:
+                    textAlign.setValue(CSSTextAlignValueImp::Left);
+                    break;
+                case HTMLAlignValueImp::Center:
+                    textAlign.setValue(CSSTextAlignValueImp::Center);
+                    break;
+                case HTMLAlignValueImp::Right:
+                    textAlign.setValue(CSSTextAlignValueImp::Right);
+                    break;
+                }
+            }
         }
     }
 
