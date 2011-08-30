@@ -325,7 +325,7 @@ BlockLevelBox* Box::expandBinding(ViewCSSImp* view, Element element, CSSStyleDec
         if (div && text) {
             div.appendChild(text);
             css::CSSStyleDeclaration divStyle = div.getStyle();
-            divStyle.setCssText(u"display: block; border-style: solid; border-width: thin; height: 1.2em");
+            divStyle.setCssText(u"display: block; border-style: solid; border-width: thin; height: 1.2em; text-align: left");
             CSSStyleDeclarationImp* imp = dynamic_cast<CSSStyleDeclarationImp*>(divStyle.self());
             if (imp) {
                 imp->specify(style);
@@ -344,7 +344,7 @@ BlockLevelBox* Box::expandBinding(ViewCSSImp* view, Element element, CSSStyleDec
         if (div && text) {
             div.appendChild(text);
             css::CSSStyleDeclaration divStyle = div.getStyle();
-            divStyle.setCssText(u"float: left; border-style: outset; border-width: thin; height: 1.2em; padding: 0 0.5em");
+            divStyle.setCssText(u"float: left; border-style: outset; border-width: thin; height: 1.2em; padding: 0 0.5em; text-align: center");
             CSSStyleDeclarationImp* imp = dynamic_cast<CSSStyleDeclarationImp*>(divStyle.self());
             if (imp) {
                 imp->specify(style);
