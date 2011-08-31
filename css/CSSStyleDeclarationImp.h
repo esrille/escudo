@@ -256,7 +256,10 @@ public:
     CSSBorderColorShorthandImp borderColor;
     CSSBorderSpacingValueImp borderSpacing;
     CSSBorderStyleShorthandImp borderStyle;
-
+    CSSBorderValueImp borderTop;
+    CSSBorderValueImp borderRight;
+    CSSBorderValueImp borderBottom;
+    CSSBorderValueImp borderLeft;
     CSSColorValueImp borderTopColor;
     CSSColorValueImp borderRightColor;
     CSSColorValueImp borderBottomColor;
@@ -270,10 +273,6 @@ public:
     CSSBorderWidthValueImp borderBottomWidth;
     CSSBorderWidthValueImp borderLeftWidth;
     CSSBorderWidthShorthandImp borderWidth;
-    CSSBorderValueImp borderTop;
-    CSSBorderValueImp borderRight;
-    CSSBorderValueImp borderBottom;
-    CSSBorderValueImp borderLeft;
     CSSBorderShorthandImp border;
     CSSAutoLengthValueImp bottom;
 
@@ -299,10 +298,10 @@ public:
     CSSLineHeightValueImp lineHeight;
 
     CSSListStyleTypeValueImp listStyleType;
-    CSSAutoLengthValueImp marginRight;
-    CSSAutoLengthValueImp marginLeft;
     CSSAutoLengthValueImp marginTop;
+    CSSAutoLengthValueImp marginRight;
     CSSAutoLengthValueImp marginBottom;
+    CSSAutoLengthValueImp marginLeft;
     CSSMarginShorthandImp margin;
     CSSNoneLengthValueImp maxHeight;
     CSSNoneLengthValueImp maxWidth;
