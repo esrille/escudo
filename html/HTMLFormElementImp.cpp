@@ -34,101 +34,95 @@ HTMLFormElementImp::~HTMLFormElementImp()
 
 std::u16string HTMLFormElementImp::getAcceptCharset()
 {
-    // TODO: implement me!
-    return u"";
+    return getAttribute(u"accept-charset");
 }
 
 void HTMLFormElementImp::setAcceptCharset(std::u16string acceptCharset)
 {
-    // TODO: implement me!
+    setAttribute(u"accept-charset", acceptCharset);
 }
 
 std::u16string HTMLFormElementImp::getAction()
 {
-    // TODO: implement me!
-    return u"";
+    return getAttribute(u"action");
 }
 
 void HTMLFormElementImp::setAction(std::u16string action)
 {
-    // TODO: implement me!
+    setAttribute(u"action", action);
 }
 
 std::u16string HTMLFormElementImp::getAutocomplete()
 {
-    // TODO: implement me!
-    return u"";
+    return getAttribute(u"autocomplete");
 }
 
 void HTMLFormElementImp::setAutocomplete(std::u16string autocomplete)
 {
-    // TODO: implement me!
+    setAttribute(u"autocomplete", autocomplete);
 }
 
 std::u16string HTMLFormElementImp::getEnctype()
 {
-    // TODO: implement me!
-    return u"";
+    return getAttribute(u"enctype");
 }
 
 void HTMLFormElementImp::setEnctype(std::u16string enctype)
 {
-    // TODO: implement me!
+    setAttribute(u"enctype", enctype);
 }
 
 std::u16string HTMLFormElementImp::getEncoding()
 {
-    // TODO: implement me!
-    return u"";
+    return getEnctype();
 }
 
 void HTMLFormElementImp::setEncoding(std::u16string encoding)
 {
-    // TODO: implement me!
+    setEnctype(encoding);
 }
 
 std::u16string HTMLFormElementImp::getMethod()
 {
-    // TODO: implement me!
-    return u"";
+    return getAttribute(u"method");
 }
 
 void HTMLFormElementImp::setMethod(std::u16string method)
 {
-    // TODO: implement me!
+    setAttribute(u"method", method);
 }
 
 std::u16string HTMLFormElementImp::getName()
 {
-    // TODO: implement me!
-    return u"";
+    return getAttribute(u"name");
 }
 
 void HTMLFormElementImp::setName(std::u16string name)
 {
-    // TODO: implement me!
+    setAttribute(u"name", name);
 }
 
 bool HTMLFormElementImp::getNoValidate()
 {
-    // TODO: implement me!
-    return 0;
+    return hasAttribute(u"novalidate");
 }
 
 void HTMLFormElementImp::setNoValidate(bool noValidate)
 {
-    // TODO: implement me!
+    if (noValidate)
+        setAttribute(u"novalidate", u"");
+    else
+        removeAttribute(u"novalidate");
 }
 
 std::u16string HTMLFormElementImp::getTarget()
 {
-    // TODO: implement me!
-    return u"";
+    return getAttribute(u"target");
 }
 
 void HTMLFormElementImp::setTarget(std::u16string target)
 {
-    // TODO: implement me!
+    setAttribute(u"target", target);
 }
 
 html::HTMLFormControlsCollection HTMLFormElementImp::getElements()
@@ -140,13 +134,17 @@ html::HTMLFormControlsCollection HTMLFormElementImp::getElements()
 
 int HTMLFormElementImp::getLength()
 {
-    // TODO: implement me!
+    getElements();
+    if (elements)
+        return elements.getLength();
     return 0;
 }
 
 Any HTMLFormElementImp::getElement(unsigned int index)
 {
-    // TODO: implement me!
+    getElements();
+    if (elements)
+        return elements.item(index);
     return 0;
 }
 
