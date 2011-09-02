@@ -141,17 +141,23 @@ void CSSValueParser::initializeRules()
                                (integer | percentage) + comma +
                                (integer | percentage))
             [&CSSValueParser::rgb]
+#if 0
         | CSSValueRule(u"rgba", (integer | percentage) + comma +
                                 (integer | percentage) + comma +
                                 (integer | percentage) + comma +
                                 number)
+            // TODO: [&CSSValueParser::rgba]
         | CSSValueRule(u"hsl", number + comma +
                                percentage + comma +
                                percentage)
+            // TODO: [&CSSValueParser::hsl]
         | CSSValueRule(u"hsla", number + comma +
                                 percentage + comma +
                                 percentage + comma +
-                                number);
+                                number)
+            // TODO: [&CSSValueParser::hsla]
+#endif
+        ;
     lineHeight
         = CSSValueRule(u"normal")
         | number
