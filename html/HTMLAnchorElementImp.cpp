@@ -30,13 +30,11 @@ namespace dom
 namespace bootstrap
 {
 
-void HTMLAnchorElementImp::handleClick(events::Event event)
+HTMLAnchorElementImp::HTMLAnchorElementImp(HTMLAnchorElementImp* org, bool deep) :
+    ObjectMixin(org, deep),
+    clickListener(boost::bind(&HTMLAnchorElementImp::handleClick, this, _1))
 {
-    if (event.getDefaultPrevented())
-        return;
-    std::u16string href = getHref();
-    if (!href.empty())
-        getOwnerDocument().setLocation(href);
+    addEventListener(u"click", &clickListener);
 }
 
 HTMLAnchorElementImp::HTMLAnchorElementImp(DocumentImp* ownerDocument) :
@@ -46,15 +44,17 @@ HTMLAnchorElementImp::HTMLAnchorElementImp(DocumentImp* ownerDocument) :
     addEventListener(u"click", &clickListener);
 }
 
-HTMLAnchorElementImp::HTMLAnchorElementImp(HTMLAnchorElementImp* org, bool deep) :
-    ObjectMixin(org, deep),
-    clickListener(boost::bind(&HTMLAnchorElementImp::handleClick, this, _1))
-{
-    addEventListener(u"click", &clickListener);
-}
-
 HTMLAnchorElementImp::~HTMLAnchorElementImp()
 {
+}
+
+void HTMLAnchorElementImp::handleClick(events::Event event)
+{
+    if (event.getDefaultPrevented())
+        return;
+    std::u16string href = getHref();
+    if (!href.empty())
+        getOwnerDocument().setLocation(href);
 }
 
 std::u16string HTMLAnchorElementImp::getHref()

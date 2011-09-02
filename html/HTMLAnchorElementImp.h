@@ -40,7 +40,6 @@ namespace bootstrap
 class HTMLAnchorElementImp : public ObjectMixin<HTMLAnchorElementImp, HTMLElementImp>
 {
     Retained<EventListenerImp> clickListener;
-
     void handleClick(events::Event event);
 
 public:
