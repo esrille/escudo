@@ -17,6 +17,7 @@
 #ifndef ES_URL_H
 #define ES_URL_H
 
+#include <assert.h>
 #include <string>
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
@@ -94,14 +95,31 @@ public:
     std::u16string getSearch() const {
         return url.substr(searchStart, searchEnd - searchStart);
     }
-    void setSearch(std::u16string search);
+    void setSearch(std::u16string search) {
+        if (search[0] != u'?')
+            search = u"?" + search;
+        if (searchStart < searchEnd)
+            url.replace(searchStart, searchEnd - searchStart, search);
+        else {
+            assert(pathnameStart < pathnameEnd);
+            url.insert(pathnameEnd, search);
+        }
+    }
     std::u16string getHash() const {
         return url.substr(hashStart, hashEnd - hashStart);
     }
+    void setHash(std::u16string hash) {
+        if (hash[0] != u'#')
+            hash = u"#" + hash;
+        if (hashStart < hashEnd)
+            url.replace(hashStart, hashEnd - hashStart, hash);
+        else
+            url += hash;
+    }
+
     bool hasSearch() const {
         return hashStart < hashEnd;
     }
-    void setHash(std::u16string hash);
 
     std::u16string resolveURL(std::u16string url);
 
