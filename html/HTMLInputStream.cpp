@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Esrille Inc.
+ * Copyright 2010, 2011 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -147,7 +147,7 @@ void HTMLInputStream::detect(const char* p)
         return;
 
     confidence = Tentative;
-    encoding = "";
+    encoding.clear();
     while (*p) {
         if (strncmp(p, "<!--", 4) == 0)
             p = skipOver(p, "-->", 3);
@@ -164,6 +164,6 @@ void HTMLInputStream::detect(const char* p)
         else
             ++p;
     }
-    if (encoding.length() == 0)
+    if (encoding.empty())
         encoding = DefaultEncoding;
 }

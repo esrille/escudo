@@ -162,7 +162,7 @@ bool WindowImp::poll()
             boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request.getContentDescriptor(), false);
 #endif
             stream.seekg(0, std::ios::beg);
-            HTMLInputStream htmlInputStream(stream, "utf-8");  // TODO check header
+            HTMLInputStream htmlInputStream(stream, request.getResponseMessage().getContentCharset());
             HTMLTokenizer tokenizer(&htmlInputStream);
             HTMLParser parser(window->getDocument(), &tokenizer);
             parser.mainLoop();  // TODO: run thin in background
