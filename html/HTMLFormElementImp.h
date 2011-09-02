@@ -27,6 +27,8 @@
 #include <org/w3c/dom/html/HTMLElement.h>
 #include <org/w3c/dom/html/HTMLFormControlsCollection.h>
 
+#include <boost/function.hpp>
+
 namespace org
 {
 namespace w3c
@@ -39,6 +41,11 @@ class HTMLFormElementImp : public ObjectMixin<HTMLFormElementImp, HTMLElementImp
 {
     html::HTMLFormControlsCollection elements;
     std::map<const std::u16string, Element> pastNamesMap;
+
+    void enumFormDataSet(ElementImp* submitter,
+                         boost::function<void (const std::u16string&, const std::u16string&, const std::u16string&)> callback);
+    void appendEncodedFormData(std::u16string* result, const std::u16string& name, const std::u16string& value, const std::u16string& type);
+    std::u16string getEncodedFormData(ElementImp* submitter);
 
 public:
     HTMLFormElementImp(DocumentImp* ownerDocument) :
@@ -74,7 +81,7 @@ public:
     int getLength();
     Any getElement(unsigned int index);
     Any getElement(std::u16string name);
-    void submit();
+    void submit(ElementImp* submitter = 0);  // Take submitter as a hidden parameter
     void reset();
     bool checkValidity();
     // Object

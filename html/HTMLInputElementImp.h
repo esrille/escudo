@@ -32,6 +32,7 @@
 #include <org/w3c/dom/html/ValidityState.h>
 
 #include "EventListenerImp.h"
+#include "HTMLFormElementImp.h"
 
 namespace org
 {
@@ -41,16 +42,67 @@ namespace dom
 {
 namespace bootstrap
 {
+
+class HTMLFormElementImp;
+
 class HTMLInputElementImp : public ObjectMixin<HTMLInputElementImp, HTMLElementImp>
 {
+    enum {
+        Hidden,
+        Text,
+        Search,
+        Telephone,
+        URL,
+        Email,
+        Password,
+        DateAndTime,
+        Date,
+        Month,
+        Week,
+        Time,
+        LocalDateAndTime,
+        Number,
+        Range,
+        Color,
+        Checkbox,
+        RadioButton,
+        FileUpload,
+        SubmitButton,
+        ImageButton,
+        ResetButton,
+        Button,
+
+        TypeMax
+    };
+
+    int type;
+    HTMLFormElementImp* form;
+
+    Retained<EventListenerImp> clickListener;
     Retained<EventListenerImp> keydownListener;
-    void handleKeydown(events::Event event);
 
     size_t cursor;
+    bool checked;
+
+    void handleKeydown(events::Event event);
+    void handleClick(events::Event event);
 
 public:
     HTMLInputElementImp(DocumentImp* ownerDocument);
     HTMLInputElementImp(HTMLInputElementImp* org, bool deep);
+
+    void eval();
+    bool isButton() const {
+        switch (type) {
+        case SubmitButton:
+        case ImageButton:
+        case ResetButton:
+        case Button:
+            return true;
+        default:
+            return false;
+        }
+    }
 
     // HTMLInputElement
     std::u16string getAccept();

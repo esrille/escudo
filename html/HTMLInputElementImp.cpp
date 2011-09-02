@@ -20,6 +20,9 @@
 
 #include <org/w3c/dom/events/KeyboardEvent.h>
 
+#include "utf.h"
+#include "HTMLInputElementImp.h"
+
 namespace org
 {
 namespace w3c
@@ -29,66 +32,130 @@ namespace dom
 namespace bootstrap
 {
 
+namespace {
+
+const char16_t* typeKeywords[] = {
+    u"hidden",
+    u"text",
+    u"search",
+    u"tel",
+    u"url",
+    u"email",
+    u"password",
+    u"datetime",
+    u"date",
+    u"month",
+    u"week",
+    u"time",
+    u"datetime-local",
+    u"number",
+    u"range",
+    u"color",
+    u"checkbox",
+    u"radio",
+    u"file",
+    u"submit",
+    u"image",
+    u"reset",
+    u"button",
+};
+
+}  // namespace
+
 HTMLInputElementImp::HTMLInputElementImp(DocumentImp* ownerDocument) :
     ObjectMixin(ownerDocument, u"input"),
+    type(Text),
+    form(0),
+    clickListener(boost::bind(&HTMLInputElementImp::handleClick, this, _1)),
     keydownListener(boost::bind(&HTMLInputElementImp::handleKeydown, this, _1)),
-    cursor(0)
+    cursor(0),
+    checked(false)
 {
+    addEventListener(u"click", &clickListener);
     addEventListener(u"keydown", &keydownListener);
 }
 
 HTMLInputElementImp::HTMLInputElementImp(HTMLInputElementImp* org, bool deep) :
     ObjectMixin(org, deep),
+    type(org->type),
+    form(0),
+    clickListener(boost::bind(&HTMLInputElementImp::handleClick, this, _1)),
     keydownListener(boost::bind(&HTMLInputElementImp::handleKeydown, this, _1)),
-    cursor(0)
+    cursor(0),
+    checked(org->checked)
 {
-    addEventListener(u"click", &keydownListener);
+    addEventListener(u"click", &clickListener);
+    addEventListener(u"keydown", &keydownListener);
+}
+
+void HTMLInputElementImp::eval()
+{
+    HTMLElementImp::eval();
+
+    setType(getAttribute(u"type"));
+}
+
+void HTMLInputElementImp::handleClick(events::Event event)
+{
+    if (event.getDefaultPrevented())
+        return;
+
+    if (type == SubmitButton) {
+        html::HTMLFormElement form = getForm();
+        if (HTMLFormElementImp* imp = dynamic_cast<HTMLFormElementImp*>(form.self()))
+            imp->submit(this);
+    }
 }
 
 void HTMLInputElementImp::handleKeydown(events::Event event)
 {
-    bool modified = false;
-    std::u16string value = getValue();
-    events::KeyboardEvent key = interface_cast<events::KeyboardEvent>(event);
-    char16_t c = key.getCharCode();
-    if (32 <= c && c < 127) {
-        value.insert(cursor, 1, c);
-        ++cursor;
-        modified = true;
-    } else if (c == 8) {
-        if (0 < cursor) {
-            --cursor;
-            value.erase(cursor, 1);
-            modified = true;
-        }
-    }
-    unsigned k = key.getKeyCode();
-    switch (k) {
-    case 35:  // End
-        cursor = value.length();
-        break;
-    case 36:  // Home
-        cursor = 0;
-        break;
-    case 37:  // <-
-        if (0 < cursor)
-            --cursor;
-        break;
-    case 39:  // ->
-        if (cursor < value.length())
+    if (event.getDefaultPrevented())
+        return;
+
+    if (type == Text) {
+        bool modified = false;
+        std::u16string value = getValue();
+        events::KeyboardEvent key = interface_cast<events::KeyboardEvent>(event);
+        char16_t c = key.getCharCode();
+        if (32 <= c && c < 127) {
+            value.insert(cursor, 1, c);
             ++cursor;
-        break;
-    case 46:  // Del
-        if (cursor < value.length()) {
-            value.erase(cursor, 1);
             modified = true;
+        } else if (c == 8) {
+            if (0 < cursor) {
+                --cursor;
+                value.erase(cursor, 1);
+                modified = true;
+            }
         }
-        break;
-    default:
-        break;
+        unsigned k = key.getKeyCode();
+        switch (k) {
+        case 35:  // End
+            cursor = value.length();
+            break;
+        case 36:  // Home
+            cursor = 0;
+            break;
+        case 37:  // <-
+            if (0 < cursor)
+                --cursor;
+            break;
+        case 39:  // ->
+            if (cursor < value.length())
+                ++cursor;
+            break;
+        case 46:  // Del
+            if (cursor < value.length()) {
+                value.erase(cursor, 1);
+                modified = true;
+            }
+            break;
+        default:
+            break;
+        }
+        if (modified)
+            setValue(value);
     }
-    if (modified)
-        setValue(value);
 }
 
 std::u16string HTMLInputElementImp::getAccept()
@@ -115,13 +182,12 @@ void HTMLInputElementImp::setAlt(std::u16string alt)
 
 std::u16string HTMLInputElementImp::getAutocomplete()
 {
-    // TODO: implement me!
-    return u"";
+    return getAttribute(u"autocomplete");
 }
 
 void HTMLInputElementImp::setAutocomplete(std::u16string autocomplete)
 {
-    // TODO: implement me!
+    setAttribute(u"autocomplete", autocomplete);
 }
 
 bool HTMLInputElementImp::getAutofocus()
@@ -148,13 +214,13 @@ void HTMLInputElementImp::setDefaultChecked(bool defaultChecked)
 
 bool HTMLInputElementImp::getChecked()
 {
-    // TODO: implement me!
-    return 0;
+    return checked;
 }
 
 void HTMLInputElementImp::setChecked(bool checked)
 {
-    // TODO: implement me!
+    this->checked = checked;
+    // TODO: dispatch an event
 }
 
 std::u16string HTMLInputElementImp::getDirName()
@@ -181,8 +247,13 @@ void HTMLInputElementImp::setDisabled(bool disabled)
 
 html::HTMLFormElement HTMLInputElementImp::getForm()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    if (form)
+        return form;
+    for (Element parent = getParentElement(); parent; parent = parent.getParentElement()) {
+        if (html::HTMLFormElement::hasInstance(parent))
+            return interface_cast<html::HTMLFormElement>(parent);
+    }
+    return 0;
 }
 
 file::FileList HTMLInputElementImp::getFiles()
@@ -320,13 +391,12 @@ void HTMLInputElementImp::setMultiple(bool multiple)
 
 std::u16string HTMLInputElementImp::getName()
 {
-    // TODO: implement me!
-    return u"";
+    return getAttribute(u"name");
 }
 
 void HTMLInputElementImp::setName(std::u16string name)
 {
-    // TODO: implement me!
+    setAttribute(u"name", name);
 }
 
 std::u16string HTMLInputElementImp::getPattern()
@@ -408,13 +478,19 @@ void HTMLInputElementImp::setStep(std::u16string step)
 
 std::u16string HTMLInputElementImp::getType()
 {
-    // TODO: implement me!
-    return u"";
+    return typeKeywords[type];
 }
 
 void HTMLInputElementImp::setType(std::u16string type)
 {
-    // TODO: implement me!
+    toLower(type);
+    for (const char16_t** i = typeKeywords; i < typeKeywords + TypeMax; ++i) {
+        if (type.compare(*i) == 0) {
+            this->type = i - typeKeywords;
+            return;
+        }
+    }
+    this->type = Text;
 }
 
 std::u16string HTMLInputElementImp::getDefaultValue()
