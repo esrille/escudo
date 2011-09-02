@@ -70,14 +70,14 @@ std::string HttpRequestMessage::toString()
     URI uri(url);
     std::string s;
     if (version == 9) {
-        s += "GET " + uri.getPathname() + " \r\n";
+        s += "GET " + uri.getPathname() + uri.getSearch() + " \r\n";
         return s;
     }
-    s += method + ' ' + uri.getPathname() + " HTTP/";
+    s += method + ' ' + uri.getPathname() + uri.getSearch() + " HTTP/";
     switch (version) {
     case 11:
         s += "1.1";
-        headers.set("Host", uri.getHostname() + ":" + uri.getPort());  // TODO: port can be omitted.
+        headers.set("Host", uri.getHost());
         break;
     default:
         s += "1.0";
