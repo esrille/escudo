@@ -31,23 +31,32 @@ namespace dom
 namespace bootstrap
 {
 
+namespace {
+
+bool isListedElement(const std::u16string& tag)
+{
+    if (tag == u"button" ||
+        tag == u"fieldset" ||
+        tag == u"input" ||
+        tag == u"keygen" ||
+        tag == u"label" ||
+        tag == u"object" ||
+        tag == u"output" ||
+        tag == u"select" ||
+        tag == u"textarea")
+        return true;
+    return false;
+}
+
+}
+
 HTMLFormControlsCollectionImp::HTMLFormControlsCollectionImp(HTMLFormElementImp* form) :
     length(0)
 {
-    std::u16string tag;
     ElementImp* i = form;
     while (i = i->getNextElement(form)) {
-        tag = i->getTagName();
-        if (tag == u"button" ||
-            tag == u"fieldset" ||
-            tag == u"input" ||
-            tag == u"keygen" ||
-            tag == u"label" ||
-            tag == u"object" ||
-            tag == u"output" ||
-            tag == u"select" ||
-            tag == u"textarea")
-        {
+        std::u16string tag = i->getTagName();
+        if (isListedElement(tag)) {
             std::u16string name;
             Nullable<std::u16string> a = i->getAttribute(u"name");
             if (a.hasValue())
