@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Esrille Inc.
+ * Copyright 2010, 2011 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,230 +45,6 @@ Override overrides[] = {
     { "tis-620", "windows-874" },
     { "us-ascii", "windows-1252" }
 };
-
-const char* validEncodings[] = {
-    "437",
-    "850",
-    "852",
-    "855",
-    "857",
-    "860",
-    "861",
-    "862",
-    "863",
-    "865",
-    "866",
-    "869",
-    "ansi_x3.4-1968",
-    "ansi_x3.4-1986",
-    "arabic",
-    "ascii",
-    "asmo-708",
-    "big5",
-    "big5-hkscs",
-    "chinese",
-    "cp037",
-    "cp1026",
-    "cp154",
-    "cp367",
-    "cp424",
-    "cp437",
-    "cp500",
-    "cp775",
-    "cp819",
-    "cp850",
-    "cp852",
-    "cp855",
-    "cp857",
-    "cp860",
-    "cp861",
-    "cp862",
-    "cp863",
-    "cp864",
-    "cp865",
-    "cp866",
-    "cp869",
-    "cp936",
-    "cp-gr",
-    "cp-is",
-    "csascii",
-    "csbig5",
-    "csibm037",
-    "csibm1026",
-    "csibm424",
-    "csibm500",
-    "csibm855",
-    "csibm857",
-    "csibm860",
-    "csibm861",
-    "csibm863",
-    "csibm864",
-    "csibm865",
-    "csibm866",
-    "csibm869",
-    "csiso2022jp",
-    "csiso2022kr",
-    "csiso58gb231280",
-    "csisolatin1",
-    "csisolatin2",
-    "csisolatin3",
-    "csisolatin4",
-    "csisolatin5",
-    "csisolatin6",
-    "csisolatinarabic",
-    "csisolatincyrillic",
-    "csisolatingreek",
-    "csisolatinhebrew",
-    "cskoi8r",
-    "cspc775baltic",
-    "cspc850multilingual",
-    "cspc862latinhebrew",
-    "cspc8codepage437",
-    "cspcp852",
-    "csptcp154",
-    "csshiftjis",
-    "cyrillic",
-    "ecma-114",
-    "ecma-118",
-    "elot_928",
-    "euc-jp",
-    "euc-kr",
-    "gb18030",
-    "gb2312",
-    "gbk",
-    "greek",
-    "greek8",
-    "hebrew",
-    "hp-roman8",
-    "hz-gb-2312",
-    "ibm037",
-    "ibm1026",
-    "ibm367",
-    "ibm424",
-    "ibm437",
-    "ibm500",
-    "ibm775",
-    "ibm819",
-    "ibm850",
-    "ibm852",
-    "ibm855",
-    "ibm857",
-    "ibm860",
-    "ibm861",
-    "ibm862",
-    "ibm863",
-    "ibm864",
-    "ibm865",
-    "ibm866",
-    "ibm869",
-    "iso-2022-jp",
-    "iso-2022-jp-2",
-    "iso-2022-kr",
-    "iso_646.irv:1991",
-    "iso646-us",
-    "iso_8859-1",
-    "iso-8859-1",
-    "iso-8859-10",
-    "iso_8859-10:1992",
-    "iso_8859-1:1987",
-    "iso-8859-13",
-    "iso_8859-14",
-    "iso-8859-14",
-    "iso_8859-14:1998",
-    "iso_8859-15",
-    "iso-8859-15",
-    "iso_8859-16",
-    "iso-8859-16",
-    "iso_8859-16:2001",
-    "iso_8859-2",
-    "iso-8859-2",
-    "iso_8859-2:1987",
-    "iso_8859-3",
-    "iso-8859-3",
-    "iso_8859-3:1988",
-    "iso_8859-4",
-    "iso-8859-4",
-    "iso_8859-4:1988",
-    "iso_8859-5",
-    "iso-8859-5",
-    "iso_8859-5:1988",
-    "iso_8859-6",
-    "iso-8859-6",
-    "iso_8859-6:1987",
-    "iso_8859-7",
-    "iso-8859-7",
-    "iso_8859-7:1987",
-    "iso_8859-8",
-    "iso-8859-8",
-    "iso_8859-8:1988",
-    "iso_8859-9",
-    "iso-8859-9",
-    "iso_8859-9:1989",
-    "iso-celtic",
-    "iso-ir-100",
-    "iso-ir-101",
-    "iso-ir-109",
-    "iso-ir-110",
-    "iso-ir-126",
-    "iso-ir-127",
-    "iso-ir-138",
-    "iso-ir-144",
-    "iso-ir-148",
-    "iso-ir-157",
-    "iso-ir-199",
-    "iso-ir-226",
-    "iso-ir-58",
-    "iso-ir-6",
-    "koi8-r",
-    "koi8-u",
-    "korean",
-    "ks_c_5601-1987",
-    "l1",
-    "l10",
-    "l2",
-    "l3",
-    "l4",
-    "l5",
-    "l6",
-    "l8",
-    "latin1",
-    "latin10",
-    "latin2",
-    "latin3",
-    "latin4",
-    "latin5",
-    "latin6",
-    "latin8",
-    "ms936",
-    "ms_kanji",
-    "pt154",
-    "ptcp154",
-    "r8",
-    "roman8",
-    "shift_jis",
-    "tis-620",
-    "us",
-    "us-ascii",
-    "utf-16",
-    "utf-16be",
-    "utf-16le",
-    "utf-7",
-    "utf-8",
-    "windows-1250",
-    "windows-1251",
-    "windows-1252",
-    "windows-1253",
-    "windows-1254",
-    "windows-1255",
-    "windows-1256",
-    "windows-1257",
-    "windows-1258",
-};
-
-bool compareEncodings(const char* s, const char* t)
-{
-    return strcmp(s, t) < 0;
-}
 
 }  // namespace
 
@@ -336,33 +112,25 @@ std::string U16InputStream::checkEncoding(std::string value)
         ;
     value.erase(j, value.length());
 
-    if (value.length() == 0)
+    if (value.empty())
         return "";
 
     // Override character encoding
     for (Override* override = overrides;
          override < &overrides[sizeof overrides / sizeof overrides[0]];
          ++override) {
-        if (value == override->input) {
+        if (!strcasecmp(value.c_str(), override->input)) {
             value = override->replacement;
             break;
         }
     }
-
-    // Check valid encodings
-    if (!std::binary_search(validEncodings,
-                            &validEncodings[sizeof validEncodings / sizeof validEncodings[0]],
-                            value.c_str(),
-                            compareEncodings))
-        return "";
-
     return value;
 }
 
 void U16InputStream::setEncoding(std::string value)
 {
     value = checkEncoding(value);
-    if (value.length() == 0)
+    if (value.empty())
         value = DefaultEncoding;
 
     // Re-check encoding with ICU for conversion
@@ -401,7 +169,7 @@ void U16InputStream::updateSource()
         stream.read(sourceLimit, count);
         count = stream.gcount();
         if (!converter) {
-            if (encoding.length() == 0) {
+            if (encoding.empty()) {
                 sourceLimit[count] = '\0';
                 detect(sourceLimit);
             }
