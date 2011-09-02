@@ -160,10 +160,10 @@ inline std::ostream& operator<<(std::ostream& stream, const std::u16string& stri
     return stream;
 }
 
-inline std::u16string espaceString(const std::u16string string)
+inline std::u16string espaceString(const std::u16string& string)
 {
     std::u16string s;
-    for (std::u16string::const_iterator i = string.begin(); i < string.end(); ++i) {
+    for (auto i = string.begin(); i < string.end(); ++i) {
         switch (*i) {
         case '\\':
             s += u"\\\\";
@@ -189,6 +189,21 @@ inline std::u16string espaceString(const std::u16string string)
         }
     }
     return s;
+}
+
+inline int compareIgnoreCase(const std::u16string& a, const std::u16string& b)
+{
+    const char16_t* i = a.c_str();
+    const char16_t* j = b.c_str();
+    int x;
+    int y;
+    do {
+        x = toLower(*i++);
+        y = toLower(*j++);
+        if (int d = x - y)
+            return d;
+    } while (x);
+    return 0;
 }
 
 #endif  // #ifndef ES_UTF_H_INCLUDED
