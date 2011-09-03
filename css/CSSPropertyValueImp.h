@@ -394,7 +394,10 @@ public:
         this->uri = uri;
     }
     CSSBackgroundImageValueImp& setValue(CSSParserTerm* term) {
-        return setValue(term->getString());
+        if (0 <= term->getIndex())
+            return setValue();
+        else
+            return setValue(term->getString());
     }
     std::u16string getValue() const {
         return uri;

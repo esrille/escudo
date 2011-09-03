@@ -265,7 +265,7 @@ void CSSValueParser::initializeRules()
             [CSSStyleDeclarationImp::BackgroundAttachment];
     backgroundImage
         = (uri
-        |  u"none")
+        |  CSSValueRule(u"none", CSSBackgroundImageValueImp::None))
             [CSSStyleDeclarationImp::BackgroundImage];
     backgroundPosition
         = (CSSValueRule(u"center", CSSBackgroundPositionValueImp::Center) +
