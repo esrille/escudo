@@ -1187,7 +1187,21 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view, Node node)
     FormattingContext* context = updateFormattingContext(context);
     assert(context);
 
-    if (hasInline())
+    // TODO: Handle replaced elements in more smart way...
+    std::u16string tag = element.getLocalName();
+    if (tag == u"img") {
+        html::HTMLImageElement img = interface_cast<html::HTMLImageElement>(element);
+        if (backgroundImage = new(std::nothrow) BoxImage(this, view->getDocument().getDocumentURI(), img)) {
+            if (autoMask & Width) {
+                width = backgroundImage->getWidth();
+                autoMask &= ~Width;
+            }
+            if (autoMask & Height) {
+                height = backgroundImage->getHeight();
+                autoMask &= ~Height;
+            }
+        }
+    } else if (hasInline())
         layOutInline(view, context);
     for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
         child->layOut(view, context);
