@@ -30,15 +30,13 @@ void reshape(int w, int h)
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(0, w, 0, h, -1000.0, 1.0);
+    glOrtho(0, w, h, 0, -1000.0, 1.0);
 
     glMatrixMode(GL_TEXTURE);
     glLoadIdentity();
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glScalef(1.0, -1.0, 1.0);
-    glTranslatef(0.0, -h, 0.0);
 }
 
 void display()

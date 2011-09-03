@@ -79,7 +79,7 @@ void getOriginScreenPosition(float& x, float& y)
     GLfloat m[16];
     glGetFloatv(GL_MODELVIEW_MATRIX, m);
     x = m[12];
-    y = glutGet(GLUT_WINDOW_HEIGHT) - m[13];
+    y = m[13];
 }
 
 }  // namespace
@@ -305,7 +305,7 @@ void Box::renderBorder(ViewCSSImp* view)
         glEnd();
     }
 
-    if (backgroundImage) {
+    if (backgroundImage && backgroundImage->getState() == BoxImage::CompletelyAvailable) {
         GLfloat border[] = { ((backgroundColor >> 16) & 0xff) / 255.0f,
                              ((backgroundColor >> 8) & 0xff) / 255.0f,
                              ((backgroundColor) & 0xff) / 255.0f,
@@ -356,8 +356,23 @@ void BlockLevelBox::render(ViewCSSImp* view)
     glPushMatrix();
     glTranslatef(offsetH, offsetV, 0.0f);
     getOriginScreenPosition(x, y);
+
     renderBorder(view);
     glTranslatef(getBlankLeft(), getBlankTop(), 0.0f);
+
+    unsigned overflow = CSSOverflowValueImp::Visible;
+    if (style)
+        overflow = style->overflow.getValue();
+    if (overflow == CSSOverflowValueImp::Hidden) {
+        float left = x + getBlankLeft();
+        float top = y + getBlankTop();
+        float h = view->getInitialContainingBlock()->getHeight();
+        glViewport(left, h - (top + height), width, height);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(left, left + width, top + height, top, -1000.0, 1.0);
+        glMatrixMode(GL_MODELVIEW);
+    }
     if (shadow)
         shadow->render();
     else {
@@ -366,6 +381,16 @@ void BlockLevelBox::render(ViewCSSImp* view)
             glTranslatef(0.0f, child->getTotalHeight(), 0.0f);
         }
     }
+    if (overflow == CSSOverflowValueImp::Hidden) {
+        float w = view->getInitialContainingBlock()->getWidth();
+        float h = view->getInitialContainingBlock()->getHeight();
+        glViewport(0, 0, w, h);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(0, w, h, 0, -1000.0, 1.0);
+        glMatrixMode(GL_MODELVIEW);
+    }
+
     glPopMatrix();
 }
 
