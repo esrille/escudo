@@ -16,6 +16,10 @@
 
 #include "DocumentWindow.h"
 
+#include <boost/bind.hpp>
+
+#include <org/w3c/dom/events/MouseEvent.h>
+
 #include "WindowImp.h"
 #include "js/esjsapi.h"
 
@@ -25,8 +29,10 @@ DocumentWindow::DocumentWindow() :
     document(0),
     global(0),
     scrollX(0),
-    scrollY(0)
+    scrollY(0),
+    clickListener(boost::bind(&DocumentWindow::handleClick, this, _1))
 {
+    addEventListener(u"click", &clickListener);
 }
 
 DocumentWindow::~DocumentWindow()
@@ -78,6 +84,36 @@ void DocumentWindow::scroll(int x, int y)
 {
     scrollX = x;
     scrollY = y;
+}
+
+void DocumentWindow::handleClick(events::Event event)
+{
+    html::Window defaultView = document.getDefaultView();
+    if (!defaultView)
+        return;
+    events::MouseEvent mouse = interface_cast<events::MouseEvent>(event);
+    switch (mouse.getButton()) {
+    case 3:
+        defaultView.scrollBy(0, -16);
+        break;
+    case 4:
+        defaultView.scrollBy(0, 16);
+        break;
+    case 5:
+        defaultView.scrollBy(-64, 0);
+        break;
+    case 6:
+        defaultView.scrollBy(64, 0);
+        break;
+    case 7:
+        defaultView.getHistory().back();
+        break;
+    case 8:
+        defaultView.getHistory().forward();
+        break;
+    default:
+        break;
+    }
 }
 
 }}}}  // org::w3c::dom::bootstrap

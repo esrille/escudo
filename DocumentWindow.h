@@ -25,6 +25,7 @@
 
 #include <boost/intrusive_ptr.hpp>
 
+#include "EventListenerImp.h"
 #include "EventTargetImp.h"
 #include "js/Script.h"
 
@@ -41,8 +42,11 @@ class DocumentWindow : public EventTargetImp
     std::list<HttpRequest*> cache;
     int scrollX;
     int scrollY;
+    Retained<EventListenerImp> clickListener;
 
     DocumentWindow(const DocumentWindow& window);
+
+    void handleClick(events::Event event);
 
 public:
     DocumentWindow();

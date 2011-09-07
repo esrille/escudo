@@ -77,9 +77,6 @@ class DocumentImp : public ObjectMixin<DocumentImp, NodeImp>
 
     ElementImp* activeElement;
 
-    Retained<EventListenerImp> clickListener;
-    void handleClick(events::Event event);
-
 public:
     DocumentImp(const std::u16string& url = u"about:blank");
     ~DocumentImp();

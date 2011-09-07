@@ -17,7 +17,6 @@
 #include "DocumentImp.h"
 
 #include <new>
-#include <boost/bind.hpp>
 
 #include <org/w3c/dom/events/MouseEvent.h>
 
@@ -93,8 +92,6 @@
 #include "ObjectArrayImp.h"
 
 #include "EventImp.h"
-#include "js/esjsapi.h"
-#include "js/Script.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -107,11 +104,9 @@ DocumentImp::DocumentImp(const std::u16string& url) :
     compatMode(u"CSS1Compat"),
     loadEventDelayCount(1),
     defaultView(0),
-    activeElement(0),
-    clickListener(boost::bind(&DocumentImp::handleClick, this, _1))
+    activeElement(0)
 {
     nodeName = u"#document";
-    addEventListener(u"click", &clickListener);
 }
 
 DocumentImp::~DocumentImp()
@@ -163,39 +158,6 @@ unsigned DocumentImp::decrementLoadEventDelayCount() {
     if (--loadEventDelayCount == 0)
         setReadyState(u"complete");
     return loadEventDelayCount;
-}
-
-void DocumentImp::handleClick(events::Event event)
-{
-    events::MouseEvent mouse = interface_cast<events::MouseEvent>(event);
-    switch (mouse.getButton()) {
-    case 3:
-        if (defaultView)
-            defaultView->scrollBy(0, -16);
-        break;
-    case 4:
-        if (defaultView)
-            defaultView->scrollBy(0, 16);
-        break;
-    case 5:
-        if (defaultView)
-            defaultView->scrollBy(-64, 0);
-        break;
-    case 6:
-        if (defaultView)
-            defaultView->scrollBy(64, 0);
-        break;
-    case 7:
-        if (defaultView)
-            defaultView->getHistory().back();
-        break;
-    case 8:
-        if (defaultView)
-            defaultView->getHistory().forward();
-        break;
-    default:
-        break;
-    }
 }
 
 // Document
