@@ -38,6 +38,8 @@ void eval(org::w3c::dom::Node node);
 org::w3c::dom::Document loadDocument(std::istream& stream);
 org::w3c::dom::Document loadDocument(const char* html);
 
+void recordTime(const char* msg);
+
 //
 // Test.glut.cpp
 //

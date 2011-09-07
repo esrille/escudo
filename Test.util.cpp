@@ -16,6 +16,8 @@
 
 #include "Test.util.h"
 
+#include <time.h>
+
 #include <sstream>
 
 #include <GL/freeglut.h>
@@ -138,3 +140,12 @@ Document loadDocument(const char* html)
     return loadDocument(stream);
 }
 
+void recordTime(const char* msg)
+{
+    static double last = 0.0;
+    timespec spec;
+    clock_gettime(CLOCK_REALTIME, &spec);
+    double now = spec.tv_sec + (spec.tv_nsec / 1000000000.0);
+    std::cerr << msg << ": " << now - last << '\n';
+    last = now;
+}
