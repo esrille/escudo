@@ -23,6 +23,8 @@
 #include <boost/iostreams/stream.hpp>
 #include <boost/iostreams/device/file_descriptor.hpp>
 
+#include "utf.h"
+
 using namespace org::w3c::dom::bootstrap;
 using namespace org::w3c::dom;
 
@@ -35,7 +37,7 @@ int test(std::u16string urlString)
     HttpRequest request;
     request.open(u"get", url);
 
-    std::cout << request.getRequestMessage().toString();
+    std::cerr << request.getRequestMessage().toString();
 
     request.send();
 
@@ -45,16 +47,17 @@ int test(std::u16string urlString)
         return 1;
 
     std::cerr << request.getResponseMessage().toString() << "----\n";
+    std::cerr << request.getResponseMessage().getContentCharset() << "----\n";
 #if 104400 <= BOOST_VERSION
     boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request.getContentDescriptor(), boost::iostreams::never_close_handle);
-#else    
+#else
     boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request.getContentDescriptor(), false);
-#endif    
+#endif
     stream.seekg(0, std::ios::beg);
     while (stream) {
         char c = stream.get();
         if (stream.good())
-            std::cerr << c;
+            std::cout << c;
     }
     return 0;
 }
@@ -62,15 +65,12 @@ int test(std::u16string urlString)
 int main(int argc, char* argv[])
 {
     int result = 0;
-#if 0
-    result += test(u"http://localhost:8000/1.html");
-    result += test(u"http://localhost:8000/2.html");
+    if (2 <= argc)
+        return test(utfconv(argv[1]));
+
+    result += test(u"http://www.esrille.com/index.html");
     sleep(3);
-    result += test(u"http://localhost:8000/1.html");  // test cache
-#else
-    result += test(u"http://www.esrille.com/index.html");  // test chunked xfer
-    sleep(3);
-    result += test(u"http://www.esrille.com/index.html");  // test chunked xfer
-#endif
+    result += test(u"http://www.esrille.com/index.html");
+
     return result;
 }
