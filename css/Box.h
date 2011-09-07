@@ -347,15 +347,15 @@ public:
     void setFlags(unsigned f) {
         flags |= f;
     }
-    void clearFlags(unsigned f) {
-        flags &= ~f;
+    void clearFlags() {
+        flags = 0;
         for (Box* i = firstChild; i; i = i->nextSibling)
-            i->clearFlags(f);
+            i->clearFlags();
     }
-    bool isFlagged() const {
+    unsigned getFlags() const {
         unsigned f = flags;
         for (const Box* i = firstChild; i; i = i->nextSibling)
-            f |= i->isFlagged();
+            f |= i->getFlags();
         return f;
     }
 

@@ -181,29 +181,41 @@ bool WindowImp::poll()
 
             refreshView();
         } else if (boxTree) {
-            if (boxTree->isFlagged()) {
-                view->cascade();
-                view->setSize(8.5f * 96, 11.0f * 96);  // US letter size, 96 DPI
-                boxTree = view->layOut();
+            if (unsigned flags = boxTree->getFlags()) {
+                recordTime("  flagged");
+                if (flags & 1) {
+                    view->cascade();
+                    view->setSize(8.5f * 96, 11.0f * 96);  // US letter size, 96 DPI
+                    recordTime("  cascade");
+                    boxTree = view->layOut();
+                    recordTime("  layout ");
+                } else {
+                    boxTree->clearFlags();
+                    recordTime("  cleared");
+                }
                 redisplay = true;
             }
         }
     }
     bool result = redisplay;
     redisplay = false;
+
     return result;
 }
 
 void WindowImp::render()
 {
     if (view) {
+        recordTime("render begin");
         view->render();
+        recordTime("render end  ");
         boxTree->dump(view);
     }
 }
 
 void WindowImp::mouse(int button, int up, int x, int y, int modifiers)
 {
+    recordTime("mouse");
     if (!view)
         return;
 
