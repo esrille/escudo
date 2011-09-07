@@ -24,6 +24,7 @@
 #include "DocumentWindow.h"
 #include "EventImp.h"
 #include "NodeImp.h"
+#include "WindowImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -107,33 +108,37 @@ bool EventTargetImp::dispatchEvent(events::Event evt)
     event->setTarget(this);
 
     if (NodeImp* node = dynamic_cast<NodeImp*>(this)) {
-        if (DocumentImp* document = dynamic_cast<DocumentImp*>(node))
+        DocumentImp* document = 0;
+        if (document = dynamic_cast<DocumentImp*>(node))
             document->activate();
-        else if (DocumentImp* document = node->getOwnerDocumentImp())
+        else if (document = node->getOwnerDocumentImp())
             document->activate();
-        if (!node->parentNode) {
-            event->setEventPhase(events::Event::AT_TARGET);
-            invoke(event);
-        } else {
-            std::list<NodeImp*> eventPath;
-            for (NodeImp* ancestor = node->parentNode; ancestor; ancestor = ancestor->parentNode)
-                eventPath.push_front(ancestor);
-            event->setEventPhase(events::Event::CAPTURING_PHASE);
-            for (auto i = eventPath.begin(); i != eventPath.end(); ++i) {
+
+        std::list<EventTargetImp*> eventPath;
+        if (document && event->getType() != u"load") {
+            if (WindowImp* view = document->getDefaultWindow())
+                eventPath.push_front(view->getDocumentWindow().get());
+        }
+        for (NodeImp* ancestor = node->parentNode; ancestor; ancestor = ancestor->parentNode)
+            eventPath.push_front(ancestor);
+
+        event->setEventPhase(events::Event::CAPTURING_PHASE);
+        for (auto i = eventPath.begin(); i != eventPath.end(); ++i) {
+            if (event->getStopPropagationFlag())
+                break;
+            (*i)->invoke(event);
+        }
+
+        event->setEventPhase(events::Event::AT_TARGET);
+        if (!event->getStopPropagationFlag())
+            node->invoke(event);
+
+        if (event->getBubbles()) {
+            event->setEventPhase(events::Event::BUBBLING_PHASE);
+            for (auto i = eventPath.rbegin(); i != eventPath.rend(); ++i) {
                 if (event->getStopPropagationFlag())
                     break;
                 (*i)->invoke(event);
-            }
-            event->setEventPhase(events::Event::AT_TARGET);
-            if (!event->getStopPropagationFlag())
-                node->invoke(event);
-            if (event->getBubbles()) {
-                event->setEventPhase(events::Event::BUBBLING_PHASE);
-                for (auto i = eventPath.rbegin(); i != eventPath.rend(); ++i) {
-                    if (event->getStopPropagationFlag())
-                        break;
-                    (*i)->invoke(event);
-                }
             }
         }
     } else if (DocumentWindow* window = dynamic_cast<DocumentWindow*>(this)) {

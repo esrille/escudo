@@ -91,6 +91,9 @@ public:
          LimitedQuirksMode
     };
 
+    WindowImp* getDefaultWindow() const {
+        return defaultView;
+    }
     void setDefaultView(WindowImp* view);
 
     int getMode() const {

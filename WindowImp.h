@@ -94,6 +94,9 @@ public:
 
     bool poll();
     void render();
+    DocumentWindowPtr getDocumentWindow() const {
+        return window;
+    }
     void setDocumentWindow(const DocumentWindowPtr& window);
     void refreshView();
 
