@@ -180,11 +180,13 @@ bool WindowImp::poll()
             imp->decrementLoadEventDelayCount();
 
             refreshView();
-        } else if (boxTree && boxTree->isFlagged()) {
-            view->cascade();
-            view->setSize(8.5f * 96, 11.0f * 96);  // US letter size, 96 DPI
-            boxTree = view->layOut();
-            redisplay = true;
+        } else if (boxTree) {
+            if (boxTree->isFlagged()) {
+                view->cascade();
+                view->setSize(8.5f * 96, 11.0f * 96);  // US letter size, 96 DPI
+                boxTree = view->layOut();
+                redisplay = true;
+            }
         }
     }
     bool result = redisplay;
@@ -1430,8 +1432,7 @@ int WindowImp::getInnerHeight()
 
 int WindowImp::getScrollX()
 {
-    // TODO: implement me!
-    return 0;
+    return window->getScrollX();
 }
 
 int WindowImp::getPageXOffset()
@@ -1442,8 +1443,7 @@ int WindowImp::getPageXOffset()
 
 int WindowImp::getScrollY()
 {
-    // TODO: implement me!
-    return 0;
+    return window->getScrollY();
 }
 
 int WindowImp::getPageYOffset()
@@ -1454,17 +1454,27 @@ int WindowImp::getPageYOffset()
 
 void WindowImp::scroll(int x, int y)
 {
-    // TODO: implement me!
+    if (!view || !boxTree)
+        return;
+
+    float overflow = boxTree->getTotalWidth() - width;
+    x = std::max(0, std::min(x, static_cast<int>(overflow)));
+
+    overflow = boxTree->getTotalHeight() - height;
+    y = std::max(0, std::min(y, static_cast<int>(overflow)));
+
+    window->scroll(x, y);
+    boxTree->setFlags(2);
 }
 
 void WindowImp::scrollTo(int x, int y)
 {
-    // TODO: implement me!
+    window->scroll(x, y);
 }
 
 void WindowImp::scrollBy(int x, int y)
 {
-    // TODO: implement me!
+    scroll(getScrollX() + x, getScrollY() + y);
 }
 
 int WindowImp::getScreenX()

@@ -169,6 +169,22 @@ void DocumentImp::handleClick(events::Event event)
 {
     events::MouseEvent mouse = interface_cast<events::MouseEvent>(event);
     switch (mouse.getButton()) {
+    case 3:
+        if (defaultView)
+            defaultView->scrollBy(0, -16);
+        break;
+    case 4:
+        if (defaultView)
+            defaultView->scrollBy(0, 16);
+        break;
+    case 5:
+        if (defaultView)
+            defaultView->scrollBy(-64, 0);
+        break;
+    case 6:
+        if (defaultView)
+            defaultView->scrollBy(64, 0);
+        break;
     case 7:
         if (defaultView)
             defaultView->getHistory().back();

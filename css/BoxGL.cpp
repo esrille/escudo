@@ -354,6 +354,8 @@ void BlockLevelBox::render(ViewCSSImp* view)
     if (!stackingContext)
         return;
     glPushMatrix();
+    if (!getParentBox())
+        glTranslatef(-view->getWindow()->getScrollX(), -view->getWindow()->getScrollY(), 0.0f);
     glTranslatef(offsetH, offsetV, 0.0f);
     getOriginScreenPosition(x, y);
 

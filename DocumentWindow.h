@@ -39,15 +39,13 @@ class DocumentWindow : public EventTargetImp
     Document document;
     void* global;       // JS global object for the document
     std::list<HttpRequest*> cache;
+    int scrollX;
+    int scrollY;
 
     DocumentWindow(const DocumentWindow& window);
 
 public:
-    DocumentWindow() :
-        document(0),
-        global(0)
-    {
-    }
+    DocumentWindow();
     ~DocumentWindow();
 
     Document getDocument() const {
@@ -71,6 +69,15 @@ public:
     void activate(WindowImp* proxy);
 
     void preload(const std::u16string& base, const std::u16string& url);
+
+    // CSSOM View
+    int getScrollX() const {
+        return scrollX;
+    }
+    int getScrollY() const {
+        return scrollY;
+    }
+    void scroll(int x, int y);
 };
 
 typedef boost::intrusive_ptr<DocumentWindow> DocumentWindowPtr;

@@ -91,6 +91,9 @@ public:
     Document getDocument() const {
         return window->getDocument();
     }
+    DocumentWindowPtr getWindow() const {
+        return window;
+    }
 
     void cascade();
     void cascade(Node node, CSSStyleDeclarationImp* parentStyle = 0);

@@ -21,6 +21,14 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
+DocumentWindow::DocumentWindow() :
+    document(0),
+    global(0),
+    scrollX(0),
+    scrollY(0)
+{
+}
+
 DocumentWindow::~DocumentWindow()
 {
     if (global) {
@@ -64,6 +72,12 @@ void DocumentWindow::preload(const std::u16string& base, const std::u16string& u
         request->open(u"GET", urlString);
         request->send();
     }
+}
+
+void DocumentWindow::scroll(int x, int y)
+{
+    scrollX = x;
+    scrollY = y;
 }
 
 }}}}  // org::w3c::dom::bootstrap

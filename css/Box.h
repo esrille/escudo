@@ -347,6 +347,11 @@ public:
     void setFlags(unsigned f) {
         flags |= f;
     }
+    void clearFlags(unsigned f) {
+        flags &= ~f;
+        for (Box* i = firstChild; i; i = i->nextSibling)
+            i->clearFlags(f);
+    }
     bool isFlagged() const {
         unsigned f = flags;
         for (const Box* i = firstChild; i; i = i->nextSibling)
