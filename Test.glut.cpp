@@ -178,14 +178,8 @@ void init(int argc, char* argv[])
 {
     glutInit(&argc, argv);
 
-    GLint buffers, samples;
-    glGetIntegerv(GL_SAMPLE_BUFFERS, &buffers);
-    glGetIntegerv(GL_SAMPLES, &samples);
-    std::cout << "GL_SAMPLE_BUFFERS = " << buffers << ", GL_SAMPLES = " << samples << '\n';
-    if (1 <= GL_SAMPLE_BUFFERS && 2 <= samples)
-        glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
-    else
-        glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
+
     glutInitWindowSize(816, 1056);
     glutCreateWindow(argv[0]);
     glutReshapeFunc(reshape);
@@ -208,8 +202,7 @@ void init(int argc, char* argv[])
     glutPassiveMotionFunc(mouseMove);
     glutTimerFunc(50, timer, 0);
     glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
-    if (1 <= GL_SAMPLE_BUFFERS && 2 <= samples) {
-        glEnable(GL_MULTISAMPLE);
-        glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
-    }
+
+    glEnable(GL_MULTISAMPLE);
+    glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
 }
