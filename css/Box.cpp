@@ -1009,6 +1009,8 @@ void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
 
 void BlockLevelBox::adjustWidth()
 {
+    if (style && !style->width.isAuto())
+        return;
     if (parentBox) {
         float diff = parentBox->width - getTotalWidth();
         if (0.0f < diff) {
