@@ -301,14 +301,6 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
             childBox = box;
     }
 
-    if (runIn && !currentBox->hasChildBoxes() && siblingBox) {
-        assert(siblingBox->getBoxType() == Box::BLOCK_LEVEL_BOX);
-        siblingBox->spliceInline(currentBox);
-        parentBox->removeChild(currentBox);
-        delete currentBox;
-        currentBox = 0;
-    }
-
     if (CSSStyleDeclarationImp* beforeStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::Before)) {
         beforeStyle->compute(this, style, element);
         if (Element before = beforeStyle->content.eval(getDocument(), element)) {
@@ -316,6 +308,15 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
             if (BlockLevelBox* box = layOutBlockBoxes(before, currentBox, childBox, style))
                 childBox = box;
         }
+    }
+
+    // cf. http://www.w3.org/TR/2010/WD-CSS2-20101207/generate.html#before-after-content
+    if (runIn && !currentBox->hasChildBoxes() && siblingBox) {
+        assert(siblingBox->getBoxType() == Box::BLOCK_LEVEL_BOX);
+        siblingBox->spliceInline(currentBox);
+        parentBox->removeChild(currentBox);
+        delete currentBox;
+        currentBox = 0;
     }
 
     if (!currentBox)
