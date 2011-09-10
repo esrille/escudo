@@ -970,6 +970,87 @@ public:
     bool isNone() const {
         return value == None;
     }
+    bool isTableParts() const {
+        switch (value) {
+        case Table:
+        case InlineTable:
+        case TableRowGroup:
+        case TableHeaderGroup:
+        case TableFooterGroup:
+        case TableRow:
+        case TableColumnGroup:
+        case TableColumn:
+        case TableCell:
+        case TableCaption:
+            return true;
+        default:
+            return false;
+        }
+    }
+    bool isRowGoupBox() const {
+        switch (value) {
+        case TableRowGroup:
+        case TableHeaderGroup:
+        case TableFooterGroup:
+            return true;
+        default:
+            return false;
+        }
+    }
+    bool isProperTableChild() const {
+        switch (value) {
+        case TableRowGroup:
+        case TableHeaderGroup:
+        case TableFooterGroup:
+        case TableRow:
+        case TableColumnGroup:
+        case TableColumn:
+        case TableCaption:
+            return true;
+        default:
+            return false;
+        }
+    }
+    bool isProperTableRowParent() const {
+        switch (value) {
+        case Table:
+        case InlineTable:
+        case TableRowGroup:
+        case TableHeaderGroup:
+        case TableFooterGroup:
+            return true;
+        default:
+            return false;
+        }
+    }
+    bool isInternalTableBox() const {
+        switch (value) {
+        case TableRowGroup:
+        case TableHeaderGroup:
+        case TableFooterGroup:
+        case TableRow:
+        case TableColumnGroup:
+        case TableColumn:
+        case TableCell:
+            return true;
+        default:
+            return false;
+        }
+    }
+    bool isTabularContainer() const {
+        switch (value) {
+        case Table:
+        case InlineTable:
+        case TableRowGroup:
+        case TableHeaderGroup:
+        case TableFooterGroup:
+        case TableRow:
+            return true;
+        default:
+            return false;
+        }
+    }
+
     static const char16_t* Options[];
 };
 
@@ -1320,6 +1401,18 @@ public:
     }
     CSSPositionValueImp(unsigned initial = Static) :
         value(initial) {
+    }
+    bool isStatic() const {
+        return value == Static;
+    }
+    bool isRelative() const {
+        return value == Relative;
+    }
+    bool isAbsolute() const {
+        return value == Absolute;
+    }
+    bool isFixed() const {
+        return value == Fixed;
     }
     static const char16_t* Options[];
 };

@@ -1020,29 +1020,29 @@ void CSSDisplayValueImp::compute(CSSStyleDeclarationImp* decl, Element element)
 {
     if (value == None)
         return;
-    if (decl->position != CSSPositionValueImp::Static && decl->position != CSSPositionValueImp::Relative ||
-        decl->float_ != CSSFloatValueImp::None ||
-        element && !element.getParentElement()) {
-        switch (value) {
-        case InlineTable:
-            value = Table;
-            break;
-        case Inline:
-        case RunIn:
-        case TableRowGroup:
-        case TableColumn:
-        case TableColumnGroup:
-        case TableHeaderGroup:
-        case TableFooterGroup:
-        case TableRow:
-        case TableCell:
-        case TableCaption:
-        case InlineBlock:
-            value = Block;
-            break;
-        default:
-            break;
-        }
+    if (decl->position.isAbsolute() || decl->position.isFixed())
+        decl->float_.setValue(CSSFloatValueImp::None);
+    else if (decl->float_.getValue() == CSSFloatValueImp::None && (!element || element.getParentElement()))
+        return;
+    switch (value) {
+    case InlineTable:
+        value = Table;
+        break;
+    case Inline:
+    case RunIn:
+    case TableRowGroup:
+    case TableColumn:
+    case TableColumnGroup:
+    case TableHeaderGroup:
+    case TableFooterGroup:
+    case TableRow:
+    case TableCell:
+    case TableCaption:
+    case InlineBlock:
+        value = Block;
+        break;
+    default:
+        break;
     }
 }
 
