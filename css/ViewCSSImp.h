@@ -103,6 +103,7 @@ public:
             window->preload(base, url);
     }
 
+    BlockLevelBox* createBlockLevelBox(Element element, CSSStyleDeclarationImp* style, bool newContext);
     BlockLevelBox* layOutBlockBoxes(Node node, BlockLevelBox* parentBox, BlockLevelBox* siblingBox, CSSStyleDeclarationImp* style);
     BlockLevelBox* layOutBlockBoxes(Text text, BlockLevelBox* parentBox, BlockLevelBox* siblingBox, CSSStyleDeclarationImp* style);
     BlockLevelBox* layOutBlockBoxes(Element element, BlockLevelBox* parentBox, BlockLevelBox* siblingBox, CSSStyleDeclarationImp* style, bool asBlock = false);

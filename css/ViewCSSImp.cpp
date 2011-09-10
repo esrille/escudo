@@ -235,46 +235,41 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Text text, BlockLevelBox* parentBox,
     return 0;
 }
 
+BlockLevelBox* ViewCSSImp::createBlockLevelBox(Element element, CSSStyleDeclarationImp* style, bool newContext)
+{
+    assert(style);
+    BlockLevelBox* block = new(std::nothrow) BlockLevelBox(element, style);
+    if (!block)
+        return 0;
+    if (newContext && !block->establishFormattingContext())
+        return 0;
+    style->addBox(block);
+    return block;
+}
+
 BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* parentBox, BlockLevelBox* siblingBox, CSSStyleDeclarationImp* style, bool asBlock)
 {
     style = map[element].get();
     if (!style || style->display.isNone())
         return 0;
-    bool runIn = style->display.isRunIn();
+    bool runIn = style->display.isRunIn() && parentBox;
     BlockLevelBox* currentBox = parentBox;
-    BlockLevelBox* childBox = 0;
-    if (style->isFloat() || style->isAbsolutelyPositioned()) {
-        currentBox = new(std::nothrow) BlockLevelBox(element, style);
+    if (style->isFloat() || style->isAbsolutelyPositioned() || !parentBox) {
+        currentBox = createBlockLevelBox(element, style, true);
         if (!currentBox)
             return 0;  // TODO: error
-        if (!currentBox->establishFormattingContext())
-            return 0;  // TODO: error
-        style->addBox(currentBox);
         // Do not insert currentBox into parentBox
     } else if (style->isBlockLevel() || runIn || asBlock) {
         // Create a temporary block-level box for the run-in box, too.
-        if (parentBox && parentBox->hasInline()) {
+        if (parentBox->hasInline()) {
             if (!parentBox->getAnonymousBox())
                 return 0;
             assert(!parentBox->hasInline());
         }
-        currentBox = new(std::nothrow) BlockLevelBox(element, style);
+        currentBox = createBlockLevelBox(element, style, style->isFlowRoot());
         if (!currentBox)
             return 0;
-        style->addBox(currentBox);
-        if (parentBox) {
-            if (Box* first = parentBox->getFirstChild())
-                parentBox->insertBefore(currentBox, first);
-            else
-                parentBox->appendChild(currentBox);
-        } else
-            runIn = false;
-
-        // Establish a new formatting context?
-        if (!parentBox || style->isFlowRoot()) {
-            if (!currentBox->establishFormattingContext())
-                return 0;  // TODO error
-        }
+        parentBox->insertBefore(currentBox, parentBox->getFirstChild());
     } else if (style->isInlineBlock() || isReplacedElement(element)) {
         assert(currentBox);
         if (!currentBox->hasChildBoxes())
@@ -286,6 +281,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
         return currentBox;
     }
 
+    BlockLevelBox* childBox = 0;
     if (CSSStyleDeclarationImp* afterStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::After)) {
         afterStyle->compute(this, style, element);
         if (Element after = afterStyle->content.eval(getDocument(), element)) {
@@ -319,11 +315,9 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
         currentBox = 0;
     }
 
-    if (!currentBox)
-        currentBox = childBox;
-    else if (currentBox == parentBox)
-        currentBox = 0;
-    else if (currentBox->isFloat() || currentBox->isAbsolutelyPositioned()) {
+    if (!currentBox || currentBox == parentBox)
+        return 0;
+    if (currentBox->isFloat() || currentBox->isAbsolutelyPositioned()) {
         floatMap[element] = currentBox;
         if (parentBox) {
             if (!parentBox->hasChildBoxes())
