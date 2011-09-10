@@ -81,6 +81,11 @@ const char16_t* CSSBorderWidthValueImp::Options[] = {
     u"thick"
 };
 
+const char16_t* CSSCaptionSideValueImp::Options[] = {
+    u"top",
+    u"bottom"
+};
+
 const char16_t* CSSClearValueImp::Options[] = {
     u"none",
     u"left",

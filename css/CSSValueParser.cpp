@@ -321,8 +321,8 @@ void CSSValueParser::initializeRules()
           border_style ||
           color;
     captionSide
-        = CSSValueRule(u"top")
-        | u"bottom";
+        = CSSValueRule(u"top", CSSCaptionSideValueImp::Top)
+        | CSSValueRule(u"bottom", CSSCaptionSideValueImp::Bottom);
     clear
         = CSSValueRule(u"none", CSSClearValueImp::None)
         | CSSValueRule(u"left", CSSClearValueImp::Left)
@@ -899,6 +899,9 @@ CSSValueParser::CSSValueParser(int propertyID) :
     case CSSStyleDeclarationImp::BorderLeft:
     case CSSStyleDeclarationImp::Border:
         rule = &border;
+        break;
+    case CSSStyleDeclarationImp::CaptionSide:
+        rule = &captionSide;
         break;
     case CSSStyleDeclarationImp::Clear:
         rule = &clear;

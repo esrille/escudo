@@ -229,6 +229,8 @@ CSSPropertyValueImp* CSSStyleDeclarationImp::getProperty(unsigned id)
         return &borderLeft;
     case Border:
         return &border;
+    case CaptionSide:
+        return &captionSide;
     case Clear:
         return &clear;
     case Color:
@@ -587,6 +589,9 @@ void CSSStyleDeclarationImp::specify(const CSSStyleDeclarationImp* decl, unsigne
     case Border:
         border.specify(this, decl);
         break;
+    case CaptionSide:
+        captionSide.specify(decl->captionSide);
+        break;
     case Clear:
         clear.specify(decl->clear);
         break;
@@ -875,6 +880,9 @@ void CSSStyleDeclarationImp::reset(unsigned id)
         reset(BorderColor);
         reset(BorderStyle);
         reset(BorderWidth);
+        break;
+    case CaptionSide:
+        captionSide.setValue();
         break;
     case Clear:
         clear.setValue();
@@ -1760,8 +1768,7 @@ void CSSStyleDeclarationImp::setBottom(Nullable<std::u16string> bottom)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getCaptionSide()
 {
-    // TODO: implement me!
-    return Nullable<std::u16string>();
+    return captionSide.getCssText(this);
 }
 
 void CSSStyleDeclarationImp::setCaptionSide(Nullable<std::u16string> captionSide)

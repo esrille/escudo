@@ -275,7 +275,7 @@ public:
     CSSBorderWidthShorthandImp borderWidth;
     CSSBorderShorthandImp border;
     CSSAutoLengthValueImp bottom;
-
+    CSSCaptionSideValueImp captionSide;
     CSSClearValueImp clear;
 
     CSSColorValueImp color;

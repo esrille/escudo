@@ -688,6 +688,36 @@ public:
     void specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl);
 };
 
+class CSSCaptionSideValueImp : public CSSPropertyValueImp
+{
+    unsigned value;
+public:
+    enum {
+        Top,
+        Bottom
+    };
+    CSSCaptionSideValueImp& setValue(unsigned value = Top) {
+        this->value = value;
+        return *this;
+    }
+    CSSCaptionSideValueImp& setValue(CSSParserTerm* term) {
+        return setValue(term->getIndex());
+    }
+    unsigned getValue() const {
+        return value;
+    }
+    virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
+        return Options[value];
+    }
+    void specify(const CSSCaptionSideValueImp& specified) {
+        value = specified.value;
+    }
+    CSSCaptionSideValueImp(unsigned initial = Top) :
+        value(initial) {
+    }
+    static const char16_t* Options[];
+};
+
 class CSSClearValueImp : public CSSPropertyValueImp
 {
     unsigned value;
