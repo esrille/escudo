@@ -322,6 +322,7 @@ public:
 
     CSSAutoLengthValueImp right;
 
+    CSSTableLayoutValueImp tableLayout;
     CSSTextAlignValueImp textAlign;
     CSSTextDecorationValueImp textDecoration;
     CSSNumericValueImp textIndent;

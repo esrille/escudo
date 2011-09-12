@@ -297,6 +297,8 @@ CSSPropertyValueImp* CSSStyleDeclarationImp::getProperty(unsigned id)
         return &pageBreakInside;
     case Position:
         return &position;
+    case TableLayout:
+        return &tableLayout;
     case TextAlign:
         return &textAlign;
     case TextDecoration:
@@ -691,6 +693,9 @@ void CSSStyleDeclarationImp::specify(const CSSStyleDeclarationImp* decl, unsigne
     case Position:
         position.specify(decl->position);
         break;
+    case TableLayout:
+        tableLayout.specify(decl->tableLayout);
+        break;
     case TextAlign:
         textAlign.specify(decl->textAlign);
         break;
@@ -988,6 +993,9 @@ void CSSStyleDeclarationImp::reset(unsigned id)
         break;
     case Position:
         position.setValue();
+        break;
+    case TableLayout:
+        tableLayout.setValue();
         break;
     case TextAlign:
         textAlign.setValue();
@@ -2556,8 +2564,7 @@ void CSSStyleDeclarationImp::setStress(Nullable<std::u16string> stress)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getTableLayout()
 {
-    // TODO: implement me!
-    return Nullable<std::u16string>();
+    return tableLayout.getCssText(this);
 }
 
 void CSSStyleDeclarationImp::setTableLayout(Nullable<std::u16string> tableLayout)

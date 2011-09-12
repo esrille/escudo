@@ -206,6 +206,11 @@ const char16_t* CSSPositionValueImp::Options[] = {
     u"fixed"
 };
 
+const char16_t* CSSTableLayoutValueImp::Options[] = {
+    u"auto",
+    u"fixed",
+};
+
 const char16_t* CSSTextAlignValueImp::Options[] = {
     u"left",
     u"right",

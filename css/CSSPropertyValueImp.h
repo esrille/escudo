@@ -1447,6 +1447,36 @@ public:
     static const char16_t* Options[];
 };
 
+class CSSTableLayoutValueImp : public CSSPropertyValueImp
+{
+    unsigned value;
+public:
+    enum {
+        Auto,
+        Fixed
+    };
+    unsigned getValue() const {
+        return value;
+    }
+    CSSTableLayoutValueImp& setValue(unsigned value = Auto) {
+        this->value = value;
+        return *this;
+    }
+    CSSTableLayoutValueImp& setValue(CSSParserTerm* term) {
+        return setValue(term->getIndex());
+    }
+    virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
+        return Options[value];
+    }
+    void specify(const CSSTableLayoutValueImp& specified) {
+        value = specified.value;
+    }
+    CSSTableLayoutValueImp(unsigned initial = Auto) :
+        value(initial) {
+    }
+    static const char16_t* Options[];
+};
+
 class CSSTextAlignValueImp : public CSSPropertyValueImp
 {
     unsigned value;
