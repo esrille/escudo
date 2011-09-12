@@ -206,4 +206,16 @@ inline int compareIgnoreCase(const std::u16string& a, const std::u16string& b)
     return 0;
 }
 
+inline std::u16string toString(unsigned int value)
+{
+    static const size_t MaxDigits = 10;
+    char16_t buf[MaxDigits];
+    char16_t* p = &buf[MaxDigits];
+    do {
+        *--p = '0' + (value % 10);
+        value /= 10;
+    } while (value);
+    return std::u16string(p, &buf[MaxDigits] - p);
+}
+
 #endif  // #ifndef ES_UTF_H_INCLUDED
