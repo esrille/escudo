@@ -19,6 +19,8 @@
 #include <iostream>
 #include <boost/bind.hpp>
 
+#include <org/w3c/dom/events/MouseEvent.h>
+
 #include "utf.h"
 
 namespace org
@@ -52,8 +54,9 @@ void HTMLAnchorElementImp::handleClick(events::Event event)
 {
     if (event.getDefaultPrevented())
         return;
+    events::MouseEvent mouse = interface_cast<events::MouseEvent>(event);
     std::u16string href = getHref();
-    if (!href.empty())
+    if (!href.empty() && mouse.getButton() == 0)
         getOwnerDocument().setLocation(href);
 }
 
