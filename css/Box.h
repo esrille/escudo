@@ -211,9 +211,6 @@ protected:
 
     ViewCSSImp* shadow;
 
-    void updatePadding();
-    void updateBorderWidth();
-
     void renderBorderEdge(ViewCSSImp* view, int edge, unsigned borderStyle, unsigned color,
                           float a, float b, float c, float d,
                           float e, float f, float g, float h);
@@ -293,7 +290,7 @@ public:
     }
 
     virtual float shrinkTo();
-    virtual void fit(float w);
+    virtual void fit(float w) {}
 
     virtual void toViewPort(const Box* box, float& x, float& y) const = 0;
     void toViewPort(float& x, float& y) const {
@@ -332,10 +329,11 @@ public:
         return false;
     }
 
+    void updatePadding();
+    void updateBorderWidth();
+
     void resolveOffset(CSSStyleDeclarationImp* style);
     virtual void resolveOffset(ViewCSSImp* view);
-
-    virtual void adjustWidth() {}
 
     virtual void layOut(ViewCSSImp* view, FormattingContext* context) {}
 
@@ -403,6 +401,7 @@ class BlockLevelBox : public Box
     void layOutAbsolute(ViewCSSImp* view, Node node, BlockLevelBox* absBox, FormattingContext* context);  // 1st pass
     void layOutInline(ViewCSSImp* view, FormattingContext* context);
 
+protected:
     // resolveAbsoluteWidth's return values
     enum {
         Left = 4u,
@@ -480,7 +479,12 @@ public:
     BlockLevelBox* getAnonymousBox();
 
     void resolveWidth(ViewCSSImp* view, const ContainingBlock* containingBlock, float available = 0);
-    virtual void adjustWidth();
+    void resolveBackground(ViewCSSImp* view);
+    void resolveMargin(ViewCSSImp* view, const ContainingBlock* containingBlock, float available);
+    void resolveWidth(float w);
+    void resolveFloatWidth(float w);
+    FormattingContext* collapseMargins(FormattingContext* context);
+    void collapseMarginBottom();
     virtual void layOut(ViewCSSImp* view, FormattingContext* context);
     virtual void render(ViewCSSImp* view);
     virtual void dump(ViewCSSImp* view, std::string indent = "");
@@ -534,8 +538,7 @@ public:
     virtual void layOut(ViewCSSImp* view, FormattingContext* context);
     virtual void render(ViewCSSImp* view);
     virtual void dump(ViewCSSImp* view, std::string indent);
-
-    void realignText(BlockLevelBox* parentBox, float shrink);
+    virtual void fit(float w);
 };
 
 typedef boost::intrusive_ptr<LineBox> LineBoxPtr;

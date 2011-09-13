@@ -28,6 +28,7 @@
 #include "DocumentImp.h"
 
 #include "Box.h"
+#include "Table.h"
 #include "StackingContext.h"
 
 #include "Test.util.h"
@@ -238,7 +239,16 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Text text, BlockLevelBox* parentBox,
 BlockLevelBox* ViewCSSImp::createBlockLevelBox(Element element, CSSStyleDeclarationImp* style, bool newContext)
 {
     assert(style);
-    BlockLevelBox* block = new(std::nothrow) BlockLevelBox(element, style);
+    BlockLevelBox* block;
+    if (style->display == CSSDisplayValueImp::Table || style->display == CSSDisplayValueImp::InlineTable) {
+        // TODO
+        block = new(std::nothrow) TableWrapperBox(this, element, style);
+        newContext = true;
+    } else if (style->display == CSSDisplayValueImp::TableCell) {
+        block = new(std::nothrow) CellBox(element, style);
+        newContext = true;
+    } else
+        block = new(std::nothrow) BlockLevelBox(element, style);
     if (!block)
         return 0;
     if (newContext && !block->establishFormattingContext())
@@ -281,28 +291,28 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
         return currentBox;
     }
 
-    BlockLevelBox* childBox = 0;
-    if (CSSStyleDeclarationImp* afterStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::After)) {
-        afterStyle->compute(this, style, element);
-        if (Element after = afterStyle->content.eval(getDocument(), element)) {
-            map[after] = afterStyle;
-            if (BlockLevelBox* box = layOutBlockBoxes(after, currentBox, childBox, style))
+    if (!dynamic_cast<TableWrapperBox*>(currentBox)) {
+        BlockLevelBox* childBox = 0;
+        if (CSSStyleDeclarationImp* afterStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::After)) {
+            afterStyle->compute(this, style, element);
+            if (Element after = afterStyle->content.eval(getDocument(), element)) {
+                map[after] = afterStyle;
+                if (BlockLevelBox* box = layOutBlockBoxes(after, currentBox, childBox, style))
+                    childBox = box;
+            }
+        }
+        // Iterate over from back to front to process run-in boxes
+        for (Node child = element.getLastChild(); child; child = child.getPreviousSibling()) {
+            if (BlockLevelBox* box = layOutBlockBoxes(child, currentBox, childBox, style))
                 childBox = box;
         }
-    }
-
-    // Iterate over from back to front to process run-in boxes
-    for (Node child = element.getLastChild(); child; child = child.getPreviousSibling()) {
-        if (BlockLevelBox* box = layOutBlockBoxes(child, currentBox, childBox, style))
-            childBox = box;
-    }
-
-    if (CSSStyleDeclarationImp* beforeStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::Before)) {
-        beforeStyle->compute(this, style, element);
-        if (Element before = beforeStyle->content.eval(getDocument(), element)) {
-            map[before] = beforeStyle;
-            if (BlockLevelBox* box = layOutBlockBoxes(before, currentBox, childBox, style))
-                childBox = box;
+        if (CSSStyleDeclarationImp* beforeStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::Before)) {
+            beforeStyle->compute(this, style, element);
+            if (Element before = beforeStyle->content.eval(getDocument(), element)) {
+                map[before] = beforeStyle;
+                if (BlockLevelBox* box = layOutBlockBoxes(before, currentBox, childBox, style))
+                    childBox = box;
+            }
         }
     }
 

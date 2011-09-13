@@ -35,6 +35,8 @@
 #include "ViewCSSImp.h"
 #include "WindowImp.h"
 
+#include "Table.h"
+
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 namespace {
@@ -430,59 +432,96 @@ BlockLevelBox* BlockLevelBox::getAnonymousBox()
 void BlockLevelBox::resolveWidth(ViewCSSImp* view, const ContainingBlock* containingBlock, float available)
 {
     assert(style);
+    resolveBackground(view);
+    updatePadding();
+    updateBorderWidth();
+    resolveMargin(view, containingBlock, available);
+}
+
+void BlockLevelBox::resolveBackground(ViewCSSImp* view)
+{
+    assert(style);
     backgroundColor = style->backgroundColor.getARGB();
     if (!style->backgroundImage.isNone()) {
         view->preload(view->getDocument().getDocumentURI(), style->backgroundImage.getValue());
         backgroundImage = new(std::nothrow) BoxImage(this, view->getDocument().getDocumentURI(), style->backgroundImage.getValue(), style->backgroundRepeat.getValue());
     }
+}
 
-    //
-    // Calculate width
-    //
-    // marginLeft + borderLeftWidth + paddingLeft + width + paddingRight + borderRightWidth + marginRight
-    // == containingBlock->width (- scrollbar width, if any)
-    //
-    updatePadding();
-    updateBorderWidth();
+// Calculate width
+//
+// marginLeft + borderLeftWidth + paddingLeft + width + paddingRight + borderRightWidth + marginRight
+// == containingBlock->width (- scrollbar width, if any)
+void BlockLevelBox::resolveWidth(float w)
+{
+    int autoCount = 3;
+    unsigned autoMask = Left | Width | Right;
+    if (style) {
+        if (style->isFloat())
+            return resolveFloatWidth(w);
+        if (!style->width.isAuto()) {
+            width = style->width.getPx();
+            --autoCount;
+            autoMask &= ~Width;
+            w -= width;
+        }
+        if (!style->marginLeft.isAuto()) {
+            marginLeft = style->marginLeft.getPx();
+            --autoCount;
+            autoMask &= ~Left;
+            w -= marginLeft;
+        }
+        if (!style->marginRight.isAuto()) {  // TODO: assuming LTR
+            if (1 < autoCount) {
+                marginRight = style->marginRight.getPx();
+                --autoCount;
+                autoMask &= ~Right;
+                w -= marginRight;
+            }
+        }
+    }
+    w -= borderLeft + paddingLeft + paddingRight + borderRight;
+    switch (autoMask) {
+    case Left | Width | Right:
+        width = w;
+        marginLeft = marginRight = 0.0f;
+        break;
+    case Left | Width:
+        width = w;
+        marginLeft = 0.0f;
+        break;
+    case Width | Right:
+        width = w;
+        marginRight = 0.0f;
+        break;
+    case Left | Right:
+        marginLeft = marginRight = w / 2.0f;
+        break;
+    case Left:
+        marginLeft = w;
+        break;
+    case Width:
+        width = w;
+        break;
+    case Right:
+        marginRight = w;
+        break;
+    default:
+        break;
+    }
+}
 
-    int autoCount = 3;  // properties which can be auto are margins and width
-    if (!style->marginLeft.isAuto()) {
-        marginLeft = style->marginLeft.getPx();
-        --autoCount;
-    }
-    if (!style->marginRight.isAuto()) {
-        marginRight = style->marginRight.getPx();
-        --autoCount;
-    }
-    if (!style->width.isAuto()) {
-        width = style->width.getPx();
-        --autoCount;
-    } else if (available) {
-        available -= getBlankLeft() + getBlankRight();
-        width = available;
-        --autoCount;
-    }
-    // if 0 == autoCount, the values are over-constrained; ignore marginRight if 'ltr'
-    float leftover = 0.0f;
-    if (!available)
-        leftover = containingBlock->width - getTotalWidth();
-    // if leftover < 0, follow overflow
-    if (autoCount == 1) {
-        if (style->marginLeft.isAuto())
-            marginLeft = leftover;
-        else if (style->marginRight.isAuto())
-            marginRight = leftover;
-        else
-            width = leftover;
-    } else if (style->width.isAuto() && available == 0.0f) {
-        if (style->marginLeft.isAuto())
-            marginLeft = 0.0f;
-        if (style->marginRight.isAuto())
-            marginRight = 0.0f;
-        width = leftover;
-    } else if (style->marginLeft.isAuto() && style->marginRight.isAuto())
-        marginLeft = marginRight = leftover / 2.0f;
+void BlockLevelBox::resolveFloatWidth(float w)
+{
+    assert(style);
+    marginLeft = style->marginLeft.isAuto() ? 0.0f : style->marginLeft.getPx();
+    marginRight = style->marginRight.isAuto() ? 0.0f : style->marginRight.getPx();
+    width = style->width.isAuto() ? (w - getBlankLeft() - getBlankRight()) : style->width.getPx();
+}
 
+void BlockLevelBox::resolveMargin(ViewCSSImp* view, const ContainingBlock* containingBlock, float available)
+{
+    resolveWidth((available != 0.0f) ? available : containingBlock->width);
     if (!style->marginTop.isAuto())
         marginTop = style->marginTop.getPx();
     else
@@ -491,7 +530,6 @@ void BlockLevelBox::resolveWidth(ViewCSSImp* view, const ContainingBlock* contai
         marginBottom = style->marginBottom.getPx();
     else
         marginBottom = 0;
-
     if (!style->height.isAuto())
         height = style->height.getPx();
 }
@@ -867,40 +905,42 @@ float BlockLevelBox::shrinkTo()
     return min;
 }
 
-void Box::fit(float w)
-{
-}
-
 void BlockLevelBox::fit(float w)
 {
-    if (getTotalWidth() <= w)
+    resolveWidth(w);
+    if (style && !style->width.isAuto())
         return;
-    int autoCount = 3;
-    float newWidth = w;
+    for (Box* child = getFirstChild(); child; child = child->getNextSibling())
+        child->fit(width);
+}
 
-    if (style) {
-        if (!style->width.isAuto()) {
-            --autoCount;
-            newWidth = style->width.getPx();
-        }
-        if (!style->marginLeft.isAuto()) {
-            --autoCount;
-            newWidth -= style->marginLeft.getPx();
-        }
-        if (!style->marginRight.isAuto()) {
-            --autoCount;
-            if (0 < autoCount)
-                newWidth -= style->marginRight.getPx();
+FormattingContext* BlockLevelBox::collapseMargins(FormattingContext* context)
+{
+    if (Box* parent = getParentBox()) {  // TODO: root exception
+        if (parent->getFirstChild() == this &&
+            parent->borderTop == 0 && parent->paddingTop == 0 /* && TODO: check clearance */) {
+            marginTop = std::max(marginTop, parent->marginTop);  // TODO: negative case
+            parent->marginTop = 0.0f;
+        } else if (Box* prev = getPreviousSibling()) {
+            marginTop = std::max(prev->marginBottom, marginTop);  // TODO: negative case
+            prev->marginBottom = 0.0f;
         }
     }
-    newWidth -= borderLeft + paddingLeft + paddingRight + borderRight;
-    float shrink = width - newWidth;
-    width = newWidth;
-    for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
-        if (LineBox* line = dynamic_cast<LineBox*>(child))
-            line->realignText(this, shrink);
-        else
-            child->fit(width);
+    context = updateFormattingContext(context);
+    assert(context);
+    context->updateRemainingHeight(getBlankTop());
+    marginTop += context->clear(style->clear.getValue());
+    return context;
+}
+
+void BlockLevelBox::collapseMarginBottom()
+{
+    // TODO: root exception
+    if (height == 0 && borderBottom == 0 && paddingBottom == 0 /* && TODO: check clearance */) {
+        if (Box* child = getLastChild()) {
+            marginBottom = std::max(marginBottom, child->marginBottom);  // TODO: negative case
+            child->marginBottom = 0;
+        }
     }
 }
 
@@ -938,23 +978,7 @@ void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     }
 
     textAlign = style->textAlign.getValue();
-
-    // Collapse margins
-    if (Box* parent = getParentBox()) {  // TODO: root exception
-        if (parent->getFirstChild() == this &&
-            parent->borderTop == 0 && parent->paddingTop == 0 /* && TODO: check clearance */) {
-            marginTop = std::max(marginTop, parent->marginTop);  // TODO: negative case
-            parent->marginTop = 0.0f;
-        } else if (Box* prev = getPreviousSibling()) {
-            marginTop = std::max(prev->marginBottom, marginTop);  // TODO: negative case
-            prev->marginBottom = 0.0f;
-        }
-    }
-
-    context = updateFormattingContext(context);
-    assert(context);
-    context->updateRemainingHeight(getBlankTop());
-    this->marginTop += context->clear(style->clear.getValue());
+    context = collapseMargins(context);
 
     if (hasInline())
         layOutInline(view, context);
@@ -964,18 +988,13 @@ void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         width = std::max(width, child->getTotalWidth());
     }
 
-    if ((style->isInlineBlock() || style->isFloat()) && style->width.isAuto())
+    if (style->width.isAuto() &&
+        (style->isInlineBlock() || style->isFloat() || style->display == CSSDisplayValueImp::TableCell))
         shrinkToFit();
 
-    // Collapse marginBottom  // TODO: root exception
-    if (height == 0 && borderBottom == 0 && paddingBottom == 0 /* && TODO: check clearance */) {
-        if (Box* child = getLastChild()) {
-            marginBottom = std::max(marginBottom, child->marginBottom);  // TODO: negative case
-            child->marginBottom = 0;
-        }
-    }
+    collapseMarginBottom();
 
-    if (height == 0) {
+    if (height == 0.0f) {
         for (Box* child = getFirstChild(); child; child = child->getNextSibling())
             height += child->getTotalHeight();
     }
@@ -997,27 +1016,13 @@ void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     // Now that 'height' is fixed, calculate 'left', 'right', 'top', and 'bottom'.
     for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
         child->resolveOffset(view);
-        child->adjustWidth();
+        child->fit(width);
     }
 
     if (backgroundImage && backgroundImage->getState() == BoxImage::CompletelyAvailable) {
         style->backgroundPosition.compute(view, backgroundImage, style->fontSize, getPaddingWidth(), getPaddingHeight());
         backgroundLeft = style->backgroundPosition.getLeftPx();
         backgroundTop = style->backgroundPosition.getTopPx();
-    }
-}
-
-void BlockLevelBox::adjustWidth()
-{
-    if (style && !style->width.isAuto())
-        return;
-    if (parentBox) {
-        float diff = parentBox->width - getTotalWidth();
-        if (0.0f < diff) {
-            width += diff;
-            for (Box* child = getFirstChild(); child; child = child->getNextSibling())
-                child->adjustWidth();
-        }
     }
 }
 
@@ -1231,7 +1236,7 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view, Node node)
     // Now that 'height' is fixed, calculate 'left', 'right', 'top', and 'bottom'.
     for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
         child->resolveOffset(view);
-        child->adjustWidth();
+        child->fit(width);
     }
 }
 
@@ -1250,25 +1255,24 @@ void LineBox::layOut(ViewCSSImp* view, FormattingContext* context)
 
 void LineBox::dump(ViewCSSImp* view, std::string indent)
 {
-    std::cout << indent << "* line box: (" << x << ", " << y << "), (" << getTotalWidth() << ", " << getTotalHeight() << ")\n";
+    std::cout << indent << "* line box: (" << x << ", " << y << "), (" << getTotalWidth() << ", " << getTotalHeight() << "), (" << offsetH << ", " << offsetV <<")\n";
     indent += "    ";
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
         child->dump(view, indent);
 }
 
-void LineBox::realignText(BlockLevelBox* parentBox, float shrink)
+void LineBox::fit(float w)
 {
-    shrink -= marginRight;
-    if (shrink <= 0.0f)
-        return;
-    switch (parentBox->getTextAlign()) {
+    assert(parentBox);
+    assert(dynamic_cast<BlockLevelBox*>(parentBox));
+    switch (dynamic_cast<BlockLevelBox*>(parentBox)->getTextAlign()) {
     case CSSTextAlignValueImp::Left:
         break;
     case CSSTextAlignValueImp::Right:
-        offsetH -= shrink;
+        offsetH = w - getTotalWidth();
         break;
     case CSSTextAlignValueImp::Center:
-        offsetH -= shrink / 2.0f;
+        offsetH = (w - getTotalWidth()) / 2.0f;
         break;
     default:  // TODO: support Justify and Default
         break;

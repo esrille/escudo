@@ -628,6 +628,8 @@ libeshtml5_a_SOURCES = \
 	css/CSSValueParser.h \
 	css/CSSInputStream.cpp \
 	css/CSSInputStream.h \
+	css/Table.cpp \
+	css/Table.h \
 	css/ViewCSSImp.cpp \
 	css/ViewCSSImp.h \
 	css/ViewCSSImpGL.cpp \
@@ -1176,4 +1178,3 @@ EXTRA_DIST = \
 	idl/wget_webidl_dom \
 	idl/workers.idl \
 	idl/xhr2.idl
-

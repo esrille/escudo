@@ -983,6 +983,15 @@ public:
             return false;
         }
     }
+    bool isInlineBlock() const {
+        switch (value) {
+        case InlineBlock:
+        case InlineTable:
+            return true;
+        default:
+            return false;
+        }
+    }
     bool isInlineLevel() const {
         switch (value) {
         case Inline:

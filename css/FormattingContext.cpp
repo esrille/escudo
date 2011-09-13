@@ -134,22 +134,6 @@ void FormattingContext::nextLine(BlockLevelBox* parentBox, bool moreFloats)
 {
     assert(lineBox);
     assert(lineBox == parentBox->lastChild);
-
-    float availale = parentBox->width - getLeftEdge() - getRightEdge();
-    float lineWidth = lineBox->getPaddingWidth();
-    switch (parentBox->textAlign) {
-    case CSSTextAlignValueImp::Left:
-        break;
-    case CSSTextAlignValueImp::Right:
-        lineBox->offsetH += availale - lineWidth;
-        break;
-    case CSSTextAlignValueImp::Center:
-        lineBox->offsetH += (availale - lineWidth) / 2.0f;
-        break;
-    default:  // TODO: support Justify and Default
-        break;
-    }
-
     for (auto i = left.rbegin(); i != left.rend(); ++i) {
         if ((*i)->edge <= lineBox->marginLeft)
             break;

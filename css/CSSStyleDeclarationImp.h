@@ -392,7 +392,7 @@ public:
         return display.isBlockLevel() || binding.isBlockLevel();
     }
     bool isInlineBlock() const {
-        return display.getValue() == CSSDisplayValueImp::InlineBlock || binding.isInlineBlock();
+        return display.isInlineBlock() || binding.isInlineBlock();
     }
 
     bool isFloat() const {
