@@ -312,9 +312,10 @@ void TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
 
     if (tableBox) {
         tableBox->setStyle(style.get());
+        tableBox->resolveBackground(view);
         tableBox->updatePadding();
         tableBox->updateBorderWidth();
-        tableBox->resolveBackground(view);
+        tableBox->resolveMargin(view, containingBlock, 0.0f);
 
         float widths[xWidth];
         float heights[yHeight];
