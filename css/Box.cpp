@@ -318,6 +318,8 @@ BlockLevelBox* Box::expandBinding(ViewCSSImp* view, Element element, CSSStyleDec
         return 0;
     }
 
+    // Note the internal div element created as a replaced element has the 'float: left' property
+    // to execute the shrink-to-fit algorithm later.
     BlockLevelBox* inlineBlock = 0;
     switch (style->binding.getValue()) {
     case CSSBindingValueImp::InputTextfield: {
@@ -327,7 +329,7 @@ BlockLevelBox* Box::expandBinding(ViewCSSImp* view, Element element, CSSStyleDec
         if (div && text) {
             div.appendChild(text);
             css::CSSStyleDeclaration divStyle = div.getStyle();
-            divStyle.setCssText(u"display: block; border-style: solid; border-width: thin; height: 1.2em; text-align: left");
+            divStyle.setCssText(u"float: left; border-style: solid; border-width: thin; height: 1.2em; text-align: left");
             CSSStyleDeclarationImp* imp = dynamic_cast<CSSStyleDeclarationImp*>(divStyle.self());
             if (imp) {
                 imp->specify(style);
@@ -457,7 +459,7 @@ void BlockLevelBox::resolveWidth(float w)
     int autoCount = 3;
     unsigned autoMask = Left | Width | Right;
     if (style) {
-        if (style->isFloat())
+        if (style->isFloat() || style->isInlineBlock())
             return resolveFloatWidth(w);
         if (!style->width.isAuto()) {
             width = style->width.getPx();
@@ -907,6 +909,8 @@ float BlockLevelBox::shrinkTo()
 
 void BlockLevelBox::fit(float w)
 {
+    if (getTotalWidth() == w)
+        return;
     resolveWidth(w);
     if (style && !style->width.isAuto())
         return;
@@ -988,7 +992,7 @@ void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         width = std::max(width, child->getTotalWidth());
     }
 
-    if (style->width.isAuto() &&
+    if ((style->width.isAuto() || style->marginLeft.isAuto() || style->marginRight.isAuto()) &&
         (style->isInlineBlock() || style->isFloat() || style->display == CSSDisplayValueImp::TableCell))
         shrinkToFit();
 
@@ -1015,8 +1019,8 @@ void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
 
     // Now that 'height' is fixed, calculate 'left', 'right', 'top', and 'bottom'.
     for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
-        child->resolveOffset(view);
         child->fit(width);
+        child->resolveOffset(view);
     }
 
     if (backgroundImage && backgroundImage->getState() == BoxImage::CompletelyAvailable) {
