@@ -95,6 +95,8 @@ public:
         return window;
     }
 
+    Element expandBinding(Element element, CSSStyleDeclarationImp* style);
+
     void cascade();
     void cascade(Node node, CSSStyleDeclarationImp* parentStyle = 0);
 

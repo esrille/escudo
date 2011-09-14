@@ -429,7 +429,12 @@ float TableWrapperBox::shrinkTo()
 
 void TableWrapperBox::dump(ViewCSSImp* view, std::string indent)
 {
-    std::cout << indent << "* table wrapper box: (" << xWidth << ", " << yHeight << ")\n";
+    std::cout << indent << "* table wrapper box (" << static_cast<void*>(this);
+    std::cout << ':' << node.self() << ')';
+    std::cout << " [" << node.getNodeName() << ']';
+    std::cout << " (" << x << ", " << y << "), (" << getTotalWidth() << ", " << getTotalHeight() << ") " <<
+                 "[" << xWidth << ", " << yHeight << "]\n";
+
     indent += "    ";
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
         child->dump(view, indent);

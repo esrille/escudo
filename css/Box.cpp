@@ -24,10 +24,8 @@
 #include <org/w3c/dom/Document.h>
 #include <org/w3c/dom/Element.h>
 #include <org/w3c/dom/Text.h>
-#include <org/w3c/dom/html/HTMLDivElement.h>
 #include <org/w3c/dom/html/HTMLIFrameElement.h>
 #include <org/w3c/dom/html/HTMLImageElement.h>
-#include <org/w3c/dom/html/HTMLInputElement.h>
 
 #include "CSSSerialize.h"
 #include "CSSStyleDeclarationImp.h"
@@ -309,64 +307,6 @@ void Box::resolveOffset(ViewCSSImp* view)
     if (isAnonymous())
         return;
     resolveOffset(getStyle());
-}
-
-BlockLevelBox* Box::expandBinding(ViewCSSImp* view, Element element, CSSStyleDeclarationImp* style)
-{
-    if (!style->isInlineBlock()) {
-        // TODO: This line should not be reached but currently it is as absolute boxes are created lazily.
-        return 0;
-    }
-
-    // Note the internal div element created as a replaced element has the 'float: left' property
-    // to execute the shrink-to-fit algorithm later.
-    BlockLevelBox* inlineBlock = 0;
-    switch (style->binding.getValue()) {
-    case CSSBindingValueImp::InputTextfield: {
-        html::HTMLInputElement input = interface_cast<html::HTMLInputElement>(element);
-        html::HTMLDivElement div = interface_cast<html::HTMLDivElement>(view->getDocument().createElement(u"div"));
-        Text text = view->getDocument().createTextNode(input.getValue());
-        if (div && text) {
-            div.appendChild(text);
-            css::CSSStyleDeclaration divStyle = div.getStyle();
-            divStyle.setCssText(u"float: left; border-style: solid; border-width: thin; height: 1.2em; text-align: left");
-            CSSStyleDeclarationImp* imp = dynamic_cast<CSSStyleDeclarationImp*>(divStyle.self());
-            if (imp) {
-                imp->specify(style);
-                imp->specifyImportant(style);
-            }
-            divStyle.setDisplay(u"block");
-            view->cascade(div, style);
-            inlineBlock = view->layOutBlockBoxes(div, 0, 0, 0);
-        }
-        break;
-    }
-    case CSSBindingValueImp::InputButton: {
-        html::HTMLInputElement input = interface_cast<html::HTMLInputElement>(element);
-        html::HTMLDivElement div = interface_cast<html::HTMLDivElement>(view->getDocument().createElement(u"div"));
-        Text text = view->getDocument().createTextNode(input.getValue());
-        if (div && text) {
-            div.appendChild(text);
-            css::CSSStyleDeclaration divStyle = div.getStyle();
-            divStyle.setCssText(u"float: left; border-style: outset; border-width: thin; height: 1.2em; padding: 0 0.5em; text-align: center");
-            CSSStyleDeclarationImp* imp = dynamic_cast<CSSStyleDeclarationImp*>(divStyle.self());
-            if (imp) {
-                imp->specify(style);
-                imp->specifyImportant(style);
-            }
-            divStyle.setLineHeight(utfconv(std::to_string(style->height.getPx())) + u"px");  // TODO:
-            divStyle.setDisplay(u"block");
-            view->cascade(div, style);
-            inlineBlock = view->layOutBlockBoxes(div, 0, 0, 0);
-        }
-        break;
-    }
-    default:
-        // Create a BlockLevelBox and make it a child of inlineLevelBox.
-        inlineBlock = view->layOutBlockBoxes(element, 0, 0, 0, true);
-        break;
-    }
-    return inlineBlock;
 }
 
 bool BlockLevelBox::isFloat() const
@@ -768,7 +708,10 @@ void BlockLevelBox::layOutInlineReplaced(ViewCSSImp* view, Node node, Formatting
             if (!src.empty() && !imp->getDocument())
                 iframe.setSrc(src);
         }
-    } else if (BlockLevelBox* inlineBlock = expandBinding(view, element, style)) {
+    } else if (!style->isInlineBlock()) {
+        // TODO: This line should not be reached but currently it is as absolute boxes are created lazily.
+        return;
+    } else if (BlockLevelBox* inlineBlock = view->layOutBlockBoxes(element, 0, 0, 0, true)) {
         inlineLevelBox->appendChild(inlineBlock);
         inlineBlock->layOut(view, context);
         inlineLevelBox->width = inlineBlock->getTotalWidth();

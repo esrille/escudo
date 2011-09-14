@@ -18,6 +18,8 @@
 
 #include <org/w3c/dom/Text.h>
 #include <org/w3c/dom/Comment.h>
+#include <org/w3c/dom/html/HTMLDivElement.h>
+#include <org/w3c/dom/html/HTMLInputElement.h>
 
 #include <new>
 #include <boost/bind.hpp>
@@ -236,6 +238,54 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Text text, BlockLevelBox* parentBox,
     return 0;
 }
 
+Element ViewCSSImp::expandBinding(Element element, CSSStyleDeclarationImp* style)
+{
+    switch (style->binding.getValue()) {
+    case CSSBindingValueImp::InputTextfield: {
+        html::HTMLInputElement input = interface_cast<html::HTMLInputElement>(element);
+        html::HTMLDivElement div = interface_cast<html::HTMLDivElement>(getDocument().createElement(u"div"));
+        Text text = getDocument().createTextNode(input.getValue());
+        if (div && text) {
+            div.appendChild(text);
+            css::CSSStyleDeclaration divStyle = div.getStyle();
+            divStyle.setCssText(u"float: left; border-style: solid; border-width: thin; height: 1.2em; text-align: left");
+            CSSStyleDeclarationImp* imp = dynamic_cast<CSSStyleDeclarationImp*>(divStyle.self());
+            if (imp) {
+                imp->specify(style);
+                imp->specifyImportant(style);
+            }
+            divStyle.setDisplay(u"block");
+            cascade(div, style);
+            return div;
+        }
+        break;
+    }
+    case CSSBindingValueImp::InputButton: {
+        html::HTMLInputElement input = interface_cast<html::HTMLInputElement>(element);
+        html::HTMLDivElement div = interface_cast<html::HTMLDivElement>(getDocument().createElement(u"div"));
+        Text text = getDocument().createTextNode(input.getValue());
+        if (div && text) {
+            div.appendChild(text);
+            css::CSSStyleDeclaration divStyle = div.getStyle();
+            divStyle.setCssText(u"float: left; border-style: outset; border-width: thin; height: 1.2em; padding: 0 0.5em; text-align: center");
+            CSSStyleDeclarationImp* imp = dynamic_cast<CSSStyleDeclarationImp*>(divStyle.self());
+            if (imp) {
+                imp->specify(style);
+                imp->specifyImportant(style);
+            }
+            divStyle.setLineHeight(utfconv(std::to_string(style->height.getPx())) + u"px");  // TODO:
+            divStyle.setDisplay(u"block");
+            cascade(div, style);
+            return div;
+        }
+        break;
+    }
+    default:
+        break;
+    }
+    return element;
+}
+
 BlockLevelBox* ViewCSSImp::createBlockLevelBox(Element element, CSSStyleDeclarationImp* style, bool newContext)
 {
     assert(style);
@@ -248,7 +298,7 @@ BlockLevelBox* ViewCSSImp::createBlockLevelBox(Element element, CSSStyleDeclarat
         block = new(std::nothrow) CellBox(element, style);
         newContext = true;
     } else
-        block = new(std::nothrow) BlockLevelBox(element, style);
+        block =  new(std::nothrow) BlockLevelBox(element, style);
     if (!block)
         return 0;
     if (newContext && !block->establishFormattingContext())
@@ -263,14 +313,17 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
     if (!style || style->display.isNone())
         return 0;
     bool runIn = style->display.isRunIn() && parentBox;
+
     BlockLevelBox* currentBox = parentBox;
     if (style->isFloat() || style->isAbsolutelyPositioned() || !parentBox) {
+        element = expandBinding(element, style);
         currentBox = createBlockLevelBox(element, style, true);
         if (!currentBox)
             return 0;  // TODO: error
         // Do not insert currentBox into parentBox
     } else if (style->isBlockLevel() || runIn || asBlock) {
         // Create a temporary block-level box for the run-in box, too.
+        element = expandBinding(element, style);
         if (parentBox->hasInline()) {
             if (!parentBox->getAnonymousBox())
                 return 0;

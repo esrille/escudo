@@ -370,9 +370,6 @@ public:
         }
         return isInside(x, y) ? this : 0;
     }
-
-    // CSS binding
-    BlockLevelBox* expandBinding(ViewCSSImp* view, Element element, CSSStyleDeclarationImp* style);
 };
 
 typedef boost::intrusive_ptr<Box> BoxPtr;
