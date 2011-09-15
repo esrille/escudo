@@ -86,6 +86,9 @@ struct CSSNumericValue
         assert(unit == css::CSSPrimitiveValue::CSS_PX || number == 0.0f);
         return number;
     }
+    bool isIndex() const {
+        return unit == CSSParserTerm::CSS_TERM_INDEX;
+    }
     short getIndex() const {
         if (unit == CSSParserTerm::CSS_TERM_INDEX)
             return index;
@@ -117,6 +120,7 @@ struct CSSNumericValue
         index = value.index;
         number = value.number;
     }
+    void compute(ViewCSSImp* view, float fullSize, const CSSFontSizeValueImp& fontSize);
 };
 
 class CSSPropertyValueImp
@@ -298,9 +302,12 @@ public:
     bool operator!=(const CSSNoneLengthValueImp& value) {
         return length != value.length;
     }
-    void compute(ViewCSSImp* view, float fullSize, const CSSFontSizeValueImp& fontSize);
     void specify(const CSSNoneLengthValueImp& specified) {
         length.specify(specified.length);
+    }
+    void compute(ViewCSSImp* view, float fullSize, const CSSFontSizeValueImp& fontSize);
+    float getPx() const {
+        return length.getPx();
     }
     CSSNoneLengthValueImp() :
         length(0) {

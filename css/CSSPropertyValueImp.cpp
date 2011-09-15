@@ -286,48 +286,44 @@ const char16_t* CSSBindingValueImp::Options[] = {
     u"time",
 };
 
-// fullSize is either containingBlock->width or containingBlock->height
-void CSSNumericValueImp::compute(ViewCSSImp* view, float fullSize, const CSSFontSizeValueImp& fontSize) {
+void CSSNumericValue::compute(ViewCSSImp* view, float fullSize, const CSSFontSizeValueImp& fontSize)
+{
     float w;
-    switch (value.unit) {
-    case CSSParserTerm::CSS_TERM_INDEX:
-        return;
+    switch (unit) {
     case css::CSSPrimitiveValue::CSS_PERCENTAGE:
-        w = view->getPx(value, fullSize);
+        w = view->getPx(*this, fullSize);
         break;
     case css::CSSPrimitiveValue::CSS_EMS:
-        w = view->getPx(value, fontSize.getPx());
+        w = view->getPx(*this, fontSize.getPx());
         break;
     case css::CSSPrimitiveValue::CSS_EXS:
-        w = view->getPx(value, fontSize.getPx() * 0.5f);  // TODO fix 0.5
+        w = view->getPx(*this, fontSize.getPx() * 0.5f);  // TODO fix 0.5
         break;
     default:
-        w = view->getPx(value);
+        w = view->getPx(*this);
         break;
     }
-    value.setValue(w, css::CSSPrimitiveValue::CSS_PX);
+    setValue(w, css::CSSPrimitiveValue::CSS_PX);
+}
+
+// fullSize is either containingBlock->width or containingBlock->height
+void CSSNumericValueImp::compute(ViewCSSImp* view, float fullSize, const CSSFontSizeValueImp& fontSize) {
+    if (value.isIndex())
+        return;
+    value.compute(view, fullSize, fontSize);
 }
 
 // fullSize is either containingBlock->width or containingBlock->height
 void CSSAutoLengthValueImp::compute(ViewCSSImp* view, float fullSize, const CSSFontSizeValueImp& fontSize) {
     if (isAuto())
         return;  // leave length as auto
-    float w;
-    switch (length.unit) {
-    case css::CSSPrimitiveValue::CSS_PERCENTAGE:
-        w = view->getPx(length, fullSize);
-        break;
-    case css::CSSPrimitiveValue::CSS_EMS:
-        w = view->getPx(length, fontSize.getPx());
-        break;
-    case css::CSSPrimitiveValue::CSS_EXS:
-        w = view->getPx(length, fontSize.getPx() * 0.5f);  // TODO fix 0.5
-        break;
-    default:
-        w = view->getPx(length);
-        break;
-    }
-    length.setValue(w, css::CSSPrimitiveValue::CSS_PX);
+    length.compute(view, fullSize, fontSize);
+}
+
+void CSSNoneLengthValueImp::compute(ViewCSSImp* view, float fullSize, const CSSFontSizeValueImp& fontSize) {
+    if (isNone())
+        return;  // leave length as auto
+    length.compute(view, fullSize, fontSize);
 }
 
 void CSSAutoNumberingValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
@@ -425,39 +421,8 @@ void CSSBackgroundPositionValueImp::setValue(CSSStyleDeclarationImp* decl, CSSVa
 void CSSBackgroundPositionValueImp::compute(ViewCSSImp* view, BoxImage* image, const CSSFontSizeValueImp& fontSize, float width, float height)
 {
     assert(image);
-    float h;
-    switch (horizontal.unit) {
-    case css::CSSPrimitiveValue::CSS_PERCENTAGE:
-        h = view->getPx(horizontal, width - image->getWidth());  // TODO: negative case
-        break;
-    case css::CSSPrimitiveValue::CSS_EMS:
-        h = view->getPx(horizontal, fontSize.getPx());
-        break;
-    case css::CSSPrimitiveValue::CSS_EXS:
-        h = view->getPx(horizontal, fontSize.getPx() * 0.5f);  // TODO fix 0.5
-        break;
-    default:
-        h = view->getPx(horizontal);
-        break;
-    }
-    horizontal.setValue(h, css::CSSPrimitiveValue::CSS_PX);
-
-    float v;
-    switch (vertical.unit) {
-    case css::CSSPrimitiveValue::CSS_PERCENTAGE:
-        v = view->getPx(vertical, height - image->getHeight());  // TODO: negative case
-        break;
-    case css::CSSPrimitiveValue::CSS_EMS:
-        v = view->getPx(vertical, fontSize.getPx());
-        break;
-    case css::CSSPrimitiveValue::CSS_EXS:
-        v = view->getPx(vertical, fontSize.getPx() * 0.5f);  // TODO fix 0.5
-        break;
-    default:
-        v = view->getPx(vertical);
-        break;
-    }
-    vertical.setValue(v, css::CSSPrimitiveValue::CSS_PX);
+    horizontal.compute(view, width - image->getWidth(), fontSize);  // TODO: negative width case
+    vertical.compute(view, height - image->getHeight(), fontSize);  // TODO: negative height case
 }
 
 void CSSBackgroundShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
@@ -657,21 +622,13 @@ void CSSBorderWidthValueImp::compute(ViewCSSImp* view, const ContainingBlock* co
             w = 1.0f;   // TODO: error
             break;
         }
-        break;
-    case css::CSSPrimitiveValue::CSS_PERCENTAGE:
-        w = view->getPx(width, containingBlock->width);  // TODO use height in the vertical writing mode
-        break;
-    case css::CSSPrimitiveValue::CSS_EMS:
-        w = view->getPx(width, fontSize.getPx());
-        break;
-    case css::CSSPrimitiveValue::CSS_EXS:
-        w = view->getPx(width, fontSize.getPx() * 0.5f);  // TODO fix 0.5
+        width.setValue(w, css::CSSPrimitiveValue::CSS_PX);
         break;
     default:
-        w = view->getPx(width);
+        // TODO use height in the vertical writing mode
+        width.compute(view, containingBlock->width, fontSize);
         break;
     }
-    width.setValue(w, css::CSSPrimitiveValue::CSS_PX);
 }
 
 void CSSBorderWidthShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
@@ -1196,15 +1153,8 @@ void CSSLineHeightValueImp::compute(ViewCSSImp* view, const CSSFontSizeValueImp&
     case css::CSSPrimitiveValue::CSS_NUMBER:
         w = fontSize.getPx() * value.number;
         break;
-    case css::CSSPrimitiveValue::CSS_PERCENTAGE:
-    case css::CSSPrimitiveValue::CSS_EMS:
-        w = view->getPx(value, fontSize.getPx());
-        break;
-    case css::CSSPrimitiveValue::CSS_EXS:
-        w = view->getPx(value, fontSize.getPx() * 0.5f);  // TODO fix 0.5
-        break;
     default:
-        w = view->getPx(value);
+        value.compute(view, fontSize.getPx(), fontSize);
         return;
     }
     value.setValue(w, css::CSSPrimitiveValue::CSS_PX);
@@ -1313,24 +1263,9 @@ void CSSPaddingShorthandImp::specify(CSSStyleDeclarationImp* self, const CSSStyl
 }
 
 void CSSVerticalAlignValueImp::compute(ViewCSSImp* view, const CSSFontSizeValueImp& fontSize, const CSSLineHeightValueImp& lineHeight) {
-    float w;
-    switch (value.unit) {
-    case CSSParserTerm::CSS_TERM_INDEX:
+    if (value.isIndex())
         return;
-    case css::CSSPrimitiveValue::CSS_PERCENTAGE:
-        w = view->getPx(value, lineHeight.getPx());
-        break;
-    case css::CSSPrimitiveValue::CSS_EMS:
-        w = view->getPx(value, fontSize.getPx());
-        break;
-    case css::CSSPrimitiveValue::CSS_EXS:
-        w = view->getPx(value, fontSize.getPx() * 0.5f);  // TODO fix 0.5
-        break;
-    default:
-        w = view->getPx(value);
-        break;
-    }
-    value.setValue(w, css::CSSPrimitiveValue::CSS_PX);
+    value.compute(view, lineHeight.getPx(), fontSize);
 }
 
 float CSSVerticalAlignValueImp::getOffset(LineBox* line, InlineLevelBox* text) const
