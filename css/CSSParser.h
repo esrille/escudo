@@ -42,12 +42,14 @@ struct CSSParserString
     const char16_t* text;
     ssize_t length;
 
-    operator std::u16string() const {
+    std::u16string toString(bool caseSensitive = true) const {
         const char16_t* end = text + length;
         std::u16string string;
         for (auto i = text; i < end; ++i) {
             char16_t c = *i;
             if (c != '\\') {
+                if (!caseSensitive)
+                    c = toLower(c);
                 string += c;
                 continue;
             }
@@ -58,8 +60,11 @@ struct CSSParserString
             c = *i;
             int x = isHexDigit(c);
             if (!x) {
-                if (c != '\n')  // TODO: check '\r' as well?
+                if (c != '\n') {  // TODO: check '\r' as well?
+                    if (!caseSensitive)
+                        c = toLower(c);
                     string += c;
+                }
                 continue;
             }
             // unescape
@@ -98,6 +103,10 @@ struct CSSParserString
             }
         }
         return string;
+    }
+
+    operator std::u16string() const {
+        return toString(false);
     }
 
     // returns 0x00FFFFFF upon an invalid #hex color
@@ -159,14 +168,14 @@ struct CSSParserTerm
     double getNumber() const {
         return number;
     }
-    std::u16string getString() const {
+    std::u16string getString(bool caseSensitive = true) const {
         switch (unit) {
         case css::CSSPrimitiveValue::CSS_STRING:
         case css::CSSPrimitiveValue::CSS_URI:
         case css::CSSPrimitiveValue::CSS_IDENT:
         case css::CSSPrimitiveValue::CSS_UNICODE_RANGE:
         case CSS_TERM_FUNCTION:
-            return text;
+            return text.toString(caseSensitive);
         default:
             return u"";
         }
@@ -207,6 +216,7 @@ class CSSParser
     CSSStyleDeclarationImp* styleDeclaration;
     CSSParserExpr* styleExpression;
     CSSMediaRuleImp* mediaRule;
+    bool caseSensitive;  // for element names and attribute names.
 
     void reset(const std::u16string cssText) {
         tokenizer.reset(cssText);
@@ -243,11 +253,19 @@ public:
         return mediaRule;
     }
 
+    bool getCaseSensitivity() const {
+        return caseSensitive;
+    }
+    void setCaseSensitivity(bool value) {
+        caseSensitive = value;
+    }
+
     CSSParser() :
         styleSheet(0),
         styleDeclaration(0),
         styleExpression(0),
-        mediaRule(0) {
+        mediaRule(0),
+        caseSensitive(false) {
     }
 };
 

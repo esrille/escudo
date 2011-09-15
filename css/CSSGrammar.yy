@@ -311,27 +311,27 @@ element_name
   ;
 attrib
   : '[' optional_space namespace_prefix IDENT optional_space attrib_op optional_space ident_term optional_space ']' {
-        $$ = new(std::nothrow) CSSAttributeSelector($3, $4, $6, $8);
+        $$ = new(std::nothrow) CSSAttributeSelector($3, $4.toString(parser->getCaseSensitivity()), $6, $8);
     }
   | '[' optional_space namespace_prefix IDENT optional_space                                                    ']' {
-        $$ = new(std::nothrow) CSSAttributeSelector($3, $4);
+        $$ = new(std::nothrow) CSSAttributeSelector($3, $4.toString(parser->getCaseSensitivity()));
     }
   | '[' optional_space                  IDENT optional_space attrib_op optional_space ident_term optional_space ']' {
-        $$ = new(std::nothrow) CSSAttributeSelector($3, $5, $7);
+        $$ = new(std::nothrow) CSSAttributeSelector($3.toString(parser->getCaseSensitivity()), $5, $7);
     }
   | '[' optional_space                  IDENT optional_space                                                    ']' {
-        $$ = new(std::nothrow) CSSAttributeSelector($3);
+        $$ = new(std::nothrow) CSSAttributeSelector($3.toString(parser->getCaseSensitivity()));
     }
   ;
 pseudo
   : ':' IDENT {
-        $$ = CSSPseudoSelector::createPseudoSelector(CSSPseudoSelector::PseudoClass, $2);
+        $$ = CSSPseudoSelector::createPseudoSelector(CSSPseudoSelector::PseudoClass, $2.toString(false));
     }
   | ':' functional_pseudo {
         $$ = CSSPseudoSelector::createPseudoSelector(CSSPseudoSelector::PseudoClass, $2);
     }
   | ':' ':' IDENT {
-        $$ = CSSPseudoSelector::createPseudoSelector(CSSPseudoSelector::PseudoElement, $3);
+        $$ = CSSPseudoSelector::createPseudoSelector(CSSPseudoSelector::PseudoElement, $3.toString(false));
     }
   | ':' ':' functional_pseudo {
         $$ = CSSPseudoSelector::createPseudoSelector(CSSPseudoSelector::PseudoElement, $3);
@@ -414,10 +414,10 @@ hexcolor
  */
 type_selector
   : namespace_prefix element_name {
-        $$ = new(std::nothrow) CSSPrimarySelector($1, $2);
+        $$ = new(std::nothrow) CSSPrimarySelector($1, $2.toString(parser->getCaseSensitivity()));
     }
   |                  element_name {
-        $$ = new(std::nothrow) CSSPrimarySelector(u"*", $1);  // TODO: support css3-selectors later...
+        $$ = new(std::nothrow) CSSPrimarySelector(u"*", $1.toString(parser->getCaseSensitivity()));  // TODO: support css3-selectors later...
     }
   ;
 namespace_prefix

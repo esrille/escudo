@@ -92,7 +92,7 @@ public:
         yymarker(0) {
     }
 
-    void reset(const std::u16string cssText, int mode = StartStyleSheet) {
+    void reset(const std::u16string& cssText, int mode = StartStyleSheet) {
         this->mode = mode;
         this->cssText = cssText;
         yyin = this->cssText.c_str();

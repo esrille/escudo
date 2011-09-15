@@ -249,7 +249,7 @@ public:
         expression = 0;
     }
     CSSPseudoSelector(const CSSParserTerm& function) :
-        CSSSimpleSelector(function.getString()),
+        CSSSimpleSelector(function.getString(false)),
         expression(function.expr) {
     }
 
