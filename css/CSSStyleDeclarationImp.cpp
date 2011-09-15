@@ -1230,6 +1230,8 @@ void CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* co
 
     minHeight.compute(view, containingBlock->height, fontSize);
     minWidth.compute(view, containingBlock->width, fontSize);
+    maxHeight.compute(view, containingBlock->height, fontSize);
+    maxWidth.compute(view, containingBlock->width, fontSize);
 
     resolved = true;
 }

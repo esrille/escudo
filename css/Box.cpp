@@ -390,18 +390,36 @@ void BlockLevelBox::resolveBackground(ViewCSSImp* view)
     }
 }
 
+void BlockLevelBox::resolveWidth(float w)
+{
+    resolveNormalWidth(w);
+    if (!style->maxWidth.isNone()) {
+        float maxWidth = style->maxWidth.getPx();
+        if (maxWidth < width)
+            resolveNormalWidth(w, maxWidth);
+    }
+    float minWidth = style->minWidth.getPx();
+    if (width < minWidth)
+        resolveNormalWidth(w, minWidth);
+}
+
 // Calculate width
 //
 // marginLeft + borderLeftWidth + paddingLeft + width + paddingRight + borderRightWidth + marginRight
 // == containingBlock->width (- scrollbar width, if any)
-void BlockLevelBox::resolveWidth(float w)
+void BlockLevelBox::resolveNormalWidth(float w, float r)
 {
     int autoCount = 3;
     unsigned autoMask = Left | Width | Right;
     if (style) {
         if (style->isFloat() || style->isInlineBlock())
             return resolveFloatWidth(w);
-        if (!style->width.isAuto()) {
+        if (!isnan(r)) {
+            width = r;
+            --autoCount;
+            autoMask &= ~Width;
+            w -= width;
+        } else if (!style->width.isAuto()) {
             width = style->width.getPx();
             --autoCount;
             autoMask &= ~Width;
@@ -453,12 +471,17 @@ void BlockLevelBox::resolveWidth(float w)
     }
 }
 
-void BlockLevelBox::resolveFloatWidth(float w)
+void BlockLevelBox::resolveFloatWidth(float w, float r)
 {
     assert(style);
     marginLeft = style->marginLeft.isAuto() ? 0.0f : style->marginLeft.getPx();
     marginRight = style->marginRight.isAuto() ? 0.0f : style->marginRight.getPx();
-    width = style->width.isAuto() ? (w - getBlankLeft() - getBlankRight()) : style->width.getPx();
+    if (!isnan(r))
+        width = r;
+    else if (!style->width.isAuto())
+        width = style->width.getPx();
+    else
+        width = w - getBlankLeft() - getBlankRight();
 }
 
 void BlockLevelBox::resolveMargin(ViewCSSImp* view, const ContainingBlock* containingBlock, float available)

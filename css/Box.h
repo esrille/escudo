@@ -479,7 +479,8 @@ public:
     void resolveBackground(ViewCSSImp* view);
     void resolveMargin(ViewCSSImp* view, const ContainingBlock* containingBlock, float available);
     void resolveWidth(float w);
-    void resolveFloatWidth(float w);
+    void resolveNormalWidth(float w, float r = NAN);
+    void resolveFloatWidth(float w, float r = NAN);
     FormattingContext* collapseMargins(FormattingContext* context);
     void collapseMarginBottom();
     virtual void layOut(ViewCSSImp* view, FormattingContext* context);
