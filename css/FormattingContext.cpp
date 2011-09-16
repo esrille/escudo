@@ -54,8 +54,12 @@ LineBox* FormattingContext::addLineBox(ViewCSSImp* view, BlockLevelBox* parentBo
     lineBox = new(std::nothrow) LineBox(parentBox->getStyle());
     if (lineBox) {
         parentBox->appendChild(lineBox);
-        x = getLeftEdge();
-        leftover = parentBox->width - getLeftEdge() - getRightEdge();
+
+        // Set marginLeft and marginRight to the current values. Note these
+        // margins do not contain the widths of the float boxes to be added
+        // below.
+        lineBox->marginLeft = getLeftEdge();
+        lineBox->marginRight = getRightEdge();
 
         // if floatNodes is not empty, append float boxes as much as possible.
         while (!floatNodes.empty()) {
@@ -72,9 +76,8 @@ LineBox* FormattingContext::addLineBox(ViewCSSImp* view, BlockLevelBox* parentBo
             floatNodes.pop_front();
         }
 
-        // Set marginLeft and marginRight to the current values.
-        lineBox->marginLeft = getLeftEdge();
-        lineBox->marginRight = getRightEdge();
+        x = getLeftEdge();
+        leftover = parentBox->width - x - getRightEdge();
     }
     return lineBox;
 }
