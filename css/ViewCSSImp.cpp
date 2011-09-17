@@ -320,7 +320,8 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
         currentBox = createBlockLevelBox(element, style, true);
         if (!currentBox)
             return 0;  // TODO: error
-        // Do not insert currentBox into parentBox
+        // Do not insert currentBox into parentBox. currentBox will be
+        // inserted in a lineBox of parentBox later
     } else if (style->isBlockLevel() || runIn || asBlock) {
         // Create a temporary block-level box for the run-in box, too.
         element = expandBinding(element, style);
@@ -383,6 +384,10 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
     if (currentBox->isFloat() || currentBox->isAbsolutelyPositioned()) {
         floatMap[element] = currentBox;
         if (parentBox) {
+            // Set currentBox->parentBox to parentBox for now so that the correct
+            // containing block can be retrieved before currentBox will be
+            // inserted in a lineBox of parentBox later
+            currentBox->parentBox = parentBox;
             if (!parentBox->hasChildBoxes())
                 parentBox->insertInline(element);
             else if (BlockLevelBox* anonymousBox = parentBox->getAnonymousBox()) {
