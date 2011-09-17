@@ -964,18 +964,19 @@ void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
 
     collapseMarginBottom();
 
-    if (height == 0.0f) {
-        for (Box* child = getFirstChild(); child; child = child->getNextSibling())
-            height += child->getTotalHeight();
-    }
-
     if (isFlowRoot()) {
-        this->height += context->clear(3);
+        context->clear(3);
         // Layout remaining float boxes in context
         while (!context->floatNodes.empty()) {
             context->addLineBox(view, this);
             context->nextLine(this, !context->floatNodes.empty());
         }
+    }
+
+    if (style->height.isAuto()) {
+        height = 0.0f;
+        for (Box* child = getFirstChild(); child; child = child->getNextSibling())
+            height += child->getTotalHeight();
     }
 
     if (!isAnonymous()) {
