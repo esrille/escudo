@@ -401,6 +401,7 @@ void LineBox::render(ViewCSSImp* view)
     glPushMatrix();
     glTranslatef(offsetH, offsetV, 0.0f);
     getOriginScreenPosition(x, y);
+    glTranslatef(getBlankLeft(), getBlankTop(), 0.0f);  // Node floats are placed inside margins.
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
         child->render(view);
         if (!child->isAbsolutelyPositioned())
