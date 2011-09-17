@@ -61,6 +61,9 @@ LineBox* FormattingContext::addLineBox(ViewCSSImp* view, BlockLevelBox* parentBo
         lineBox->marginLeft = getLeftEdge();
         lineBox->marginRight = getRightEdge();
 
+        x = lineBox->marginLeft;
+        leftover = parentBox->width - x - lineBox->marginRight;
+
         // if floatNodes is not empty, append float boxes as much as possible.
         while (!floatNodes.empty()) {
             BlockLevelBox* floatBox = view->getFloatBox(floatNodes.front());
@@ -158,7 +161,7 @@ void FormattingContext::nextLine(BlockLevelBox* parentBox, bool moreFloats)
     if (height != 0.0f)
         updateRemainingHeight(height);
     else if (moreFloats)
-        lineBox->marginTop += clear(3);
+        lineBox->marginBottom += clear(3);
     lineBox = 0;
     x = leftover = 0.0f;
 }

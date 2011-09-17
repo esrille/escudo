@@ -783,16 +783,14 @@ void BlockLevelBox::layOutInlineReplaced(ViewCSSImp* view, Node node, Formatting
 void BlockLevelBox::layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floatBox, FormattingContext* context)
 {
     assert(floatBox->style);
-    bool first = false;
     if (!context->lineBox) {
-        first = true;
         if (!context->addLineBox(view, this))
             return;   // TODO error
     }
     floatBox->layOut(view, context);
     floatBox->remainingHeight = floatBox->getTotalHeight();
     float w = floatBox->getTotalWidth();
-    if (context->leftover < w && !first) {
+    if (context->leftover < w && 0.0f < context->getLeftEdge()) {
         // Process this float box later in the other line box.
         context->floatNodes.push_back(node);
         return;
@@ -965,7 +963,9 @@ void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     collapseMarginBottom();
 
     if (isFlowRoot()) {
-        context->clear(3);
+        float h = context->clear(3);
+        if (Box* last = getLastChild())
+            last->marginBottom += h;
         // Layout remaining float boxes in context
         while (!context->floatNodes.empty()) {
             context->addLineBox(view, this);
