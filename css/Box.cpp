@@ -973,7 +973,7 @@ void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         }
     }
 
-    if (style->height.isAuto()) {
+    if (style->height.isAuto() || isAnonymous()) {
         height = 0.0f;
         for (Box* child = getFirstChild(); child; child = child->getNextSibling())
             height += child->getTotalHeight();
