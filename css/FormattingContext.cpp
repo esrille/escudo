@@ -147,8 +147,9 @@ void FormattingContext::nextLine(BlockLevelBox* parentBox, bool moreFloats)
         if ((*i)->edge <= lineBox->marginRight)
             break;
         // We would need a margin before the 1st float box to be added.
+        // TODO: We should use another measure for adjusting the left edge of the float box.
         if (first) {
-            (*i)->marginLeft += parentBox->width - lineBox->width - lineBox->marginLeft - lineBox->marginRight - (*i)->getTotalWidth();
+            (*i)->marginLeft += parentBox->width - lineBox->getTotalWidth() - getLeftEdge() - getRightEdge();
             first = false;
         }
         lineBox->appendChild(*i);
