@@ -280,6 +280,25 @@ Element ViewCSSImp::expandBinding(Element element, CSSStyleDeclarationImp* style
         }
         break;
     }
+    case CSSBindingValueImp::InputRadio: {
+        html::HTMLInputElement input = interface_cast<html::HTMLInputElement>(element);
+        html::HTMLDivElement div = interface_cast<html::HTMLDivElement>(getDocument().createElement(u"div"));
+        Text text = getDocument().createTextNode(input.getChecked() ? u"\u25c9" : u"\u25cb");
+        if (div && text) {
+            div.appendChild(text);
+            css::CSSStyleDeclaration divStyle = div.getStyle();
+            divStyle.setCssText(u"float: left; border-style: none;  height: 1.2em; padding: 0.5em");
+            CSSStyleDeclarationImp* imp = dynamic_cast<CSSStyleDeclarationImp*>(divStyle.self());
+            if (imp) {
+                imp->specify(style);
+                imp->specifyImportant(style);
+            }
+            divStyle.setDisplay(u"block");
+            cascade(div, style);
+            return div;
+        }
+        break;
+    }
     default:
         break;
     }
