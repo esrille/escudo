@@ -159,11 +159,26 @@ const char16_t* CSSFontStyleValueImp::Options[] = {
     u"oblique"
 };
 
+const char16_t* CSSFontVariantValueImp::Options[] = {
+    u"normal",
+    u"small-caps"
+};
+
 const char16_t* CSSFontWeightValueImp::Options[] = {
     u"normal",
     u"bold",
     u"bolder",
     u"lighter",
+};
+
+const char16_t* CSSFontShorthandImp::Options[] = {
+    u"normal",
+    u"caption",
+    u"icon",
+    u"menu",
+    u"message-box",
+    u"small-caption"
+    u"status-bar"
 };
 
 const char16_t* CSSListStyleTypeValueImp::Options[] = {
@@ -481,7 +496,6 @@ void CSSBackgroundShorthandImp::specify(CSSStyleDeclarationImp* self, const CSSS
     self->backgroundAttachment.specify(decl->backgroundAttachment);
     self->backgroundPosition.specify(decl->backgroundPosition);
 }
-
 
 void CSSBackgroundShorthandImp::reset(CSSStyleDeclarationImp* self)
 {
@@ -1013,19 +1027,20 @@ void CSSDisplayValueImp::compute(CSSStyleDeclarationImp* decl, Element element)
     }
 }
 
-void CSSFontFamilyValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
+std::deque<CSSParserTerm*>::iterator CSSFontFamilyValueImp::setValue(std::deque<CSSParserTerm*>& stack, std::deque<CSSParserTerm*>::iterator i)
 {
     std::u16string family;
-    std::deque<CSSParserTerm*>& stack = parser->getStack();
-    for (auto i = stack.begin(); i != stack.end() && generic == None; ++i) {
+    for (; i != stack.end(); ++i) {
         CSSParserTerm* term = *i;
+        if (term->propertyID != CSSStyleDeclarationImp::FontFamily)
+            break;
         if (term->unit == CSSPrimitiveValue::CSS_IDENT) {
-            if (0 < family.length())
+            if (!family.empty())
                 family += u' ';
             family += term->text;
             continue;
         }
-        if (0 < family.length()) {
+        if (!family.empty()) {
             familyNames.push_back(family);
             family.clear();
         }
@@ -1040,8 +1055,15 @@ void CSSFontFamilyValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParse
             break;
         }
     }
-    if (0 < family.length())
+    if (!family.empty())
         familyNames.push_back(family);
+    return --i;
+}
+
+void CSSFontFamilyValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
+{
+    std::deque<CSSParserTerm*>& stack = parser->getStack();
+    setValue(stack, stack.begin());
 }
 
 std::u16string CSSFontFamilyValueImp::getCssText(CSSStyleDeclarationImp* decl)
@@ -1055,7 +1077,7 @@ std::u16string CSSFontFamilyValueImp::getCssText(CSSStyleDeclarationImp* decl)
         }
     }
     if (generic != None) {
-        if (0 < cssText.length())
+        if (!cssText.empty())
             cssText += u", ";
         cssText += Options[generic - 1];
     }
@@ -1142,6 +1164,93 @@ void CSSFontWeightValueImp::compute(ViewCSSImp* view, const CSSFontWeightValueIm
         return;
     }
     value.setValue(w, css::CSSPrimitiveValue::CSS_NUMBER);
+}
+
+void CSSFontShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
+{
+    reset(decl);
+    std::deque<CSSParserTerm*>& stack = parser->getStack();
+    for (auto i = stack.begin(); i != stack.end(); ++i) {
+        CSSParserTerm* term = *i;
+        switch (term->propertyID) {
+        case CSSStyleDeclarationImp::FontStyle:
+            decl->fontStyle.setValue(term);
+            break;
+        case CSSStyleDeclarationImp::FontVariant:
+            decl->fontVariant.setValue(term);
+            break;
+        case CSSStyleDeclarationImp::FontWeight:
+            decl->fontWeight.setValue(term);
+            break;
+        case CSSStyleDeclarationImp::FontSize:
+            decl->fontSize.setValue(term);
+            break;
+        case CSSStyleDeclarationImp::LineHeight:
+            decl->lineHeight.setValue(term);
+            break;
+        case CSSStyleDeclarationImp::FontFamily:
+            i = decl->fontFamily.setValue(stack, i);
+            break;
+        default:
+            if (term->unit == CSSParserTerm::CSS_TERM_INDEX)
+                index = term->getIndex();
+            break;
+        }
+    }
+}
+
+std::u16string CSSFontShorthandImp::getCssText(CSSStyleDeclarationImp* decl)
+{
+    if (index != Normal)
+        return Options[index];
+
+    std::u16string text;
+    if (!decl->fontStyle.isNormal())
+        text += decl->fontStyle.getCssText(decl);
+    if (!decl->fontVariant.isNormal()) {
+        if (!text.empty())
+            text += u" ";
+        text += decl->fontVariant.getCssText(decl);
+    }
+    if (!decl->fontWeight.isNormal()) {
+        if (!text.empty())
+            text += u" ";
+        text += decl->fontWeight.getCssText(decl);
+    }
+    if (!text.empty())
+        text += u" ";
+    text += decl->fontSize.getCssText(decl);
+    if (!decl->lineHeight.isNormal())
+        text += u"/" + decl->lineHeight.getCssText(decl);
+    text += u" " + decl->fontFamily.getCssText(decl);
+    return text;
+}
+
+void CSSFontShorthandImp::specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl)
+{
+    if (decl->font.index != Normal) {
+        reset(self);
+        index = decl->font.index;
+    } else {
+        index = Normal;
+        self->fontStyle.specify(decl->fontStyle);
+        self->fontVariant.specify(decl->fontVariant);
+        self->fontWeight.specify(decl->fontWeight);
+        self->fontSize.specify(decl->fontSize);
+        self->lineHeight.specify(decl->lineHeight);
+        self->fontFamily.specify(decl->fontFamily);
+    }
+}
+
+void CSSFontShorthandImp::reset(CSSStyleDeclarationImp* self)
+{
+    index = Normal;
+    self->fontStyle.setValue();
+    self->fontVariant.setValue();
+    self->fontWeight.setValue();
+    self->fontSize.setValue();
+    self->lineHeight.setValue();
+    self->fontFamily.reset();
 }
 
 void CSSLineHeightValueImp::compute(ViewCSSImp* view, const CSSFontSizeValueImp& fontSize) {

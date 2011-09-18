@@ -290,8 +290,9 @@ public:
     CSSFontFamilyValueImp fontFamily;
     CSSFontSizeValueImp fontSize;
     CSSFontStyleValueImp fontStyle;
+    CSSFontVariantValueImp fontVariant;
     CSSFontWeightValueImp fontWeight;
-
+    CSSFontShorthandImp font;
     CSSAutoLengthValueImp height;
     CSSAutoLengthValueImp left;
 

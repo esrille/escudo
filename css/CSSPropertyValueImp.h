@@ -1160,6 +1160,7 @@ public:
     void addFamily(const std::u16string name) {
         familyNames.push_back(name);
     }
+    std::deque<CSSParserTerm*>::iterator setValue(std::deque<CSSParserTerm*>& stack, std::deque<CSSParserTerm*>::iterator i);
     virtual void setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl);
     void specify(const CSSFontFamilyValueImp& specified) {
@@ -1245,7 +1246,43 @@ public:
     unsigned getStyle() const {
         return value;
     }
+    bool isNormal() const {
+        return value == Normal;
+    }
     CSSFontStyleValueImp(unsigned initial = Normal) :
+        value(initial) {
+    }
+    static const char16_t* Options[];
+};
+
+class CSSFontVariantValueImp : public CSSPropertyValueImp
+{
+    unsigned value;
+public:
+    enum {
+        Normal,
+        SmallCaps
+    };
+    CSSFontVariantValueImp& setValue(unsigned value = Normal) {
+        this->value = value;
+        return *this;
+    }
+    CSSFontVariantValueImp& setValue(CSSParserTerm* term) {
+        return setValue(term->getIndex());
+    }
+    virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
+        return Options[value];
+    }
+    void specify(const CSSFontVariantValueImp& specified) {
+        value = specified.value;
+    }
+    unsigned getStyle() const {
+        return value;
+    }
+    bool isNormal() const {
+        return value == Normal;
+    }
+    CSSFontVariantValueImp(unsigned initial = Normal) :
         value(initial) {
     }
     static const char16_t* Options[];
@@ -1283,8 +1320,38 @@ public:
         assert(value.unit == css::CSSPrimitiveValue::CSS_NUMBER);
         return static_cast<unsigned>(value.number);
     }
+    bool isNormal() const {
+        if (value.getIndex() == Normal)
+            return true;
+        if (value.unit == css::CSSPrimitiveValue::CSS_NUMBER && value.number == 400.0f)
+            return true;
+        return false;
+    }
     CSSFontWeightValueImp() :
         value(Normal) {
+    }
+    static const char16_t* Options[];
+};
+
+class CSSFontShorthandImp : public CSSPropertyValueImp
+{
+    unsigned index;
+public:
+    enum {
+        Normal,
+        Caption,
+        Icon,
+        Menu,
+        MessageBox,
+        SmallCaption,
+        StatusBar
+    };
+    virtual void setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
+    void reset(CSSStyleDeclarationImp* self);
+    virtual std::u16string getCssText(CSSStyleDeclarationImp* decl);
+    void specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl);
+    CSSFontShorthandImp() :
+        index(Normal) {
     }
     static const char16_t* Options[];
 };

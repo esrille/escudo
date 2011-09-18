@@ -253,8 +253,12 @@ CSSPropertyValueImp* CSSStyleDeclarationImp::getProperty(unsigned id)
         return &fontSize;
     case FontStyle:
         return &fontStyle;
+    case FontVariant:
+        return &fontVariant;
     case FontWeight:
         return &fontWeight;
+    case Font:
+        return &font;
     case LineHeight:
         return &lineHeight;
     case ListStyleType:
@@ -358,6 +362,14 @@ void CSSStyleDeclarationImp::setInherit(unsigned id)
         setInherit(BorderStyle);
         setInherit(BorderWidth);
         break;
+    case Font:
+        setInherit(FontStyle);
+        setInherit(FontVariant);
+        setInherit(FontWeight);
+        setInherit(FontSize);
+        setInherit(LineHeight);
+        setInherit(FontFamily);
+        break;
     case Margin:
         setInherit(MarginTop);
         setInherit(MarginRight);
@@ -408,6 +420,14 @@ void CSSStyleDeclarationImp::resetInherit(unsigned id)
         resetInherit(BorderColor);
         resetInherit(BorderStyle);
         resetInherit(BorderWidth);
+        break;
+    case Font:
+        resetInherit(FontStyle);
+        resetInherit(FontVariant);
+        resetInherit(FontWeight);
+        resetInherit(FontSize);
+        resetInherit(LineHeight);
+        resetInherit(FontFamily);
         break;
     case Margin:
         resetInherit(MarginTop);
@@ -627,8 +647,14 @@ void CSSStyleDeclarationImp::specify(const CSSStyleDeclarationImp* decl, unsigne
     case FontStyle:
         fontStyle.specify(decl->fontStyle);
         break;
+    case FontVariant:
+        fontVariant.specify(decl->fontVariant);
+        break;
     case FontWeight:
         fontWeight.specify(decl->fontWeight);
+        break;
+    case Font:
+        font.specify(this, decl);
         break;
     case LineHeight:
         lineHeight.specify(decl->lineHeight);
@@ -922,8 +948,14 @@ void CSSStyleDeclarationImp::reset(unsigned id)
     case FontStyle:
         fontStyle.setValue();
         break;
+    case FontVariant:
+        fontVariant.setValue();
+        break;
     case FontWeight:
         fontWeight.setValue();
+        break;
+    case Font:
+        font.reset(this);
         break;
     case LineHeight:
         lineHeight.setValue();
@@ -1046,6 +1078,7 @@ void CSSStyleDeclarationImp::resetInheritedProperties()
         case BorderBottom:
         case BorderLeft:
         case Border:
+        case Font:  // TODO
         case Margin:
         case Padding:
             // ignore shorthand
@@ -1072,6 +1105,7 @@ void CSSStyleDeclarationImp::copy(const CSSStyleDeclarationImp* parentStyle, uns
     case BorderBottom:
     case BorderLeft:
     case Border:
+    case Font:  // TODO
     case Margin:
     case Padding:
         // ignore shorthand
@@ -1945,8 +1979,7 @@ void CSSStyleDeclarationImp::setCssFloat(Nullable<std::u16string> cssFloat)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getFont()
 {
-    // TODO: implement me!
-    return Nullable<std::u16string>();
+    return font.getCssText(this);
 }
 
 void CSSStyleDeclarationImp::setFont(Nullable<std::u16string> font)
@@ -2008,8 +2041,7 @@ void CSSStyleDeclarationImp::setFontStyle(Nullable<std::u16string> fontStyle)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getFontVariant()
 {
-    // TODO: implement me!
-    return Nullable<std::u16string>();
+    return fontVariant.getCssText(this);
 }
 
 void CSSStyleDeclarationImp::setFontVariant(Nullable<std::u16string> fontVariant)

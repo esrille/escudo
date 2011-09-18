@@ -160,10 +160,11 @@ void CSSValueParser::initializeRules()
 #endif
         ;
     lineHeight
-        = CSSValueRule(u"normal")
-        | number
-        | length
-        | percentage;
+        = (CSSValueRule(u"normal", CSSLineHeightValueImp::Normal)
+        |  number
+        |  length
+        |  percentage)
+            [CSSStyleDeclarationImp::LineHeight];
     listStyleType
         = CSSValueRule(u"disc", CSSListStyleTypeValueImp::Disc)
         | CSSValueRule(u"circle", CSSListStyleTypeValueImp::Circle)
@@ -214,23 +215,26 @@ void CSSValueParser::initializeRules()
         = string
         | CSSValueRule(1, CSSValueRule::Inf, ident);
     font_style
-        = CSSValueRule(u"italic", CSSFontStyleValueImp::Italic)
-        | CSSValueRule(u"oblique", CSSFontStyleValueImp::Oblique);
+        = (CSSValueRule(u"italic", CSSFontStyleValueImp::Italic)
+        |  CSSValueRule(u"oblique", CSSFontStyleValueImp::Oblique))
+            [CSSStyleDeclarationImp::FontStyle];
     font_variant
-        = CSSValueRule(u"small-caps");
+        = (CSSValueRule(u"small-caps",CSSFontVariantValueImp::SmallCaps))
+            [CSSStyleDeclarationImp::FontVariant];
     font_weight
-        = CSSValueRule(u"bold", CSSFontWeightValueImp::Bold)
-        | CSSValueRule(u"lighter", CSSFontWeightValueImp::Lighter)
-        | CSSValueRule(u"bolder", CSSFontWeightValueImp::Bolder)
-        | 100.0f
-        | 200.0f
-        | 300.0f
-        | 400.0f
-        | 500.0f
-        | 600.0f
-        | 700.0f
-        | 800.0f
-        | 900.0f;
+        = (CSSValueRule(u"bold", CSSFontWeightValueImp::Bold)
+        |  CSSValueRule(u"lighter", CSSFontWeightValueImp::Lighter)
+        |  CSSValueRule(u"bolder", CSSFontWeightValueImp::Bolder)
+        |  100.0f
+        |  200.0f
+        |  300.0f
+        |  400.0f
+        |  500.0f
+        |  600.0f
+        |  700.0f
+        |  800.0f
+        |  900.0f)
+            [CSSStyleDeclarationImp::FontWeight];
     generic_family
         = CSSValueRule(u"serif", CSSFontFamilyValueImp::Serif)
         | CSSValueRule(u"sans-serif", CSSFontFamilyValueImp::SansSerif)
@@ -371,32 +375,36 @@ void CSSValueParser::initializeRules()
         | CSSValueRule(u"left", CSSFloatValueImp::Left)
         | CSSValueRule(u"right", CSSFloatValueImp::Right);
     fontFamily
-        = (generic_family | family_name) +
-          CSSValueRule(0, CSSValueRule::Inf, comma + (generic_family | family_name));
+        = ((generic_family | family_name) +
+           CSSValueRule(0, CSSValueRule::Inf, comma + (generic_family | family_name)))
+            [CSSStyleDeclarationImp::FontFamily];
     fontSize
-        = absolute_size
-        | relative_size
-        | length
-        | percentage;
+        = (absolute_size
+        |  relative_size
+        |  length
+        |  percentage)
+            [CSSStyleDeclarationImp::FontSize];
     fontStyle
-        = CSSValueRule(u"normal", 0)
+        = CSSValueRule(u"normal", CSSFontStyleValueImp::Normal)
         | font_style;
     fontVariant
-        = CSSValueRule(u"normal")
+        = CSSValueRule(u"normal", CSSFontVariantValueImp::Normal)
         | font_variant;
     fontWeight
         = CSSValueRule(u"normal", CSSFontWeightValueImp::Normal)
         | font_weight;
     font
-        = (CSSValueRule(0, 1, font_style || font_variant || font_weight || u"normal") +
+        = (CSSValueRule(0, 1, font_style || font_variant || font_weight ||
+                              CSSValueRule(u"normal", CSSFontShorthandImp::Normal)) +
            fontSize +
-           CSSValueRule(0, 1, slash + lineHeight) + fontFamily)
-        | u"caption"
-        | u"icon"
-        | u"menu"
-        | u"message-box"
-        | u"small-caption"
-        | u"status-bar";
+           CSSValueRule(0, 1, slash + lineHeight) +
+           fontFamily)
+        | CSSValueRule(u"caption", CSSFontShorthandImp::Caption)
+        | CSSValueRule(u"icon", CSSFontShorthandImp::Icon)
+        | CSSValueRule(u"menu", CSSFontShorthandImp::Menu)
+        | CSSValueRule(u"message-box", CSSFontShorthandImp::MessageBox)
+        | CSSValueRule(u"small-caption", CSSFontShorthandImp::SmallCaption)
+        | CSSValueRule(u"status-bar", CSSFontShorthandImp::StatusBar);
     letterSpacing
         = CSSValueRule(u"normal")
         | length;
@@ -940,8 +948,14 @@ CSSValueParser::CSSValueParser(int propertyID) :
     case CSSStyleDeclarationImp::FontStyle:
         rule = &fontStyle;
         break;
+    case CSSStyleDeclarationImp::FontVariant:
+        rule = &fontVariant;
+        break;
     case CSSStyleDeclarationImp::FontWeight:
         rule = &fontWeight;
+        break;
+    case CSSStyleDeclarationImp::Font:
+        rule = &font;
         break;
     case CSSStyleDeclarationImp::LineHeight:
         rule = &lineHeight;

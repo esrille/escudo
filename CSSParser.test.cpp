@@ -196,6 +196,13 @@ int main(int argc, char** argv)
     test("h1:before { counter-reset: item 10 section }");
     test("h1:before { counter-increment: none }");
 
+    test("html { font: 10px/1 Verdana, sans-serif }");
+    test("p { font: 12px/14px sans-serif }");
+    test("p { font: 80% sans-serif }");
+    test("p { font: x-large/110% \"New Century Schoolbook\", serif }");
+    test("p { font: bold italic large Palatino, serif }");
+    test("p { font: normal small-caps 120%/120% fantasy }");
+
     // test @media
     test("@media print {"
          "  h1            { page-break-before: always }"
