@@ -210,9 +210,8 @@ void BlockLevelBox::setContainingBlock(ViewCSSImp* view)
     assert(isAbsolutelyPositioned());
     float x = 0.0f;
     float y = 0.0f;
-    Box::toViewPort(x, y);  // TODO: Why do we need to say 'Box::' here?
-    offsetH = -x;
-    offsetV = -y;
+    const Box* staticPosition = Box::towardViewPort(x, y);
+    assert(staticPosition);
     if (!isFixed()) {
         assert(node);
         for (auto ancestor = node.getParentElement(); ancestor; ancestor = ancestor.getParentElement()) {
@@ -224,11 +223,12 @@ void BlockLevelBox::setContainingBlock(ViewCSSImp* view)
             case CSSPositionValueImp::Relative:
             case CSSPositionValueImp::Fixed: {
                 // Now we need to find the corresponding box for this ancestor.
-                Box* box = style->box;
+                const Box* box = style->box;
                 assert(box);
-                float t = -box->paddingTop;
-                float l = -box->paddingLeft;
-                box->toViewPort(l, t);
+                while (box != staticPosition)
+                    staticPosition = staticPosition->towardViewPort(x, y);
+                offsetH = -x - box->paddingLeft;
+                offsetV = -y - box->paddingTop;
                 if (box->getBoxType() == BLOCK_LEVEL_BOX) {
                     absoluteBlock.width = box->getPaddingWidth();
                     absoluteBlock.height = box->getPaddingHeight();
@@ -238,19 +238,26 @@ void BlockLevelBox::setContainingBlock(ViewCSSImp* view)
                         absoluteBlock.width = inlineBlock->getPaddingWidth();
                         absoluteBlock.height = inlineBlock->getPaddingHeight();
                     } else {
-                        float b = style->lastBox->height + style->lastBox->paddingBottom;
-                        float r = style->lastBox->width + style->lastBox->paddingRight;
-                        style->lastBox->toViewPort(r, b);
+                        const Box* p = box->getParentBox();
+                        float t = -box->paddingTop;
+                        float l = -box->paddingLeft;
+                        while (box != p)
+                            box = box->towardViewPort(t, l);
+                        box = style->lastBox;
+                        float b = box->height + box->paddingBottom;
+                        float r = box->width + box->paddingRight;
+                        while (box != p)
+                            box = box->towardViewPort(b, r);
                         absoluteBlock.width = r - l;
                         absoluteBlock.height = t - b;
                     }
                 }
 
                 // TODO: overflow
+                while (staticPosition)
+                    staticPosition = staticPosition->towardViewPort(x, y);
                 absoluteBlock.width = view->getInitialContainingBlock()->width - x;
-
-                offsetH += l;
-                offsetV += t;
+                absoluteBlock.height = view->getInitialContainingBlock()->height - y;
                 return;
             }
             default:
@@ -258,8 +265,12 @@ void BlockLevelBox::setContainingBlock(ViewCSSImp* view)
             }
         }
     }
-    absoluteBlock.width = view->getInitialContainingBlock()->width;
-    absoluteBlock.height = view->getInitialContainingBlock()->height;
+    while (staticPosition)
+        staticPosition = staticPosition->towardViewPort(x, y);
+    offsetH = -x;
+    offsetV = -y;
+    absoluteBlock.width = view->getInitialContainingBlock()->width - x;
+    absoluteBlock.height = view->getInitialContainingBlock()->height - y;
 }
 
 FormattingContext* Box::updateFormattingContext(FormattingContext* context)
@@ -800,7 +811,8 @@ void BlockLevelBox::layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floa
 
 void BlockLevelBox::layOutAbsolute(ViewCSSImp* view, Node node, BlockLevelBox* absBox, FormattingContext* context)
 {
-    // Just insert this absolute box into a line box. We will the abs. box later. TODO
+    // Just insert this absolute box into a line box now.
+    // Absolute boxes will be processed later in ViewCSSImp::layOut().
     if (!context->lineBox) {
         if (!context->addLineBox(view, this))
             return;  // TODO error
@@ -978,11 +990,8 @@ void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         for (Box* child = getFirstChild(); child; child = child->getNextSibling())
             height += child->getTotalHeight();
     }
-
-    if (!isAnonymous()) {
-        width = std::max(width, style->minWidth.getPx());
+    if (!isAnonymous())
         height = std::max(height, style->minHeight.getPx());
-    }
 
     // Now that 'height' is fixed, calculate 'left', 'right', 'top', and 'bottom'.
     for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
@@ -1154,6 +1163,8 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view, Node node)
     if (!style)
         return;  // TODO error
 
+    std::u16string tag;
+
     setContainingBlock(view);
     const ContainingBlock* containingBlock = &absoluteBlock;
 
@@ -1166,7 +1177,7 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view, Node node)
     assert(context);
 
     // TODO: Handle replaced elements in more smart way...
-    std::u16string tag = element.getLocalName();
+    tag = element.getLocalName();
     if (tag == u"img") {
         html::HTMLImageElement img = interface_cast<html::HTMLImageElement>(element);
         if (backgroundImage = new(std::nothrow) BoxImage(this, view->getDocument().getDocumentURI(), img)) {
@@ -1248,14 +1259,6 @@ void LineBox::fit(float w)
     default:  // TODO: support Justify and Default
         break;
     }
-}
-
-void InlineLevelBox::toViewPort(const Box* box, float& x, float& y) const
-{
-    // In the case of the inline-block, InlineLevelBox holds a block-level box
-    // as its only child.
-    if (Box* box = getParentBox())
-        box->toViewPort(this, x, y);
 }
 
 bool InlineLevelBox::isAnonymous() const

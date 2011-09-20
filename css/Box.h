@@ -292,13 +292,21 @@ public:
     virtual float shrinkTo();
     virtual void fit(float w) {}
 
-    virtual void toViewPort(const Box* box, float& x, float& y) const = 0;
     void toViewPort(float& x, float& y) const {
-        // TODO: make this work for abs box as well
+        const Box* box = this;
+        do {
+            box = box->towardViewPort(x, y);
+        } while (box);
+    }
+    const Box* towardViewPort(float& x, float& y) const {
         x += offsetH + getBlankLeft();
         y += offsetV + getBlankTop();
-        if (Box* box = getParentBox())
-            box->toViewPort(this, x, y);
+        if (const Box* box = getParentBox())
+            return box->towardViewPort(this, x, y);
+        return 0;
+    }
+    virtual const Box* towardViewPort(const Box* child, float& x, float& y) const {
+        return this;
     }
 
     CSSStyleDeclarationImp* getStyle() const {
@@ -427,13 +435,13 @@ public:
     virtual float shrinkTo();
     virtual void fit(float w);
 
-    virtual void toViewPort(const Box* box, float& x, float& y) const {
-        x += offsetH + getBlankLeft();
-        y += offsetV + getBlankTop();
-        for (auto i = box->getPreviousSibling(); i; i = i->getPreviousSibling())
-            y += i->getTotalHeight();
-        if (box = getParentBox())
-            box->toViewPort(this, x, y);
+    virtual const Box* towardViewPort(const Box* child, float& x, float& y) const {
+        if (const Box* box = child->getPreviousSibling()) {
+            x -= box->getBlankLeft() + box->offsetH;
+            y += box->height + box->getBlankBottom() - box->offsetV;
+            return box;
+        }
+        return this;
     }
 
     unsigned getTextAlign() const {
@@ -514,13 +522,15 @@ public:
         return LINE_BOX;
     }
 
-    virtual void toViewPort(const Box* box, float& x, float& y) const {
-        for (auto i = box->getPreviousSibling(); i; i = i->getPreviousSibling()) {
-            if (!i->isAbsolutelyPositioned())
-                x += i->getTotalWidth();
+    virtual const Box* towardViewPort(const Box* child, float& x, float& y) const {
+        for (const Box* box = child->getPreviousSibling(); box; box = box->getPreviousSibling()) {
+            if (box->isAbsolutelyPositioned())
+                continue;
+            x += box->width + box->getBlankRight() - box->offsetH;
+            y -= box->getBlankTop() + box->offsetV;
+            return box;
         }
-        if (box = getParentBox())
-            box->toViewPort(this, x, y);
+        return this;
     }
 
     float getBaseline() const {
@@ -565,7 +575,11 @@ public:
         return INLINE_LEVEL_BOX;
     }
 
-    virtual void toViewPort(const Box* box, float& x, float& y) const;
+    virtual const Box* towardViewPort(const Box* child, float& x, float& y) const {
+        // In the case of the inline-block, InlineLevelBox holds a block-level box
+        // as its only child.
+        return this;
+    }
 
     virtual bool isAnonymous() const;
 
