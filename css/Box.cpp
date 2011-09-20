@@ -964,6 +964,8 @@ void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         layOutInline(view, context);
     for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
         child->layOut(view, context);
+        if (child->isFlowRoot())
+            context->updateRemainingHeight(child->getTotalHeight());
         // TODO: overflow
         width = std::max(width, child->getTotalWidth());
     }
