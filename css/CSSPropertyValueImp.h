@@ -505,6 +505,54 @@ public:
     void specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl);
 };
 
+class CSSBorderColorValueImp : public CSSPropertyValueImp
+{
+    unsigned value;
+    bool hasValue;
+public:
+    CSSBorderColorValueImp& setValue(unsigned color = 0xff000000) {
+        value = color;
+        hasValue = true;
+        return *this;
+    }
+    CSSBorderColorValueImp& setValue(CSSParserTerm* term) {
+        assert(term->unit == css::CSSPrimitiveValue::CSS_RGBCOLOR);
+        hasValue = true;
+        return setValue(term->rgb);
+    }
+    virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
+        return CSSSerializeRGB(value);
+    }
+    bool operator==(const CSSBorderColorValueImp& color) const {
+        if (!hasValue && !color.hasValue)
+            return true;
+        if (hasValue != color.hasValue)
+            return false;
+        return value == color.value;
+    }
+    bool operator!=(const CSSBorderColorValueImp& color) const {
+        return !(*this == color);
+    }
+    void specify(const CSSBorderColorValueImp& specified) {
+        value = specified.value;
+        hasValue = specified.hasValue;
+    }
+    CSSBorderColorValueImp& reset() {
+        value = 0xff000000;
+        hasValue = false;
+        return *this;
+    }
+    unsigned getARGB() {
+        return value;
+    }
+    void compute(CSSStyleDeclarationImp* decl);
+    CSSBorderColorValueImp(unsigned argb = 0xff000000) :
+        value(0xff000000),
+        hasValue(false)
+    {
+    }
+};
+
 class CSSBorderSpacingValueImp : public CSSPropertyValueImp
 {
     CSSNumericValue horizontal;

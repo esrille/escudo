@@ -834,16 +834,16 @@ void CSSStyleDeclarationImp::reset(unsigned id)
         borderSpacing.setValue();
         break;
     case BorderTopColor:
-        borderTopColor.setValue();
+        borderTopColor.reset();
         break;
     case BorderRightColor:
-        borderRightColor.setValue();
+        borderRightColor.reset();
         break;
     case BorderBottomColor:
-        borderBottomColor.setValue();
+        borderBottomColor.reset();
         break;
     case BorderLeftColor:
-        borderLeftColor.setValue();
+        borderLeftColor.reset();
         break;
     case BorderColor:
         reset(BorderTopColor);
@@ -1149,6 +1149,11 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
             background.reset(this);
         }
     }
+
+    borderTopColor.compute(this);
+    borderRightColor.compute(this);
+    borderBottomColor.compute(this);
+    borderLeftColor.compute(this);
 
     if (isFloat() || isAbsolutelyPositioned() || !parentStyle)  // TODO or the contents of atomic inline-level descendants such as inline blocks and inline tables.
         textDecorationContext.update(this);
@@ -2870,32 +2875,6 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp() :
     pseudoElements[CSSPseudoElementSelector::NonPseudo] = this;
     for (int i = 1; i < CSSPseudoElementSelector::MaxPseudoElements; ++i)
         pseudoElements[i] = 0;
-}
-
-CSSStyleDeclarationImp::CSSStyleDeclarationImp(const CSSStyleDeclarationImp& other) :
-    owner(0),
-    parentRule(0),
-    resolved(false),
-    box(0),
-    lastBox(0),
-    stackingContext(0),
-    backgroundColor(CSSColorValueImp::Transparent),
-    counterIncrement(1),
-    counterReset(0),
-    borderTop(0),
-    borderRight(1),
-    borderBottom(2),
-    borderLeft(3),
-    marginTop(0.0f, css::CSSPrimitiveValue::CSS_PX),
-    marginRight(0.0f, css::CSSPrimitiveValue::CSS_PX),
-    marginLeft(0.0f, css::CSSPrimitiveValue::CSS_PX),
-    marginBottom(0.0f, css::CSSPrimitiveValue::CSS_PX),
-    minHeight(0.0f, css::CSSPrimitiveValue::CSS_PX),
-    minWidth(0.0f, css::CSSPrimitiveValue::CSS_PX),
-    textIndent(0.0f, css::CSSPrimitiveValue::CSS_PX)
-{
-    for (unsigned id = 1; id < MaxProperties; ++id)
-        copy(&other, id);
 }
 
 const char16_t* CSSStyleDeclarationImp::getPropertyName(int propertyID)

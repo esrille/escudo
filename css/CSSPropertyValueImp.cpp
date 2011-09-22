@@ -506,6 +506,13 @@ void CSSBackgroundShorthandImp::reset(CSSStyleDeclarationImp* self)
     self->backgroundPosition.setValue();
 }
 
+void CSSBorderColorValueImp::compute(CSSStyleDeclarationImp* decl)
+{
+    assert(decl);
+    if (!hasValue)
+        value = decl->color.getARGB();
+}
+
 void CSSBorderColorShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
 {
     std::deque<CSSParserTerm*>& stack = parser->getStack();
@@ -799,16 +806,16 @@ void CSSBorderValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* p
     if (!color) {
         switch (index) {
         case 0:
-            decl->borderTopColor.setValue();
+            decl->borderTopColor.reset();
             break;
         case 1:
-            decl->borderRightColor.setValue();
+            decl->borderRightColor.reset();
             break;
         case 2:
-            decl->borderBottomColor.setValue();
+            decl->borderBottomColor.reset();
             break;
         case 3:
-            decl->borderLeftColor.setValue();
+            decl->borderLeftColor.reset();
             break;
         default:
             break;
@@ -884,7 +891,7 @@ void CSSBorderShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParse
     if (!width)
         decl->borderBottomWidth = decl->borderLeftWidth = decl->borderRightWidth = decl->borderTopWidth.setValue();
     if (!color)
-        decl->borderBottomColor = decl->borderLeftColor = decl->borderRightColor = decl->borderTopColor.setValue();
+        decl->borderBottomColor = decl->borderLeftColor = decl->borderRightColor = decl->borderTopColor.reset();
 }
 
 std::u16string CSSBorderShorthandImp::getCssText(CSSStyleDeclarationImp* decl)

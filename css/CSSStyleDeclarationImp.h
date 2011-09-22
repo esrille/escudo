@@ -260,10 +260,10 @@ public:
     CSSBorderValueImp borderRight;
     CSSBorderValueImp borderBottom;
     CSSBorderValueImp borderLeft;
-    CSSColorValueImp borderTopColor;
-    CSSColorValueImp borderRightColor;
-    CSSColorValueImp borderBottomColor;
-    CSSColorValueImp borderLeftColor;
+    CSSBorderColorValueImp borderTopColor;
+    CSSBorderColorValueImp borderRightColor;
+    CSSBorderColorValueImp borderBottomColor;
+    CSSBorderColorValueImp borderLeftColor;
     CSSBorderStyleValueImp borderTopStyle;
     CSSBorderStyleValueImp borderRightStyle;
     CSSBorderStyleValueImp borderBottomStyle;
@@ -344,9 +344,10 @@ public:
 
     TextDecorationContext textDecorationContext;
 
+    CSSStyleDeclarationImp(const CSSStyleDeclarationImp&);
+
 public:
     CSSStyleDeclarationImp();
-    CSSStyleDeclarationImp(const CSSStyleDeclarationImp& other);
     ~CSSStyleDeclarationImp()
     {
         ;  //
