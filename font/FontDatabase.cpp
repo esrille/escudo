@@ -106,6 +106,15 @@ FontInfo fontDatabase[] = {
         }
     },
 #endif
+#ifdef HAVE_AHEM
+    {
+        u"Ahem",
+        CSSFontFamilyValueImp::Monospace,
+        {
+            { HAVE_AHEM, 400 }
+        }
+    },
+#endif
     {
         u"LiberationSerif",
         CSSFontFamilyValueImp::Serif,
@@ -143,7 +152,7 @@ const int fontDatabaseSize = sizeof fontDatabase / sizeof fontDatabase[0];
 FontInfo* chooseFontInfo(const std::u16string& family)
 {
     for (FontInfo* i = fontDatabase; i < &fontDatabase[fontDatabaseSize]; ++i) {
-        if (family == i->family)
+        if (!compareIgnoreCase(family, i->family))
             return i;
     }
     return 0;

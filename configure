@@ -565,6 +565,7 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
+HAVE_AHEM
 HAVE_IPA_PMINCHO
 HAVE_IPA_PGOTHIC
 HAVE_IPA_MINCHO
@@ -4375,6 +4376,28 @@ fi
 $as_echo "$ac_cv_file__usr_share_fonts_truetype_takao_TakaoPMincho_ttf" >&6; }
 if test "x$ac_cv_file__usr_share_fonts_truetype_takao_TakaoPMincho_ttf" = xyes; then :
   HAVE_IPA_PMINCHO=/usr/share/fonts/truetype/takao/TakaoPMincho.ttf
+
+fi
+
+
+# check for the Ahem font (http://www.w3.org/Style/CSS/Test/Fonts/Ahem/)
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/share/fonts/ahem/AHEM____.TTF" >&5
+$as_echo_n "checking for /usr/share/fonts/ahem/AHEM____.TTF... " >&6; }
+if ${ac_cv_file__usr_share_fonts_ahem_AHEM_____TTF+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "/usr/share/fonts/ahem/AHEM____.TTF"; then
+  ac_cv_file__usr_share_fonts_ahem_AHEM_____TTF=yes
+else
+  ac_cv_file__usr_share_fonts_ahem_AHEM_____TTF=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_share_fonts_ahem_AHEM_____TTF" >&5
+$as_echo "$ac_cv_file__usr_share_fonts_ahem_AHEM_____TTF" >&6; }
+if test "x$ac_cv_file__usr_share_fonts_ahem_AHEM_____TTF" = xyes; then :
+  HAVE_AHEM=/usr/share/fonts/ahem/AHEM____.TTF
 
 fi
 
