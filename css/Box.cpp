@@ -925,8 +925,14 @@ void BlockLevelBox::collapseMargins(FormattingContext* context)
 
 void BlockLevelBox::collapseMarginBottom()
 {
-    // TODO: root exception
-    if (height == 0 && borderBottom == 0 && paddingBottom == 0 /* && TODO: check clearance */) {
+    if (Box* parent = getParentBox()) {
+        if (parent->getFirstChild() == this) {
+            if (parent->borderTop == 0 && parent->paddingTop == 0)
+                std::swap(marginTop, parent->marginTop);
+        }
+    }
+
+    if (height == 0 && borderBottom == 0 && paddingBottom == 0) {
         if (Box* child = getLastChild()) {
             marginBottom = std::max(marginBottom, child->marginBottom);  // TODO: negative case
             child->marginBottom = 0;
