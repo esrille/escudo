@@ -308,7 +308,8 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
     resolveMargin(view, containingBlock, 0.0f);
     stackingContext = style->getStackingContext();
 
-    context = collapseMargins(context);
+    context = updateFormattingContext(context);
+    collapseMargins(context);
 
     if (tableBox) {
         tableBox->setStyle(style.get());
