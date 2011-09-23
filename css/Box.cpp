@@ -275,9 +275,11 @@ void BlockLevelBox::setContainingBlock(ViewCSSImp* view)
 
 FormattingContext* Box::updateFormattingContext(FormattingContext* context)
 {
-    if (isFlowRoot())
+    if (isFlowRoot()) {
+        assert(formattingContext);
+        // TODO: adjust left and right blanks.
         return formattingContext;
-    // TODO: adjust left and right blanks.
+    }
     return context;
 }
 
@@ -896,18 +898,24 @@ void BlockLevelBox::fit(float w)
 
 FormattingContext* BlockLevelBox::collapseMargins(FormattingContext* context)
 {
-    if (Box* parent = getParentBox()) {  // TODO: root exception
-        if (parent->getFirstChild() == this &&
-            parent->borderTop == 0 && parent->paddingTop == 0 /* && TODO: check clearance */) {
-            marginTop = std::max(marginTop, parent->marginTop);  // TODO: negative case
-            parent->marginTop = 0.0f;
-        } else if (Box* prev = getPreviousSibling()) {
+    if (isFlowRoot()) {
+        context = updateFormattingContext(context);
+        return context;
+    }
+
+    if (Box* parent = getParentBox()) {
+        if (parent->getFirstChild() == this) {
+            if (parent->borderTop == 0 && parent->paddingTop == 0) {
+                marginTop = std::max(marginTop, parent->marginTop);  // TODO: negative case
+                parent->marginTop = 0.0f;
+            }
+        } else {
+            Box* prev = getPreviousSibling();
+            assert(prev);
             marginTop = std::max(prev->marginBottom, marginTop);  // TODO: negative case
             prev->marginBottom = 0.0f;
         }
     }
-    context = updateFormattingContext(context);
-    assert(context);
     context->updateRemainingHeight(getBlankTop());
     marginTop += context->clear(style->clear.getValue());
     return context;
