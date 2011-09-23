@@ -85,7 +85,7 @@ class TableWrapperBox : public BlockLevelBox
 public:
     TableWrapperBox(ViewCSSImp* view, Element element, CSSStyleDeclarationImp* style);
     virtual void fit(float w);
-    virtual void layOut(ViewCSSImp* view, FormattingContext* context);
+    virtual bool layOut(ViewCSSImp* view, FormattingContext* context);
     virtual float shrinkTo();
     virtual void dump(ViewCSSImp* view, std::string indent = "");
 };

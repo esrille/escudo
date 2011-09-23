@@ -291,12 +291,12 @@ void TableWrapperBox::fit(float w)
     }
 }
 
-void TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
+bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
 {
     const ContainingBlock* containingBlock = getContainingBlock(view);
     style = view->getStyle(table);
     if (!style)
-        return;  // TODO error
+        return false;  // TODO error
 
     style->resolve(view, containingBlock, table);
 
@@ -420,6 +420,8 @@ void TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
         width = std::max(width, style->minWidth.getPx());
         height = std::max(height, style->minHeight.getPx());
     }
+
+    return true;
 }
 
 float TableWrapperBox::shrinkTo()

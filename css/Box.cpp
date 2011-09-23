@@ -512,20 +512,20 @@ void BlockLevelBox::resolveMargin(ViewCSSImp* view, const ContainingBlock* conta
         height = style->height.getPx();
 }
 
-void BlockLevelBox::layOutText(ViewCSSImp* view, Text text, FormattingContext* context)
+bool BlockLevelBox::layOutText(ViewCSSImp* view, Text text, FormattingContext* context)
 {
     CSSStyleDeclarationImp* style = 0;
     Element element = getContainingElement(text);
     if (!element)
-        return;  // TODO error
+        return false;  // TODO error
 
     style = view->getStyle(element);
     if (!style)
-        return;  // TODO error
+        return false;  // TODO error
     style->resolve(view, this, element);
     std::u16string data = text.getData();
     if (style->processWhiteSpace(data, context->prevChar) == 0)
-        return;
+        return !isAnonymous();
 
     bool psuedoChecked = false;
     CSSStyleDeclarationImp* firstLineStyle = 0;
@@ -538,9 +538,9 @@ void BlockLevelBox::layOutText(ViewCSSImp* view, Text text, FormattingContext* c
     for (;;) {
         if (!context->lineBox) {
             if (style->processLineHeadWhiteSpace(data) == 0)
-                return;
+                return !isAnonymous();
             if (!context->addLineBox(view, this))
-                return;  // TODO error
+                return false;  // TODO error
             if (!psuedoChecked && getFirstChild() == context->lineBox) {
                 psuedoChecked  = true;
                 // The current line box is the 1st line of this block box.
@@ -599,7 +599,7 @@ void BlockLevelBox::layOutText(ViewCSSImp* view, Text text, FormattingContext* c
 
         InlineLevelBox* inlineLevelBox = new(std::nothrow) InlineLevelBox(text, activeStyle);
         if (!inlineLevelBox)
-            return;  // TODO error
+            return false;  // TODO error
         style->addBox(inlineLevelBox);  // activeStyle? maybe not...
         inlineLevelBox->resolveWidth();
         float blankLeft = inlineLevelBox->getBlankLeft();
@@ -687,6 +687,7 @@ void BlockLevelBox::layOutText(ViewCSSImp* view, Text text, FormattingContext* c
             }
         }
     }
+    return true;
 }
 
 void BlockLevelBox::layOutInlineReplaced(ViewCSSImp* view, Node node, FormattingContext* context)
@@ -823,26 +824,31 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view, Node node, BlockLevelBox* a
 }
 
 // Generate line boxes
-void BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context)
+bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context)
 {
     assert(!hasChildBoxes());
+    bool collapsed = true;
     for (auto i = inlines.begin(); i != inlines.end(); ++i) {
         if (BlockLevelBox* box = view->getFloatBox(*i)) {
             if (box->isFloat())
                 layOutFloat(view, *i, box, context);
             else if (box->isAbsolutelyPositioned())
                 layOutAbsolute(view, *i, box, context);
+            collapsed = false;
         } else if ((*i).getNodeType() == Node::TEXT_NODE) {
             Text text = interface_cast<Text>(*i);
-            layOutText(view, text, context);
+            if (layOutText(view, text, context))
+                collapsed = false;
         } else {
             // At this point, *i should be a replaced element or an inline block element.
             // TODO: it could be of other types as we develop...
             layOutInlineReplaced(view, *i, context);
+            collapsed = false;
         }
     }
     if (context->lineBox)
         context->nextLine(this);
+    return !collapsed;
 }
 
 // TODO for a more complete implementation, see,
@@ -932,7 +938,7 @@ void BlockLevelBox::collapseMarginBottom()
     }
 }
 
-void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
+bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
 {
     const ContainingBlock* containingBlock = getContainingBlock(view);
 
@@ -942,11 +948,11 @@ void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     else if (const Box* box = dynamic_cast<const Box*>(containingBlock))
         element = getContainingElement(box->node);
     if (!element)
-        return;  // TODO error
+        return false;  // TODO error
 
     style = view->getStyle(element);
     if (!style)
-        return;  // TODO error
+        return false;  // TODO error
 
     if (!isAnonymous()) {
         style->resolve(view, containingBlock, element);
@@ -968,10 +974,17 @@ void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     textAlign = style->textAlign.getValue();
     context = collapseMargins(context);
 
-    if (hasInline())
-        layOutInline(view, context);
-    for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
-        child->layOut(view, context);
+    if (hasInline()) {
+        if (!layOutInline(view, context) && isAnonymous())
+            return false;
+    }
+    Box* next;
+    for (Box* child = getFirstChild(); child; child = next) {
+        next = child->getNextSibling();
+        if (!child->layOut(view, context)) {
+            removeChild(child);
+            continue;
+        }
         if (child->isFlowRoot())
             context->updateRemainingHeight(child->getTotalHeight());
         // TODO: overflow
@@ -1014,6 +1027,8 @@ void BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         backgroundLeft = style->backgroundPosition.getLeftPx();
         backgroundTop = style->backgroundPosition.getTopPx();
     }
+
+    return true;
 }
 
 unsigned BlockLevelBox::resolveAbsoluteWidth(const ContainingBlock* containingBlock, float& right, float& bottom)
@@ -1232,7 +1247,7 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view, Node node)
     }
 }
 
-void LineBox::layOut(ViewCSSImp* view, FormattingContext* context)
+bool LineBox::layOut(ViewCSSImp* view, FormattingContext* context)
 {
     for (Box* box = getFirstChild(); box; box = box->getNextSibling()) {
         if (box->isAbsolutelyPositioned())
@@ -1243,6 +1258,7 @@ void LineBox::layOut(ViewCSSImp* view, FormattingContext* context)
                 inlineBox->offsetV += style->verticalAlign.getOffset(this, inlineBox);
         }
     }
+    return true;
 }
 
 void LineBox::dump(ViewCSSImp* view, std::string indent)

@@ -343,7 +343,9 @@ public:
     void resolveOffset(CSSStyleDeclarationImp* style);
     virtual void resolveOffset(ViewCSSImp* view);
 
-    virtual void layOut(ViewCSSImp* view, FormattingContext* context) {}
+    virtual bool layOut(ViewCSSImp* view, FormattingContext* context) {
+        return true;
+    }
 
     virtual void render(ViewCSSImp* view) = 0;
     void renderBorder(ViewCSSImp* view);
@@ -400,11 +402,11 @@ class BlockLevelBox : public Box
     // A block-level box may contain either line boxes or block-level boxes, but not both.
     std::list<Node> inlines;
 
-    void layOutText(ViewCSSImp* view, Text text, FormattingContext* context);
+    bool layOutText(ViewCSSImp* view, Text text, FormattingContext* context);
     void layOutInlineReplaced(ViewCSSImp* view, Node node, FormattingContext* context);
     void layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floatBox, FormattingContext* context);
     void layOutAbsolute(ViewCSSImp* view, Node node, BlockLevelBox* absBox, FormattingContext* context);  // 1st pass
-    void layOutInline(ViewCSSImp* view, FormattingContext* context);
+    bool layOutInline(ViewCSSImp* view, FormattingContext* context);
 
 protected:
     // resolveAbsoluteWidth's return values
@@ -491,7 +493,7 @@ public:
     void resolveFloatWidth(float w, float r = NAN);
     FormattingContext* collapseMargins(FormattingContext* context);
     void collapseMarginBottom();
-    virtual void layOut(ViewCSSImp* view, FormattingContext* context);
+    virtual bool layOut(ViewCSSImp* view, FormattingContext* context);
     virtual void render(ViewCSSImp* view);
     virtual void dump(ViewCSSImp* view, std::string indent = "");
 };
@@ -543,7 +545,7 @@ public:
         return underlineThickness;
     }
 
-    virtual void layOut(ViewCSSImp* view, FormattingContext* context);
+    virtual bool layOut(ViewCSSImp* view, FormattingContext* context);
     virtual void render(ViewCSSImp* view);
     virtual void dump(ViewCSSImp* view, std::string indent);
     virtual void fit(float w);
