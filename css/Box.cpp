@@ -450,7 +450,7 @@ void BlockLevelBox::resolveNormalWidth(float w, float r)
                 --autoCount;
                 autoMask &= ~Right;
                 w -= marginRight;
-            }
+            }  // else over-constrained
         }
     }
     w -= borderLeft + paddingLeft + paddingRight + borderRight;
@@ -897,8 +897,7 @@ float BlockLevelBox::shrinkTo()
         }
         if (!style->marginRight.isAuto()) {
             --autoCount;
-            if (0 < autoCount)
-                min += style->marginRight.getPx();
+            min += style->marginRight.getPx();
         }
     }
     return min;
@@ -1242,7 +1241,6 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view, Node node)
         }
     } else if (hasInline())
         layOutInline(view, context);
-
     layOutChildren(view, context);
 
     if (autoMask & Width) {
