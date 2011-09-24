@@ -824,7 +824,7 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view, Node node, BlockLevelBox* a
 }
 
 // Generate line boxes
-bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context)
+bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, float originalMargin)
 {
     assert(!hasChildBoxes());
     bool collapsed = true;
@@ -848,7 +848,20 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context)
     }
     if (context->lineBox)
         context->nextLine(this);
-    return !collapsed;
+    if (collapsed && isAnonymous()) {
+        if (originalMargin != 0.0f) {
+            // Undo collapseMarginTop
+            if (Box* prev = getPreviousSibling())
+                prev->marginBottom = originalMargin;
+            else {
+                Box* parent = getParentBox();
+                assert(parent);
+                parent->marginTop = originalMargin;
+            }
+        }
+        return false;
+    }
+    return true;
 }
 
 // TODO for a more complete implementation, see,
@@ -944,6 +957,22 @@ void BlockLevelBox::collapseMarginBottom()
     }
 }
 
+void BlockLevelBox::layOutChildren(ViewCSSImp* view, FormattingContext* context)
+{
+    Box* next;
+    for (Box* child = getFirstChild(); child; child = next) {
+        next = child->getNextSibling();
+        if (!child->layOut(view, context)) {
+            removeChild(child);
+            continue;
+        }
+        if (child->isFlowRoot())
+            context->updateRemainingHeight(child->getTotalHeight());
+        // TODO: overflow
+        width = std::max(width, child->getTotalWidth());
+    }
+}
+
 bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
 {
     const ContainingBlock* containingBlock = getContainingBlock(view);
@@ -982,32 +1011,10 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     float before = collapseMarginTop(context);
 
     if (hasInline()) {
-        if (!layOutInline(view, context) && isAnonymous()) {
-            if (before != 0.0f) {
-                // Undo collapseMarginTop
-                if (Box* prev = getPreviousSibling())
-                    prev->marginBottom = before;
-                else {
-                    Box* parent = getParentBox();
-                    assert(parent);
-                    parent->marginTop = before;
-                }
-            }
+        if (!layOutInline(view, context, before))
             return false;
-        }
     }
-    Box* next;
-    for (Box* child = getFirstChild(); child; child = next) {
-        next = child->getNextSibling();
-        if (!child->layOut(view, context)) {
-            removeChild(child);
-            continue;
-        }
-        if (child->isFlowRoot())
-            context->updateRemainingHeight(child->getTotalHeight());
-        // TODO: overflow
-        width = std::max(width, child->getTotalWidth());
-    }
+    layOutChildren(view, context);
 
     if ((style->width.isAuto() || style->marginLeft.isAuto() || style->marginRight.isAuto()) &&
         (style->isInlineBlock() || style->isFloat() || style->display == CSSDisplayValueImp::TableCell))
@@ -1235,11 +1242,8 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view, Node node)
         }
     } else if (hasInline())
         layOutInline(view, context);
-    for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
-        child->layOut(view, context);
-        // TODO: overflow
-        width = std::max(width, child->getTotalWidth());
-    }
+
+    layOutChildren(view, context);
 
     if (autoMask & Width) {
         shrinkToFit();

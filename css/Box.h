@@ -406,7 +406,8 @@ class BlockLevelBox : public Box
     void layOutInlineReplaced(ViewCSSImp* view, Node node, FormattingContext* context);
     void layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floatBox, FormattingContext* context);
     void layOutAbsolute(ViewCSSImp* view, Node node, BlockLevelBox* absBox, FormattingContext* context);  // 1st pass
-    bool layOutInline(ViewCSSImp* view, FormattingContext* context);
+    bool layOutInline(ViewCSSImp* view, FormattingContext* context, float originalMargin = 0.0f);
+    void layOutChildren(ViewCSSImp* view, FormattingContext* context);
 
 protected:
     // resolveAbsoluteWidth's return values
