@@ -446,6 +446,8 @@ void BlockLevelBox::resolveNormalWidth(float w, float r)
         }
     }
     w -= borderLeft + paddingLeft + paddingRight + borderRight;
+    if (w < 0.0f)
+        w = 0.0f;
     switch (autoMask) {
     case Left | Width | Right:
         width = w;
