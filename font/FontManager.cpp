@@ -89,13 +89,13 @@ FontTexture::FontTexture(FontFace* face, unsigned int point) try :
 {
     addImage();
     glyphs = new FontGlyph[face->glyphCount];
-    // FT_Error error = FT_Set_Pixel_Sizes(face->face, 0, point);
-    FT_Error error = FT_Set_Char_Size(face->face, point * 64, point * 64, 96, 96);  // TODO: make dpi configurable
+    // TODO: make dpi configurable
+    FT_Error error = FT_Set_Pixel_Sizes(face->face, 0, (point * 96) / 72);
+    // FT_Error error = FT_Set_Char_Size(face->face, point * 64, point * 64, 96, 96);
     if (error)
         throw std::runtime_error(__func__);
-    size = face->face->size;
-    ascender = size->metrics.ascender;
-    descender = size->metrics.descender;
+    ascender = face->face->ascender;
+    descender = face->face->descender;
     pen.x = pen.y = 1;  // (0, 0) is reserved for an uninitialized font glyph
     ymax = 0;
 

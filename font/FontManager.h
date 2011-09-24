@@ -135,7 +135,6 @@ class FontTexture
     FontFace* face;
     FontGlyph* glyphs;
     unsigned int point; // nominal font point sized
-    FT_Size size;       // face->size
     short ascender;
     short descender;
 
@@ -198,19 +197,19 @@ public:
     }
 
     float getHeight(float point) const {
-        return (ascender - descender) * point / this->point / 64.0f;
+        return point / 72 * 96;  // TODO XXX DPI
     }
 
     float getAscender(float point) const {
-        return ascender * point / this->point / 64.0f;
+        return (getHeight(point) * ascender) / (ascender - descender);
     }
 
     float getUnderlinePosition(float point) const {
-        return -face->face->underline_position * point / this->point / 64.0f;
+        return (getHeight(point) * -face->face->underline_position) / (ascender - descender);
     }
 
     float getUnderlineThickness(float point) const {
-        return -face->face->underline_thickness * point / this->point / 64.0f;
+        return (getHeight(point) * face->face->underline_thickness) / (ascender - descender);
     }
 
     static const int Width = 1024;

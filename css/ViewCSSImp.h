@@ -210,6 +210,9 @@ public:
     float getPointFromPx(float px) {
         return px / dpi * 72;
     }
+    float getPxFromPoint(float point) {
+        return point * dpi / 72;
+    }
 
     Box* boxFromPoint(int x, int y);
 

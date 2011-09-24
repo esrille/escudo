@@ -35,7 +35,7 @@ namespace {
 
 FontManagerBackEndGL backend;
 
-const int Point = 20;
+const int Point = 24;
 
 }
 
