@@ -902,25 +902,30 @@ void BlockLevelBox::fit(float w)
         child->fit(width);
 }
 
-void BlockLevelBox::collapseMargins(FormattingContext* context)
+float BlockLevelBox::collapseMarginTop(FormattingContext* context)
 {
     if (isFlowRoot())
-        return;
+        return 0.0f;
+    float before = 0.0f;
     if (Box* parent = getParentBox()) {
         if (parent->getFirstChild() == this) {
             if (parent->borderTop == 0 && parent->paddingTop == 0) {
+                before = parent->marginTop;
                 marginTop = std::max(marginTop, parent->marginTop);  // TODO: negative case
                 parent->marginTop = 0.0f;
             }
         } else {
             Box* prev = getPreviousSibling();
             assert(prev);
+            before = prev->marginBottom;
             marginTop = std::max(prev->marginBottom, marginTop);  // TODO: negative case
             prev->marginBottom = 0.0f;
         }
     }
     context->updateRemainingHeight(getBlankTop());
-    marginTop += context->clear(style->clear.getValue());
+    if (!isAnonymous())
+        marginTop += context->clear(style->clear.getValue());
+    return before;
 }
 
 void BlockLevelBox::collapseMarginBottom()
@@ -931,8 +936,7 @@ void BlockLevelBox::collapseMarginBottom()
                 std::swap(marginTop, parent->marginTop);
         }
     }
-
-    if (height == 0 && borderBottom == 0 && paddingBottom == 0) {
+    if (borderBottom == 0 && paddingBottom == 0) {
         if (Box* child = getLastChild()) {
             marginBottom = std::max(marginBottom, child->marginBottom);  // TODO: negative case
             child->marginBottom = 0;
@@ -975,11 +979,22 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
 
     textAlign = style->textAlign.getValue();
     context = updateFormattingContext(context);
-    collapseMargins(context);
+    float before = collapseMarginTop(context);
 
     if (hasInline()) {
-        if (!layOutInline(view, context) && isAnonymous())
+        if (!layOutInline(view, context) && isAnonymous()) {
+            if (before != 0.0f) {
+                // Undo collapseMarginTop
+                if (Box* prev = getPreviousSibling())
+                    prev->marginBottom = before;
+                else {
+                    Box* parent = getParentBox();
+                    assert(parent);
+                    parent->marginTop = before;
+                }
+            }
             return false;
+        }
     }
     Box* next;
     for (Box* child = getFirstChild(); child; child = next) {

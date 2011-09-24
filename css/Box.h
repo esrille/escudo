@@ -491,7 +491,7 @@ public:
     void resolveWidth(float w);
     void resolveNormalWidth(float w, float r = NAN);
     void resolveFloatWidth(float w, float r = NAN);
-    void collapseMargins(FormattingContext* context);
+    float collapseMarginTop(FormattingContext* context);
     void collapseMarginBottom();
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context);
     virtual void render(ViewCSSImp* view);
