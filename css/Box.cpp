@@ -252,12 +252,6 @@ void BlockLevelBox::setContainingBlock(ViewCSSImp* view)
                         absoluteBlock.height = t - b;
                     }
                 }
-
-                // TODO: overflow
-                while (staticPosition)
-                    staticPosition = staticPosition->towardViewPort(x, y);
-                absoluteBlock.width = view->getInitialContainingBlock()->width - x;
-                absoluteBlock.height = view->getInitialContainingBlock()->height - y;
                 return;
             }
             default:
@@ -269,8 +263,8 @@ void BlockLevelBox::setContainingBlock(ViewCSSImp* view)
         staticPosition = staticPosition->towardViewPort(x, y);
     offsetH = -x;
     offsetV = -y;
-    absoluteBlock.width = view->getInitialContainingBlock()->width - x;
-    absoluteBlock.height = view->getInitialContainingBlock()->height - y;
+    absoluteBlock.width = view->getInitialContainingBlock()->width;
+    absoluteBlock.height = view->getInitialContainingBlock()->height;
 }
 
 FormattingContext* Box::updateFormattingContext(FormattingContext* context)
