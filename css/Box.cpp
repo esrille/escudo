@@ -333,18 +333,16 @@ bool BlockLevelBox::isAbsolutelyPositioned() const
 
 void BlockLevelBox::dump(ViewCSSImp* view, std::string indent)
 {
-    std::cout << indent << "* block-level box (" << static_cast<void*>(this);
+    std::cout << indent << "* block-level box";
     if (!node)
-        std::cout << ") [anonymous]";
-    else {
-        std::cout << ':' << node.self() << ')';
+        std::cout << " [anonymous]";
+    else
         std::cout << " [" << node.getNodeName() << ']';
-    }
-    std::cout << " (" << x << ", " << y << "), (" << getTotalWidth() << ", " << getTotalHeight() << ") " <<
+    std::cout << " (" << x << ", " << y << ") w:" << width << " h:" << height << ' ' <<
     "m:" << marginTop << ':' << marginRight << ':' << marginBottom << ':' << marginLeft << ' ' <<
     "p:" << paddingTop << ':' <<  paddingRight << ':'<< paddingBottom<< ':' << paddingLeft << ' ' <<
     "b:" << borderTop << ':' <<  borderRight << ':' << borderBottom<< ':' << borderLeft << '\n';
-    indent += "    ";
+    indent += "  ";
     if (!getFirstChild() && hasInline()) {
         for (auto i = inlines.begin(); i != inlines.end(); ++i) {
             if ((*i).getNodeType() == Node::TEXT_NODE) {
@@ -1291,8 +1289,8 @@ bool LineBox::layOut(ViewCSSImp* view, FormattingContext* context)
 
 void LineBox::dump(ViewCSSImp* view, std::string indent)
 {
-    std::cout << indent << "* line box: (" << x << ", " << y << "), (" << getTotalWidth() << ", " << getTotalHeight() << "), (" << offsetH << ", " << offsetV <<")\n";
-    indent += "    ";
+    std::cout << indent << "* line box (" << x << ", " << y << ") w:" << width << " h:" << height << " (" << offsetH << ", " << offsetV <<")\n";
+    indent += "  ";
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
         child->dump(view, indent);
 }
@@ -1364,10 +1362,9 @@ void InlineLevelBox::resolveOffset(ViewCSSImp* view)
 
 void InlineLevelBox::dump(ViewCSSImp* view, std::string indent)
 {
-    std::cout << indent << "* inline-level box (" << static_cast<void*>(this) << "): (" <<
-        x << ", " << y << "), (" << getTotalWidth() << ", " << getTotalHeight() << ") \"" <<
-        data << "\"\n";
-    indent += "    ";
+    std::cout << indent << "* inline-level box (" << x << ", " << y << ") w:" <<
+        width << " h:" << height << " \"" << data << "\"\n";
+    indent += "  ";
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
         child->dump(view, indent);
 }
