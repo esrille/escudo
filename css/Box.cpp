@@ -347,9 +347,9 @@ void BlockLevelBox::dump(ViewCSSImp* view, std::string indent)
         std::cout << " [" << node.getNodeName() << ']';
     }
     std::cout << " (" << x << ", " << y << "), (" << getTotalWidth() << ", " << getTotalHeight() << ") " <<
-    "m:" << marginTop << '-' << marginRight << '-' << marginBottom << '-' << marginLeft << ' ' <<
-    "p:" << paddingTop << '-' <<  paddingRight << '-'<< paddingBottom<< '-' << paddingLeft << ' ' <<
-    "b:" << borderTop << '-' <<  borderRight << '-' << borderBottom<< '-' << borderLeft << '\n';
+    "m:" << marginTop << ':' << marginRight << ':' << marginBottom << ':' << marginLeft << ' ' <<
+    "p:" << paddingTop << ':' <<  paddingRight << ':'<< paddingBottom<< ':' << paddingLeft << ' ' <<
+    "b:" << borderTop << ':' <<  borderRight << ':' << borderBottom<< ':' << borderLeft << '\n';
     indent += "    ";
     if (!getFirstChild() && hasInline()) {
         for (auto i = inlines.begin(); i != inlines.end(); ++i) {
@@ -914,6 +914,20 @@ void BlockLevelBox::fit(float w)
         child->fit(width);
 }
 
+namespace {
+
+// TODO: Support when three or more margins collapse...
+float collapseMargins(float a, float b)
+{
+    if (0.0f <= a && 0.0f <= b)
+        return std::max(a, b);
+    if (a < 0.0f && b < 0.0f)
+        return std::min(a, b);
+    return a + b;
+}
+
+}  // namespace
+
 float BlockLevelBox::collapseMarginTop(FormattingContext* context)
 {
     if (isFlowRoot())
@@ -923,14 +937,14 @@ float BlockLevelBox::collapseMarginTop(FormattingContext* context)
         if (parent->getFirstChild() == this) {
             if (parent->borderTop == 0 && parent->paddingTop == 0) {
                 before = parent->marginTop;
-                marginTop = std::max(marginTop, parent->marginTop);  // TODO: negative case
+                marginTop = collapseMargins(marginTop, parent->marginTop);
                 parent->marginTop = 0.0f;
             }
         } else {
             Box* prev = getPreviousSibling();
             assert(prev);
             before = prev->marginBottom;
-            marginTop = std::max(prev->marginBottom, marginTop);  // TODO: negative case
+            marginTop = collapseMargins(prev->marginBottom, marginTop);
             prev->marginBottom = 0.0f;
         }
     }
@@ -950,7 +964,7 @@ void BlockLevelBox::collapseMarginBottom()
     }
     if (borderBottom == 0 && paddingBottom == 0) {
         if (Box* child = getLastChild()) {
-            marginBottom = std::max(marginBottom, child->marginBottom);  // TODO: negative case
+            marginBottom = collapseMargins(marginBottom, child->marginBottom);
             child->marginBottom = 0;
         }
     }
