@@ -415,6 +415,8 @@ void InlineLevelBox::render(ViewCSSImp* view)
     assert(stackingContext);
     glPushMatrix();
     glTranslatef(offsetH, offsetV, 0.0f);
+    if (0 < data.length())
+        glTranslatef(0, -getBlankTop(), 0.0f);
     renderBorder(view);
     glTranslatef(getBlankLeft(), getBlankTop(), 0.0f);
     getOriginScreenPosition(x, y);
