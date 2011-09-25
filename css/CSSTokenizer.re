@@ -244,7 +244,7 @@ void CSSTokenizer::parseURL(const char16_t* text, ssize_t length, CSSParserStrin
     }
     while (isSpace(text[length - 1]))
         --length;
-    if (*text == u'"') {
+    if (*text == u'"' || *text == u'\'') {
         ++text;
         length -= 2;
     }
