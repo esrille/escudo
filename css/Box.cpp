@@ -436,17 +436,15 @@ void BlockLevelBox::resolveNormalWidth(float w, float r)
             autoMask &= ~Left;
             w -= marginLeft;
         }
-        if (!style->marginRight.isAuto()) {  // TODO: assuming LTR
-            if (1 < autoCount) {
-                marginRight = style->marginRight.getPx();
-                --autoCount;
-                autoMask &= ~Right;
-                w -= marginRight;
-            }  // else over-constrained
+        if (!style->marginRight.isAuto()) {
+            marginRight = style->marginRight.getPx();
+            --autoCount;
+            autoMask &= ~Right;
+            w -= marginRight;
         }
     }
     w -= borderLeft + paddingLeft + paddingRight + borderRight;
-    if (w < 0.0f)
+    if (w < 0.0f && !(autoMask & Width))
         w = 0.0f;
     switch (autoMask) {
     case Left | Width | Right:
@@ -473,7 +471,8 @@ void BlockLevelBox::resolveNormalWidth(float w, float r)
     case Right:
         marginRight = w;
         break;
-    default:
+    default:  // over-constrained
+        marginRight += w;   // TODO: assuming LTR
         break;
     }
 }
@@ -975,8 +974,8 @@ void BlockLevelBox::layOutChildren(ViewCSSImp* view, FormattingContext* context)
         }
         if (child->isFlowRoot())
             context->updateRemainingHeight(child->getTotalHeight());
-        // TODO: overflow
-        width = std::max(width, child->getTotalWidth());
+        if (style->width.isAuto())
+            width = std::max(width, child->getTotalWidth());
     }
 }
 
