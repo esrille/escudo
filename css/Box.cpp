@@ -343,16 +343,6 @@ void BlockLevelBox::dump(ViewCSSImp* view, std::string indent)
     "p:" << paddingTop << ':' <<  paddingRight << ':'<< paddingBottom<< ':' << paddingLeft << ' ' <<
     "b:" << borderTop << ':' <<  borderRight << ':' << borderBottom<< ':' << borderLeft << '\n';
     indent += "  ";
-    if (!getFirstChild() && hasInline()) {
-        for (auto i = inlines.begin(); i != inlines.end(); ++i) {
-            if ((*i).getNodeType() == Node::TEXT_NODE) {
-                Text text = interface_cast<Text>(*i);
-                std::cout << indent << "* inline-level box: \"" << text.getData() << "\"\n";
-            } else if (Box* box = view->getFloatBox(*i))
-                box->dump(view, indent);
-        }
-        return;
-    }
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
         child->dump(view, indent);
 }
@@ -610,8 +600,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Text text, FormattingContext* c
         // And repeat this process until there's no more float box in the context.
         float advanced;
         size_t length;
-        bool linefeed;
-        linefeed = false;
+        bool linefeed = false;
         size_t next = 1;
         float required = 0.0f;
         do {
@@ -635,8 +624,21 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Text text, FormattingContext* c
         }
 
         if (!linefeed) {
-            inlineLevelBox->setData(font, point, data.substr(0, length));
-            inlineLevelBox->width = advanced;
+            switch (style->whiteSpace.getValue()) {
+            case CSSWhiteSpaceValueImp::Normal:
+            case CSSWhiteSpaceValueImp::Nowrap:
+            case CSSWhiteSpaceValueImp::PreLine:
+                if (0 < length && data[length - 1] == u' ') {
+                    inlineLevelBox->setData(font, point, data.substr(0, length - 1));
+                    inlineLevelBox->width = advanced - font->measureText(u" ", point);
+                    break;
+                }
+                // FALL THROUGH
+            default:
+                inlineLevelBox->setData(font, point, data.substr(0, length));
+                inlineLevelBox->width = advanced;
+                break;
+            }
             if (!firstLetterStyle && length < data.length()) {  // TODO: firstLetterStyle : actually we are not sure if the following characters would fit in the same line box...
                 inlineLevelBox->marginRight = inlineLevelBox->paddingRight = inlineLevelBox->borderRight = blankRight = 0;
             }
