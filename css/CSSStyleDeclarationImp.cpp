@@ -1150,6 +1150,30 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
         }
     }
 
+    width.compute(view, fontSize);
+    height.compute(view, fontSize);
+
+    top.compute(view, fontSize);
+    right.compute(view, fontSize);
+    bottom.compute(view, fontSize);
+    left.compute(view, fontSize);
+
+    marginTop.compute(view, fontSize);
+    marginRight.compute(view, fontSize);
+    marginBottom.compute(view, fontSize);
+    marginLeft.compute(view, fontSize);
+
+    // CSS3 would allow percentages in border width, the resolved values of these should be the used values, too.
+    borderTopWidth.compute(view, borderTopStyle, fontSize);
+    borderRightWidth.compute(view, borderRightStyle, fontSize);
+    borderBottomWidth.compute(view, borderBottomStyle, fontSize);
+    borderLeftWidth.compute(view, borderLeftStyle, fontSize);
+
+    paddingTop.compute(view, fontSize);
+    paddingRight.compute(view, fontSize);
+    paddingBottom.compute(view, fontSize);
+    paddingLeft.compute(view, fontSize);
+
     borderTopColor.compute(this);
     borderRightColor.compute(this);
     borderBottomColor.compute(this);
@@ -1186,29 +1210,11 @@ void CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* co
     if (resolved)
         return;
 
-    // Copy the inherited properties that depend on the containing block size again
     if (Element parentElement = element.getParentElement()) {
         if (CSSStyleDeclarationImp* parentStyle = view->getStyle(parentElement)) {
-            copy(parentStyle, CSSStyleDeclarationImp::Width);
-            copy(parentStyle, CSSStyleDeclarationImp::Height);
-            copy(parentStyle, CSSStyleDeclarationImp::Left);
-            copy(parentStyle, CSSStyleDeclarationImp::Right);
-            copy(parentStyle, CSSStyleDeclarationImp::Top);
-            copy(parentStyle, CSSStyleDeclarationImp::Bottom);
-            copy(parentStyle, CSSStyleDeclarationImp::MarginTop);
-            copy(parentStyle, CSSStyleDeclarationImp::MarginRight);
-            copy(parentStyle, CSSStyleDeclarationImp::MarginBottom);
-            copy(parentStyle, CSSStyleDeclarationImp::MarginLeft);
-            copy(parentStyle, CSSStyleDeclarationImp::PaddingTop);
-            copy(parentStyle, CSSStyleDeclarationImp::PaddingRight);
-            copy(parentStyle, CSSStyleDeclarationImp::PaddingBottom);
-            copy(parentStyle, CSSStyleDeclarationImp::PaddingLeft);
-            copy(parentStyle, CSSStyleDeclarationImp::BorderTopWidth);
-            copy(parentStyle, CSSStyleDeclarationImp::BorderRightWidth);
-            copy(parentStyle, CSSStyleDeclarationImp::BorderBottomWidth);
-            copy(parentStyle, CSSStyleDeclarationImp::BorderLeftWidth);
-
-            if (!propertySet.test(Margin) && !propertySet.test(MarginLeft) && !propertySet.test(MarginRight)) {
+            // TODO: Refine
+            if (!propertySet.test(Margin) && !propertySet.test(MarginLeft) && !propertySet.test(MarginRight) &&
+                !inheritSet.test(Margin) && !inheritSet.test(MarginLeft) && !inheritSet.test(MarginRight)) {
                 switch (parentStyle->htmlAlign.getValue()) {
                 case HTMLAlignValueImp::Left:
                     marginLeft.setValue(0.0f, css::CSSPrimitiveValue::CSS_PX);
@@ -1224,7 +1230,7 @@ void CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* co
                     break;
                 }
             }
-            if (!propertySet.test(TextAlign)) {
+            if (!propertySet.test(TextAlign) && !inheritSet.test(TextAlign)) {
                 switch (htmlAlign.getValue()) {
                 case HTMLAlignValueImp::Left:
                     textAlign.setValue(CSSTextAlignValueImp::Left);
@@ -1240,6 +1246,7 @@ void CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* co
         }
     }
 
+    // Recompute properties that depend on the containing block size
     width.compute(view, containingBlock->width, fontSize);
     if (containingBlock->height == 0 && height.isPercentage())  // TODO: check more conditions
         height.setValue();  // change height to 'auto'.
@@ -1255,12 +1262,6 @@ void CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* co
     paddingRight.compute(view, containingBlock->width, fontSize);
     paddingBottom.compute(view, containingBlock->width, fontSize);
     paddingLeft.compute(view, containingBlock->width, fontSize);
-
-    // CSS3 would allow percentages in border width, the resolved values of these should be the used values, too.
-    borderTopWidth.compute(view, containingBlock, borderTopStyle, fontSize);
-    borderRightWidth.compute(view, containingBlock, borderRightStyle, fontSize);
-    borderBottomWidth.compute(view, containingBlock, borderBottomStyle, fontSize);
-    borderLeftWidth.compute(view, containingBlock, borderLeftStyle, fontSize);
 
     left.compute(view, containingBlock->width, fontSize);
     right.compute(view, containingBlock->width, fontSize);

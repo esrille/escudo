@@ -321,11 +321,23 @@ void CSSNumericValue::compute(ViewCSSImp* view, float fullSize, const CSSFontSiz
     setValue(w, css::CSSPrimitiveValue::CSS_PX);
 }
 
+void CSSNumericValueImp::compute(ViewCSSImp* view, const CSSFontSizeValueImp& fontSize) {
+    if (value.isIndex() || value.isPercentage())
+        return;
+    value.compute(view, 0.0f, fontSize);
+}
+
 // fullSize is either containingBlock->width or containingBlock->height
 void CSSNumericValueImp::compute(ViewCSSImp* view, float fullSize, const CSSFontSizeValueImp& fontSize) {
     if (value.isIndex())
         return;
     value.compute(view, fullSize, fontSize);
+}
+
+void CSSAutoLengthValueImp::compute(ViewCSSImp* view, const CSSFontSizeValueImp& fontSize) {
+    if (isAuto() || length.isPercentage())
+        return;  // leave as it is
+    length.compute(view, 0.0f, fontSize);
 }
 
 // fullSize is either containingBlock->width or containingBlock->height
@@ -615,7 +627,7 @@ void CSSBorderStyleShorthandImp::specify(CSSStyleDeclarationImp* self, const CSS
     self->borderLeftStyle.specify(decl->borderLeftStyle);
 }
 
-void CSSBorderWidthValueImp::compute(ViewCSSImp* view, const ContainingBlock* containingBlock, const CSSBorderStyleValueImp& borderStyle, const CSSFontSizeValueImp& fontSize)
+void CSSBorderWidthValueImp::compute(ViewCSSImp* view, const CSSBorderStyleValueImp& borderStyle, const CSSFontSizeValueImp& fontSize)
 {
     switch (borderStyle.getValue()) {
     case CSSBorderStyleValueImp::None:
@@ -647,7 +659,7 @@ void CSSBorderWidthValueImp::compute(ViewCSSImp* view, const ContainingBlock* co
         break;
     default:
         // TODO use height in the vertical writing mode
-        width.compute(view, containingBlock->width, fontSize);
+        width.compute(view, 0.0f, fontSize);
         break;
     }
 }

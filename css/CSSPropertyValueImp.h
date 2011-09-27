@@ -99,6 +99,9 @@ struct CSSNumericValue
         this->index = value;
         return *this;
     }
+    bool isPercentage() const {
+        return unit == css::CSSPrimitiveValue::CSS_PERCENTAGE;
+    }
     bool operator==(const CSSNumericValue& value) const {
         if (unit == CSSParserTerm::CSS_TERM_INDEX && index == value.index)
             return true;
@@ -210,6 +213,7 @@ public:
     void specify(const CSSNumericValueImp& specified) {
         value.specify(specified.value);
     }
+    void compute(ViewCSSImp* view, const CSSFontSizeValueImp& fontSize);
     void compute(ViewCSSImp* view, float fullSize, const CSSFontSizeValueImp& fontSize);
     float getPx() const {
         return value.getPx();
@@ -256,6 +260,7 @@ public:
     void specify(const CSSAutoLengthValueImp& specified) {
         length.specify(specified.length);
     }
+    void compute(ViewCSSImp* view, const CSSFontSizeValueImp& fontSize);
     void compute(ViewCSSImp* view, float fullSize, const CSSFontSizeValueImp& fontSize);
     float getPx() const {
         return length.getPx();
@@ -704,7 +709,7 @@ public:
     void specify(const CSSBorderWidthValueImp& specified) {
         width.specify(specified.width);
     }
-    void compute(ViewCSSImp* view, const ContainingBlock* containingBlock, const CSSBorderStyleValueImp& borderStyle, const CSSFontSizeValueImp& fontSize);
+    void compute(ViewCSSImp* view, const CSSBorderStyleValueImp& borderStyle, const CSSFontSizeValueImp& fontSize);
     float getPx() const {
         return width.getPx();
     }
