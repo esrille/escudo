@@ -140,6 +140,10 @@ void FormattingContext::nextLine(BlockLevelBox* parentBox, bool moreFloats)
 {
     assert(lineBox);
     assert(lineBox == parentBox->lastChild);
+
+    if (InlineLevelBox* inlineLevelBox = dynamic_cast<InlineLevelBox*>(lineBox->getLastChild()))
+        inlineLevelBox->atEndOfLine();
+
     for (auto i = left.rbegin(); i != left.rend(); ++i) {
         if ((*i)->edge <= lineBox->marginLeft)
             break;

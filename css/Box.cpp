@@ -624,21 +624,8 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Text text, FormattingContext* c
         }
 
         if (!linefeed) {
-            switch (style->whiteSpace.getValue()) {
-            case CSSWhiteSpaceValueImp::Normal:
-            case CSSWhiteSpaceValueImp::Nowrap:
-            case CSSWhiteSpaceValueImp::PreLine:
-                if (0 < length && data[length - 1] == u' ') {
-                    inlineLevelBox->setData(font, point, data.substr(0, length - 1));
-                    inlineLevelBox->width = advanced - font->measureText(u" ", point);
-                    break;
-                }
-                // FALL THROUGH
-            default:
-                inlineLevelBox->setData(font, point, data.substr(0, length));
-                inlineLevelBox->width = advanced;
-                break;
-            }
+            inlineLevelBox->setData(font, point, data.substr(0, length));
+            inlineLevelBox->width = advanced;
             if (!firstLetterStyle && length < data.length()) {  // TODO: firstLetterStyle : actually we are not sure if the following characters would fit in the same line box...
                 inlineLevelBox->marginRight = inlineLevelBox->paddingRight = inlineLevelBox->borderRight = blankRight = 0;
             }
@@ -1327,6 +1314,25 @@ void InlineLevelBox::setData(FontTexture* font, float point, std::u16string data
     this->point = point;
     this->data = data;
     baseline = font->getAscender(point);
+}
+
+void InlineLevelBox::atEndOfLine()
+{
+    size_t length = data.length();
+    if (length < 1)
+        return;
+    switch (style->whiteSpace.getValue()) {
+    case CSSWhiteSpaceValueImp::Normal:
+    case CSSWhiteSpaceValueImp::Nowrap:
+    case CSSWhiteSpaceValueImp::PreLine:
+        if (data[length - 1] == u' ') {
+            data.erase(length - 1);
+            width -= font->measureText(u" ", point);
+        }
+        break;
+    default:
+        break;
+    }
 }
 
 void InlineLevelBox::resolveWidth()

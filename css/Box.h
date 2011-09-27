@@ -586,6 +586,8 @@ public:
 
     virtual bool isAnonymous() const;
 
+    void atEndOfLine();
+
     float getBaseline() const {
         return baseline;
     }
