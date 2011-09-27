@@ -959,6 +959,9 @@ public:
     CSSDirectionValueImp& setValue(CSSParserTerm* term) {
         return setValue(term->getIndex());
     }
+    unsigned getValue() const {
+        return value;
+    }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
         return Options[value];
     }
@@ -1441,7 +1444,7 @@ public:
     void specify(const CSSLineHeightValueImp& specified) {
         value.specify(specified.value);
     }
-    void compute(ViewCSSImp* view, const CSSFontSizeValueImp& fontSize);
+    void compute(ViewCSSImp* view, CSSStyleDeclarationImp* self);
     float getPx() const {
         return value.getPx();
     }

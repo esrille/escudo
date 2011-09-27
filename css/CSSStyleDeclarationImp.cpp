@@ -1131,8 +1131,8 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
         copyInheritedProperties(parentStyle);
     display.compute(this, element);  // TODO: we need to keep the original value for absolute box
     fontSize.compute(view, parentStyle ? &parentStyle->fontSize : 0);
-    lineHeight.compute(view, fontSize);
     fontWeight.compute(view, parentStyle ? &parentStyle->fontWeight : 0);
+    lineHeight.compute(view, this);
     verticalAlign.compute(view, fontSize, lineHeight);
     if (position.getValue() == CSSPositionValueImp::Static)
         left = right = top = bottom.setValue();  // set to 'auto'

@@ -1260,17 +1260,20 @@ void CSSFontShorthandImp::reset(CSSStyleDeclarationImp* self)
     self->fontFamily.reset();
 }
 
-void CSSLineHeightValueImp::compute(ViewCSSImp* view, const CSSFontSizeValueImp& fontSize) {
+void CSSLineHeightValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* self) {
     float w;
     switch (value.unit) {
     case CSSParserTerm::CSS_TERM_INDEX:
-        w = fontSize.getPx() * 1.2;  // normal  TODO: we should use the font's default line gap.
+        if (FontTexture* font = view->selectFont(self))
+            w = font->getHeight(view->getPointFromPx(self->fontSize.getPx()));
+        else
+            w = self->fontSize.getPx() * 1.2;
         break;
     case css::CSSPrimitiveValue::CSS_NUMBER:
-        w = fontSize.getPx() * value.number;
+        w = self->fontSize.getPx() * value.number;
         break;
     default:
-        value.compute(view, fontSize.getPx(), fontSize);
+        value.compute(view, self->fontSize.getPx(), self->fontSize);
         return;
     }
     value.setValue(w, css::CSSPrimitiveValue::CSS_PX);
