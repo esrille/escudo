@@ -416,7 +416,7 @@ void InlineLevelBox::render(ViewCSSImp* view)
     glPushMatrix();
     glTranslatef(offsetH, offsetV, 0.0f);
     if (0 < data.length())
-        glTranslatef(0, -getBlankTop(), 0.0f);
+        glTranslatef(0, baseline - font->getAscender(point) - getBlankTop(), 0.0f);
     renderBorder(view);
     glTranslatef(getBlankLeft(), getBlankTop(), 0.0f);
     getOriginScreenPosition(x, y);
@@ -425,7 +425,7 @@ void InlineLevelBox::render(ViewCSSImp* view)
     else if (getFirstChild())  // for inline-block
         getFirstChild()->render(view);
     else if (0 < data.length()) {
-        glTranslatef(0.0f, baseline, stackingContext->getZ3());
+        glTranslatef(0.0f, font->getAscender(point), stackingContext->getZ3());
         glPushMatrix();
             glScalef(point / font->getPoint(), point / font->getPoint(), 1.0);
             unsigned color = getStyle()->color.getARGB();
