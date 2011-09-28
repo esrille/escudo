@@ -1016,7 +1016,6 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         shrinkToFit();
 
     collapseMarginBottom();
-
     if (isFlowRoot()) {
         float h = context->clear(3);
         if (Box* last = getLastChild())
@@ -1035,6 +1034,18 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     }
     if (!isAnonymous())
         height = std::max(height, style->minHeight.getPx());
+
+    // Collapse top and bottom margins.
+    if (!isFlowRoot() && height == 0.0f) {
+        float offset = marginTop;
+        marginBottom = collapseMargins(marginTop, marginBottom);
+        marginTop = 0.0f;
+        if (0.0f != offset) {
+            if (Box* child = getFirstChild())
+                child->marginTop += offset;
+            context->updateRemainingHeight(-offset);
+        }
+    }
 
     // Now that 'height' is fixed, calculate 'left', 'right', 'top', and 'bottom'.
     for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
