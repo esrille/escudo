@@ -185,12 +185,12 @@ void Box::renderBorderEdge(ViewCSSImp* view, int edge, unsigned borderStyle, uns
 
     if (borderStyle == CSSBorderStyleValueImp::Groove ||
         borderStyle == CSSBorderStyleValueImp::Ridge) {
-        GLubyte redDark = std::max(red - 128, 0);
-        GLubyte greenDark = std::max(green - 128, 0);
-        GLubyte blueDark = std::max(blue - 128, 0);
-        GLubyte redBright = std::min(red + 128, 255);
-        GLubyte greenBright = std::min(green + 128, 255);
-        GLubyte blueBright = std::min(blue + 128, 255);
+        GLubyte redDark = std::max(red - 32, 0);
+        GLubyte greenDark = std::max(green - 32, 0);
+        GLubyte blueDark = std::max(blue - 32, 0);
+        GLubyte redBright = std::min(red + 32, 255);
+        GLubyte greenBright = std::min(green + 32, 255);
+        GLubyte blueBright = std::min(blue + 32, 255);
         float offset;
         offset = (g - a) / 2;
         float i = a + offset;
@@ -252,13 +252,13 @@ void Box::renderBorderEdge(ViewCSSImp* view, int edge, unsigned borderStyle, uns
             }
         }
         if (dark) {
-            red = std::max(red - 128, 0);
-            green = std::max(green - 128, 0);
-            blue = std::max(blue - 128, 0);
+            red = std::max(red - 32, 0);
+            green = std::max(green - 32, 0);
+            blue = std::max(blue - 32, 0);
         } else if (bright) {
-            red = std::min(red + 128, 255);
-            green = std::min(green + 128, 255);
-            blue = std::min(blue + 128, 255);
+            red = std::min(red + 32, 255);
+            green = std::min(green + 32, 255);
+            blue = std::min(blue + 32, 255);
         }
     }
 
