@@ -339,9 +339,9 @@ void BlockLevelBox::dump(ViewCSSImp* view, std::string indent)
     else
         std::cout << " [" << node.getNodeName() << ']';
     std::cout << " (" << x << ", " << y << ") w:" << width << " h:" << height << ' ' <<
-    "m:" << marginTop << ':' << marginRight << ':' << marginBottom << ':' << marginLeft << ' ' <<
-    "p:" << paddingTop << ':' <<  paddingRight << ':'<< paddingBottom<< ':' << paddingLeft << ' ' <<
-    "b:" << borderTop << ':' <<  borderRight << ':' << borderBottom<< ':' << borderLeft << '\n';
+        "m:" << marginTop << ':' << marginRight << ':' << marginBottom << ':' << marginLeft << ' ' <<
+        "p:" << paddingTop << ':' <<  paddingRight << ':'<< paddingBottom<< ':' << paddingLeft << ' ' <<
+        "b:" << borderTop << ':' <<  borderRight << ':' << borderBottom<< ':' << borderLeft << '\n';
     indent += "  ";
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
         child->dump(view, indent);
@@ -586,8 +586,10 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Text text, FormattingContext* c
         style->addBox(inlineLevelBox);  // activeStyle? maybe not...
         inlineLevelBox->resolveWidth();
         float blankLeft = inlineLevelBox->getBlankLeft();
-        if (0 < position)  // TODO: this is a bit awkward...
+        if (0 < position || element.getFirstChild() != text) {
+            // TODO: there might not be such a text node that 'element.getFirstChild() == text'.
             inlineLevelBox->marginLeft = inlineLevelBox->paddingLeft = inlineLevelBox->borderLeft = blankLeft = 0;
+        }
         float blankRight = inlineLevelBox->getBlankRight();
         context->x += blankLeft;
         context->leftover -= blankLeft + blankRight;
@@ -626,7 +628,9 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Text text, FormattingContext* c
         if (!linefeed) {
             inlineLevelBox->setData(font, point, data.substr(0, length));
             inlineLevelBox->width = advanced;
-            if (!firstLetterStyle && length < data.length()) {  // TODO: firstLetterStyle : actually we are not sure if the following characters would fit in the same line box...
+            if ((length < data.length() || element.getLastChild() != text) && !firstLetterStyle) {
+                // TODO: there might not be such a text node that 'element.getLastNode() == text'.
+                // TODO: firstLetterStyle: actually we are not sure if the following characters would fit in the same line box...
                 inlineLevelBox->marginRight = inlineLevelBox->paddingRight = inlineLevelBox->borderRight = blankRight = 0;
             }
         }
@@ -1383,8 +1387,11 @@ void InlineLevelBox::resolveOffset(ViewCSSImp* view)
 
 void InlineLevelBox::dump(ViewCSSImp* view, std::string indent)
 {
-    std::cout << indent << "* inline-level box (" << x << ", " << y << ") w:" <<
-        width << " h:" << height << " \"" << data << "\"\n";
+    std::cout << indent << "* inline-level box (" << x << ", " << y << ") w:" << width << " h:" << height << ' ' <<
+        "m:" << marginTop << ':' << marginRight << ':' << marginBottom << ':' << marginLeft << ' ' <<
+        "p:" << paddingTop << ':' <<  paddingRight << ':'<< paddingBottom<< ':' << paddingLeft << ' ' <<
+        "b:" << borderTop << ':' <<  borderRight << ':' << borderBottom<< ':' << borderLeft <<
+        " \"" << data << "\"\n";
     indent += "  ";
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
         child->dump(view, indent);
