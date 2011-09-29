@@ -223,6 +223,38 @@ public:
     }
 };
 
+class CSSNonNegativeValueImp : public CSSNumericValueImp
+{
+public:
+    CSSNonNegativeValueImp& setValue(float number = 0.0f, unsigned short unit = css::CSSPrimitiveValue::CSS_NUMBER) {
+        value.setValue(number, unit);
+        return *this;
+    }
+    CSSNonNegativeValueImp& setValue(CSSParserTerm* term) {
+        value.setValue(term);
+        return *this;
+    }
+    virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
+        return value.getCssText();
+    }
+    bool operator==(const CSSNonNegativeValueImp& n) {
+        return value == n.value;
+    }
+    bool operator!=(const CSSNonNegativeValueImp& n) {
+        return value != n.value;
+    }
+    void specify(const CSSNonNegativeValueImp& specified) {
+        value.specify(specified.value);
+    }
+    float getPx() const {
+        float px = value.getPx();
+        return (px < 0.0f) ? 0.0f : px;
+    }
+    CSSNonNegativeValueImp(float number = 0.0f, unsigned short unit = css::CSSPrimitiveValue::CSS_NUMBER) :
+        CSSNumericValueImp(number, unit) {
+    }
+};
+
 // <length>, <percentage>, auto
 class CSSAutoLengthValueImp : public CSSPropertyValueImp
 {
@@ -312,7 +344,8 @@ public:
     }
     void compute(ViewCSSImp* view, float fullSize, const CSSFontSizeValueImp& fontSize);
     float getPx() const {
-        return length.getPx();
+        float px = length.getPx();
+        return (px < 0.0f) ? 0.0f : px;
     }
     CSSNoneLengthValueImp() :
         length(0) {

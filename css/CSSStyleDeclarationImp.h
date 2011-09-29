@@ -306,14 +306,14 @@ public:
     CSSMarginShorthandImp margin;
     CSSNoneLengthValueImp maxHeight;
     CSSNoneLengthValueImp maxWidth;
-    CSSNumericValueImp minHeight;
-    CSSNumericValueImp minWidth;
+    CSSNonNegativeValueImp minHeight;
+    CSSNonNegativeValueImp minWidth;
 
     CSSOverflowValueImp overflow;
-    CSSNumericValueImp paddingTop;
-    CSSNumericValueImp paddingRight;
-    CSSNumericValueImp paddingBottom;
-    CSSNumericValueImp paddingLeft;
+    CSSNonNegativeValueImp paddingTop;
+    CSSNonNegativeValueImp paddingRight;
+    CSSNonNegativeValueImp paddingBottom;
+    CSSNonNegativeValueImp paddingLeft;
     CSSPaddingShorthandImp padding;
     CSSPageBreakValueImp pageBreakAfter;
     CSSPageBreakValueImp pageBreakBefore;
