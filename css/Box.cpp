@@ -1036,7 +1036,8 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         height = std::max(height, style->minHeight.getPx());
 
     // Collapse top and bottom margins.
-    if (!isFlowRoot() && height == 0.0f) {
+    if (!isFlowRoot() && height == 0.0f &&
+        borderTop == 0.0f && paddingTop == 0.0f && paddingBottom == 0.0f && borderBottom == 0.0f) {
         float offset = marginTop;
         marginBottom = collapseMargins(marginTop, marginBottom);
         marginTop = 0.0f;
