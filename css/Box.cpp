@@ -918,6 +918,7 @@ float BlockLevelBox::collapseMarginTop(FormattingContext* context)
 {
     if (isFlowRoot())
         return 0.0f;
+    assert(!isFlowRoot());
     float before = 0.0f;
     if (Box* parent = getParentBox()) {
         if (parent->getFirstChild() == this) {
@@ -935,8 +936,6 @@ float BlockLevelBox::collapseMarginTop(FormattingContext* context)
         }
     }
     context->updateRemainingHeight(getBlankTop());
-    if (!isAnonymous())
-        marginTop += context->clear(style->clear.getValue());
     return before;
 }
 
@@ -1007,7 +1006,15 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
 
     textAlign = style->textAlign.getValue();
     context = updateFormattingContext(context);
-    float before = collapseMarginTop(context);
+    float before = 0.0f;
+    float clearance = 0.0f;
+    if (!isFlowRoot()) {
+        before = collapseMarginTop(context);
+        if (!isAnonymous()) {
+            clearance = context->clear(style->clear.getValue());
+            marginTop += clearance;
+        }
+    }
 
     if (hasInline()) {
         if (!layOutInline(view, context, before))
@@ -1041,7 +1048,7 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
 
     // Collapse top and bottom margins.
     if (!isFlowRoot() && height == 0.0f &&
-        borderTop == 0.0f && paddingTop == 0.0f && paddingBottom == 0.0f && borderBottom == 0.0f) {
+        borderTop == 0.0f && paddingTop == 0.0f && paddingBottom == 0.0f && borderBottom == 0.0f && clearance == 0.0f) {
         float offset = marginTop;
         marginBottom = collapseMargins(marginTop, marginBottom);
         marginTop = 0.0f;
