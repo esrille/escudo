@@ -123,7 +123,10 @@ struct CSSNumericValue
         index = value.index;
         number = value.number;
     }
-    void compute(ViewCSSImp* view, float fullSize, const CSSFontSizeValueImp& fontSize);
+    void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style) {
+        resolve(view, style, 0.0f);
+    }
+    void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize);
 };
 
 class CSSPropertyValueImp
@@ -213,8 +216,8 @@ public:
     void specify(const CSSNumericValueImp& specified) {
         value.specify(specified.value);
     }
-    void compute(ViewCSSImp* view, const CSSFontSizeValueImp& fontSize);
-    void compute(ViewCSSImp* view, float fullSize, const CSSFontSizeValueImp& fontSize);
+    void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
+    void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize);
     float getPx() const {
         return value.getPx();
     }
@@ -292,8 +295,8 @@ public:
     void specify(const CSSAutoLengthValueImp& specified) {
         length.specify(specified.length);
     }
-    void compute(ViewCSSImp* view, const CSSFontSizeValueImp& fontSize);
-    void compute(ViewCSSImp* view, float fullSize, const CSSFontSizeValueImp& fontSize);
+    void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
+    void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize);
     float getPx() const {
         return length.getPx();
     }
@@ -342,7 +345,7 @@ public:
     void specify(const CSSNoneLengthValueImp& specified) {
         length.specify(specified.length);
     }
-    void compute(ViewCSSImp* view, float fullSize, const CSSFontSizeValueImp& fontSize);
+    void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize);
     float getPx() const {
         float px = length.getPx();
         return (px < 0.0f) ? 0.0f : px;
@@ -489,7 +492,7 @@ public:
         horizontal.specify(specified.horizontal);
         vertical.specify(specified.vertical);
     }
-    void compute(ViewCSSImp* view, BoxImage* image, const CSSFontSizeValueImp& fontSize, float width, float height);
+    void resolve(ViewCSSImp* view, BoxImage* image, CSSStyleDeclarationImp* style, float width, float height);
     float getLeftPx() const {
         return horizontal.getPx();
     }
@@ -742,7 +745,7 @@ public:
     void specify(const CSSBorderWidthValueImp& specified) {
         width.specify(specified.width);
     }
-    void compute(ViewCSSImp* view, const CSSBorderStyleValueImp& borderStyle, const CSSFontSizeValueImp& fontSize);
+    void compute(ViewCSSImp* view, const CSSBorderStyleValueImp& borderStyle, CSSStyleDeclarationImp* style);
     float getPx() const {
         return width.getPx();
     }
@@ -1300,7 +1303,7 @@ public:
     void specify(const CSSFontSizeValueImp& specified) {
         size.specify(specified.size);
     }
-    void compute(ViewCSSImp* view, CSSFontSizeValueImp* parentFontSize);
+    void compute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle);
     float getPx() const {
         return size.getPx();
     }
@@ -1404,7 +1407,7 @@ public:
     void specify(const CSSFontWeightValueImp& specified) {
         value = specified.value;
     }
-    void compute(ViewCSSImp* view, const CSSFontWeightValueImp* inheritedValue);
+    void compute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle);
     unsigned getWeight() const {
         assert(value.unit == css::CSSPrimitiveValue::CSS_NUMBER);
         return static_cast<unsigned>(value.number);
@@ -1482,7 +1485,7 @@ public:
     void specify(const CSSLineHeightValueImp& specified) {
         value.specify(specified.value);
     }
-    void compute(ViewCSSImp* view, CSSStyleDeclarationImp* self);
+    void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     float getPx() const {
         return value.getPx();
     }
@@ -1788,7 +1791,7 @@ public:
     void specify(const CSSVerticalAlignValueImp& specified) {
         value.specify(specified.value);
     }
-    void compute(ViewCSSImp* view, const CSSFontSizeValueImp& fontSize, const CSSLineHeightValueImp& lineHeight);
+    void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     float getOffset(LineBox* line, InlineLevelBox* text) const;
     CSSVerticalAlignValueImp() :
         value(Baseline) {

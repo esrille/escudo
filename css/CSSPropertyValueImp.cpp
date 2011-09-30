@@ -301,7 +301,7 @@ const char16_t* CSSBindingValueImp::Options[] = {
     u"time",
 };
 
-void CSSNumericValue::compute(ViewCSSImp* view, float fullSize, const CSSFontSizeValueImp& fontSize)
+void CSSNumericValue::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize)
 {
     float w;
     switch (unit) {
@@ -309,10 +309,13 @@ void CSSNumericValue::compute(ViewCSSImp* view, float fullSize, const CSSFontSiz
         w = view->getPx(*this, fullSize);
         break;
     case css::CSSPrimitiveValue::CSS_EMS:
-        w = view->getPx(*this, fontSize.getPx());
+        w = view->getPx(*this, style->fontSize.getPx());
         break;
     case css::CSSPrimitiveValue::CSS_EXS:
-        w = view->getPx(*this, fontSize.getPx() * 0.5f);  // TODO fix 0.5
+        if (FontTexture* font = style->getFontTexture())
+            w = view->getPx(*this, font->getXHeight(view->getPointFromPx(style->fontSize.getPx())));
+        else
+            w = view->getPx(*this, style->fontSize.getPx() * 0.5f);
         break;
     default:
         w = view->getPx(*this);
@@ -321,36 +324,34 @@ void CSSNumericValue::compute(ViewCSSImp* view, float fullSize, const CSSFontSiz
     setValue(w, css::CSSPrimitiveValue::CSS_PX);
 }
 
-void CSSNumericValueImp::compute(ViewCSSImp* view, const CSSFontSizeValueImp& fontSize) {
+void CSSNumericValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style) {
     if (value.isIndex() || value.isPercentage())
         return;
-    value.compute(view, 0.0f, fontSize);
+    value.compute(view, style);
 }
 
-// fullSize is either containingBlock->width or containingBlock->height
-void CSSNumericValueImp::compute(ViewCSSImp* view, float fullSize, const CSSFontSizeValueImp& fontSize) {
+void CSSNumericValueImp::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize) {
     if (value.isIndex())
         return;
-    value.compute(view, fullSize, fontSize);
+    value.resolve(view, style, fullSize);
 }
 
-void CSSAutoLengthValueImp::compute(ViewCSSImp* view, const CSSFontSizeValueImp& fontSize) {
+void CSSAutoLengthValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style) {
     if (isAuto() || length.isPercentage())
         return;  // leave as it is
-    length.compute(view, 0.0f, fontSize);
+    length.compute(view, style);
 }
 
-// fullSize is either containingBlock->width or containingBlock->height
-void CSSAutoLengthValueImp::compute(ViewCSSImp* view, float fullSize, const CSSFontSizeValueImp& fontSize) {
+void CSSAutoLengthValueImp::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize) {
     if (isAuto())
         return;  // leave length as auto
-    length.compute(view, fullSize, fontSize);
+    length.resolve(view, style, fullSize);
 }
 
-void CSSNoneLengthValueImp::compute(ViewCSSImp* view, float fullSize, const CSSFontSizeValueImp& fontSize) {
+void CSSNoneLengthValueImp::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize) {
     if (isNone())
         return;  // leave length as auto
-    length.compute(view, fullSize, fontSize);
+    length.resolve(view, style, fullSize);
 }
 
 void CSSAutoNumberingValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
@@ -445,11 +446,11 @@ void CSSBackgroundPositionValueImp::setValue(CSSStyleDeclarationImp* decl, CSSVa
     setValue(stack, stack.begin());
 }
 
-void CSSBackgroundPositionValueImp::compute(ViewCSSImp* view, BoxImage* image, const CSSFontSizeValueImp& fontSize, float width, float height)
+void CSSBackgroundPositionValueImp::resolve(ViewCSSImp* view, BoxImage* image, CSSStyleDeclarationImp* style, float width, float height)
 {
     assert(image);
-    horizontal.compute(view, width - image->getWidth(), fontSize);  // TODO: negative width case
-    vertical.compute(view, height - image->getHeight(), fontSize);  // TODO: negative height case
+    horizontal.resolve(view, style, width - image->getWidth());  // TODO: negative width case
+    vertical.resolve(view, style, height - image->getHeight());  // TODO: negative height case
 }
 
 void CSSBackgroundShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
@@ -627,7 +628,7 @@ void CSSBorderStyleShorthandImp::specify(CSSStyleDeclarationImp* self, const CSS
     self->borderLeftStyle.specify(decl->borderLeftStyle);
 }
 
-void CSSBorderWidthValueImp::compute(ViewCSSImp* view, const CSSBorderStyleValueImp& borderStyle, const CSSFontSizeValueImp& fontSize)
+void CSSBorderWidthValueImp::compute(ViewCSSImp* view, const CSSBorderStyleValueImp& borderStyle, CSSStyleDeclarationImp* style)
 {
     switch (borderStyle.getValue()) {
     case CSSBorderStyleValueImp::None:
@@ -659,7 +660,7 @@ void CSSBorderWidthValueImp::compute(ViewCSSImp* view, const CSSBorderStyleValue
         break;
     default:
         // TODO use height in the vertical writing mode
-        width.compute(view, 0.0f, fontSize);
+        width.compute(view, style);
         break;
     }
 }
@@ -1103,9 +1104,9 @@ std::u16string CSSFontFamilyValueImp::getCssText(CSSStyleDeclarationImp* decl)
     return cssText;
 }
 
-void CSSFontSizeValueImp::compute(ViewCSSImp* view, CSSFontSizeValueImp* parentFontSize) {
+void CSSFontSizeValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle) {
     float w;
-    float parentSize = parentFontSize ? parentFontSize->size.number : view->getMediumFontSize();
+    float parentSize = parentStyle ? parentStyle->fontSize.size.number : view->getMediumFontSize();
     unsigned i;
     switch (size.unit) {
     case CSSParserTerm::CSS_TERM_INDEX:
@@ -1137,7 +1138,10 @@ void CSSFontSizeValueImp::compute(ViewCSSImp* view, CSSFontSizeValueImp* parentF
         w = view->getPx(size, parentSize);
         break;
     case css::CSSPrimitiveValue::CSS_EXS:
-        w = view->getPx(size, parentSize * 0.5f); // TODO: '* 0.5' is not the best solution
+        if (parentStyle && parentStyle->getFontTexture())
+            w = view->getPx(size, parentStyle->getFontTexture()->getXHeight(view->getPointFromPx(parentStyle->fontSize.getPx())));
+        else
+            w = view->getPx(size, parentStyle->fontSize.getPx() * 0.5f);
         break;
     default:
         w = view->getPx(size);
@@ -1146,8 +1150,9 @@ void CSSFontSizeValueImp::compute(ViewCSSImp* view, CSSFontSizeValueImp* parentF
     size.setValue(w, css::CSSPrimitiveValue::CSS_PX);
 }
 
-void CSSFontWeightValueImp::compute(ViewCSSImp* view, const CSSFontWeightValueImp* inheritedValue) {
-    float inherited = inheritedValue ? inheritedValue->value.number : 400.0f;
+void CSSFontWeightValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle)
+{
+    float inherited = parentStyle ? parentStyle->fontWeight.value.number : 400.0f;
     float w;
     switch (value.unit) {
     case CSSParserTerm::CSS_TERM_INDEX:
@@ -1272,20 +1277,20 @@ void CSSFontShorthandImp::reset(CSSStyleDeclarationImp* self)
     self->fontFamily.reset();
 }
 
-void CSSLineHeightValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* self) {
+void CSSLineHeightValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style) {
     float w;
     switch (value.unit) {
     case CSSParserTerm::CSS_TERM_INDEX:
-        if (FontTexture* font = view->selectFont(self))
-            w = font->getHeight(view->getPointFromPx(self->fontSize.getPx()));
+        if (FontTexture* font = style->getFontTexture())
+            w = font->getHeight(view->getPointFromPx(style->fontSize.getPx()));
         else
-            w = self->fontSize.getPx() * 1.2;
+            w = style->fontSize.getPx() * 1.2;
         break;
     case css::CSSPrimitiveValue::CSS_NUMBER:
-        w = self->fontSize.getPx() * value.number;
+        w = style->fontSize.getPx() * value.number;
         break;
     default:
-        value.compute(view, self->fontSize.getPx(), self->fontSize);
+        value.resolve(view, style, style->fontSize.getPx());
         return;
     }
     value.setValue(w, css::CSSPrimitiveValue::CSS_PX);
@@ -1393,10 +1398,11 @@ void CSSPaddingShorthandImp::specify(CSSStyleDeclarationImp* self, const CSSStyl
     self->paddingLeft.specify(decl->paddingLeft);
 }
 
-void CSSVerticalAlignValueImp::compute(ViewCSSImp* view, const CSSFontSizeValueImp& fontSize, const CSSLineHeightValueImp& lineHeight) {
+void CSSVerticalAlignValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style)
+{
     if (value.isIndex())
         return;
-    value.compute(view, lineHeight.getPx(), fontSize);
+    value.resolve(view, style, style->lineHeight.getPx());
 }
 
 float CSSVerticalAlignValueImp::getOffset(LineBox* line, InlineLevelBox* text) const

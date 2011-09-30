@@ -35,6 +35,8 @@
 #include "CSSSelector.h"
 #include "CSSRuleImp.h"
 
+class FontTexture;  // TODO: define namespace
+
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class Box;
@@ -231,6 +233,7 @@ private:
     Box* box;
     Box* lastBox;  // for inline
     StackingContext* stackingContext;
+    FontTexture* fontTexture;
 
     CSSStyleDeclarationPtr pseudoElements[CSSPseudoElementSelector::MaxPseudoElements];
 
@@ -348,10 +351,7 @@ public:
 
 public:
     CSSStyleDeclarationImp();
-    ~CSSStyleDeclarationImp()
-    {
-        ;  //
-    }
+    ~CSSStyleDeclarationImp();
 
     void setOwner(Object* owner) {
         this->owner = owner;
@@ -417,6 +417,10 @@ public:
 
     StackingContext* getStackingContext() const {
         return stackingContext;
+    }
+
+    FontTexture* getFontTexture() const {
+        return fontTexture;
     }
 
     static int getPropertyID(const std::u16string& ident);

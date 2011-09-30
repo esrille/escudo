@@ -1130,10 +1130,11 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     else
         copyInheritedProperties(parentStyle);
     display.compute(this, element);  // TODO: we need to keep the original value for absolute box
-    fontSize.compute(view, parentStyle ? &parentStyle->fontSize : 0);
-    fontWeight.compute(view, parentStyle ? &parentStyle->fontWeight : 0);
+    fontSize.compute(view, parentStyle);
+    fontWeight.compute(view, parentStyle);
+    fontTexture = view->selectFont(this);
     lineHeight.compute(view, this);
-    verticalAlign.compute(view, fontSize, lineHeight);
+    verticalAlign.compute(view, this);
     if (position.getValue() == CSSPositionValueImp::Static)
         left = right = top = bottom.setValue();  // set to 'auto'
     if (element.getLocalName() == u"body") {  // TODO: check HTML namespace
@@ -1150,29 +1151,29 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
         }
     }
 
-    width.compute(view, fontSize);
-    height.compute(view, fontSize);
+    width.compute(view, this);
+    height.compute(view, this);
 
-    top.compute(view, fontSize);
-    right.compute(view, fontSize);
-    bottom.compute(view, fontSize);
-    left.compute(view, fontSize);
+    top.compute(view, this);
+    right.compute(view, this);
+    bottom.compute(view, this);
+    left.compute(view, this);
 
-    marginTop.compute(view, fontSize);
-    marginRight.compute(view, fontSize);
-    marginBottom.compute(view, fontSize);
-    marginLeft.compute(view, fontSize);
+    marginTop.compute(view, this);
+    marginRight.compute(view, this);
+    marginBottom.compute(view, this);
+    marginLeft.compute(view, this);
 
     // CSS3 would allow percentages in border width, the resolved values of these should be the used values, too.
-    borderTopWidth.compute(view, borderTopStyle, fontSize);
-    borderRightWidth.compute(view, borderRightStyle, fontSize);
-    borderBottomWidth.compute(view, borderBottomStyle, fontSize);
-    borderLeftWidth.compute(view, borderLeftStyle, fontSize);
+    borderTopWidth.compute(view, borderTopStyle, this);
+    borderRightWidth.compute(view, borderRightStyle, this);
+    borderBottomWidth.compute(view, borderBottomStyle, this);
+    borderLeftWidth.compute(view, borderLeftStyle, this);
 
-    paddingTop.compute(view, fontSize);
-    paddingRight.compute(view, fontSize);
-    paddingBottom.compute(view, fontSize);
-    paddingLeft.compute(view, fontSize);
+    paddingTop.compute(view, this);
+    paddingRight.compute(view, this);
+    paddingBottom.compute(view, this);
+    paddingLeft.compute(view, this);
 
     borderTopColor.compute(this);
     borderRightColor.compute(this);
@@ -1247,31 +1248,31 @@ void CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* co
     }
 
     // Recompute properties that depend on the containing block size
-    width.compute(view, containingBlock->width, fontSize);
+    width.resolve(view, this, containingBlock->width);
     if (containingBlock->height == 0 && height.isPercentage())  // TODO: check more conditions
         height.setValue();  // change height to 'auto'.
     else
-        height.compute(view, containingBlock->height, fontSize);  // TODO: check more conditions
+        height.resolve(view, this, containingBlock->height);  // TODO: check more conditions
 
-    marginTop.compute(view, containingBlock->width, fontSize);
-    marginRight.compute(view, containingBlock->width, fontSize);
-    marginBottom.compute(view, containingBlock->width, fontSize);
-    marginLeft.compute(view, containingBlock->width, fontSize);
+    marginTop.resolve(view, this, containingBlock->width);
+    marginRight.resolve(view, this, containingBlock->width);
+    marginBottom.resolve(view, this, containingBlock->width);
+    marginLeft.resolve(view, this, containingBlock->width);
 
-    paddingTop.compute(view, containingBlock->width, fontSize);
-    paddingRight.compute(view, containingBlock->width, fontSize);
-    paddingBottom.compute(view, containingBlock->width, fontSize);
-    paddingLeft.compute(view, containingBlock->width, fontSize);
+    paddingTop.resolve(view, this, containingBlock->width);
+    paddingRight.resolve(view, this, containingBlock->width);
+    paddingBottom.resolve(view, this, containingBlock->width);
+    paddingLeft.resolve(view, this, containingBlock->width);
 
-    left.compute(view, containingBlock->width, fontSize);
-    right.compute(view, containingBlock->width, fontSize);
-    top.compute(view, containingBlock->height, fontSize);
-    bottom.compute(view, containingBlock->height, fontSize);
+    left.resolve(view, this, containingBlock->width);
+    right.resolve(view, this, containingBlock->width);
+    top.resolve(view, this, containingBlock->height);
+    bottom.resolve(view, this, containingBlock->height);
 
-    minHeight.compute(view, containingBlock->height, fontSize);
-    minWidth.compute(view, containingBlock->width, fontSize);
-    maxHeight.compute(view, containingBlock->height, fontSize);
-    maxWidth.compute(view, containingBlock->width, fontSize);
+    minHeight.resolve(view, this, containingBlock->height);
+    minWidth.resolve(view, this, containingBlock->width);
+    maxHeight.resolve(view, this, containingBlock->height);
+    maxWidth.resolve(view, this, containingBlock->width);
 
     resolved = true;
 }
@@ -2811,6 +2812,7 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp() :
     box(0),
     lastBox(0),
     stackingContext(0),
+    fontTexture(0),
     backgroundColor(CSSColorValueImp::Transparent),
     counterIncrement(1),
     counterReset(0),
@@ -2876,6 +2878,10 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp() :
     pseudoElements[CSSPseudoElementSelector::NonPseudo] = this;
     for (int i = 1; i < CSSPseudoElementSelector::MaxPseudoElements; ++i)
         pseudoElements[i] = 0;
+}
+
+CSSStyleDeclarationImp::~CSSStyleDeclarationImp()
+{
 }
 
 const char16_t* CSSStyleDeclarationImp::getPropertyName(int propertyID)
