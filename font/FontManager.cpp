@@ -18,6 +18,8 @@
 
 #include <algorithm>
 
+#include <freetype/tttables.h>
+
 #include "utf.h"
 #include "TextIterator.h"
 
@@ -98,6 +100,12 @@ FontTexture::FontTexture(FontFace* face, unsigned int point) try :
     descender = face->face->descender;
     pen.x = pen.y = 1;  // (0, 0) is reserved for an uninitialized font glyph
     ymax = 0;
+
+    xHeight = ascender / 2;
+    if (FT_IS_SFNT(face->face)) {
+        if (TT_OS2_* os2 = static_cast<TT_OS2_*>(FT_Get_Sfnt_Table(face->face, ft_sfnt_os2)))
+            xHeight = os2->sxHeight;
+    }
 
     // Store the missing glyph (0) as the 1st entry
     if (!storeGlyph(glyphs, 0))

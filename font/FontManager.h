@@ -137,6 +137,7 @@ class FontTexture
     unsigned int point; // nominal font point sized
     short ascender;
     short descender;
+    short xHeight;
 
     std::vector<uint8_t*> images;
     uint8_t* image;  // intensity texture image of Width x Height texels
@@ -198,6 +199,10 @@ public:
 
     float getHeight(float point) const {
         return point / 72 * 96;  // TODO XXX DPI
+    }
+
+    float getXHeight(float point) const {
+        return (getHeight(point) * xHeight) / (ascender - descender);
     }
 
     float getAscender(float point) const {
