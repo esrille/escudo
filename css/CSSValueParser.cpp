@@ -827,7 +827,7 @@ bool CSSValueParser::rgb(const CSSValueRule& rule)
         } else {
             assert(term->unit == CSSPrimitiveValue::CSS_PERCENTAGE);
             rgb <<= 8;
-            rgb += static_cast<unsigned char>(255.0 * std::max(0.0, std::min(100.0, term->number)));
+            rgb += static_cast<unsigned char>(roundf(255.0f * (std::max(0.0, std::min(100.0, term->number) / 100.0f))));
         }
     }
     rgb |= 0xFF000000;
