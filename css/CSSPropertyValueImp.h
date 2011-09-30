@@ -747,7 +747,8 @@ public:
     }
     void compute(ViewCSSImp* view, const CSSBorderStyleValueImp& borderStyle, CSSStyleDeclarationImp* style);
     float getPx() const {
-        return width.getPx();
+        float px = width.getPx();
+        return (px < 0.0f) ? 3.0f : px;  // returns the default 'medium' width in px if negative.
     }
     CSSBorderWidthValueImp() :
         width(Medium) {
