@@ -309,6 +309,8 @@ CSSPropertyValueImp* CSSStyleDeclarationImp::getProperty(unsigned id)
         return &textDecoration;
     case TextIndent:
         return &textIndent;
+    case TextTransform:
+        return &textTransform;
     case UnicodeBidi:
         return &unicodeBidi;
     case VerticalAlign:
@@ -731,6 +733,9 @@ void CSSStyleDeclarationImp::specify(const CSSStyleDeclarationImp* decl, unsigne
     case TextIndent:
         textIndent.specify(decl->textIndent);
         break;
+    case TextTransform:
+        textTransform.specify(decl->textTransform);
+        break;
     case UnicodeBidi:
         unicodeBidi.specify(decl->unicodeBidi);
         break;
@@ -1037,6 +1042,9 @@ void CSSStyleDeclarationImp::reset(unsigned id)
         break;
     case TextIndent:
         textIndent.setValue(0.0f, css::CSSPrimitiveValue::CSS_PX);
+        break;
+    case TextTransform:
+        textTransform.setValue();
         break;
     case UnicodeBidi:
         unicodeBidi.setValue();
@@ -2620,8 +2628,7 @@ void CSSStyleDeclarationImp::setTextShadow(Nullable<std::u16string> textShadow)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getTextTransform()
 {
-    // TODO: implement me!
-    return Nullable<std::u16string>();
+    return textTransform.getCssText(this);
 }
 
 void CSSStyleDeclarationImp::setTextTransform(Nullable<std::u16string> textTransform)

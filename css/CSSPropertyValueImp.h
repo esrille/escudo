@@ -637,6 +637,7 @@ public:
     };
     CSSBorderCollapseValueImp& setValue(unsigned value = Separate) {
         this->value = value;
+        return *this;
     }
     CSSBorderCollapseValueImp& setValue(CSSParserTerm* term) {
         return setValue(term->getIndex());
@@ -1728,6 +1729,38 @@ public:
         value = specified.value;
     }
     CSSTextDecorationValueImp(unsigned initial = None) :
+        value(initial) {
+    }
+    static const char16_t* Options[];
+};
+
+class CSSTextTransformValueImp : public CSSPropertyValueImp
+{
+    unsigned value;
+public:
+    enum {
+        None,
+        Capitalize,
+        Uppercase,
+        Lowercase
+    };
+    CSSTextTransformValueImp& setValue(unsigned value = None) {
+        this->value = value;
+        return *this;
+    }
+    CSSTextTransformValueImp& setValue(CSSParserTerm* term) {
+        return setValue(term->getIndex());
+    }
+    unsigned getValue() const {
+        return value;
+    }
+    virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
+        return Options[value];
+    }
+    void specify(const CSSTextTransformValueImp& specified) {
+        value = specified.value;
+    }
+    CSSTextTransformValueImp(unsigned initial = None) :
         value(initial) {
     }
     static const char16_t* Options[];

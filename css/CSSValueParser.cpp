@@ -99,6 +99,7 @@ CSSValueRule CSSValueParser::position;
 CSSValueRule CSSValueParser::tableLayout;
 CSSValueRule CSSValueParser::textAlign;
 CSSValueRule CSSValueParser::textDecoration;
+CSSValueRule CSSValueParser::textTransform;
 CSSValueRule CSSValueParser::unicodeBidi;
 CSSValueRule CSSValueParser::verticalAlign;
 CSSValueRule CSSValueParser::visibility;
@@ -454,13 +455,17 @@ void CSSValueParser::initializeRules()
         | CSSValueRule(u"right", CSSTextAlignValueImp::Right)
         | CSSValueRule(u"center", CSSTextAlignValueImp::Center)
         | CSSValueRule(u"justify", CSSTextAlignValueImp::Justify);
-
     textDecoration
         = CSSValueRule(u"none", CSSTextDecorationValueImp::None)
         | (CSSValueRule(u"underline", CSSTextDecorationValueImp::Underline) ||
            CSSValueRule(u"overline", CSSTextDecorationValueImp::Overline) ||
            CSSValueRule(u"line-through", CSSTextDecorationValueImp::LineThrough) ||
            CSSValueRule(u"blink", CSSTextDecorationValueImp::Blink));
+    textTransform
+        = CSSValueRule(u"capitalize", CSSTextTransformValueImp::Capitalize)
+        | CSSValueRule(u"uppercase", CSSTextTransformValueImp::Uppercase)
+        | CSSValueRule(u"lowercase", CSSTextTransformValueImp::Lowercase)
+        | CSSValueRule(u"none", CSSTextTransformValueImp::None);
 
     unicodeBidi
         = CSSValueRule(u"normal", CSSUnicodeBidiValueImp::Normal)
@@ -1013,6 +1018,9 @@ CSSValueParser::CSSValueParser(int propertyID) :
         break;
     case CSSStyleDeclarationImp::TextIndent:
         rule = &percent_length;
+        break;
+    case CSSStyleDeclarationImp::TextTransform:
+        rule = &textTransform;
         break;
     case CSSStyleDeclarationImp::UnicodeBidi:
         rule = &unicodeBidi;

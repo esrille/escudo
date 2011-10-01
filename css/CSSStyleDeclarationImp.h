@@ -330,7 +330,7 @@ public:
     CSSTextAlignValueImp textAlign;
     CSSTextDecorationValueImp textDecoration;
     CSSNumericValueImp textIndent;
-
+    CSSTextTransformValueImp textTransform;
     CSSAutoLengthValueImp top;
     CSSUnicodeBidiValueImp unicodeBidi;
     CSSVerticalAlignValueImp verticalAlign;

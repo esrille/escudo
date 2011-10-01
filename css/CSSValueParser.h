@@ -259,6 +259,7 @@ class CSSValueParser
     static CSSValueRule tableLayout;
     static CSSValueRule textAlign;
     static CSSValueRule textDecoration;
+    static CSSValueRule textTransform;
     static CSSValueRule unicodeBidi;
     static CSSValueRule verticalAlign;
     static CSSValueRule visibility;

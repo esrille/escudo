@@ -242,6 +242,13 @@ const char16_t* CSSTextDecorationValueImp::Options[] = {
     u"blink"
 };
 
+const char16_t* CSSTextTransformValueImp::Options[] = {
+    u"none",
+    u"capitalize",
+    u"uppercase",
+    u"lowercase"
+};
+
 const char16_t* CSSVerticalAlignValueImp::Options[] = {
     u"baseline",
     u"sub",
