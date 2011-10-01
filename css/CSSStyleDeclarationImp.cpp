@@ -359,6 +359,26 @@ void CSSStyleDeclarationImp::setInherit(unsigned id)
         setInherit(BorderBottomWidth);
         setInherit(BorderLeftWidth);
         break;
+    case BorderTop:
+        setInherit(BorderTopColor);
+        setInherit(BorderTopStyle);
+        setInherit(BorderTopWidth);
+        break;
+    case BorderRight:
+        setInherit(BorderRightColor);
+        setInherit(BorderRightStyle);
+        setInherit(BorderRightWidth);
+        break;
+    case BorderBottom:
+        setInherit(BorderBottomColor);
+        setInherit(BorderBottomStyle);
+        setInherit(BorderBottomWidth);
+        break;
+    case BorderLeft:
+        setInherit(BorderLeftColor);
+        setInherit(BorderLeftStyle);
+        setInherit(BorderLeftWidth);
+        break;
     case Border:
         setInherit(BorderColor);
         setInherit(BorderStyle);
@@ -416,6 +436,26 @@ void CSSStyleDeclarationImp::resetInherit(unsigned id)
         resetInherit(BorderTopWidth);
         resetInherit(BorderRightWidth);
         resetInherit(BorderBottomWidth);
+        resetInherit(BorderLeftWidth);
+        break;
+    case BorderTop:
+        resetInherit(BorderTopColor);
+        resetInherit(BorderTopStyle);
+        resetInherit(BorderTopWidth);
+        break;
+    case BorderRight:
+        resetInherit(BorderRightColor);
+        resetInherit(BorderRightStyle);
+        resetInherit(BorderRightWidth);
+        break;
+    case BorderBottom:
+        resetInherit(BorderBottomColor);
+        resetInherit(BorderBottomStyle);
+        resetInherit(BorderBottomWidth);
+        break;
+    case BorderLeft:
+        resetInherit(BorderLeftColor);
+        resetInherit(BorderLeftStyle);
         resetInherit(BorderLeftWidth);
         break;
     case Border:
