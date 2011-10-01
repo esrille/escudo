@@ -605,6 +605,9 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Text text, FormattingContext* c
         bool linefeed = false;
         size_t next = 1;
         float required = 0.0f;
+        unsigned transform = activeStyle->textTransform.getValue();
+        std::u16string transformed;
+        size_t transformedLength = 0;
         do {
             advanced = context->leftover;
             if (data[0] == '\n') {
@@ -613,7 +616,14 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Text text, FormattingContext* c
                 advanced = 0.0f;
                 break;
             }
-            length = font->fitText(data.c_str(), fitLength, point, context->leftover, &next, &required);
+            if (!transform) // 'none'
+                length = font->fitText(data.c_str(), fitLength, point, context->leftover, &next, &required);
+            else {
+                transformed = font->fitTextWithTransformation(data.c_str(), fitLength, point, transform,
+                                                              context->leftover,
+                                                              &length, &transformedLength,
+                                                              &next, &required);
+            }
             if (0 < length) {
                 advanced -= context->leftover;
                 break;
@@ -623,10 +633,14 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Text text, FormattingContext* c
             context->leftover -= required;
             advanced -= context->leftover;
             length = next;
+            transformedLength = transformed.length();
         }
 
         if (!linefeed) {
-            inlineLevelBox->setData(font, point, data.substr(0, length));
+            if (!transform) // 'none'
+                inlineLevelBox->setData(font, point, data.substr(0, length));
+            else
+                inlineLevelBox->setData(font, point, transformed.substr(0, transformedLength));
             inlineLevelBox->width = advanced;
             if ((length < data.length() || element.getLastChild() != text) && !firstLetterStyle) {
                 // TODO: there might not be such a text node that 'element.getLastNode() == text'.
