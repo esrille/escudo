@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Esrille Inc.
+ * Copyright 2010, 2011 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
 #include <algorithm>
 
 #include <freetype/tttables.h>
+#include <unicode/utypes.h>
 
 #include "utf.h"
 #include "TextIterator.h"
@@ -243,4 +244,66 @@ size_t FontTexture::fitText(const char16_t* text, size_t length, float point, fl
         posLast = pos;
     }
     return posLast;
+}
+
+// TODO: Support full (language-specific) case mapping at some point.
+// cf. http://userguide.icu-project.org/transforms/casemappings
+std::u16string FontTexture::
+fitTextWithTransformation(const char16_t* text, size_t length, float point, unsigned transform,
+                          float& leftover,
+                          size_t* lenght, size_t* transformedLength,
+                          size_t* next, float* required)
+{
+    std::u16string transformed;
+    const float scale = point / this->point / 64.0f;
+    char32_t u;
+    float width = 0.0f;
+    size_t posLast = 0;
+    size_t posLastTransformed = 0;
+    TextIterator ti;  // TODO: keep one ti
+    ti.setText(text, length);
+    while (ti.next()) {
+        size_t pos = *ti;
+        float advance = 0.0f;
+        for (size_t i = posLast; i < pos; ++i) {
+            text = utf16to32(text, &u);
+            switch (transform) {
+            case 1:  // capitalize
+                if (i == posLast)
+                    u = u_totitle(u);
+                break;
+            case 2:  // uppercase
+                u = u_toupper(u);
+                break;
+            case 3:  // lowercase
+                u = u_tolower(u);
+                break;
+            default:  // none
+                break;
+            }
+            char16_t buffer[3];
+            if (char16_t* p = utf32to16(u, buffer)) {
+                *p = 0;
+                transformed += buffer;
+            }
+            FontGlyph* glyph = getGlyph(u);
+            advance += glyph->advance;
+        }
+        advance *= scale;
+        if (leftover < advance) {
+            if (next)
+                *next = pos;
+            if (required)
+                *required = advance;
+            break;
+        }
+        leftover -= advance;
+        posLast = pos;
+        posLastTransformed = transformed.length();
+    }
+    if (lenght)
+        *lenght = posLast;
+    if (transformedLength)
+        *transformedLength = posLastTransformed;
+    return transformed;
 }
