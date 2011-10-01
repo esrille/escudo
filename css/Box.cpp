@@ -511,11 +511,11 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Text text, FormattingContext* c
         return !isAnonymous();
 
     bool psuedoChecked = false;
-    CSSStyleDeclarationImp* firstLineStyle = 0;
-    CSSStyleDeclarationImp* firstLetterStyle = 0;
+    CSSStyleDeclarationPtr firstLineStyle;
+    CSSStyleDeclarationPtr firstLetterStyle;
     CSSStyleDeclarationImp* activeStyle = style;
 
-    FontTexture* font = view->selectFont(activeStyle);
+    FontTexture* font = activeStyle->getFontTexture();
     float point = view->getPointFromPx(activeStyle->fontSize.getPx());
     size_t position = 0;
     for (;;) {
@@ -545,36 +545,30 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Text text, FormattingContext* c
                     box = parent;
                 }
                 if (!firstLineStyles.empty()) {
-                    CSSStyleDeclarationImp* parentStyle = style;
-                    for (auto i = firstLineStyles.begin(); i != firstLineStyles.end(); ++i) {
-                        (*i)->compute(view, parentStyle, 0);
-                        parentStyle = *i;
+                    firstLineStyle = new(std::nothrow) CSSStyleDeclarationImp;
+                    if (firstLineStyle) {
+                        for (auto i = firstLineStyles.begin(); i != firstLineStyles.end(); ++i)
+                            firstLineStyle->specify(*i);
+                        firstLineStyle->compute(view, style, 0);
+                        // TODO: resolve?
                     }
-                    firstLineStyle = firstLineStyles.back();
-                    CSSStyleDeclarationImp* p = style->createPseudoElementStyle(CSSPseudoElementSelector::FirstLine);
-                    assert(p);  // TODO
-                    p->specify(firstLineStyle);
-                    firstLineStyle = p;
                 }
                 if (!firstLetterStyles.empty()) {
-                    CSSStyleDeclarationImp* parentStyle = style;
-                    for (auto i = firstLetterStyles.begin(); i != firstLetterStyles.end(); ++i) {
-                        (*i)->compute(view, parentStyle, 0);
-                        parentStyle = *i;
+                    firstLetterStyle = new(std::nothrow) CSSStyleDeclarationImp;
+                    if (firstLetterStyle) {
+                        for (auto i = firstLetterStyles.begin(); i != firstLetterStyles.end(); ++i)
+                            firstLetterStyle->specify(*i);
+                        firstLetterStyle->compute(view, style, 0);
+                        // TODO: resolve?
                     }
-                    firstLetterStyle = firstLetterStyles.back();
-                    CSSStyleDeclarationImp* p = style->createPseudoElementStyle(CSSPseudoElementSelector::FirstLetter);
-                    assert(p);  // TODO
-                    p->specify(firstLetterStyle);
-                    firstLetterStyle = p;
                 }
                 if (firstLetterStyle) {
-                    activeStyle = firstLetterStyle;
-                    font = view->selectFont(activeStyle);
+                    activeStyle = firstLetterStyle.get();
+                    font = activeStyle->getFontTexture();
                     point = view->getPointFromPx(activeStyle->fontSize.getPx());
                 } else if (firstLineStyle) {
-                    activeStyle = firstLineStyle;
-                    font = view->selectFont(activeStyle);
+                    activeStyle = firstLineStyle.get();
+                    font = activeStyle->getFontTexture();
                     point = view->getPointFromPx(activeStyle->fontSize.getPx());
                 }
             }
@@ -669,20 +663,18 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Text text, FormattingContext* c
         if (firstLetterStyle) {
             firstLetterStyle = 0;
             if (firstLineStyle) {
-                activeStyle = firstLineStyle;
-                font = view->selectFont(activeStyle);
-                point = view->getPointFromPx(activeStyle->fontSize.getPx());
+                activeStyle = firstLineStyle.get();
             } else {
                 activeStyle = style;
-                font = view->selectFont(activeStyle);
-                point = view->getPointFromPx(activeStyle->fontSize.getPx());
             }
+            font = activeStyle->getFontTexture();
+            point = view->getPointFromPx(activeStyle->fontSize.getPx());
         } else {
             context->nextLine(this);
             if (firstLineStyle) {
                 firstLineStyle = 0;
                 activeStyle = style;
-                font = view->selectFont(activeStyle);
+                font = activeStyle->getFontTexture();
                 point = view->getPointFromPx(activeStyle->fontSize.getPx());
             }
         }
