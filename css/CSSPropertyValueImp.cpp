@@ -1113,7 +1113,7 @@ std::u16string CSSFontFamilyValueImp::getCssText(CSSStyleDeclarationImp* decl)
 
 void CSSFontSizeValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle) {
     float w;
-    float parentSize = parentStyle ? parentStyle->fontSize.size.number : view->getMediumFontSize();
+    float parentSize = parentStyle ? parentStyle->fontSize.getPx() : view->getMediumFontSize();
     unsigned i;
     switch (size.unit) {
     case CSSParserTerm::CSS_TERM_INDEX:
@@ -1146,9 +1146,9 @@ void CSSFontSizeValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* pare
         break;
     case css::CSSPrimitiveValue::CSS_EXS:
         if (parentStyle && parentStyle->getFontTexture())
-            w = view->getPx(size, parentStyle->getFontTexture()->getXHeight(view->getPointFromPx(parentStyle->fontSize.getPx())));
+            w = view->getPx(size, parentStyle->getFontTexture()->getXHeight(view->getPointFromPx(parentSize)));
         else
-            w = view->getPx(size, parentStyle->fontSize.getPx() * 0.5f);
+            w = view->getPx(size, parentSize * 0.5f);
         break;
     default:
         w = view->getPx(size);
