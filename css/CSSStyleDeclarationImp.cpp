@@ -1076,7 +1076,25 @@ void CSSStyleDeclarationImp::resetInheritedProperties()
     for (unsigned id = 1; id < MaxProperties; ++id) {
         if (!inheritSet.test(id))
             continue;
-        reset(id);
+        switch (id) {
+        case Background:
+        case BorderColor:
+        case BorderStyle:
+        case BorderWidth:
+        case BorderTop:
+        case BorderRight:
+        case BorderBottom:
+        case BorderLeft:
+        case Border:
+        case Font:  // TODO
+        case Margin:
+        case Padding:
+            // ignore shorthand
+            break;
+        default:
+            reset(id);
+            break;
+        }
     }
 }
 
@@ -1085,7 +1103,25 @@ void CSSStyleDeclarationImp::copy(const CSSStyleDeclarationImp* parentStyle, uns
     assert(parentStyle);
     if (!inheritSet.test(id))
         return;
-    specify(parentStyle, id);
+    switch (id) {
+    case Background:
+    case BorderColor:
+    case BorderStyle:
+    case BorderWidth:
+    case BorderTop:
+    case BorderRight:
+    case BorderBottom:
+    case BorderLeft:
+    case Border:
+    case Font:  // TODO
+    case Margin:
+    case Padding:
+        // ignore shorthand
+        break;
+    default:
+        specify(parentStyle, id);
+        break;
+    }
 }
 
 void CSSStyleDeclarationImp::copyInheritedProperties(const CSSStyleDeclarationImp* parentStyle)
