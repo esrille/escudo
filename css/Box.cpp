@@ -1300,6 +1300,24 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view, Node node)
     }
 }
 
+void BlockLevelBox::resolveOffset(ViewCSSImp* view)
+{
+    // cf. http://test.csswg.org/suites/css2.1/20110323/html4/inline-box-002.htm
+    Box::resolveOffset(view);
+    if (isAnonymous())
+        return;
+    Element element = getContainingElement(node);
+    element = element.getParentElement();
+    if (!element)
+        return;
+    CSSStyleDeclarationImp* parentStyle = view->getStyle(element);
+    if (!parentStyle)
+        return;
+    if (!parentStyle->display.isInline())
+        return;
+    Box::resolveOffset(parentStyle);
+}
+
 bool LineBox::layOut(ViewCSSImp* view, FormattingContext* context)
 {
     for (Box* box = getFirstChild(); box; box = box->getNextSibling()) {

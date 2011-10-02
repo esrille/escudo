@@ -499,6 +499,8 @@ public:
     void resolveFloatWidth(float w, float r = NAN);
     float collapseMarginTop(FormattingContext* context);
     void collapseMarginBottom();
+
+    virtual void resolveOffset(ViewCSSImp* view);
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context);
     virtual void render(ViewCSSImp* view);
     virtual void dump(ViewCSSImp* view, std::string indent = "");

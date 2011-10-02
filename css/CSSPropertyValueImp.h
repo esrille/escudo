@@ -1104,6 +1104,9 @@ public:
             return false;
         }
     }
+    bool isInline() const {
+        return value == Inline;
+    }
     bool isRunIn() const {
         return value == RunIn;
     }
