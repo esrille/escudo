@@ -81,9 +81,12 @@ public:
     }
     void setOwnerDocument(DocumentImp* document);
 
-    unsigned int getChildCount()
-    {
+    unsigned int getChildCount() {
         return childCount;
+    }
+
+    void setParentNode(NodeImp* node) {
+        parentNode = node;
     }
 
     // Node

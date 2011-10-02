@@ -1021,6 +1021,14 @@ Element CSSContentValueImp::eval(Document document, Element element)
     }
     if (org::w3c::dom::Text text = document.createTextNode(data))
         span.appendChild(text);
+
+    // Set the pseudo parentNode of the new span element so that
+    // setContainingBlock() works even for the positioned :before and
+    // :after pseudo-elements.
+    // cf. http://test.csswg.org/suites/css2.1/20110323/html4/containing-block-029.htm
+    if (NodeImp* imp = dynamic_cast<NodeImp*>(span.self()))
+        imp->setParentNode(static_cast<NodeImp*>(element.self()));
+
     return span;
 }
 

@@ -205,6 +205,8 @@ const ContainingBlock* Box::getContainingBlock(ViewCSSImp* view) const
 }
 
 // We also calculate offsetH and offsetV here.
+// TODO: Probably it's better to visit ancestors via the box tree rather than the node tree.
+//       cf. CSSContentValueImp::eval()
 void BlockLevelBox::setContainingBlock(ViewCSSImp* view)
 {
     assert(isAbsolutelyPositioned());
