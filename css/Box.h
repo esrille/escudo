@@ -401,6 +401,7 @@ class BlockLevelBox : public Box
 
     // A block-level box may contain either line boxes or block-level boxes, but not both.
     std::list<Node> inlines;
+    unsigned treeOrder;
 
     bool layOutText(ViewCSSImp* view, Text text, FormattingContext* context);
     void layOutInlineReplaced(ViewCSSImp* view, Node node, FormattingContext* context);
@@ -425,7 +426,8 @@ public:
         Box(node),
         textAlign(CSSTextAlignValueImp::Default),
         edge(0.0f),
-        remainingHeight(0.0f)
+        remainingHeight(0.0f),
+        treeOrder(0)
     {
         setStyle(style);
     }
@@ -459,6 +461,9 @@ public:
     }
     void spliceInline(BlockLevelBox* box) {
         inlines.splice(inlines.begin(), box->inlines);
+    }
+    unsigned getTreeOrder() const {
+        return treeOrder;
     }
 
     virtual bool isAbsolutelyPositioned() const;

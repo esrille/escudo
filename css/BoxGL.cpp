@@ -274,8 +274,17 @@ void Box::renderBorderEdge(ViewCSSImp* view, int edge, unsigned borderStyle, uns
 void Box::renderBorder(ViewCSSImp* view)
 {
     glPushMatrix();
-    glTranslatef(0.0f, 0.0f, positioned ? stackingContext->getZ1() : stackingContext->getZ3());
-
+    if (!positioned)
+        glTranslatef(0.0f, 0.0f, stackingContext->getZ3());
+    else {
+        glTranslatef(0.0f, 0.0f, stackingContext->getZ1());
+        for (Box* b = this; b; b = b->getParentBox()) {
+            if (BlockLevelBox* bb = dynamic_cast<BlockLevelBox*>(b)) {
+                glTranslatef(0.0f, 0.0f, bb->getTreeOrder() / 1024.f);  // TODO: overflow
+                break;
+            }
+        }
+    }
     glDisable(GL_TEXTURE_2D);
 
     float ll = marginLeft;
@@ -426,6 +435,14 @@ void InlineLevelBox::render(ViewCSSImp* view)
         getFirstChild()->render(view);
     else if (0 < data.length()) {
         glTranslatef(0.0f, font->getAscender(point), stackingContext->getZ3());
+        if (positioned) {
+            for (Box* b = this; b; b = b->getParentBox()) {
+                if (BlockLevelBox* bb = dynamic_cast<BlockLevelBox*>(b)) {
+                    glTranslatef(0.0f, 0.0f, bb->getTreeOrder() / 1024.f);  // TODO: overflow
+                    break;
+                }
+            }
+        }
         glPushMatrix();
             glScalef(point / font->getPoint(), point / font->getPoint(), 1.0);
             unsigned color = getStyle()->color.getARGB();

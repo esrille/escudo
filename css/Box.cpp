@@ -30,6 +30,7 @@
 #include "CSSSerialize.h"
 #include "CSSStyleDeclarationImp.h"
 #include "CSSTokenizer.h"
+#include "StackingContext.h"
 #include "ViewCSSImp.h"
 #include "WindowImp.h"
 
@@ -340,10 +341,13 @@ void BlockLevelBox::dump(ViewCSSImp* view, std::string indent)
         std::cout << " [anonymous]";
     else
         std::cout << " [" << node.getNodeName() << ']';
-    std::cout << " (" << x << ", " << y << ") w:" << width << " h:" << height << ' ' <<
+    std::cout << " (" << x << ", " << y << ", " <<
+        ((positioned ? stackingContext->getZ1() : stackingContext->getZ3()) + treeOrder / 1024.0f) << ") " <<
+        "w:" << width << " h:" << height << ' ' <<
         "m:" << marginTop << ':' << marginRight << ':' << marginBottom << ':' << marginLeft << ' ' <<
         "p:" << paddingTop << ':' <<  paddingRight << ':'<< paddingBottom<< ':' << paddingLeft << ' ' <<
-        "b:" << borderTop << ':' <<  borderRight << ':' << borderBottom<< ':' << borderLeft << '\n';
+        "b:" << borderTop << ':' <<  borderRight << ':' << borderBottom<< ':' << borderLeft << ' ' <<
+        std::hex << CSSSerializeRGB(backgroundColor) << '\n';
     indent += "  ";
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
         child->dump(view, indent);
@@ -822,8 +826,10 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
 {
     assert(!hasChildBoxes());
     bool collapsed = true;
+    unsigned order = 0;
     for (auto i = inlines.begin(); i != inlines.end(); ++i) {
         if (BlockLevelBox* box = view->getFloatBox(*i)) {
+            box->treeOrder = ++order;
             if (box->isFloat())
                 layOutFloat(view, *i, box, context);
             else if (box->isAbsolutelyPositioned())
@@ -1402,7 +1408,8 @@ void InlineLevelBox::resolveOffset(ViewCSSImp* view)
 
 void InlineLevelBox::dump(ViewCSSImp* view, std::string indent)
 {
-    std::cout << indent << "* inline-level box (" << x << ", " << y << ") w:" << width << " h:" << height << ' ' <<
+    std::cout << indent << "* inline-level box (" << x << ", " << y << ") " <<
+        "w:" << width << " h:" << height << ' ' <<
         "m:" << marginTop << ':' << marginRight << ':' << marginBottom << ':' << marginLeft << ' ' <<
         "p:" << paddingTop << ':' <<  paddingRight << ':'<< paddingBottom<< ':' << paddingLeft << ' ' <<
         "b:" << borderTop << ':' <<  borderRight << ':' << borderBottom<< ':' << borderLeft <<
