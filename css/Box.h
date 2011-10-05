@@ -403,6 +403,9 @@ class BlockLevelBox : public Box
     std::list<Node> inlines;
     unsigned treeOrder;
 
+    void nextLine(ViewCSSImp* view, FormattingContext* context, CSSStyleDeclarationImp*& activeStyle,
+                  CSSStyleDeclarationPtr& firstLetterStyle, CSSStyleDeclarationPtr& firstLineStyle,
+                  CSSStyleDeclarationImp* style, FontTexture*& font, float& point);
     bool layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
                     std::u16string data, Element element, CSSStyleDeclarationImp* style);
     void layOutInlineReplaced(ViewCSSImp* view, Node node, FormattingContext* context,

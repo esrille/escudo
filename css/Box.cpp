@@ -503,16 +503,41 @@ void BlockLevelBox::resolveMargin(ViewCSSImp* view, const ContainingBlock* conta
 
 namespace {
 
+// TODO: there might not be such a text node that 'element.getFirstChild() == node'.
 bool isAtLeftEdge(Element& element, Node& node)
 {
     return element == node || element.getFirstChild() == node;
 }
 
+// TODO: there might not be such a text node that 'element.getLastNode() == node'.
 bool isAtRightEdge(Element& element, Node& node)
 {
     return element == node || element.getLastChild() == node;
 }
 
+}
+
+void BlockLevelBox::nextLine(ViewCSSImp* view, FormattingContext* context, CSSStyleDeclarationImp*& activeStyle,
+                             CSSStyleDeclarationPtr& firstLetterStyle, CSSStyleDeclarationPtr& firstLineStyle,
+                             CSSStyleDeclarationImp* style, FontTexture*& font, float& point)
+{
+    if (firstLetterStyle) {
+        firstLetterStyle = 0;
+        if (firstLineStyle)
+            activeStyle = firstLineStyle.get();
+        else
+            activeStyle = style;
+        font = activeStyle->getFontTexture();
+        point = view->getPointFromPx(activeStyle->fontSize.getPx());
+    } else {
+        context->nextLine(this);
+        if (firstLineStyle) {
+            firstLineStyle = 0;
+            activeStyle = style;
+            font = activeStyle->getFontTexture();
+            point = view->getPointFromPx(activeStyle->fontSize.getPx());
+        }
+    }
 }
 
 bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
@@ -593,13 +618,17 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
         style->addBox(inlineLevelBox);  // activeStyle? maybe not...
         inlineLevelBox->resolveWidth();
         float blankLeft = inlineLevelBox->getBlankLeft();
-        if (0 < position || !isAtLeftEdge(element, text)) {
-            // TODO: there might not be such a text node that 'element.getFirstChild() == text'.
+        if (0 < position || !isAtLeftEdge(element, text))
             inlineLevelBox->marginLeft = inlineLevelBox->paddingLeft = inlineLevelBox->borderLeft = blankLeft = 0;
-        }
-        float blankRight = inlineLevelBox->getBlankRight();
         context->x += blankLeft;
-        context->leftover -= blankLeft + blankRight;
+        context->leftover -= blankLeft;
+        float blankRight = inlineLevelBox->getBlankRight();
+        context->leftover -= blankRight;
+        if (context->leftover < 0.0f) {
+            delete inlineLevelBox;
+            nextLine(view, context, activeStyle, firstLetterStyle, firstLineStyle, style, font, point);
+            continue;
+        }
 
         size_t length = 0;
         bool linefeed = false;
@@ -615,6 +644,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
             unsigned transform = activeStyle->textTransform.getValue();
             std::u16string transformed;
             size_t transformedLength = 0;
+
             do {
                 advanced = context->leftover;
                 if (data[0] == '\n') {
@@ -627,13 +657,16 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                     length = font->fitText(data.c_str(), fitLength, point, context->leftover, &next, &required);
                 else {
                     transformed = font->fitTextWithTransformation(data.c_str(), fitLength, point, transform,
-                                                                  context->leftover,
-                                                                  &length, &transformedLength,
-                                                                  &next, &required);
+                                                                  context->leftover, &length, &transformedLength, &next, &required);
                 }
                 if (0 < length) {
                     advanced -= context->leftover;
                     break;
+                }
+                if (context->lineBox->hasChildBoxes()) {
+                    delete inlineLevelBox;
+                    nextLine(view, context, activeStyle, firstLetterStyle, firstLineStyle, style, font, point);
+                    continue;
                 }
             } while (context->shiftDownLineBox());
             if (length == 0) {
@@ -651,7 +684,6 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
             }
         }
         if ((length < data.length() || !isAtRightEdge(element, text)) && !firstLetterStyle) {
-            // TODO: there might not be such a text node that 'element.getLastNode() == text'.
             // TODO: firstLetterStyle: actually we are not sure if the following characters would fit in the same line box...
             inlineLevelBox->marginRight = inlineLevelBox->paddingRight = inlineLevelBox->borderRight = blankRight = 0;
         }
@@ -672,25 +704,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                 context->nextLine(this);
             break;
         }
-
-        if (firstLetterStyle) {
-            firstLetterStyle = 0;
-            if (firstLineStyle) {
-                activeStyle = firstLineStyle.get();
-            } else {
-                activeStyle = style;
-            }
-            font = activeStyle->getFontTexture();
-            point = view->getPointFromPx(activeStyle->fontSize.getPx());
-        } else {
-            context->nextLine(this);
-            if (firstLineStyle) {
-                firstLineStyle = 0;
-                activeStyle = style;
-                font = activeStyle->getFontTexture();
-                point = view->getPointFromPx(activeStyle->fontSize.getPx());
-            }
-        }
+        nextLine(view, context, activeStyle, firstLetterStyle, firstLineStyle, style, font, point);
     }
     return true;
 }
