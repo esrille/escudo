@@ -21,6 +21,7 @@
 
 #include <Object.h>
 #include <org/w3c/dom/Node.h>
+#include <org/w3c/dom/Element.h>
 #include <org/w3c/dom/css/CSSStyleSheet.h>
 
 #include "css/ViewCSSImp.h"
@@ -39,6 +40,14 @@ org::w3c::dom::Document loadDocument(std::istream& stream);
 org::w3c::dom::Document loadDocument(const char* html);
 
 void recordTime(const char* msg);
+
+inline bool isReplacedElement(org::w3c::dom::Element& element)
+{
+    std::u16string tag = element.getLocalName();  // TODO: Check HTML namespace
+    if (tag == u"img" || tag == u"iframe" || tag == u"video")  // TODO: more tags to come...
+        return true;
+    return false;
+}
 
 //
 // Test.glut.cpp

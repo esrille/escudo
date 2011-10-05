@@ -37,18 +37,6 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
-namespace {
-
-bool isReplacedElement(Element& element)
-{
-    std::u16string tag = element.getLocalName();  // TODO: Check HTML namespace
-    if (tag == u"img" || tag == u"iframe" || tag == u"video")  // TODO: more tags to come...
-        return true;
-    return false;
-}
-
-}
-
 ViewCSSImp::ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyleSheet) :
     window(window),
     defaultStyleSheet(defaultStyleSheet),

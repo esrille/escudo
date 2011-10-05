@@ -36,6 +36,8 @@
 
 #include "Table.h"
 
+#include "Test.util.h"
+
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 namespace {
@@ -862,18 +864,20 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
             if (!style)
                 continue;
             style->resolve(view, this, element);
-            if (node.getNodeType() == Node::TEXT_NODE) {
+            if (isReplacedElement(element)) {
+                layOutInlineReplaced(view, node, context, element, style);
+                collapsed = false;
+            } else if (node.getNodeType() == Node::TEXT_NODE) {
                 Text text = interface_cast<Text>(node);
                 if (layOutText(view, node, context, text.getData(), element, style))
                     collapsed = false;
-            } else if (style->display.isInline()) {  // TODO: check 'img', etc.
+            } else if (style->display.isInline()) {
                 // empty inline element
                 assert(!element.hasChildNodes());
                 if (layOutText(view, node, context, u"", element, style))
                     collapsed = false;
             } else {
-                // At this point, node should be a replaced element or an inline block element.
-                // TODO: it could be of other types as we develop...
+                // At this point, node should be an inline block element.
                 layOutInlineReplaced(view, node, context, element, style);
                 collapsed = false;
             }
