@@ -505,12 +505,12 @@ namespace {
 
 bool isAtLeftEdge(Element& element, Node& node)
 {
-    return element == node || element.getFirstChild() != node;
+    return element == node || element.getFirstChild() == node;
 }
 
 bool isAtRightEdge(Element& element, Node& node)
 {
-    return element == node || element.getLastChild() != node;
+    return element == node || element.getLastChild() == node;
 }
 
 }
