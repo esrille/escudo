@@ -943,10 +943,10 @@ void CSSContentValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* 
             do {
                 switch (term->unit) {
                 case CSSPrimitiveValue::CSS_IDENT:
-                    name = term->text;
+                    name = term->getString();
                     break;
                 case CSSPrimitiveValue::CSS_STRING:
-                    string = term->text;
+                    string = term->getString();
                     break;
                 default:
                     listStyleType = term->getIndex();
@@ -960,7 +960,7 @@ void CSSContentValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* 
         }
         case Attr:
             if (term->unit == CSSPrimitiveValue::CSS_IDENT)
-                content = new(std::nothrow) AttrContent(term->text);
+                content = new(std::nothrow) AttrContent(term->getString());
             break;
         default:
             index = term->getIndex();
@@ -979,10 +979,10 @@ void CSSContentValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* 
                 assert(index == -1);
                 switch (term->unit) {
                 case CSSPrimitiveValue::CSS_STRING:
-                    content = new(std::nothrow) StringContent(term->text);
+                    content = new(std::nothrow) StringContent(term->getString());
                     break;
                 case CSSPrimitiveValue::CSS_URI:
-                    content = new(std::nothrow) URIContent(term->text);
+                    content = new(std::nothrow) URIContent(term->getString());
                     break;
                 }
                 break;
