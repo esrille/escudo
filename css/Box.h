@@ -403,8 +403,10 @@ class BlockLevelBox : public Box
     std::list<Node> inlines;
     unsigned treeOrder;
 
-    bool layOutText(ViewCSSImp* view, Text text, FormattingContext* context);
-    void layOutInlineReplaced(ViewCSSImp* view, Node node, FormattingContext* context);
+    bool layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
+                    std::u16string data, Element element, CSSStyleDeclarationImp* style);
+    void layOutInlineReplaced(ViewCSSImp* view, Node node, FormattingContext* context,
+                              Element element, CSSStyleDeclarationImp* style);
     void layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floatBox, FormattingContext* context);
     void layOutAbsolute(ViewCSSImp* view, Node node, BlockLevelBox* absBox, FormattingContext* context);  // 1st pass
     bool layOutInline(ViewCSSImp* view, FormattingContext* context, float originalMargin = 0.0f);

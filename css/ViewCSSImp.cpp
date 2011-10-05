@@ -208,7 +208,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Text text, BlockLevelBox* parentBox,
         parentBox->insertInline(text);
         return 0;
     }
-    if (!parentBox->hasAnonymousBox()) {
+    if (!style->display.isInline() && !parentBox->hasAnonymousBox()) {
         // cf. http://www.w3.org/TR/CSS2/visuren.html#anonymous
         // White space content that would subsequently be collapsed
         // away according to the 'white-space' property does not
@@ -365,10 +365,12 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
     }
 
     if (!dynamic_cast<TableWrapperBox*>(currentBox)) {
+        bool emptyInline = style->display.isInline() && !element.hasChildNodes();
         BlockLevelBox* childBox = 0;
         if (CSSStyleDeclarationImp* afterStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::After)) {
             afterStyle->compute(this, style, element);
             if (Element after = afterStyle->content.eval(getDocument(), element)) {
+                emptyInline = false;
                 map[after] = afterStyle;
                 if (BlockLevelBox* box = layOutBlockBoxes(after, currentBox, childBox, style))
                     childBox = box;
@@ -382,10 +384,15 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
         if (CSSStyleDeclarationImp* beforeStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::Before)) {
             beforeStyle->compute(this, style, element);
             if (Element before = beforeStyle->content.eval(getDocument(), element)) {
+                emptyInline = false;
                 map[before] = beforeStyle;
                 if (BlockLevelBox* box = layOutBlockBoxes(before, currentBox, childBox, style))
                     childBox = box;
             }
+        }
+        if (emptyInline) {
+            // Empty inline elements still have margins, padding, borders and a line height. cf. 10.8
+            layOutBlockBoxes(Text(element.self()), currentBox, 0, style);
         }
     }
 

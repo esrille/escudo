@@ -501,19 +501,26 @@ void BlockLevelBox::resolveMargin(ViewCSSImp* view, const ContainingBlock* conta
         height = style->height.getPx();
 }
 
-bool BlockLevelBox::layOutText(ViewCSSImp* view, Text text, FormattingContext* context)
-{
-    CSSStyleDeclarationImp* style = 0;
-    Element element = getContainingElement(text);
-    if (!element)
-        return false;  // TODO error
+namespace {
 
-    style = view->getStyle(element);
-    if (!style)
-        return false;  // TODO error
-    style->resolve(view, this, element);
-    std::u16string data = text.getData();
-    if (style->processWhiteSpace(data, context->prevChar) == 0)
+bool isAtLeftEdge(Element& element, Node& node)
+{
+    return element == node || element.getFirstChild() != node;
+}
+
+bool isAtRightEdge(Element& element, Node& node)
+{
+    return element == node || element.getLastChild() != node;
+}
+
+}
+
+bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
+                               std::u16string data, Element element, CSSStyleDeclarationImp* style)
+{
+    assert(element);
+    assert(style);
+    if (style->processWhiteSpace(data, context->prevChar) == 0 && !style->display.isInline())
         return !isAnonymous();
 
     bool psuedoChecked = false;
@@ -526,7 +533,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Text text, FormattingContext* c
     size_t position = 0;
     for (;;) {
         if (!context->lineBox) {
-            if (style->processLineHeadWhiteSpace(data) == 0)
+            if (style->processLineHeadWhiteSpace(data) == 0 && !style->display.isInline())
                 return !isAnonymous();
             if (!context->addLineBox(view, this))
                 return false;  // TODO error
@@ -586,7 +593,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Text text, FormattingContext* c
         style->addBox(inlineLevelBox);  // activeStyle? maybe not...
         inlineLevelBox->resolveWidth();
         float blankLeft = inlineLevelBox->getBlankLeft();
-        if (0 < position || element.getFirstChild() != text) {
+        if (0 < position || !isAtLeftEdge(element, text)) {
             // TODO: there might not be such a text node that 'element.getFirstChild() == text'.
             inlineLevelBox->marginLeft = inlineLevelBox->paddingLeft = inlineLevelBox->borderLeft = blankLeft = 0;
         }
@@ -594,59 +601,59 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Text text, FormattingContext* c
         context->x += blankLeft;
         context->leftover -= blankLeft + blankRight;
 
-        size_t fitLength = firstLetterStyle ? 1 : data.length();  // TODO: 1 is absolutely wrong...
-
-        // We are still not sure if there's a room for text in context->lineBox.
-        // If there's no room due to float box(es), move the linebox down to
-        // the closest bottom of float box.
-        // And repeat this process until there's no more float box in the context.
-        float advanced;
-        size_t length;
+        size_t length = 0;
         bool linefeed = false;
-        size_t next = 1;
-        float required = 0.0f;
-        unsigned transform = activeStyle->textTransform.getValue();
-        std::u16string transformed;
-        size_t transformedLength = 0;
-        do {
-            advanced = context->leftover;
-            if (data[0] == '\n') {
-                linefeed = true;
-                length = 1;
-                advanced = 0.0f;
-                break;
-            }
-            if (!transform) // 'none'
-                length = font->fitText(data.c_str(), fitLength, point, context->leftover, &next, &required);
-            else {
-                transformed = font->fitTextWithTransformation(data.c_str(), fitLength, point, transform,
-                                                              context->leftover,
-                                                              &length, &transformedLength,
-                                                              &next, &required);
-            }
-            if (0 < length) {
+        float advanced = 0.0f;
+        if (!data.empty()) {
+            size_t fitLength = firstLetterStyle ? 1 : data.length();  // TODO: 1 is absolutely wrong...
+            // We are still not sure if there's a room for text in context->lineBox.
+            // If there's no room due to float box(es), move the linebox down to
+            // the closest bottom of float box.
+            // And repeat this process until there's no more float box in the context.
+            size_t next = 1;
+            float required = 0.0f;
+            unsigned transform = activeStyle->textTransform.getValue();
+            std::u16string transformed;
+            size_t transformedLength = 0;
+            do {
+                advanced = context->leftover;
+                if (data[0] == '\n') {
+                    linefeed = true;
+                    length = 1;
+                    advanced = 0.0f;
+                    break;
+                }
+                if (!transform) // 'none'
+                    length = font->fitText(data.c_str(), fitLength, point, context->leftover, &next, &required);
+                else {
+                    transformed = font->fitTextWithTransformation(data.c_str(), fitLength, point, transform,
+                                                                  context->leftover,
+                                                                  &length, &transformedLength,
+                                                                  &next, &required);
+                }
+                if (0 < length) {
+                    advanced -= context->leftover;
+                    break;
+                }
+            } while (context->shiftDownLineBox());
+            if (length == 0) {
+                context->leftover -= required;
                 advanced -= context->leftover;
-                break;
+                length = next;
+                transformedLength = transformed.length();
             }
-        } while (context->shiftDownLineBox());
-        if (length == 0) {
-            context->leftover -= required;
-            advanced -= context->leftover;
-            length = next;
-            transformedLength = transformed.length();
+            if (!linefeed) {
+                if (!transform) // 'none'
+                    inlineLevelBox->setData(font, point, data.substr(0, length));
+                else
+                    inlineLevelBox->setData(font, point, transformed.substr(0, transformedLength));
+                inlineLevelBox->width = advanced;
+            }
         }
-
-        if (!linefeed) {
-            if (!transform) // 'none'
-                inlineLevelBox->setData(font, point, data.substr(0, length));
-            else
-                inlineLevelBox->setData(font, point, transformed.substr(0, transformedLength));
-            inlineLevelBox->width = advanced;
-            if ((length < data.length() || element.getLastChild() != text) && !firstLetterStyle) {
-                // TODO: there might not be such a text node that 'element.getLastNode() == text'.
-                // TODO: firstLetterStyle: actually we are not sure if the following characters would fit in the same line box...
-                inlineLevelBox->marginRight = inlineLevelBox->paddingRight = inlineLevelBox->borderRight = blankRight = 0;
-            }
+        if ((length < data.length() || !isAtRightEdge(element, text)) && !firstLetterStyle) {
+            // TODO: there might not be such a text node that 'element.getLastNode() == text'.
+            // TODO: firstLetterStyle: actually we are not sure if the following characters would fit in the same line box...
+            inlineLevelBox->marginRight = inlineLevelBox->paddingRight = inlineLevelBox->borderRight = blankRight = 0;
         }
         inlineLevelBox->height = font->getHeight(point);
         inlineLevelBox->baseline += (activeStyle->lineHeight.getPx() - inlineLevelBox->height) / 2.0f;
@@ -688,17 +695,11 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Text text, FormattingContext* c
     return true;
 }
 
-void BlockLevelBox::layOutInlineReplaced(ViewCSSImp* view, Node node, FormattingContext* context)
+void BlockLevelBox::layOutInlineReplaced(ViewCSSImp* view, Node node, FormattingContext* context,
+                                         Element element, CSSStyleDeclarationImp* style)
 {
-    CSSStyleDeclarationImp* style = 0;
-    Element element = 0;
-    if (element = getContainingElement(node)) {
-        style = view->getStyle(element);
-        if (!style)
-            return;  // TODO error
-        style->resolve(view, this, element);
-    } else
-        return;  // TODO error
+    assert(element);
+    assert(style);
 
     if (!context->lineBox) {
         if (!context->addLineBox(view, this))
@@ -828,22 +829,38 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
     bool collapsed = true;
     unsigned order = 0;
     for (auto i = inlines.begin(); i != inlines.end(); ++i) {
-        if (BlockLevelBox* box = view->getFloatBox(*i)) {
+        Node node = *i;
+        if (BlockLevelBox* box = view->getFloatBox(node)) {
             box->treeOrder = ++order;
             if (box->isFloat())
-                layOutFloat(view, *i, box, context);
+                layOutFloat(view, node, box, context);
             else if (box->isAbsolutelyPositioned())
-                layOutAbsolute(view, *i, box, context);
+                layOutAbsolute(view, node, box, context);
             collapsed = false;
-        } else if ((*i).getNodeType() == Node::TEXT_NODE) {
-            Text text = interface_cast<Text>(*i);
-            if (layOutText(view, text, context))
-                collapsed = false;
         } else {
-            // At this point, *i should be a replaced element or an inline block element.
-            // TODO: it could be of other types as we develop...
-            layOutInlineReplaced(view, *i, context);
-            collapsed = false;
+            CSSStyleDeclarationImp* style = 0;
+            Element element = getContainingElement(node);
+            if (!element)
+                continue;
+            style = view->getStyle(element);
+            if (!style)
+                continue;
+            style->resolve(view, this, element);
+            if (node.getNodeType() == Node::TEXT_NODE) {
+                Text text = interface_cast<Text>(node);
+                if (layOutText(view, node, context, text.getData(), element, style))
+                    collapsed = false;
+            } else if (style->display.isInline()) {
+                // empty inline element
+                assert(!element.hasChildNodes());
+                if (layOutText(view, node, context, u"", element, style))
+                    collapsed = false;
+            } else {
+                // At this point, node should be a replaced element or an inline block element.
+                // TODO: it could be of other types as we develop...
+                layOutInlineReplaced(view, node, context, element, style);
+                collapsed = false;
+            }
         }
     }
     if (context->lineBox)
