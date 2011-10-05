@@ -864,7 +864,7 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
                 Text text = interface_cast<Text>(node);
                 if (layOutText(view, node, context, text.getData(), element, style))
                     collapsed = false;
-            } else if (style->display.isInline()) {
+            } else if (style->display.isInline()) {  // TODO: check 'img', etc.
                 // empty inline element
                 assert(!element.hasChildNodes());
                 if (layOutText(view, node, context, u"", element, style))
