@@ -33,10 +33,13 @@ struct Override
     const char* replacement;
 };
 
+// cf. HTML Living Standard 13.2.2.2 Character encodings
 Override overrides[] = {
     { "euc-kr", "windows-949" },
+    { "euc-jp", "cp51932" },
     { "gb2312", "gbk" },
     { "gb_2312-80", "gbk" },
+    { "iso-2022-jp", "cp50220" },
     { "iso-8859-1", "windows-1252" },
     { "iso-8859-9", "windows-1254" },
     { "iso-8859-11", "windows-874" },
