@@ -702,7 +702,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
         context->x += advanced + blankRight;
         LineBox* lineBox = context->lineBox;
         lineBox->appendChild(inlineLevelBox);
-        lineBox->height = std::max(lineBox->height, std::max(activeStyle->lineHeight.getPx(), inlineLevelBox->height));
+        lineBox->height = std::max(getStyle()->lineHeight.getPx(), std::max(lineBox->height, std::max(activeStyle->lineHeight.getPx(), inlineLevelBox->height)));
         lineBox->baseline = std::max(lineBox->baseline, inlineLevelBox->baseline);
         lineBox->width += blankLeft + advanced + blankRight;
         lineBox->underlinePosition = std::max(lineBox->underlinePosition, font->getUnderlinePosition(point));
@@ -812,7 +812,7 @@ void BlockLevelBox::layOutInlineReplaced(ViewCSSImp* view, Node node, Formatting
     context->x += inlineLevelBox->width + blankRight;
     LineBox* lineBox = context->lineBox;
     lineBox->appendChild(inlineLevelBox);
-    lineBox->height = std::max(lineBox->height, inlineLevelBox->height);  // TODO: marginTop, etc.???
+    lineBox->height = std::max(getStyle()->lineHeight.getPx(), std::max(lineBox->height, inlineLevelBox->height));  // TODO: marginTop, etc.???
     lineBox->baseline = std::max(lineBox->baseline, inlineLevelBox->baseline);
     lineBox->width += blankLeft + inlineLevelBox->width + blankRight;
 }

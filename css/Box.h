@@ -531,10 +531,8 @@ public:
         underlineThickness(1.0f)
     {
         setStyle(style);
-        if (style) {
-            // Set the minimal height of this line box.
-            height = style->lineHeight.getPx();
-        }
+        // Keep 'height' 0.0f here since float and positioned elements are
+        // also placed in line boxes in this implementation.
     }
 
     virtual unsigned getBoxType() const {
