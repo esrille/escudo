@@ -547,7 +547,13 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
 {
     assert(element);
     assert(style);
-    if (style->processWhiteSpace(data, context->prevChar) == 0 && !style->display.isInline())
+
+    // An empty inline element should pass 'data' as an empty string. In this case,
+    // the inline box to be generated must not be collapsed away by returning false.
+    // cf. 10.8 Line height calculations: the ’line-height’ and ’vertical-align’ properties
+    bool discardable = !data.empty();
+
+    if (style->processWhiteSpace(data, context->prevChar) == 0 && discardable)
         return !isAnonymous();
 
     bool psuedoChecked = false;
@@ -560,7 +566,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
     size_t position = 0;
     for (;;) {
         if (!context->lineBox) {
-            if (style->processLineHeadWhiteSpace(data) == 0 && !style->display.isInline())
+            if (style->processLineHeadWhiteSpace(data) == 0 && discardable)
                 return !isAnonymous();
             if (!context->addLineBox(view, this))
                 return false;  // TODO error
