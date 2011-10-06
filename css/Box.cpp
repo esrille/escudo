@@ -632,7 +632,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
         context->leftover -= blankLeft;
         float blankRight = inlineLevelBox->getBlankRight();
         context->leftover -= blankRight;
-        if (context->leftover < 0.0f) {
+        if (context->leftover < 0.0f && context->lineBox->hasChildBoxes()) {
             delete inlineLevelBox;
             nextLine(view, context, activeStyle, firstLetterStyle, firstLineStyle, style, font, point);
             continue;
