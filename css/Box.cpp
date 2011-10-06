@@ -1319,14 +1319,20 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view, Node node)
         layOutInline(view, context);
     layOutChildren(view, context);
 
-    if (autoMask & Width) {
+    if ((autoMask & (Left | Width | Right)) == (Left | Width) ||
+        (autoMask & (Left | Width | Right)) == (Width | Right))
+    {
         shrinkToFit();
         if (autoMask & Left) {
             float left = containingBlock->width - getTotalWidth() - right;
             offsetH += left;
         }
     }
-    if ((autoMask & Height) || height == 0) {
+
+    if ((autoMask & (Top | Height | Bottom)) == (Top | Height) ||
+        (autoMask & (Top | Height | Bottom)) == (Height | Bottom) ||
+        height == 0)
+    {
         height = 0;
         for (Box* child = getFirstChild(); child; child = child->getNextSibling())
             height += child->getTotalHeight();
