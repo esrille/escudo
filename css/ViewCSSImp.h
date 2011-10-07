@@ -113,6 +113,7 @@ public:
     BlockLevelBox* layOut();
     BlockLevelBox* dump();
 
+    void resolveXY(float left, float top);
     void render();
 
     // For the containing block of the root element's top-level boxes, we need to explicitly specify the size of the box.

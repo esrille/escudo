@@ -336,25 +336,6 @@ bool BlockLevelBox::isAbsolutelyPositioned() const
     return style && style->isAbsolutelyPositioned();
 }
 
-void BlockLevelBox::dump(ViewCSSImp* view, std::string indent)
-{
-    std::cout << indent << "* block-level box";
-    if (!node)
-        std::cout << " [anonymous]";
-    else
-        std::cout << " [" << node.getNodeName() << ']';
-    std::cout << " (" << x << ", " << y << ", " <<
-        ((positioned ? stackingContext->getZ1() : stackingContext->getZ3()) + treeOrder / 1024.0f) << ") " <<
-        "w:" << width << " h:" << height << ' ' <<
-        "m:" << marginTop << ':' << marginRight << ':' << marginBottom << ':' << marginLeft << ' ' <<
-        "p:" << paddingTop << ':' <<  paddingRight << ':'<< paddingBottom<< ':' << paddingLeft << ' ' <<
-        "b:" << borderTop << ':' <<  borderRight << ':' << borderBottom<< ':' << borderLeft << ' ' <<
-        std::hex << CSSSerializeRGB(backgroundColor) << '\n';
-    indent += "  ";
-    for (Box* child = getFirstChild(); child; child = child->getNextSibling())
-        child->dump(view, indent);
-}
-
 BlockLevelBox* BlockLevelBox::getAnonymousBox()
 {
     BlockLevelBox* anonymousBox;
@@ -641,7 +622,10 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
         size_t length = 0;
         bool linefeed = false;
         float advanced = 0.0f;
-        if (!data.empty()) {
+
+        if (data.empty())
+            inlineLevelBox->setData(font, point, data);
+        else {
             size_t fitLength = firstLetterStyle ? 1 : data.length();  // TODO: 1 is absolutely wrong...
             // We are still not sure if there's a room for text in context->lineBox.
             // If there's no room due to float box(es), move the linebox down to
@@ -1367,6 +1351,50 @@ void BlockLevelBox::resolveOffset(ViewCSSImp* view)
     Box::resolveOffset(parentStyle);
 }
 
+void BlockLevelBox::resolveXY(ViewCSSImp* view, float left, float top)
+{
+    if (!getParentBox()) {
+        left -= view->getWindow()->getScrollX();
+        top -= view->getWindow()->getScrollY();
+    } else if (style && style->position.isFixed()) {
+        left += view->getWindow()->getScrollX();
+        top += view->getWindow()->getScrollY();
+    }
+    left += offsetH;
+    top += offsetV;
+    x = left;
+    y = top;
+    left += getBlankLeft();
+    top += getBlankTop();
+    if (shadow)
+        shadow->resolveXY(left, top);
+    else {
+        for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
+            child->resolveXY(view, left, top);
+            top += child->getTotalHeight();
+        }
+    }
+}
+
+void BlockLevelBox::dump(ViewCSSImp* view, std::string indent)
+{
+    std::cout << indent << "* block-level box";
+    if (!node)
+        std::cout << " [anonymous]";
+    else
+        std::cout << " [" << node.getNodeName() << ']';
+    std::cout << " (" << x << ", " << y << ", " <<
+        ((positioned ? stackingContext->getZ1() : stackingContext->getZ3()) + treeOrder / 1024.0f) << ") " <<
+        "w:" << width << " h:" << height << ' ' <<
+        "m:" << marginTop << ':' << marginRight << ':' << marginBottom << ':' << marginLeft << ' ' <<
+        "p:" << paddingTop << ':' <<  paddingRight << ':'<< paddingBottom<< ':' << paddingLeft << ' ' <<
+        "b:" << borderTop << ':' <<  borderRight << ':' << borderBottom<< ':' << borderLeft << ' ' <<
+        std::hex << CSSSerializeRGB(backgroundColor) << '\n';
+    indent += "  ";
+    for (Box* child = getFirstChild(); child; child = child->getNextSibling())
+        child->dump(view, indent);
+}
+
 bool LineBox::layOut(ViewCSSImp* view, FormattingContext* context)
 {
     for (Box* box = getFirstChild(); box; box = box->getNextSibling()) {
@@ -1379,14 +1407,6 @@ bool LineBox::layOut(ViewCSSImp* view, FormattingContext* context)
         }
     }
     return true;
-}
-
-void LineBox::dump(ViewCSSImp* view, std::string indent)
-{
-    std::cout << indent << "* line box (" << x << ", " << y << ") w:" << width << " h:" << height << " (" << offsetH << ", " << offsetV <<")\n";
-    indent += "  ";
-    for (Box* child = getFirstChild(); child; child = child->getNextSibling())
-        child->dump(view, indent);
 }
 
 void LineBox::fit(float w)
@@ -1405,6 +1425,29 @@ void LineBox::fit(float w)
     default:  // TODO: support Justify and Default
         break;
     }
+}
+
+void LineBox::resolveXY(ViewCSSImp* view, float left, float top)
+{
+    left += offsetH;
+    top += offsetV;
+    x = left;
+    y = top;
+    left += getBlankLeft();  // Node floats are placed inside margins.
+    top += getBlankTop();
+    for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
+        child->resolveXY(view, left, top);
+        if (!child->isAbsolutelyPositioned())
+            left += child->getTotalWidth();
+    }
+}
+
+void LineBox::dump(ViewCSSImp* view, std::string indent)
+{
+    std::cout << indent << "* line box (" << x << ", " << y << ") w:" << width << " h:" << height << " (" << offsetH << ", " << offsetV <<")\n";
+    indent += "  ";
+    for (Box* child = getFirstChild(); child; child = child->getNextSibling())
+        child->dump(view, indent);
 }
 
 bool InlineLevelBox::isAnonymous() const
@@ -1471,6 +1514,20 @@ void InlineLevelBox::resolveOffset(ViewCSSImp* view)
             break;
         s = view->getStyle(element);
     }
+}
+
+void InlineLevelBox::resolveXY(ViewCSSImp* view, float left, float top)
+{
+    left += offsetH;
+    top += offsetV;
+    if (shadow)
+        shadow->resolveXY(left, top);
+    else if (getFirstChild())
+        getFirstChild()->resolveXY(view, left, top);
+    else if (font)
+        top += baseline - font->getAscender(point);
+    x = left;
+    y = top;
 }
 
 void InlineLevelBox::dump(ViewCSSImp* view, std::string indent)

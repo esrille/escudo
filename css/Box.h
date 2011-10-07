@@ -342,13 +342,13 @@ public:
 
     void resolveOffset(CSSStyleDeclarationImp* style);
     virtual void resolveOffset(ViewCSSImp* view);
-
+    virtual void resolveXY(ViewCSSImp* view, float left, float top) = 0;
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context) {
         return true;
     }
 
     virtual void render(ViewCSSImp* view) = 0;
-    void renderBorder(ViewCSSImp* view);
+    void renderBorder(ViewCSSImp* view, float left, float top);
 
     virtual void dump(ViewCSSImp* view, std::string indent = "") = 0;
 
@@ -506,6 +506,7 @@ public:
     void collapseMarginBottom();
 
     virtual void resolveOffset(ViewCSSImp* view);
+    virtual void resolveXY(ViewCSSImp* view, float left, float top);
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context);
     virtual void render(ViewCSSImp* view);
     virtual void dump(ViewCSSImp* view, std::string indent = "");
@@ -560,6 +561,7 @@ public:
         return underlineThickness;
     }
 
+    virtual void resolveXY(ViewCSSImp* view, float left, float top);
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context);
     virtual void render(ViewCSSImp* view);
     virtual void dump(ViewCSSImp* view, std::string indent);
@@ -611,6 +613,7 @@ public:
     std::u16string getData() const {
         return data;
     }
+    virtual void resolveXY(ViewCSSImp* view, float left, float top);
     virtual void render(ViewCSSImp* view);
     virtual void dump(ViewCSSImp* view, std::string indent);
 };

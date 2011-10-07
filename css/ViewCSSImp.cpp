@@ -98,6 +98,12 @@ void ViewCSSImp::findDeclarations(DeclarationSet& set, Element element, css::CSS
     }
 }
 
+void ViewCSSImp::resolveXY(float left, float top)
+{
+    if (boxTree)
+        boxTree->resolveXY(this, left, top);
+}
+
 void ViewCSSImp::render()
 {
     if (boxTree)
@@ -443,6 +449,9 @@ BlockLevelBox* ViewCSSImp::layOut()
         floatMap.erase(i);
     }
     floatMap.swap(tmp);
+
+    boxTree->resolveXY(this, 0.0f, 0.0f);
+
     if (stackingContexts) {
         stackingContexts->eval();
         stackingContexts->dump();
