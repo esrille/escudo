@@ -1237,7 +1237,7 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
 
     if (!parentStyle) {
         assert(view->getStackingContexts() == 0);
-        view->setStackingContexts(new(std::nothrow) StackingContext(zIndex.getValue()));
+        view->setStackingContexts(new(std::nothrow) StackingContext(false, zIndex.getValue()));
         stackingContext = view->getStackingContexts();
     } else if (isPositioned()) {
         if (zIndex.isAuto())

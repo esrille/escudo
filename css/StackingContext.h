@@ -21,19 +21,20 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
+class Box;
+class ViewCSSImp;
+
 class StackingContext
 {
+    bool auto_;
     int zIndex;
-    float z1;
-    float z3;
     StackingContext* parent;
     StackingContext* firstChild;
     StackingContext* lastChild;
     StackingContext* previousSibling;
     StackingContext* nextSibling;
     unsigned int childCount;
-
-    StackingContext* zero;  // for auto
+    Box* base;  // The box that generated this StackingContext.
 
     StackingContext* removeChild(StackingContext* item);
     StackingContext* insertBefore(StackingContext* item, StackingContext* after);
@@ -59,29 +60,34 @@ class StackingContext
     }
 
     bool isAuto() const {
-        if (!parent)
-            return false;
-        return parent->zero == this;
+        return auto_;
     }
 
 public:
-    StackingContext(int zIndex);
+    StackingContext(bool auto_, int zIndex = 0);
     ~StackingContext();
 
-    StackingContext* getAuto();
-    StackingContext* addContext(int zIndex);
+    StackingContext* getAuto() {
+        return addContext(true, 0);
+    }
+    StackingContext* addContext(int zIndex) {
+        return addContext(false, zIndex);
+    }
+    StackingContext* addContext(bool auto_, int zIndex);
 
-    float eval() {
-        return eval(zIndex);
+    void clearBase() {
+        base = 0;
+        for (auto i = getFirstChild(); i; i = i->getNextSibling())
+            i->clearBase();
     }
-    float eval(float z);
+    Box* getBase() const {
+        return base;
+    }
+    void setBase(Box* box) {
+        base = box;
+    }
 
-    float getZ1() const {
-        return z1;
-    }
-    float getZ3() const {
-        return z3;
-    }
+    void render(ViewCSSImp* view);
 
     void dump(std::string indent = "");
 };

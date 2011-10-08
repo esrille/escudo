@@ -1916,7 +1916,10 @@ public:
     CSSZIndexValueImp& setValue(CSSParserTerm* term) {
         if (0 <= term->getIndex())
             return setValue(true);
-        return setValue(false, static_cast<int>(term->getNumber()));
+        double value = term->getNumber();
+        if (fmod(value, 1.0) != 0.0)
+            return setValue(true);
+        return setValue(false, static_cast<int>(value));
     }
     bool isAuto() const {
         return auto_;

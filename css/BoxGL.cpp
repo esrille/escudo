@@ -274,17 +274,7 @@ void Box::renderBorderEdge(ViewCSSImp* view, int edge, unsigned borderStyle, uns
 void Box::renderBorder(ViewCSSImp* view, float left, float top)
 {
     glPushMatrix();
-    if (!positioned)
-        glTranslatef(left, top, stackingContext->getZ3());
-    else {
-        glTranslatef(left, top, stackingContext->getZ1());
-        for (Box* b = this; b; b = b->getParentBox()) {
-            if (BlockLevelBox* bb = dynamic_cast<BlockLevelBox*>(b)) {
-                glTranslatef(0.0f, 0.0f, bb->getTreeOrder() / 1024.f);  // TODO: overflow
-                break;
-            }
-        }
-    }
+    glTranslatef(left, top, 0.0f);
     glDisable(GL_TEXTURE_2D);
 
     float ll = marginLeft;
@@ -358,30 +348,36 @@ void Box::renderBorder(ViewCSSImp* view, float left, float top)
     glPopMatrix();
 }
 
-void BlockLevelBox::render(ViewCSSImp* view)
+unsigned BlockLevelBox::renderBegin(ViewCSSImp* view)
 {
-    if (!stackingContext)
-        return;
+    glPushMatrix();
+    float scrollX = 0.0f;
+    float scrollY = 0.0f;
+    if (style && style->position.isFixed()) {
+        scrollX = view->getWindow()->getScrollX();
+        scrollY = view->getWindow()->getScrollY();
+        glTranslatef(scrollX, scrollY, 0.0f);
+    }
     renderBorder(view, x, y);
     unsigned overflow = CSSOverflowValueImp::Visible;
     if (style)
         overflow = style->overflow.getValue();
     if (overflow == CSSOverflowValueImp::Hidden) {
-        float left = x + getBlankLeft();
-        float top = y + getBlankTop();
-        float h = view->getInitialContainingBlock()->getHeight();
-        glViewport(left, h - (top + height), width, height);
+        float left = x + marginLeft + borderLeft + scrollX;
+        float top = y + marginTop + borderTop + scrollY;
+        float w = getPaddingWidth();
+        float h = getPaddingHeight();
+        glViewport(left, view->getInitialContainingBlock()->getHeight() - (top + h), w, h);
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        glOrtho(left, left + width, top + height, top, -1000.0, 1.0);
+        glOrtho(left, left + w, top + h, top, -1000.0, 1.0);
         glMatrixMode(GL_MODELVIEW);
     }
-    if (shadow)
-        shadow->render();
-    else {
-        for (auto child = getFirstChild(); child; child = child->getNextSibling())
-            child->render(view);
-    }
+    return overflow;
+}
+
+void BlockLevelBox::renderEnd(ViewCSSImp* view, unsigned overflow)
+{
     if (overflow == CSSOverflowValueImp::Hidden) {
         float w = view->getInitialContainingBlock()->getWidth();
         float h = view->getInitialContainingBlock()->getHeight();
@@ -391,12 +387,36 @@ void BlockLevelBox::render(ViewCSSImp* view)
         glOrtho(0, w, h, 0, -1000.0, 1.0);
         glMatrixMode(GL_MODELVIEW);
     }
+    glPopMatrix();
+}
+
+void BlockLevelBox::renderContent(ViewCSSImp* view)
+{
+    if (shadow) {
+        shadow->render();
+        return;
+    }
+    for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
+        if (child->style && child->style->isPositioned() && !child->isAnonymous())
+            continue;
+        child->render(view);
+    }
+}
+
+void BlockLevelBox::render(ViewCSSImp* view)
+{
+    unsigned overflow = renderBegin(view);
+    renderContent(view);
+    renderEnd(view, overflow);
 }
 
 void LineBox::render(ViewCSSImp* view)
 {
-    for (auto child = getFirstChild(); child; child = child->getNextSibling())
+    for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
+        if (child->style && child->style->isPositioned() && !child->isAnonymous())
+            continue;
         child->render(view);
+    }
 }
 
 void InlineLevelBox::render(ViewCSSImp* view)
@@ -412,7 +432,7 @@ void InlineLevelBox::render(ViewCSSImp* view)
         getFirstChild()->render(view);
     else if (font) {
         glPushMatrix();
-            glTranslatef(x, y + font->getAscender(point), stackingContext->getZ3());
+            glTranslatef(x, y + font->getAscender(point), 0.0f);
             if (positioned) {
                 for (Box* b = this; b; b = b->getParentBox()) {
                     if (BlockLevelBox* bb = dynamic_cast<BlockLevelBox*>(b)) {
@@ -421,14 +441,6 @@ void InlineLevelBox::render(ViewCSSImp* view)
                     }
                 }
             }
-            glPushMatrix();
-                glScalef(point / font->getPoint(), point / font->getPoint(), 1.0);
-                unsigned color = getStyle()->color.getARGB();
-                glColor4ub(color >> 16, color >> 8, color, color >> 24);
-                glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-                font->renderText(data.c_str(), data.length());
-                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            glPopMatrix();
             if (getStyle()->textDecorationContext.hasDecoration()) {
                 unsigned lineDecoration = getStyle()->textDecorationContext.decoration;
                 glDisable(GL_TEXTURE_2D);
@@ -443,8 +455,18 @@ void InlineLevelBox::render(ViewCSSImp* view)
                         glVertex2f(getTotalWidth(), lineBox->getUnderlinePosition());
                     glEnd();
                 }
+                // TODO: overlining
                 glEnable(GL_TEXTURE_2D);
             }
+            glPushMatrix();
+                glScalef(point / font->getPoint(), point / font->getPoint(), 1.0);
+                unsigned color = getStyle()->color.getARGB();
+                glColor4ub(color >> 16, color >> 8, color, color >> 24);
+                glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+                font->renderText(data.c_str(), data.length());
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            glPopMatrix();
+            // TODO: line-through
         glPopMatrix();
     }
 }

@@ -177,9 +177,7 @@ void timer(int value)
 void init(int argc, char* argv[])
 {
     glutInit(&argc, argv);
-
-    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
-
+    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
     glutInitWindowSize(816, 1056);
     glutCreateWindow(argv[0]);
     glutReshapeFunc(reshape);
@@ -188,7 +186,7 @@ void init(int argc, char* argv[])
     glEnable(GL_TEXTURE_2D);
     glDepthFunc(GL_LEQUAL);
     glDisable(GL_CULL_FACE);
-    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_DEPTH_TEST);
     glDisable(GL_ALPHA_TEST);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -202,7 +200,4 @@ void init(int argc, char* argv[])
     glutPassiveMotionFunc(mouseMove);
     glutTimerFunc(50, timer, 0);
     glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
-
-    glEnable(GL_MULTISAMPLE);
-    glEnable(GL_SAMPLE_ALPHA_TO_COVERAGE);
 }

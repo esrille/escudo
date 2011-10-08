@@ -691,6 +691,8 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
         lineBox->width += blankLeft + advanced + blankRight;
         lineBox->underlinePosition = std::max(lineBox->underlinePosition, font->getUnderlinePosition(point));
         lineBox->underlineThickness = std::max(lineBox->underlineThickness, font->getUnderlineThickness(point));
+        if (activeStyle->isPositioned() && !inlineLevelBox->isAnonymous())
+            activeStyle->getStackingContext()->setBase(inlineLevelBox);
         position += length;
         data.erase(0, length);
         if (data.length() == 0) {  // layout done?
@@ -799,6 +801,8 @@ void BlockLevelBox::layOutInlineReplaced(ViewCSSImp* view, Node node, Formatting
     lineBox->height = std::max(getStyle()->lineHeight.getPx(), std::max(lineBox->height, inlineLevelBox->height));  // TODO: marginTop, etc.???
     lineBox->baseline = std::max(lineBox->baseline, inlineLevelBox->baseline);
     lineBox->width += blankLeft + inlineLevelBox->width + blankRight;
+    if (style->isPositioned() && !inlineLevelBox->isAnonymous())
+        style->getStackingContext()->setBase(inlineLevelBox);
 }
 
 void BlockLevelBox::layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floatBox, FormattingContext* context)
@@ -1353,13 +1357,6 @@ void BlockLevelBox::resolveOffset(ViewCSSImp* view)
 
 void BlockLevelBox::resolveXY(ViewCSSImp* view, float left, float top)
 {
-    if (!getParentBox()) {
-        left -= view->getWindow()->getScrollX();
-        top -= view->getWindow()->getScrollY();
-    } else if (style && style->position.isFixed()) {
-        left += view->getWindow()->getScrollX();
-        top += view->getWindow()->getScrollY();
-    }
     left += offsetH;
     top += offsetV;
     x = left;
@@ -1383,13 +1380,12 @@ void BlockLevelBox::dump(ViewCSSImp* view, std::string indent)
         std::cout << " [anonymous]";
     else
         std::cout << " [" << node.getNodeName() << ']';
-    std::cout << " (" << x << ", " << y << ", " <<
-        ((positioned ? stackingContext->getZ1() : stackingContext->getZ3()) + treeOrder / 1024.0f) << ") " <<
+    std::cout << " (" << x << ", " << y << ") " <<
         "w:" << width << " h:" << height << ' ' <<
         "m:" << marginTop << ':' << marginRight << ':' << marginBottom << ':' << marginLeft << ' ' <<
         "p:" << paddingTop << ':' <<  paddingRight << ':'<< paddingBottom<< ':' << paddingLeft << ' ' <<
         "b:" << borderTop << ':' <<  borderRight << ':' << borderBottom<< ':' << borderLeft << ' ' <<
-        std::hex << CSSSerializeRGB(backgroundColor) << '\n';
+        std::hex << CSSSerializeRGB(backgroundColor) << std::dec << '\n';
     indent += "  ";
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
         child->dump(view, indent);

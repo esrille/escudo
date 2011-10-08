@@ -26,6 +26,7 @@
 #include "DocumentImp.h"
 
 #include "Box.h"
+#include "StackingContext.h"
 
 #include "font/FontDatabase.h"
 #include "font/FontManager.h"
@@ -46,6 +47,15 @@ FontTexture* ViewCSSImp::selectFont(CSSStyleDeclarationImp* style)
     FontFileInfo* info = FontFileInfo::chooseFont(style);
     backend.getFontFace(info->filename);
     return backend.getFontTexture(Point);
+}
+
+void ViewCSSImp::render()
+{
+    glPushMatrix();
+    glTranslatef(-window->getScrollX(), -window->getScrollY(), 0.0f);
+    if (stackingContexts)
+        stackingContexts->render(this);
+    glPopMatrix();
 }
 
 }}}}  // org::w3c::dom::bootstrap

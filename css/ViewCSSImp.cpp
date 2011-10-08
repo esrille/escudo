@@ -104,12 +104,6 @@ void ViewCSSImp::resolveXY(float left, float top)
         boxTree->resolveXY(this, left, top);
 }
 
-void ViewCSSImp::render()
-{
-    if (boxTree)
-        boxTree->render(this);
-}
-
 void ViewCSSImp::cascade()
 {
     map.clear();
@@ -317,6 +311,12 @@ BlockLevelBox* ViewCSSImp::createBlockLevelBox(Element element, CSSStyleDeclarat
     if (newContext && !block->establishFormattingContext())
         return 0;
     style->addBox(block);
+
+    StackingContext* stackingContext = style->getStackingContext();
+    assert(stackingContext);
+    if (style->isPositioned())
+        stackingContext->setBase(block);
+
     return block;
 }
 
@@ -429,6 +429,9 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes()
 
 BlockLevelBox* ViewCSSImp::layOut()
 {
+    if (stackingContexts)
+        stackingContexts->clearBase();
+
     layOutBlockBoxes();
     if (!boxTree)
         return 0;
@@ -453,7 +456,7 @@ BlockLevelBox* ViewCSSImp::layOut()
     boxTree->resolveXY(this, 0.0f, 0.0f);
 
     if (stackingContexts) {
-        stackingContexts->eval();
+        stackingContexts->setBase(boxTree.get());
         stackingContexts->dump();
     }
     return boxTree.get();

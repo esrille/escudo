@@ -162,6 +162,7 @@ class Box : public ContainingBlock
     friend class LineBox;
     friend class FormattingContext;
     friend class BoxImage;
+    friend class StackingContext;
 
 public:
     static const unsigned short BLOCK_LEVEL_BOX = 1;
@@ -510,6 +511,10 @@ public:
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context);
     virtual void render(ViewCSSImp* view);
     virtual void dump(ViewCSSImp* view, std::string indent = "");
+
+    unsigned renderBegin(ViewCSSImp* view);
+    void renderEnd(ViewCSSImp* view, unsigned overflow);
+    void renderContent(ViewCSSImp* view);
 };
 
 typedef boost::intrusive_ptr<BlockLevelBox> BlockLevelBoxPtr;

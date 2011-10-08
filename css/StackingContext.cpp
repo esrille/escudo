@@ -19,6 +19,8 @@
 #include <new>
 #include <iostream>
 
+#include "Box.h"
+
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 StackingContext* StackingContext::removeChild(StackingContext* item)
@@ -69,17 +71,16 @@ StackingContext* StackingContext::appendChild(StackingContext* item)
     return item;
 }
 
-StackingContext::StackingContext(int zIndex) :
+StackingContext::StackingContext(bool auto_, int zIndex) :
+    auto_(auto_),
     zIndex(zIndex),
-    z1(0.0f),
-    z3(0.0f),
     parent(0),
     firstChild(0),
     lastChild(0),
     previousSibling(0),
     nextSibling(0),
     childCount(0),
-    zero(0)
+    base(0)
 {
 }
 
@@ -93,19 +94,10 @@ StackingContext::~StackingContext()
     }
 }
 
-StackingContext* StackingContext::getAuto()
+StackingContext* StackingContext::addContext(bool auto_, int zIndex)
 {
     if (isAuto())
-        return this;
-    if (!zero)
-        zero = addContext(0);
-    return zero;
-}
-
-StackingContext* StackingContext::addContext(int zIndex)
-{
-    if (isAuto())
-        return parent->addContext(zIndex);
+        return parent->addContext(auto_, zIndex);
 
     StackingContext* after = 0;
     for (auto i = getFirstChild(); i; i = i->getNextSibling()) {
@@ -114,31 +106,37 @@ StackingContext* StackingContext::addContext(int zIndex)
             break;
         }
     }
-    StackingContext* item = new(std::nothrow) StackingContext(zIndex);
+    StackingContext* item = new(std::nothrow) StackingContext(auto_, zIndex);
     if (item)
         insertBefore(item, after);
     return item;
-
 }
 
-float StackingContext::eval(float z)
+void StackingContext::render(ViewCSSImp* view)
 {
-    z += 1.0f;
-    z1 = z3 = z;
-    for (auto i = getFirstChild(); i; i = i->getNextSibling()) {
-        z = i->eval(z);
-        if (i->zIndex < 0) {
-            z += 1.0f;
-            z3 = z;
-        }
-    }
-    return z;
+    if (!base)
+        return;
+    BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(base);
+    unsigned overflow = CSSOverflowValueImp::Visible;
+    if (block)
+        overflow = block->renderBegin(view);
+    StackingContext* childContext = getFirstChild();
+    for (; childContext && childContext->zIndex < 0; childContext = childContext->getNextSibling())
+        childContext->render(view);
+    if (!block)
+        base->render(view);
+    else
+        block->renderContent(view);
+    for (; childContext; childContext = childContext->getNextSibling())
+        childContext->render(view);
+    if (block)
+        block->renderEnd(view, overflow);
 }
 
 void StackingContext::dump(std::string indent)
 {
-    std::cout << indent << "z-index: " << zIndex << " " << z1 << " " << z3 << "\n";
-    indent += "    ";
+    std::cout << indent << "z-index: " << zIndex << '\n';
+    indent += "  ";
     for (auto child = getFirstChild(); child; child = child->getNextSibling())
         child->dump(indent);
 }
