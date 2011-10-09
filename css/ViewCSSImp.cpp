@@ -403,6 +403,8 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
         return 0;
     if (currentBox->isFloat() || currentBox->isAbsolutelyPositioned()) {
         floatMap[element] = currentBox;
+        if (currentBox->isAbsolutelyPositioned())
+            absoluteList.push_front(currentBox);
         if (parentBox) {
             // Set currentBox->parentBox to parentBox for now so that the correct
             // containing block can be retrieved before currentBox will be
@@ -439,19 +441,13 @@ BlockLevelBox* ViewCSSImp::layOut()
     boxTree->layOut(this, 0);
 
     // Lay out absolute boxes.
-    // Since absolute boxes could be created by layOutAbsolute() itself,
-    // we cannot simply iterate over floatMap.
-    // TODO: refine the code
-    std::map<Node, BlockLevelBoxPtr> tmp;
-    while (!floatMap.empty()) {
-        auto i = floatMap.begin();
-        BlockLevelBoxPtr box = i->second;
-        if (box->isAbsolutelyPositioned())
-            box->layOutAbsolute(this, i->first);
-        tmp.insert(*i);
-        floatMap.erase(i);
+    while (!absoluteList.empty()) {
+        BlockLevelBox* box = absoluteList.front();
+        absoluteList.pop_front();
+        assert(box->isAbsolutelyPositioned());
+        assert(box->node);
+        box->layOutAbsolute(this, box->node);
     }
-    floatMap.swap(tmp);
 
     boxTree->resolveXY(this, 0.0f, 0.0f);
 

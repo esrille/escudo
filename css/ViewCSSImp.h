@@ -67,6 +67,7 @@ class ViewCSSImp
     css::CSSStyleSheet defaultStyleSheet;
     std::map<Element, CSSStyleDeclarationPtr> map;
     std::map<Node, BlockLevelBoxPtr> floatMap;
+    std::list<BlockLevelBox*> absoluteList;
     BlockLevelBoxPtr boxTree;
     Retained<ContainingBlock> initialContainingBlock;
     StackingContext* stackingContexts;
