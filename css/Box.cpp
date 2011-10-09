@@ -839,11 +839,9 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
 {
     assert(!hasChildBoxes());
     bool collapsed = true;
-    unsigned order = 0;
     for (auto i = inlines.begin(); i != inlines.end(); ++i) {
         Node node = *i;
         if (BlockLevelBox* box = view->getFloatBox(node)) {
-            box->treeOrder = ++order;
             if (box->isFloat())
                 layOutFloat(view, node, box, context);
             else if (box->isAbsolutelyPositioned())

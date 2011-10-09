@@ -433,14 +433,6 @@ void InlineLevelBox::render(ViewCSSImp* view)
     else if (font) {
         glPushMatrix();
             glTranslatef(x, y + font->getAscender(point), 0.0f);
-            if (positioned) {
-                for (Box* b = this; b; b = b->getParentBox()) {
-                    if (BlockLevelBox* bb = dynamic_cast<BlockLevelBox*>(b)) {
-                        glTranslatef(0.0f, 0.0f, bb->getTreeOrder() / 1024.f);  // TODO: overflow
-                        break;
-                    }
-                }
-            }
             if (getStyle()->textDecorationContext.hasDecoration()) {
                 unsigned lineDecoration = getStyle()->textDecorationContext.decoration;
                 glDisable(GL_TEXTURE_2D);
