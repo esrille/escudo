@@ -481,7 +481,7 @@ public:
     void setContainingBlock(ViewCSSImp* view);
 
     unsigned resolveAbsoluteWidth(const ContainingBlock* containingBlock, float& right, float& bottom);
-    void layOutAbsolute(ViewCSSImp* view, Node node);  // 2nd pass
+    void layOutAbsolute(ViewCSSImp* view);  // 2nd pass
 
     // Gets the first child box which is an anonymous box. Creates one if there's none
     // even if there's no children; if so, the existing texts are moved to the

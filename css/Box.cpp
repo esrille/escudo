@@ -1265,8 +1265,9 @@ unsigned BlockLevelBox::resolveAbsoluteWidth(const ContainingBlock* containingBl
     return autoMask;
 }
 
-void BlockLevelBox::layOutAbsolute(ViewCSSImp* view, Node node)
+void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
 {
+    assert(node);
     assert(isAbsolutelyPositioned());
     Element element = getContainingElement(node);
     if (!element)

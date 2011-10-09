@@ -444,9 +444,7 @@ BlockLevelBox* ViewCSSImp::layOut()
     while (!absoluteList.empty()) {
         BlockLevelBox* box = absoluteList.front();
         absoluteList.pop_front();
-        assert(box->isAbsolutelyPositioned());
-        assert(box->node);
-        box->layOutAbsolute(this, box->node);
+        box->layOutAbsolute(this);
     }
 
     boxTree->resolveXY(this, 0.0f, 0.0f);
