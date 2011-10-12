@@ -102,10 +102,13 @@ FontTexture::FontTexture(FontFace* face, unsigned int point) try :
     pen.x = pen.y = 1;  // (0, 0) is reserved for an uninitialized font glyph
     ymax = 0;
 
+    lineGap = 0;
     xHeight = ascender / 2;
     if (FT_IS_SFNT(face->face)) {
-        if (TT_OS2_* os2 = static_cast<TT_OS2_*>(FT_Get_Sfnt_Table(face->face, ft_sfnt_os2)))
+        if (TT_OS2_* os2 = static_cast<TT_OS2_*>(FT_Get_Sfnt_Table(face->face, ft_sfnt_os2))) {
+            lineGap = os2->usWinAscent + os2->usWinDescent - face->face->units_per_EM;
             xHeight = os2->sxHeight;
+        }
     }
 
     // Store the missing glyph (0) as the 1st entry

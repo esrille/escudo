@@ -681,7 +681,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
             // TODO: firstLetterStyle: actually we are not sure if the following characters would fit in the same line box...
             inlineLevelBox->marginRight = inlineLevelBox->paddingRight = inlineLevelBox->borderRight = blankRight = 0;
         }
-        inlineLevelBox->height = font->getHeight(point);
+        inlineLevelBox->height = font->getLineHeight(point);
         inlineLevelBox->baseline += (activeStyle->lineHeight.getPx() - inlineLevelBox->height) / 2.0f;
         context->x += advanced + blankRight;
         LineBox* lineBox = context->lineBox;

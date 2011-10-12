@@ -137,6 +137,7 @@ class FontTexture
     unsigned int point; // nominal font point sized
     short ascender;
     short descender;
+    short lineGap;
     short xHeight;
 
     std::vector<uint8_t*> images;
@@ -202,24 +203,32 @@ public:
         face->manager->getBackEnd()->renderText(this, text, length);
     }
 
-    float getHeight(float point) const {
+    float getSize(float point) const {
         return point / 72 * 96;  // TODO XXX DPI
     }
 
+    float getLineGap(float point) const {
+        return (getSize(point) * lineGap) / (ascender - descender);
+    }
+
     float getXHeight(float point) const {
-        return (getHeight(point) * xHeight) / (ascender - descender);
+        return (getSize(point) * xHeight) / (ascender - descender);
     }
 
     float getAscender(float point) const {
-        return (getHeight(point) * ascender) / (ascender - descender);
+        return (getSize(point) * ascender) / (ascender - descender);
+    }
+
+    float getLineHeight(float point) const {
+        return (getSize(point) * (ascender - descender + lineGap)) / (ascender - descender);
     }
 
     float getUnderlinePosition(float point) const {
-        return (getHeight(point) * -face->face->underline_position) / (ascender - descender);
+        return (getSize(point) * -face->face->underline_position) / (ascender - descender);
     }
 
     float getUnderlineThickness(float point) const {
-        return (getHeight(point) * face->face->underline_thickness) / (ascender - descender);
+        return (getSize(point) * face->face->underline_thickness) / (ascender - descender);
     }
 
     static const int Width = 1024;
