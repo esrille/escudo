@@ -1284,6 +1284,29 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
     float right;
     float bottom;
     unsigned autoMask = resolveAbsoluteWidth(containingBlock, right, bottom);
+    unsigned maskH = autoMask & (Left | Width | Right);
+    unsigned maskV = autoMask & (Top | Height | Bottom);
+
+    if (CSSDisplayValueImp::isBlockLevel(style->display.getOriginalValue())) {
+        Element parent = element.getParentElement();
+        if (parent) {
+            CSSStyleDeclarationImp* parentStyle = view->getStyle(parent);
+            if (!CSSDisplayValueImp::isBlockLevel(parentStyle->display.getOriginalValue())) {
+                // This box is originally a block-level box inside an inline context.
+                // Set the static position to the beginning of the next line.
+                const Box* lineBox = getParentBox();
+                assert(lineBox);
+                if (maskV == (Top | Height | Bottom) || maskV == (Top | Bottom))
+                    offsetV += lineBox->getTotalHeight();
+                if (maskH == (Left | Width | Right) || maskH == (Left | Right)) {
+                    for (const Box* box = getPreviousSibling(); box; box = box->getPreviousSibling()) {
+                        if (!box->isAbsolutelyPositioned())
+                            offsetH -= box->getTotalWidth();
+                    }
+                }
+            }
+        }
+    }
 
     FormattingContext* context = updateFormattingContext(context);
     assert(context);
@@ -1296,19 +1319,19 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
             if (autoMask & Width) {
                 width = backgroundImage->getWidth();
                 autoMask &= ~Width;
+                maskH = autoMask & (Left | Width | Right);
             }
             if (autoMask & Height) {
                 height = backgroundImage->getHeight();
                 autoMask &= ~Height;
+                maskV = autoMask & (Top | Height | Bottom);
             }
         }
     } else if (hasInline())
         layOutInline(view, context);
     layOutChildren(view, context);
 
-    if ((autoMask & (Left | Width | Right)) == (Left | Width) ||
-        (autoMask & (Left | Width | Right)) == (Width | Right))
-    {
+    if (maskH == (Left | Width) || maskH == (Width | Right)) {
         shrinkToFit();
         if (autoMask & Left) {
             float left = containingBlock->width - getTotalWidth() - right;
@@ -1316,10 +1339,7 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
         }
     }
 
-    if ((autoMask & (Top | Height | Bottom)) == (Top | Height) ||
-        (autoMask & (Top | Height | Bottom)) == (Height | Bottom) ||
-        height == 0)
-    {
+    if (maskV == (Top | Height) || maskV == (Height | Bottom) || height == 0) {
         height = 0;
         for (Box* child = getFirstChild(); child; child = child->getNextSibling())
             height += child->getTotalHeight();
@@ -1381,6 +1401,7 @@ void BlockLevelBox::dump(ViewCSSImp* view, std::string indent)
         std::cout << " [" << node.getNodeName() << ']';
     std::cout << " (" << x << ", " << y << ") " <<
         "w:" << width << " h:" << height << ' ' <<
+        "(" << offsetH << ", " << offsetV <<") " <<
         "m:" << marginTop << ':' << marginRight << ':' << marginBottom << ':' << marginLeft << ' ' <<
         "p:" << paddingTop << ':' <<  paddingRight << ':'<< paddingBottom<< ':' << paddingLeft << ' ' <<
         "b:" << borderTop << ':' <<  borderRight << ':' << borderBottom<< ':' << borderLeft << ' ' <<

@@ -1019,6 +1019,7 @@ public:
 
 class CSSDisplayValueImp : public CSSPropertyValueImp
 {
+    unsigned original;  // retains the original value for calculating the static position of an absolutely positioned box.
     unsigned value;
 public:
     enum {
@@ -1040,7 +1041,7 @@ public:
         None
     };
     CSSDisplayValueImp& setValue(unsigned value = Inline) {
-        this->value = value;
+        original = this->value = value;
         return *this;
     }
     CSSDisplayValueImp& setValue(CSSParserTerm* term) {
@@ -1048,6 +1049,9 @@ public:
     }
     unsigned getValue() const {
         return value;
+    }
+    unsigned getOriginalValue() const {
+        return original;
     }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
         return Options[value];
@@ -1059,30 +1063,16 @@ public:
         return value != display.value;
     }
     void specify(const CSSDisplayValueImp& specified) {
-        value = specified.value;
+        setValue(specified.value);
     }
     void compute(CSSStyleDeclarationImp* decl, Element element);
     CSSDisplayValueImp(unsigned initial = Inline) :
-        value(initial) {
+        original(initial),
+        value(initial)
+    {
     }
     bool isBlockLevel() const {
-        switch (value) {
-        case Block:
-        case ListItem:
-        case Table:
-        case TableRowGroup:
-        case TableHeaderGroup:
-        case TableFooterGroup:
-        case TableRow:
-        case TableColumnGroup:
-        case TableColumn:
-        case TableCell:
-        case TableCaption:
-        // <template>:
-            return true;
-        default:
-            return false;
-        }
+        return isBlockLevel(value);
     }
     bool isInlineBlock() const {
         switch (value) {
@@ -1195,6 +1185,26 @@ public:
     }
 
     static const char16_t* Options[];
+
+    static bool isBlockLevel(unsigned value) {
+        switch (value) {
+        case Block:
+        case ListItem:
+        case Table:
+        case TableRowGroup:
+        case TableHeaderGroup:
+        case TableFooterGroup:
+        case TableRow:
+        case TableColumnGroup:
+        case TableColumn:
+        case TableCell:
+        case TableCaption:
+        // <template>:
+            return true;
+        default:
+            return false;
+        }
+    }
 };
 
 class CSSFloatValueImp : public CSSPropertyValueImp

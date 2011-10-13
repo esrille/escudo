@@ -1177,7 +1177,7 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
         resetInheritedProperties();
     else
         copyInheritedProperties(parentStyle);
-    display.compute(this, element);  // TODO: we need to keep the original value for absolute box
+    display.compute(this, element);
     fontSize.compute(view, parentStyle);
     fontWeight.compute(view, parentStyle);
     fontTexture = view->selectFont(this);
