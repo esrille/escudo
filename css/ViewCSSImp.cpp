@@ -458,7 +458,7 @@ BlockLevelBox* ViewCSSImp::layOut()
 
 BlockLevelBox* ViewCSSImp::dump()
 {
-    boxTree->dump(this);
+    boxTree->dump();
     return boxTree.get();
 }
 

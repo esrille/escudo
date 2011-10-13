@@ -351,7 +351,7 @@ public:
     virtual void render(ViewCSSImp* view) = 0;
     void renderBorder(ViewCSSImp* view, float left, float top);
 
-    virtual void dump(ViewCSSImp* view, std::string indent = "") = 0;
+    virtual void dump(std::string indent = "") = 0;
 
     void setFlags(unsigned f) {
         flags |= f;
@@ -505,7 +505,7 @@ public:
     virtual void resolveXY(ViewCSSImp* view, float left, float top);
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context);
     virtual void render(ViewCSSImp* view);
-    virtual void dump(ViewCSSImp* view, std::string indent = "");
+    virtual void dump(std::string indent = "");
 
     unsigned renderBegin(ViewCSSImp* view);
     void renderEnd(ViewCSSImp* view, unsigned overflow);
@@ -564,7 +564,7 @@ public:
     virtual void resolveXY(ViewCSSImp* view, float left, float top);
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context);
     virtual void render(ViewCSSImp* view);
-    virtual void dump(ViewCSSImp* view, std::string indent);
+    virtual void dump(std::string indent);
     virtual void fit(float w);
 };
 
@@ -615,7 +615,7 @@ public:
     }
     virtual void resolveXY(ViewCSSImp* view, float left, float top);
     virtual void render(ViewCSSImp* view);
-    virtual void dump(ViewCSSImp* view, std::string indent);
+    virtual void dump(std::string indent);
 };
 
 typedef boost::intrusive_ptr<InlineLevelBox> InlineLevelBoxPtr;

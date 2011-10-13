@@ -430,7 +430,7 @@ float TableWrapperBox::shrinkTo()
     return getTotalWidth();
 }
 
-void TableWrapperBox::dump(ViewCSSImp* view, std::string indent)
+void TableWrapperBox::dump(std::string indent)
 {
     std::cout << indent << "* table wrapper box (" << static_cast<void*>(this);
     std::cout << ':' << node.self() << ')';
@@ -440,7 +440,7 @@ void TableWrapperBox::dump(ViewCSSImp* view, std::string indent)
 
     indent += "    ";
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
-        child->dump(view, indent);
+        child->dump(indent);
 }
 
 }}}}  // org::w3c::dom::bootstrap

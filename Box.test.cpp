@@ -110,7 +110,7 @@ int main(int argc, char** argv)
     if (!boxTree)
         return EXIT_FAILURE;
 
-    boxTree->dump(view);
+    boxTree->dump();
 
     std::cout << "done.\n";
     return 0;

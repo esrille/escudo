@@ -1392,7 +1392,7 @@ void BlockLevelBox::resolveXY(ViewCSSImp* view, float left, float top)
     }
 }
 
-void BlockLevelBox::dump(ViewCSSImp* view, std::string indent)
+void BlockLevelBox::dump(std::string indent)
 {
     std::cout << indent << "* block-level box";
     if (!node)
@@ -1408,7 +1408,7 @@ void BlockLevelBox::dump(ViewCSSImp* view, std::string indent)
         std::hex << CSSSerializeRGB(backgroundColor) << std::dec << '\n';
     indent += "  ";
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
-        child->dump(view, indent);
+        child->dump(indent);
 }
 
 bool LineBox::layOut(ViewCSSImp* view, FormattingContext* context)
@@ -1458,12 +1458,12 @@ void LineBox::resolveXY(ViewCSSImp* view, float left, float top)
     }
 }
 
-void LineBox::dump(ViewCSSImp* view, std::string indent)
+void LineBox::dump(std::string indent)
 {
     std::cout << indent << "* line box (" << x << ", " << y << ") w:" << width << " h:" << height << " (" << offsetH << ", " << offsetV <<")\n";
     indent += "  ";
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
-        child->dump(view, indent);
+        child->dump(indent);
 }
 
 bool InlineLevelBox::isAnonymous() const
@@ -1546,17 +1546,18 @@ void InlineLevelBox::resolveXY(ViewCSSImp* view, float left, float top)
     y = top;
 }
 
-void InlineLevelBox::dump(ViewCSSImp* view, std::string indent)
+void InlineLevelBox::dump(std::string indent)
 {
     std::cout << indent << "* inline-level box (" << x << ", " << y << ") " <<
         "w:" << width << " h:" << height << ' ' <<
         "m:" << marginTop << ':' << marginRight << ':' << marginBottom << ':' << marginLeft << ' ' <<
         "p:" << paddingTop << ':' <<  paddingRight << ':'<< paddingBottom<< ':' << paddingLeft << ' ' <<
-        "b:" << borderTop << ':' <<  borderRight << ':' << borderBottom<< ':' << borderLeft <<
-        " \"" << data << "\"\n";
+        "b:" << borderTop << ':' <<  borderRight << ':' << borderBottom<< ':' << borderLeft << ' ' <<
+        '"' << data << "\" " <<
+        std::hex << CSSSerializeRGB(getStyle()->color.getARGB()) << std::dec << '\n';
     indent += "  ";
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
-        child->dump(view, indent);
+        child->dump(indent);
 }
 
 }}}}  // org::w3c::dom::bootstrap

@@ -210,7 +210,7 @@ void WindowImp::render()
         view->render();
         recordTime("render end  ");
         if (boxTree)    // When the root element has display:none, no box is created at all.
-            boxTree->dump(view);
+            boxTree->dump();
     }
 }
 

@@ -87,7 +87,7 @@ public:
     virtual void fit(float w);
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context);
     virtual float shrinkTo();
-    virtual void dump(ViewCSSImp* view, std::string indent = "");
+    virtual void dump(std::string indent = "");
 };
 
 typedef boost::intrusive_ptr<TableWrapperBox> TableWrapperBoxPtr;
