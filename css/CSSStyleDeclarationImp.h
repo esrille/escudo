@@ -230,6 +230,7 @@ private:
     std::bitset<PropertyCount> inheritSet;
     bool resolved;
 
+    CSSStyleDeclarationImp* parentStyle;
     Box* box;
     Box* lastBox;  // for inline
     StackingContext* stackingContext;
@@ -408,12 +409,7 @@ public:
         return position.getValue() != CSSPositionValueImp::Static;
     }
 
-    void addBox(Box* box) {
-        if (!this->box)
-            this->box = lastBox = box;
-        else
-            lastBox = box;
-    }
+    void addBox(Box* box);
 
     StackingContext* getStackingContext() const {
         return stackingContext;

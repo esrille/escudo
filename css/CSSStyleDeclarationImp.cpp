@@ -1173,6 +1173,7 @@ void CSSStyleDeclarationImp::copyInheritedProperties(const CSSStyleDeclarationIm
 
 void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle, Element element)
 {
+    this->parentStyle = parentStyle;
     if (!parentStyle)  // is it the root element?
         resetInheritedProperties();
     else
@@ -1398,6 +1399,17 @@ bool CSSStyleDeclarationImp::isFlowRoot() const
            overflow.getValue() != CSSOverflowValueImp::Visible ||
            position.getValue() != CSSPositionValueImp::Static && position.getValue() != CSSPositionValueImp::Relative;
            /* TODO || and more conditions... */
+}
+
+void CSSStyleDeclarationImp::addBox(Box* box)
+{
+    if (!this->box)
+        this->box = lastBox = box;
+    else
+        lastBox = box;
+    if (!parentStyle || parentStyle->isBlockLevel() || box->getBoxType() != Box::INLINE_LEVEL_BOX)
+        return;
+    parentStyle->addBox(box);
 }
 
 CSSStyleDeclarationImp* CSSStyleDeclarationImp::getPseudoElementStyle(int id)
@@ -2856,6 +2868,7 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp() :
     owner(0),
     parentRule(0),
     resolved(false),
+    parentStyle(0),
     box(0),
     lastBox(0),
     stackingContext(0),

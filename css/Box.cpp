@@ -209,15 +209,11 @@ const ContainingBlock* Box::getContainingBlock(ViewCSSImp* view) const
 }
 
 // We also calculate offsetH and offsetV here.
-// TODO: Probably it's better to visit ancestors via the box tree rather than the node tree.
+// TODO: Maybe it's better to visit ancestors via the box tree rather than the node tree.
 //       cf. CSSContentValueImp::eval()
 void BlockLevelBox::setContainingBlock(ViewCSSImp* view)
 {
     assert(isAbsolutelyPositioned());
-    float x = 0.0f;
-    float y = 0.0f;
-    const Box* staticPosition = Box::towardViewPort(x, y);
-    assert(staticPosition);
     if (!isFixed()) {
         assert(node);
         for (auto ancestor = node.getParentElement(); ancestor; ancestor = ancestor.getParentElement()) {
@@ -231,10 +227,8 @@ void BlockLevelBox::setContainingBlock(ViewCSSImp* view)
                 // Now we need to find the corresponding box for this ancestor.
                 const Box* box = style->box;
                 assert(box);
-                while (box != staticPosition)
-                    staticPosition = staticPosition->towardViewPort(x, y);
-                offsetH = -x - box->paddingLeft;
-                offsetV = -y - box->paddingTop;
+                offsetH = box->x - box->paddingLeft - x;
+                offsetV = box->y - box->paddingTop - y;
                 if (box->getBoxType() == BLOCK_LEVEL_BOX) {
                     absoluteBlock.width = box->getPaddingWidth();
                     absoluteBlock.height = box->getPaddingHeight();
@@ -245,17 +239,14 @@ void BlockLevelBox::setContainingBlock(ViewCSSImp* view)
                         absoluteBlock.height = inlineBlock->getPaddingHeight();
                     } else {
                         const Box* p = box->getParentBox();
-                        float t = -box->paddingTop;
-                        float l = -box->paddingLeft;
-                        while (box != p)
-                            box = box->towardViewPort(t, l);
+                        float t = box->y - box->paddingTop;
+                        float l = box->x - box->paddingLeft;
                         box = style->lastBox;
-                        float b = box->height + box->paddingBottom;
-                        float r = box->width + box->paddingRight;
-                        while (box != p)
-                            box = box->towardViewPort(b, r);
+                        assert(box);
+                        float b = box->y + box->height + box->paddingBottom;
+                        float r = box->x + box->width + box->paddingRight;
                         absoluteBlock.width = r - l;
-                        absoluteBlock.height = t - b;
+                        absoluteBlock.height = b - t;
                     }
                 }
                 return;
@@ -265,8 +256,6 @@ void BlockLevelBox::setContainingBlock(ViewCSSImp* view)
             }
         }
     }
-    while (staticPosition)
-        staticPosition = staticPosition->towardViewPort(x, y);
     offsetH = -x;
     offsetV = -y;
     absoluteBlock.width = view->getInitialContainingBlock()->width;

@@ -439,15 +439,15 @@ BlockLevelBox* ViewCSSImp::layOut()
         return 0;
     // Expand line boxes and inline-level boxes in each block-level box
     boxTree->layOut(this, 0);
+    boxTree->resolveXY(this, 0.0f, 0.0f);
 
     // Lay out absolute boxes.
     while (!absoluteList.empty()) {
         BlockLevelBox* box = absoluteList.front();
         absoluteList.pop_front();
         box->layOutAbsolute(this);
+        box->resolveXY(this, box->x, box->y);
     }
-
-    boxTree->resolveXY(this, 0.0f, 0.0f);
 
     if (stackingContexts) {
         stackingContexts->addBase(boxTree.get());
