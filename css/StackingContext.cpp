@@ -80,7 +80,8 @@ StackingContext::StackingContext(bool auto_, int zIndex) :
     previousSibling(0),
     nextSibling(0),
     childCount(0),
-    base(0)
+    firstBase(0),
+    lastBase(0)
 {
 }
 
@@ -114,23 +115,34 @@ StackingContext* StackingContext::addContext(bool auto_, int zIndex)
 
 void StackingContext::render(ViewCSSImp* view)
 {
-    if (!base)
-        return;
-    BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(base);
-    unsigned overflow = CSSOverflowValueImp::Visible;
-    if (block)
-        overflow = block->renderBegin(view);
-    StackingContext* childContext = getFirstChild();
-    for (; childContext && childContext->zIndex < 0; childContext = childContext->getNextSibling())
-        childContext->render(view);
-    if (!block)
-        base->render(view);
-    else
-        block->renderContent(view);
-    for (; childContext; childContext = childContext->getNextSibling())
-        childContext->render(view);
-    if (block)
-        block->renderEnd(view, overflow);
+    for (Box* base = firstBase; base; base = base->nextBase) {
+        BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(base);
+        unsigned overflow = CSSOverflowValueImp::Visible;
+        if (block)
+            overflow = block->renderBegin(view);
+        StackingContext* childContext = getFirstChild();
+        for (; childContext && childContext->zIndex < 0; childContext = childContext->getNextSibling())
+            childContext->render(view);
+        if (!block)
+            base->render(view);
+        else
+            block->renderContent(view);
+        for (; childContext; childContext = childContext->getNextSibling())
+            childContext->render(view);
+        if (block)
+            block->renderEnd(view, overflow);
+    }
+}
+
+void StackingContext::addBase(Box* box)
+{
+    if (!firstBase)
+        firstBase = lastBase = box;
+    else {
+        lastBase->nextBase = box;
+        lastBase = box;
+    }
+    box->nextBase = 0;
 }
 
 void StackingContext::dump(std::string indent)

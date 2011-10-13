@@ -34,7 +34,11 @@ class StackingContext
     StackingContext* previousSibling;
     StackingContext* nextSibling;
     unsigned int childCount;
-    Box* base;  // The box that generated this StackingContext.
+
+    // The top level boxes in this StackingContext. Note a single, positioned
+    // inline element can generate multiple inline boxes.
+    Box* firstBase;
+    Box* lastBase;
 
     StackingContext* removeChild(StackingContext* item);
     StackingContext* insertBefore(StackingContext* item, StackingContext* after);
@@ -76,16 +80,14 @@ public:
     StackingContext* addContext(bool auto_, int zIndex);
 
     void clearBase() {
-        base = 0;
+        firstBase = lastBase = 0;
         for (auto i = getFirstChild(); i; i = i->getNextSibling())
             i->clearBase();
     }
     Box* getBase() const {
-        return base;
+        return firstBase;
     }
-    void setBase(Box* box) {
-        base = box;
-    }
+    void addBase(Box* box);
 
     void render(ViewCSSImp* view);
 

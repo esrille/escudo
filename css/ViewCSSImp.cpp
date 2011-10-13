@@ -315,7 +315,7 @@ BlockLevelBox* ViewCSSImp::createBlockLevelBox(Element element, CSSStyleDeclarat
     StackingContext* stackingContext = style->getStackingContext();
     assert(stackingContext);
     if (style->isPositioned())
-        stackingContext->setBase(block);
+        stackingContext->addBase(block);
 
     return block;
 }
@@ -450,7 +450,7 @@ BlockLevelBox* ViewCSSImp::layOut()
     boxTree->resolveXY(this, 0.0f, 0.0f);
 
     if (stackingContexts) {
-        stackingContexts->setBase(boxTree.get());
+        stackingContexts->addBase(boxTree.get());
         stackingContexts->dump();
     }
     return boxTree.get();

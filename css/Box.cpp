@@ -77,6 +77,7 @@ Box::Box(Node node) :
     offsetV(0.0f),
     positioned(false),
     stackingContext(0),
+    nextBase(0),
     x(0.0f),
     y(0.0f),
     backgroundColor(0x00000000),
@@ -692,7 +693,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
         lineBox->underlinePosition = std::max(lineBox->underlinePosition, font->getUnderlinePosition(point));
         lineBox->underlineThickness = std::max(lineBox->underlineThickness, font->getUnderlineThickness(point));
         if (activeStyle->isPositioned() && !inlineLevelBox->isAnonymous())
-            activeStyle->getStackingContext()->setBase(inlineLevelBox);
+            activeStyle->getStackingContext()->addBase(inlineLevelBox);
         position += length;
         data.erase(0, length);
         if (data.length() == 0) {  // layout done?
@@ -802,7 +803,7 @@ void BlockLevelBox::layOutInlineReplaced(ViewCSSImp* view, Node node, Formatting
     lineBox->baseline = std::max(lineBox->baseline, inlineLevelBox->baseline);
     lineBox->width += blankLeft + inlineLevelBox->width + blankRight;
     if (style->isPositioned() && !inlineLevelBox->isAnonymous())
-        style->getStackingContext()->setBase(inlineLevelBox);
+        style->getStackingContext()->addBase(inlineLevelBox);
 }
 
 void BlockLevelBox::layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floatBox, FormattingContext* context)

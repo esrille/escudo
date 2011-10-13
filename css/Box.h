@@ -195,6 +195,7 @@ protected:
 
     bool positioned;
     StackingContext* stackingContext;
+    Box* nextBase;
 
     float x;  // in screen coord
     float y;  // in screen coord
