@@ -1471,23 +1471,26 @@ void InlineLevelBox::setData(FontTexture* font, float point, std::u16string data
     baseline = font->getAscender(point);
 }
 
-void InlineLevelBox::atEndOfLine()
+float InlineLevelBox::atEndOfLine()
 {
     size_t length = data.length();
     if (length < 1)
-        return;
+        return 0.0f;
     switch (style->whiteSpace.getValue()) {
     case CSSWhiteSpaceValueImp::Normal:
     case CSSWhiteSpaceValueImp::Nowrap:
     case CSSWhiteSpaceValueImp::PreLine:
         if (data[length - 1] == u' ') {
             data.erase(length - 1);
-            width -= font->measureText(u" ", point);
+            float w = -font->measureText(u" ", point);
+            width += w;
+            return w;
         }
         break;
     default:
         break;
     }
+    return 0.0f;
 }
 
 void InlineLevelBox::resolveWidth()

@@ -603,7 +603,7 @@ public:
 
     virtual bool isAnonymous() const;
 
-    void atEndOfLine();
+    float atEndOfLine();
 
     float getBaseline() const {
         return baseline;

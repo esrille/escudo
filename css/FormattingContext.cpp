@@ -142,7 +142,7 @@ void FormattingContext::nextLine(BlockLevelBox* parentBox, bool moreFloats)
     assert(lineBox == parentBox->lastChild);
 
     if (InlineLevelBox* inlineLevelBox = dynamic_cast<InlineLevelBox*>(lineBox->getLastChild()))
-        inlineLevelBox->atEndOfLine();
+        lineBox->width += inlineLevelBox->atEndOfLine();
 
     for (auto i = left.rbegin(); i != left.rend(); ++i) {
         if ((*i)->edge <= lineBox->marginLeft)
