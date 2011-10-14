@@ -39,7 +39,7 @@ void display()
     glColor3f(0.0, 0.0, 0.0);
 
     if (boxTree)
-        boxTree->render(view);
+        boxTree->render(view, 0);  // TODO: missing the stacking context
 
     // TODO: do GC here or maybe in the idle proc
 

@@ -81,7 +81,10 @@ StackingContext::StackingContext(bool auto_, int zIndex) :
     nextSibling(0),
     childCount(0),
     firstBase(0),
-    lastBase(0)
+    lastBase(0),
+    firstFloat(0),
+    lastFloat(0),
+    currentFloat(0)
 {
 }
 
@@ -115,6 +118,7 @@ StackingContext* StackingContext::addContext(bool auto_, int zIndex)
 
 void StackingContext::render(ViewCSSImp* view)
 {
+    currentFloat = 0;
     for (Box* base = firstBase; base; base = base->nextBase) {
         BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(base);
         unsigned overflow = CSSOverflowValueImp::Visible;
@@ -124,9 +128,11 @@ void StackingContext::render(ViewCSSImp* view)
         for (; childContext && childContext->zIndex < 0; childContext = childContext->getNextSibling())
             childContext->render(view);
         if (!block)
-            base->render(view);
+            base->render(view, this);
         else
-            block->renderContent(view);
+            block->renderContent(view, this);
+        for (currentFloat = firstFloat; currentFloat; currentFloat = currentFloat->nextBase)
+            currentFloat ->render(view, this);
         for (; childContext; childContext = childContext->getNextSibling())
             childContext->render(view);
         if (block)
@@ -141,6 +147,22 @@ void StackingContext::addBase(Box* box)
     else {
         lastBase->nextBase = box;
         lastBase = box;
+    }
+    box->nextBase = 0;
+}
+
+void StackingContext::addFloat(Box* box)
+{
+    if (currentFloat) {
+        box->nextBase = currentFloat->nextBase;
+        currentFloat->nextBase = box;
+        return;
+    }
+    if (!firstFloat)
+        firstFloat = lastFloat = box;
+    else {
+        lastFloat->nextBase = box;
+        lastFloat = box;
     }
     box->nextBase = 0;
 }

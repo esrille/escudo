@@ -40,6 +40,10 @@ class StackingContext
     Box* firstBase;
     Box* lastBase;
 
+    Box* firstFloat;
+    Box* lastFloat;
+    Box* currentFloat;
+
     StackingContext* removeChild(StackingContext* item);
     StackingContext* insertBefore(StackingContext* item, StackingContext* after);
     StackingContext* appendChild(StackingContext* item);
@@ -81,6 +85,7 @@ public:
 
     void clearBase() {
         firstBase = lastBase = 0;
+        firstFloat = lastFloat = 0;
         for (auto i = getFirstChild(); i; i = i->getNextSibling())
             i->clearBase();
     }
@@ -88,6 +93,8 @@ public:
         return firstBase;
     }
     void addBase(Box* box);
+
+    void addFloat(Box* box);
 
     void render(ViewCSSImp* view);
 

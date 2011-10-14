@@ -349,7 +349,7 @@ public:
         return true;
     }
 
-    virtual void render(ViewCSSImp* view) = 0;
+    virtual void render(ViewCSSImp* view, StackingContext* stackingContext) = 0;
     void renderBorder(ViewCSSImp* view, float left, float top);
 
     virtual void dump(std::string indent = "") = 0;
@@ -505,12 +505,12 @@ public:
     virtual void resolveOffset(ViewCSSImp* view);
     virtual void resolveXY(ViewCSSImp* view, float left, float top);
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context);
-    virtual void render(ViewCSSImp* view);
+    virtual void render(ViewCSSImp* view, StackingContext* stackingContext);
     virtual void dump(std::string indent = "");
 
     unsigned renderBegin(ViewCSSImp* view);
     void renderEnd(ViewCSSImp* view, unsigned overflow);
-    void renderContent(ViewCSSImp* view);
+    void renderContent(ViewCSSImp* view, StackingContext* stackingContext);
 };
 
 typedef boost::intrusive_ptr<BlockLevelBox> BlockLevelBoxPtr;
@@ -564,7 +564,7 @@ public:
 
     virtual void resolveXY(ViewCSSImp* view, float left, float top);
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context);
-    virtual void render(ViewCSSImp* view);
+    virtual void render(ViewCSSImp* view, StackingContext* stackingContext);
     virtual void dump(std::string indent);
     virtual void fit(float w);
 };
@@ -615,7 +615,7 @@ public:
         return data;
     }
     virtual void resolveXY(ViewCSSImp* view, float left, float top);
-    virtual void render(ViewCSSImp* view);
+    virtual void render(ViewCSSImp* view, StackingContext* stackingContext);
     virtual void dump(std::string indent);
 };
 

@@ -390,36 +390,43 @@ void BlockLevelBox::renderEnd(ViewCSSImp* view, unsigned overflow)
     glPopMatrix();
 }
 
-void BlockLevelBox::renderContent(ViewCSSImp* view)
+void BlockLevelBox::renderContent(ViewCSSImp* view, StackingContext* stackingContext)
 {
     if (shadow) {
         shadow->render();
         return;
     }
+
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
         if (child->style && child->style->isPositioned() && !child->isAnonymous())
             continue;
-        child->render(view);
+        child->render(view, stackingContext);
     }
 }
 
-void BlockLevelBox::render(ViewCSSImp* view)
+void BlockLevelBox::render(ViewCSSImp* view, StackingContext* stackingContext)
 {
     unsigned overflow = renderBegin(view);
-    renderContent(view);
+    renderContent(view, stackingContext);
     renderEnd(view, overflow);
 }
 
-void LineBox::render(ViewCSSImp* view)
+void LineBox::render(ViewCSSImp* view, StackingContext* stackingContext)
 {
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
-        if (child->style && child->style->isPositioned() && !child->isAnonymous())
-            continue;
-        child->render(view);
+        if (child->style) {
+            if (child->style->isPositioned() && !child->isAnonymous())
+                continue;
+            if (child->style->isFloat()) {
+                stackingContext->addFloat(child);
+                continue;
+            }
+        }
+        child->render(view, stackingContext);
     }
 }
 
-void InlineLevelBox::render(ViewCSSImp* view)
+void InlineLevelBox::render(ViewCSSImp* view, StackingContext* stackingContext)
 {
     assert(stackingContext);
     if (font)
@@ -429,7 +436,7 @@ void InlineLevelBox::render(ViewCSSImp* view)
     if (shadow)
         shadow->render();
     else if (getFirstChild())  // for inline-block
-        getFirstChild()->render(view);
+        getFirstChild()->render(view, stackingContext);
     else if (font) {
         glPushMatrix();
             glTranslatef(x + getBlankLeft(), y + font->getAscender(point), 0.0f);
