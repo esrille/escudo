@@ -671,16 +671,18 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
             // TODO: firstLetterStyle: actually we are not sure if the following characters would fit in the same line box...
             inlineLevelBox->marginRight = inlineLevelBox->paddingRight = inlineLevelBox->borderRight = blankRight = 0;
         }
-        inlineLevelBox->height = font->getLineHeight(point);
-        inlineLevelBox->baseline += (activeStyle->lineHeight.getPx() - inlineLevelBox->height) / 2.0f;
-        context->x += advanced + blankRight;
         LineBox* lineBox = context->lineBox;
+        if (inlineLevelBox->getTotalWidth() || inlineLevelBox->getTotalHeight()) {  // have non-zero margins, padding, or borders?
+            inlineLevelBox->height = font->getLineHeight(point);
+            inlineLevelBox->baseline += (activeStyle->lineHeight.getPx() - inlineLevelBox->height) / 2.0f;
+            lineBox->height = std::max(getStyle()->lineHeight.getPx(), std::max(lineBox->height, std::max(activeStyle->lineHeight.getPx(), inlineLevelBox->height)));
+            lineBox->baseline = std::max(lineBox->baseline, inlineLevelBox->baseline);
+            lineBox->underlinePosition = std::max(lineBox->underlinePosition, font->getUnderlinePosition(point));
+            lineBox->underlineThickness = std::max(lineBox->underlineThickness, font->getUnderlineThickness(point));
+        }
+        context->x += advanced + blankRight;
         lineBox->appendChild(inlineLevelBox);
-        lineBox->height = std::max(getStyle()->lineHeight.getPx(), std::max(lineBox->height, std::max(activeStyle->lineHeight.getPx(), inlineLevelBox->height)));
-        lineBox->baseline = std::max(lineBox->baseline, inlineLevelBox->baseline);
         lineBox->width += blankLeft + advanced + blankRight;
-        lineBox->underlinePosition = std::max(lineBox->underlinePosition, font->getUnderlinePosition(point));
-        lineBox->underlineThickness = std::max(lineBox->underlineThickness, font->getUnderlineThickness(point));
         if (activeStyle->isPositioned() && !inlineLevelBox->isAnonymous())
             activeStyle->getStackingContext()->addBase(inlineLevelBox);
         position += length;
