@@ -226,7 +226,7 @@ void BlockLevelBox::setContainingBlock(ViewCSSImp* view)
             case CSSPositionValueImp::Fixed: {
                 // Now we need to find the corresponding box for this ancestor.
                 const Box* box = style->box;
-                assert(box);
+                assert(box);    // TODO: check NULL case
                 offsetH = box->x - box->paddingLeft - x;
                 offsetV = box->y - box->paddingTop - y;
                 if (box->getBoxType() == BLOCK_LEVEL_BOX) {

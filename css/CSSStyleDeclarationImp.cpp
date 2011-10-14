@@ -1407,6 +1407,7 @@ void CSSStyleDeclarationImp::addBox(Box* box)
         this->box = lastBox = box;
     else
         lastBox = box;
+    // TODO: check the 3rd condition. maybe 'display'?
     if (!parentStyle || parentStyle->isBlockLevel() || box->getBoxType() != Box::INLINE_LEVEL_BOX)
         return;
     parentStyle->addBox(box);
