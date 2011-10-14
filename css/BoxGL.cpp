@@ -432,7 +432,7 @@ void InlineLevelBox::render(ViewCSSImp* view)
         getFirstChild()->render(view);
     else if (font) {
         glPushMatrix();
-            glTranslatef(x, y + font->getAscender(point), 0.0f);
+            glTranslatef(x + getBlankLeft(), y + font->getAscender(point), 0.0f);
             if (getStyle()->textDecorationContext.hasDecoration()) {
                 unsigned lineDecoration = getStyle()->textDecorationContext.decoration;
                 glDisable(GL_TEXTURE_2D);
