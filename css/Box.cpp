@@ -807,12 +807,6 @@ void BlockLevelBox::layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floa
         context->floatNodes.push_back(node);
         return;
     }
-    float w = floatBox->getEffectiveTotalWidth();
-    if (context->leftover < w && context->lineBox && context->lineBox->hasChildBoxes()) {
-        // Process this float box later in the other line box.
-        context->floatNodes.push_back(node);
-        return;
-    }
     unsigned clear = floatBox->style->clear.getValue();
     if ((clear & CSSClearValueImp::Left) && context->getLeftEdge() ||
         (clear & CSSClearValueImp::Right) && context->getRightEdge()) {
@@ -822,6 +816,15 @@ void BlockLevelBox::layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floa
     if (!context->lineBox) {
         if (!context->addLineBox(view, this))
             return;   // TODO error
+    }
+    float w = floatBox->getEffectiveTotalWidth();
+    if (context->leftover < w &&
+        (context->lineBox->hasChildBoxes() ||
+         0.0f < context->getLeftEdge() ||
+         0.0f < context->getRightEdge())) {
+        // Process this float box later in the other line box.
+        context->floatNodes.push_back(node);
+        return;
     }
     context->addFloat(floatBox, w);
 }
