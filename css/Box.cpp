@@ -1097,8 +1097,15 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         for (Box* child = getFirstChild(); child; child = child->getNextSibling())
             height += child->getTotalHeight();
     }
-    if (!isAnonymous())
-        height = std::max(height, style->minHeight.getPx());
+    if (!hasChildBoxes())
+        context->updateRemainingHeight(height);
+    if (!isAnonymous()) {
+        float d = style->minHeight.getPx() - height;
+        if (0.0f < d) {
+            context->updateRemainingHeight(d);
+            height = style->minHeight.getPx();
+        }
+    }
 
     // Collapse top and bottom margins.
     if (!isFlowRoot() && height == 0.0f &&
