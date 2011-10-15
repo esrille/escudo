@@ -807,15 +807,21 @@ void BlockLevelBox::layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floa
         context->floatNodes.push_back(node);
         return;
     }
-    if (!context->lineBox) {
-        if (!context->addLineBox(view, this))
-            return;   // TODO error
-    }
     float w = floatBox->getTotalWidth();
-    if (context->leftover < w && context->lineBox->hasChildBoxes()) {
+    if (context->leftover < w && context->lineBox && context->lineBox->hasChildBoxes()) {
         // Process this float box later in the other line box.
         context->floatNodes.push_back(node);
         return;
+    }
+    unsigned clear = floatBox->style->clear.getValue();
+    if ((clear & CSSClearValueImp::Left) && context->getLeftEdge() ||
+        (clear & CSSClearValueImp::Right) && context->getRightEdge()) {
+        context->floatNodes.push_back(node);
+        return;
+    }
+    if (!context->lineBox) {
+        if (!context->addLineBox(view, this))
+            return;   // TODO error
     }
     context->addFloat(floatBox, w);
 }
@@ -872,12 +878,17 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
             }
         }
     }
+    unsigned clear = 0;
+    if (!context->floatNodes.empty()) {
+        BlockLevelBox* floatBox = view->getFloatBox(context->floatNodes.front());
+        clear = floatBox->style->clear.getValue();
+    }
     if (context->lineBox)
-        context->nextLine(this);
+        context->nextLine(this, clear);  // TODO: check a clearance should be created here or not.
     // Layout remaining floats in context
     while (!context->floatNodes.empty()) {
         context->addLineBox(view, this);
-        context->nextLine(this, !context->floatNodes.empty());
+        context->nextLine(this, context->floatNodes.empty() ? 0 : CSSClearValueImp::Both);
     }
     if (collapsed && isAnonymous()) {
         if (originalMargin != 0.0f) {

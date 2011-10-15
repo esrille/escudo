@@ -93,7 +93,7 @@ public:
     float getLeftRemainingHeight() const;
     float getRightRemainingHeight() const;
     bool shiftDownLineBox();
-    void nextLine(BlockLevelBox* parentBox, bool moreFloats = false);
+    void nextLine(BlockLevelBox* parentBox, unsigned moreFloats = 0);
     void updateRemainingHeight(float height);
     float clear(unsigned value);
 };

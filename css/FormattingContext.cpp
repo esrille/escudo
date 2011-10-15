@@ -67,6 +67,11 @@ LineBox* FormattingContext::addLineBox(ViewCSSImp* view, BlockLevelBox* parentBo
         // if floatNodes is not empty, append float boxes as much as possible.
         while (!floatNodes.empty()) {
             BlockLevelBox* floatBox = view->getFloatBox(floatNodes.front());
+            unsigned clear = floatBox->style->clear.getValue();
+            if ((clear & CSSClearValueImp::Left) && !left.empty() ||
+                (clear & CSSClearValueImp::Right) && !right.empty()) {
+                break;
+            }
             float w = floatBox->getTotalWidth();
             if (leftover < w) {
                 if (left.empty() && right.empty()) {
@@ -136,7 +141,7 @@ bool FormattingContext::shiftDownLineBox()
 
 // Complete the current lineBox by adding float boxes if any.
 // Then update remainingHeight.
-void FormattingContext::nextLine(BlockLevelBox* parentBox, bool moreFloats)
+void FormattingContext::nextLine(BlockLevelBox* parentBox, unsigned moreFloats)
 {
     assert(lineBox);
     assert(lineBox == parentBox->lastChild);
@@ -165,7 +170,7 @@ void FormattingContext::nextLine(BlockLevelBox* parentBox, bool moreFloats)
     if (height != 0.0f)
         updateRemainingHeight(height);
     else if (moreFloats)
-        lineBox->marginBottom += clear(3);
+        lineBox->marginBottom += clear(moreFloats);
     lineBox = 0;
     x = leftover = 0.0f;
 }
