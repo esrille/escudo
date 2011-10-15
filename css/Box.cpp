@@ -800,14 +800,19 @@ void BlockLevelBox::layOutInlineReplaced(ViewCSSImp* view, Node node, Formatting
 void BlockLevelBox::layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floatBox, FormattingContext* context)
 {
     assert(floatBox->style);
+    floatBox->layOut(view, context);
+    floatBox->remainingHeight = floatBox->getTotalHeight();
+    if (!context->floatNodes.empty()) {
+        // Floats are not allowed to reorder. Process this float box later in the other line box.
+        context->floatNodes.push_back(node);
+        return;
+    }
     if (!context->lineBox) {
         if (!context->addLineBox(view, this))
             return;   // TODO error
     }
-    floatBox->layOut(view, context);
-    floatBox->remainingHeight = floatBox->getTotalHeight();
     float w = floatBox->getTotalWidth();
-    if (context->leftover < w && 0.0f < context->getLeftEdge()) {
+    if (context->leftover < w && context->lineBox->hasChildBoxes()) {
         // Process this float box later in the other line box.
         context->floatNodes.push_back(node);
         return;
@@ -869,6 +874,11 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
     }
     if (context->lineBox)
         context->nextLine(this);
+    // Layout remaining floats in context
+    while (!context->floatNodes.empty()) {
+        context->addLineBox(view, this);
+        context->nextLine(this, !context->floatNodes.empty());
+    }
     if (collapsed && isAnonymous()) {
         if (originalMargin != 0.0f) {
             // Undo collapseMarginTop
@@ -1066,11 +1076,6 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         float h = context->clear(3);
         if (Box* last = getLastChild())
             last->marginBottom += h;
-        // Layout remaining float boxes in context
-        while (!context->floatNodes.empty()) {
-            context->addLineBox(view, this);
-            context->nextLine(this, !context->floatNodes.empty());
-        }
     }
 
     if (style->height.isAuto() || isAnonymous()) {
