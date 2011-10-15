@@ -807,7 +807,7 @@ void BlockLevelBox::layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floa
         context->floatNodes.push_back(node);
         return;
     }
-    float w = floatBox->getTotalWidth();
+    float w = floatBox->getEffectiveTotalWidth();
     if (context->leftover < w && context->lineBox && context->lineBox->hasChildBoxes()) {
         // Process this float box later in the other line box.
         context->floatNodes.push_back(node);

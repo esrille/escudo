@@ -72,7 +72,7 @@ LineBox* FormattingContext::addLineBox(ViewCSSImp* view, BlockLevelBox* parentBo
                 (clear & CSSClearValueImp::Right) && !right.empty()) {
                 break;
             }
-            float w = floatBox->getTotalWidth();
+            float w = floatBox->getEffectiveTotalWidth();
             if (leftover < w) {
                 if (left.empty() && right.empty()) {
                     addFloat(floatBox, w);
@@ -115,21 +115,21 @@ bool FormattingContext::shiftDownLineBox()
     float rh = getRightRemainingHeight();
     if (0.0f < lh && lh < rh) {
         // Shift down to left
-        float w = left.back()->getTotalWidth();
+        float w = left.back()->getEffectiveTotalWidth();
         lineBox->marginTop += lh;
         x -= w;
         leftover += w;
         updateRemainingHeight(lh);
     } else if (0.0f < rh && rh < lh) {
         // Shift down to right
-        float w = right.front()->getTotalWidth();
+        float w = right.front()->getEffectiveTotalWidth();
         lineBox->marginTop += rh;
         leftover += w;
         updateRemainingHeight(rh);
     } else if (0.0f < lh) {
         // Shift down to both
-        float l = left.back()->getTotalWidth();
-        float w = l + right.front()->getTotalWidth();
+        float l = left.back()->getEffectiveTotalWidth();
+        float w = l + right.front()->getEffectiveTotalWidth();
         lineBox->marginTop += lh;
         x -= l;
         leftover += w;
@@ -201,7 +201,7 @@ float FormattingContext::clear(unsigned value)
     float h = 0.0f;
     if (value & 1) {  // clear left
         for (auto i = left.begin(); i != left.end(); ++i) {
-            float w = (*i)->getTotalWidth();
+            float w = (*i)->getEffectiveTotalWidth();
             x -= w;
             leftover += w;
             h = std::max(h, (*i)->remainingHeight);
@@ -209,7 +209,7 @@ float FormattingContext::clear(unsigned value)
     }
     if (value & 2) {  // clear right
         for (auto i = right.begin(); i != right.end(); ++i) {
-            float w = (*i)->getTotalWidth();
+            float w = (*i)->getEffectiveTotalWidth();
             leftover += w;
             h = std::max(h, (*i)->remainingHeight);
         }

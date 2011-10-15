@@ -291,6 +291,10 @@ public:
         return paddingTop + height + paddingBottom;
     }
 
+    float getEffectiveTotalWidth() const {
+        return (getTotalHeight() == 0.0f) ? 0.0f : getTotalWidth();
+    }
+
     virtual float shrinkTo();
     virtual void fit(float w) {}
 
