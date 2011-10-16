@@ -492,7 +492,7 @@ negation_arg
         $$ = new(std::nothrow) CSSPrimarySelector($1);
     }
   | HASH {
-        $$ = new(std::nothrow) CSSIDSelector($1);
+        $$ = new(std::nothrow) CSSIDSelector($1.toString(true));
     }
   | class {
         $$ = new(std::nothrow) CSSClassSelector($1);
@@ -557,7 +557,7 @@ declaration_list
   ;
 simple_selector_term
   : HASH {
-        $$ = new(std::nothrow) CSSIDSelector($1);
+        $$ = new(std::nothrow) CSSIDSelector($1.toString(true));
     }
   | class {
         $$ = new(std::nothrow) CSSClassSelector($1);
