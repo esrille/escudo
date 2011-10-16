@@ -503,7 +503,7 @@ void BlockLevelBox::nextLine(ViewCSSImp* view, FormattingContext* context, CSSSt
         font = activeStyle->getFontTexture();
         point = view->getPointFromPx(activeStyle->fontSize.getPx());
     } else {
-        context->nextLine(this);
+        context->nextLine(view, this);
         if (firstLineStyle) {
             firstLineStyle = 0;
             activeStyle = style;
@@ -689,7 +689,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
         data.erase(0, length);
         if (data.length() == 0) {  // layout done?
             if (linefeed)
-                context->nextLine(this);
+                context->nextLine(view, this);
             break;
         }
         nextLine(view, context, activeStyle, firstLetterStyle, firstLineStyle, style, font, point);
@@ -895,7 +895,7 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
             }
             BlockLevelBox* floatBox = view->getFloatBox(context->floatNodes.front());
             if (unsigned clear = floatBox->style->clear.getValue())
-                context->nextLine(this, clear);
+                context->nextLine(view, this, clear);
             else {
                 clearance = context->shiftDown();
                 if (0.0f < clearance) {
@@ -904,12 +904,12 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
                         clearance = 0.0f;
                 }
                 currentLine->marginBottom += clearance;
-                context->nextLine(this);
+                context->nextLine(view, this);
             }
             context->addLineBox(view, this);
             currentLine->marginTop += saved;
         }
-        context->nextLine(this);
+        context->nextLine(view, this);
     }
 
     if (collapsed && isAnonymous()) {

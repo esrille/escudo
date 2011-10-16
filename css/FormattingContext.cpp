@@ -64,30 +64,35 @@ LineBox* FormattingContext::addLineBox(ViewCSSImp* view, BlockLevelBox* parentBo
         x = lineBox->marginLeft;
         leftover = parentBox->width - x - lineBox->marginRight;
 
-        // if floatNodes is not empty, append float boxes as much as possible.
-        while (!floatNodes.empty()) {
-            BlockLevelBox* floatBox = view->getFloatBox(floatNodes.front());
-            unsigned clear = floatBox->style->clear.getValue();
-            if ((clear & CSSClearValueImp::Left) && !left.empty() ||
-                (clear & CSSClearValueImp::Right) && !right.empty()) {
-                break;
-            }
-            float w = floatBox->getEffectiveTotalWidth();
-            if (leftover < w) {
-                if (left.empty() && right.empty()) {
-                    addFloat(floatBox, w);
-                    floatNodes.pop_front();
-                }
-                break;
-            }
-            addFloat(floatBox, w);
-            floatNodes.pop_front();
-        }
+        tryAddFloat(view);
 
         x = getLeftEdge();
         leftover = parentBox->width - x - getRightEdge();
     }
     return lineBox;
+}
+
+// if floatNodes is not empty, append float boxes as much as possible.
+void FormattingContext::tryAddFloat(ViewCSSImp* view)
+{
+    while (!floatNodes.empty()) {
+        BlockLevelBox* floatBox = view->getFloatBox(floatNodes.front());
+        unsigned clear = floatBox->style->clear.getValue();
+        if ((clear & CSSClearValueImp::Left) && !left.empty() ||
+            (clear & CSSClearValueImp::Right) && !right.empty()) {
+            break;
+        }
+        float w = floatBox->getEffectiveTotalWidth();
+        if (leftover < w) {
+            if (left.empty() && right.empty() && !lineBox->hasChildBoxes()) {
+                addFloat(floatBox, w);
+                floatNodes.pop_front();
+            }
+            break;
+        }
+        addFloat(floatBox, w);
+        floatNodes.pop_front();
+    }
 }
 
 void FormattingContext::updateRemainingHeight(float h)
@@ -153,13 +158,19 @@ bool FormattingContext::shiftDownLineBox()
 
 // Complete the current lineBox by adding float boxes if any.
 // Then update remainingHeight.
-void FormattingContext::nextLine(BlockLevelBox* parentBox, unsigned clearValue)
+void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, unsigned clearValue)
 {
     assert(lineBox);
     assert(lineBox == parentBox->lastChild);
 
-    if (InlineLevelBox* inlineLevelBox = dynamic_cast<InlineLevelBox*>(lineBox->getLastChild()))
-        lineBox->width += inlineLevelBox->atEndOfLine();
+    if (InlineLevelBox* inlineLevelBox = dynamic_cast<InlineLevelBox*>(lineBox->getLastChild())) {
+        float w = inlineLevelBox->atEndOfLine();
+        if (w < 0.0f) {
+            lineBox->width += w;
+            leftover -= w;
+            tryAddFloat(view);
+        }
+    }
 
     for (auto i = left.rbegin(); i != left.rend(); ++i) {
         BlockLevelBox* floatBox = *i;
