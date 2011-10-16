@@ -342,6 +342,9 @@ public:
     virtual bool isAbsolutelyPositioned() const {
         return false;
     }
+    virtual bool isFloat() const {
+        return false;
+    }
 
     void updatePadding();
     void updateBorderWidth();
@@ -399,6 +402,7 @@ class BlockLevelBox : public Box
     unsigned textAlign;
 
     // for float box
+    bool inserted;  // set to true if inserted in a linebox.
     float edge;
     float remainingHeight;
 
@@ -435,6 +439,7 @@ public:
     BlockLevelBox(Node node = 0, CSSStyleDeclarationImp* style = 0) :
         Box(node),
         textAlign(CSSTextAlignValueImp::Default),
+        inserted(false),
         edge(0.0f),
         remainingHeight(0.0f)
     {
@@ -473,7 +478,7 @@ public:
     }
 
     virtual bool isAbsolutelyPositioned() const;
-    bool isFloat() const;
+    virtual bool isFloat() const;
     bool isFixed() const;
 
     virtual const ContainingBlock* getContainingBlock(ViewCSSImp* view) const {

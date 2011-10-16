@@ -150,21 +150,25 @@ void FormattingContext::nextLine(BlockLevelBox* parentBox, unsigned moreFloats)
         lineBox->width += inlineLevelBox->atEndOfLine();
 
     for (auto i = left.rbegin(); i != left.rend(); ++i) {
-        if ((*i)->edge <= lineBox->marginLeft)
-            break;
-        lineBox->insertBefore(*i, lineBox->getFirstChild());
+        BlockLevelBox* floatBox = *i;
+        if (!floatBox->inserted) {
+            floatBox->inserted = true;
+            lineBox->insertBefore(floatBox, lineBox->getFirstChild());
+        }
     }
     bool first = true;
     for (auto i = right.begin(); i != right.end(); ++i) {
-        if ((*i)->edge <= lineBox->marginRight)
-            break;
-        // We would need a margin before the 1st float box to be added.
-        // TODO: We should use another measure for adjusting the left edge of the float box.
-        if (first) {
-            (*i)->marginLeft += parentBox->width - lineBox->getTotalWidth() - getLeftEdge() - getRightEdge();
-            first = false;
+        BlockLevelBox* floatBox = *i;
+        if (!floatBox->inserted) {
+            floatBox->inserted = true;
+            // We would need a margin before the 1st float box to be added.
+            // TODO: We should use another measure for adjusting the left edge of the float box.
+            if (first) {
+                first = false;
+                floatBox->marginLeft += parentBox->width - lineBox->getTotalWidth() - getLeftEdge() - getRightEdge();
+            }
+            lineBox->appendChild(*i);
         }
-        lineBox->appendChild(*i);
     }
     float height = lineBox->getTotalHeight();
     if (height != 0.0f)

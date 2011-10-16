@@ -311,19 +311,19 @@ void Box::resolveOffset(ViewCSSImp* view)
     resolveOffset(getStyle());
 }
 
+bool BlockLevelBox::isAbsolutelyPositioned() const
+{
+    return !isAnonymous() && style && style->isAbsolutelyPositioned();
+}
+
 bool BlockLevelBox::isFloat() const
 {
-    return style && style->isFloat();
+    return !isAnonymous() && style && style->isFloat();
 }
 
 bool BlockLevelBox::isFixed() const
 {
-    return style && style->position.getValue() == CSSPositionValueImp::Fixed;
-}
-
-bool BlockLevelBox::isAbsolutelyPositioned() const
-{
-    return style && style->isAbsolutelyPositioned();
+    return !isAnonymous() && style && style->position.getValue() == CSSPositionValueImp::Fixed;
 }
 
 BlockLevelBox* BlockLevelBox::getAnonymousBox()
@@ -1471,8 +1471,12 @@ void LineBox::resolveXY(ViewCSSImp* view, float left, float top)
     top += getBlankTop();
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
         child->resolveXY(view, left, top);
-        if (!child->isAbsolutelyPositioned())
-            left += child->getTotalWidth();
+        if (!child->isAbsolutelyPositioned()) {
+            if (!child->isFloat())
+                left += child->getTotalWidth();
+            else
+                left += child->getEffectiveTotalWidth();
+        }
     }
 }
 
