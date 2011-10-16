@@ -881,18 +881,32 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
             }
         }
     }
-    unsigned clear = 0;
-    if (!context->floatNodes.empty()) {
-        BlockLevelBox* floatBox = view->getFloatBox(context->floatNodes.front());
-        clear = floatBox->style->clear.getValue();
+
+    if (context->lineBox) {
+        // Layout remaining floats in context
+        float clearance = 0.0f;
+        while (!context->floatNodes.empty()) {
+            LineBox* currentLine = context->lineBox;
+            float saved = 0.0f;
+            if (clearance != 0.0f) {
+                Box* prevLine = currentLine->getPreviousSibling();
+                saved = prevLine->marginBottom;
+                prevLine->marginBottom = 0.0f;
+            }
+            BlockLevelBox* floatBox = view->getFloatBox(context->floatNodes.front());
+            if (unsigned clear = floatBox->style->clear.getValue())
+                context->nextLine(this, clear);
+            else {
+                clearance = context->shiftDown();
+                currentLine->marginBottom += clearance;
+                context->nextLine(this);
+            }
+            context->addLineBox(view, this);
+            currentLine->marginTop += saved;
+        }
+        context->nextLine(this);
     }
-    if (context->lineBox)
-        context->nextLine(this, clear);  // TODO: check a clearance should be created here or not.
-    // Layout remaining floats in context
-    while (!context->floatNodes.empty()) {
-        context->addLineBox(view, this);
-        context->nextLine(this, context->floatNodes.empty() ? 0 : CSSClearValueImp::Both);
-    }
+
     if (collapsed && isAnonymous()) {
         if (originalMargin != 0.0f) {
             // Undo collapseMarginTop
@@ -1087,9 +1101,9 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
 
     collapseMarginBottom();
     if (isFlowRoot()) {
-        float h = context->clear(3);
+        clearance = context->clear(3);
         if (Box* last = getLastChild())
-            last->marginBottom += h;
+            last->marginBottom += clearance;
     }
 
     if (style->height.isAuto() || isAnonymous()) {
@@ -1482,7 +1496,9 @@ void LineBox::resolveXY(ViewCSSImp* view, float left, float top)
 
 void LineBox::dump(std::string indent)
 {
-    std::cout << indent << "* line box (" << x << ", " << y << ") w:" << width << " h:" << height << " (" << offsetH << ", " << offsetV <<")\n";
+    std::cout << indent << "* line box (" << x << ", " << y << ") " <<
+        "w:" << width << " h:" << height << " (" << offsetH << ", " << offsetV <<") " <<
+        "m:" << marginTop << ':' << marginRight << ':' << marginBottom << ':' << marginLeft << '\n';
     indent += "  ";
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
         child->dump(indent);

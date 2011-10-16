@@ -106,42 +106,54 @@ void FormattingContext::updateRemainingHeight(float h)
     }
 }
 
+float FormattingContext::shiftDown()
+{
+    assert(lineBox);
+    float h = 0.0f;
+    float w = 0.0f;
+    do {
+        float lh = getLeftRemainingHeight();
+        float rh = getRightRemainingHeight();
+        if (0.0f < lh && (lh < rh || rh <= 0.0f)) {
+            // Shift down to left
+            w = left.back()->getEffectiveTotalWidth();
+            x -= w;
+            leftover += w;
+            h += lh;
+        } else if (0.0f < rh && (rh < lh || lh <= 0.0f)) {
+            // Shift down to right
+            w = right.front()->getEffectiveTotalWidth();
+            leftover += w;
+            h += rh;
+        } else if (0.0f < lh) {
+            // Shift down to both
+            float l = left.back()->getEffectiveTotalWidth();
+            w = l + right.front()->getEffectiveTotalWidth();
+            x -= l;
+            leftover += w;
+            h += lh;
+        } else
+            break;
+    } while (w == 0.0f);
+    return h;
+}
+
 // If there's a float, shiftDownLineBox() will expand leftover by extending
 // marginTop in lineBox down to the bottom of the nearest float box.
 bool FormattingContext::shiftDownLineBox()
 {
     assert(lineBox);
-    float lh = getLeftRemainingHeight();
-    float rh = getRightRemainingHeight();
-    if (0.0f < lh && lh < rh) {
-        // Shift down to left
-        float w = left.back()->getEffectiveTotalWidth();
-        lineBox->marginTop += lh;
-        x -= w;
-        leftover += w;
-        updateRemainingHeight(lh);
-    } else if (0.0f < rh && rh < lh) {
-        // Shift down to right
-        float w = right.front()->getEffectiveTotalWidth();
-        lineBox->marginTop += rh;
-        leftover += w;
-        updateRemainingHeight(rh);
-    } else if (0.0f < lh) {
-        // Shift down to both
-        float l = left.back()->getEffectiveTotalWidth();
-        float w = l + right.front()->getEffectiveTotalWidth();
-        lineBox->marginTop += lh;
-        x -= l;
-        leftover += w;
-        updateRemainingHeight(lh);
-    } else
-        return false;  // no float boxes
-    return true;
+    if (float h = shiftDown()) {
+        updateRemainingHeight(h);
+        lineBox->marginTop += h;
+        return true;
+    }
+    return false;  // no floats
 }
 
 // Complete the current lineBox by adding float boxes if any.
 // Then update remainingHeight.
-void FormattingContext::nextLine(BlockLevelBox* parentBox, unsigned moreFloats)
+void FormattingContext::nextLine(BlockLevelBox* parentBox, unsigned clearValue)
 {
     assert(lineBox);
     assert(lineBox == parentBox->lastChild);
@@ -173,8 +185,8 @@ void FormattingContext::nextLine(BlockLevelBox* parentBox, unsigned moreFloats)
     float height = lineBox->getTotalHeight();
     if (height != 0.0f)
         updateRemainingHeight(height);
-    else if (moreFloats)
-        lineBox->marginBottom += clear(moreFloats);
+    else if (clearValue)
+        lineBox->marginBottom += clear(clearValue);
     lineBox = 0;
     x = leftover = 0.0f;
 }
