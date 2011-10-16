@@ -898,6 +898,11 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
                 context->nextLine(this, clear);
             else {
                 clearance = context->shiftDown();
+                if (0.0f < clearance) {
+                    clearance -= currentLine->height;
+                    if (clearance < 0.0f)
+                        clearance = 0.0f;
+                }
                 currentLine->marginBottom += clearance;
                 context->nextLine(this);
             }
