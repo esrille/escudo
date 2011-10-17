@@ -294,7 +294,7 @@ public:
     }
 
     float getEffectiveTotalWidth() const {
-        return (getTotalHeight() == 0.0f) ? 0.0f : getTotalWidth();
+        return (0.0f <= marginTop && 0.0f <= marginBottom && getTotalHeight() == 0.0f) ? 0.0f : getTotalWidth();
     }
 
     virtual float shrinkTo();
