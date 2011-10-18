@@ -999,9 +999,11 @@ float BlockLevelBox::collapseMarginTop(FormattingContext* context)
         return 0.0f;
     assert(!isFlowRoot());
     float before = 0.0f;
+    bool top = false;  // TODO: review this logic again for negative margins, etc.
     if (Box* parent = getParentBox()) {
         if (parent->getFirstChild() == this) {
             if (parent->borderTop == 0 && parent->paddingTop == 0) {
+                top = true;
                 before = parent->marginTop;
                 marginTop = collapseMargins(marginTop, parent->marginTop);
                 parent->marginTop = 0.0f;
@@ -1014,7 +1016,7 @@ float BlockLevelBox::collapseMarginTop(FormattingContext* context)
             prev->marginBottom = 0.0f;
         }
     }
-    context->updateRemainingHeight(getBlankTop());
+    context->updateRemainingHeight(top ? (getBlankTop() - before) : getBlankTop());
     return before;
 }
 
@@ -1129,7 +1131,8 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
 
     // Collapse top and bottom margins.
     if (!isFlowRoot() && height == 0.0f &&
-        borderTop == 0.0f && paddingTop == 0.0f && paddingBottom == 0.0f && borderBottom == 0.0f && clearance == 0.0f) {
+        borderTop == 0.0f && paddingTop == 0.0f && paddingBottom == 0.0f && borderBottom == 0.0f && clearance == 0.0f)
+    {
         float offset = marginTop;
         marginBottom = collapseMargins(marginTop, marginBottom);
         marginTop = 0.0f;
