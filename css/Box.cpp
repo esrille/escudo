@@ -1462,6 +1462,16 @@ bool LineBox::layOut(ViewCSSImp* view, FormattingContext* context)
     return true;
 }
 
+float LineBox::shrinkTo()
+{
+    float w = getTotalWidth();
+    for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
+        if (child->isFloat())
+            w += child->getEffectiveTotalWidth();
+    }
+    return w;
+}
+
 void LineBox::fit(float w)
 {
     assert(parentBox);
@@ -1478,6 +1488,18 @@ void LineBox::fit(float w)
     default:  // TODO: support Justify and Default
         break;
     }
+
+    // Adjust the gap between the last inline box and the leftmost float at the right side.
+    if (rightBox) {
+        gap = w - getTotalWidth();
+        for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
+            if (child->isFloat()) {
+                BlockLevelBox* box = dynamic_cast<BlockLevelBox*>(child);
+                assert(box);
+                gap -= box->getEffectiveTotalWidth();
+            }
+        }
+    }
 }
 
 void LineBox::resolveXY(ViewCSSImp* view, float left, float top)
@@ -1489,13 +1511,20 @@ void LineBox::resolveXY(ViewCSSImp* view, float left, float top)
     left += getBlankLeft();  // Node floats are placed inside margins.
     top += getBlankTop();
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
-        child->resolveXY(view, left, top);
+        float next = left;
         if (!child->isAbsolutelyPositioned()) {
             if (!child->isFloat())
-                left += child->getTotalWidth();
-            else
-                left += child->getEffectiveTotalWidth();
+                next += child->getTotalWidth();
+            else {
+                BlockLevelBox* box = dynamic_cast<BlockLevelBox*>(child);
+                assert(box);
+                if (box == rightBox)
+                    left += gap;
+                next = left + box->getEffectiveTotalWidth();
+            }
         }
+        child->resolveXY(view, left, top);
+        left = next;
     }
 }
 

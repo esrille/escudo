@@ -179,16 +179,14 @@ void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, uns
             lineBox->insertBefore(floatBox, lineBox->getFirstChild());
         }
     }
-    bool first = true;
     for (auto i = right.begin(); i != right.end(); ++i) {
         BlockLevelBox* floatBox = *i;
         if (!floatBox->inserted) {
             floatBox->inserted = true;
-            // We would need a margin before the 1st float box to be added.
-            // TODO: We should use another measure for adjusting the left edge of the float box.
-            if (first) {
-                first = false;
-                floatBox->marginLeft += parentBox->width - lineBox->getTotalWidth() - getLeftEdge() - getRightEdge();
+            // We would need a gap before the 1st right floating box to be added.
+            if (!lineBox->rightBox) {
+                lineBox->rightBox = floatBox;
+                lineBox->gap = parentBox->width - lineBox->getTotalWidth() - getLeftEdge() - getRightEdge();
             }
             lineBox->appendChild(*i);
         }

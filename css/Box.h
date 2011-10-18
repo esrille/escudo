@@ -530,18 +530,24 @@ typedef boost::intrusive_ptr<BlockLevelBox> BlockLevelBoxPtr;
 // ‘display’ of ‘inline’, ‘inline-block’, ‘inline-table’ or ‘ruby’.
 class LineBox : public Box
 {
-    friend class BlockLevelBox ;
+    friend class BlockLevelBox;
+    friend void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, unsigned clearValue);
 
     float baseline;
     float underlinePosition;
     float underlineThickness;
+
+    float gap;  // the gap between the last inline box and the 1st right floating box
+    BlockLevelBox* rightBox;  // the 1st right floating box
 
 public:
     LineBox(CSSStyleDeclarationImp* style) :
         Box(0),
         baseline(0.0f),
         underlinePosition(0.0f),
-        underlineThickness(1.0f)
+        underlineThickness(1.0f),
+        gap(0.0f),
+        rightBox(0)
     {
         setStyle(style);
         // Keep 'height' 0.0f here since float and positioned elements are
@@ -577,6 +583,7 @@ public:
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context);
     virtual void render(ViewCSSImp* view, StackingContext* stackingContext);
     virtual void dump(std::string indent);
+    virtual float shrinkTo();
     virtual void fit(float w);
 };
 
