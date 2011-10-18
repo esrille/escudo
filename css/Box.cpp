@@ -1070,8 +1070,7 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
 
     if (!isAnonymous()) {
         style->resolve(view, containingBlock, element);
-        resolveWidth(view, containingBlock,
-                     (style->isInlineBlock() || style->isFloat()) ? context->leftover : 0.0f);
+        resolveWidth(view, containingBlock, style->isInlineBlock() ? context->leftover : 0.0f);
     } else {
         // The properties of anonymous boxes are inherited from the enclosing non-anonymous box.
         // Theoretically, we are supposed to create a new style for this anonymous box, but
