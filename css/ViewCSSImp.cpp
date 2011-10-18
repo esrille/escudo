@@ -201,13 +201,9 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Text text, BlockLevelBox* parentBox,
         // White space content that would subsequently be collapsed
         // away according to the 'white-space' property does not
         // generate any anonymous inline boxes.
-        std::u16string data;
-        bool whiteSpace = true;
-        switch (style->whiteSpace.getValue()) {
-        case CSSWhiteSpaceValueImp::Normal:
-        case CSSWhiteSpaceValueImp::Nowrap:
-        case CSSWhiteSpaceValueImp::PreLine:
-            data = text.getData();  // TODO: make this faster
+        if (style->whiteSpace.isCollapsingSpace()) {
+            std::u16string data = text.getData();  // TODO: make this faster
+            bool whiteSpace = true;
             for (auto i = data.begin(); i != data.end(); ++i) {
                 if (!isSpace(*i)) {
                     whiteSpace = false;
@@ -216,7 +212,6 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Text text, BlockLevelBox* parentBox,
             }
             if (whiteSpace)
                 return 0;
-            break;
         }
     }
     if (BlockLevelBox* anonymousBox = parentBox->getAnonymousBox()) {

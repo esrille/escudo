@@ -1904,6 +1904,16 @@ public:
     void specify(const CSSWhiteSpaceValueImp& specified) {
         value = specified.value;
     }
+    bool isCollapsingSpace() const {
+        switch (value) {
+        case Normal:
+        case Nowrap:
+        case PreLine:
+            return true;
+        default:
+            return false;
+        }
+    }
     CSSWhiteSpaceValueImp(unsigned initial = Normal) :
         value(initial) {
     }

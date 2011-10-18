@@ -590,6 +590,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                 }
             }
         }
+        LineBox* lineBox = context->lineBox;
 
         InlineLevelBox* inlineLevelBox = new(std::nothrow) InlineLevelBox(text, activeStyle);
         if (!inlineLevelBox)
@@ -615,7 +616,11 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
 
         if (data.empty())
             inlineLevelBox->setData(font, point, data);
-        else {
+        else if (data[0] == '\n') {
+            linefeed = true;
+            length = 1;
+            advanced = 0.0f;
+        } else {
             size_t fitLength = firstLetterStyle ? 1 : data.length();  // TODO: 1 is absolutely wrong...
             // We are still not sure if there's a room for text in context->lineBox.
             // If there's no room due to float box(es), move the linebox down to
@@ -626,52 +631,47 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
             unsigned transform = activeStyle->textTransform.getValue();
             std::u16string transformed;
             size_t transformedLength = 0;
-
-            do {
+            for (;;) {
                 advanced = context->leftover;
-                if (data[0] == '\n') {
-                    linefeed = true;
-                    length = 1;
-                    advanced = 0.0f;
-                    break;
-                }
                 if (!transform) // 'none'
                     length = font->fitText(data.c_str(), fitLength, point, context->leftover, &next, &required);
                 else {
                     transformed = font->fitTextWithTransformation(data.c_str(), fitLength, point, transform,
-                                                                  context->leftover, &length, &transformedLength, &next, &required);
+                                                                    context->leftover, &length, &transformedLength, &next, &required);
                 }
                 if (0 < length) {
                     advanced -= context->leftover;
                     break;
                 }
-                if (context->lineBox->hasChildBoxes() || context->hasNewFloats())
-                    break;
-            } while (context->shiftDownLineBox());
-            if (length == 0) {
-                if (context->lineBox->hasChildBoxes() || context->hasNewFloats()) {
-                    delete inlineLevelBox;
-                    nextLine(view, context, activeStyle, firstLetterStyle, firstLineStyle, style, font, point);
+                if (activeStyle->whiteSpace.isCollapsingSpace() &&
+                    1 < fitLength && data[fitLength - 1] == u' ')
+                {
+                    --fitLength;  // Trim 'white-spce' at EOL
                     continue;
                 }
-                context->leftover -= required;
-                advanced -= context->leftover;
-                length = next;
-                transformedLength = transformed.length();
+                if (context->lineBox->hasChildBoxes() || context->hasNewFloats()) {
+                    delete inlineLevelBox;
+                    goto NextLine;
+                }
+                if (!context->shiftDownLineBox()) {
+                    context->leftover -= required;
+                    advanced -= context->leftover;
+                    length = next;
+                    transformedLength = transformed.length();
+                    break;
+                }
             }
-            if (!linefeed) {
-                if (!transform) // 'none'
-                    inlineLevelBox->setData(font, point, data.substr(0, length));
-                else
-                    inlineLevelBox->setData(font, point, transformed.substr(0, transformedLength));
-                inlineLevelBox->width = advanced;
-            }
+            assert(0 < length);
+            if (!transform) // 'none'
+                inlineLevelBox->setData(font, point, data.substr(0, length));
+            else
+                inlineLevelBox->setData(font, point, transformed.substr(0, transformedLength));
+            inlineLevelBox->width = advanced;
         }
         if ((length < data.length() || !isAtRightEdge(element, text)) && !firstLetterStyle) {
             // TODO: firstLetterStyle: actually we are not sure if the following characters would fit in the same line box...
             inlineLevelBox->marginRight = inlineLevelBox->paddingRight = inlineLevelBox->borderRight = blankRight = 0;
         }
-        LineBox* lineBox = context->lineBox;
         if (inlineLevelBox->getTotalWidth() || inlineLevelBox->getTotalHeight()) {  // have non-zero margins, padding, or borders?
             inlineLevelBox->height = font->getLineHeight(point);
             inlineLevelBox->baseline += (activeStyle->lineHeight.getPx() - inlineLevelBox->height) / 2.0f;
@@ -692,6 +692,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                 context->nextLine(view, this);
             break;
         }
+    NextLine:
         nextLine(view, context, activeStyle, firstLetterStyle, firstLineStyle, style, font, point);
     }
     return true;
@@ -1556,19 +1557,11 @@ float InlineLevelBox::atEndOfLine()
     size_t length = data.length();
     if (length < 1)
         return 0.0f;
-    switch (style->whiteSpace.getValue()) {
-    case CSSWhiteSpaceValueImp::Normal:
-    case CSSWhiteSpaceValueImp::Nowrap:
-    case CSSWhiteSpaceValueImp::PreLine:
-        if (data[length - 1] == u' ') {
-            data.erase(length - 1);
-            float w = -font->measureText(u" ", point);
-            width += w;
-            return w;
-        }
-        break;
-    default:
-        break;
+    if (style->whiteSpace.isCollapsingSpace() && data[length - 1] == u' ') {
+        data.erase(length - 1);
+        float w = -font->measureText(u" ", point);
+        width += w;
+        return w;
     }
     return 0.0f;
 }
