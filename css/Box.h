@@ -94,6 +94,7 @@ public:
     float getRightRemainingHeight() const;
     float shiftDown();
     bool shiftDownLineBox();
+    bool hasNewFloats() const;
     void nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, unsigned clearValue = 0);
     void tryAddFloat(ViewCSSImp* view);
     void updateRemainingHeight(float height);

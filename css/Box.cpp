@@ -645,11 +645,11 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                     advanced -= context->leftover;
                     break;
                 }
-                if (context->lineBox->hasChildBoxes())
+                if (context->lineBox->hasChildBoxes() || context->hasNewFloats())
                     break;
             } while (context->shiftDownLineBox());
             if (length == 0) {
-                if (context->lineBox->hasChildBoxes()) {
+                if (context->lineBox->hasChildBoxes() || context->hasNewFloats()) {
                     delete inlineLevelBox;
                     nextLine(view, context, activeStyle, firstLetterStyle, firstLineStyle, style, font, point);
                     continue;

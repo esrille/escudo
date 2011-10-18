@@ -151,9 +151,26 @@ bool FormattingContext::shiftDownLineBox()
     if (float h = shiftDown()) {
         updateRemainingHeight(h);
         lineBox->marginTop += h;
+        lineBox->marginLeft = x;
+        lineBox->marginRight = lineBox->getParentBox()->width - x - leftover;
         return true;
     }
     return false;  // no floats
+}
+
+bool FormattingContext::hasNewFloats() const
+{
+    if (!left.empty()) {
+        BlockLevelBox* box = left.back();
+        if (!box->inserted)
+            return true;
+    }
+    if (!right.empty()) {
+        BlockLevelBox* box = right.front();
+        if (!box->inserted)
+            return true;
+    }
+    return false;
 }
 
 // Complete the current lineBox by adding float boxes if any.
