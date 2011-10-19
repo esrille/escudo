@@ -227,8 +227,8 @@ void BlockLevelBox::setContainingBlock(ViewCSSImp* view)
                 // Now we need to find the corresponding box for this ancestor.
                 const Box* box = style->box;
                 assert(box);    // TODO: check NULL case
-                offsetH = box->x - box->paddingLeft - x;
-                offsetV = box->y - box->paddingTop - y;
+                offsetH = box->x + box->marginLeft + box->borderLeft - x;
+                offsetV = box->y + box->marginTop + box->borderTop - y;
                 if (box->getBoxType() == BLOCK_LEVEL_BOX) {
                     absoluteBlock.width = box->getPaddingWidth();
                     absoluteBlock.height = box->getPaddingHeight();
