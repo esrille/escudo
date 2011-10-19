@@ -1065,6 +1065,7 @@ libeshtml5_a_SOURCES += \
 	xhr/XMLHttpRequestUploadImp.h
 
 bin_PROGRAMS = \
+	harness \
 	Any.test \
 	FontManager.test \
 	FontDatabase.test \
@@ -1083,6 +1084,9 @@ bin_PROGRAMS = \
 	Script.test
 
 bin_PROGRAMS : $(LDADD)
+
+harness_SOURCES = \
+	harness/harness.cpp
 
 Any_test_SOURCES = \
 	Any.test.cpp
