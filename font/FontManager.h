@@ -192,12 +192,11 @@ public:
     }
 
     float measureText(const char16_t* text, float point);
-    size_t fitText(const char16_t* text, size_t length, float point, float& leftover, size_t* next = 0, float* required = 0);
-    size_t fitTextWithTransform(std::u16string& text, size_t length, float point, unsigned transform, float& leftover, size_t* next = 0, float* required = 0);
+    size_t fitText(const char16_t* text, size_t length, float point, float& leftover, bool ws = false, size_t* next = 0, float* required = 0);
     std::u16string fitTextWithTransformation(const char16_t* text, size_t length, float point, unsigned transform,
                                              float& leftover,
                                              size_t* lenght, size_t* transformedLength,
-                                             size_t* next = 0, float* required = 0);
+                                             bool ws = false, size_t* next = 0, float* required = 0);
 
     void renderText(const char16_t* text, size_t length) {
         face->manager->getBackEnd()->renderText(this, text, length);

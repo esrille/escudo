@@ -633,21 +633,18 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
             size_t transformedLength = 0;
             for (;;) {
                 advanced = context->leftover;
-                if (!transform) // 'none'
-                    length = font->fitText(data.c_str(), fitLength, point, context->leftover, &next, &required);
-                else {
-                    transformed = font->fitTextWithTransformation(data.c_str(), fitLength, point, transform,
-                                                                    context->leftover, &length, &transformedLength, &next, &required);
+                if (!transform) {  // 'none'
+                    length = font->fitText(data.c_str(), fitLength, point, context->leftover,
+                                           activeStyle->whiteSpace.isCollapsingSpace(), &next, &required);
+                } else {
+                    transformed = font->fitTextWithTransformation(
+                        data.c_str(), fitLength, point, transform, context->leftover,
+                        &length, &transformedLength,
+                        activeStyle->whiteSpace.isCollapsingSpace(), &next, &required);
                 }
                 if (0 < length) {
                     advanced -= context->leftover;
                     break;
-                }
-                if (activeStyle->whiteSpace.isCollapsingSpace() &&
-                    1 < fitLength && data[fitLength - 1] == u' ')
-                {
-                    --fitLength;  // Trim 'white-spce' at EOL
-                    continue;
                 }
                 if (context->lineBox->hasChildBoxes() || context->hasNewFloats()) {
                     delete inlineLevelBox;
