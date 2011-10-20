@@ -296,10 +296,10 @@ void Box::renderBorder(ViewCSSImp* view, float left, float top)
                 glVertex2f(lr, bt);
             } else {
                 const ContainingBlock* containingBlock = getContainingBlock(view);
-                glVertex2f(0, 0);
-                glVertex2f(containingBlock->width, 0);
-                glVertex2f(containingBlock->width, containingBlock->height);
-                glVertex2f(0, containingBlock->height);
+                glVertex2f(-left, -top);
+                glVertex2f(-left + containingBlock->width, -top);
+                glVertex2f(-left + containingBlock->width, -top + containingBlock->height);
+                glVertex2f(-left, -top + containingBlock->height);
             }
         glEnd();
     }
