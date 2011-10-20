@@ -433,8 +433,10 @@ BlockLevelBox* ViewCSSImp::layOut()
     if (!boxTree)
         return 0;
     // Expand line boxes and inline-level boxes in each block-level box
-    boxTree->layOut(this, 0);
-    boxTree->resolveXY(this, 0.0f, 0.0f);
+    if (!boxTree->isAbsolutelyPositioned()) {
+        boxTree->layOut(this, 0);
+        boxTree->resolveXY(this, 0.0f, 0.0f);
+    }
 
     // Lay out absolute boxes.
     while (!absoluteList.empty()) {
