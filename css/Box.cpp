@@ -1002,7 +1002,7 @@ float BlockLevelBox::collapseMarginTop(FormattingContext* context)
     bool top = false;  // TODO: review this logic again for negative margins, etc.
     if (Box* parent = getParentBox()) {
         if (parent->getFirstChild() == this) {
-            if (parent->borderTop == 0 && parent->paddingTop == 0) {
+            if (parent->getParentBox() && parent->borderTop == 0 && parent->paddingTop == 0) {
                 top = true;
                 before = parent->marginTop;
                 marginTop = collapseMargins(marginTop, parent->marginTop);
@@ -1024,11 +1024,11 @@ void BlockLevelBox::collapseMarginBottom()
 {
     if (Box* parent = getParentBox()) {
         if (parent->getFirstChild() == this) {
-            if (parent->borderTop == 0 && parent->paddingTop == 0)
+            if (parent->getParentBox() && parent->borderTop == 0 && parent->paddingTop == 0)
                 std::swap(marginTop, parent->marginTop);
         }
     }
-    if (borderBottom == 0 && paddingBottom == 0) {
+    if (getParentBox() && borderBottom == 0 && paddingBottom == 0) {
         if (Box* child = getLastChild()) {
             marginBottom = collapseMargins(marginBottom, child->marginBottom);
             child->marginBottom = 0;
