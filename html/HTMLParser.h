@@ -97,7 +97,7 @@ class HTMLParser
     class BeforeHtml : public InsertionMode
     {
         bool anythingElse(HTMLParser* parser, Token& token);
-        void insertHtmlElement(HTMLParser* parser);
+        Element insertHtmlElement(HTMLParser* parser);
     public:
         virtual bool processEOF(HTMLParser* parser, Token& token);
         virtual bool processComment(HTMLParser* parser, Token& token);

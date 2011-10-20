@@ -687,12 +687,13 @@ bool HTMLParser::BeforeHtml::anythingElse(HTMLParser* parser, Token& token)
     return parser->setInsertionMode(&parser->beforeHead, token);
 }
 
-void HTMLParser::BeforeHtml::insertHtmlElement(HTMLParser* parser)
+Element HTMLParser::BeforeHtml::insertHtmlElement(HTMLParser* parser)
 {
     Document document = parser->document;
     Element element = document.createElement(u"html");
     document.appendChild(element);
     parser->pushElement(element);
+    return element;
 }
 
 bool HTMLParser::BeforeHtml::processEOF(HTMLParser* parser, Token& token)
@@ -722,10 +723,12 @@ bool HTMLParser::BeforeHtml::processCharacter(HTMLParser* parser, Token& token)
 
 bool HTMLParser::BeforeHtml::processStartTag(HTMLParser* parser, Token& token)
 {
-    insertHtmlElement(parser);
-    if (token.getName() == u"html")
+    Element element = insertHtmlElement(parser);
+    if (token.getName() == u"html") {
+        if (ElementImp* imp = dynamic_cast<ElementImp*>(element.self()))
+            imp->setAttributes(token.getAttributes());
         parser->setInsertionMode(&parser->beforeHead);
-    else
+    } else
         parser->setInsertionMode(&parser->beforeHead, token);
     return true;
 }
