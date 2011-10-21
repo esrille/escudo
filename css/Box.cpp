@@ -387,7 +387,7 @@ void BlockLevelBox::resolveNormalWidth(float w, float r)
     unsigned autoMask = Left | Width | Right;
     if (style) {
         if (style->isFloat() || style->isInlineBlock())
-            return resolveFloatWidth(w);
+            return resolveFloatWidth(w, r);
         if (!isnan(r)) {
             width = r;
             --autoCount;
@@ -1102,6 +1102,10 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     if ((style->width.isAuto() || style->marginLeft.isAuto() || style->marginRight.isAuto()) &&
         (style->isInlineBlock() || style->isFloat() || style->display == CSSDisplayValueImp::TableCell))
         shrinkToFit();
+
+    // Apply resolveWidth() again to check 'max-width'.
+    // TODO: Maybe we should have a flag that indicates the width has been fixed.
+    resolveWidth(width);
 
     collapseMarginBottom();
     if (isFlowRoot()) {
