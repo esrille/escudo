@@ -1105,7 +1105,8 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
 
     // Apply resolveWidth() again to check 'max-width'.
     // TODO: Maybe we should have a flag that indicates the width has been fixed.
-    resolveWidth(getTotalWidth());
+    if (!isAnonymous())
+        resolveWidth(getTotalWidth());
 
     collapseMarginBottom();
     if (isFlowRoot()) {
