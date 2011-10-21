@@ -777,29 +777,23 @@ void BlockLevelBox::layOutInlineReplaced(ViewCSSImp* view, Node node, Formatting
     if (inlineLevelBox->baseline == 0.0f)
         inlineLevelBox->baseline = inlineLevelBox->getBlankTop() + inlineLevelBox->height;  // TODO
 
-    float blankLeft = inlineLevelBox->getBlankLeft();
-    float blankRight = inlineLevelBox->getBlankRight();
-    context->x += blankLeft;
-    context->leftover -= blankLeft + blankRight;
-
-    // We are still not sure if there's a room for text in context->lineBox.
-    // If there's no room due to float box(es), move the linebox down to
-    // the closest bottom of float box.
-    // And repeat this process until there's no more float box in the context.
-    do {
-        if (inlineLevelBox->width <= context->leftover) {
-            context->leftover -= inlineLevelBox->width;
-            break;
+    while (context->leftover < inlineLevelBox->getTotalWidth()) {
+        if (context->lineBox->hasChildBoxes() || context->hasNewFloats()) {
+            context->nextLine(view, this);
+            if (!context->addLineBox(view, this))
+                return;  // TODO error
         }
-    } while (context->shiftDownLineBox());
-    // TODO: deal with overflow
+        if (!context->shiftDownLineBox())
+            break;
+    }
 
-    context->x += inlineLevelBox->width + blankRight;
+    context->x += inlineLevelBox->getTotalWidth();
+    context->leftover -= inlineLevelBox->getTotalWidth();
     LineBox* lineBox = context->lineBox;
     lineBox->appendChild(inlineLevelBox);
     lineBox->height = std::max(getStyle()->lineHeight.getPx(), std::max(lineBox->height, inlineLevelBox->height));  // TODO: marginTop, etc.???
     lineBox->baseline = std::max(lineBox->baseline, inlineLevelBox->baseline);
-    lineBox->width += blankLeft + inlineLevelBox->width + blankRight;
+    lineBox->width += inlineLevelBox->getTotalWidth();
     if (style->isPositioned() && !inlineLevelBox->isAnonymous())
         style->getStackingContext()->addBase(inlineLevelBox);
 }
