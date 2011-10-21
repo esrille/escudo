@@ -484,13 +484,7 @@ public:
     virtual bool isFloat() const;
     bool isFixed() const;
 
-    virtual const ContainingBlock* getContainingBlock(ViewCSSImp* view) const {
-        if (isAbsolutelyPositioned())
-            return &absoluteBlock;
-        if (getParentBox() && getParentBox()->getBoxType() == Box::INLINE_LEVEL_BOX)  // inline-block?
-            return getParentBox();
-        return Box::getContainingBlock(view);
-    }
+    virtual const ContainingBlock* getContainingBlock(ViewCSSImp* view) const;
     void setContainingBlock(ViewCSSImp* view);
 
     unsigned resolveAbsoluteWidth(const ContainingBlock* containingBlock, float& right, float& bottom);

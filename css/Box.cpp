@@ -208,6 +208,13 @@ const ContainingBlock* Box::getContainingBlock(ViewCSSImp* view) const
     return box;
 }
 
+const ContainingBlock* BlockLevelBox::getContainingBlock(ViewCSSImp* view) const
+{
+    if (isAbsolutelyPositioned())
+        return &absoluteBlock;
+    return Box::getContainingBlock(view);
+}
+
 // We also calculate offsetH and offsetV here.
 // TODO: Maybe it's better to visit ancestors via the box tree rather than the node tree.
 //       cf. CSSContentValueImp::eval()
@@ -710,6 +717,8 @@ void BlockLevelBox::layOutInlineReplaced(ViewCSSImp* view, Node node, Formatting
         return;  // TODO error
     style->addBox(inlineLevelBox);
 
+    inlineLevelBox->parentBox = context->lineBox;  // for getContainingBlock
+
     inlineLevelBox->resolveWidth();
     if (!style->width.isAuto())
         inlineLevelBox->width = style->width.getPx();
@@ -1067,7 +1076,7 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
 
     if (!isAnonymous()) {
         style->resolve(view, containingBlock, element);
-        resolveWidth(view, containingBlock, style->isInlineBlock() ? context->leftover : 0.0f);
+        resolveWidth(view, containingBlock);
     } else {
         // The properties of anonymous boxes are inherited from the enclosing non-anonymous box.
         // Theoretically, we are supposed to create a new style for this anonymous box, but
