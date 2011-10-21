@@ -1105,7 +1105,7 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
 
     // Apply resolveWidth() again to check 'max-width'.
     // TODO: Maybe we should have a flag that indicates the width has been fixed.
-    resolveWidth(width);
+    resolveWidth(getTotalWidth());
 
     collapseMarginBottom();
     if (isFlowRoot()) {
@@ -1329,21 +1329,15 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
     unsigned maskV = autoMask & (Top | Height | Bottom);
 
     if (CSSDisplayValueImp::isBlockLevel(style->display.getOriginalValue())) {
-        Element parent = element.getParentElement();
-        if (parent) {
-            CSSStyleDeclarationImp* parentStyle = view->getStyle(parent);
-            if (!CSSDisplayValueImp::isBlockLevel(parentStyle->display.getOriginalValue())) {
-                // This box is originally a block-level box inside an inline context.
-                // Set the static position to the beginning of the next line.
-                const Box* lineBox = getParentBox();
-                assert(lineBox);
-                if (maskV == (Top | Height | Bottom) || maskV == (Top | Bottom))
-                    offsetV += lineBox->getTotalHeight();
-                if (maskH == (Left | Width | Right) || maskH == (Left | Right)) {
-                    for (const Box* box = getPreviousSibling(); box; box = box->getPreviousSibling()) {
-                        if (!box->isAbsolutelyPositioned())
-                            offsetH -= box->getTotalWidth();
-                    }
+        // This box is originally a block-level box inside an inline context.
+        // Set the static position to the beginning of the next line.
+        if (const Box* lineBox = getParentBox()) {  // A root element can be absolutely positioned.
+            if (maskV == (Top | Height | Bottom) || maskV == (Top | Bottom))
+                offsetV += lineBox->getTotalHeight();
+            if (maskH == (Left | Width | Right) || maskH == (Left | Right)) {
+                for (const Box* box = getPreviousSibling(); box; box = box->getPreviousSibling()) {
+                    if (!box->isAbsolutelyPositioned())
+                        offsetH -= box->getTotalWidth();
                 }
             }
         }
