@@ -1293,6 +1293,17 @@ void CSSFontShorthandImp::reset(CSSStyleDeclarationImp* self)
 }
 
 void CSSLineHeightValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style) {
+    switch (value.unit) {
+    case CSSParserTerm::CSS_TERM_INDEX:
+    case css::CSSPrimitiveValue::CSS_NUMBER:
+        break;
+    default:
+        value.resolve(view, style, style->fontSize.getPx());
+        break;
+    }
+}
+
+void CSSLineHeightValueImp::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style) {
     float w;
     switch (value.unit) {
     case CSSParserTerm::CSS_TERM_INDEX:
@@ -1305,7 +1316,6 @@ void CSSLineHeightValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* st
         w = style->fontSize.getPx() * value.number;
         break;
     default:
-        value.resolve(view, style, style->fontSize.getPx());
         return;
     }
     value.setValue(w, css::CSSPrimitiveValue::CSS_PX);

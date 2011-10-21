@@ -1296,6 +1296,8 @@ void CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* co
         }
     }
 
+    lineHeight.resolve(view, this);
+
     // Recompute properties that depend on the containing block size
     width.resolve(view, this, containingBlock->width);
     if (containingBlock->height == 0 && height.isPercentage())  // TODO: check more conditions

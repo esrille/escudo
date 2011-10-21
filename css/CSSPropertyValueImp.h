@@ -1501,6 +1501,7 @@ public:
         value.specify(specified.value);
     }
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
+    void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     float getPx() const {
         return value.getPx();
     }
