@@ -1023,7 +1023,8 @@ float BlockLevelBox::collapseMarginTop(FormattingContext* context)
 void BlockLevelBox::collapseMarginBottom()
 {
     if (Box* parent = getParentBox()) {
-        if (parent->getFirstChild() == this) {
+        // Note if this box is a inline-block, parent is a linebox.
+        if (dynamic_cast<BlockLevelBox*>(parent) && parent->getFirstChild() == this) {
             if (parent->getParentBox() && parent->borderTop == 0 && parent->paddingTop == 0)
                 std::swap(marginTop, parent->marginTop);
         }
