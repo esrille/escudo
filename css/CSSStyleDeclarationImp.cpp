@@ -1254,7 +1254,6 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
 
 // calculate resolved values that requite containing block information for calucuration
 // cf. CSSOM 7. Resolved Values
-// TODO: make sure this function is not called again and again
 void CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* containingBlock, Element element)
 {
     if (resolved)
@@ -1302,10 +1301,8 @@ void CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* co
     bool nonExplicit = false;
     if (const Box* containingBox = dynamic_cast<const Box*>(containingBlock)) {
         CSSStyleDeclarationImp* containingStyle = containingBox->getStyle();
-        if (containingStyle && containingStyle->height.isAuto()) {
-            assert(!containingStyle->isAbsolutelyPositioned());
+        if (containingStyle && containingStyle->height.isAuto() && !containingStyle->isAbsolutelyPositioned())
             nonExplicit = true;
-        }
     }
 
     // Resolve properties that depend on the containing block size
