@@ -1260,7 +1260,8 @@ void CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* co
     if (resolved)
         return;
 
-    if (Element parentElement = element.getParentElement()) {
+    Element parentElement = element.getParentElement();
+    if (parentElement) {
         if (CSSStyleDeclarationImp* parentStyle = view->getStyle(parentElement)) {
             // TODO: Refine
             if (!propertySet.test(Margin) && !propertySet.test(MarginLeft) && !propertySet.test(MarginRight) &&
@@ -1298,12 +1299,21 @@ void CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* co
 
     lineHeight.resolve(view, this);
 
-    // Recompute properties that depend on the containing block size
+    bool nonExplicit = false;
+    if (const Box* containingBox = dynamic_cast<const Box*>(containingBlock)) {
+        CSSStyleDeclarationImp* containingStyle = containingBox->getStyle();
+        if (containingStyle && containingStyle->height.isAuto()) {
+            assert(!containingStyle->isAbsolutelyPositioned());
+            nonExplicit = true;
+        }
+    }
+
+    // Resolve properties that depend on the containing block size
     width.resolve(view, this, containingBlock->width);
-    if (containingBlock->height == 0 && height.isPercentage())  // TODO: check more conditions
+    if (height.isPercentage() && nonExplicit && parentElement)
         height.setValue();  // change height to 'auto'.
     else
-        height.resolve(view, this, containingBlock->height);  // TODO: check more conditions
+        height.resolve(view, this, containingBlock->height);
 
     marginTop.resolve(view, this, containingBlock->width);
     marginRight.resolve(view, this, containingBlock->width);
@@ -1320,11 +1330,17 @@ void CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* co
     top.resolve(view, this, containingBlock->height);
     bottom.resolve(view, this, containingBlock->height);
 
-    minHeight.resolve(view, this, containingBlock->height);
     minWidth.resolve(view, this, containingBlock->width);
-    maxHeight.resolve(view, this, containingBlock->height);
     maxWidth.resolve(view, this, containingBlock->width);
 
+    if (minHeight.isPercentage() && nonExplicit)
+        minHeight.setValue(0.0f);
+    else
+        minHeight.resolve(view, this, containingBlock->height);
+    if (maxHeight.isPercentage() && nonExplicit)
+        maxHeight.setValue();
+    else
+        maxHeight.resolve(view, this, containingBlock->height);
     resolved = true;
 }
 

@@ -240,6 +240,9 @@ public:
         value.setValue(term);
         return *this;
     }
+    bool isPercentage() const {
+        return value.unit == css::CSSPrimitiveValue::CSS_PERCENTAGE;
+    }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
         return value.getCssText();
     }
