@@ -1306,7 +1306,7 @@ unsigned BlockLevelBox::resolveAbsoluteWidth(const ContainingBlock* containingBl
         if (style->marginTop.isAuto() && style->marginBottom.isAuto()) {
             if (0.0f <= leftover)
                 marginTop = marginBottom = leftover / 2.0f;
-            else {  // TODO rtl
+            else {
                 marginTop = 0.0f;
                 marginBottom = -leftover;
             }
@@ -1398,17 +1398,37 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
     if (Box* last = getLastChild())
         last->marginBottom += clearance;
 
+    float d = height;
     if (maskV == (Top | Height) || maskV == (Height | Bottom) || height == 0) {
         height = 0;
         for (Box* child = getFirstChild(); child; child = child->getNextSibling())
             height += child->getTotalHeight();
-        applyMinMaxHeight(context);
-        if (autoMask & Top) {
-            float top = containingBlock->height - getTotalHeight() - bottom;
-            offsetV += top;
+    }
+    applyMinMaxHeight(context);
+    maskV &= ~Height;
+    d -= height;
+    if (d != 0.0f) {
+        if (maskV == Top)
+            y += d;
+        else if (maskV == 0) {
+            float top = style->top.getPx();
+            float bottom = style->bottom.getPx();
+            marginTop = style->marginTop.isAuto() ? 0.0f : style->marginTop.getPx();
+            marginBottom = style->marginBottom.isAuto() ? 0.0f : style->marginBottom.getPx();
+            float leftover = containingBlock->height - getTotalHeight() - top - bottom;
+            if (style->marginTop.isAuto() && style->marginBottom.isAuto()) {
+                if (0.0f <= leftover)
+                    marginTop = marginBottom = leftover / 2.0f;
+                else {
+                    marginTop = 0.0f;
+                    marginBottom = -leftover;
+                }
+            } else if (style->marginTop.isAuto())
+                marginTop = leftover;
+            else if (style->marginBottom.isAuto())
+                marginBottom = leftover;
         }
-    } else
-        applyMinMaxHeight(context);
+    }
 
     // Now that 'height' is fixed, calculate 'left', 'right', 'top', and 'bottom'.
     for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
