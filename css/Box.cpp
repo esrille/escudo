@@ -1053,6 +1053,25 @@ void BlockLevelBox::layOutChildren(ViewCSSImp* view, FormattingContext* context)
     }
 }
 
+void BlockLevelBox::applyMinMaxHeight(FormattingContext* context)
+{
+    assert(!isAnonymous());
+    if (!style->maxHeight.isNone()) {
+        float maxHeight = style->maxHeight.getPx();
+        if (maxHeight < height) {
+            height = maxHeight;
+            // TODO: Do we have to undo updateRemainingHeight?
+        }
+    }
+    if (!hasChildBoxes())
+        context->updateRemainingHeight(height);
+    float d = style->minHeight.getPx() - height;
+    if (0.0f < d) {
+        context->updateRemainingHeight(d);
+        height = style->minHeight.getPx();
+    }
+}
+
 bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
 {
     const ContainingBlock* containingBlock = getContainingBlock(view);
@@ -1124,22 +1143,9 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         for (Box* child = getFirstChild(); child; child = child->getNextSibling())
             height += child->getTotalHeight();
     }
-    if (!isAnonymous()) {
-        if (!style->maxHeight.isNone()) {
-            float maxHeight = style->maxHeight.getPx();
-            if (maxHeight < height) {
-                height = maxHeight;
-                // TODO: Do we have to undo updateRemainingHeight?
-            }
-        }
-        if (!hasChildBoxes())
-            context->updateRemainingHeight(height);
-        float d = style->minHeight.getPx() - height;
-        if (0.0f < d) {
-            context->updateRemainingHeight(d);
-            height = style->minHeight.getPx();
-        }
-    } else if (!hasChildBoxes())
+    if (!isAnonymous())
+        applyMinMaxHeight(context);
+    else if (!hasChildBoxes())
         context->updateRemainingHeight(height);
 
     // Collapse top and bottom margins.
@@ -1396,11 +1402,13 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
         height = 0;
         for (Box* child = getFirstChild(); child; child = child->getNextSibling())
             height += child->getTotalHeight();
+        applyMinMaxHeight(context);
         if (autoMask & Top) {
             float top = containingBlock->height - getTotalHeight() - bottom;
             offsetV += top;
         }
-    }
+    } else
+        applyMinMaxHeight(context);
 
     // Now that 'height' is fixed, calculate 'left', 'right', 'top', and 'bottom'.
     for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {

@@ -427,6 +427,8 @@ class BlockLevelBox : public Box
     bool layOutInline(ViewCSSImp* view, FormattingContext* context, float originalMargin = 0.0f);
     void layOutChildren(ViewCSSImp* view, FormattingContext* context);
 
+    void applyMinMaxHeight(FormattingContext* context);
+
 protected:
     // resolveAbsoluteWidth's return values
     enum {
