@@ -1379,6 +1379,11 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
         }
     }
 
+    // An absolutely positioned box is a flow root.
+    float clearance = context->clear(3);
+    if (Box* last = getLastChild())
+        last->marginBottom += clearance;
+
     if (maskV == (Top | Height) || maskV == (Height | Bottom) || height == 0) {
         height = 0;
         for (Box* child = getFirstChild(); child; child = child->getNextSibling())
