@@ -357,7 +357,7 @@ void CSSAutoLengthValueImp::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* st
 
 void CSSNoneLengthValueImp::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize) {
     if (isNone())
-        return;  // leave length as auto
+        return;  // leave length as none
     length.resolve(view, style, fullSize);
 }
 

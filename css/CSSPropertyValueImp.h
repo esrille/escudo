@@ -86,6 +86,9 @@ struct CSSNumericValue
         assert(unit == css::CSSPrimitiveValue::CSS_PX || number == 0.0f);
         return number;
     }
+    bool isNegative() const {
+        return !isIndex() && number < 0.0;
+    }
     bool isIndex() const {
         return unit == CSSParserTerm::CSS_TERM_INDEX;
     }
@@ -309,6 +312,7 @@ public:
 };
 
 // <length>, <percentage>, none
+// Negative values are illegal.
 class CSSNoneLengthValueImp : public CSSPropertyValueImp
 {
 protected:
@@ -316,13 +320,18 @@ protected:
 public:
     CSSNoneLengthValueImp& setValue(float number, unsigned short unit) {
         length.setValue(number, unit);
+        if (length.isNegative())
+            length.setIndex(0);
         return *this;
     }
     CSSNoneLengthValueImp& setValue(CSSParserTerm* term = 0) {
-        if (term)
-            length.setValue(term);
-        else
+        if (!term)
             length.setIndex(0);
+        else {
+            length.setValue(term);
+            if (length.isNegative())
+                length.setIndex(0);
+        }
         return *this;
     }
     bool isNone() const {
