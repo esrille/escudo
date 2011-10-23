@@ -1352,7 +1352,7 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
         // Set the static position to the beginning of the next line.
         if (const Box* lineBox = getParentBox()) {  // A root element can be absolutely positioned.
             if (maskV == (Top | Height | Bottom) || maskV == (Top | Bottom))
-                offsetV += lineBox->getTotalHeight();
+                offsetV += lineBox->height + lineBox->getBlankBottom();
             if (maskH == (Left | Width | Right) || maskH == (Left | Right)) {
                 for (const Box* box = getPreviousSibling(); box; box = box->getPreviousSibling()) {
                     if (!box->isAbsolutelyPositioned())
