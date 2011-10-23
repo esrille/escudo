@@ -1399,7 +1399,7 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
         last->marginBottom += clearance;
 
     float d = height;
-    if (maskV == (Top | Height) || maskV == (Height | Bottom) || height == 0) {
+    if (maskV == (Top | Height) || maskV == (Height | Bottom)) {
         height = 0;
         for (Box* child = getFirstChild(); child; child = child->getNextSibling())
             height += child->getTotalHeight();
@@ -1409,7 +1409,7 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
     d -= height;
     if (d != 0.0f) {
         if (maskV == Top)
-            y += d;
+            offsetV += d;
         else if (maskV == 0) {
             float top = style->top.getPx();
             float bottom = style->bottom.getPx();
