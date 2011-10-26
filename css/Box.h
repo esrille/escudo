@@ -200,6 +200,8 @@ protected:
     StackingContext* stackingContext;
     Box* nextBase;
 
+    bool intrinsic;  // do not change width and height
+
     float x;  // in screen coord
     float y;  // in screen coord
 
@@ -352,6 +354,8 @@ public:
     void updatePadding();
     void updateBorderWidth();
 
+    void resolveReplacedWidth(float intrinsicWidth, float intrinsicHeight);
+
     void resolveOffset(CSSStyleDeclarationImp* style);
     virtual void resolveOffset(ViewCSSImp* view);
     virtual void resolveXY(ViewCSSImp* view, float left, float top) = 0;
@@ -420,12 +424,14 @@ class BlockLevelBox : public Box
                   CSSStyleDeclarationImp* style, FontTexture*& font, float& point);
     bool layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
                     std::u16string data, Element element, CSSStyleDeclarationImp* style);
-    void layOutInlineReplaced(ViewCSSImp* view, Node node, FormattingContext* context,
+    void layOutInlineLevelBox(ViewCSSImp* view, Node node, FormattingContext* context,
                               Element element, CSSStyleDeclarationImp* style);
     void layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floatBox, FormattingContext* context);
     void layOutAbsolute(ViewCSSImp* view, Node node, BlockLevelBox* absBox, FormattingContext* context);  // 1st pass
     bool layOutInline(ViewCSSImp* view, FormattingContext* context, float originalMargin = 0.0f);
     void layOutChildren(ViewCSSImp* view, FormattingContext* context);
+
+    void layOutReplacedElement(ViewCSSImp* view, Box* replaced, Element element, CSSStyleDeclarationImp* style);
 
     void applyMinMaxHeight(FormattingContext* context);
 
@@ -505,6 +511,7 @@ public:
     void resolveBackground(ViewCSSImp* view);
     void resolveMargin(ViewCSSImp* view, const ContainingBlock* containingBlock, float available);
     void resolveWidth(float w);
+    void applyMinMaxWidth(float w);
     void resolveNormalWidth(float w, float r = NAN);
     void resolveFloatWidth(float w, float r = NAN);
     float collapseMarginTop(FormattingContext* context);

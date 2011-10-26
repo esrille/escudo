@@ -629,6 +629,7 @@ libeshtml5_a_SOURCES = \
 	css/CSSValueParser.h \
 	css/CSSInputStream.cpp \
 	css/CSSInputStream.h \
+	css/Replaced.cpp \
 	css/Table.cpp \
 	css/Table.h \
 	css/ViewCSSImp.cpp \

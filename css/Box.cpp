@@ -78,6 +78,7 @@ Box::Box(Node node) :
     positioned(false),
     stackingContext(0),
     nextBase(0),
+    intrinsic(false),
     x(0.0f),
     y(0.0f),
     backgroundColor(0x00000000),
@@ -374,6 +375,11 @@ void BlockLevelBox::resolveBackground(ViewCSSImp* view)
 void BlockLevelBox::resolveWidth(float w)
 {
     resolveNormalWidth(w);
+    applyMinMaxWidth(w);
+}
+
+void BlockLevelBox::applyMinMaxWidth(float w)
+{
     if (!style->maxWidth.isNone()) {
         float maxWidth = style->maxWidth.getPx();
         if (maxWidth < width)
@@ -395,7 +401,11 @@ void BlockLevelBox::resolveNormalWidth(float w, float r)
     if (style) {
         if (style->isFloat() || style->isInlineBlock())
             return resolveFloatWidth(w, r);
-        if (!isnan(r)) {
+        if (intrinsic) {
+            --autoCount;
+            autoMask &= ~Width;
+            w -= width;
+        } else if (!isnan(r)) {
             width = r;
             --autoCount;
             autoMask &= ~Width;
@@ -702,7 +712,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
     return true;
 }
 
-void BlockLevelBox::layOutInlineReplaced(ViewCSSImp* view, Node node, FormattingContext* context,
+void BlockLevelBox::layOutInlineLevelBox(ViewCSSImp* view, Node node, FormattingContext* context,
                                          Element element, CSSStyleDeclarationImp* style)
 {
     assert(element);
@@ -718,60 +728,22 @@ void BlockLevelBox::layOutInlineReplaced(ViewCSSImp* view, Node node, Formatting
     style->addBox(inlineLevelBox);
 
     inlineLevelBox->parentBox = context->lineBox;  // for getContainingBlock
-
-    inlineLevelBox->resolveWidth();
-    if (!style->width.isAuto())
-        inlineLevelBox->width = style->width.getPx();
-    else
-        inlineLevelBox->width = 300;  // TODO
-    if (!style->height.isAuto())
-        inlineLevelBox->height = style->height.getPx();
-    else
-        inlineLevelBox->height = 24;  // TODO
-
     context->prevChar = 0;
 
-    std::u16string tag = element.getLocalName();
-    if (tag == u"img") {
-        html::HTMLImageElement img = interface_cast<html::HTMLImageElement>(element);
-        if (BoxImage* backgroundImage = new(std::nothrow) BoxImage(inlineLevelBox, view->getDocument().getDocumentURI(), img)) {
-            inlineLevelBox->backgroundImage = backgroundImage;
-            if (style->width.isAuto())
-                inlineLevelBox->width = backgroundImage->getWidth();
-            if (style->height.isAuto())
-                inlineLevelBox->height = backgroundImage->getHeight();
-        }
-    } else if (tag == u"iframe") {
-        html::HTMLIFrameElement iframe = interface_cast<html::HTMLIFrameElement>(element);
-        inlineLevelBox->width = CSSTokenizer::parseInt(iframe.getWidth().c_str(), iframe.getWidth().size());
-        inlineLevelBox->height = CSSTokenizer::parseInt(iframe.getHeight().c_str(), iframe.getHeight().size());
-        html::Window contentWindow = iframe.getContentWindow();
-        if (WindowImp* imp = dynamic_cast<WindowImp*>(contentWindow.self())) {
-            imp->setSize(inlineLevelBox->width, inlineLevelBox->height);
-            inlineLevelBox->shadow = imp->getView();
-            std::u16string src = iframe.getSrc();
-            if (!src.empty() && !imp->getDocument())
-                iframe.setSrc(src);
-        }
-    } else if (!style->isInlineBlock()) {
-        // TODO: This line should not be reached but currently it is as absolute boxes are created lazily.
-        return;
-    } else if (BlockLevelBox* inlineBlock = view->layOutBlockBoxes(element, 0, 0, 0, true)) {
+    if (isReplacedElement(element)) {
+        inlineLevelBox->resolveWidth();
+        layOutReplacedElement(view, inlineLevelBox, element, style);
+    } else {
+        assert(style->isInlineBlock());
+        BlockLevelBox* inlineBlock = view->layOutBlockBoxes(element, 0, 0, 0, true);
+        if (!inlineBlock)
+            return;  // TODO error
         inlineLevelBox->appendChild(inlineBlock);
         inlineBlock->layOut(view, context);
         inlineLevelBox->width = inlineBlock->getTotalWidth();
-        inlineLevelBox->marginLeft = inlineLevelBox->marginRight =
-        inlineLevelBox->borderLeft = inlineLevelBox->borderRight =
-        inlineLevelBox->paddingLeft = inlineLevelBox->paddingRight = 0.0f;
-
         inlineLevelBox->height = inlineBlock->getTotalHeight();
-        inlineLevelBox->marginTop = inlineLevelBox->marginBottom =
-        inlineLevelBox->borderTop = inlineLevelBox->borderBottom =
-        inlineLevelBox->paddingTop = inlineLevelBox->paddingBottom = 0.0f;
-
         inlineLevelBox->baseline = inlineBlock->getBlankTop() + inlineBlock->height;
-    } else
-        return;  // TODO
+    }
 
     // TODO: calc inlineLevelBox->width and height with intrinsic values.
     if (inlineLevelBox->baseline == 0.0f)
@@ -864,7 +836,7 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
                 continue;
             style->resolve(view, this, element);
             if (isReplacedElement(element)) {
-                layOutInlineReplaced(view, node, context, element, style);
+                layOutInlineLevelBox(view, node, context, element, style);
                 collapsed = false;
             } else if (node.getNodeType() == Node::TEXT_NODE) {
                 Text text = interface_cast<Text>(node);
@@ -877,7 +849,7 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
                     collapsed = false;
             } else {
                 // At this point, node should be an inline block element.
-                layOutInlineReplaced(view, node, context, element, style);
+                layOutInlineLevelBox(view, node, context, element, style);
                 collapsed = false;
             }
         }
@@ -1116,20 +1088,22 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         }
     }
 
-    if (hasInline()) {
+    if (isReplacedElement(element))
+        layOutReplacedElement(view, this, element, style.get());
+    else if (hasInline()) {
         if (!layOutInline(view, context, before))
             return false;
     }
     layOutChildren(view, context);
 
     if ((style->width.isAuto() || style->marginLeft.isAuto() || style->marginRight.isAuto()) &&
-        (style->isInlineBlock() || style->isFloat() || style->display == CSSDisplayValueImp::TableCell))
+        (style->isInlineBlock() || style->isFloat() || style->display == CSSDisplayValueImp::TableCell) &&
+        !intrinsic)
         shrinkToFit();
 
     // Apply resolveWidth() again to check 'max-width'.
-    // TODO: Maybe we should have a flag that indicates the width has been fixed.
     if (!isAnonymous())
-        resolveWidth(getTotalWidth());
+        applyMinMaxWidth(getTotalWidth());
 
     collapseMarginBottom();
     if (isFlowRoot()) {
@@ -1138,7 +1112,7 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
             last->marginBottom += clearance;
     }
 
-    if (style->height.isAuto() || isAnonymous()) {
+    if ((style->height.isAuto() && !intrinsic) || isAnonymous()) {
         height = 0.0f;
         for (Box* child = getFirstChild(); child; child = child->getNextSibling())
             height += child->getTotalHeight();
@@ -1365,22 +1339,12 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
     FormattingContext* context = updateFormattingContext(context);
     assert(context);
 
-    // TODO: Handle replaced elements in more smart way...
-    tag = element.getLocalName();
-    if (tag == u"img") {
-        html::HTMLImageElement img = interface_cast<html::HTMLImageElement>(element);
-        if (backgroundImage = new(std::nothrow) BoxImage(this, view->getDocument().getDocumentURI(), img)) {
-            if (autoMask & Width) {
-                width = backgroundImage->getWidth();
-                autoMask &= ~Width;
-                maskH = autoMask & (Left | Width | Right);
-            }
-            if (autoMask & Height) {
-                height = backgroundImage->getHeight();
-                autoMask &= ~Height;
-                maskV = autoMask & (Top | Height | Bottom);
-            }
-        }
+    if (isReplacedElement(element)) {
+        layOutReplacedElement(view, this, element, style.get());
+        autoMask &= ~(Width | Height);
+        maskH &= ~Width;
+        maskV &= ~Height;
+        // TODO: more conditions...
     } else if (hasInline())
         layOutInline(view, context);
     layOutChildren(view, context);
