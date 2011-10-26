@@ -1022,4 +1022,27 @@ int HTMLElementImp::getOffsetHeight()
     return 0;
 }
 
+bool HTMLElementImp::toPxOrPercentage(std::u16string& value)
+{
+    stripLeadingAndTrailingWhitespace(value);
+    if (value.empty())
+        return false;
+    const char16_t* s = value.c_str();
+    while (*s) {
+        if (*s == '%')
+            break;
+        if (!isDigit(*s))
+            return false;
+        ++s;
+    }
+    if (!*s) {
+        value += u"px";
+        return true;
+    }
+    assert(*s == '%');
+    if (!s[1] && 1 < value.length())
+        return true;
+    return false;
+}
+
 }}}}  // org::w3c::dom::bootstrap

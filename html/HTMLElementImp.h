@@ -230,6 +230,8 @@ public:
     {
         return html::HTMLElement::getMetaData();
     }
+
+    static bool toPxOrPercentage(std::u16string& value);  // for the width and heigth attributes
 };
 
 }}}}  // org::w3c::dom::bootstrap

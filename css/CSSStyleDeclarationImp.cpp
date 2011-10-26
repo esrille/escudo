@@ -1523,7 +1523,7 @@ void CSSStyleDeclarationImp::setProperty(int id, Nullable<std::u16string> value,
     }
     std::u16string v = value.value();
     stripLeadingAndTrailingWhitespace(v);
-    if (v == u"") {
+    if (v.empty()) {
         removeProperty(id);
         return;
     }
