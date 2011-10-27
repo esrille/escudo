@@ -303,8 +303,8 @@ BlockLevelBox* ViewCSSImp::createBlockLevelBox(Element element, CSSStyleDeclarat
         block =  new(std::nothrow) BlockLevelBox(element, style);
     if (!block)
         return 0;
-    if (newContext && !block->establishFormattingContext())
-        return 0;
+    if (newContext)
+        block->establishFormattingContext();  // TODO: check error
     style->addBox(block);
 
     StackingContext* stackingContext = style->getStackingContext();

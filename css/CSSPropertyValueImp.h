@@ -1195,6 +1195,17 @@ public:
             return false;
         }
     }
+    bool isFlowRoot() const {
+        switch (value) {
+        case TableCell:
+        case TableCaption:
+        case InlineBlock:
+        case InlineTable:
+            return true;
+        default:
+            return false;
+        }
+    }
 
     static const char16_t* Options[];
 
