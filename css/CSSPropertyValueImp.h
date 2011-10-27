@@ -1556,6 +1556,9 @@ public:
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
         return Options[value];
     }
+    bool isClipped() const {
+        return value == Hidden || value == Scroll;
+    }
     void specify(const CSSOverflowValueImp& specified) {
         value = specified.value;
     }

@@ -196,7 +196,6 @@ protected:
     float offsetH;
     float offsetV;
 
-    bool positioned;
     StackingContext* stackingContext;
     Box* nextBase;
 
@@ -204,6 +203,8 @@ protected:
 
     float x;  // in screen coord
     float y;  // in screen coord
+
+    BlockLevelBox* clipBox;
 
     // background
     unsigned backgroundColor;
@@ -325,10 +326,8 @@ public:
     }
     void setStyle(CSSStyleDeclarationImp* style) {
         this->style = style;
-        if (style) {
-            positioned = style->isPositioned();
+        if (style)
             stackingContext = style->getStackingContext();
-        }
     }
 
     virtual const ContainingBlock* getContainingBlock(ViewCSSImp* view) const;
@@ -358,7 +357,7 @@ public:
 
     void resolveOffset(CSSStyleDeclarationImp* style);
     virtual void resolveOffset(ViewCSSImp* view);
-    virtual void resolveXY(ViewCSSImp* view, float left, float top) = 0;
+    virtual void resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip) = 0;
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context) {
         return true;
     }
@@ -447,15 +446,7 @@ protected:
     };
 
 public:
-    BlockLevelBox(Node node = 0, CSSStyleDeclarationImp* style = 0) :
-        Box(node),
-        textAlign(CSSTextAlignValueImp::Default),
-        inserted(false),
-        edge(0.0f),
-        remainingHeight(0.0f)
-    {
-        setStyle(style);
-    }
+    BlockLevelBox(Node node = 0, CSSStyleDeclarationImp* style = 0);
 
     virtual unsigned getBoxType() const {
         return BLOCK_LEVEL_BOX;
@@ -518,7 +509,7 @@ public:
     void collapseMarginBottom();
 
     virtual void resolveOffset(ViewCSSImp* view);
-    virtual void resolveXY(ViewCSSImp* view, float left, float top);
+    virtual void resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip);
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context);
     virtual void render(ViewCSSImp* view, StackingContext* stackingContext);
     virtual void dump(std::string indent = "");
@@ -583,7 +574,7 @@ public:
         return underlineThickness;
     }
 
-    virtual void resolveXY(ViewCSSImp* view, float left, float top);
+    virtual void resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip);
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context);
     virtual void render(ViewCSSImp* view, StackingContext* stackingContext);
     virtual void dump(std::string indent);
@@ -636,7 +627,7 @@ public:
     std::u16string getData() const {
         return data;
     }
-    virtual void resolveXY(ViewCSSImp* view, float left, float top);
+    virtual void resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip);
     virtual void render(ViewCSSImp* view, StackingContext* stackingContext);
     virtual void dump(std::string indent);
 };

@@ -409,6 +409,9 @@ public:
         return position.getValue() != CSSPositionValueImp::Static;
     }
 
+    Box* getBox() const {
+        return box;
+    }
     void addBox(Box* box);
 
     StackingContext* getStackingContext() const {

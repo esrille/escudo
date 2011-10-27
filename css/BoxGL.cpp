@@ -362,7 +362,8 @@ unsigned BlockLevelBox::renderBegin(ViewCSSImp* view)
     unsigned overflow = CSSOverflowValueImp::Visible;
     if (style)
         overflow = style->overflow.getValue();
-    if (overflow == CSSOverflowValueImp::Hidden) {
+    if (overflow == CSSOverflowValueImp::Hidden || overflow == CSSOverflowValueImp::Scroll) {
+        // TODO: Support the cumulative intersection.
         float left = x + marginLeft + borderLeft + scrollX;
         float top = y + marginTop + borderTop + scrollY;
         float w = getPaddingWidth();
@@ -378,7 +379,8 @@ unsigned BlockLevelBox::renderBegin(ViewCSSImp* view)
 
 void BlockLevelBox::renderEnd(ViewCSSImp* view, unsigned overflow)
 {
-    if (overflow == CSSOverflowValueImp::Hidden) {
+    if (overflow == CSSOverflowValueImp::Hidden || overflow == CSSOverflowValueImp::Scroll) {
+        // TODO: Support the cumulative intersection.
         float w = view->getInitialContainingBlock()->getWidth();
         float h = view->getInitialContainingBlock()->getHeight();
         glViewport(0, 0, w, h);

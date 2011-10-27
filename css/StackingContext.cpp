@@ -16,10 +16,15 @@
 
 #include "StackingContext.h"
 
+// TODO: Do not inlcude GL in this file
+#include <GL/gl.h>
+#include <GL/glu.h>
+
 #include <new>
 #include <iostream>
 
 #include "Box.h"
+#include "ViewCSSImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -120,6 +125,21 @@ void StackingContext::render(ViewCSSImp* view)
 {
     currentFloat = 0;
     for (Box* base = firstBase; base; base = base->nextBase) {
+        if (base->clipBox) {
+            // TODO: Support the cumulative clip intersection.
+            BlockLevelBox* clip = base->clipBox;
+            // TODO: if (base->isAbsolutelyPositioned()) ... else ...
+            float left = clip->x + clip->marginLeft + clip->borderLeft;
+            float top = clip->y + clip->marginTop + clip->borderTop;
+            float right = left + clip->getPaddingWidth();
+            float bottom = top + clip->getPaddingHeight();
+            glViewport(left, view->getInitialContainingBlock()->getHeight() - bottom, right - left, bottom - top);
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            glOrtho(left, right, bottom, top, -1000.0, 1.0);
+            glMatrixMode(GL_MODELVIEW);
+        }
+
         BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(base);
         unsigned overflow = CSSOverflowValueImp::Visible;
         if (block)
@@ -137,6 +157,16 @@ void StackingContext::render(ViewCSSImp* view)
             childContext->render(view);
         if (block)
             block->renderEnd(view, overflow);
+
+        if (base->clipBox) {
+            float w = view->getInitialContainingBlock()->getWidth();
+            float h = view->getInitialContainingBlock()->getHeight();
+            glViewport(0, 0, w, h);
+            glMatrixMode(GL_PROJECTION);
+            glLoadIdentity();
+            glOrtho(0, w, h, 0, -1000.0, 1.0);
+            glMatrixMode(GL_MODELVIEW);
+        }
     }
 }
 

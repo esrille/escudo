@@ -75,12 +75,12 @@ Box::Box(Node node) :
     borderRight(0.0f),
     offsetH(0.0f),
     offsetV(0.0f),
-    positioned(false),
     stackingContext(0),
     nextBase(0),
     intrinsic(false),
     x(0.0f),
     y(0.0f),
+    clipBox(0),
     backgroundColor(0x00000000),
     backgroundImage(0),
     backgroundLeft(0.0f),
@@ -228,25 +228,25 @@ void BlockLevelBox::setContainingBlock(ViewCSSImp* view)
             CSSStyleDeclarationImp* style = view->getStyle(ancestor);
             if (!style)
                 break;
-            switch (style->position.getValue()) {
-            case CSSPositionValueImp::Absolute:
-            case CSSPositionValueImp::Relative:
-            case CSSPositionValueImp::Fixed: {
+            if (style->isPositioned()) {
                 // Now we need to find the corresponding box for this ancestor.
-                const Box* box = style->box;
+                Box* box = style->box;
                 assert(box);    // TODO: check NULL case
                 offsetH = box->x + box->marginLeft + box->borderLeft - x;
                 offsetV = box->y + box->marginTop + box->borderTop - y;
-                if (box->getBoxType() == BLOCK_LEVEL_BOX) {
+                clipBox = box->clipBox;
+                if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(box)) {
                     absoluteBlock.width = box->getPaddingWidth();
                     absoluteBlock.height = box->getPaddingHeight();
+                    if (style->overflow.isClipped())
+                        clipBox = block;
                 } else {
                     assert(box->getBoxType() == INLINE_LEVEL_BOX);
                     if (Box* inlineBlock = box->getFirstChild()) {
                         absoluteBlock.width = inlineBlock->getPaddingWidth();
                         absoluteBlock.height = inlineBlock->getPaddingHeight();
                     } else {
-                        const Box* p = box->getParentBox();
+                        Box* p = box->getParentBox();
                         float t = box->y - box->paddingTop;
                         float l = box->x - box->paddingLeft;
                         box = style->lastBox;
@@ -259,13 +259,11 @@ void BlockLevelBox::setContainingBlock(ViewCSSImp* view)
                 }
                 return;
             }
-            default:
-                break;
-            }
         }
     }
     offsetH = -x;
     offsetV = -y;
+    clipBox = 0;
     absoluteBlock.width = view->getInitialContainingBlock()->width;
     absoluteBlock.height = view->getInitialContainingBlock()->height;
 }
@@ -290,12 +288,13 @@ bool Box::isFlowOf(const Box* flowRoot) const
     return false;
 }
 
-// Calculate left, right, top, bottom for 'static' or 'relative' element.
+// Calculate left, right, top, bottom for a 'relative' element.
 // TODO: rtl
 void Box::resolveOffset(CSSStyleDeclarationImp* style)
 {
-    assert(style->position.getValue() == CSSPositionValueImp::Relative ||
-           style->position.getValue() == CSSPositionValueImp::Static);
+    if (style->position.isStatic())
+        return;
+    assert(style->position.isRelative());
 
     float h = 0.0f;
     if (!style->left.isAuto())
@@ -317,6 +316,16 @@ void Box::resolveOffset(ViewCSSImp* view)
     if (isAnonymous())
         return;
     resolveOffset(getStyle());
+}
+
+BlockLevelBox::BlockLevelBox(Node node, CSSStyleDeclarationImp* style) :
+    Box(node),
+    textAlign(CSSTextAlignValueImp::Default),
+    inserted(false),
+    edge(0.0f),
+    remainingHeight(0.0f)
+{
+    setStyle(style);
 }
 
 bool BlockLevelBox::isAbsolutelyPositioned() const
@@ -1419,19 +1428,24 @@ void BlockLevelBox::resolveOffset(ViewCSSImp* view)
     Box::resolveOffset(parentStyle);
 }
 
-void BlockLevelBox::resolveXY(ViewCSSImp* view, float left, float top)
+void BlockLevelBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip)
 {
     left += offsetH;
     top += offsetV;
     x = left;
     y = top;
+    clipBox = clip;
     left += getBlankLeft();
     top += getBlankTop();
+
+    if (!isAnonymous() && style->overflow.isClipped())
+        clip = this;
+
     if (shadow)
         shadow->resolveXY(left, top);
     else {
         for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
-            child->resolveXY(view, left, top);
+            child->resolveXY(view, left, top, clip);
             top += child->getTotalHeight();
         }
     }
@@ -1510,12 +1524,13 @@ void LineBox::fit(float w)
     }
 }
 
-void LineBox::resolveXY(ViewCSSImp* view, float left, float top)
+void LineBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip)
 {
     left += offsetH;
     top += offsetV;
     x = left;
     y = top;
+    clipBox = clip;
     left += getBlankLeft();  // Node floats are placed inside margins.
     top += getBlankTop();
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
@@ -1531,7 +1546,7 @@ void LineBox::resolveXY(ViewCSSImp* view, float left, float top)
                 next = left + box->getEffectiveTotalWidth();
             }
         }
-        child->resolveXY(view, left, top);
+        child->resolveXY(view, left, top, clip);
         left = next;
     }
 }
@@ -1607,18 +1622,19 @@ void InlineLevelBox::resolveOffset(ViewCSSImp* view)
     }
 }
 
-void InlineLevelBox::resolveXY(ViewCSSImp* view, float left, float top)
+void InlineLevelBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip)
 {
     left += offsetH;
     top += offsetV;
     if (shadow)
         shadow->resolveXY(left, top);
     else if (getFirstChild())
-        getFirstChild()->resolveXY(view, left, top);
+        getFirstChild()->resolveXY(view, left, top, clip);
     else if (font)
         top += baseline - font->getAscender(point);
     x = left;
     y = top;
+    clipBox = clip;
 }
 
 void InlineLevelBox::dump(std::string indent)

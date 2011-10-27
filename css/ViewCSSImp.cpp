@@ -101,7 +101,7 @@ void ViewCSSImp::findDeclarations(DeclarationSet& set, Element element, css::CSS
 void ViewCSSImp::resolveXY(float left, float top)
 {
     if (boxTree)
-        boxTree->resolveXY(this, left, top);
+        boxTree->resolveXY(this, left, top, 0);
 }
 
 void ViewCSSImp::cascade()
@@ -435,7 +435,7 @@ BlockLevelBox* ViewCSSImp::layOut()
     // Expand line boxes and inline-level boxes in each block-level box
     if (!boxTree->isAbsolutelyPositioned()) {
         boxTree->layOut(this, 0);
-        boxTree->resolveXY(this, 0.0f, 0.0f);
+        boxTree->resolveXY(this, 0.0f, 0.0f, 0);
     }
 
     // Lay out absolute boxes.
@@ -443,7 +443,7 @@ BlockLevelBox* ViewCSSImp::layOut()
         BlockLevelBox* box = absoluteList.front();
         absoluteList.pop_front();
         box->layOutAbsolute(this);
-        box->resolveXY(this, box->x, box->y);
+        box->resolveXY(this, box->x, box->y, box->clipBox);
     }
 
     if (stackingContexts) {
