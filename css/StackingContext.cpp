@@ -123,14 +123,16 @@ StackingContext* StackingContext::addContext(bool auto_, int zIndex)
 
 void StackingContext::render(ViewCSSImp* view)
 {
+    float scrollX = view->getWindow()->getScrollX();
+    float scrollY = view->getWindow()->getScrollY();
     currentFloat = 0;
     for (Box* base = firstBase; base; base = base->nextBase) {
         if (base->clipBox) {
             // TODO: Support the cumulative clip intersection.
             BlockLevelBox* clip = base->clipBox;
             // TODO: if (base->isAbsolutelyPositioned()) ... else ...
-            float left = clip->x + clip->marginLeft + clip->borderLeft;
-            float top = clip->y + clip->marginTop + clip->borderTop;
+            float left = clip->x + clip->marginLeft + clip->borderLeft - scrollX;
+            float top = clip->y + clip->marginTop + clip->borderTop - scrollY;
             float right = left + clip->getPaddingWidth();
             float bottom = top + clip->getPaddingHeight();
             glViewport(left, view->getInitialContainingBlock()->getHeight() - bottom, right - left, bottom - top);
