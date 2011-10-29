@@ -41,6 +41,7 @@ ViewCSSImp::ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyle
     window(window),
     defaultStyleSheet(defaultStyleSheet),
     stackingContexts(0),
+    overflow(CSSOverflowValueImp::Auto),
     hovered(0),
     dpi(96),
     mutationListener(boost::bind(&ViewCSSImp::handleMutation, this, _1))
@@ -161,6 +162,9 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle)
     }
     for (Node child = node.getFirstChild(); child; child = child.getNextSibling())
         cascade(child, style);
+
+    if (!parentStyle && style)
+        overflow = style->overflow.getValue();
 }
 
 // In this step, neither inline-level boxes nor line boxes are generated.

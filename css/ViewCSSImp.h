@@ -71,6 +71,7 @@ class ViewCSSImp
     BlockLevelBoxPtr boxTree;
     Retained<ContainingBlock> initialContainingBlock;
     StackingContext* stackingContexts;
+    unsigned overflow;
 
     Node hovered;
 

@@ -56,6 +56,11 @@ void ViewCSSImp::render()
     if (stackingContexts)
         stackingContexts->render(this);
     glPopMatrix();
+
+    if (overflow != CSSOverflowValueImp::Hidden) {
+        Box::renderVerticalScrollBar(initialContainingBlock.width, initialContainingBlock.height, window->getScrollY(), boxTree->getTotalHeight());
+        Box::renderHorizontalScrollBar(initialContainingBlock.width, initialContainingBlock.height, window->getScrollX(), boxTree->getTotalWidth());
+    }
 }
 
 }}}}  // org::w3c::dom::bootstrap

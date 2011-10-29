@@ -395,6 +395,9 @@ public:
         }
         return isInside(x, y) ? this : 0;
     }
+
+    static void renderVerticalScrollBar(float w, float h, float pos, float total);
+    static void renderHorizontalScrollBar(float w, float h, float pos, float total);
 };
 
 typedef boost::intrusive_ptr<Box> BoxPtr;
