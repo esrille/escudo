@@ -1557,7 +1557,7 @@ public:
         return Options[value];
     }
     bool isClipped() const {
-        return value == Hidden || value == Scroll;
+        return value != Visible;
     }
     void specify(const CSSOverflowValueImp& specified) {
         value = specified.value;

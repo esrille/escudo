@@ -437,25 +437,26 @@ unsigned BlockLevelBox::renderBegin(ViewCSSImp* view)
     if (!isAnonymous()) {
         float scrollX = 0.0f;
         float scrollY = 0.0f;
-        if (style->position.isFixed()) {
+        if (style->position.isFixed() && style->parentStyle) {
             scrollX = view->getWindow()->getScrollX();
             scrollY = view->getWindow()->getScrollY();
             glTranslatef(scrollX, scrollY, 0.0f);
         }
         renderBorder(view, x, y);
-        overflow = style->overflow.getValue();
-        if (overflow == CSSOverflowValueImp::Hidden || overflow == CSSOverflowValueImp::Scroll) {
-            // TODO: Support the cumulative intersection.
-            float left = x + marginLeft + borderLeft + scrollX;
-            float top = y + marginTop + borderTop + scrollY;
-            float w = getPaddingWidth();
-            float h = getPaddingHeight();
-            glViewport(left, view->getInitialContainingBlock()->getHeight() - (top + h), w, h);
-            glMatrixMode(GL_PROJECTION);
-            glLoadIdentity();
-            glOrtho(left, left + w, top + h, top, -1000.0, 1.0);
-            glMatrixMode(GL_MODELVIEW);
-            if (overflow == CSSOverflowValueImp::Scroll) {
+        if (style->parentStyle) {
+            overflow = style->overflow.getValue();
+            if (overflow != CSSOverflowValueImp::Visible) {
+                // TODO: Support the cumulative intersection.
+                float left = x + marginLeft + borderLeft + scrollX;
+                float top = y + marginTop + borderTop + scrollY;
+                float w = getPaddingWidth();
+                float h = getPaddingHeight();
+                glViewport(left, view->getInitialContainingBlock()->getHeight() - (top + h), w, h);
+                glMatrixMode(GL_PROJECTION);
+                glLoadIdentity();
+                glOrtho(left, left + w, top + h, top, -1000.0, 1.0);
+                glMatrixMode(GL_MODELVIEW);
+
                 glPushMatrix();
                 Element element = interface_cast<Element>(node);
                 glTranslatef(-element.getScrollLeft(), -element.getScrollTop(), 0.0f);
@@ -467,10 +468,10 @@ unsigned BlockLevelBox::renderBegin(ViewCSSImp* view)
 
 void BlockLevelBox::renderEnd(ViewCSSImp* view, unsigned overflow)
 {
-    if (!isAnonymous()) {
-        if (overflow == CSSOverflowValueImp::Hidden || overflow == CSSOverflowValueImp::Scroll) {
-            if (overflow == CSSOverflowValueImp::Scroll)
-                glPopMatrix();
+    if (!isAnonymous() && style->parentStyle) {
+        if (overflow != CSSOverflowValueImp::Visible) {
+            glPopMatrix();
+
             // TODO: Support the cumulative intersection.
             float w = view->getInitialContainingBlock()->getWidth();
             float h = view->getInitialContainingBlock()->getHeight();
@@ -479,22 +480,23 @@ void BlockLevelBox::renderEnd(ViewCSSImp* view, unsigned overflow)
             glLoadIdentity();
             glOrtho(0, w, h, 0, -1000.0, 1.0);
             glMatrixMode(GL_MODELVIEW);
-        }
-        if (overflow == CSSOverflowValueImp::Scroll && style->parentStyle) {  // TODO: Auto?
-            glPushMatrix();
-                glTranslatef(x + marginLeft + borderLeft, y + marginTop + borderTop, 0.0f);
-                float w = getPaddingWidth();
-                float h = getPaddingHeight();
-                Element element = interface_cast<Element>(node);
-                float tw = 0.0f;
-                float th = 0.0f;
-                for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
-                    th += child->getTotalHeight();
-                    tw = std::max(tw, child->getTotalWidth());
-                }
-                renderVerticalScrollBar(w, h, element.getScrollTop(), th);
-                renderHorizontalScrollBar(w, h, element.getScrollLeft(), tw);
-            glPopMatrix();
+
+            if (overflow != CSSOverflowValueImp::Hidden) {
+                glPushMatrix();
+                    glTranslatef(x + marginLeft + borderLeft, y + marginTop + borderTop, 0.0f);
+                    float w = getPaddingWidth();
+                    float h = getPaddingHeight();
+                    Element element = interface_cast<Element>(node);
+                    float tw = 0.0f;
+                    float th = 0.0f;
+                    for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
+                        th += child->getTotalHeight();
+                        tw = std::max(tw, child->getTotalWidth());
+                    }
+                    renderVerticalScrollBar(w, h, element.getScrollTop(), th);
+                    renderHorizontalScrollBar(w, h, element.getScrollLeft(), tw);
+                glPopMatrix();
+            }
         }
     }
     glPopMatrix();

@@ -139,7 +139,7 @@ void StackingContext::render(ViewCSSImp* view)
             top = clip->y + clip->marginTop + clip->borderTop;
             w = clip->getPaddingWidth();
             h = clip->getPaddingHeight();
-            if (clip->style->overflow.getValue() == CSSOverflowValueImp::Scroll) {
+            if (clip->style->overflow.getValue() != CSSOverflowValueImp::Visible) {
                 Element element = interface_cast<Element>(clip->node);
                 glTranslatef(-element.getScrollLeft(), -element.getScrollTop(), 0.0f);
             }
