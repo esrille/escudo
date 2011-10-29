@@ -71,6 +71,9 @@ class StackingContext
         return auto_;
     }
 
+    void clip(ViewCSSImp* view, Box* base, float scrollX, float scrollY);
+    void unclip(ViewCSSImp* view, Box* base);
+
 public:
     StackingContext(bool auto_, int zIndex = 0);
     ~StackingContext();

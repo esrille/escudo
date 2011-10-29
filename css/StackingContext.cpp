@@ -121,6 +121,62 @@ StackingContext* StackingContext::addContext(bool auto_, int zIndex)
     return item;
 }
 
+void StackingContext::clip(ViewCSSImp* view, Box* base, float scrollX, float scrollY)
+{
+    float left;
+    float top;
+    float w;
+    float h;
+
+    for (BlockLevelBox* clip = base->clipBox; clip; clip = clip->clipBox) {
+        if (clip->style->overflow.getValue() != CSSOverflowValueImp::Visible) {
+            Element element = interface_cast<Element>(clip->node);
+            glTranslatef(-element.getScrollLeft(), -element.getScrollTop(), 0.0f);
+            if (clip != base->clipBox) {
+                left -= element.getScrollLeft();
+                top -= element.getScrollTop();
+            }
+        }
+        // TODO: if (base->isAbsolutelyPositioned()) ... else ...
+        if (clip == base->clipBox) {
+            left = clip->x + clip->marginLeft + clip->borderLeft;
+            top = clip->y + clip->marginTop + clip->borderTop;
+            w = clip->getPaddingWidth();
+            h = clip->getPaddingHeight();
+        } else {
+            Box::unionRect(left, top, w, h,
+                            clip->x + clip->marginLeft + clip->borderLeft,
+                            clip->y + clip->marginTop + clip->borderTop,
+                            clip->getPaddingWidth(),
+                            clip->getPaddingHeight());
+        }
+    }
+
+    if (base->clipBox) {
+        left -= scrollX;
+        top -= scrollY;
+        glViewport(left, view->getInitialContainingBlock()->getHeight() - (top + h), w, h);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(left, left + w, top + h, top, -1000.0, 1.0);
+        glMatrixMode(GL_MODELVIEW);
+    }
+}
+
+// TODO: Revert to the previous clipping status
+void StackingContext::unclip(ViewCSSImp* view, Box* base)
+{
+    if (base->clipBox) {
+        float w = view->getInitialContainingBlock()->getWidth();
+        float h = view->getInitialContainingBlock()->getHeight();
+        glViewport(0, 0, w, h);
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glOrtho(0, w, h, 0, -1000.0, 1.0);
+        glMatrixMode(GL_MODELVIEW);
+    }
+}
+
 void StackingContext::render(ViewCSSImp* view)
 {
     float scrollX = view->getWindow()->getScrollX();
@@ -128,43 +184,7 @@ void StackingContext::render(ViewCSSImp* view)
     currentFloat = 0;
     for (Box* base = firstBase; base; base = base->nextBase) {
         glPushMatrix();
-        float left;
-        float top;
-        float w;
-        float h;
-        for (BlockLevelBox* clip = base->clipBox; clip; clip = clip->clipBox) {
-            if (clip->style->overflow.getValue() != CSSOverflowValueImp::Visible) {
-                Element element = interface_cast<Element>(clip->node);
-                glTranslatef(-element.getScrollLeft(), -element.getScrollTop(), 0.0f);
-                if (clip != base->clipBox) {
-                    left -= element.getScrollLeft();
-                    top -= element.getScrollTop();
-                }
-            }
-            // TODO: if (base->isAbsolutelyPositioned()) ... else ...
-            if (clip == base->clipBox) {
-                left = clip->x + clip->marginLeft + clip->borderLeft;
-                top = clip->y + clip->marginTop + clip->borderTop;
-                w = clip->getPaddingWidth();
-                h = clip->getPaddingHeight();
-            } else {
-                Box::unionRect(left, top, w, h,
-                               clip->x + clip->marginLeft + clip->borderLeft,
-                               clip->y + clip->marginTop + clip->borderTop,
-                               clip->getPaddingWidth(),
-                               clip->getPaddingHeight());
-            }
-        }
-        if (base->clipBox) {
-            left -= scrollX;
-            top -= scrollY;
-            glViewport(left, view->getInitialContainingBlock()->getHeight() - (top + h), w, h);
-            glMatrixMode(GL_PROJECTION);
-            glLoadIdentity();
-            glOrtho(left, left + w, top + h, top, -1000.0, 1.0);
-            glMatrixMode(GL_MODELVIEW);
-        }
-
+        clip(view, base, scrollX, scrollY);
         BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(base);
         unsigned overflow = CSSOverflowValueImp::Visible;
         if (block)
@@ -176,22 +196,17 @@ void StackingContext::render(ViewCSSImp* view)
             base->render(view, this);
         else
             block->renderContent(view, this);
-        for (currentFloat = firstFloat; currentFloat; currentFloat = currentFloat->nextBase)
-            currentFloat ->render(view, this);
+        for (currentFloat = firstFloat; currentFloat; currentFloat = currentFloat->nextBase) {
+            clip(view, currentFloat, scrollX, scrollY);
+            currentFloat->render(view, this);
+            unclip(view, currentFloat);
+        }
         for (; childContext; childContext = childContext->getNextSibling())
             childContext->render(view);
         if (block)
             block->renderEnd(view, overflow);
 
-        if (base->clipBox) {
-            float w = view->getInitialContainingBlock()->getWidth();
-            float h = view->getInitialContainingBlock()->getHeight();
-            glViewport(0, 0, w, h);
-            glMatrixMode(GL_PROJECTION);
-            glLoadIdentity();
-            glOrtho(0, w, h, 0, -1000.0, 1.0);
-            glMatrixMode(GL_MODELVIEW);
-        }
+        unclip(view, base);
         glPopMatrix();
     }
 }
