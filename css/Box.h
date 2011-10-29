@@ -398,6 +398,27 @@ public:
 
     static void renderVerticalScrollBar(float w, float h, float pos, float total);
     static void renderHorizontalScrollBar(float w, float h, float pos, float total);
+    static void unionRect(float& l, float& t, float& w, float& h,
+                          float ll, float tt, float ww, float hh) {
+        if (ll < l + w && l < ll + ww && tt < t + h && t < tt + hh) {
+            if (l < ll) {
+                w -= (ll - l);
+                l = ll;
+            } else
+                ww -= (l - ll);
+            if (ww < w)
+                w = ww;
+            if (t < tt) {
+                h -= (tt - t);
+                t = tt;
+            } else
+                hh -= (t - tt);
+            if (hh < h)
+                h = hh;
+            return;
+        }
+        w = h = 0.0f;
+    }
 };
 
 typedef boost::intrusive_ptr<Box> BoxPtr;

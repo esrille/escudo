@@ -128,20 +128,31 @@ void StackingContext::render(ViewCSSImp* view)
     currentFloat = 0;
     for (Box* base = firstBase; base; base = base->nextBase) {
         glPushMatrix();
-        float left = 0.0f;
-        float top = 0.0f;
-        float w = view->getWidth();
-        float h = view->getHeight();
-        // TODO: Support the cumulative clip intersection.
+        float left;
+        float top;
+        float w;
+        float h;
         for (BlockLevelBox* clip = base->clipBox; clip; clip = clip->clipBox) {
-            // TODO: if (base->isAbsolutelyPositioned()) ... else ...
-            left = clip->x + clip->marginLeft + clip->borderLeft;
-            top = clip->y + clip->marginTop + clip->borderTop;
-            w = clip->getPaddingWidth();
-            h = clip->getPaddingHeight();
             if (clip->style->overflow.getValue() != CSSOverflowValueImp::Visible) {
                 Element element = interface_cast<Element>(clip->node);
                 glTranslatef(-element.getScrollLeft(), -element.getScrollTop(), 0.0f);
+                if (clip != base->clipBox) {
+                    left -= element.getScrollLeft();
+                    top -= element.getScrollTop();
+                }
+            }
+            // TODO: if (base->isAbsolutelyPositioned()) ... else ...
+            if (clip == base->clipBox) {
+                left = clip->x + clip->marginLeft + clip->borderLeft;
+                top = clip->y + clip->marginTop + clip->borderTop;
+                w = clip->getPaddingWidth();
+                h = clip->getPaddingHeight();
+            } else {
+                Box::unionRect(left, top, w, h,
+                               clip->x + clip->marginLeft + clip->borderLeft,
+                               clip->y + clip->marginTop + clip->borderTop,
+                               clip->getPaddingWidth(),
+                               clip->getPaddingHeight());
             }
         }
         if (base->clipBox) {
