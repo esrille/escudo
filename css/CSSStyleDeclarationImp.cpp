@@ -1186,19 +1186,6 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     verticalAlign.compute(view, this);
     if (position.getValue() == CSSPositionValueImp::Static)
         left = right = top = bottom.setValue();  // set to 'auto'
-    if (element.getLocalName() == u"body") {  // TODO: check HTML namespace
-        // TODO: do not update computed values here, just *use* them.
-        assert(parentStyle);
-        if (parentStyle->overflow.getValue() == CSSOverflowValueImp::Visible) {
-            parentStyle->overflow.specify(overflow);
-            overflow.setValue(CSSOverflowValueImp::Visible);
-        }
-        if (parentStyle->backgroundColor.getARGB() == 0 &&  // transparent?
-            parentStyle->backgroundImage.isNone()) {
-            parentStyle->background.specify(parentStyle, this);
-            background.reset(this);
-        }
-    }
 
     width.compute(view, this);
     height.compute(view, this);

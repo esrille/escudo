@@ -163,6 +163,23 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle)
     for (Node child = node.getFirstChild(); child; child = child.getNextSibling())
         cascade(child, style);
 
+    if (node.getNodeType() == Node::ELEMENT_NODE) {
+        Element element = interface_cast<Element>(node);
+        if (element.getLocalName() == u"body") {  // TODO: check HTML namespace
+            assert(parentStyle);
+            assert(style);
+            if (parentStyle->overflow.getValue() == CSSOverflowValueImp::Visible) {
+                parentStyle->overflow.specify(style->overflow);
+                style->overflow.setValue(CSSOverflowValueImp::Visible);
+            }
+            if (parentStyle->backgroundColor.getARGB() == 0 &&  // transparent?
+                parentStyle->backgroundImage.isNone()) {
+                parentStyle->background.specify(parentStyle, style);
+                style->background.reset(style);
+            }
+        }
+    }
+
     if (!parentStyle && style)
         overflow = style->overflow.getValue();
 }
