@@ -123,6 +123,13 @@ public:
         initialContainingBlock.width = w;
         initialContainingBlock.height = h;
     }
+    float getWidth() const {
+        return initialContainingBlock.width;
+    }
+    float getHeight() const {
+        return initialContainingBlock.height;
+    }
+
     const ContainingBlock* getInitialContainingBlock() const {
         return &initialContainingBlock;
     }

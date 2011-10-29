@@ -18,28 +18,63 @@
 
 #include <boost/bind.hpp>
 
+#include <org/w3c/dom/events/MouseEvent.h>
+
 #include "DocumentImp.h"
+#include "css/Box.h"
 #include "css/CSSParser.h"
 #include "css/CSSStyleDeclarationImp.h"
 #include "js/esjsapi.h"
 #include "js/Script.h"
 
+
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 HTMLElementImp::HTMLElementImp(DocumentImp* ownerDocument, const std::u16string& localName) :
     ObjectMixin(ownerDocument, localName, u"http://www.w3.org/1999/xhtml"),
-    style(0)
+    style(0),
+    scrollTop(0),
+    scrollLeft(0),
+    clickListener(boost::bind(&HTMLElementImp::handleClick, this, _1))
 {
+    addEventListener(u"click", &clickListener);
 }
 
 HTMLElementImp::HTMLElementImp(HTMLElementImp* org, bool deep) :
     ObjectMixin(org, deep),
-    style(org->style)  // TODO: clone
+    style(org->style),  // TODO: clone
+    scrollTop(0),
+    scrollLeft(0),
+    clickListener(boost::bind(&HTMLElementImp::handleClick, this, _1))
 {
+    addEventListener(u"click", &clickListener);
 }
 
 HTMLElementImp::~HTMLElementImp()
 {
+}
+
+void HTMLElementImp::handleClick(events::Event event)
+{
+    if (event.getDefaultPrevented())
+        return;
+    events::MouseEvent mouse = interface_cast<events::MouseEvent>(event);
+    switch (mouse.getButton()) {
+    case 3:
+        setScrollTop(getScrollTop() - 16);
+        break;
+    case 4:
+        setScrollTop(getScrollTop() + 16);
+        break;
+    case 5:
+        setScrollLeft(getScrollLeft() - 16);
+        break;
+    case 6:
+        setScrollLeft(getScrollLeft() + 16);
+        break;
+    default:
+        break;
+    }
 }
 
 void HTMLElementImp::eval()
@@ -58,10 +93,118 @@ void HTMLElementImp::eval()
         setOnload(compileFunction(attr.value()));
 }
 
+Box* HTMLElementImp::getBox()
+{
+    html::Window window = getOwnerDocument().getDefaultView();
+    if (!window)
+        return 0;
+    css::CSSStyleDeclaration style = window.getComputedStyle(this);
+    if (!style)
+        return 0;
+    // TODO: Fix MVC violation
+    CSSStyleDeclarationImp* imp = dynamic_cast<CSSStyleDeclarationImp*>(style.self());
+    if (!imp)
+        return 0;
+    return imp->getBox();
+}
+
 // Node
 Node HTMLElementImp::cloneNode(bool deep)
 {
     return new(std::nothrow) HTMLElementImp(this, deep);
+}
+
+// Element
+
+views::ClientRectList HTMLElementImp::getClientRects()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+views::ClientRect HTMLElementImp::getBoundingClientRect()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void HTMLElementImp::scrollIntoView(bool top)
+{
+    // TODO: implement me!
+}
+
+int HTMLElementImp::getScrollTop()
+{
+    return scrollTop;
+}
+
+void HTMLElementImp::setScrollTop(int y)
+{
+    BlockLevelBox* box = dynamic_cast<BlockLevelBox*>(getBox());
+    if (!box)
+        return;
+    float overflow = 0.0f;
+    for (Box* child = box->getFirstChild(); child; child = child->getNextSibling())
+        overflow += child->getTotalHeight();
+    overflow -= box->height;
+    scrollTop = std::max(0, std::min(y, static_cast<int>(overflow)));
+    box->setFlags(2);
+}
+
+int HTMLElementImp::getScrollLeft()
+{
+    return scrollLeft;
+}
+
+void HTMLElementImp::setScrollLeft(int x)
+{
+    BlockLevelBox* box = dynamic_cast<BlockLevelBox*>(getBox());
+    if (!box)
+        return;
+    float overflow = 0.0f;
+    for (Box* child = box->getFirstChild(); child; child = child->getNextSibling())
+        overflow = std::max(overflow, child->getTotalWidth());
+    overflow -= box->width;
+    scrollLeft = std::max(0, std::min(x, static_cast<int>(overflow)));
+    box->setFlags(2);
+}
+
+int HTMLElementImp::getScrollWidth()
+{
+    if (Box* box = getBox())
+        return box->getPaddingWidth();
+    return 0;
+}
+
+int HTMLElementImp::getScrollHeight()
+{
+    if (Box* box = getBox())
+        return box->getPaddingHeight();
+    return 0;
+}
+
+int HTMLElementImp::getClientTop()
+{
+    // TODO: implement me!
+    return 0;
+}
+
+int HTMLElementImp::getClientLeft()
+{
+    // TODO: implement me!
+    return 0;
+}
+
+int HTMLElementImp::getClientWidth()
+{
+    // TODO: implement me!
+    return 0;
+}
+
+int HTMLElementImp::getClientHeight()
+{
+    // TODO: implement me!
+    return 0;
 }
 
 // HTMLElement - implemented

@@ -127,18 +127,30 @@ void StackingContext::render(ViewCSSImp* view)
     float scrollY = view->getWindow()->getScrollY();
     currentFloat = 0;
     for (Box* base = firstBase; base; base = base->nextBase) {
-        if (base->clipBox) {
-            // TODO: Support the cumulative clip intersection.
-            BlockLevelBox* clip = base->clipBox;
+        glPushMatrix();
+        float left = 0.0f;
+        float top = 0.0f;
+        float w = view->getWidth();
+        float h = view->getHeight();
+        // TODO: Support the cumulative clip intersection.
+        for (BlockLevelBox* clip = base->clipBox; clip; clip = clip->clipBox) {
             // TODO: if (base->isAbsolutelyPositioned()) ... else ...
-            float left = clip->x + clip->marginLeft + clip->borderLeft - scrollX;
-            float top = clip->y + clip->marginTop + clip->borderTop - scrollY;
-            float right = left + clip->getPaddingWidth();
-            float bottom = top + clip->getPaddingHeight();
-            glViewport(left, view->getInitialContainingBlock()->getHeight() - bottom, right - left, bottom - top);
+            left = clip->x + clip->marginLeft + clip->borderLeft;
+            top = clip->y + clip->marginTop + clip->borderTop;
+            w = clip->getPaddingWidth();
+            h = clip->getPaddingHeight();
+            if (clip->style->overflow.getValue() == CSSOverflowValueImp::Scroll) {
+                Element element = interface_cast<Element>(clip->node);
+                glTranslatef(-element.getScrollLeft(), -element.getScrollTop(), 0.0f);
+            }
+        }
+        if (base->clipBox) {
+            left -= scrollX;
+            top -= scrollY;
+            glViewport(left, view->getInitialContainingBlock()->getHeight() - (top + h), w, h);
             glMatrixMode(GL_PROJECTION);
             glLoadIdentity();
-            glOrtho(left, right, bottom, top, -1000.0, 1.0);
+            glOrtho(left, left + w, top + h, top, -1000.0, 1.0);
             glMatrixMode(GL_MODELVIEW);
         }
 
@@ -169,6 +181,7 @@ void StackingContext::render(ViewCSSImp* view)
             glOrtho(0, w, h, 0, -1000.0, 1.0);
             glMatrixMode(GL_MODELVIEW);
         }
+        glPopMatrix();
     }
 }
 

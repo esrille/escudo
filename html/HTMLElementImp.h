@@ -31,12 +31,20 @@
 #include <org/w3c/dom/html/HTMLPropertiesCollection.h>
 
 #include "ElementImp.h"
+#include "EventListenerImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
+
+class Box;
 
 class HTMLElementImp : public ObjectMixin<HTMLElementImp, ElementImp>
 {
     css::CSSStyleDeclaration style;
+    int scrollTop;
+    int scrollLeft;
+    Retained<EventListenerImp> clickListener;
+
+    void handleClick(events::Event event);
 
 public:
     HTMLElementImp(DocumentImp* ownerDocument, const std::u16string& localName);
@@ -44,9 +52,25 @@ public:
     ~HTMLElementImp();
 
     virtual void eval();
+    Box* getBox();
 
     // Node
     virtual Node cloneNode(bool deep);
+
+    // Element (CSSOM view)
+    virtual views::ClientRectList getClientRects();
+    virtual views::ClientRect getBoundingClientRect();
+    virtual void scrollIntoView(bool top = true);
+    virtual int getScrollTop();
+    virtual void setScrollTop(int scrollTop);
+    virtual int getScrollLeft();
+    virtual void setScrollLeft(int scrollLeft);
+    virtual int getScrollWidth();
+    virtual int getScrollHeight();
+    virtual int getClientTop();
+    virtual int getClientLeft();
+    virtual int getClientWidth();
+    virtual int getClientHeight();
 
     // HTMLElement
     virtual NodeList getElementsByClassName(std::u16string classNames);
