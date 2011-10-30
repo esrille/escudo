@@ -405,6 +405,14 @@ void BlockLevelBox::applyMinMaxWidth(float w)
 // == containingBlock->width (- scrollbar width, if any)
 void BlockLevelBox::resolveNormalWidth(float w, float r)
 {
+    if (isAnonymous()) {
+        if (!isnan(r))
+            width = r;
+        else
+            width = w;
+        return;
+    }
+
     int autoCount = 3;
     unsigned autoMask = Left | Width | Right;
     if (style) {
@@ -954,7 +962,7 @@ void BlockLevelBox::fit(float w)
     if (getTotalWidth() == w)
         return;
     resolveWidth(w);
-    if (style && !style->width.isAuto())
+    if (!isAnonymous() && !style->width.isAuto())
         return;
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
         child->fit(width);
