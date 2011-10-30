@@ -1433,14 +1433,12 @@ html::Screen WindowImp::getScreen()
 
 int WindowImp::getInnerWidth()
 {
-    // TODO: implement me!
-    return 0;
+    return width;
 }
 
 int WindowImp::getInnerHeight()
 {
-    // TODO: implement me!
-    return 0;
+    return height;
 }
 
 int WindowImp::getScrollX()
@@ -1450,8 +1448,7 @@ int WindowImp::getScrollX()
 
 int WindowImp::getPageXOffset()
 {
-    // TODO: implement me!
-    return 0;
+    return getScrollX();
 }
 
 int WindowImp::getScrollY()
@@ -1461,8 +1458,7 @@ int WindowImp::getScrollY()
 
 int WindowImp::getPageYOffset()
 {
-    // TODO: implement me!
-    return 0;
+    return getScrollY();
 }
 
 void WindowImp::scroll(int x, int y)

@@ -238,6 +238,10 @@ public:
     }
     bool isHovered(Node node);
 
+    bool canScroll() const {
+        return CSSOverflowValueImp::canScroll(overflow);
+    }
+
     CSSStyleDeclarationImp* getStyle(Element elt, Nullable<std::u16string> pseudoElt = Nullable<std::u16string>());
 
     // TODO OpenGL specific part...

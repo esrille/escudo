@@ -21,6 +21,7 @@
 #include <org/w3c/dom/events/MouseEvent.h>
 
 #include "WindowImp.h"
+#include "css/ViewCSSImp.h"
 #include "js/esjsapi.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
@@ -91,19 +92,28 @@ void DocumentWindow::handleClick(events::Event event)
     html::Window defaultView = document.getDefaultView();
     if (!defaultView)
         return;
+    WindowImp* imp = dynamic_cast<WindowImp*>(defaultView.self());
+    if (!imp)
+        return;
+    bool canScroll = imp->getView()->canScroll();
+
     events::MouseEvent mouse = interface_cast<events::MouseEvent>(event);
     switch (mouse.getButton()) {
     case 3:
-        defaultView.scrollBy(0, -16);
+        if (canScroll)
+            defaultView.scrollBy(0, -16);
         break;
     case 4:
-        defaultView.scrollBy(0, 16);
+        if (canScroll)
+            defaultView.scrollBy(0, 16);
         break;
     case 5:
-        defaultView.scrollBy(-64, 0);
+        if (canScroll)
+            defaultView.scrollBy(-64, 0);
         break;
     case 6:
-        defaultView.scrollBy(64, 0);
+        if (canScroll)
+            defaultView.scrollBy(64, 0);
         break;
     case 7:
         defaultView.getHistory().back();

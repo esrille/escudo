@@ -1559,6 +1559,9 @@ public:
     bool isClipped() const {
         return value != Visible;
     }
+    bool canScroll() const {
+        return canScroll(value);
+    }
     void specify(const CSSOverflowValueImp& specified) {
         value = specified.value;
     }
@@ -1566,6 +1569,10 @@ public:
         value(initial) {
     }
     static const char16_t* Options[];
+
+    static bool canScroll(unsigned value) {
+        return value == Scroll || value == Auto;
+    }
 };
 
 class CSSPageBreakValueImp : public CSSPropertyValueImp
