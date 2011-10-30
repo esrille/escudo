@@ -239,7 +239,8 @@ public:
     bool isHovered(Node node);
 
     bool canScroll() const {
-        return CSSOverflowValueImp::canScroll(overflow);
+        // Note the 'visible' value is interpreted as 'auto' in the viewport.
+        return overflow != CSSOverflowValueImp::Hidden;
     }
 
     CSSStyleDeclarationImp* getStyle(Element elt, Nullable<std::u16string> pseudoElt = Nullable<std::u16string>());
