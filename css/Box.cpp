@@ -976,8 +976,6 @@ float collapseMargins(float a, float b)
 
 float BlockLevelBox::collapseMarginTop(FormattingContext* context)
 {
-    if (isFlowRoot())
-        return 0.0f;
     assert(!isFlowRoot());
     float before = 0.0f;
     bool top = false;  // TODO: review this logic again for negative margins, etc.
@@ -992,9 +990,11 @@ float BlockLevelBox::collapseMarginTop(FormattingContext* context)
         } else {
             Box* prev = getPreviousSibling();
             assert(prev);
-            before = prev->marginBottom;
-            marginTop = collapseMargins(prev->marginBottom, marginTop);
-            prev->marginBottom = 0.0f;
+            if (!prev->isFlowRoot()) {
+                before = prev->marginBottom;
+                marginTop = collapseMargins(prev->marginBottom, marginTop);
+                prev->marginBottom = 0.0f;
+            }
         }
     }
     context->updateRemainingHeight(top ? (getBlankTop() - before) : getBlankTop());
@@ -1027,8 +1027,17 @@ void BlockLevelBox::layOutChildren(ViewCSSImp* view, FormattingContext* context)
             removeChild(child);
             continue;
         }
-        if (child->isFlowRoot())
-            context->updateRemainingHeight(child->getTotalHeight());
+        if (child->isFlowRoot()) {
+            assert(!child->isAnonymous());
+            if (Box* prev = child->getPreviousSibling()) {
+                if (!prev->isFlowRoot())
+                    context->updateRemainingHeight(prev->marginBottom);
+            }
+            float clearance = context->clear(child->style->clear.getValue());
+            if (child->marginTop < clearance)
+                child->marginTop = clearance;
+            context->updateRemainingHeight(child->getTotalHeight() - clearance);
+        }
         if (style->width.isAuto())
             width = std::max(width, child->getTotalWidth());
     }
@@ -1089,6 +1098,7 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     context = updateFormattingContext(context);
     float before = 0.0f;
     float clearance = 0.0f;
+
     if (!isFlowRoot()) {
         before = collapseMarginTop(context);
         if (!isAnonymous()) {

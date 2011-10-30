@@ -309,7 +309,6 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
     stackingContext = style->getStackingContext();
 
     context = updateFormattingContext(context);
-    collapseMarginTop(context);
 
     if (tableBox) {
         tableBox->setStyle(style.get());
