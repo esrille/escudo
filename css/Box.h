@@ -510,7 +510,11 @@ public:
     virtual const ContainingBlock* getContainingBlock(ViewCSSImp* view) const;
     void setContainingBlock(ViewCSSImp* view);
 
-    unsigned resolveAbsoluteWidth(const ContainingBlock* containingBlock, float& right, float& bottom);
+    unsigned resolveAbsoluteWidth(const ContainingBlock* containingBlock, float& left, float& right, float r = NAN);
+    unsigned applyAbsoluteMinMaxWidth(const ContainingBlock* containingBlock, float& left, float& right, unsigned autoMask);
+    unsigned resolveAbsoluteHeight(const ContainingBlock* containingBlock, float& top, float& bottom, float r = NAN);
+    unsigned applyAbsoluteMinMaxHeight(const ContainingBlock* containingBlock, float& top, float& bottom, unsigned autoMask);
+
     void layOutAbsolute(ViewCSSImp* view);  // 2nd pass
 
     // Gets the first child box which is an anonymous box. Creates one if there's none

@@ -1178,14 +1178,8 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     return true;
 }
 
-unsigned BlockLevelBox::resolveAbsoluteWidth(const ContainingBlock* containingBlock, float& right, float& bottom)
+unsigned BlockLevelBox::resolveAbsoluteWidth(const ContainingBlock* containingBlock, float& left, float& right, float r)
 {
-    assert(style);
-    backgroundColor = style->backgroundColor.getARGB();
-
-    updatePadding();
-    updateBorderWidth();
-
     //
     // Calculate width
     //
@@ -1195,7 +1189,7 @@ unsigned BlockLevelBox::resolveAbsoluteWidth(const ContainingBlock* containingBl
     marginLeft = style->marginLeft.isAuto() ? 0.0f : style->marginLeft.getPx();
     marginRight = style->marginRight.isAuto() ? 0.0f : style->marginRight.getPx();
 
-    float left = 0.0f;
+    left = 0.0f;
     right = 0.0f;
 
     unsigned autoMask = Left | Width | Right;
@@ -1203,7 +1197,10 @@ unsigned BlockLevelBox::resolveAbsoluteWidth(const ContainingBlock* containingBl
         left = style->left.getPx();
         autoMask &= ~Left;
     }
-    if (!style->width.isAuto()) {
+    if (!isnan(r)) {
+        width = r;
+        autoMask &= ~Width;
+    } else if (!style->width.isAuto()) {
         width = style->width.getPx();
         autoMask &= ~Width;
     }
@@ -1252,7 +1249,24 @@ unsigned BlockLevelBox::resolveAbsoluteWidth(const ContainingBlock* containingBl
             right += leftover;
         break;
     }
+    return autoMask;
+}
 
+unsigned BlockLevelBox::applyAbsoluteMinMaxWidth(const ContainingBlock* containingBlock, float& left, float& right, unsigned autoMask)
+{
+    if (!style->maxWidth.isNone()) {
+        float maxWidth = style->maxWidth.getPx();
+        if (maxWidth < width)
+            autoMask = resolveAbsoluteWidth(containingBlock, left, right, maxWidth);
+    }
+    float minWidth = style->minWidth.getPx();
+    if (width < minWidth)
+        autoMask = resolveAbsoluteWidth(containingBlock, left, right, minWidth);
+    return autoMask;
+}
+
+unsigned BlockLevelBox::resolveAbsoluteHeight(const ContainingBlock* containingBlock, float& top, float& bottom, float r)
+{
     //
     // Calculate height
     //
@@ -1262,15 +1276,18 @@ unsigned BlockLevelBox::resolveAbsoluteWidth(const ContainingBlock* containingBl
     marginTop = style->marginTop.isAuto() ? 0.0f : style->marginTop.getPx();
     marginBottom = style->marginBottom.isAuto() ? 0.0f : style->marginBottom.getPx();
 
-    float top = 0.0f;
+    top = 0.0f;
     bottom = 0.0f;
 
-    autoMask |= Top | Height | Bottom;
+    unsigned autoMask = Top | Height | Bottom;
     if (!style->top.isAuto()) {
         top = style->top.getPx();
         autoMask &= ~Top;
     }
-    if (!style->height.isAuto()) {
+    if (!isnan(r)) {
+        height = r;
+        autoMask &= ~Height;
+    } else if (!style->height.isAuto()) {
         height = style->height.getPx();
         autoMask &= ~Height;
     }
@@ -1278,7 +1295,11 @@ unsigned BlockLevelBox::resolveAbsoluteWidth(const ContainingBlock* containingBl
         bottom = style->bottom.getPx();
         autoMask &= ~Bottom;
     }
-    leftover = containingBlock->height - getTotalHeight() - top - bottom;
+    float leftover;
+    if (containingBlock->height <= 0.0f)
+        leftover = 0.0f;
+    else
+        leftover = containingBlock->height - getTotalHeight() - top - bottom;
     switch (autoMask & (Top | Height | Bottom)) {
     case Top | Height | Bottom:
         top = -offsetV;
@@ -1319,10 +1340,19 @@ unsigned BlockLevelBox::resolveAbsoluteWidth(const ContainingBlock* containingBl
             bottom += leftover;
         break;
     }
+    return autoMask;
+}
 
-    offsetH += left;
-    offsetV += top;
-
+unsigned BlockLevelBox::applyAbsoluteMinMaxHeight(const ContainingBlock* containingBlock, float& top, float& bottom, unsigned autoMask)
+{
+    if (!style->maxHeight.isNone()) {
+        float maxHeight = style->maxHeight.getPx();
+        if (maxHeight < height)
+            autoMask = resolveAbsoluteHeight(containingBlock, top, bottom, maxHeight);
+    }
+    float minHeight = style->minHeight.getPx();
+    if (height < minHeight)
+        autoMask = resolveAbsoluteHeight(containingBlock, top, bottom, minHeight);
     return autoMask;
 }
 
@@ -1342,11 +1372,19 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
     const ContainingBlock* containingBlock = &absoluteBlock;
 
     style->resolve(view, containingBlock, element);
+
+    backgroundColor = style->backgroundColor.getARGB();
+    updatePadding();
+    updateBorderWidth();
+
+    float left;
     float right;
+    unsigned maskH = resolveAbsoluteWidth(containingBlock, left, right);
+    maskH = applyAbsoluteMinMaxWidth(containingBlock, left, right, maskH);
+    float top;
     float bottom;
-    unsigned autoMask = resolveAbsoluteWidth(containingBlock, right, bottom);
-    unsigned maskH = autoMask & (Left | Width | Right);
-    unsigned maskV = autoMask & (Top | Height | Bottom);
+    unsigned maskV = resolveAbsoluteHeight(containingBlock, top, bottom);
+    maskV = applyAbsoluteMinMaxHeight(containingBlock, top, bottom, maskV);
 
     if (CSSDisplayValueImp::isBlockLevel(style->display.getOriginalValue())) {
         // This box is originally a block-level box inside an inline context.
@@ -1368,7 +1406,6 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
 
     if (isReplacedElement(element)) {
         layOutReplacedElement(view, this, element, style.get());
-        autoMask &= ~(Width | Height);
         maskH &= ~Width;
         maskV &= ~Height;
         // TODO: more conditions...
@@ -1378,54 +1415,35 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
 
     if (maskH == (Left | Width) || maskH == (Width | Right)) {
         shrinkToFit();
-        if (autoMask & Left) {
+        if (maskH & Left) {
             float left = containingBlock->width - getTotalWidth() - right;
             offsetH += left;
         }
     }
+    // Check 'max-width' and then 'min-width' again.
+    maskH = applyAbsoluteMinMaxWidth(containingBlock, left, right, maskH);
 
     // An absolutely positioned box is a flow root.
     float clearance = context->clear(3);
     if (Box* last = getLastChild())
         last->marginBottom += clearance;
 
-    float d = height;
     if (maskV == (Top | Height) || maskV == (Height | Bottom)) {
         height = 0;
         for (Box* child = getFirstChild(); child; child = child->getNextSibling())
             height += child->getTotalHeight();
     }
-    applyMinMaxHeight(context);
-    maskV &= ~Height;
-    d -= height;
-    if (d != 0.0f) {
-        if (maskV == Top)
-            offsetV += d;
-        else if (maskV == 0) {
-            float top = style->top.getPx();
-            float bottom = style->bottom.getPx();
-            marginTop = style->marginTop.isAuto() ? 0.0f : style->marginTop.getPx();
-            marginBottom = style->marginBottom.isAuto() ? 0.0f : style->marginBottom.getPx();
-            float leftover = containingBlock->height - getTotalHeight() - top - bottom;
-            if (style->marginTop.isAuto() && style->marginBottom.isAuto()) {
-                if (0.0f <= leftover)
-                    marginTop = marginBottom = leftover / 2.0f;
-                else {
-                    marginTop = 0.0f;
-                    marginBottom = -leftover;
-                }
-            } else if (style->marginTop.isAuto())
-                marginTop = leftover;
-            else if (style->marginBottom.isAuto())
-                marginBottom = leftover;
-        }
-    }
+    // Check 'max-height' and then 'min-height' again.
+    maskV = applyAbsoluteMinMaxHeight(containingBlock, top, bottom, maskV);
 
     // Now that 'height' is fixed, calculate 'left', 'right', 'top', and 'bottom'.
     for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
         child->resolveOffset(view);
         child->fit(width);
     }
+
+    offsetH += left;
+    offsetV += top;
 }
 
 void BlockLevelBox::resolveOffset(ViewCSSImp* view)
