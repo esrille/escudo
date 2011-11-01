@@ -1285,16 +1285,26 @@ void CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* co
 
     lineHeight.resolve(view, this);
 
-    bool nonExplicit = false;
+    bool nonExplicitWidth = false;
+    bool nonExplicitHeight = false;
     if (const Box* containingBox = dynamic_cast<const Box*>(containingBlock)) {
         CSSStyleDeclarationImp* containingStyle = containingBox->getStyle();
-        if (containingStyle && containingStyle->height.isAuto() && !containingStyle->isAbsolutelyPositioned())
-            nonExplicit = true;
+        if (containingStyle) {
+            if (containingStyle->width.isAuto())
+                nonExplicitWidth = true;
+            if (containingStyle->height.isAuto()&& !containingStyle->isAbsolutelyPositioned())
+                nonExplicitHeight = true;
+        }
     }
 
     // Resolve properties that depend on the containing block size
-    width.resolve(view, this, containingBlock->width);
-    if (height.isPercentage() && nonExplicit && parentElement)
+
+    if (width.isPercentage() && nonExplicitWidth && parentElement)
+        width.setValue();  // change height to 'auto'.
+    else
+        width.resolve(view, this, containingBlock->width);
+
+    if (height.isPercentage() && nonExplicitHeight && parentElement)
         height.setValue();  // change height to 'auto'.
     else
         height.resolve(view, this, containingBlock->height);
@@ -1314,17 +1324,24 @@ void CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* co
     top.resolve(view, this, containingBlock->height);
     bottom.resolve(view, this, containingBlock->height);
 
-    minWidth.resolve(view, this, containingBlock->width);
-    maxWidth.resolve(view, this, containingBlock->width);
+    if (minWidth.isPercentage() && nonExplicitWidth)
+        minWidth.setValue(0.0f);
+    else
+        minWidth.resolve(view, this, containingBlock->width);
+    if (maxWidth.isPercentage() && nonExplicitWidth)
+        maxWidth.setValue();
+    else
+        maxWidth.resolve(view, this, containingBlock->width);
 
-    if (minHeight.isPercentage() && nonExplicit)
+    if (minHeight.isPercentage() && nonExplicitHeight)
         minHeight.setValue(0.0f);
     else
         minHeight.resolve(view, this, containingBlock->height);
-    if (maxHeight.isPercentage() && nonExplicit)
+    if (maxHeight.isPercentage() && nonExplicitHeight)
         maxHeight.setValue();
     else
         maxHeight.resolve(view, this, containingBlock->height);
+
     resolved = true;
 }
 
