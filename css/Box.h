@@ -354,6 +354,7 @@ public:
     void updateBorderWidth();
 
     void resolveReplacedWidth(float intrinsicWidth, float intrinsicHeight);
+    void applyReplacedMinMax(float w, float h);
 
     void resolveOffset(CSSStyleDeclarationImp* style);
     virtual void resolveOffset(ViewCSSImp* view);

@@ -27,14 +27,18 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 void Box::resolveReplacedWidth(float intrinsicWidth, float intrinsicHeight)
 {
     if (style->width.isAuto() && style->height.isAuto()) {
-        if (0.0f <= intrinsicWidth)
-            width = intrinsicWidth;
-        else
-            width = 300.0f;
-        if (0.0f <= intrinsicHeight)
-            height = intrinsicHeight;
-        else
-            height = 150.0f;
+        if (0.0f < intrinsicWidth && 0.0f < intrinsicHeight)
+            applyReplacedMinMax(intrinsicWidth, intrinsicHeight);
+        else {
+            if (0.0f <= intrinsicWidth)
+                width = intrinsicWidth;
+            else
+                width = 300.0f;
+            if (0.0f <= intrinsicHeight)
+                height = intrinsicHeight;
+            else
+                height = 150.0f;
+        }
     } else if (style->width.isAuto()) {
         height = style->height.getPx();
         if (0.0f < intrinsicHeight && 0.0f <= intrinsicWidth)
@@ -52,6 +56,55 @@ void Box::resolveReplacedWidth(float intrinsicWidth, float intrinsicHeight)
         height = style->height.getPx();
     }
     intrinsic = true;
+}
+
+void Box::applyReplacedMinMax(float w, float h)
+{
+    float minWidth = style->minWidth.getPx();
+    float minHeight = style->minHeight.getPx();
+    float maxWidth = style->maxWidth.isNone() ? w : style->maxWidth.getPx();
+    maxWidth = std::max(minWidth, maxWidth);
+    float maxHeight = style->maxHeight.isNone() ? h : style->maxHeight.getPx();
+    maxHeight = std::max(minHeight, maxHeight);
+
+    if (maxWidth < w && maxHeight < h) {
+        if (maxWidth / w <= maxHeight / h) {
+            width = maxWidth;
+            height = std::max(minHeight, maxWidth * h / w);
+        } else {
+            width = std::max(minWidth, maxHeight * w / h);
+            height = maxHeight;
+        }
+    } else if (w < minWidth && h < minHeight) {
+        if (minWidth / w <= minHeight / h) {
+            width = std::min(maxWidth, minHeight * w / h);
+            height = minHeight;
+        } else {
+            width = minWidth;
+            height = std::min(maxHeight, minWidth * h / w);
+        }
+    } else if (w < minWidth && maxHeight < h) {
+        width = minWidth;
+        height = maxHeight;
+    } else if (maxWidth < w && h < minHeight) {
+        width = maxWidth;
+        height = minHeight;
+    } else if (maxWidth < w) {
+        width = maxWidth;
+        height = std::max(maxWidth * h / w, minHeight);
+    } else if (w < minWidth) {
+        width = minWidth;
+        height = std::min(minWidth * h / w, maxHeight);
+    } else if (maxHeight < h) {
+        width = std::max(maxHeight * w / h, minWidth);
+        height = maxHeight;
+    } else if (h < minHeight) {
+        width = std::min(minHeight * w / h, maxWidth);
+        height = minHeight;
+    } else {
+        width = w;
+        height = h;
+    }
 }
 
 void BlockLevelBox::
