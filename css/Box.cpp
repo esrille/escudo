@@ -1295,11 +1295,7 @@ unsigned BlockLevelBox::resolveAbsoluteHeight(const ContainingBlock* containingB
         bottom = style->bottom.getPx();
         autoMask &= ~Bottom;
     }
-    float leftover;
-    if (containingBlock->height <= 0.0f)
-        leftover = 0.0f;
-    else
-        leftover = containingBlock->height - getTotalHeight() - top - bottom;
+    float leftover = containingBlock->height - getTotalHeight() - top - bottom;
     switch (autoMask & (Top | Height | Bottom)) {
     case Top | Height | Bottom:
         top = -offsetV;
@@ -1380,11 +1376,11 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
     float left;
     float right;
     unsigned maskH = resolveAbsoluteWidth(containingBlock, left, right);
-    maskH = applyAbsoluteMinMaxWidth(containingBlock, left, right, maskH);
+    applyAbsoluteMinMaxWidth(containingBlock, left, right, maskH);
     float top;
     float bottom;
     unsigned maskV = resolveAbsoluteHeight(containingBlock, top, bottom);
-    maskV = applyAbsoluteMinMaxHeight(containingBlock, top, bottom, maskV);
+    applyAbsoluteMinMaxHeight(containingBlock, top, bottom, maskV);
 
     if (CSSDisplayValueImp::isBlockLevel(style->display.getOriginalValue())) {
         // This box is originally a block-level box inside an inline context.
