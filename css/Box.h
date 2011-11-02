@@ -431,6 +431,7 @@ class BlockLevelBox : public Box
     friend class FormattingContext;
 
     unsigned textAlign;
+    float clearance;
 
     // for float box
     bool inserted;  // set to true if inserted in a linebox.
@@ -442,6 +443,8 @@ class BlockLevelBox : public Box
 
     // A block-level box may contain either line boxes or block-level boxes, but not both.
     std::list<Node> inlines;
+
+    bool isCollapsedThrough() const;
 
     void nextLine(ViewCSSImp* view, FormattingContext* context, CSSStyleDeclarationImp*& activeStyle,
                   CSSStyleDeclarationPtr& firstLetterStyle, CSSStyleDeclarationPtr& firstLineStyle,

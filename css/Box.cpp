@@ -321,6 +321,7 @@ void Box::resolveOffset(ViewCSSImp* view)
 BlockLevelBox::BlockLevelBox(Node node, CSSStyleDeclarationImp* style) :
     Box(node),
     textAlign(CSSTextAlignValueImp::Default),
+    clearance(0.0f),
     inserted(false),
     edge(0.0f),
     remainingHeight(0.0f)
@@ -982,6 +983,13 @@ float collapseMargins(float a, float b)
 
 }  // namespace
 
+bool BlockLevelBox::isCollapsedThrough() const
+{
+    return height == 0.0f && !isFlowRoot() &&
+           borderTop == 0.0f && paddingTop == 0.0f &&
+           paddingBottom == 0.0f && borderBottom == 0.0f;
+}
+
 float BlockLevelBox::collapseMarginTop(FormattingContext* context)
 {
     assert(!isFlowRoot());
@@ -996,11 +1004,16 @@ float BlockLevelBox::collapseMarginTop(FormattingContext* context)
                 parent->marginTop = 0.0f;
             }
         } else {
-            Box* prev = getPreviousSibling();
+            BlockLevelBox* prev = dynamic_cast<BlockLevelBox*>(getPreviousSibling());
             assert(prev);
             if (!prev->isFlowRoot()) {
                 before = prev->marginBottom;
-                marginTop = collapseMargins(prev->marginBottom, marginTop);
+                if (!prev->isCollapsedThrough())
+                    marginTop = collapseMargins(prev->marginBottom, marginTop);
+                else {
+                    float pm = collapseMargins(prev->marginTop - prev->clearance, prev->marginBottom);
+                    marginTop = collapseMargins(pm, marginTop) - (prev->marginTop - prev->clearance);
+                }
                 prev->marginBottom = 0.0f;
             }
         }
@@ -1011,17 +1024,14 @@ float BlockLevelBox::collapseMarginTop(FormattingContext* context)
 
 void BlockLevelBox::collapseMarginBottom()
 {
-    if (Box* parent = getParentBox()) {
-        // Note if this box is a inline-block, parent is a linebox.
-        if (dynamic_cast<BlockLevelBox*>(parent) && parent->getFirstChild() == this) {
-            if (!parent->isFlowRoot() && parent->borderTop == 0 && parent->paddingTop == 0)
-                std::swap(marginTop, parent->marginTop);
-        }
-    }
-    if (!isFlowRoot() && borderBottom == 0 && paddingBottom == 0) {
-        if (Box* child = getLastChild()) {
-            marginBottom = collapseMargins(marginBottom, child->marginBottom);
-            child->marginBottom = 0;
+    if (!isFlowRoot()) {
+        BlockLevelBox* first = dynamic_cast<BlockLevelBox*>(getFirstChild());
+        if (first && !first->isFlowRoot() && borderTop == 0 && paddingTop == 0)
+            std::swap(first->marginTop, marginTop);
+        BlockLevelBox* last = dynamic_cast<BlockLevelBox*>(getLastChild());
+        if (last && !last->isFlowRoot() && borderBottom == 0 && paddingBottom == 0) {
+            marginBottom = collapseMargins(marginBottom, last->marginBottom);
+            last->marginBottom = 0;
         }
     }
 }
@@ -1105,13 +1115,16 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     textAlign = style->textAlign.getValue();
     context = updateFormattingContext(context);
     float before = 0.0f;
-    float clearance = 0.0f;
 
     if (!isFlowRoot()) {
+        float original = marginTop;
         before = collapseMarginTop(context);
         if (!isAnonymous()) {
             clearance = context->clear(style->clear.getValue());
-            marginTop += clearance;
+            if (clearance != 0.0f) {
+                marginTop += clearance;
+                clearance = marginTop - (original + before);
+            }
         }
     }
 
@@ -1134,9 +1147,8 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
 
     collapseMarginBottom();
     if (isFlowRoot()) {
-        clearance = context->clear(3);
         if (Box* last = getLastChild())
-            last->marginBottom += clearance;
+            last->marginBottom += context->clear(3);
     }
 
     if ((style->height.isAuto() && !intrinsic) || isAnonymous()) {
@@ -1148,20 +1160,6 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         applyMinMaxHeight(context);
     else if (!hasChildBoxes())
         context->updateRemainingHeight(height);
-
-    // Collapse top and bottom margins.
-    if (!isFlowRoot() && height == 0.0f &&
-        borderTop == 0.0f && paddingTop == 0.0f && paddingBottom == 0.0f && borderBottom == 0.0f && clearance == 0.0f)
-    {
-        float offset = marginTop;
-        marginBottom = collapseMargins(marginTop, marginBottom);
-        marginTop = 0.0f;
-        if (0.0f != offset) {
-            if (Box* child = getFirstChild())
-                child->marginTop += offset;
-            context->updateRemainingHeight(-offset);
-        }
-    }
 
     // Now that 'height' is fixed, calculate 'left', 'right', 'top', and 'bottom'.
     for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
@@ -1420,9 +1418,8 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
     maskH = applyAbsoluteMinMaxWidth(containingBlock, left, right, maskH);
 
     // An absolutely positioned box is a flow root.
-    float clearance = context->clear(3);
     if (Box* last = getLastChild())
-        last->marginBottom += clearance;
+        last->marginBottom += context->clear(3);
 
     if (maskV == (Top | Height) || maskV == (Height | Bottom)) {
         height = 0;
