@@ -144,6 +144,7 @@ class FontTexture
     uint8_t* image;  // intensity texture image of Width x Height texels
     FT_Vector pen;
     unsigned ymax;
+    float bearingGap;
 
     // Allocates a new texture plane
     void addImage()
@@ -228,6 +229,10 @@ public:
 
     float getUnderlineThickness(float point) const {
         return (getSize(point) * face->face->underline_thickness) / (ascender - descender);
+    }
+
+    float getBearingGap() const {
+        return bearingGap;
     }
 
     static const int Width = 1024;

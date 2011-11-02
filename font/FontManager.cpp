@@ -88,7 +88,8 @@ FontTexture::FontTexture(FontFace* face, unsigned int point) try :
     face(face),
     glyphs(0),
     point(point),
-    image(0)
+    image(0),
+    bearingGap(0.0f)
 {
     addImage();
     glyphs = new FontGlyph[face->glyphCount];
@@ -108,6 +109,11 @@ FontTexture::FontTexture(FontFace* face, unsigned int point) try :
         if (TT_OS2_* os2 = static_cast<TT_OS2_*>(FT_Get_Sfnt_Table(face->face, ft_sfnt_os2))) {
             lineGap = os2->usWinAscent + os2->usWinDescent - face->face->units_per_EM;
             xHeight = os2->sxHeight;
+
+            float b = (point * 96.0f) / 72.0f * 64.0f;
+            b *= static_cast<float>(ascender) / (ascender - descender);
+            b /= 64.0f;
+            bearingGap = (roundf(b) - b) * 64.0f;
         }
     }
 
