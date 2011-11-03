@@ -444,8 +444,6 @@ class BlockLevelBox : public Box
     // A block-level box may contain either line boxes or block-level boxes, but not both.
     std::list<Node> inlines;
 
-    bool isCollapsedThrough() const;
-
     void nextLine(ViewCSSImp* view, FormattingContext* context, CSSStyleDeclarationImp*& activeStyle,
                   CSSStyleDeclarationPtr& firstLetterStyle, CSSStyleDeclarationPtr& firstLineStyle,
                   CSSStyleDeclarationImp* style, FontTexture*& font, float& point);
@@ -472,6 +470,11 @@ protected:
         Height = 16u,
         Bottom = 8u
     };
+
+    bool isCollapsedThrough() const;
+    float collapseMarginTop(FormattingContext* context);
+    void undoCollapseMarginTop(float before);
+    void collapseMarginBottom();
 
 public:
     BlockLevelBox(Node node = 0, CSSStyleDeclarationImp* style = 0);
@@ -537,8 +540,6 @@ public:
     void applyMinMaxWidth(float w);
     void resolveNormalWidth(float w, float r = NAN);
     void resolveFloatWidth(float w, float r = NAN);
-    float collapseMarginTop(FormattingContext* context);
-    void collapseMarginBottom();
 
     virtual void resolveOffset(ViewCSSImp* view);
     virtual void resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip);

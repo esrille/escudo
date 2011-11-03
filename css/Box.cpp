@@ -904,16 +904,7 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
     }
 
     if (collapsed && isAnonymous()) {
-        if (originalMargin != 0.0f) {
-            // Undo collapseMarginTop
-            if (Box* prev = getPreviousSibling())
-                prev->marginBottom = originalMargin;
-            else {
-                Box* parent = getParentBox();
-                assert(parent);
-                parent->marginTop = originalMargin;
-            }
-        }
+        undoCollapseMarginTop(originalMargin);
         return false;
     }
     return true;
@@ -993,32 +984,36 @@ bool BlockLevelBox::isCollapsedThrough() const
 float BlockLevelBox::collapseMarginTop(FormattingContext* context)
 {
     assert(!isFlowRoot());
-    float before = 0.0f;
-    bool top = false;  // TODO: review this logic again for negative margins, etc.
+    float before = NAN;
     if (Box* parent = getParentBox()) {
         if (parent->getFirstChild() == this) {
             if (!parent->isFlowRoot() && parent->borderTop == 0 && parent->paddingTop == 0) {
-                top = true;
                 before = parent->marginTop;
                 marginTop = collapseMargins(marginTop, parent->marginTop);
                 parent->marginTop = 0.0f;
+                // TODO: review this logic again for negative margins, etc.
+                context->updateRemainingHeight(getBlankTop() - before);
+                return before;
             }
         } else {
             BlockLevelBox* prev = dynamic_cast<BlockLevelBox*>(getPreviousSibling());
             assert(prev);
             if (!prev->isFlowRoot()) {
                 before = prev->marginBottom;
-                if (!prev->isCollapsedThrough())
+                if (!prev->isCollapsedThrough()) {
                     marginTop = collapseMargins(prev->marginBottom, marginTop);
-                else {
+                    prev->marginBottom = 0.0f;
+                } else {
                     float pm = collapseMargins(prev->marginTop - prev->clearance, prev->marginBottom);
-                    marginTop = collapseMargins(pm, marginTop) - (prev->marginTop - prev->clearance);
+                    prev->marginBottom = -(prev->marginTop - prev->clearance);
+                    marginTop = collapseMargins(pm, marginTop);
+                    context->updateRemainingHeight(getBlankTop() + prev->marginBottom);
+                    return before;
                 }
-                prev->marginBottom = 0.0f;
             }
         }
     }
-    context->updateRemainingHeight(top ? (getBlankTop() - before) : getBlankTop());
+    context->updateRemainingHeight(getBlankTop());
     return before;
 }
 
@@ -1030,9 +1025,31 @@ void BlockLevelBox::collapseMarginBottom()
             std::swap(first->marginTop, marginTop);
         BlockLevelBox* last = dynamic_cast<BlockLevelBox*>(getLastChild());
         if (last && !last->isFlowRoot() && borderBottom == 0 && paddingBottom == 0) {
-            marginBottom = collapseMargins(marginBottom, last->marginBottom);
-            last->marginBottom = 0;
+            if (!last->isCollapsedThrough()) {
+                marginBottom = collapseMargins(marginBottom, last->marginBottom);
+                last->marginBottom = 0;
+            } else if (last->clearance != 0.0f) {
+                // cf. 8.3.1 - resulting margin does not collapse with the bottom margin of the parent block.
+                last->marginBottom = collapseMargins(last->marginTop - last->clearance, last->marginBottom) - (last->marginTop - last->clearance);
+            } else {
+                float lm = collapseMargins(last->marginTop, last->marginBottom);
+                last->marginBottom = -last->marginTop;
+                marginBottom = collapseMargins(lm, marginBottom);
+            }
         }
+    }
+}
+
+void BlockLevelBox::undoCollapseMarginTop(float before)
+{
+    if (isnan(before))
+        return;
+    if (Box* prev = getPreviousSibling())
+        prev->marginBottom = before;
+    else {
+        Box* parent = getParentBox();
+        assert(parent);
+        parent->marginTop = before;
     }
 }
 
