@@ -1019,23 +1019,28 @@ float BlockLevelBox::collapseMarginTop(FormattingContext* context)
 
 void BlockLevelBox::collapseMarginBottom()
 {
-    if (!isFlowRoot()) {
-        BlockLevelBox* first = dynamic_cast<BlockLevelBox*>(getFirstChild());
-        if (first && !first->isFlowRoot() && borderTop == 0 && paddingTop == 0)
-            std::swap(first->marginTop, marginTop);
-        BlockLevelBox* last = dynamic_cast<BlockLevelBox*>(getLastChild());
-        if (last && !last->isFlowRoot() && borderBottom == 0 && paddingBottom == 0) {
-            if (!last->isCollapsedThrough()) {
-                marginBottom = collapseMargins(marginBottom, last->marginBottom);
-                last->marginBottom = 0;
-            } else if (last->clearance != 0.0f) {
+    BlockLevelBox* first = dynamic_cast<BlockLevelBox*>(getFirstChild());
+    if (first && !first->isFlowRoot() && !isFlowRoot() && borderTop == 0 && paddingTop == 0)
+        std::swap(first->marginTop, marginTop);
+
+    BlockLevelBox* last = dynamic_cast<BlockLevelBox*>(getLastChild());
+    if (last && !last->isFlowRoot()) {
+        if (last->isCollapsedThrough()) {
+            if (last->clearance != 0.0f) {
                 // cf. 8.3.1 - resulting margin does not collapse with the bottom margin of the parent block.
                 last->marginBottom = collapseMargins(last->marginTop - last->clearance, last->marginBottom) - (last->marginTop - last->clearance);
             } else {
                 float lm = collapseMargins(last->marginTop, last->marginBottom);
-                last->marginBottom = -last->marginTop;
-                marginBottom = collapseMargins(lm, marginBottom);
+                if (!isFlowRoot() && borderBottom == 0 && paddingBottom == 0) {
+                    last->marginBottom = -last->marginTop;
+                    marginBottom = collapseMargins(lm, marginBottom);
+                } else {
+                    last->marginBottom = lm - last->marginTop;
+                }
             }
+        } else if (!isFlowRoot() && borderBottom == 0 && paddingBottom == 0) {
+            marginBottom = collapseMargins(marginBottom, last->marginBottom);
+            last->marginBottom = 0;
         }
     }
 }
@@ -1434,6 +1439,7 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
     // Check 'max-width' and then 'min-width' again.
     maskH = applyAbsoluteMinMaxWidth(containingBlock, left, right, maskH);
 
+    collapseMarginBottom();
     // An absolutely positioned box is a flow root.
     if (Box* last = getLastChild())
         last->marginBottom += context->clear(3);
