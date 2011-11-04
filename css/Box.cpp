@@ -1006,7 +1006,7 @@ float BlockLevelBox::collapseMarginTop(FormattingContext* context)
                 marginTop = collapseMargins(marginTop, parent->marginTop);
                 parent->marginTop = 0.0f;
                 // TODO: review this logic again for negative margins, etc.
-                context->updateRemainingHeight(getBlankTop() - before);
+                context->updateRemainingHeight(marginTop - before);
                 return before;
             }
         } else {
@@ -1021,13 +1021,13 @@ float BlockLevelBox::collapseMarginTop(FormattingContext* context)
                     float pm = collapseMargins(prev->marginTop - prev->clearance, prev->marginBottom);
                     prev->marginBottom = -(prev->marginTop - prev->clearance);
                     marginTop = collapseMargins(pm, marginTop);
-                    context->updateRemainingHeight(getBlankTop() + prev->marginBottom);
+                    context->updateRemainingHeight(marginTop + prev->marginBottom);
                     return before;
                 }
             }
         }
     }
-    context->updateRemainingHeight(getBlankTop());
+    context->updateRemainingHeight(marginTop);
     return before;
 }
 
@@ -1163,6 +1163,7 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
                 clearance = marginTop - (original + before);
             }
         }
+        context->updateRemainingHeight(borderTop + paddingTop);
     }
 
     if (isReplacedElement(element))
