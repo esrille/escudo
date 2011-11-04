@@ -963,6 +963,7 @@ void BlockLevelBox::fit(float w)
 namespace {
 
 // TODO: Support when three or more margins collapse...
+
 float collapseMargins(float a, float b)
 {
     if (0.0f <= a && 0.0f <= b)
@@ -970,6 +971,19 @@ float collapseMargins(float a, float b)
     if (a < 0.0f && b < 0.0f)
         return std::min(a, b);
     return a + b;
+}
+
+bool  collapseMargins(float a, float b, float& collapsed)
+{
+    if (0.0f <= a && 0.0f <= b) {
+        collapsed = std::max(a, b);
+        return true;
+    }
+    if (a < 0.0f && b < 0.0f) {
+        collapsed = std::min(a, b);
+        return true;
+    }
+    return false;
 }
 
 }  // namespace
@@ -1001,8 +1015,8 @@ float BlockLevelBox::collapseMarginTop(FormattingContext* context)
             if (!prev->isFlowRoot()) {
                 before = prev->marginBottom;
                 if (!prev->isCollapsedThrough()) {
-                    marginTop = collapseMargins(prev->marginBottom, marginTop);
-                    prev->marginBottom = 0.0f;
+                    if (collapseMargins(prev->marginBottom, marginTop, marginTop))
+                        prev->marginBottom = 0.0f;
                 } else {
                     float pm = collapseMargins(prev->marginTop - prev->clearance, prev->marginBottom);
                     prev->marginBottom = -(prev->marginTop - prev->clearance);
@@ -1028,7 +1042,8 @@ void BlockLevelBox::collapseMarginBottom()
         if (last->isCollapsedThrough()) {
             if (last->clearance != 0.0f) {
                 // cf. 8.3.1 - resulting margin does not collapse with the bottom margin of the parent block.
-                last->marginBottom = collapseMargins(last->marginTop - last->clearance, last->marginBottom) - (last->marginTop - last->clearance);
+                last->marginBottom = collapseMargins(last->marginTop - last->clearance, last->marginBottom);
+                last->marginBottom -= (last->marginTop - last->clearance);
             } else {
                 float lm = collapseMargins(last->marginTop, last->marginBottom);
                 if (!isFlowRoot() && borderBottom == 0 && paddingBottom == 0) {
