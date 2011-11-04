@@ -1046,14 +1046,14 @@ void BlockLevelBox::collapseMarginBottom()
                 last->marginBottom -= (last->marginTop - last->clearance);
             } else {
                 float lm = collapseMargins(last->marginTop, last->marginBottom);
-                if (!isFlowRoot() && borderBottom == 0 && paddingBottom == 0) {
+                if (!isFlowRoot() && borderBottom == 0 && paddingBottom == 0 && style->height.isAuto()) {
                     last->marginBottom = -last->marginTop;
                     marginBottom = collapseMargins(lm, marginBottom);
                 } else {
                     last->marginBottom = lm - last->marginTop;
                 }
             }
-        } else if (!isFlowRoot() && borderBottom == 0 && paddingBottom == 0) {
+        } else if (!isFlowRoot() && borderBottom == 0 && paddingBottom == 0 && style->height.isAuto()) {
             marginBottom = collapseMargins(marginBottom, last->marginBottom);
             last->marginBottom = 0;
         }
@@ -1182,6 +1182,7 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     if (!isAnonymous())
         applyMinMaxWidth(getTotalWidth());
 
+    // Collapse margins with the first and the last children before calculating the auto height.
     collapseMarginBottom();
     if (isFlowRoot()) {
         if (Box* last = getLastChild())
@@ -1193,9 +1194,10 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         for (Box* child = getFirstChild(); child; child = child->getNextSibling())
             height += child->getTotalHeight();
     }
-    if (!isAnonymous())
+    if (!isAnonymous()) {
         applyMinMaxHeight(context);
-    else if (!hasChildBoxes())
+        // TODO: If min-height was applied, we might need to undo collapseMarginBottom().
+    } else if (!hasChildBoxes())
         context->updateRemainingHeight(height);
 
     // Now that 'height' is fixed, calculate 'left', 'right', 'top', and 'bottom'.
