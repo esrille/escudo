@@ -1290,9 +1290,11 @@ void CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* co
     if (const Box* containingBox = dynamic_cast<const Box*>(containingBlock)) {
         CSSStyleDeclarationImp* containingStyle = containingBox->getStyle();
         if (containingStyle) {
-            if (containingStyle->width.isAuto())
+            // It appears a floating box does not treat 'width' in unknown percentage as unknown.
+            // cf. http://test.csswg.org/suites/css2.1/20110323/html4/margin-collapse-143.htm
+            if (containingStyle->width.isAuto() && !isFloat())
                 nonExplicitWidth = true;
-            if (containingStyle->height.isAuto()&& !containingStyle->isAbsolutelyPositioned())
+            if (containingStyle->height.isAuto() && !containingStyle->isAbsolutelyPositioned())
                 nonExplicitHeight = true;
         }
     }
