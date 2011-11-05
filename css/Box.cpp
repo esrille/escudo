@@ -990,9 +990,16 @@ bool  collapseMargins(float a, float b, float& collapsed)
 
 bool BlockLevelBox::isCollapsedThrough() const
 {
-    return height == 0.0f && !isFlowRoot() &&
-           borderTop == 0.0f && paddingTop == 0.0f &&
-           paddingBottom == 0.0f && borderBottom == 0.0f;
+    if (height != 0.0f || isFlowRoot() ||
+        borderTop != 0.0f || paddingTop != 0.0f || paddingBottom != 0.0f || borderBottom != 0.0f)
+        return false;
+    for (LineBox* lineBox = dynamic_cast<LineBox*>(getFirstChild());
+         lineBox;
+         lineBox = dynamic_cast<LineBox*>(lineBox->getNextSibling())) {
+        if (lineBox->getTotalHeight() != 0.0f)
+            return false;
+    }
+    return true;
 }
 
 float BlockLevelBox::collapseMarginTop(FormattingContext* context)
