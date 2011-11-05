@@ -1027,7 +1027,7 @@ float BlockLevelBox::collapseMarginTop(FormattingContext* context)
             }
         }
     }
-    context->updateRemainingHeight(marginTop);
+    context->updateRemainingHeight(marginTop);  // TODO: this should be done when marginTop is totally fixed.
     return before;
 }
 
@@ -1039,7 +1039,7 @@ void BlockLevelBox::collapseMarginBottom()
 
     BlockLevelBox* last = dynamic_cast<BlockLevelBox*>(getLastChild());
     if (last && !last->isFlowRoot()) {
-        if (last->isCollapsedThrough()) {
+        if (last->isCollapsedThrough()) {  // TODO: if last == first??
             if (last->clearance != 0.0f) {
                 // cf. 8.3.1 - resulting margin does not collapse with the bottom margin of the parent block.
                 last->marginBottom = collapseMargins(last->marginTop - last->clearance, last->marginBottom);
@@ -1070,6 +1070,21 @@ void BlockLevelBox::undoCollapseMarginTop(float before)
         Box* parent = getParentBox();
         assert(parent);
         parent->marginTop = before;
+    }
+}
+
+// Adjust marginTop of the 1st, collapsed through child box.
+void BlockLevelBox::adjustCollapsedThroughMargins(FormattingContext* context)
+{
+    Box* parent = getParentBox();
+    if (!parent)
+        return;
+    if (parent->getFirstChild() == this && isCollapsedThrough()) {
+        float before = marginTop;
+        marginTop = collapseMargins(marginTop, marginBottom);
+        marginBottom = 0.0f;
+        // TODO: review this logic again for negative margins, etc.
+        context->updateRemainingHeight(marginTop - before);
     }
 }
 
@@ -1206,6 +1221,8 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         child->fit(width);
         child->resolveOffset(view);
     }
+
+    adjustCollapsedThroughMargins(context);
 
     if (backgroundImage && backgroundImage->getState() == BoxImage::CompletelyAvailable) {
         style->backgroundPosition.resolve(view, backgroundImage, style.get(), getPaddingWidth(), getPaddingHeight());
@@ -1475,6 +1492,8 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
         child->resolveOffset(view);
         child->fit(width);
     }
+
+    adjustCollapsedThroughMargins(context);
 
     offsetH += left;
     offsetV += top;

@@ -421,6 +421,8 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
         height = std::max(height, style->minHeight.getPx());
     }
 
+    adjustCollapsedThroughMargins(context);
+
     return true;
 }
 
