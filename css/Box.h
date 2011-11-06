@@ -180,6 +180,7 @@ protected:
     Box* nextSibling;
     unsigned int childCount;
 
+    float clearance;
     float marginTop;
     float marginRight;
     float marginBottom;
@@ -264,6 +265,10 @@ public:
     }
     float getY() const {
         return y;
+    }
+
+    float getClearance() const {
+        return clearance;
     }
 
     float getBlankLeft() const {
@@ -431,7 +436,6 @@ class BlockLevelBox : public Box
     friend class FormattingContext;
 
     unsigned textAlign;
-    float clearance;
 
     // for float box
     bool inserted;  // set to true if inserted in a linebox.
@@ -473,7 +477,7 @@ protected:
 
     bool isCollapsedThrough() const;
     float collapseMarginTop(FormattingContext* context);
-    void undoCollapseMarginTop(float before);
+    bool undoCollapseMarginTop(float before);
     void collapseMarginBottom();
     void adjustCollapsedThroughMargins(FormattingContext* context);
 

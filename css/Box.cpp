@@ -61,6 +61,7 @@ Box::Box(Node node) :
     previousSibling(0),
     nextSibling(0),
     childCount(0),
+    clearance(0.0f),
     marginTop(0.0f),
     marginBottom(0.0f),
     marginLeft(0.0f),
@@ -321,7 +322,6 @@ void Box::resolveOffset(ViewCSSImp* view)
 BlockLevelBox::BlockLevelBox(Node node, CSSStyleDeclarationImp* style) :
     Box(node),
     textAlign(CSSTextAlignValueImp::Default),
-    clearance(0.0f),
     inserted(false),
     edge(0.0f),
     remainingHeight(0.0f)
@@ -1020,15 +1020,15 @@ float BlockLevelBox::collapseMarginTop(FormattingContext* context)
             BlockLevelBox* prev = dynamic_cast<BlockLevelBox*>(getPreviousSibling());
             assert(prev);
             if (!prev->isFlowRoot()) {
-                before = prev->marginBottom;
                 if (!prev->isCollapsedThrough()) {
-                    if (collapseMargins(prev->marginBottom, marginTop, marginTop))
+                    before = prev->marginBottom;
+                    if (collapseMargins(before, marginTop, marginTop))
                         prev->marginBottom = 0.0f;
                 } else {
-                    float pm = collapseMargins(prev->marginTop - prev->clearance, prev->marginBottom);
-                    prev->marginBottom = -(prev->marginTop - prev->clearance);
-                    marginTop = collapseMargins(pm, marginTop);
-                    context->updateRemainingHeight(marginTop + prev->marginBottom);
+                    before = collapseMargins(prev->marginTop, prev->marginBottom);
+                    marginTop = collapseMargins(before, marginTop);
+                    prev->marginBottom = -prev->marginTop;
+                    context->updateRemainingHeight(marginTop - prev->marginTop);
                     return before;
                 }
             }
@@ -1049,8 +1049,8 @@ void BlockLevelBox::collapseMarginBottom()
         if (last->isCollapsedThrough()) {  // TODO: if last == first??
             if (last->clearance != 0.0f) {
                 // cf. 8.3.1 - resulting margin does not collapse with the bottom margin of the parent block.
-                last->marginBottom = collapseMargins(last->marginTop - last->clearance, last->marginBottom);
-                last->marginBottom -= (last->marginTop - last->clearance);
+                last->marginBottom = collapseMargins(last->marginTop, last->marginBottom);
+                last->marginBottom -= last->marginTop;
             } else {
                 float lm = collapseMargins(last->marginTop, last->marginBottom);
                 if (!isFlowRoot() && borderBottom == 0 && paddingBottom == 0 && style->height.isAuto()) {
@@ -1067,17 +1067,21 @@ void BlockLevelBox::collapseMarginBottom()
     }
 }
 
-void BlockLevelBox::undoCollapseMarginTop(float before)
+bool BlockLevelBox::undoCollapseMarginTop(float before)
 {
     if (isnan(before))
-        return;
-    if (Box* prev = getPreviousSibling())
-        prev->marginBottom = before;
-    else {
+        return false;
+    if (BlockLevelBox* prev = dynamic_cast<BlockLevelBox*>(getPreviousSibling())) {
+        if (!prev->isCollapsedThrough())
+            prev->marginBottom = before;
+        else
+            prev->marginBottom = before - prev->marginTop;
+    } else {
         Box* parent = getParentBox();
         assert(parent);
         parent->marginTop = before;
     }
+    return true;
 }
 
 // Adjust marginTop of the 1st, collapsed through child box.
@@ -1173,7 +1177,7 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
 
     textAlign = style->textAlign.getValue();
     context = updateFormattingContext(context);
-    float before = 0.0f;
+    float before = NAN;
 
     if (!isFlowRoot()) {
         float original = marginTop;
@@ -1181,8 +1185,13 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         if (!isAnonymous()) {
             clearance = context->clear(style->clear.getValue());
             if (clearance != 0.0f) {
-                marginTop += clearance;
-                clearance = marginTop - (original + before);
+                clearance += marginTop;
+                if (undoCollapseMarginTop(before))
+                    clearance -= original + before;
+                else
+                    clearance -= original;
+                marginTop = original;
+                before = NAN;
             }
         }
         context->updateRemainingHeight(borderTop + paddingTop);
@@ -1215,7 +1224,7 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     if ((style->height.isAuto() && !intrinsic) || isAnonymous()) {
         height = 0.0f;
         for (Box* child = getFirstChild(); child; child = child->getNextSibling())
-            height += child->getTotalHeight();
+            height += child->getTotalHeight() + child->getClearance();
     }
     if (!isAnonymous()) {
         applyMinMaxHeight(context);
@@ -1489,7 +1498,7 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
     if (maskV == (Top | Height) || maskV == (Height | Bottom)) {
         height = 0;
         for (Box* child = getFirstChild(); child; child = child->getNextSibling())
-            height += child->getTotalHeight();
+            height += child->getTotalHeight() + child->getClearance();
     }
     // Check 'max-height' and then 'min-height' again.
     maskV = applyAbsoluteMinMaxHeight(containingBlock, top, bottom, maskV);
@@ -1529,7 +1538,7 @@ void BlockLevelBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLeve
     left += offsetH;
     top += offsetV;
     x = left;
-    y = top;
+    y = top + clearance;
     clipBox = clip;
     left += getBlankLeft();
     top += getBlankTop();
@@ -1542,7 +1551,7 @@ void BlockLevelBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLeve
     else {
         for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
             child->resolveXY(view, left, top, clip);
-            top += child->getTotalHeight();
+            top += child->getTotalHeight() + child->getClearance();
         }
     }
 }
@@ -1556,8 +1565,10 @@ void BlockLevelBox::dump(std::string indent)
         std::cout << " [" << node.getNodeName() << ']';
     std::cout << " (" << x << ", " << y << ") " <<
         "w:" << width << " h:" << height << ' ' <<
-        "(" << offsetH << ", " << offsetV <<") " <<
-        "m:" << marginTop << ':' << marginRight << ':' << marginBottom << ':' << marginLeft << ' ' <<
+        "(" << offsetH << ", " << offsetV <<") ";
+    if (clearance != 0.0f)
+        std::cout << "c:" << clearance << ' ';
+    std::cout << "m:" << marginTop << ':' << marginRight << ':' << marginBottom << ':' << marginLeft << ' ' <<
         "p:" << paddingTop << ':' <<  paddingRight << ':'<< paddingBottom<< ':' << paddingLeft << ' ' <<
         "b:" << borderTop << ':' <<  borderRight << ':' << borderBottom<< ':' << borderLeft << ' ' <<
         std::hex << CSSSerializeRGB(backgroundColor) << std::dec << '\n';

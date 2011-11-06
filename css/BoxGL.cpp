@@ -490,7 +490,7 @@ void BlockLevelBox::renderEnd(ViewCSSImp* view, unsigned overflow)
                     float tw = 0.0f;
                     float th = 0.0f;
                     for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
-                        th += child->getTotalHeight();
+                        th += child->getTotalHeight() + child->getClearance();
                         tw = std::max(tw, child->getTotalWidth());
                     }
                     renderVerticalScrollBar(w, h, element.getScrollTop(), th);

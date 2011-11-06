@@ -411,7 +411,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
         width = std::max(width, child->getTotalWidth());
     height = 0.0f;
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
-        height += child->getTotalHeight();
+        height += child->getTotalHeight() + child->getClearance();
 
     style->width.setValue();
 
