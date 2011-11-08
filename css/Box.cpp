@@ -1062,8 +1062,13 @@ void BlockLevelBox::collapseMarginBottom()
     }
 
     BlockLevelBox* first = dynamic_cast<BlockLevelBox*>(getFirstChild());
-    if (first && !first->isFlowRoot() && !isFlowRoot() && borderTop == 0 && paddingTop == 0)
+    if (first && !first->isFlowRoot() && !isFlowRoot() && borderTop == 0 && paddingTop == 0) {
         std::swap(first->marginTop, marginTop);
+        if (first->isCollapsedThrough() && first->getFirstChild()) {
+            assert(first->getFirstChild()->hasClearance());
+            first->getFirstChild()->clearance = NAN;
+        }
+    }
 }
 
 bool BlockLevelBox::undoCollapseMarginTop(float before)
@@ -1085,18 +1090,13 @@ void BlockLevelBox::adjustCollapsedThroughMargins(FormattingContext* context)
 {
     BlockLevelBox* parent = dynamic_cast<BlockLevelBox*>(getParentBox());
     if (isCollapsedThrough()) {
-        float before = marginTop;
-        if (!getPreviousSibling()) {   // the 1st child
-            marginTop = collapseMargins(marginTop, marginBottom);
-            marginBottom = 0.0f;
-        }
         if (getFirstChild()) {
             if (getFirstChild()->hasClearance())
                 getFirstChild()->clearance += marginTop;
             else
                 getFirstChild()->clearance = marginTop;
             // TODO: review this logic again for negative margins, etc.
-            context->updateRemainingHeight(-before);
+            context->updateRemainingHeight(-marginTop);
         }
     } else if (!isFlowRoot())
         moveUpCollapsedThroughMargins();
