@@ -61,7 +61,7 @@ Box::Box(Node node) :
     previousSibling(0),
     nextSibling(0),
     childCount(0),
-    clearance(0.0f),
+    clearance(NAN),
     marginTop(0.0f),
     marginBottom(0.0f),
     marginLeft(0.0f),
@@ -1006,7 +1006,7 @@ float BlockLevelBox::collapseMarginTop(FormattingContext* context)
 {
     assert(!isFlowRoot());
     float before = NAN;
-    if (Box* parent = getParentBox()) {
+    if (BlockLevelBox* parent = dynamic_cast<BlockLevelBox*>(getParentBox())) {
         if (parent->getFirstChild() == this) {
             if (!parent->isFlowRoot() && parent->borderTop == 0 && parent->paddingTop == 0) {
                 before = parent->marginTop;
@@ -1027,7 +1027,8 @@ float BlockLevelBox::collapseMarginTop(FormattingContext* context)
                 } else {
                     before = collapseMargins(prev->marginTop, prev->marginBottom);
                     marginTop = collapseMargins(before, marginTop);
-                    prev->marginBottom = -prev->marginTop;
+                    prev->marginBottom = prev->marginTop = 0.0f;
+                    // TODO: review this logic again for negative margins, etc.
                     context->updateRemainingHeight(marginTop - prev->marginTop);
                     return before;
                 }
@@ -1040,43 +1041,38 @@ float BlockLevelBox::collapseMarginTop(FormattingContext* context)
 
 void BlockLevelBox::collapseMarginBottom()
 {
-    BlockLevelBox* first = dynamic_cast<BlockLevelBox*>(getFirstChild());
-    if (first && !first->isFlowRoot() && !isFlowRoot() && borderTop == 0 && paddingTop == 0)
-        std::swap(first->marginTop, marginTop);
-
     BlockLevelBox* last = dynamic_cast<BlockLevelBox*>(getLastChild());
     if (last && !last->isFlowRoot()) {
-        if (last->isCollapsedThrough()) {  // TODO: if last == first??
-            if (last->clearance != 0.0f) {
-                // cf. 8.3.1 - resulting margin does not collapse with the bottom margin of the parent block.
-                last->marginBottom = collapseMargins(last->marginTop, last->marginBottom);
-                last->marginBottom -= last->marginTop;
+        if (last->isCollapsedThrough()) {
+            float lm = collapseMargins(last->marginTop, last->marginBottom);
+            if (!isFlowRoot() && borderBottom == 0 && paddingBottom == 0 && style->height.isAuto() &&
+                !last->hasClearance())
+            {
+                last->marginBottom = last->marginTop = 0.0f;
+                marginBottom = collapseMargins(lm, marginBottom);
             } else {
-                float lm = collapseMargins(last->marginTop, last->marginBottom);
-                if (!isFlowRoot() && borderBottom == 0 && paddingBottom == 0 && style->height.isAuto()) {
-                    last->marginBottom = -last->marginTop;
-                    marginBottom = collapseMargins(lm, marginBottom);
-                } else {
-                    last->marginBottom = lm - last->marginTop;
-                }
+                last->marginBottom = lm;
+                last->marginTop = 0.0f;
+                last->moveUpCollapsedThroughMargins();
             }
         } else if (!isFlowRoot() && borderBottom == 0 && paddingBottom == 0 && style->height.isAuto()) {
             marginBottom = collapseMargins(marginBottom, last->marginBottom);
             last->marginBottom = 0;
         }
     }
+
+    BlockLevelBox* first = dynamic_cast<BlockLevelBox*>(getFirstChild());
+    if (first && !first->isFlowRoot() && !isFlowRoot() && borderTop == 0 && paddingTop == 0)
+        std::swap(first->marginTop, marginTop);
 }
 
 bool BlockLevelBox::undoCollapseMarginTop(float before)
 {
     if (isnan(before))
         return false;
-    if (BlockLevelBox* prev = dynamic_cast<BlockLevelBox*>(getPreviousSibling())) {
-        if (!prev->isCollapsedThrough())
-            prev->marginBottom = before;
-        else
-            prev->marginBottom = before - prev->marginTop;
-    } else {
+    if (BlockLevelBox* prev = dynamic_cast<BlockLevelBox*>(getPreviousSibling()))
+        prev->marginBottom = before;
+    else {
         Box* parent = getParentBox();
         assert(parent);
         parent->marginTop = before;
@@ -1087,15 +1083,62 @@ bool BlockLevelBox::undoCollapseMarginTop(float before)
 // Adjust marginTop of the 1st, collapsed through child box.
 void BlockLevelBox::adjustCollapsedThroughMargins(FormattingContext* context)
 {
-    Box* parent = getParentBox();
-    if (!parent)
-        return;
-    if (parent->getFirstChild() == this && isCollapsedThrough()) {
+    BlockLevelBox* parent = dynamic_cast<BlockLevelBox*>(getParentBox());
+    if (isCollapsedThrough()) {
         float before = marginTop;
-        marginTop = collapseMargins(marginTop, marginBottom);
-        marginBottom = 0.0f;
-        // TODO: review this logic again for negative margins, etc.
-        context->updateRemainingHeight(marginTop - before);
+        if (!getPreviousSibling()) {   // the 1st child
+            marginTop = collapseMargins(marginTop, marginBottom);
+            marginBottom = 0.0f;
+        }
+        if (getFirstChild()) {
+            if (getFirstChild()->hasClearance())
+                getFirstChild()->clearance += marginTop;
+            else
+                getFirstChild()->clearance = marginTop;
+            // TODO: review this logic again for negative margins, etc.
+            context->updateRemainingHeight(-before);
+        }
+    } else if (!isFlowRoot())
+        moveUpCollapsedThroughMargins();
+}
+
+void BlockLevelBox::moveUpCollapsedThroughMargins()
+{
+    assert(!isFlowRoot());
+    float m;
+    BlockLevelBox* from = this;
+    BlockLevelBox* curr = this;
+    BlockLevelBox* prev = dynamic_cast<BlockLevelBox*>(curr->getPreviousSibling());
+    if (hasClearance()) {
+        from = curr = prev;
+        prev = dynamic_cast<BlockLevelBox*>(curr->getPreviousSibling());
+        if (from->hasClearance())
+            return;
+    }
+    if (curr->isCollapsedThrough()) {
+        assert(curr->marginTop == 0.0f);
+        m = curr->marginBottom;
+        if (curr->getFirstChild() && curr->getFirstChild()->hasClearance())
+            curr->getFirstChild()->clearance -= m;
+    } else
+        m = curr->marginTop;
+    while (prev && prev->isCollapsedThrough() && !prev->hasClearance()) {
+        if (prev->getFirstChild() && prev->getFirstChild()->hasClearance())
+            prev->getFirstChild()->clearance -= m;
+        curr = prev;
+        prev = dynamic_cast<BlockLevelBox*>(curr->getPreviousSibling());
+    }
+    if (curr != from) {
+        assert(curr->marginTop == 0.0f);
+        assert(curr->marginBottom == 0.0f);
+        curr->marginTop = m;
+        if (hasClearance() || !isCollapsedThrough())
+            from->marginTop = 0.0f;
+        else
+            from->marginBottom = 0.0f;
+    } else if (curr->isCollapsedThrough()) {
+        curr->marginTop = m;
+        curr->marginBottom = 0.0f;
     }
 }
 
@@ -1192,7 +1235,8 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
                     clearance -= original;
                 marginTop = original;
                 before = NAN;
-            }
+            } else
+                clearance = NAN;
         }
         context->updateRemainingHeight(borderTop + paddingTop);
     }
@@ -1536,9 +1580,9 @@ void BlockLevelBox::resolveOffset(ViewCSSImp* view)
 void BlockLevelBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip)
 {
     left += offsetH;
-    top += offsetV;
+    top += offsetV + getClearance();
     x = left;
-    y = top + clearance;
+    y = top;
     clipBox = clip;
     left += getBlankLeft();
     top += getBlankTop();
@@ -1566,7 +1610,7 @@ void BlockLevelBox::dump(std::string indent)
     std::cout << " (" << x << ", " << y << ") " <<
         "w:" << width << " h:" << height << ' ' <<
         "(" << offsetH << ", " << offsetV <<") ";
-    if (clearance != 0.0f)
+    if (hasClearance())
         std::cout << "c:" << clearance << ' ';
     std::cout << "m:" << marginTop << ':' << marginRight << ':' << marginBottom << ':' << marginLeft << ' ' <<
         "p:" << paddingTop << ':' <<  paddingRight << ':'<< paddingBottom<< ':' << paddingLeft << ' ' <<
@@ -1634,7 +1678,7 @@ void LineBox::fit(float w)
 void LineBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip)
 {
     left += offsetH;
-    top += offsetV;
+    top += offsetV + getClearance();
     x = left;
     y = top;
     clipBox = clip;
@@ -1661,8 +1705,10 @@ void LineBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* 
 void LineBox::dump(std::string indent)
 {
     std::cout << indent << "* line box (" << x << ", " << y << ") " <<
-        "w:" << width << " h:" << height << " (" << offsetH << ", " << offsetV <<") " <<
-        "m:" << marginTop << ':' << marginRight << ':' << marginBottom << ':' << marginLeft << '\n';
+        "w:" << width << " h:" << height << " (" << offsetH << ", " << offsetV <<") ";
+    if (hasClearance())
+        std::cout << "c:" << clearance << ' ';
+    std::cout << "m:" << marginTop << ':' << marginRight << ':' << marginBottom << ':' << marginLeft << '\n';
     indent += "  ";
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
         child->dump(indent);

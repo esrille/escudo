@@ -267,8 +267,11 @@ public:
         return y;
     }
 
+    bool hasClearance() const {
+        return !isnan(clearance);
+    }
     float getClearance() const {
-        return clearance;
+        return hasClearance() ? clearance : 0.0f;
     }
 
     float getBlankLeft() const {
@@ -480,6 +483,7 @@ protected:
     bool undoCollapseMarginTop(float before);
     void collapseMarginBottom();
     void adjustCollapsedThroughMargins(FormattingContext* context);
+    void moveUpCollapsedThroughMargins();
 
 public:
     BlockLevelBox(Node node = 0, CSSStyleDeclarationImp* style = 0);
