@@ -495,7 +495,7 @@ negation_arg
         $$ = new(std::nothrow) CSSIDSelector($1.toString(true));
     }
   | class {
-        $$ = new(std::nothrow) CSSClassSelector($1);
+        $$ = new(std::nothrow) CSSClassSelector($1.toString(true));
     }
   | attrib
   | pseudo
@@ -560,7 +560,7 @@ simple_selector_term
         $$ = new(std::nothrow) CSSIDSelector($1.toString(true));
     }
   | class {
-        $$ = new(std::nothrow) CSSClassSelector($1);
+        $$ = new(std::nothrow) CSSClassSelector($1.toString(true));
     }
   | attrib
   | pseudo
