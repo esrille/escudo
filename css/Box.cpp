@@ -1103,7 +1103,7 @@ void BlockLevelBox::moveUpCollapsedThroughMargins()
     BlockLevelBox* from = this;
     BlockLevelBox* curr = this;
     BlockLevelBox* prev = dynamic_cast<BlockLevelBox*>(curr->getPreviousSibling());
-    if (hasClearance()) {
+    if (hasClearance() || style->clear.getValue() != CSSClearValueImp::None) {
         from = curr = prev;
         prev = dynamic_cast<BlockLevelBox*>(curr->getPreviousSibling());
         if (from->hasClearance())
