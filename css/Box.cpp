@@ -1115,6 +1115,13 @@ void BlockLevelBox::moveUpCollapsedThroughMargins()
         assert(curr->marginTop == 0.0f);
         m = curr->marginBottom;
         curr->topBorderEdge -= m;
+        for (BlockLevelBox* last = dynamic_cast<BlockLevelBox*>(curr->getLastChild());
+             last && last->isCollapsedThrough();
+             last = dynamic_cast<BlockLevelBox*>(last->getPreviousSibling())) {
+            last->topBorderEdge = 0.0f;
+            if (last->hasClearance())
+                break;
+        }
     } else
         m = curr->marginTop;
     while (prev && prev->isCollapsedThrough() && !prev->hasClearance()) {
