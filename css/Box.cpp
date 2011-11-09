@@ -1131,6 +1131,7 @@ void BlockLevelBox::moveUpCollapsedThroughMargins()
     } else if (curr->isCollapsedThrough()) {
         curr->marginTop = m;
         curr->marginBottom = 0.0f;
+        curr->topBorderEdge = 0.0f;
     }
 }
 
