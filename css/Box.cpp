@@ -1066,10 +1066,14 @@ void BlockLevelBox::collapseMarginBottom()
     }
 
     BlockLevelBox* first = dynamic_cast<BlockLevelBox*>(getFirstChild());
-    if (first && !first->isFlowRoot() && !isFlowRoot() && borderTop == 0 && paddingTop == 0) {
+    if (first && !first->isFlowRoot() && !isFlowRoot() && borderTop == 0 && paddingTop == 0 && !first->hasClearance()) {
         std::swap(first->marginTop, marginTop);
-        if (first->isCollapsedThrough())
+        while (first->isCollapsedThrough()) {
             first->topBorderEdge = 0.0f;
+            first = dynamic_cast<BlockLevelBox*>(first->getNextSibling());
+            if (!first || first->hasClearance())
+                break;
+        }
     }
 }
 
