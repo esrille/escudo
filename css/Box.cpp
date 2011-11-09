@@ -1027,10 +1027,13 @@ float BlockLevelBox::collapseMarginTop(FormattingContext* context)
                         prev->marginBottom = 0.0f;
                 } else {
                     before = collapseMargins(prev->marginTop, prev->marginBottom);
-                    marginTop = collapseMargins(before, marginTop);
                     prev->marginBottom = prev->marginTop = 0.0f;
+                    marginTop = collapseMargins(before, marginTop);
                     // TODO: review this logic again for negative margins, etc.
-                    context->updateRemainingHeight(marginTop - prev->marginTop);
+                    if (isAnonymous() || style->clear.getValue() == style->clear.None)
+                        context->updateRemainingHeight(marginTop - prev->marginTop);
+                    else
+                        context->updateRemainingHeight(-prev->marginTop);
                     return before;
                 }
             }
@@ -1087,7 +1090,6 @@ bool BlockLevelBox::undoCollapseMarginTop(float before)
 // Adjust marginTop of the 1st, collapsed through child box.
 void BlockLevelBox::adjustCollapsedThroughMargins(FormattingContext* context)
 {
-    BlockLevelBox* parent = dynamic_cast<BlockLevelBox*>(getParentBox());
     if (isCollapsedThrough()) {
         topBorderEdge = marginTop;
         // TODO: review this logic again for negative margins, etc.
@@ -1220,7 +1222,15 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         before = collapseMarginTop(context);
         if (!isAnonymous()) {
             clearance = context->clear(style->clear.getValue());
-            if (clearance != 0.0f) {
+            BlockLevelBox* prev = dynamic_cast<BlockLevelBox*>(getPreviousSibling());
+            if (clearance == 0.0f)
+                clearance = NAN;
+            else if (prev && prev->isCollapsedThrough()) {
+                prev->marginBottom = before;
+                clearance -= original + before;
+                marginTop = original;
+                before = NAN;
+            } else {
                 clearance += marginTop;
                 if (undoCollapseMarginTop(before))
                     clearance -= original + before;
@@ -1228,8 +1238,7 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
                     clearance -= original;
                 marginTop = original;
                 before = NAN;
-            } else
-                clearance = NAN;
+            }
         }
         context->updateRemainingHeight(borderTop + paddingTop);
     }
