@@ -322,6 +322,7 @@ void Box::resolveOffset(ViewCSSImp* view)
 BlockLevelBox::BlockLevelBox(Node node, CSSStyleDeclarationImp* style) :
     Box(node),
     textAlign(CSSTextAlignValueImp::Default),
+    topBorderEdge(0.0f),
     inserted(false),
     edge(0.0f),
     remainingHeight(0.0f)
@@ -1064,10 +1065,8 @@ void BlockLevelBox::collapseMarginBottom()
     BlockLevelBox* first = dynamic_cast<BlockLevelBox*>(getFirstChild());
     if (first && !first->isFlowRoot() && !isFlowRoot() && borderTop == 0 && paddingTop == 0) {
         std::swap(first->marginTop, marginTop);
-        if (first->isCollapsedThrough() && first->getFirstChild()) {
-            assert(first->getFirstChild()->hasClearance());
-            first->getFirstChild()->clearance = NAN;
-        }
+        if (first->isCollapsedThrough())
+            first->topBorderEdge = 0.0f;
     }
 }
 
@@ -1090,14 +1089,9 @@ void BlockLevelBox::adjustCollapsedThroughMargins(FormattingContext* context)
 {
     BlockLevelBox* parent = dynamic_cast<BlockLevelBox*>(getParentBox());
     if (isCollapsedThrough()) {
-        if (getFirstChild()) {
-            if (getFirstChild()->hasClearance())
-                getFirstChild()->clearance += marginTop;
-            else
-                getFirstChild()->clearance = marginTop;
-            // TODO: review this logic again for negative margins, etc.
-            context->updateRemainingHeight(-marginTop);
-        }
+        topBorderEdge = marginTop;
+        // TODO: review this logic again for negative margins, etc.
+        context->updateRemainingHeight(-marginTop);
     } else if (!isFlowRoot())
         moveUpCollapsedThroughMargins();
 }
@@ -1118,13 +1112,11 @@ void BlockLevelBox::moveUpCollapsedThroughMargins()
     if (curr->isCollapsedThrough()) {
         assert(curr->marginTop == 0.0f);
         m = curr->marginBottom;
-        if (curr->getFirstChild() && curr->getFirstChild()->hasClearance())
-            curr->getFirstChild()->clearance -= m;
+        curr->topBorderEdge -= m;
     } else
         m = curr->marginTop;
     while (prev && prev->isCollapsedThrough() && !prev->hasClearance()) {
-        if (prev->getFirstChild() && prev->getFirstChild()->hasClearance())
-            prev->getFirstChild()->clearance -= m;
+        prev->topBorderEdge -= m;
         curr = prev;
         prev = dynamic_cast<BlockLevelBox*>(curr->getPreviousSibling());
     }
@@ -1585,7 +1577,7 @@ void BlockLevelBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLeve
     y = top;
     clipBox = clip;
     left += getBlankLeft();
-    top += getBlankTop();
+    top += getBlankTop() + topBorderEdge;
 
     if (!isAnonymous() && style->overflow.isClipped())
         clip = this;
@@ -1612,6 +1604,8 @@ void BlockLevelBox::dump(std::string indent)
         "(" << offsetH << ", " << offsetV <<") ";
     if (hasClearance())
         std::cout << "c:" << clearance << ' ';
+    if (isCollapsedThrough())
+        std::cout << "t:" << topBorderEdge << ' ';
     std::cout << "m:" << marginTop << ':' << marginRight << ':' << marginBottom << ':' << marginLeft << ' ' <<
         "p:" << paddingTop << ':' <<  paddingRight << ':'<< paddingBottom<< ':' << paddingLeft << ' ' <<
         "b:" << borderTop << ':' <<  borderRight << ':' << borderBottom<< ':' << borderLeft << ' ' <<

@@ -440,6 +440,9 @@ class BlockLevelBox : public Box
 
     unsigned textAlign;
 
+    // for a collapsed-through box
+    float topBorderEdge;
+
     // for float box
     bool inserted;  // set to true if inserted in a linebox.
     float edge;
