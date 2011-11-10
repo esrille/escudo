@@ -1031,9 +1031,9 @@ float BlockLevelBox::collapseMarginTop(FormattingContext* context)
                     marginTop = collapseMargins(before, marginTop);
                     // TODO: review this logic again for negative margins, etc.
                     if (isAnonymous() || style->clear.getValue() == style->clear.None)
-                        context->updateRemainingHeight(marginTop - prev->marginTop);
+                        context->updateRemainingHeight(marginTop - prev->marginTop);  // TODO: prev->marginTop is always zero.
                     else
-                        context->updateRemainingHeight(-prev->marginTop);
+                        context->updateRemainingHeight(-prev->marginTop);  // TODO: prev->marginTop is always zero.
                     return before;
                 }
             }
@@ -1237,6 +1237,8 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
             if (clearance == 0.0f)
                 clearance = NAN;
             else if (prev && prev->isCollapsedThrough()) {
+                if (clearance < marginTop)
+                    clearance = marginTop;
                 prev->marginBottom = before;
                 clearance -= original + before;
                 marginTop = original;
