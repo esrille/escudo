@@ -177,9 +177,9 @@ bool WindowImp::poll()
                 imp->dispatchEvent(event);
             }
 
-            imp->decrementLoadEventDelayCount();
-
             refreshView();
+
+            imp->decrementLoadEventDelayCount();
         } else if (boxTree) {
             if (unsigned flags = boxTree->getFlags()) {
                 recordTime("  flagged");
@@ -209,8 +209,9 @@ void WindowImp::render()
         recordTime("render begin");
         view->render();
         recordTime("render end  ");
-        if (boxTree)    // When the root element has display:none, no box is created at all.
-            boxTree->dump();
+        view->dump();
+        std::cout << "##\n";
+        std::cout.flush();
     }
 }
 

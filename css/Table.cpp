@@ -433,8 +433,7 @@ float TableWrapperBox::shrinkTo()
 
 void TableWrapperBox::dump(std::string indent)
 {
-    std::cout << indent << "* table wrapper box (" << static_cast<void*>(this);
-    std::cout << ':' << node.self() << ')';
+    std::cout << indent << "* table wrapper box";
     std::cout << " [" << node.getNodeName() << ']';
     std::cout << " (" << x << ", " << y << "), (" << getTotalWidth() << ", " << getTotalHeight() << ") " <<
                  "[" << xWidth << ", " << yHeight << "]\n";

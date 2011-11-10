@@ -47,6 +47,7 @@ class DocumentWindow : public EventTargetImp
     DocumentWindow(const DocumentWindow& window);
 
     void handleClick(events::Event event);
+    void notify();
 
 public:
     DocumentWindow();

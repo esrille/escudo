@@ -20,6 +20,7 @@
 
 #include <org/w3c/dom/events/MouseEvent.h>
 
+#include "DocumentImp.h"
 #include "WindowImp.h"
 #include "css/ViewCSSImp.h"
 #include "js/esjsapi.h"
@@ -77,8 +78,17 @@ void DocumentWindow::preload(const std::u16string& base, const std::u16string& u
     if (request) {
         cache.push_back(request);
         request->open(u"GET", urlString);
+        request->setHanndler(boost::bind(&DocumentWindow::notify, this));
+        if (DocumentImp* imp = dynamic_cast<DocumentImp*>(document.self()))
+            imp->incrementLoadEventDelayCount();
         request->send();
     }
+}
+
+void DocumentWindow::notify()
+{
+    if (DocumentImp* imp = dynamic_cast<DocumentImp*>(document.self()))
+        imp->decrementLoadEventDelayCount();
 }
 
 void DocumentWindow::scroll(int x, int y)

@@ -469,6 +469,7 @@ BlockLevelBox* ViewCSSImp::layOut()
 
     if (stackingContexts) {
         stackingContexts->addBase(boxTree.get());
+        std::cout << "## stacking contexts\n";
         stackingContexts->dump();
     }
     return boxTree.get();
@@ -476,8 +477,13 @@ BlockLevelBox* ViewCSSImp::layOut()
 
 BlockLevelBox* ViewCSSImp::dump()
 {
-    boxTree->dump();
-    return boxTree.get();
+    std::cout << "## render tree\n";
+    // When the root element has display:none, no box is created at all.
+    if (boxTree) {
+        boxTree->dump();
+        return boxTree.get();
+    }
+    return 0;
 }
 
 CSSStyleDeclarationImp* ViewCSSImp::getStyle(Element elt, Nullable<std::u16string> pseudoElt)

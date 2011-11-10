@@ -36,7 +36,7 @@ std::FILE* HttpRequest::openFile()
 {
     if (fdContent == -1)
         return 0;
-    std::FILE* file = fdopen(dup(fdContent ), "rb");
+    std::FILE* file = fdopen(dup(fdContent), "rb");
     if (!file)
         return 0;
     rewind(file);
