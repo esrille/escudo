@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+// A test harness for the implementation report of
+//       the CSS2.1 Conformance Test Suite
+// http://test.csswg.org/suites/css2.1/20110323/
+
 #include <unistd.h>
 #include <sys/wait.h>
 
@@ -23,19 +27,51 @@
 #include <sstream>
 #include <string>
 
-// A test harness for the implementation report of
-//       the CSS2.1 Conformance Test Suite
-// http://test.csswg.org/suites/css2.1/20110323/
-int main(int argc,  char* argv[])
+#include <boost/version.hpp>
+#include <boost/iostreams/stream.hpp>
+#include <boost/iostreams/device/file_descriptor.hpp>
+
+int processOutput(std::istream& stream, std::string& result)
 {
-    if (argc < 3) {
-        std::cout << "usage: " << argv[0] << " report.data command [argument ...]\n";
+    std::string output;
+    bool completed = false;
+    while (std::getline(stream, output)) {
+        if (!completed) {
+            if (output == "## complete")
+                completed = true;
+            continue;
+        }
+        if (output == "##")
+            break;
+        result += output + '\n';
+    }
+    return 0;
+}
+
+int main(int argc, char* argv[])
+{
+    bool headless = true;
+
+    int argi = 1;
+    while (*argv[argi] == '-') {
+        switch (argv[argi][1]) {
+        case 'i':
+            headless = false;
+            break;
+        default:
+            break;
+        }
+        ++argi;
+    }
+
+    if (argc < argi + 2) {
+        std::cout << "usage: " << argv[0] << " [-i] report.data command [argument ...]\n";
         return EXIT_FAILURE;
     }
 
-    std::ifstream data(argv[1]);
+    std::ifstream data(argv[argi]);
     if (!data) {
-        std::cerr << "error: " << argv[1] << ": no such file\n";
+        std::cerr << "error: " << argv[argi] << ": no such file\n";
         return EXIT_FAILURE;
     }
 
@@ -45,10 +81,10 @@ int main(int argc,  char* argv[])
         return EXIT_FAILURE;
     }
 
-    char* args[argc];
+    char* args[argc - argi + 1];
     for (int i = 2; i < argc; ++i)
-        args[i - 2] = argv[i];
-    args[argc - 1] = 0;
+        args[i - 2] = argv[i + argi - 1];
+    args[argc - argi] = 0;
 
     while (data) {
         std::string line;
@@ -64,42 +100,105 @@ int main(int argc,  char* argv[])
         if (url.empty())
             continue;
 
+        int pipefd[2];
+        pipe(pipefd);
+
         pid_t pid = fork();
         if (pid == -1) {
             std::cerr << "error: no more process to create\n";
             break;
         }
         if (pid == 0) {
+            close(1);
+            dup(pipefd[1]);
+            close(pipefd[0]);
+
             url = "http://localhost:8000/" + url;
-            args[argc - 2] = strdup(url.c_str());
+            args[argc - argi - 1] = strdup(url.c_str());
             execvp(args[0], args);
             exit(EXIT_FAILURE);
         }
+        close(pipefd[1]);
+
+        std::string output;
+
+#if 104400 <= BOOST_VERSION
+        boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(pipefd[0], boost::iostreams::close_handle);
+#else
+        boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(pipefd[0], true);
+#endif
+        processOutput(stream, output);
+
+        if (headless)
+            kill(pid, SIGTERM);
+
         int status;
         if (wait(&status) == -1) {
             std::cerr << "error: failed to wait for a test process to complete\n";
             break;
         }
 
-        std::cout << '[' << url << "]? ";
-        std::string input;
-        std::getline(std::cin, input);
-        if (input.empty() || input == "p")
-            input = "pass";
-        else if (input == "f")
-            input = "fail";
-        else if (input == "i")
-            input = "invalid";
-        else if (input == "n")
-            input = "na";
-        else if (input == "s")
-            input = "skip";
-        else if (input == "u")
-            input = "uncertain";
-        else if (input == "q" || input == "quit")
-            break;
+        std::string path(url);
+        size_t pos = path.rfind('.');
+        if (pos != std::string::npos) {
+            path.erase(pos);
+            path += ".log";
+        }
+        std::string evaluation;
 
-        result << url << '\t' << input << '\n';
+        if (output.empty())
+            evaluation = "fatal";
+        else if (!headless) {
+            std::cout << "## complete\n" << output;
+            std::cout << '[' << url << "]? ";
+            std::getline(std::cin, evaluation);
+            if (evaluation.empty() || evaluation == "p")
+                evaluation = "pass";
+            else if (evaluation == "f")
+                evaluation = "fail";
+            else if (evaluation == "i")
+                evaluation = "invalid";
+            else if (evaluation == "n")
+                evaluation = "na";
+            else if (evaluation == "s")
+                evaluation = "skip";
+            else if (evaluation == "u")
+                evaluation = "uncertain";
+            else if (evaluation == "q" || evaluation == "quit")
+                break;
+
+            std::ofstream dump(path.c_str(), std::ios_base::out | std::ios_base::trunc);
+            if (!dump) {
+                std::cerr << "error: failed to open the report file\n";
+                return EXIT_FAILURE;
+            }
+            dump << "# " << url.c_str() << '\t' << evaluation << '\n' << output;
+            dump.flush();
+            dump.close();
+        } else {
+            std::ifstream dump(path.c_str());
+            if (!dump)
+                evaluation = "uncertain";
+            else {
+                std::string head;
+                std::getline(dump, line);
+                std::stringstream s(line, std::stringstream::in);
+                s >> evaluation;
+                s >> evaluation;
+                s >> evaluation;
+                std::string comp;
+                while (std::getline(dump, line))
+                    comp += line + '\n';
+                if (output != comp) {
+                    if (evaluation == "pass")
+                        evaluation = "fail";
+                    else
+                        evaluation = "uncertain";
+                }
+            }
+        }
+
+        result << url << '\t' << evaluation << '\n';
     }
     result.close();
 }
