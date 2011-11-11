@@ -541,6 +541,9 @@ public:
     virtual bool isAbsolutelyPositioned() const;
     virtual bool isFloat() const;
     bool isFixed() const;
+    bool isClipped() const {
+        return !isAnonymous() && style && style->overflow.isClipped();
+    }
 
     virtual const ContainingBlock* getContainingBlock(ViewCSSImp* view) const;
     void setContainingBlock(ViewCSSImp* view);
@@ -560,6 +563,9 @@ public:
         return firstChild && firstChild->isAnonymous();
     }
     BlockLevelBox* getAnonymousBox();
+
+    bool isCollapsableInside() const;
+    bool isCollapsableOutside() const;
 
     void resolveWidth(ViewCSSImp* view, const ContainingBlock* containingBlock, float available = 0);
     void resolveBackground(ViewCSSImp* view);
