@@ -113,6 +113,13 @@ public:
         positiveMargin = negativeMargin = 0.0f;
         previousMargin = NAN;
     }
+    void inheritMarginContext(FormattingContext* from) {
+        if (from) {
+            positiveMargin = from->positiveMargin;
+            negativeMargin = from->negativeMargin;
+            previousMargin = from->previousMargin;
+        }
+    }
 
     void adjustRemainingFloatingBoxes(float topBorderEdge);
 };
