@@ -85,6 +85,7 @@ class FormattingContext
     float positiveMargin;
     float negativeMargin;
     float previousMargin;
+    bool withClearance;
 
 public:
     FormattingContext();
@@ -112,13 +113,21 @@ public:
     void clearMargin() {
         positiveMargin = negativeMargin = 0.0f;
         previousMargin = NAN;
+        withClearance = false;
     }
     void inheritMarginContext(FormattingContext* from) {
         if (from) {
             positiveMargin = from->positiveMargin;
             negativeMargin = from->negativeMargin;
             previousMargin = from->previousMargin;
+            withClearance = from->withClearance;
         }
+    }
+    bool hasClearance() const {
+        return withClearance;
+    }
+    void setClearance() {
+        withClearance = true;
     }
 
     void adjustRemainingFloatingBoxes(float topBorderEdge);

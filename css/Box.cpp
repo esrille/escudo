@@ -1022,7 +1022,7 @@ void BlockLevelBox::collapseMarginBottom(FormattingContext* context)
         if (last->isCollapsedThrough()) {
             last->marginTop = 0.0f;
             if (isCollapsableInside() && borderBottom == 0 && paddingBottom == 0 && style->height.isAuto() &&
-                !last->hasClearance())
+                !context->hasClearance())
             {
                 last->marginBottom = 0.0f;
                 marginBottom = context->collapseMargins(marginBottom);
@@ -1220,6 +1220,7 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
                 marginTop = original;
                 before = NAN;
                 context->collapseMargins(marginTop);
+                context->setClearance();
             } else if (clearance < marginTop) {
                 clearance = NAN;
                 before = NAN;
@@ -1232,6 +1233,7 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
                 marginTop = original;
                 before = NAN;
                 context->collapseMargins(marginTop);
+                context->setClearance();
             }
         }
     }
