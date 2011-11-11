@@ -24,6 +24,17 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
+FormattingContext::FormattingContext() :
+    lineBox(0),
+    x(0.0f),
+    leftover(0.0f),
+    prevChar(0),
+    positiveMargin(0.0f),
+    negativeMargin(0.0f),
+    previousMargin(NAN)
+{
+}
+
 float FormattingContext::getLeftEdge() const {
     if (left.empty())
         return 0.0f;
@@ -95,7 +106,7 @@ void FormattingContext::tryAddFloat(ViewCSSImp* view)
     }
 }
 
-void FormattingContext::updateRemainingHeight(float h)
+void FormattingContext::adjustRemainingHeight(float h)
 {
     for (auto i = left.begin(); i != left.end();) {
         if (((*i)->remainingHeight -= h) <= 0.0f)
@@ -109,6 +120,13 @@ void FormattingContext::updateRemainingHeight(float h)
         else
             ++i;
     }
+}
+
+void FormattingContext::updateRemainingHeight(float h)
+{
+    h += getMargin();
+    clearMargin();
+    adjustRemainingHeight(h);
 }
 
 float FormattingContext::shiftDown()
@@ -256,10 +274,40 @@ float FormattingContext::clear(unsigned value)
             h = std::max(h, (*i)->remainingHeight);
         }
     }
-    updateRemainingHeight(h);
+    if (0.0f < h)
+        updateRemainingHeight(h - getMargin());
     assert(!(value & 1) || left.empty());
     assert(!(value & 2) || right.empty());
     return h;
+}
+
+float FormattingContext::collapseMargins(float margin)
+{
+    if (0.0f <= margin) {
+        previousMargin = positiveMargin;
+        positiveMargin = std::max(positiveMargin, margin);
+    } else {
+        previousMargin = negativeMargin;
+        negativeMargin = std::min(negativeMargin, margin);
+    }
+    return positiveMargin + negativeMargin;
+}
+
+float FormattingContext::undoCollapseMargins()
+{
+    if (!isnan(previousMargin)) {
+        if (0.0f <= previousMargin)
+            positiveMargin = previousMargin;
+        else
+            negativeMargin = previousMargin;
+        previousMargin = NAN;
+    }
+    return positiveMargin + negativeMargin;
+}
+
+float FormattingContext::fixMargin()
+{
+    updateRemainingHeight(0.0f);
 }
 
 }}}}  // org::w3c::dom::bootstrap

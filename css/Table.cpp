@@ -415,7 +415,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
 
     style->width.setValue();
 
-    collapseMarginBottom();
+    collapseMarginBottom(context);
     if (!isAnonymous()) {
         width = std::max(width, style->minWidth.getPx());
         height = std::max(height, style->minHeight.getPx());

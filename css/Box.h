@@ -79,13 +79,13 @@ class FormattingContext
     std::list<BlockLevelBox*> right;  // active float boxes at the right side
     std::list<Node> floatNodes;       // float boxes not layed out yet
 
+    // Adjoining margins
+    float positiveMargin;
+    float negativeMargin;
+    float previousMargin;
+
 public:
-    FormattingContext() :
-        lineBox(0),
-        x(0.0f),
-        leftover(0.0f),
-        prevChar(0) {
-    }
+    FormattingContext();
     LineBox* addLineBox(ViewCSSImp* view, BlockLevelBox* parentBox);
     void addFloat(BlockLevelBox* floatBox, float totalWidth);
     float getLeftEdge() const;
@@ -97,8 +97,20 @@ public:
     bool hasNewFloats() const;
     void nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, unsigned clearValue = 0);
     void tryAddFloat(ViewCSSImp* view);
+    void adjustRemainingHeight(float height);
     void updateRemainingHeight(float height);
     float clear(unsigned value);
+
+    float collapseMargins(float margin);
+    float undoCollapseMargins();
+    float fixMargin();
+    float getMargin() const {
+        return positiveMargin + negativeMargin;
+    }
+    void clearMargin() {
+        positiveMargin = negativeMargin = 0.0f;
+        previousMargin = NAN;
+    }
 };
 
 class BoxImage
@@ -483,8 +495,8 @@ protected:
 
     bool isCollapsedThrough() const;
     float collapseMarginTop(FormattingContext* context);
-    bool undoCollapseMarginTop(float before);
-    void collapseMarginBottom();
+    bool undoCollapseMarginTop(FormattingContext* context, float before);
+    void collapseMarginBottom(FormattingContext* context);
     void adjustCollapsedThroughMargins(FormattingContext* context);
     void moveUpCollapsedThroughMargins();
 
