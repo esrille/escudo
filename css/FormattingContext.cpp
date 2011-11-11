@@ -212,6 +212,7 @@ void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, uns
         if (!floatBox->inserted) {
             floatBox->inserted = true;
             lineBox->insertBefore(floatBox, lineBox->getFirstChild());
+            floatList.push_back(floatBox);
         }
     }
     for (auto i = right.begin(); i != right.end(); ++i) {
@@ -224,6 +225,7 @@ void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, uns
                 lineBox->gap = parentBox->width - lineBox->getTotalWidth() - getLeftEdge() - getRightEdge();
             }
             lineBox->appendChild(*i);
+            floatList.push_back(floatBox);
         }
     }
     float height = lineBox->getTotalHeight();
@@ -308,6 +310,15 @@ float FormattingContext::undoCollapseMargins()
 float FormattingContext::fixMargin()
 {
     updateRemainingHeight(0.0f);
+}
+
+void FormattingContext::adjustRemainingFloatingBoxes(float topBorderEdge)
+{
+    if (!isnan(topBorderEdge) && topBorderEdge != 0.0f) {
+        for (auto i = floatList.begin(); i != floatList.end(); ++i)
+            (*i)->remainingHeight += topBorderEdge;
+    }
+    floatList.clear();
 }
 
 }}}}  // org::w3c::dom::bootstrap

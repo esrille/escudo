@@ -79,6 +79,8 @@ class FormattingContext
     std::list<BlockLevelBox*> right;  // active float boxes at the right side
     std::list<Node> floatNodes;       // float boxes not layed out yet
 
+    std::list<BlockLevelBox*> floatList;  // list of floating boxes just inserted inside the same block box.
+
     // Adjoining margins
     float positiveMargin;
     float negativeMargin;
@@ -111,6 +113,8 @@ public:
         positiveMargin = negativeMargin = 0.0f;
         previousMargin = NAN;
     }
+
+    void adjustRemainingFloatingBoxes(float topBorderEdge);
 };
 
 class BoxImage

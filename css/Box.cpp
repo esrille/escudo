@@ -1057,10 +1057,9 @@ void BlockLevelBox::adjustCollapsedThroughMargins(FormattingContext* context)
 {
     if (isCollapsedThrough()) {
         topBorderEdge = marginTop;
-        // TODO: review this logic again for negative margins, etc.
-        context->adjustRemainingHeight(-marginTop);
     } else if (!isFlowRoot())
         moveUpCollapsedThroughMargins();
+    context->adjustRemainingFloatingBoxes(topBorderEdge);
 }
 
 void BlockLevelBox::moveUpCollapsedThroughMargins()
