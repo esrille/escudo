@@ -922,7 +922,10 @@ void BlockLevelBox::shrinkToFit()
 // returns the minimum total width
 float Box::shrinkTo()
 {
-    return getTotalWidth();
+    float w = marginLeft + getBorderWidth();
+    if (0.0f < marginRight)
+        w += marginRight;
+    return w;
 }
 
 float BlockLevelBox::shrinkTo()
@@ -944,7 +947,9 @@ float BlockLevelBox::shrinkTo()
         }
         if (!style->marginRight.isAuto()) {
             --autoCount;
-            min += style->marginRight.getPx();
+            float m = style->marginRight.getPx();
+            if (0.0f < m)
+                min += m;
         }
     }
     return min;
@@ -952,7 +957,7 @@ float BlockLevelBox::shrinkTo()
 
 void BlockLevelBox::fit(float w)
 {
-    if (getTotalWidth() == w)
+    if (Box::shrinkTo() == w)
         return;
     resolveWidth(w);
     if (!isAnonymous() && !style->width.isAuto())
@@ -1273,6 +1278,10 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         (style->isInlineBlock() || style->isFloat() || style->display == CSSDisplayValueImp::TableCell) &&
         !intrinsic)
         shrinkToFit();
+    else if (style->width.isAuto()) {
+        for (Box* child = getFirstChild(); child; child = child->getNextSibling())
+            width = std::max(width, child->Box::shrinkTo());
+    }
 
     // Apply resolveWidth() again to check 'max-width'.
     if (!isAnonymous())
@@ -1289,6 +1298,10 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         height = 0.0f;
         for (Box* child = getFirstChild(); child; child = child->getNextSibling())
             height += child->getTotalHeight() + child->getClearance();
+        if (Box* last = getLastChild()) {
+            if (last->marginBottom < 0.0f)
+                height -= last->marginBottom;
+        }
     }
     if (!isAnonymous()) {
         applyMinMaxHeight(context);
@@ -1570,6 +1583,10 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
         height = 0;
         for (Box* child = getFirstChild(); child; child = child->getNextSibling())
             height += child->getTotalHeight() + child->getClearance();
+        if (Box* last = getLastChild()) {
+            if (last->marginBottom < 0.0f)
+                height -= last->marginBottom;
+        }
     }
     // Check 'max-height' and then 'min-height' again.
     maskV = applyAbsoluteMinMaxHeight(containingBlock, top, bottom, maskV);
@@ -1666,7 +1683,7 @@ bool LineBox::layOut(ViewCSSImp* view, FormattingContext* context)
 
 float LineBox::shrinkTo()
 {
-    float w = getTotalWidth();
+    float w = Box::shrinkTo();
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
         if (child->isFloat())
             w += child->getEffectiveTotalWidth();
@@ -1682,10 +1699,10 @@ void LineBox::fit(float w)
     case CSSTextAlignValueImp::Left:
         break;
     case CSSTextAlignValueImp::Right:
-        offsetH = w - getTotalWidth();
+        offsetH = w - Box::shrinkTo();
         break;
     case CSSTextAlignValueImp::Center:
-        offsetH = (w - getTotalWidth()) / 2.0f;
+        offsetH = (w - Box::shrinkTo()) / 2.0f;
         break;
     default:  // TODO: support Justify and Default
         break;
@@ -1693,7 +1710,7 @@ void LineBox::fit(float w)
 
     // Adjust the gap between the last inline box and the leftmost float at the right side.
     if (rightBox) {
-        gap = w - getTotalWidth();
+        gap = w - Box::shrinkTo();
         for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
             if (child->isFloat()) {
                 BlockLevelBox* box = dynamic_cast<BlockLevelBox*>(child);
