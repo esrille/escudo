@@ -1042,7 +1042,21 @@ void BlockLevelBox::collapseMarginBottom(FormattingContext* context)
 
     BlockLevelBox* first = dynamic_cast<BlockLevelBox*>(getFirstChild());
     if (first && first->isCollapsableOutside() && !first->hasClearance() && isCollapsableInside() && borderTop == 0 && paddingTop == 0) {
-        std::swap(first->marginTop, marginTop);
+        if (hasClearance()) {
+            // The following algorithm is deduced from the following tests:
+            //   http://test.csswg.org/suites/css2.1/20110323/html4/margin-collapse-157.htm
+            //   http://test.csswg.org/suites/css2.1/20110323/html4/margin-collapse-clear-015.htm
+            float original = style->marginTop.isAuto() ? 0 : style->marginTop.getPx();
+            float d = first->marginTop - clearance;
+            if (original < d)
+                marginTop = d;
+            else {
+                // TODO: The expected behavior is not very clear.
+                marginTop = original;
+            }
+            first->marginTop = 0.0f;
+        } else
+            std::swap(first->marginTop, marginTop);
         while (first->isCollapsedThrough()) {
             first->topBorderEdge = 0.0f;
             first = dynamic_cast<BlockLevelBox*>(first->getNextSibling());
