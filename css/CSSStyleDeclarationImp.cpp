@@ -1289,12 +1289,18 @@ void CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* co
     bool nonExplicitHeight = false;
     if (const Box* containingBox = dynamic_cast<const Box*>(containingBlock)) {
         CSSStyleDeclarationImp* containingStyle = containingBox->getStyle();
-        if (containingStyle) {
-            // It appears a floating box does not treat 'width' in unknown percentage as unknown.
-            // cf. http://test.csswg.org/suites/css2.1/20110323/html4/margin-collapse-143.htm
-            if (containingStyle->width.isAuto() && !isFloat())
+        if (containingStyle && !isAbsolutelyPositioned()) {
+            // While it is not defined in CSS 2.1, we treat an unknown percentage width as
+            // 'auto'. A percentage width is unknown if the style associated with the
+            // containing block has the 'auto' width, and its width is to (potentially) shrink-to-fit.
+            // Particularly we'd like to pass the following CSS 2.1 tests:
+            //   http://test.csswg.org/suites/css2.1/20110323/html4/margin-collapse-143.htm
+            //   http://test.csswg.org/suites/css2.1/20110323/html4/margin-collapse-clear-012.htm
+            //   http://test.csswg.org/suites/css2.1/20110323/html4/abspos-width-002.htm
+            if (containingStyle->width.isAuto() &&
+                (containingStyle->isFloat() || containingStyle->isInlineBlock() || containingStyle->isAbsolutelyPositioned()))
                 nonExplicitWidth = true;
-            if (containingStyle->height.isAuto() && !containingStyle->isAbsolutelyPositioned())
+            if (containingStyle->height.isAuto())
                 nonExplicitHeight = true;
         }
     }
