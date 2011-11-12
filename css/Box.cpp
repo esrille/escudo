@@ -1121,6 +1121,10 @@ void BlockLevelBox::moveUpCollapsedThroughMargins()
         }
     } else
         m = curr->marginTop;
+
+    if (m == 0.0f)
+        return;
+
     while (prev && prev->isCollapsedThrough() && !prev->hasClearance()) {
         prev->topBorderEdge -= m;
         curr = prev;
@@ -1516,8 +1520,6 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
         return;  // TODO error
     if (!style)
         return;  // TODO error
-
-    std::u16string tag;
 
     setContainingBlock(view);
     const ContainingBlock* containingBlock = &absoluteBlock;
