@@ -1034,7 +1034,8 @@ void BlockLevelBox::collapseMarginBottom(FormattingContext* context)
             } else {
                 last->marginBottom = lm;
                 context->fixMargin();
-                last->moveUpCollapsedThroughMargins();
+                if (!last->hasClearance())
+                    last->moveUpCollapsedThroughMargins();
             }
         } else if (isCollapsableInside() && borderBottom == 0 && paddingBottom == 0 && style->height.isAuto()) {
             last->marginBottom = 0.0f;
@@ -1088,9 +1089,11 @@ bool BlockLevelBox::undoCollapseMarginTop(FormattingContext* context, float befo
 // Adjust marginTop of the 1st, collapsed through child box.
 void BlockLevelBox::adjustCollapsedThroughMargins(FormattingContext* context)
 {
-    if (isCollapsedThrough())
+    if (isCollapsedThrough()) {
         topBorderEdge = marginTop;
-    else if (isCollapsableOutside())
+        if (hasClearance())
+            moveUpCollapsedThroughMargins();
+    } else if (isCollapsableOutside())
         moveUpCollapsedThroughMargins();
     context->adjustRemainingFloatingBoxes(topBorderEdge);
 }
@@ -1107,8 +1110,8 @@ void BlockLevelBox::moveUpCollapsedThroughMargins()
         prev = dynamic_cast<BlockLevelBox*>(curr->getPreviousSibling());
         if (from->hasClearance())
             return;
-        m = from->marginTop;
-    } else if (curr->isCollapsedThrough()) {
+    }
+    if (curr->isCollapsedThrough()) {
         assert(curr->marginTop == 0.0f);
         m = curr->marginBottom;
         curr->topBorderEdge -= m;
@@ -1134,11 +1137,11 @@ void BlockLevelBox::moveUpCollapsedThroughMargins()
         assert(curr->marginTop == 0.0f);
         assert(curr->marginBottom == 0.0f);
         curr->marginTop = m;
-        if (hasClearance() || !isCollapsedThrough())
+        if (!from->isCollapsedThrough())
             from->marginTop = 0.0f;
         else
             from->marginBottom = 0.0f;
-    } else if (!hasClearance() && curr->isCollapsedThrough()) {
+    } else if (curr->isCollapsedThrough()) {
         curr->marginTop = m;
         curr->marginBottom = 0.0f;
         curr->topBorderEdge = 0.0f;
