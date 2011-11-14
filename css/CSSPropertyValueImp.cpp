@@ -1305,7 +1305,7 @@ void CSSLineHeightValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* st
 
 void CSSLineHeightValueImp::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style) {
     float w;
-    switch (value.unit) {
+    switch (value.isNegative() ? CSSParserTerm::CSS_TERM_INDEX : value.unit) {
     case CSSParserTerm::CSS_TERM_INDEX:
         if (FontTexture* font = style->getFontTexture())
             w = font->getLineHeight(view->getPointFromPx(style->fontSize.getPx()));
