@@ -1677,13 +1677,15 @@ void LineBox::appendInlineBox(InlineLevelBox* inlineBox, CSSStyleDeclarationImp*
 {
     assert(activeStyle);
     float offset = activeStyle->verticalAlign.getOffset(this, inlineBox);
-    if (offset < 0.0f)
+    if (offset < 0.0f) {
         baseline -= offset;
-    else
+        offset = 0.0f;
+    } else
         baseline = std::max(baseline, offset + inlineBox->getBaseline());
     width += inlineBox->getTotalWidth();
-    height = std::max(inlineBox->height, height);
-    height = std::max(activeStyle->lineHeight.getPx(), height);
+    if (0.0f < inlineBox->height)
+        height = std::max(height, offset + inlineBox->height);
+    height = std::max(height, activeStyle->lineHeight.getPx());
     appendChild(inlineBox);
     if (activeStyle->isPositioned() && !inlineBox->isAnonymous())
         activeStyle->getStackingContext()->addBase(inlineBox);
