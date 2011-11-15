@@ -1873,6 +1873,7 @@ public:
         value.specify(specified.value);
     }
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
+    void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     float getOffset(LineBox* line, InlineLevelBox* text) const;
     CSSVerticalAlignValueImp() :
         value(Baseline) {

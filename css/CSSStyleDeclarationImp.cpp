@@ -1284,6 +1284,7 @@ void CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* co
     }
 
     lineHeight.resolve(view, this);
+    verticalAlign.resolve(view, this);
 
     bool nonExplicitWidth = false;
     bool nonExplicitHeight = false;

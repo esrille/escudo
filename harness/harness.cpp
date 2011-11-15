@@ -152,7 +152,7 @@ int main(int argc, char* argv[])
             std::cout << "## complete\n" << output;
             std::cout << '[' << url << "]? ";
             std::getline(std::cin, evaluation);
-            if (evaluation.empty() || evaluation == "p")
+            if (evaluation.empty() || evaluation == "p" || evaluation == "\x1b")
                 evaluation = "pass";
             else if (evaluation == "f")
                 evaluation = "fail";

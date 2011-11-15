@@ -1427,6 +1427,13 @@ void CSSVerticalAlignValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp*
 {
     if (value.isIndex())
         return;
+    value.compute(view, style);
+}
+
+void CSSVerticalAlignValueImp::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style)
+{
+    if (value.isIndex())
+        return;
     value.resolve(view, style, style->lineHeight.getPx());
 }
 
