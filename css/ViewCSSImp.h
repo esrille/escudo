@@ -214,7 +214,7 @@ public:
         case css::CSSPrimitiveValue::CSS_PC:
             return n.number * 12 / 72 * dpi;
         default:
-            return NAN;  // TODO: error
+            return NAN;
         }
     }
     float getPointFromPx(float px) {

@@ -1425,7 +1425,7 @@ void CSSPaddingShorthandImp::specify(CSSStyleDeclarationImp* self, const CSSStyl
 
 void CSSVerticalAlignValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style)
 {
-    if (value.isIndex())
+    if (value.isIndex() || value.isPercentage())
         return;
     value.compute(view, style);
 }
