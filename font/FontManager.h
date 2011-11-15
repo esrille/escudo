@@ -219,6 +219,10 @@ public:
         return (getSize(point) * ascender) / (ascender - descender);
     }
 
+    float getDescender(float point) const {
+        return (getSize(point) * descender) / (ascender - descender);
+    }
+
     float getLineHeight(float point) const {
         return (getSize(point) * (ascender - descender + lineGap)) / (ascender - descender);
     }

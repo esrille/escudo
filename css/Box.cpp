@@ -237,6 +237,7 @@ void BlockLevelBox::setContainingBlock(ViewCSSImp* view)
                 offsetV = box->y + box->marginTop + box->borderTop - y;
                 clipBox = box->clipBox;
                 if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(box)) {
+                    offsetV += block->topBorderEdge;
                     absoluteBlock.width = box->getPaddingWidth();
                     absoluteBlock.height = box->getPaddingHeight();
                     if (style->overflow.isClipped())
@@ -706,18 +707,18 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
             inlineLevelBox->marginRight = inlineLevelBox->paddingRight = inlineLevelBox->borderRight = blankRight = 0;
         }
         if (inlineLevelBox->getTotalWidth() || inlineLevelBox->getTotalHeight()) {  // have non-zero margins, padding, or borders?
-            inlineLevelBox->height = font->getLineHeight(point);
-            inlineLevelBox->baseline += (activeStyle->lineHeight.getPx() - inlineLevelBox->height) / 2.0f;
-            lineBox->height = std::max(getStyle()->lineHeight.getPx(), std::max(lineBox->height, std::max(activeStyle->lineHeight.getPx(), inlineLevelBox->height)));
-            lineBox->baseline = std::max(lineBox->baseline, inlineLevelBox->baseline);
+            inlineLevelBox->height = activeStyle->lineHeight.getPx();
+            float leading = inlineLevelBox->height - font->getSize(point);
+            inlineLevelBox->offsetV += leading / 2.0f;
+            if (0.0f < leading)
+                inlineLevelBox->height -= leading;
+
+            // TODO: XXX
             lineBox->underlinePosition = std::max(lineBox->underlinePosition, font->getUnderlinePosition(point));
             lineBox->underlineThickness = std::max(lineBox->underlineThickness, font->getUnderlineThickness(point));
         }
         context->x += advanced + blankRight;
-        lineBox->appendChild(inlineLevelBox);
-        lineBox->width += blankLeft + advanced + blankRight;
-        if (activeStyle->isPositioned() && !inlineLevelBox->isAnonymous())
-            activeStyle->getStackingContext()->addBase(inlineLevelBox);
+        lineBox->appendInlineBox(inlineLevelBox, activeStyle);
         position += length;
         data.erase(0, length);
         if (data.length() == 0) {  // layout done?
@@ -781,12 +782,7 @@ void BlockLevelBox::layOutInlineLevelBox(ViewCSSImp* view, Node node, Formatting
     context->x += inlineLevelBox->getTotalWidth();
     context->leftover -= inlineLevelBox->getTotalWidth();
     LineBox* lineBox = context->lineBox;
-    lineBox->appendChild(inlineLevelBox);
-    lineBox->height = std::max(getStyle()->lineHeight.getPx(), std::max(lineBox->height, inlineLevelBox->height));  // TODO: marginTop, etc.???
-    lineBox->baseline = std::max(lineBox->baseline, inlineLevelBox->baseline);
-    lineBox->width += inlineLevelBox->getTotalWidth();
-    if (style->isPositioned() && !inlineLevelBox->isAnonymous())
-        style->getStackingContext()->addBase(inlineLevelBox);
+    lineBox->appendInlineBox(inlineLevelBox, style);
 }
 
 void BlockLevelBox::layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floatBox, FormattingContext* context)
@@ -990,6 +986,10 @@ bool BlockLevelBox::isCollapsedThrough() const
          lineBox = dynamic_cast<LineBox*>(lineBox->getNextSibling())) {
         if (lineBox->getTotalHeight() != 0.0f)
             return false;
+        for (auto i = lineBox->getFirstChild(); i; i = i->getNextSibling()) {
+            if (dynamic_cast<InlineLevelBox*>(i))
+                return false;
+        }
     }
     return true;
 }
@@ -1093,8 +1093,10 @@ void BlockLevelBox::adjustCollapsedThroughMargins(FormattingContext* context)
         topBorderEdge = marginTop;
         if (hasClearance())
             moveUpCollapsedThroughMargins();
-    } else if (isCollapsableOutside())
+    } else if (isCollapsableOutside()) {
+        context->fixMargin();
         moveUpCollapsedThroughMargins();
+    }
     context->adjustRemainingFloatingBoxes(topBorderEdge);
 }
 
@@ -1671,6 +1673,22 @@ void BlockLevelBox::dump(std::string indent)
         child->dump(indent);
 }
 
+void LineBox::appendInlineBox(InlineLevelBox* inlineBox, CSSStyleDeclarationImp* activeStyle)
+{
+    assert(activeStyle);
+    float offset = activeStyle->verticalAlign.getOffset(this, inlineBox);
+    if (offset < 0.0f)
+        baseline -= offset;
+    else
+        baseline = std::max(baseline, offset + inlineBox->getBaseline());
+    width += inlineBox->getTotalWidth();
+    height = std::max(inlineBox->height, height);
+    height = std::max(activeStyle->lineHeight.getPx(), height);
+    appendChild(inlineBox);
+    if (activeStyle->isPositioned() && !inlineBox->isAnonymous())
+        activeStyle->getStackingContext()->addBase(inlineBox);
+}
+
 bool LineBox::layOut(ViewCSSImp* view, FormattingContext* context)
 {
     for (Box* box = getFirstChild(); box; box = box->getNextSibling()) {
@@ -1833,8 +1851,6 @@ void InlineLevelBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLev
         shadow->resolveXY(left, top);
     else if (getFirstChild())
         getFirstChild()->resolveXY(view, left, top, clip);
-    else if (font)
-        top += baseline - font->getAscender(point);
     x = left;
     y = top;
     clipBox = clip;

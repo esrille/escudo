@@ -542,7 +542,7 @@ void InlineLevelBox::render(ViewCSSImp* view, StackingContext* stackingContext)
 {
     assert(stackingContext);
     if (font)
-        renderBorder(view, x - getBlankTop(), y);
+        renderBorder(view, x, y - getBlankTop());
     else
         renderBorder(view, x, y);
     if (shadow)
@@ -551,7 +551,7 @@ void InlineLevelBox::render(ViewCSSImp* view, StackingContext* stackingContext)
         getFirstChild()->render(view, stackingContext);
     else if (font) {
         glPushMatrix();
-            glTranslatef(x + getBlankLeft(), y + font->getAscender(point), 0.0f);
+            glTranslatef(x + getBlankLeft(), y + baseline, 0.0f);
             if (getStyle()->textDecorationContext.hasDecoration()) {
                 unsigned lineDecoration = getStyle()->textDecorationContext.decoration;
                 glDisable(GL_TEXTURE_2D);

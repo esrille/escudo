@@ -657,6 +657,8 @@ public:
         return underlineThickness;
     }
 
+    void appendInlineBox(InlineLevelBox* inlineBox, CSSStyleDeclarationImp* activeStyle);
+
     virtual void resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip);
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context);
     virtual void render(ViewCSSImp* view, StackingContext* stackingContext);
