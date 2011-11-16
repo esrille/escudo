@@ -708,7 +708,8 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
         }
         if (inlineLevelBox->getTotalWidth() || inlineLevelBox->getTotalHeight()) {  // have non-zero margins, padding, or borders?
             inlineLevelBox->height = activeStyle->lineHeight.getPx();
-            float leading = inlineLevelBox->height - font->getSize(point);
+
+            float leading = std::max(inlineLevelBox->height, getStyle()->lineHeight.getPx()) - font->getSize(point);
             inlineLevelBox->offsetV += leading / 2.0f;
             if (0.0f < leading)
                 inlineLevelBox->height -= leading;
@@ -1691,7 +1692,10 @@ void LineBox::appendInlineBox(InlineLevelBox* inlineBox, CSSStyleDeclarationImp*
     width += inlineBox->getTotalWidth();
     if (0.0f < inlineBox->height)
         height = std::max(height, offset + inlineBox->height);
+    // Since the leading length might have been deducted from inlineBox->height,
+    // we still need to check the line-height of the inline level box's style.
     height = std::max(height, activeStyle->lineHeight.getPx());
+    height = std::max(height, style->lineHeight.getPx());
     appendChild(inlineBox);
     if (activeStyle->isPositioned() && !inlineBox->isAnonymous())
         activeStyle->getStackingContext()->addBase(inlineBox);
