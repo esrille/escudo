@@ -1687,8 +1687,8 @@ void LineBox::appendInlineBox(InlineLevelBox* inlineBox, CSSStyleDeclarationImp*
     if (offset < 0.0f) {
         baseline -= offset;
         offset = 0.0f;
-    } else
-        baseline = std::max(baseline, offset + inlineBox->getBaseline());
+    }
+
     width += inlineBox->getTotalWidth();
     if (0.0f < inlineBox->height)
         height = std::max(height, offset + inlineBox->height);
