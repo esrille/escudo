@@ -762,7 +762,7 @@ void BlockLevelBox::layOutInlineLevelBox(ViewCSSImp* view, Node node, Formatting
         inlineBlock->layOut(view, context);
         inlineLevelBox->width = inlineBlock->getTotalWidth();
         inlineLevelBox->height = inlineBlock->getTotalHeight();
-        inlineLevelBox->baseline = inlineBlock->getBlankTop() + inlineBlock->height;
+        inlineLevelBox->baseline = inlineLevelBox->height;
     }
 
     // TODO: calc inlineLevelBox->width and height with intrinsic values.
