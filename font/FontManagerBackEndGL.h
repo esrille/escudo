@@ -157,22 +157,24 @@ public:
         while (text < last) {
             char32_t u;
             text = utf16to32(text, &u);
-            FontGlyph* glyph = fontTexture->getGlyph(u);
-            uint8_t* image = fontTexture->getImage(glyph);
-            bindImage(image);
-            unsigned y = glyph->y % FontTexture::Height;
-            glTranslatef(glyph->left / 64.f, -(glyph->top - fontTexture->getBearingGap()) / 64.f, 0.0);
-            glBegin(GL_QUADS);
-                    glTexCoord2i(glyph->x, y);
-                    glVertex2i(0, 0);
-                    glTexCoord2i(glyph->x + glyph->width, y);
-                    glVertex2i(glyph->width, 0);
-                    glTexCoord2i(glyph->x + glyph->width, y + glyph->height);
-                    glVertex2i(glyph->width, glyph->height);
-                    glTexCoord2i(glyph->x, y + glyph->height);
-                    glVertex2i(0, glyph->height);
-            glEnd();
-            glTranslatef((-glyph->left + glyph->advance) / 64.0, (glyph->top - fontTexture->getBearingGap()) / 64.f, 0.0);
+            if (u != '\n') {
+                FontGlyph* glyph = fontTexture->getGlyph(u);
+                uint8_t* image = fontTexture->getImage(glyph);
+                bindImage(image);
+                unsigned y = glyph->y % FontTexture::Height;
+                glTranslatef(glyph->left / 64.f, -(glyph->top - fontTexture->getBearingGap()) / 64.f, 0.0);
+                glBegin(GL_QUADS);
+                        glTexCoord2i(glyph->x, y);
+                        glVertex2i(0, 0);
+                        glTexCoord2i(glyph->x + glyph->width, y);
+                        glVertex2i(glyph->width, 0);
+                        glTexCoord2i(glyph->x + glyph->width, y + glyph->height);
+                        glVertex2i(glyph->width, glyph->height);
+                        glTexCoord2i(glyph->x, y + glyph->height);
+                        glVertex2i(0, glyph->height);
+                glEnd();
+                glTranslatef((-glyph->left + glyph->advance) / 64.0, (glyph->top - fontTexture->getBearingGap()) / 64.f, 0.0);
+            }
         }
     }
 };

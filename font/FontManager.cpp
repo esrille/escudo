@@ -228,7 +228,7 @@ float FontTexture::measureText(const char16_t* text, float point)
 size_t FontTexture::fitText(const char16_t* text, size_t length, float point, float& leftover, bool ws, size_t* next, float* required)
 {
     const float scale = point / this->point / 64.0f;
-    char32_t u;
+    char32_t u = 0;
     float width = 0.0f;
     size_t posLast = 0;
     TextIterator ti;  // TODO: keep one ti
@@ -240,9 +240,13 @@ size_t FontTexture::fitText(const char16_t* text, size_t length, float point, fl
         float advance = 0.0f;
         FontGlyph* glyph;
         for (size_t i = posLast; i < pos; ++i) {
-            text = utf16to32(text, &u);
-            glyph = getGlyph(u);
-            advance += glyph->advance;
+            char32_t c;
+            text = utf16to32(text, &c);
+            if (c != '\n') {
+                u = c;
+                glyph = getGlyph(u);
+                advance += glyph->advance;
+            }
         }
         advance *= scale;
         if (leftover < advance) {
@@ -276,7 +280,7 @@ fitTextWithTransformation(const char16_t* text, size_t length, float point, unsi
 {
     std::u16string transformed;
     const float scale = point / this->point / 64.0f;
-    char32_t u;
+    char32_t u = 0;
     float width = 0.0f;
     size_t posLast = 0;
     size_t posLastTransformed = 0;
@@ -289,28 +293,32 @@ fitTextWithTransformation(const char16_t* text, size_t length, float point, unsi
         float advance = 0.0f;
         FontGlyph* glyph;
         for (size_t i = posLast; i < pos; ++i) {
-            text = utf16to32(text, &u);
-            switch (transform) {
-            case 1:  // capitalize
-                if (i == posLast)
-                    u = u_totitle(u);
-                break;
-            case 2:  // uppercase
-                u = u_toupper(u);
-                break;
-            case 3:  // lowercase
-                u = u_tolower(u);
-                break;
-            default:  // none
-                break;
+            char32_t c;
+            text = utf16to32(text, &c);
+            if (c != '\n') {
+                u = c;
+                switch (transform) {
+                case 1:  // capitalize
+                    if (i == posLast)
+                        u = u_totitle(u);
+                    break;
+                case 2:  // uppercase
+                    u = u_toupper(u);
+                    break;
+                case 3:  // lowercase
+                    u = u_tolower(u);
+                    break;
+                default:  // none
+                    break;
+                }
+                char16_t buffer[3];
+                if (char16_t* p = utf32to16(u, buffer)) {
+                    *p = 0;
+                    transformed += buffer;
+                }
+                glyph = getGlyph(u);
+                advance += glyph->advance;
             }
-            char16_t buffer[3];
-            if (char16_t* p = utf32to16(u, buffer)) {
-                *p = 0;
-                transformed += buffer;
-            }
-            glyph = getGlyph(u);
-            advance += glyph->advance;
         }
         advance *= scale;
         if (leftover < advance) {
