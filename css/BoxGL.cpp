@@ -277,7 +277,7 @@ void Box::renderBorder(ViewCSSImp* view, float left, float top)
     glTranslatef(left, top, 0.0f);
     glDisable(GL_TEXTURE_2D);
 
-    float ll = marginLeft;
+    float ll = (marginLeft < 0.0f) ? 0.0f : marginLeft;
     float lr = ll + borderLeft;
     float rl = lr + paddingLeft + width + paddingRight;
     float rr = rl + borderRight;
@@ -551,7 +551,7 @@ void InlineLevelBox::render(ViewCSSImp* view, StackingContext* stackingContext)
         getFirstChild()->render(view, stackingContext);
     else if (font) {
         glPushMatrix();
-            glTranslatef(x + getBlankLeft(), y + baseline, 0.0f);
+            glTranslatef(x + getBlankLeft(), y + font->getAscender(point), 0.0f);
             if (getStyle()->textDecorationContext.hasDecoration()) {
                 unsigned lineDecoration = getStyle()->textDecorationContext.decoration;
                 glDisable(GL_TEXTURE_2D);

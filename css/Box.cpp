@@ -634,6 +634,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
             return false;  // TODO error
         style->addBox(inlineLevelBox);  // activeStyle? maybe not...
         inlineLevelBox->resolveWidth();
+        // TODO: Support negative margins.
         float blankLeft = inlineLevelBox->getBlankLeft();
         if (0 < position || !isAtLeftEdge(element, text))
             inlineLevelBox->marginLeft = inlineLevelBox->paddingLeft = inlineLevelBox->borderLeft = blankLeft = 0;
@@ -708,11 +709,9 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
         }
         if (inlineLevelBox->getTotalWidth() || inlineLevelBox->getTotalHeight()) {  // have non-zero margins, padding, or borders?
             inlineLevelBox->height = activeStyle->lineHeight.getPx();
-
-            float leading = std::max(inlineLevelBox->height, getStyle()->lineHeight.getPx()) - font->getSize(point);
-            inlineLevelBox->offsetV += leading / 2.0f;
-            if (0.0f < leading)
-                inlineLevelBox->height -= leading;
+            inlineLevelBox->leading = std::max(inlineLevelBox->height, getStyle()->lineHeight.getPx()) - font->getSize(point);
+            if (0.0f < inlineLevelBox->leading)
+                inlineLevelBox->height -= inlineLevelBox->leading;
 
             // TODO: XXX
             lineBox->underlinePosition = std::max(lineBox->underlinePosition, font->getUnderlinePosition(point));
@@ -754,6 +753,7 @@ void BlockLevelBox::layOutInlineLevelBox(ViewCSSImp* view, Node node, Formatting
     if (isReplacedElement(element)) {
         inlineLevelBox->resolveWidth();
         layOutReplacedElement(view, inlineLevelBox, element, style);
+        inlineLevelBox->baseline = inlineLevelBox->getTotalHeight();
     } else {
         assert(style->isInlineBlock());
         BlockLevelBox* inlineBlock = view->layOutBlockBoxes(element, 0, 0, 0, true);
@@ -772,10 +772,6 @@ void BlockLevelBox::layOutInlineLevelBox(ViewCSSImp* view, Node node, Formatting
         }
     }
 
-    // TODO: calc inlineLevelBox->width and height with intrinsic values.
-    if (inlineLevelBox->baseline == 0.0f)
-        inlineLevelBox->baseline = inlineLevelBox->getBlankTop() + inlineLevelBox->height;  // TODO
-
     while (context->leftover < inlineLevelBox->getTotalWidth()) {
         if (context->lineBox->hasChildBoxes() || context->hasNewFloats()) {
             context->nextLine(view, this);
@@ -786,8 +782,8 @@ void BlockLevelBox::layOutInlineLevelBox(ViewCSSImp* view, Node node, Formatting
             break;
     }
 
-    context->x += inlineLevelBox->getTotalWidth();
-    context->leftover -= inlineLevelBox->getTotalWidth();
+    context->x += inlineLevelBox->getOuterWidth();
+    context->leftover -= inlineLevelBox->getOuterWidth();
     LineBox* lineBox = context->lineBox;
     lineBox->appendInlineBox(inlineLevelBox, style);
 }
@@ -1688,14 +1684,17 @@ void LineBox::appendInlineBox(InlineLevelBox* inlineBox, CSSStyleDeclarationImp*
         baseline -= offset;
         offset = 0.0f;
     }
-
-    width += inlineBox->getTotalWidth();
     if (0.0f < inlineBox->height)
         height = std::max(height, offset + inlineBox->height);
     // Since the leading length might have been deducted from inlineBox->height,
     // we still need to check the line-height of the inline level box's style.
     height = std::max(height, activeStyle->lineHeight.getPx());
     height = std::max(height, style->lineHeight.getPx());
+
+    width += inlineBox->getOuterWidth();
+    if (inlineBox->marginLeft < 0.0f)
+        inlineBox->offsetH -= inlineBox->marginLeft;
+
     appendChild(inlineBox);
     if (activeStyle->isPositioned() && !inlineBox->isAnonymous())
         activeStyle->getStackingContext()->addBase(inlineBox);
@@ -1768,7 +1767,7 @@ void LineBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* 
         float next = left;
         if (!child->isAbsolutelyPositioned()) {
             if (!child->isFloat())
-                next += child->getTotalWidth();
+                next += child->getOuterWidth();
             else {
                 BlockLevelBox* box = dynamic_cast<BlockLevelBox*>(child);
                 assert(box);
@@ -1858,7 +1857,7 @@ void InlineLevelBox::resolveOffset(ViewCSSImp* view)
 void InlineLevelBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip)
 {
     left += offsetH;
-    top += offsetV;
+    top += offsetV + leading / 2.0f;
     if (shadow)
         shadow->resolveXY(left, top);
     else if (getFirstChild())

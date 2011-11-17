@@ -341,6 +341,19 @@ public:
         return (0.0f <= marginTop && 0.0f <= marginBottom && getTotalHeight() == 0.0f) ? 0.0f : getTotalWidth();
     }
 
+    float getOuterWidth() const {
+        float w = getBorderWidth();
+        if (0.0f < marginLeft)
+            w += marginLeft;
+        if (0.0f < marginRight)
+            w += marginRight;
+        return w;
+    }
+
+    float getVerticalOffset() const {
+        return offsetV;
+    }
+
     virtual float shrinkTo();
     virtual void fit(float w) {}
 
@@ -677,6 +690,7 @@ class InlineLevelBox : public Box
     FontTexture* font;
     float point;
     float baseline;
+    float leading;
     std::u16string data;
 
 public:
@@ -684,7 +698,8 @@ public:
         Box(node),
         font(0),
         point(0.0f),
-        baseline(0.0f)
+        baseline(0.0f),
+        leading(0.0f)
     {
         setStyle(style);
     }
@@ -700,6 +715,10 @@ public:
     }
 
     virtual bool isAnonymous() const;
+
+    float getLeading() const {
+        return leading;
+    }
 
     float atEndOfLine();
 
