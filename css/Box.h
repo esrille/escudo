@@ -417,7 +417,7 @@ public:
     }
 
     virtual void render(ViewCSSImp* view, StackingContext* stackingContext) = 0;
-    void renderBorder(ViewCSSImp* view, float left, float top);
+    void renderBorder(ViewCSSImp* view, float left, float top, float contentHeight = NAN);
 
     virtual void dump(std::string indent = "") = 0;
 
