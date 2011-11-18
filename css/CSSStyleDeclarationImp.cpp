@@ -1363,6 +1363,8 @@ size_t CSSStyleDeclarationImp::processWhiteSpace(std::u16string& data, char16_t&
     case CSSWhiteSpaceValueImp::PreLine:
         for (int i = 0; i < data.length();) {
             char16_t c = data[i];
+            if (c == '\t')
+                data[i] = ' ';
             if (c == '\n') {  // linefeed
                 int j;
                 for (j = i - 1; 0 <= j && isSpace(data[j]); --j)
@@ -1372,7 +1374,7 @@ size_t CSSStyleDeclarationImp::processWhiteSpace(std::u16string& data, char16_t&
                     data.erase(j, i - j);
                     i = j;
                 }
-                for (j = i + 1; j < data.length() && isSpace(data[j]); ++j)
+                for (int j = i + 1; j < data.length() && isSpace(data[j]); ++j)
                     ;
                 --j;
                 if (i < j)
@@ -1383,11 +1385,7 @@ size_t CSSStyleDeclarationImp::processWhiteSpace(std::u16string& data, char16_t&
                     c = data[i] = ' ';
                     break;
                 }
-            }
-            // tab, and space following another space
-            if (c == '\t')
-                data[i] = ' ';
-            if (c == ' ' && prevChar == ' ') {
+            } else if (c == ' ' && prevChar == ' ') {
                 data.erase(i, 1);
                 continue;  // do not increment i.
             }
