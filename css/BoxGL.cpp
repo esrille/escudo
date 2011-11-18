@@ -278,8 +278,6 @@ void Box::renderBorder(ViewCSSImp* view, float left, float top, float contentHei
     glDisable(GL_TEXTURE_2D);
 
     float ll = marginLeft;
-    if (ll < 0.0f && !isnan(contentHeight))
-        ll = 0.0f;
     float lr = ll + borderLeft;
     float rl = lr + paddingLeft + width + paddingRight;
     float rr = rl + borderRight;

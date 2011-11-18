@@ -634,12 +634,12 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
             return false;  // TODO error
         style->addBox(inlineLevelBox);  // activeStyle? maybe not...
         inlineLevelBox->resolveWidth();
-        float blankLeft = inlineLevelBox->getInlineLeft();
+        float blankLeft = inlineLevelBox->getBlankLeft();
         if (0 < position || !isAtLeftEdge(element, text))
             inlineLevelBox->marginLeft = inlineLevelBox->paddingLeft = inlineLevelBox->borderLeft = blankLeft = 0;
         context->x += blankLeft;
         context->leftover -= blankLeft;
-        float blankRight = inlineLevelBox->getInlineRight();
+        float blankRight = inlineLevelBox->getBlankRight();
         context->leftover -= blankRight;
         if (context->leftover < 0.0f && context->lineBox->hasChildBoxes()) {
             delete inlineLevelBox;
@@ -781,8 +781,8 @@ void BlockLevelBox::layOutInlineLevelBox(ViewCSSImp* view, Node node, Formatting
             break;
     }
 
-    context->x += inlineLevelBox->getInlineWidth();
-    context->leftover -= inlineLevelBox->getInlineWidth();
+    context->x += inlineLevelBox->getTotalWidth();
+    context->leftover -= inlineLevelBox->getTotalWidth();
     LineBox* lineBox = context->lineBox;
     lineBox->appendInlineBox(inlineLevelBox, style);
 }
@@ -920,7 +920,7 @@ void BlockLevelBox::shrinkToFit()
 // returns the minimum total width
 float Box::shrinkTo()
 {
-    return getInlineWidth();
+    return getTotalWidth();
 }
 
 float BlockLevelBox::shrinkTo()
@@ -1683,9 +1683,7 @@ void LineBox::appendInlineBox(InlineLevelBox* inlineBox, CSSStyleDeclarationImp*
     height = std::max(height, activeStyle->lineHeight.getPx());
     height = std::max(height, style->lineHeight.getPx());
 
-    width += inlineBox->getInlineWidth();
-    if (inlineBox->marginRight < 0.0f)
-        inlineBox->offsetH -= inlineBox->marginRight;
+    width += inlineBox->getTotalWidth();
 
     appendChild(inlineBox);
     if (activeStyle->isPositioned() && !inlineBox->isAnonymous())
@@ -1760,7 +1758,7 @@ void LineBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* 
         next = left;
         if (!child->isAbsolutelyPositioned()) {
             if (!child->isFloat())
-                next += child->getInlineWidth();
+                next += child->getTotalWidth();
             else {
                 BlockLevelBox* box = dynamic_cast<BlockLevelBox*>(child);
                 assert(box);

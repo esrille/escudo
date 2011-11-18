@@ -349,23 +349,6 @@ public:
         return w;
     }
 
-    // for inline level box
-    float getInlineLeft() const {
-        float w = borderLeft + paddingLeft;
-        if (0.0f < marginLeft)
-            w += marginLeft;
-        return w;
-    }
-    float getInlineRight() const {
-        float w = borderRight + paddingRight;
-        if (0.0f < marginRight)
-            w += marginRight;
-        return w;
-    }
-    float getInlineWidth() const {
-        return getInlineLeft() + width + getInlineRight();
-    }
-
     float getVerticalOffset() const {
         return offsetV;
     }
