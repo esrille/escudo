@@ -73,6 +73,8 @@ class ViewCSSImp
     StackingContext* stackingContexts;
     unsigned overflow;
 
+    float scrollWidth;
+
     Node hovered;
 
     unsigned dpi;
@@ -225,6 +227,14 @@ public:
     }
 
     Box* boxFromPoint(int x, int y);
+
+    float getScrollWidth() const {
+        return scrollWidth;
+    }
+    float updateScrollWidth(float w) {
+        scrollWidth = std::max(scrollWidth, w);
+        return scrollWidth;
+    }
 
     Node getHovered() const {
         return hovered;

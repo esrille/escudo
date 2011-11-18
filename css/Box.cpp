@@ -634,13 +634,12 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
             return false;  // TODO error
         style->addBox(inlineLevelBox);  // activeStyle? maybe not...
         inlineLevelBox->resolveWidth();
-        // TODO: Support negative margins.
-        float blankLeft = inlineLevelBox->getBlankLeft();
+        float blankLeft = inlineLevelBox->getInlineLeft();
         if (0 < position || !isAtLeftEdge(element, text))
             inlineLevelBox->marginLeft = inlineLevelBox->paddingLeft = inlineLevelBox->borderLeft = blankLeft = 0;
         context->x += blankLeft;
         context->leftover -= blankLeft;
-        float blankRight = inlineLevelBox->getBlankRight();
+        float blankRight = inlineLevelBox->getInlineRight();
         context->leftover -= blankRight;
         if (context->leftover < 0.0f && context->lineBox->hasChildBoxes()) {
             delete inlineLevelBox;
@@ -782,8 +781,8 @@ void BlockLevelBox::layOutInlineLevelBox(ViewCSSImp* view, Node node, Formatting
             break;
     }
 
-    context->x += inlineLevelBox->getOuterWidth();
-    context->leftover -= inlineLevelBox->getOuterWidth();
+    context->x += inlineLevelBox->getInlineWidth();
+    context->leftover -= inlineLevelBox->getInlineWidth();
     LineBox* lineBox = context->lineBox;
     lineBox->appendInlineBox(inlineLevelBox, style);
 }
@@ -921,10 +920,7 @@ void BlockLevelBox::shrinkToFit()
 // returns the minimum total width
 float Box::shrinkTo()
 {
-    float w = marginLeft + getBorderWidth();
-    if (0.0f < marginRight)
-        w += marginRight;
-    return w;
+    return getInlineWidth();
 }
 
 float BlockLevelBox::shrinkTo()
@@ -946,7 +942,7 @@ float BlockLevelBox::shrinkTo()
         }
         if (!style->marginRight.isAuto()) {
             --autoCount;
-            float m = style->marginRight.getPx();
+            float m  = style->marginRight.getPx();
             if (0.0f < m)
                 min += m;
         }
@@ -956,7 +952,7 @@ float BlockLevelBox::shrinkTo()
 
 void BlockLevelBox::fit(float w)
 {
-    if (Box::shrinkTo() == w)
+    if (getBlockWidth() == w)
         return;
     resolveWidth(w);
     if (!isAnonymous() && !style->width.isAuto())
@@ -1158,23 +1154,22 @@ void BlockLevelBox::layOutChildren(ViewCSSImp* view, FormattingContext* context)
             removeChild(child);
             continue;
         }
-        BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(child);
-        if (block && !block->isCollapsableOutside()) {
-            assert(!child->isAnonymous());
+        if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(child)) {
+            if (!block->isCollapsableOutside()) {
+                assert(!child->isAnonymous());
 
-            // TODO: Verify what if child is the first one, etc.
-            Box* prev = child->getPreviousSibling();
-            if (prev && 0.0f != context->getMargin())
-                prev->marginBottom = context->getMargin();
+                // TODO: Verify what if child is the first one, etc.
+                Box* prev = child->getPreviousSibling();
+                if (prev && 0.0f != context->getMargin())
+                    prev->marginBottom = context->getMargin();
 
-            context->fixMargin();
-            float clearance = context->clear(child->style->clear.getValue());
-            if (child->marginTop < clearance)
-                child->marginTop = clearance;
-            context->updateRemainingHeight(child->getTotalHeight() - clearance);
+                context->fixMargin();
+                float clearance = context->clear(child->style->clear.getValue());
+                if (child->marginTop < clearance)
+                    child->marginTop = clearance;
+                context->updateRemainingHeight(child->getTotalHeight() - clearance);
+            }
         }
-        if (style->width.isAuto())
-            width = std::max(width, child->getTotalWidth());
     }
 }
 
@@ -1286,12 +1281,7 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         (style->isInlineBlock() || style->isFloat() || style->display == CSSDisplayValueImp::TableCell) &&
         !intrinsic)
         shrinkToFit();
-    else if (style->width.isAuto()) {
-        for (Box* child = getFirstChild(); child; child = child->getNextSibling())
-            width = std::max(width, child->Box::shrinkTo());
-    }
 
-    // Apply resolveWidth() again to check 'max-width'.
     if (!isAnonymous())
         applyMinMaxWidth(getTotalWidth());
 
@@ -1651,6 +1641,8 @@ void BlockLevelBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLeve
             top += child->getTotalHeight() + child->getClearance();
         }
     }
+
+    view->updateScrollWidth(x + getBlockWidth());
 }
 
 void BlockLevelBox::dump(std::string indent)
@@ -1691,9 +1683,9 @@ void LineBox::appendInlineBox(InlineLevelBox* inlineBox, CSSStyleDeclarationImp*
     height = std::max(height, activeStyle->lineHeight.getPx());
     height = std::max(height, style->lineHeight.getPx());
 
-    width += inlineBox->getOuterWidth();
-    if (inlineBox->marginLeft < 0.0f)
-        inlineBox->offsetH -= inlineBox->marginLeft;
+    width += inlineBox->getInlineWidth();
+    if (inlineBox->marginRight < 0.0f)
+        inlineBox->offsetH -= inlineBox->marginRight;
 
     appendChild(inlineBox);
     if (activeStyle->isPositioned() && !inlineBox->isAnonymous())
@@ -1763,11 +1755,12 @@ void LineBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* 
     clipBox = clip;
     left += getBlankLeft();  // Node floats are placed inside margins.
     top += getBlankTop();
+    float next = 0.0f;
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
-        float next = left;
+        next = left;
         if (!child->isAbsolutelyPositioned()) {
             if (!child->isFloat())
-                next += child->getOuterWidth();
+                next += child->getInlineWidth();
             else {
                 BlockLevelBox* box = dynamic_cast<BlockLevelBox*>(child);
                 assert(box);
@@ -1779,6 +1772,8 @@ void LineBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* 
         child->resolveXY(view, left, top, clip);
         left = next;
     }
+
+    view->updateScrollWidth(x + getTotalWidth() + getBlankRight());
 }
 
 void LineBox::dump(std::string indent)

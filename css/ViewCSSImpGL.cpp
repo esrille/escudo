@@ -59,7 +59,7 @@ void ViewCSSImp::render()
 
     if (overflow != CSSOverflowValueImp::Hidden) {
         Box::renderVerticalScrollBar(initialContainingBlock.width, initialContainingBlock.height, window->getScrollY(), boxTree->getTotalHeight());
-        Box::renderHorizontalScrollBar(initialContainingBlock.width, initialContainingBlock.height, window->getScrollX(), boxTree->getTotalWidth());
+        Box::renderHorizontalScrollBar(initialContainingBlock.width, initialContainingBlock.height, window->getScrollX(), scrollWidth);
     }
 }
 

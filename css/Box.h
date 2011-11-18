@@ -341,13 +341,29 @@ public:
         return (0.0f <= marginTop && 0.0f <= marginBottom && getTotalHeight() == 0.0f) ? 0.0f : getTotalWidth();
     }
 
-    float getOuterWidth() const {
-        float w = getBorderWidth();
-        if (0.0f < marginLeft)
-            w += marginLeft;
+    // for block level box
+    float getBlockWidth() const {
+        float w = marginLeft + getBorderWidth();
         if (0.0f < marginRight)
             w += marginRight;
         return w;
+    }
+
+    // for inline level box
+    float getInlineLeft() const {
+        float w = borderLeft + paddingLeft;
+        if (0.0f < marginLeft)
+            w += marginLeft;
+        return w;
+    }
+    float getInlineRight() const {
+        float w = borderRight + paddingRight;
+        if (0.0f < marginRight)
+            w += marginRight;
+        return w;
+    }
+    float getInlineWidth() const {
+        return getInlineLeft() + width + getInlineRight();
     }
 
     float getVerticalOffset() const {

@@ -277,7 +277,9 @@ void Box::renderBorder(ViewCSSImp* view, float left, float top, float contentHei
     glTranslatef(left, top, 0.0f);
     glDisable(GL_TEXTURE_2D);
 
-    float ll = (marginLeft < 0.0f) ? 0.0f : marginLeft;
+    float ll = marginLeft;
+    if (ll < 0.0f && !isnan(contentHeight))
+        ll = 0.0f;
     float lr = ll + borderLeft;
     float rl = lr + paddingLeft + width + paddingRight;
     float rr = rl + borderRight;
@@ -297,8 +299,8 @@ void Box::renderBorder(ViewCSSImp* view, float left, float top, float contentHei
             } else {
                 const ContainingBlock* containingBlock = getContainingBlock(view);
                 glVertex2f(-left, -top);
-                glVertex2f(-left + containingBlock->width, -top);
-                glVertex2f(-left + containingBlock->width, -top + containingBlock->height);
+                glVertex2f(-left + view->getScrollWidth(), -top);
+                glVertex2f(-left + view->getScrollWidth(), -top + containingBlock->height);
                 glVertex2f(-left, -top + containingBlock->height);
             }
         glEnd();
@@ -544,7 +546,7 @@ void InlineLevelBox::render(ViewCSSImp* view, StackingContext* stackingContext)
     if (font)
         renderBorder(view, x, y - getBlankTop(), font->getSize(point));
     else
-        renderBorder(view, x, y);
+        renderBorder(view, x, y, height);
     if (shadow)
         shadow->render();
     else if (getFirstChild())  // for inline-block

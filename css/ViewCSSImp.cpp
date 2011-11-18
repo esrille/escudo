@@ -42,6 +42,7 @@ ViewCSSImp::ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyle
     defaultStyleSheet(defaultStyleSheet),
     stackingContexts(0),
     overflow(CSSOverflowValueImp::Auto),
+    scrollWidth(0.0f),
     hovered(0),
     dpi(96),
     mutationListener(boost::bind(&ViewCSSImp::handleMutation, this, _1))
@@ -449,6 +450,8 @@ BlockLevelBox* ViewCSSImp::layOut()
 {
     if (stackingContexts)
         stackingContexts->clearBase();
+
+    scrollWidth = 0.0f;
 
     layOutBlockBoxes();
     if (!boxTree)

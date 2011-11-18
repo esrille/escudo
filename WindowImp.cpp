@@ -1467,7 +1467,7 @@ void WindowImp::scroll(int x, int y)
     if (!view || !boxTree)
         return;
 
-    float overflow = boxTree->getTotalWidth() - width;
+    float overflow = view->getScrollWidth() - width;
     x = std::max(0, std::min(x, static_cast<int>(overflow)));
 
     overflow = boxTree->getTotalHeight() - height;
