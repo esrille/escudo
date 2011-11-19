@@ -708,7 +708,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
         }
         if (inlineLevelBox->getTotalWidth() || inlineLevelBox->getTotalHeight()) {  // have non-zero margins, padding, or borders?
             inlineLevelBox->height = activeStyle->lineHeight.getPx();
-            inlineLevelBox->leading = std::max(inlineLevelBox->height, getStyle()->lineHeight.getPx()) - font->getSize(point);
+            inlineLevelBox->leading = std::max(inlineLevelBox->height, getStyle()->lineHeight.getPx()) - font->getLineHeight(point);
             if (0.0f < inlineLevelBox->leading)
                 inlineLevelBox->height -= inlineLevelBox->leading;
 

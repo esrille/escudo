@@ -542,7 +542,7 @@ void InlineLevelBox::render(ViewCSSImp* view, StackingContext* stackingContext)
 {
     assert(stackingContext);
     if (font)
-        renderBorder(view, x, y - getBlankTop(), font->getSize(point));
+        renderBorder(view, x, y - getBlankTop(), font->getLineHeight(point));
     else
         renderBorder(view, x, y, height);
     if (shadow)
