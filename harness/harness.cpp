@@ -31,6 +31,12 @@
 #include <boost/iostreams/stream.hpp>
 #include <boost/iostreams/device/file_descriptor.hpp>
 
+enum {
+    INTERACTIVE,
+    HEADLESS,
+    REPORT
+};
+
 int processOutput(std::istream& stream, std::string& result)
 {
     std::string output;
@@ -46,6 +52,45 @@ int processOutput(std::istream& stream, std::string& result)
         result += output + '\n';
     }
     return 0;
+}
+
+int runTest(int argc, char* argv[], std::string url, std::string& result)
+{
+    int pipefd[2];
+    pipe(pipefd);
+
+    pid_t pid = fork();
+    if (pid == -1) {
+        std::cerr << "error: no more process to create\n";
+        return -1;
+    }
+    if (pid == 0) {
+        close(1);
+        dup(pipefd[1]);
+        close(pipefd[0]);
+
+        url = "http://localhost:8000/" + url;
+        argv[argc - 1] = strdup(url.c_str());
+        execvp(argv[0], argv);
+        exit(EXIT_FAILURE);
+    }
+    close(pipefd[1]);
+
+#if 104400 <= BOOST_VERSION
+    boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(pipefd[0], boost::iostreams::close_handle);
+#else
+    boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(pipefd[0], true);
+#endif
+    processOutput(stream, result);
+    return pid;
+}
+
+void killTest(int pid)
+{
+    int status;
+    kill(pid, SIGTERM);
+    if (wait(&status) == -1)
+        std::cerr << "error: failed to wait for a test process to complete\n";
 }
 
 bool loadLog(const std::string& path, std::string& result, std::string& log)
@@ -85,13 +130,16 @@ bool saveLog(const std::string& path, const std::string& url, const std::string&
 
 int main(int argc, char* argv[])
 {
-    bool headless = true;
+    int mode = HEADLESS;
 
     int argi = 1;
     while (*argv[argi] == '-') {
         switch (argv[argi][1]) {
         case 'i':
-            headless = false;
+            mode = INTERACTIVE;
+            break;
+        case 'r':
+            mode = REPORT;
             break;
         default:
             break;
@@ -121,47 +169,35 @@ int main(int argc, char* argv[])
         args[i - 2] = argv[i + argi - 1];
     args[argc - argi] = 0;
 
+    std::string result;
+    std::string url;
+    std::string undo;
+    bool redo = false;
     while (data) {
-        std::string line;
-        std::getline(data, line);
-        if (line.empty() || line[0] == '#' || line == "testname    result  comment") {
-            report << line << '\n';
-            continue;
+        if (result == "undo") {
+            std::swap(url, undo);
+            redo = true;
+        } else if (redo) {
+            std::swap(url, undo);
+            redo = false;
+        } else {
+            std::string line;
+            std::getline(data, line);
+            if (line.empty() || line[0] == '#' || line == "testname    result  comment") {
+                report << line << '\n';
+                continue;
+            }
+            undo = url;
+            std::stringstream s(line, std::stringstream::in);
+            s >> url;
         }
-
-        std::stringstream s(line, std::stringstream::in);
-        std::string url;
-        s >> url;
         if (url.empty())
             continue;
 
-        int pipefd[2];
-        pipe(pipefd);
-
-        pid_t pid = fork();
-        if (pid == -1) {
-            std::cerr << "error: no more process to create\n";
-            break;
-        }
-        if (pid == 0) {
-            close(1);
-            dup(pipefd[1]);
-            close(pipefd[0]);
-
-            url = "http://localhost:8000/" + url;
-            args[argc - argi - 1] = strdup(url.c_str());
-            execvp(args[0], args);
-            exit(EXIT_FAILURE);
-        }
-        close(pipefd[1]);
-
+        pid_t pid = -1;
         std::string output;
-#if 104400 <= BOOST_VERSION
-        boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(pipefd[0], boost::iostreams::close_handle);
-#else
-        boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(pipefd[0], true);
-#endif
-        processOutput(stream, output);
+        if (mode != REPORT)
+            pid = runTest(argc - argi, args, url, output);
 
         std::string path(url);
         size_t pos = path.rfind('.');
@@ -174,14 +210,25 @@ int main(int argc, char* argv[])
         std::string log;
         loadLog(path, evaluation, log);
 
-        std::string result;
-        if (output.empty())
+        if (0 < pid && output.empty())
             result = "fatal";
-        else if (!headless) {
+        else if (mode == INTERACTIVE) {
             std::cout << "## complete\n" << output;
-            std::cout << '[' << url << " : " << evaluation << "]? ";
+            std::cout << '[' << url << "] ";
+            if (evaluation.empty() || evaluation[0] == '?')
+                std::cout << "pass? ";
+            else {
+                std::cout << evaluation << "? ";
+                if (evaluation != "pass")
+                    std::cout << '\a';
+            }
             std::getline(std::cin, result);
-            if (result.empty() || result == "p" || result == "\x1b")
+            if (result.empty()) {
+                if (evaluation.empty() || evaluation[0] == '?')
+                    result = "pass";
+                else
+                    result = evaluation;
+            } else if (result == "p" || result == "\x1b")
                 result = "pass";
             else if (result == "f")
                 result = "fail";
@@ -197,26 +244,28 @@ int main(int argc, char* argv[])
                 result = "uncertain";
             else if (result == "q" || result == "quit")
                 break;
-            if (!saveLog(path, url, result, output)) {
+            else if (result == "z")
+                result = "undo";
+            if (result != "undo" && !saveLog(path, url, result, output)) {
                 std::cerr << "error: failed to open the report file\n";
                 return EXIT_FAILURE;
             }
-        } else {
+        } else if (mode == HEADLESS) {
             if (evaluation != "?" && output != log)
                 result = "uncertain";
             else
                 result = evaluation;
             std::cout << url << '\t' << result << '\n';
+        } else if (mode == REPORT) {
+            result = evaluation;
+            std::cout << url << '\t' << result << '\n';
         }
 
-        int status;
-        kill(pid, SIGTERM);
-        if (wait(&status) == -1) {
-            std::cerr << "error: failed to wait for a test process to complete\n";
-            break;
-        }
+        if (0 < pid)
+            killTest(pid);
 
-        report << url << '\t' << result << '\n';
+        if (result != "undo")
+            report << url << '\t' << result << '\n';
     }
     report.close();
 }
