@@ -48,6 +48,41 @@ int processOutput(std::istream& stream, std::string& result)
     return 0;
 }
 
+bool loadLog(const std::string& path, std::string& result, std::string& log)
+{
+    std::ifstream file(path.c_str());
+    if (!file) {
+        result = "?";
+        return false;
+    }
+    std::string line;
+    std::getline(file, line);
+    size_t pos = line.find('\t');
+    if (pos != std::string::npos)
+        result = line.substr(pos + 1);
+    else {
+        result = "?";
+        return false;
+    }
+    log.clear();
+    while (std::getline(file, line))
+        log += line + '\n';
+    return true;
+}
+
+bool saveLog(const std::string& path, const std::string& url, const std::string& result, const std::string& log)
+{
+    std::ofstream file(path.c_str(), std::ios_base::out | std::ios_base::trunc);
+    if (!file) {
+        std::cerr << "error: failed to open the report file\n";
+        return false;
+    }
+    file << "# " << url.c_str() << '\t' << result << '\n' << log;
+    file.flush();
+    file.close();
+    return true;
+}
+
 int main(int argc, char* argv[])
 {
     bool headless = true;
@@ -75,8 +110,8 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
-    std::ofstream result("report.data", std::ios_base::out | std::ios_base::trunc);
-    if (!result) {
+    std::ofstream report("report.data", std::ios_base::out | std::ios_base::trunc);
+    if (!report) {
         std::cerr << "error: failed to open the report file\n";
         return EXIT_FAILURE;
     }
@@ -90,7 +125,7 @@ int main(int argc, char* argv[])
         std::string line;
         std::getline(data, line);
         if (line.empty() || line[0] == '#' || line == "testname    result  comment") {
-            result << line << '\n';
+            report << line << '\n';
             continue;
         }
 
@@ -121,7 +156,6 @@ int main(int argc, char* argv[])
         close(pipefd[1]);
 
         std::string output;
-
 #if 104400 <= BOOST_VERSION
         boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(pipefd[0], boost::iostreams::close_handle);
 #else
@@ -129,76 +163,60 @@ int main(int argc, char* argv[])
 #endif
         processOutput(stream, output);
 
-        if (headless)
-            kill(pid, SIGTERM);
-
-        int status;
-        if (wait(&status) == -1) {
-            std::cerr << "error: failed to wait for a test process to complete\n";
-            break;
-        }
-
         std::string path(url);
         size_t pos = path.rfind('.');
         if (pos != std::string::npos) {
             path.erase(pos);
             path += ".log";
         }
-        std::string evaluation;
 
+        std::string evaluation;
+        std::string log;
+        loadLog(path, evaluation, log);
+
+        std::string result;
         if (output.empty())
-            evaluation = "fatal";
+            result = "fatal";
         else if (!headless) {
             std::cout << "## complete\n" << output;
-            std::cout << '[' << url << "]? ";
-            std::getline(std::cin, evaluation);
-            if (evaluation.empty() || evaluation == "p" || evaluation == "\x1b")
-                evaluation = "pass";
-            else if (evaluation == "f")
-                evaluation = "fail";
-            else if (evaluation == "i")
-                evaluation = "invalid";
-            else if (evaluation == "n")
-                evaluation = "na";
-            else if (evaluation == "s")
-                evaluation = "skip";
-            else if (evaluation == "u")
-                evaluation = "uncertain";
-            else if (evaluation == "q" || evaluation == "quit")
+            std::cout << '[' << url << " : " << evaluation << "]? ";
+            std::getline(std::cin, result);
+            if (result.empty() || result == "p" || result == "\x1b")
+                result = "pass";
+            else if (result == "f")
+                result = "fail";
+            else if (result == "i")
+                result = "invalid";
+            else if (result == "k") // keep
+                result = evaluation;
+            else if (result == "n")
+                result = "na";
+            else if (result == "s")
+                result = "skip";
+            else if (result == "u")
+                result = "uncertain";
+            else if (result == "q" || result == "quit")
                 break;
-
-            std::ofstream dump(path.c_str(), std::ios_base::out | std::ios_base::trunc);
-            if (!dump) {
+            if (!saveLog(path, url, result, output)) {
                 std::cerr << "error: failed to open the report file\n";
                 return EXIT_FAILURE;
             }
-            dump << "# " << url.c_str() << '\t' << evaluation << '\n' << output;
-            dump.flush();
-            dump.close();
         } else {
-            std::ifstream dump(path.c_str());
-            if (!dump)
-                evaluation = "uncertain";
-            else {
-                std::string head;
-                std::getline(dump, line);
-                std::stringstream s(line, std::stringstream::in);
-                s >> evaluation;
-                s >> evaluation;
-                s >> evaluation;
-                std::string comp;
-                while (std::getline(dump, line))
-                    comp += line + '\n';
-                if (output != comp) {
-                    if (evaluation == "pass")
-                        evaluation = "fail";
-                    else
-                        evaluation = "uncertain";
-                }
-            }
+            if (evaluation != "?" && output != log)
+                result = "uncertain";
+            else
+                result = evaluation;
+            std::cout << url << '\t' << result << '\n';
         }
 
-        result << url << '\t' << evaluation << '\n';
+        int status;
+        kill(pid, SIGTERM);
+        if (wait(&status) == -1) {
+            std::cerr << "error: failed to wait for a test process to complete\n";
+            break;
+        }
+
+        report << url << '\t' << result << '\n';
     }
-    result.close();
+    report.close();
 }
