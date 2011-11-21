@@ -706,11 +706,9 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
             // TODO: firstLetterStyle: actually we are not sure if the following characters would fit in the same line box...
             inlineLevelBox->marginRight = inlineLevelBox->paddingRight = inlineLevelBox->borderRight = blankRight = 0;
         }
-        if (inlineLevelBox->getTotalWidth() || inlineLevelBox->getTotalHeight()) {  // have non-zero margins, padding, or borders?
+        if (inlineLevelBox->hasHeight()) {
             inlineLevelBox->height = activeStyle->lineHeight.getPx();
             inlineLevelBox->leading = std::max(inlineLevelBox->height, getStyle()->lineHeight.getPx()) - font->getLineHeight(point);
-            if (0.0f < inlineLevelBox->leading)
-                inlineLevelBox->height -= inlineLevelBox->leading;
 
             // TODO: XXX
             lineBox->underlinePosition = std::max(lineBox->underlinePosition, font->getUnderlinePosition(point));
@@ -718,6 +716,9 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
         }
         context->x += advanced + blankRight;
         lineBox->appendInlineBox(inlineLevelBox, activeStyle);
+        // Switch height from 'line-height' to the content height.
+        if (inlineLevelBox->hasHeight())
+            inlineLevelBox->height = font->getLineHeight(point);
         position += length;
         data.erase(0, length);
         if (data.length() == 0) {  // layout done?
@@ -1676,10 +1677,9 @@ void LineBox::appendInlineBox(InlineLevelBox* inlineBox, CSSStyleDeclarationImp*
         baseline -= offset;
         offset = 0.0f;
     }
+
     if (0.0f < inlineBox->height)
         height = std::max(height, offset + inlineBox->height);
-    // Since the leading length might have been deducted from inlineBox->height,
-    // we still need to check the line-height of the inline level box's style.
     height = std::max(height, activeStyle->lineHeight.getPx());
     height = std::max(height, style->lineHeight.getPx());
 

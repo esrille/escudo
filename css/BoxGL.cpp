@@ -271,7 +271,7 @@ void Box::renderBorderEdge(ViewCSSImp* view, int edge, unsigned borderStyle, uns
     glEnd();
 }
 
-void Box::renderBorder(ViewCSSImp* view, float left, float top, float contentHeight)
+void Box::renderBorder(ViewCSSImp* view, float left, float top)
 {
     glPushMatrix();
     glTranslatef(left, top, 0.0f);
@@ -283,7 +283,7 @@ void Box::renderBorder(ViewCSSImp* view, float left, float top, float contentHei
     float rr = rl + borderRight;
     float tt = marginTop;
     float tb = tt + borderTop;
-    float bt = tb + paddingTop + (isnan(contentHeight) ? height : contentHeight) + paddingBottom;
+    float bt = tb + paddingTop + height + paddingBottom;
     float bb = bt + borderBottom;
 
     if (backgroundColor != 0x00000000) {
@@ -542,9 +542,9 @@ void InlineLevelBox::render(ViewCSSImp* view, StackingContext* stackingContext)
 {
     assert(stackingContext);
     if (font)
-        renderBorder(view, x, y - getBlankTop(), font->getLineHeight(point));
+        renderBorder(view, x, y - getBlankTop());
     else
-        renderBorder(view, x, y, height);
+        renderBorder(view, x, y);
     if (shadow)
         shadow->render();
     else if (getFirstChild())  // for inline-block

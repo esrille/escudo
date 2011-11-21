@@ -299,6 +299,10 @@ public:
         return y;
     }
 
+    bool hasMargins() const {  // have non-zero margins?
+        return marginTop != 0.0f || marginRight != 0.0f || marginBottom != 0.0f || marginLeft != 0.0f;
+    }
+
     bool hasClearance() const {
         return !isnan(clearance);
     }
@@ -416,7 +420,7 @@ public:
     }
 
     virtual void render(ViewCSSImp* view, StackingContext* stackingContext) = 0;
-    void renderBorder(ViewCSSImp* view, float left, float top, float contentHeight = NAN);
+    void renderBorder(ViewCSSImp* view, float left, float top);
 
     virtual void dump(std::string indent = "") = 0;
 
@@ -714,6 +718,11 @@ public:
     }
 
     virtual bool isAnonymous() const;
+
+    // has non-zero margins, padding, or borders?
+    bool hasHeight() const {
+        return 0.0f < getBorderWidth() || 0.0f < getBorderHeight() || hasMargins();
+    }
 
     float getLeading() const {
         return leading;
