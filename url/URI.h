@@ -41,6 +41,10 @@ class URI
 
     void clear();
 
+    bool isPort80() const {
+        return portStart + 2 == portEnd && uri[portStart] == '8' && uri[portStart + 1] == '0';
+    }
+
 public:
     bool isEmpty() const {
         return uri.empty();
@@ -54,6 +58,8 @@ public:
         return uri.substr(0, protocolEnd);
     }
     std::string getHost() const {
+        if (isPort80())
+            return getHostname();
         return uri.substr(hostStart, hostEnd - hostStart);
     }
     std::string getHostname() const {
