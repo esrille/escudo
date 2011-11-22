@@ -34,17 +34,18 @@ struct Override
 };
 
 // cf. HTML Living Standard 13.2.2.2 Character encodings
+// cf. http://bugs.icu-project.org/trac/browser/icu/trunk/source/data/mappings/convrtrs.txt
 Override overrides[] = {
     { "euc-kr", "windows-949" },
-    { "euc-jp", "cp51932" },
-    { "gb2312", "gbk" },
-    { "gb_2312-80", "gbk" },
-    { "iso-2022-jp", "cp50220" },
+    { "euc-jp", "windows-51932" },    // ucnv_open() may not understand 'CP51932'.
+    { "gb2312", "GBK" },
+    { "gb_2312-80", "GBK" },
+    // { "iso-2022-jp", "CP50220" },  // ucnv_open() may not understand 'CP50220'; iso-2022-jp appears to be the same as CP50220 in ICU.
     { "iso-8859-1", "windows-1252" },
     { "iso-8859-9", "windows-1254" },
     { "iso-8859-11", "windows-874" },
     { "ks_c_5601-1987", "windows-949" },
-    { "shift_jis", "windows-31j" },
+    { "shift_jis", "Windows-31j" },
     { "tis-620", "windows-874" },
     { "us-ascii", "windows-1252" }
 };
