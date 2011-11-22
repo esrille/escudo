@@ -276,8 +276,8 @@ float FormattingContext::clear(unsigned value)
             h = std::max(h, (*i)->remainingHeight);
         }
     }
-    if (0.0f < h)
-        updateRemainingHeight(h - getMargin());
+    // Note there could be a floating box whose remainingHeight is zero.
+    updateRemainingHeight(h - getMargin());
     assert(!(value & 1) || left.empty());
     assert(!(value & 2) || right.empty());
     return h;
