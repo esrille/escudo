@@ -654,6 +654,9 @@ public:
     CSSBorderCollapseValueImp& setValue(CSSParserTerm* term) {
         return setValue(term->getIndex());
     }
+    unsigned getValue() const {
+        return value;
+    }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
         return Options[value];
     }
@@ -679,16 +682,17 @@ class CSSBorderStyleValueImp : public CSSPropertyValueImp
     unsigned value;
 public:
     enum {
+        // In the preferred order for the border conflict resolution
         None,
-        Hidden,
+        Inset,
+        Groove,
+        Outset,
+        Ridge,
         Dotted,
         Dashed,
         Solid,
         Double,
-        Groove,
-        Ridge,
-        Inset,
-        Outset
+        Hidden
     };
     CSSBorderStyleValueImp& setValue(unsigned value = None) {
         this->value = value;
@@ -708,6 +712,9 @@ public:
     }
     bool operator!=(const CSSBorderStyleValueImp& style) const {
         return value != style.value;
+    }
+    bool operator<(const CSSBorderStyleValueImp& style) const {
+        return value < style.value;
     }
     void specify(const CSSBorderStyleValueImp& specified) {
         value = specified.value;
@@ -754,6 +761,9 @@ public:
     }
     bool operator!=(const CSSBorderWidthValueImp& value) const {
         return width != value.width;
+    }
+    bool operator<(const CSSBorderWidthValueImp& value) const {
+        return getPx() < value.getPx();
     }
     void specify(const CSSBorderWidthValueImp& specified) {
         width.specify(specified.width);

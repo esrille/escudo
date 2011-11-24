@@ -53,7 +53,7 @@ TableWrapperBox::TableWrapperBox(ViewCSSImp* view, Element element, CSSStyleDecl
 {
     // TODO: Support cases where display is not table or inline-table.
     assert(style->display == CSSDisplayValueImp::Table || style->display == CSSDisplayValueImp::InlineTable);
-    formTable();
+    formTable(view);
 
     // Top caption boxes
     for (auto i = topCaptions.begin(); i != topCaptions.end(); ++i)
@@ -87,6 +87,8 @@ unsigned TableWrapperBox::appendRow()
     ++yHeight;
     grid.resize(yHeight);
     grid.back().resize(xWidth);
+    rows.resize(yHeight);
+    rowGroups.resize(yHeight);
     return yHeight;
 }
 
@@ -95,10 +97,12 @@ unsigned TableWrapperBox::appendColumn()
     ++xWidth;
     for (auto r = grid.begin(); r != grid.end(); ++r)
         r->resize(xWidth);
+    columns.resize(xWidth);
+    columnGroups.resize(xWidth);
     return xWidth;
 }
 
-void TableWrapperBox::formTable()
+void TableWrapperBox::formTable(ViewCSSImp* view)
 {
     if (table.getChildElementCount() == 0)
         return;
@@ -128,7 +132,7 @@ void TableWrapperBox::formTable()
         }
         if (display == CSSDisplayValueImp::TableColumnGroup) {
             yCurrent = endRowGroup(yCurrent);
-            processColGruop(current);
+            processColGruop(view, current);
             continue;
         }
         if (display == CSSDisplayValueImp::TableColumn)  // TODO HTML doesn't need this though
@@ -138,7 +142,7 @@ void TableWrapperBox::formTable()
         // 13.
         if (display == CSSDisplayValueImp::TableRow) {
             // TODO
-            yCurrent = processRow(current, yCurrent);
+            yCurrent = processRow(view, current, yCurrent);
             continue;
         }
         if (display == CSSDisplayValueImp::TableFooterGroup) {
@@ -146,19 +150,21 @@ void TableWrapperBox::formTable()
             continue;
         }
         assert(display == CSSDisplayValueImp::TableHeaderGroup || display == CSSDisplayValueImp::TableRowGroup);
-        yCurrent = processRowGruop(current, yCurrent);
+        yCurrent = processRowGruop(view, current, yCurrent);
     }
     while (!pendingTfootElements.empty()) {
         Element tfoot = pendingTfootElements.front();
-        yCurrent = processRowGruop(tfoot, yCurrent);
+        yCurrent = processRowGruop(view, tfoot, yCurrent);
         pendingTfootElements.pop_front();
     }
 }
 
-unsigned TableWrapperBox::processRow(Element row, unsigned yCurrent)
+unsigned TableWrapperBox::processRow(ViewCSSImp* view, Element row, unsigned yCurrent)
 {
     if (yHeight == yCurrent)
         appendRow();
+    rows[yCurrent] = view->getStyle(row);
+
     unsigned xCurrent = 0;
     growDownwardGrowingCells();
     for (Element child = row.getFirstElementChild(); child; child = child.getNextElementSibling()) {
@@ -201,7 +207,7 @@ unsigned TableWrapperBox::processRow(Element row, unsigned yCurrent)
     return ++yCurrent;
 }
 
-unsigned TableWrapperBox::processRowGruop(Element section, unsigned yCurrent)
+unsigned TableWrapperBox::processRowGruop(ViewCSSImp* view, Element section, unsigned yCurrent)
 {
     unsigned yStart = yHeight;
     for (Element child = section.getFirstElementChild(); child; child = child.getNextElementSibling()) {
@@ -209,7 +215,9 @@ unsigned TableWrapperBox::processRowGruop(Element section, unsigned yCurrent)
         assert(childStyle);
         if (childStyle->display.getValue() != CSSDisplayValueImp::TableRow)
             continue;
-        yCurrent = processRow(child, yCurrent);
+        unsigned next = processRow(view, child, yCurrent);
+        rowGroups[yCurrent] = view->getStyle(section);
+        yCurrent = next;
     }
     // TODO 3.
     return endRowGroup(yCurrent);
@@ -225,7 +233,7 @@ unsigned TableWrapperBox::endRowGroup(int yCurrent)
     return yCurrent;
 }
 
-void TableWrapperBox::processColGruop(Element colgroup)
+void TableWrapperBox::processColGruop(ViewCSSImp* view, Element colgroup)
 {
     bool hasCol = false;
     int xStart = xWidth;
@@ -240,8 +248,11 @@ void TableWrapperBox::processColGruop(Element colgroup)
             html::HTMLTableColElement col(interface_cast<html::HTMLTableColElement>(child));
             span = col.getSpan();
         }
-        while (0 < span--)
+        while (0 < span--) {
             appendColumn();
+            columns[xWidth - 1] = childStyle;
+            columnGroups[xWidth - 1] = view->getStyle(colgroup);
+        }
         // TODO 5.
     }
     if (hasCol) {
@@ -252,8 +263,10 @@ void TableWrapperBox::processColGruop(Element colgroup)
             html::HTMLTableColElement cg(interface_cast<html::HTMLTableColElement>(colgroup));
             span = cg.getSpan();
         }
-        while (0 < span--)
+        while (0 < span--) {
             appendColumn();
+            columnGroups[xWidth - 1] = view->getStyle(colgroup);
+        }
         // TODO 3.
     }
 }
@@ -291,6 +304,46 @@ void TableWrapperBox::fit(float w)
     }
 }
 
+void TableWrapperBox::resolveBorderConflict()
+{
+    assert(style);
+    if (style->borderCollapse.getValue() != style->borderCollapse.Collapse)
+        return;
+    if (!tableBox)
+        return;
+
+    for (unsigned y = 0; y < yHeight; ++y) {
+        for (unsigned x = 0; x < xWidth; ++x) {
+            CellBox* cellBox = grid[y][x].get();
+            if (!cellBox || *cellBox == occupied)
+                continue;
+
+            CSSStyleDeclarationImp* cellStyle = cellBox->getStyle();
+            assert(cellStyle);
+            cellStyle->resolveBorderConflict(rows[y], 0x5);
+            cellStyle->resolveBorderConflict(rowGroups[y], 0x5);  // TODO: check span
+            cellStyle->resolveBorderConflict(columns[x], 0xa);
+            cellStyle->resolveBorderConflict(columnGroups[x], 0xa);  // TODO: check span
+            cellStyle->resolveBorderConflict(style, ((y == 0) ? 1 : 0) |
+                                                    ((x + 1 == xWidth) ? 2 : 0) |
+                                                    ((y + 1 == yHeight) ? 4 : 0) |
+                                                    ((x == 0) ? 8 : 0));
+            if (0 < x) {
+                CellBox* adjoiningCell = grid[y][x - 1].get();
+                if (adjoiningCell && *adjoiningCell != occupied)
+                    cellStyle->resolveLeftBorderConflict(adjoiningCell->getStyle());
+                // TODO: support span
+            }
+            if (0 < y) {
+                CellBox* adjoiningCell = grid[y - 1][x].get();
+                if (adjoiningCell && *adjoiningCell != occupied)
+                    cellStyle->resolveTopBorderConflict(adjoiningCell->getStyle());
+                // TODO: support span
+            }
+        }
+    }
+}
+
 bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
 {
     const ContainingBlock* containingBlock = getContainingBlock(view);
@@ -299,6 +352,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
         return false;  // TODO error
 
     style->resolve(view, containingBlock, table);
+    resolveBorderConflict();
 
     // The computed values of properties 'position', 'float', 'margin-*', 'top', 'right', 'bottom',
     // and 'left' on the table element are used on the table wrapper box and not the table box;
@@ -377,7 +431,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
                 float h = 0.0f;
                 for (unsigned r = 0; r < cellBox->getRowSpan(); ++r)
                     h += heights[y + r];
-                cellBox->height = h;
+                cellBox->height = h - cellBox->borderTop - cellBox->paddingTop - cellBox->paddingBottom - cellBox->borderBottom;
             }
         }
 

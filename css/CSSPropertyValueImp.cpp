@@ -64,15 +64,15 @@ const char16_t* CSSBorderCollapseValueImp::Options[] = {
 
 const char16_t* CSSBorderStyleValueImp::Options[] = {
     u"none",
-    u"hidden",
+    u"inset",
+    u"groove",
+    u"outset",
+    u"ridge",
     u"dotted",
     u"dashed",
     u"solid",
     u"double",
-    u"groove",
-    u"ridge",
-    u"inset",
-    u"outset"
+    u"hidden"
 };
 
 const char16_t* CSSBorderWidthValueImp::Options[] = {

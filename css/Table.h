@@ -63,6 +63,11 @@ class TableWrapperBox : public BlockLevelBox
     std::deque<Caption> topCaptions;
     std::deque<Caption> bottomCaptions;
 
+    std::deque<CSSStyleDeclarationPtr> rows;
+    std::deque<CSSStyleDeclarationPtr> rowGroups;
+    std::deque<CSSStyleDeclarationPtr> columns;
+    std::deque<CSSStyleDeclarationPtr> columnGroups;
+
     Grid grid;
     unsigned xWidth;
     unsigned yHeight;
@@ -75,12 +80,14 @@ class TableWrapperBox : public BlockLevelBox
     unsigned appendRow();
     unsigned appendColumn();
 
-    void formTable();
-    void processColGruop(Element colgroup);
-    unsigned processRow(Element row, unsigned yCurrent);
-    unsigned processRowGruop(Element section, unsigned yCurrent);
+    void formTable(ViewCSSImp* view);
+    void processColGruop(ViewCSSImp* view, Element colgroup);
+    unsigned processRow(ViewCSSImp* view, Element row, unsigned yCurrent);
+    unsigned processRowGruop(ViewCSSImp* view, Element section, unsigned yCurrent);
     unsigned endRowGroup(int yCurrent);
     void growDownwardGrowingCells();
+
+    void resolveBorderConflict();
 
 public:
     TableWrapperBox(ViewCSSImp* view, Element element, CSSStyleDeclarationImp* style);

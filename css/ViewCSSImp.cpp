@@ -318,7 +318,7 @@ BlockLevelBox* ViewCSSImp::createBlockLevelBox(Element element, CSSStyleDeclarat
         // TODO
         block = new(std::nothrow) TableWrapperBox(this, element, style);
         newContext = true;
-    } else if (style->display == CSSDisplayValueImp::TableCell) {
+    } else if (style->display.getValue() == CSSDisplayValueImp::TableCell) {
         block = new(std::nothrow) CellBox(element, style);
         newContext = true;
     } else

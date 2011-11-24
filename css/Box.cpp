@@ -971,8 +971,10 @@ bool BlockLevelBox::isCollapsableOutside() const
 {
     if (isFloat() || isAbsolutelyPositioned() || !getParentBox())
         return false;
-    if (!isAnonymous() && style && style->isInlineBlock())
-        return false;
+    if (!isAnonymous() && style) {
+        if (style->isInlineBlock() || style->display.getValue() == CSSDisplayValueImp::TableCell)
+            return false;
+    }
     return true;
 }
 
