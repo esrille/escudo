@@ -1,0 +1,44 @@
+<HTML>
+  <HEAD>
+    <TITLE>Border conflict resolution</TITLE>
+    <STYLE>
+table          { border-collapse: collapse;
+                 border: 5px solid yellow; }
+*#col1         { border: 3px solid black; }
+td             { border: 1px solid red; padding: 1em; }
+td.cell5       { border: 5px dashed blue; }
+td.cell6       { border: 5px solid green; }
+    </STYLE>
+  </HEAD>
+  <BODY>
+<TABLE>
+<COL id="col1"><COL id="col2"><COL id="col3">
+<TR id="row1">
+    <TD> 1
+    <TD> 2
+    <TD> 3
+</TR>
+<TR id="row2">
+    <TD> 4 
+    <TD class="cell5"> 5
+    <TD class="cell6"> 6
+</TR>
+<TR id="row3">
+    <TD> 7
+    <TD> 8
+    <TD> 9
+</TR>
+<TR id="row4">
+    <TD> 10
+    <TD> 11
+    <TD> 12
+</TR>
+<TR id="row5">
+    <TD> 13
+    <TD> 14
+    <TD> 15
+</TR>
+</TABLE>
+
+  </BODY>
+</HTML>
