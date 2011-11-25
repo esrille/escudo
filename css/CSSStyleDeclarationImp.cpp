@@ -1486,18 +1486,17 @@ void CSSStyleDeclarationImp::resolveTopBorderConflict(CSSStyleDeclarationPtr sty
     CSSStyleDeclarationImp* imp = style.get();
     if (!imp)
         return;
-    if (borderTopStyle == CSSBorderStyleValueImp::Hidden) {
+    if (borderTopStyle == CSSBorderStyleValueImp::Hidden ||
+        imp->borderBottomWidth < borderTopWidth ||
+        imp->borderBottomWidth == borderTopWidth && imp->borderBottomStyle < borderTopStyle)
+    {
         imp->borderBottomStyle.setValue();
         imp->borderBottomWidth.setValue(0.0f, css::CSSPrimitiveValue::CSS_PX);
-    } else if (imp->borderBottomStyle == CSSBorderStyleValueImp::Hidden) {
-        borderTopStyle.setValue();
-        borderTopWidth.setValue(0.0f, css::CSSPrimitiveValue::CSS_PX);
-    } else if (imp->borderBottomWidth < borderTopWidth ||
-        imp->borderBottomWidth == borderTopWidth && imp->borderBottomStyle < borderTopStyle) {
-        imp->borderBottomStyle.setValue();
-        imp->borderBottomWidth.setValue(0.0f, css::CSSPrimitiveValue::CSS_PX);
-    } else if (borderTopWidth < imp->borderBottomWidth ||
-        borderTopWidth == imp->borderBottomWidth && borderTopStyle < imp->borderBottomStyle) {
+    }
+    else if (imp->borderBottomStyle == CSSBorderStyleValueImp::Hidden ||
+             borderTopWidth < imp->borderBottomWidth ||
+             borderTopWidth == imp->borderBottomWidth && borderTopStyle < imp->borderBottomStyle)
+    {
         borderTopStyle.setValue();
         borderTopWidth.setValue(0.0f, css::CSSPrimitiveValue::CSS_PX);
     }
