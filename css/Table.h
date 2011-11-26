@@ -67,6 +67,7 @@ public:
         return col != x || row != y;
     }
 
+    void separatedBorders(CSSStyleDeclarationPtr style);
     void collapseBorder(TableWrapperBox* wrapper);
 };
 

@@ -52,6 +52,14 @@ void CellBox::fit(float w)
         child->fit(width);
 }
 
+void CellBox::separatedBorders(CSSStyleDeclarationPtr style)
+{
+    float h = style->borderSpacing.getHorizontalSpacing();
+    float v = style->borderSpacing.getVerticalSpacing();
+    marginTop = marginBottom = v / 2.0f;
+    marginLeft = marginRight = h / 2.0f;
+}
+
 void CellBox::collapseBorder(TableWrapperBox* wrapper)
 {
     borderTop = borderRight = borderBottom = borderLeft = 0.0f;
@@ -475,6 +483,8 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
                 cellBox->layOut(view, context);
                 if (borderCollapse)
                     cellBox->collapseBorder(this);
+                else
+                    cellBox->separatedBorders(style);
                 if (cellBox->getColSpan() == 1)
                     widths[x] = std::max(widths[x], cellBox->getTotalWidth());
                 if (cellBox->getRowSpan() == 1)

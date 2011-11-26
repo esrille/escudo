@@ -1216,6 +1216,8 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     borderBottomColor.compute(this);
     borderLeftColor.compute(this);
 
+    borderSpacing.compute(view, this);
+
     if (isFloat() || isAbsolutelyPositioned() || !parentStyle)  // TODO or the contents of atomic inline-level descendants such as inline blocks and inline tables.
         textDecorationContext.update(this);
     else if (parentStyle->textDecorationContext.hasDecoration())

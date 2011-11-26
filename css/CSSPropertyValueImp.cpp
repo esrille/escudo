@@ -533,6 +533,12 @@ void CSSBorderColorValueImp::compute(CSSStyleDeclarationImp* decl)
         value = decl->color.getARGB();
 }
 
+void CSSBorderSpacingValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style)
+{
+    horizontal.compute(view, style);
+    vertical.compute(view, style);
+}
+
 void CSSBorderColorShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
 {
     std::deque<CSSParserTerm*>& stack = parser->getStack();

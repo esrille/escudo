@@ -611,8 +611,8 @@ class CSSBorderSpacingValueImp : public CSSPropertyValueImp
     CSSNumericValue horizontal;
     CSSNumericValue vertical;
 public:
-    CSSBorderSpacingValueImp& setValue(float h = 0.0f, short horizontalUnit = css::CSSPrimitiveValue::CSS_PERCENTAGE,
-                                       float v = 0.0f, short verticalUnit = css::CSSPrimitiveValue::CSS_PERCENTAGE) {
+    CSSBorderSpacingValueImp& setValue(float h = 0.0f, short horizontalUnit = css::CSSPrimitiveValue::CSS_PX,
+                                       float v = 0.0f, short verticalUnit = css::CSSPrimitiveValue::CSS_PX) {
         horizontal.setValue(h, horizontalUnit);
         vertical.setValue(v, verticalUnit);
         return *this;
@@ -632,6 +632,13 @@ public:
     void specify(const CSSBorderSpacingValueImp& specified) {
         horizontal.specify(specified.horizontal);
         vertical.specify(specified.vertical);
+    }
+    void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
+    float getHorizontalSpacing() const {
+        return horizontal.getPx();
+    }
+    float getVerticalSpacing() const {
+        return vertical.getPx();
     }
     CSSBorderSpacingValueImp() :
         horizontal(0, css::CSSPrimitiveValue::CSS_PX),
