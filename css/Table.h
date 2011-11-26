@@ -20,21 +20,32 @@
 #include "css/Box.h"
 #include "Box.h"
 
+#include <vector>
+
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
+
+class TableWrapperBox;
 
 class CellBox : public BlockLevelBox
 {
     friend class TableWrapperBox;
 
+    unsigned col;
+    unsigned row;
     unsigned colSpan;
     unsigned rowSpan;
 public:
     CellBox(Element element = 0, CSSStyleDeclarationImp* style = 0) :
         BlockLevelBox(element, style),
+        col(0),
+        row(0),
         colSpan(1),
         rowSpan(1)
     {
     }
+
+    virtual void fit(float w);
+
     unsigned getColSpan() const {
         return colSpan;
     }
@@ -47,6 +58,16 @@ public:
     void setRowSpan(unsigned span) {
         rowSpan = span;
     }
+
+    void setPosition(unsigned x, unsigned y) {
+        col = x;
+        row = y;
+    }
+    bool isSpanned(unsigned x, unsigned y) const {
+        return col != x || row != y;
+    }
+
+    void collapseBorder(TableWrapperBox* wrapper);
 };
 
 typedef boost::intrusive_ptr<CellBox> CellBoxPtr;
@@ -57,6 +78,22 @@ class TableWrapperBox : public BlockLevelBox
 
     typedef std::deque<CellBoxPtr> Row;
     typedef std::deque<Row> Grid;
+
+    struct BorderValue {
+        CSSBorderColorValueImp color;
+        CSSBorderStyleValueImp style;
+        CSSBorderWidthValueImp width;
+    public:
+        BorderValue() :
+            width(0.0f)
+        {}
+
+        bool resolveBorderConflict(CSSBorderColorValueImp& c, CSSBorderStyleValueImp& s, CSSBorderWidthValueImp& w);
+        void resolveBorderConflict(CSSStyleDeclarationPtr s, unsigned trbl);
+        float getWidth() const {
+            return width.getPx();
+        }
+    };
 
     ViewCSSImp* view;
 
@@ -74,8 +111,11 @@ class TableWrapperBox : public BlockLevelBox
 
     Element table;
     BlockLevelBox* tableBox;
+    std::vector<BorderValue> borderRows;
+    std::vector<BorderValue> borderColumns;
 
-    Retained<CellBox> occupied;
+    std::vector<float> widths;
+    std::vector<float> heights;
 
     unsigned appendRow();
     unsigned appendColumn();
@@ -87,13 +127,28 @@ class TableWrapperBox : public BlockLevelBox
     unsigned endRowGroup(int yCurrent);
     void growDownwardGrowingCells();
 
-    void resolveBorderConflict();
+    void resolveHorizontalBorderConflict(unsigned x, unsigned y, BorderValue* b, CellBox* c, unsigned mask);
+    void resolveVerticalBorderConflict(unsigned x, unsigned y, BorderValue* b, CellBox* c, unsigned mask);
+    bool resolveBorderConflict();
 
 public:
     TableWrapperBox(ViewCSSImp* view, Element element, CSSStyleDeclarationImp* style);
+
+    BorderValue* getRowBorderValue(unsigned x, unsigned y) {
+        assert(x < xWidth);
+        return &borderRows[xWidth * y + x];
+    }
+    BorderValue* getColumnBorderValue(unsigned x, unsigned y) {
+        assert(x < xWidth + 1);
+        return &borderColumns[(xWidth + 1) * y + x];
+    }
+
     virtual void fit(float w);
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context);
     virtual float shrinkTo();
+
+    virtual void renderTableBorders(ViewCSSImp* view);
+
     virtual void dump(std::string indent = "");
 };
 

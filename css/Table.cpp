@@ -23,8 +23,6 @@
 #include <org/w3c/dom/html/HTMLTableRowElement.h>
 #include <org/w3c/dom/html/HTMLTableSectionElement.h>
 
-#include "css/Box.h"
-#include "css/ViewCSSImp.h"
 #include "ViewCSSImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
@@ -42,6 +40,27 @@ int isOneOf(const std::u16string& s, std::initializer_list<const char16_t*> list
 }
 
 }  // namespace
+
+void CellBox::fit(float w)
+{
+    if (getBlockWidth() == w)
+        return;
+    if (!isAnonymous() && !style->width.isAuto())
+        return;
+    width = w - getBlankLeft() - getBlankRight();
+    for (Box* child = getFirstChild(); child; child = child->getNextSibling())
+        child->fit(width);
+}
+
+void CellBox::collapseBorder(TableWrapperBox* wrapper)
+{
+    borderTop = borderRight = borderBottom = borderLeft = 0.0f;
+    // TODO: support span
+    marginTop = wrapper->getRowBorderValue(col, row)->getWidth() / 2.0f;
+    marginRight = wrapper->getColumnBorderValue(col + 1, row)->getWidth() / 2.0f;
+    marginBottom = wrapper->getRowBorderValue(col, row + 1)->getWidth() / 2.0f;
+    marginLeft = wrapper->getColumnBorderValue(col, row)->getWidth() / 2.0f;
+}
 
 TableWrapperBox::TableWrapperBox(ViewCSSImp* view, Element element, CSSStyleDeclarationImp* style) :
     BlockLevelBox(element, style),
@@ -69,7 +88,7 @@ TableWrapperBox::TableWrapperBox(ViewCSSImp* view, Element element, CSSStyleDecl
             tableBox->appendChild(lineBox);
             for (unsigned x = 0; x < xWidth; ++x) {
                 CellBox* cellBox = grid[y][x].get();
-                if (!cellBox || *cellBox == occupied)
+                if (!cellBox || cellBox->isSpanned(x, y))
                     continue;
                 lineBox->appendChild(cellBox);
             }
@@ -189,15 +208,15 @@ unsigned TableWrapperBox::processRow(ViewCSSImp* view, Element row, unsigned yCu
             appendColumn();
         while (yHeight < yCurrent + rowspan)
             appendRow();
-        for (unsigned x = xCurrent; x < xCurrent + colspan; ++x) {
-            for (unsigned y = yCurrent; y < yCurrent + rowspan; ++y)
-                grid[y][x] = &occupied;
-        }
         CellBox* cellBox = static_cast<CellBox*>(view->layOutBlockBoxes(child, 0, 0, childStyle, true));
         if (cellBox) {
+            cellBox->setPosition(xCurrent, yCurrent);
             cellBox->setColSpan(colspan);
             cellBox->setRowSpan(rowspan);
-            grid[yCurrent][xCurrent] = cellBox;
+            for (unsigned x = xCurrent; x < xCurrent + colspan; ++x) {
+                for (unsigned y = yCurrent; y < yCurrent + rowspan; ++y)
+                    grid[y][x] = cellBox;
+            }
         }
         // TODO: 13
         if (cellGrowsDownward)
@@ -304,44 +323,114 @@ void TableWrapperBox::fit(float w)
     }
 }
 
-void TableWrapperBox::resolveBorderConflict()
+bool TableWrapperBox::
+BorderValue::resolveBorderConflict(CSSBorderColorValueImp& c, CSSBorderStyleValueImp& s, CSSBorderWidthValueImp& w)
+{
+    if (s.getValue() == CSSBorderStyleValueImp::None)
+        return false;
+    if (s.getValue() == CSSBorderStyleValueImp::Hidden) {
+        style.setValue();
+        width.setValue(0.0f, css::CSSPrimitiveValue::CSS_PX);
+        return true;
+    }
+    if (width < w || width == w && style < s) {
+        color.specify(c);
+        style.specify(s);
+        width.specify(w);
+        return true;
+    }
+    return false;
+}
+
+void TableWrapperBox::
+BorderValue::resolveBorderConflict(CSSStyleDeclarationPtr s, unsigned trbl)
+{
+    CSSStyleDeclarationImp* style = s.get();
+    if (!style)
+        return;
+    if (trbl & 0x1)
+        resolveBorderConflict(style->borderTopColor, style->borderTopStyle, style->borderTopWidth);
+    if (trbl & 0x2)
+        resolveBorderConflict(style->borderRightColor, style->borderRightStyle, style->borderRightWidth);
+    if (trbl & 0x4)
+        resolveBorderConflict(style->borderBottomColor, style->borderBottomStyle, style->borderBottomWidth);
+    if (trbl & 0x8)
+        resolveBorderConflict(style->borderLeftColor, style->borderLeftStyle, style->borderLeftWidth);
+}
+
+void TableWrapperBox::resolveHorizontalBorderConflict(unsigned x, unsigned y, BorderValue* b, CellBox* c, unsigned mask)
+{
+    if (c) {
+        b->resolveBorderConflict(c->getStyle(), mask);
+        if (y < yHeight) {
+            if (mask & 0x1)
+                b->resolveBorderConflict(rows[y], 0x1 & mask);
+            else if (0 < y)
+                b->resolveBorderConflict(rows[y - 1], 0x4 & mask);
+            b->resolveBorderConflict(rowGroups[y], 0x5 & mask);  // TODO: check span
+        }
+        if (y == 0 || y == yHeight) {
+            b->resolveBorderConflict(columns[x], 0x5 & mask);
+            b->resolveBorderConflict(columnGroups[x], 0x05 & mask);
+            b->resolveBorderConflict(style, 0x05 & mask);
+        }
+    }
+}
+
+void TableWrapperBox::resolveVerticalBorderConflict(unsigned x, unsigned y, BorderValue* b, CellBox* c, unsigned mask)
+{
+    if (c) {
+        b->resolveBorderConflict(c->getStyle(), mask);
+        if (x == 0 || x == xWidth) {
+            b->resolveBorderConflict(rows[y], 0xa & mask);
+            b->resolveBorderConflict(rowGroups[y], 0xa & mask);  // TODO: check span
+        }
+        if (x < xWidth) {
+            if (mask & 0x8)
+                b->resolveBorderConflict(columns[x], 0x8 & mask);
+            else if (0 < x)
+                b->resolveBorderConflict(columns[x - 1], 0x2 & mask);
+            b->resolveBorderConflict(columnGroups[x], 0x0a & mask);
+        }
+        if (x == 0 || x == xWidth)
+            b->resolveBorderConflict(style, 0x0a & mask);
+    }
+}
+
+bool TableWrapperBox::resolveBorderConflict()
 {
     assert(style);
+    borderRows.clear();
+    borderColumns.clear();
     if (style->borderCollapse.getValue() != style->borderCollapse.Collapse)
-        return;
+        return false;
     if (!tableBox)
-        return;
-
-    for (unsigned y = 0; y < yHeight; ++y) {
-        for (unsigned x = 0; x < xWidth; ++x) {
-            CellBox* cellBox = grid[y][x].get();
-            if (!cellBox || *cellBox == occupied)
-                continue;
-
-            CSSStyleDeclarationImp* cellStyle = cellBox->getStyle();
-            assert(cellStyle);
-            cellStyle->resolveBorderConflict(rows[y], 0x5);
-            cellStyle->resolveBorderConflict(rowGroups[y], 0x5);  // TODO: check span
-            cellStyle->resolveBorderConflict(columns[x], 0xa);
-            cellStyle->resolveBorderConflict(columnGroups[x], 0xa);  // TODO: check span
-            cellStyle->resolveBorderConflict(style, ((y == 0) ? 1 : 0) |
-                                                    ((x + 1 == xWidth) ? 2 : 0) |
-                                                    ((y + 1 == yHeight) ? 4 : 0) |
-                                                    ((x == 0) ? 8 : 0));
-            if (0 < x) {
-                CellBox* adjoiningCell = grid[y][x - 1].get();
-                if (adjoiningCell && *adjoiningCell != occupied)
-                    cellStyle->resolveLeftBorderConflict(adjoiningCell->getStyle());
-                // TODO: support span
+        return false;
+    borderRows.resize((yHeight + 1) * xWidth);
+    borderColumns.resize(yHeight * (xWidth + 1));
+    for (unsigned y = 0; y < yHeight + 1; ++y) {
+        for (unsigned x = 0; x < xWidth + 1; ++x) {
+            if (x < xWidth) {
+                BorderValue* br = getRowBorderValue(x, y);
+                CellBox* top = (y < yHeight) ? grid[y][x].get() : 0;
+                CellBox* bottom = (0 < y) ? grid[y - 1][x].get() : 0;
+                if (top != bottom) {
+                    resolveHorizontalBorderConflict(x, y, br, top, 0x1);
+                    resolveHorizontalBorderConflict(x, y, br, bottom, 0x4);
+                }
             }
-            if (0 < y) {
-                CellBox* adjoiningCell = grid[y - 1][x].get();
-                if (adjoiningCell && *adjoiningCell != occupied)
-                    cellStyle->resolveTopBorderConflict(adjoiningCell->getStyle());
-                // TODO: support span
+            if (y < yHeight) {
+                BorderValue* bc = getColumnBorderValue(x, y);
+                CellBox* left = (x < xWidth) ? grid[y][x].get() : 0;
+                CellBox* right = (0 < x) ? grid[y][x - 1].get() : 0;
+                if (left != right) {
+                    resolveVerticalBorderConflict(x, y, bc, left, 0x8);
+                    resolveVerticalBorderConflict(x, y, bc, right, 0x2);
+                }
             }
         }
     }
+    return true;
 }
 
 bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
@@ -352,7 +441,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
         return false;  // TODO error
 
     style->resolve(view, containingBlock, table);
-    resolveBorderConflict();
+    bool borderCollapse = resolveBorderConflict();
 
     // The computed values of properties 'position', 'float', 'margin-*', 'top', 'right', 'bottom',
     // and 'left' on the table element are used on the table wrapper box and not the table box;
@@ -368,39 +457,42 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
         tableBox->setStyle(style.get());
         tableBox->resolveBackground(view);
         tableBox->updatePadding();
-        tableBox->updateBorderWidth();
+         if (!borderCollapse)
+            tableBox->updateBorderWidth();
         tableBox->resolveMargin(view, containingBlock, 0.0f);
 
-        float widths[xWidth];
-        float heights[yHeight];
+        widths.resize(xWidth);
+        heights.resize(yHeight);
         for (unsigned x = 0; x < xWidth; ++x)
             widths[x] = 0.0f;
         for (unsigned y = 0; y < yHeight; ++y)
             heights[y] = 0.0f;
-        for (unsigned x = 0; x < xWidth; ++x) {
-            for (unsigned y = 0; y < yHeight; ++y) {
+        for (unsigned y = 0; y < yHeight; ++y) {
+            for (unsigned x = 0; x < xWidth; ++x) {
                 CellBox* cellBox = grid[y][x].get();
-                if (!cellBox || *cellBox == occupied)
+                if (!cellBox || cellBox->isSpanned(x, y))
                     continue;
                 cellBox->layOut(view, context);
+                if (borderCollapse)
+                    cellBox->collapseBorder(this);
                 if (cellBox->getColSpan() == 1)
-                    widths[x] = std::max(widths[x], cellBox->getBorderWidth());
+                    widths[x] = std::max(widths[x], cellBox->getTotalWidth());
                 if (cellBox->getRowSpan() == 1)
-                    heights[y] = std::max(heights[y], cellBox->getBorderHeight());
+                    heights[y] = std::max(heights[y], cellBox->getTotalHeight());
             }
         }
         for (unsigned x = 0; x < xWidth; ++x) {
             for (unsigned y = 0; y < yHeight; ++y) {
                 CellBox* cellBox = grid[y][x].get();
-                if (!cellBox || *cellBox == occupied)
+                if (!cellBox || cellBox->isSpanned(x, y))
                     continue;
                 unsigned span = cellBox->getColSpan();
                 if (1 < span) {
                     float sum = 0.0f;
                     for (unsigned c = 0; c < span; ++c)
                         sum += widths[x + c];
-                    if (sum < cellBox->getBorderWidth()) {
-                        float diff = (cellBox->getBorderWidth() - sum) / span;
+                    if (sum < cellBox->getTotalWidth()) {
+                        float diff = (cellBox->getTotalWidth() - sum) / span;
                         for (unsigned c = 0; c < span; ++c)
                             widths[x + c] += diff;
                     }
@@ -410,8 +502,8 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
                     float sum = 0.0f;
                     for (unsigned r = 0; r < span; ++r)
                         sum += heights[y + r];
-                    if (sum < cellBox->getBorderHeight()) {
-                        float diff = (cellBox->getBorderHeight() - sum) / span;
+                    if (sum < cellBox->getTotalHeight()) {
+                        float diff = (cellBox->getTotalHeight() - sum) / span;
                         for (unsigned r = 0; r < span; ++r)
                             heights[y + r] += diff;
                     }
@@ -422,7 +514,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
         for (unsigned x = 0; x < xWidth; ++x) {
             for (unsigned y = 0; y < yHeight; ++y) {
                 CellBox* cellBox = grid[y][x].get();
-                if (!cellBox || *cellBox == occupied)
+                if (!cellBox || cellBox->isSpanned(x, y))
                     continue;
                 float w = 0.0f;
                 for (unsigned c = 0; c < cellBox->getColSpan(); ++c)
@@ -431,7 +523,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
                 float h = 0.0f;
                 for (unsigned r = 0; r < cellBox->getRowSpan(); ++r)
                     h += heights[y + r];
-                cellBox->height = h - cellBox->borderTop - cellBox->paddingTop - cellBox->paddingBottom - cellBox->borderBottom;
+                cellBox->height = h - cellBox->getBlankTop() - cellBox->getBlankBottom();
             }
         }
 
@@ -451,7 +543,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
             float xOffset = 0.0f;
             for (unsigned x = 0; x < xWidth; ++x) {
                 CellBox* cellBox = grid[y][x].get();
-                if (!cellBox || *cellBox == occupied) {
+                if (!cellBox || cellBox->isSpanned(x, y)) {
                     xOffset += widths[x];
                     continue;
                 }

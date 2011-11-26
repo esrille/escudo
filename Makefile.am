@@ -632,6 +632,7 @@ libeshtml5_a_SOURCES = \
 	css/Replaced.cpp \
 	css/Table.cpp \
 	css/Table.h \
+	css/TableGL.cpp \
 	css/ViewCSSImp.cpp \
 	css/ViewCSSImp.h \
 	css/ViewCSSImpGL.cpp \

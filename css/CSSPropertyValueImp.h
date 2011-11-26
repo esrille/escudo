@@ -776,6 +776,9 @@ public:
     CSSBorderWidthValueImp() :
         width(Medium) {
     }
+    CSSBorderWidthValueImp(float number) :
+        width(number) {
+    }
     static const char16_t* Options[];
 };
 

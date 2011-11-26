@@ -248,10 +248,6 @@ private:
     void setProperty(unsigned id);
     void resetProperty(unsigned id);
 
-    bool resolveBorderConflict(CSSBorderColorValueImp& color, CSSBorderStyleValueImp& style, CSSBorderWidthValueImp& width,
-                               CSSBorderColorValueImp& underColor, CSSBorderStyleValueImp& underStyle, CSSBorderWidthValueImp& underWidth);
-
-
 public:
     // property values
     CSSBackgroundAttachmentValueImp backgroundAttachment;
@@ -392,10 +388,6 @@ public:
 
     size_t processWhiteSpace(std::u16string& data, char16_t& prevChar);
     size_t processLineHeadWhiteSpace(std::u16string& data);
-
-    void resolveBorderConflict(CSSStyleDeclarationPtr style, unsigned trbl);
-    void resolveLeftBorderConflict(CSSStyleDeclarationPtr style);
-    void resolveTopBorderConflict(CSSStyleDeclarationPtr style);
 
     bool isFlowRoot() const;
 
