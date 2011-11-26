@@ -172,8 +172,18 @@ void Box::renderBorderEdge(ViewCSSImp* view, int edge, unsigned borderStyle, uns
     if (borderStyle == CSSBorderStyleValueImp::Dotted ||
         borderStyle == CSSBorderStyleValueImp::Dashed) {
         glEnable(GL_LINE_STIPPLE);
-        glLineWidth(fabsf(g - a));
-        glLineStipple(fabsf(g - a), (borderStyle == CSSBorderStyleValueImp::Dotted) ? 0xaaaa : 0xcccc);
+        switch (edge) {
+        case LEFT:
+        case RIGHT:
+            glLineWidth(fabsf(g - a));
+            glLineStipple(fabsf(g - a), (borderStyle == CSSBorderStyleValueImp::Dotted) ? 0xaaaa : 0xcccc);
+            break;;
+        case TOP:
+        case BOTTOM:
+            glLineWidth(fabsf(h - b));
+            glLineStipple(fabsf(h - b), (borderStyle == CSSBorderStyleValueImp::Dotted) ? 0xaaaa : 0xcccc);
+            break;;
+        }
         glColor4ub(red, green, blue, alpha);
         glBegin(GL_LINES);
             glVertex2f((a + g) / 2, (b + h) / 2);
@@ -279,11 +289,11 @@ void Box::renderBorder(ViewCSSImp* view, float left, float top)
 
     float ll = marginLeft;
     float lr = ll + borderLeft;
-    float rl = lr + paddingLeft + width + paddingRight;
+    float rl = lr + getPaddingWidth();
     float rr = rl + borderRight;
     float tt = marginTop;
     float tb = tt + borderTop;
-    float bt = tb + paddingTop + height + paddingBottom;
+    float bt = tb + getPaddingHeight();
     float bb = bt + borderBottom;
 
     if (backgroundColor != 0x00000000) {
@@ -462,6 +472,7 @@ unsigned BlockLevelBox::renderBegin(ViewCSSImp* view)
                 glTranslatef(-element.getScrollLeft(), -element.getScrollTop(), 0.0f);
             }
         }
+        renderTableBorders(view);
     }
     return overflow;
 }
