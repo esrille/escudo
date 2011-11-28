@@ -672,12 +672,12 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                 advanced = context->leftover;
                 if (!transform) {  // 'none'
                     length = font->fitText(data.c_str(), fitLength, point, context->leftover,
-                                           activeStyle->whiteSpace.isCollapsingSpace(), &next, &required);
+                                           activeStyle->whiteSpace.getValue(), &next, &required);
                 } else {
                     transformed = font->fitTextWithTransformation(
                         data.c_str(), fitLength, point, transform, context->leftover,
                         &length, &transformedLength,
-                        activeStyle->whiteSpace.isCollapsingSpace(), &next, &required);
+                        activeStyle->whiteSpace.getValue(), &next, &required);
                 }
                 if (0 < length) {
                     advanced -= context->leftover;

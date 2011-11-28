@@ -26,6 +26,29 @@
 
 using namespace org::w3c::dom::bootstrap;
 
+namespace {
+
+// cf. CSSWhiteSpaceValueImp
+enum {
+    Normal,
+    Pre,
+    Nowrap,
+    PreWrap,
+    PreLine
+};
+
+bool isCollapsingSpace(unsigned value) {
+    switch (value) {
+    case Normal:
+    case Nowrap:
+    case PreLine:
+        return true;
+    default:
+        return false;
+    }
+}
+
+}
 //
 // FontManager
 //
@@ -225,7 +248,7 @@ float FontTexture::measureText(const char16_t* text, float point)
     return width / 64.0f * point / this->point;
 }
 
-size_t FontTexture::fitText(const char16_t* text, size_t length, float point, float& leftover, bool ws, size_t* next, float* required)
+size_t FontTexture::fitText(const char16_t* text, size_t length, float point, float& leftover, unsigned ws, size_t* next, float* required)
 {
     const float scale = point / this->point / 64.0f;
     char32_t u = 0;
@@ -235,12 +258,12 @@ size_t FontTexture::fitText(const char16_t* text, size_t length, float point, fl
     ti.setText(text, length);
     if (next)
         *next = 0;
-    while (ti.next()) {
+    char32_t c = 0;
+    while (ti.next() && c != '\n') {
         size_t pos = *ti;
         float advance = 0.0f;
         FontGlyph* glyph;
         for (size_t i = posLast; i < pos; ++i) {
-            char32_t c;
             text = utf16to32(text, &c);
             if (c != '\n') {
                 u = c;
@@ -249,8 +272,8 @@ size_t FontTexture::fitText(const char16_t* text, size_t length, float point, fl
             }
         }
         advance *= scale;
-        if (leftover < advance) {
-            if (u == u' ' && ws && posLast < pos) {
+        if (leftover < advance && ws != Pre && ws != Nowrap) {
+            if (u == u' ' && isCollapsingSpace(ws) && posLast < pos) {
                 float trimmed = advance - glyph->advance * scale;
                 if (trimmed <= leftover) {
                     leftover -= trimmed;
@@ -276,7 +299,7 @@ std::u16string FontTexture::
 fitTextWithTransformation(const char16_t* text, size_t length, float point, unsigned transform,
                           float& leftover,
                           size_t* lenght, size_t* transformedLength,
-                          bool ws, size_t* next, float* required)
+                          unsigned ws, size_t* next, float* required)
 {
     std::u16string transformed;
     const float scale = point / this->point / 64.0f;
@@ -288,12 +311,12 @@ fitTextWithTransformation(const char16_t* text, size_t length, float point, unsi
     ti.setText(text, length);
     if (next)
         *next = 0;
-    while (ti.next()) {
+    char32_t c;
+    while (ti.next() && c != '\n') {
         size_t pos = *ti;
         float advance = 0.0f;
         FontGlyph* glyph;
         for (size_t i = posLast; i < pos; ++i) {
-            char32_t c;
             text = utf16to32(text, &c);
             if (c != '\n') {
                 u = c;
@@ -321,8 +344,8 @@ fitTextWithTransformation(const char16_t* text, size_t length, float point, unsi
             }
         }
         advance *= scale;
-        if (leftover < advance) {
-            if (u == u' ' && ws && posLast < pos) {
+        if (leftover < advance && ws != Pre && ws != Nowrap) {
+            if (u == u' ' && isCollapsingSpace(ws) && posLast < pos) {
                 float trimmed = advance - glyph->advance * scale;
                 if (trimmed <= leftover) {
                     leftover -= trimmed;
