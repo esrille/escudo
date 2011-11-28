@@ -148,7 +148,7 @@ void TableWrapperBox::formTable(ViewCSSImp* view)
         }
         unsigned display = currentStyle->display.getValue();
         if (display == CSSDisplayValueImp::TableCaption) {
-            BlockLevelBox* caption = view->layOutBlockBoxes(current, this, 0, currentStyle, false);
+            BlockLevelBox* caption = view->layOutBlockBoxes(current, 0, 0, currentStyle, false);
             if (!caption)
                 continue;
             if (currentStyle->captionSide.getValue() == CSSCaptionSideValueImp::Top)
@@ -560,6 +560,11 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
                 cellBox->offsetH += xOffset;
             }
         }
+    }
+
+    for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
+        if (child != tableBox)
+            child->layOut(view, context);
     }
 
     width = 0.0f;
