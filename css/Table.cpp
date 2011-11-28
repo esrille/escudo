@@ -591,7 +591,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
                 }
                 unsigned span = cellBox->getRowSpan();
                 if (1 < span) {
-                    float sum = 0.0f;
+                    float sum = spacing * (span - 1);
                     for (unsigned r = 0; r < span; ++r)
                         sum += heights[y + r];
                     if (sum < cellBox->getTotalHeight()) {
@@ -601,6 +601,29 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
                     }
                 }
             }
+        }
+
+        if (!fixedLayout) {
+            float w = spacing * (xWidth - 1);
+            for (unsigned x = 0; x < xWidth; ++x)
+                w += widths[x];
+            if (style->width.isAuto())
+                tableBox->width = w;
+            else if (w < tableBox->width) {
+                w = (tableBox->width - w) / xWidth;
+                for (unsigned x = 0; x < xWidth; ++x)
+                    widths[x] += w;
+            }
+        }
+        float h = spacing * (yHeight - 1);
+        for (unsigned y = 0; y < yHeight; ++y)
+            h += heights[y];
+        if (style->height.isAuto())
+            tableBox->height = h;
+        else if (h < tableBox->height) {
+            h = (tableBox->height- h) / yHeight;
+            for (unsigned y = 0; y < yHeight; ++y)
+                heights[y] += h;
         }
 
         for (unsigned x = 0; x < xWidth; ++x) {
@@ -621,16 +644,8 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
             }
         }
 
-        if (!fixedLayout) {
-            tableBox->width = spacing * (xWidth - 1);
-            for (unsigned x = 0; x < xWidth; ++x)
-                tableBox->width += widths[x];
-        }
-
-        tableBox->height = 0.0f;
         Box* lineBox = tableBox->getFirstChild();
         for (unsigned y = 0; y < yHeight; ++y)  {
-            tableBox->height += heights[y];
             assert(lineBox);
             lineBox->width = tableBox->width;
             lineBox->height = heights[y];
