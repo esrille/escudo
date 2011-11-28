@@ -852,7 +852,7 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
             style = view->getStyle(element);
             if (!style)
                 continue;
-            style->resolve(view, this, element);
+            style->resolve(view, this);
             if (isReplacedElement(element)) {
                 layOutInlineLevelBox(view, node, context, element, style);
                 collapsed = false;
@@ -1210,7 +1210,7 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         return false;  // TODO error
 
     if (!isAnonymous()) {
-        style->resolve(view, containingBlock, element);
+        style->resolve(view, containingBlock);
         resolveWidth(view, containingBlock);
     } else {
         // The properties of anonymous boxes are inherited from the enclosing non-anonymous box.
@@ -1521,7 +1521,7 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
     setContainingBlock(view);
     const ContainingBlock* containingBlock = &absoluteBlock;
 
-    style->resolve(view, containingBlock, element);
+    style->resolve(view, containingBlock);
 
     backgroundColor = style->backgroundColor.getARGB();
     updatePadding();

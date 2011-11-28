@@ -604,7 +604,7 @@ public:
     void resolveWidth(ViewCSSImp* view, const ContainingBlock* containingBlock, float available = 0);
     void resolveBackground(ViewCSSImp* view);
     void resolveMargin(ViewCSSImp* view, const ContainingBlock* containingBlock, float available);
-    void resolveWidth(float w);
+    virtual void resolveWidth(float w);
     void applyMinMaxWidth(float w);
     void resolveNormalWidth(float w, float r = NAN);
     void resolveFloatWidth(float w, float r = NAN);
@@ -618,6 +618,8 @@ public:
     unsigned renderBegin(ViewCSSImp* view);
     void renderEnd(ViewCSSImp* view, unsigned overflow);
     void renderContent(ViewCSSImp* view, StackingContext* stackingContext);
+
+    bool isTableBox() const;
 };
 
 typedef boost::intrusive_ptr<BlockLevelBox> BlockLevelBoxPtr;

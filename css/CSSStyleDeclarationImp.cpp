@@ -1243,44 +1243,41 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
 
 // calculate resolved values that requite containing block information for calucuration
 // cf. CSSOM 7. Resolved Values
-void CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* containingBlock, Element element)
+void CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* containingBlock)
 {
     if (resolved)
         return;
 
-    Element parentElement = element.getParentElement();
-    if (parentElement) {
-        if (CSSStyleDeclarationImp* parentStyle = view->getStyle(parentElement)) {
-            // TODO: Refine
-            if (!propertySet.test(Margin) && !propertySet.test(MarginLeft) && !propertySet.test(MarginRight) &&
-                !inheritSet.test(Margin) && !inheritSet.test(MarginLeft) && !inheritSet.test(MarginRight)) {
-                switch (parentStyle->htmlAlign.getValue()) {
-                case HTMLAlignValueImp::Left:
-                    marginLeft.setValue(0.0f, css::CSSPrimitiveValue::CSS_PX);
-                    marginRight.setValue();
-                    break;
-                case HTMLAlignValueImp::Center:
-                    marginLeft.setValue();
-                    marginRight.setValue();
-                    break;
-                case HTMLAlignValueImp::Right:
-                    marginLeft.setValue();
-                    marginRight.setValue(0.0f, css::CSSPrimitiveValue::CSS_PX);
-                    break;
-                }
+    if (parentStyle) {
+        // TODO: Refine
+        if (!propertySet.test(Margin) && !propertySet.test(MarginLeft) && !propertySet.test(MarginRight) &&
+            !inheritSet.test(Margin) && !inheritSet.test(MarginLeft) && !inheritSet.test(MarginRight)) {
+            switch (parentStyle->htmlAlign.getValue()) {
+            case HTMLAlignValueImp::Left:
+                marginLeft.setValue(0.0f, css::CSSPrimitiveValue::CSS_PX);
+                marginRight.setValue();
+                break;
+            case HTMLAlignValueImp::Center:
+                marginLeft.setValue();
+                marginRight.setValue();
+                break;
+            case HTMLAlignValueImp::Right:
+                marginLeft.setValue();
+                marginRight.setValue(0.0f, css::CSSPrimitiveValue::CSS_PX);
+                break;
             }
-            if (!propertySet.test(TextAlign) && !inheritSet.test(TextAlign)) {
-                switch (htmlAlign.getValue()) {
-                case HTMLAlignValueImp::Left:
-                    textAlign.setValue(CSSTextAlignValueImp::Left);
-                    break;
-                case HTMLAlignValueImp::Center:
-                    textAlign.setValue(CSSTextAlignValueImp::Center);
-                    break;
-                case HTMLAlignValueImp::Right:
-                    textAlign.setValue(CSSTextAlignValueImp::Right);
-                    break;
-                }
+        }
+        if (!propertySet.test(TextAlign) && !inheritSet.test(TextAlign)) {
+            switch (htmlAlign.getValue()) {
+            case HTMLAlignValueImp::Left:
+                textAlign.setValue(CSSTextAlignValueImp::Left);
+                break;
+            case HTMLAlignValueImp::Center:
+                textAlign.setValue(CSSTextAlignValueImp::Center);
+                break;
+            case HTMLAlignValueImp::Right:
+                textAlign.setValue(CSSTextAlignValueImp::Right);
+                break;
             }
         }
     }
@@ -1310,12 +1307,12 @@ void CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* co
 
     // Resolve properties that depend on the containing block size
 
-    if (width.isPercentage() && nonExplicitWidth && parentElement)
+    if (width.isPercentage() && nonExplicitWidth && parentStyle)
         width.setValue();  // change height to 'auto'.
     else
         width.resolve(view, this, containingBlock->width);
 
-    if (height.isPercentage() && nonExplicitHeight && parentElement)
+    if (height.isPercentage() && nonExplicitHeight && parentStyle)
         height.setValue();  // change height to 'auto'.
     else
         height.resolve(view, this, containingBlock->height);

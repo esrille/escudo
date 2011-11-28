@@ -30,6 +30,7 @@ class CellBox : public BlockLevelBox
 {
     friend class TableWrapperBox;
 
+    bool fixedLayout;
     unsigned col;
     unsigned row;
     unsigned colSpan;
@@ -37,6 +38,7 @@ class CellBox : public BlockLevelBox
 public:
     CellBox(Element element = 0, CSSStyleDeclarationImp* style = 0) :
         BlockLevelBox(element, style),
+        fixedLayout(false),
         col(0),
         row(0),
         colSpan(1),
@@ -67,8 +69,22 @@ public:
         return col != x || row != y;
     }
 
-    void separatedBorders(CSSStyleDeclarationPtr style);
+    void separatedBorders(CSSStyleDeclarationPtr style, unsigned xWidth, unsigned yHeight);
     void collapseBorder(TableWrapperBox* wrapper);
+
+    virtual float shrinkTo() {
+        if (fixedLayout)
+            return getBlockWidth();
+        return BlockLevelBox::shrinkTo();
+    }
+    virtual void resolveWidth(float w) {
+        if (fixedLayout) {
+            w -= borderLeft + paddingLeft + paddingRight + borderRight;
+            width = w;
+            return;
+        }
+        BlockLevelBox::resolveWidth(w);
+    }
 };
 
 typedef boost::intrusive_ptr<CellBox> CellBoxPtr;
@@ -132,6 +148,8 @@ class TableWrapperBox : public BlockLevelBox
     void resolveVerticalBorderConflict(unsigned x, unsigned y, BorderValue* b, CellBox* c, unsigned mask);
     bool resolveBorderConflict();
 
+    void layOutFixed(ViewCSSImp* view, const ContainingBlock* containingBlock, bool collapsingModel);
+
 public:
     TableWrapperBox(ViewCSSImp* view, Element element, CSSStyleDeclarationImp* style);
 
@@ -142,6 +160,10 @@ public:
     BorderValue* getColumnBorderValue(unsigned x, unsigned y) {
         assert(x < xWidth + 1);
         return &borderColumns[(xWidth + 1) * y + x];
+    }
+
+    bool isTableBox(const BlockLevelBox* box) const {
+        return tableBox && box == tableBox;
     }
 
     virtual void fit(float w);

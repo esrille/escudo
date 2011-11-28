@@ -384,7 +384,7 @@ public:
 
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle, Element element);
 
-    void resolve(ViewCSSImp* view, const ContainingBlock* containingBlock, Element element);
+    void resolve(ViewCSSImp* view, const ContainingBlock* containingBlock);
 
     size_t processWhiteSpace(std::u16string& data, char16_t& prevChar);
     size_t processLineHeadWhiteSpace(std::u16string& data);

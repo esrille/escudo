@@ -444,7 +444,7 @@ unsigned BlockLevelBox::renderBegin(ViewCSSImp* view)
 {
     unsigned overflow = CSSOverflowValueImp::Visible;
     glPushMatrix();
-    if (!isAnonymous()) {
+    if (!isAnonymous() || isTableBox()) {
         float scrollX = 0.0f;
         float scrollY = 0.0f;
         if (style->position.isFixed() && style->parentStyle) {
