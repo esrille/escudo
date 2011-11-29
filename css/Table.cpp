@@ -335,10 +335,10 @@ void TableWrapperBox::fit(float w)
 bool TableWrapperBox::
 BorderValue::resolveBorderConflict(CSSBorderColorValueImp& c, CSSBorderStyleValueImp& s, CSSBorderWidthValueImp& w)
 {
-    if (s.getValue() == CSSBorderStyleValueImp::None)
+    if (s.getValue() == CSSBorderStyleValueImp::None || style.getValue() == CSSBorderStyleValueImp::Hidden)
         return false;
     if (s.getValue() == CSSBorderStyleValueImp::Hidden) {
-        style.setValue();
+        style.setValue(CSSBorderStyleValueImp::Hidden);
         width.setValue(0.0f, css::CSSPrimitiveValue::CSS_PX);
         return true;
     }
