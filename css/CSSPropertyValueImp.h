@@ -636,11 +636,13 @@ public:
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     float getHorizontalSpacing() const {
         // Note in HTML, the default value is 2.
-        return std::max(horizontal.getPx(), 2.0f);
+        float v = horizontal.getPx();
+        return (0.0f <= v) ? v : 2.0f;
     }
     float getVerticalSpacing() const {
         // Note in HTML, the default value is 2.
-        return std::max(vertical.getPx(), 2.0f);
+        float v = vertical.getPx();
+        return (0.0f <= v) ? v : 2.0f;
     }
     CSSBorderSpacingValueImp() :
         horizontal(0, css::CSSPrimitiveValue::CSS_PX),
