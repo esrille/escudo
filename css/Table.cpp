@@ -371,12 +371,18 @@ void TableWrapperBox::resolveHorizontalBorderConflict(unsigned x, unsigned y, Bo
 {
     if (c) {
         b->resolveBorderConflict(c->getStyle(), mask);
-        if (mask & 0x1)
+        if (mask & 0x1) {
             b->resolveBorderConflict(rows[y], 0x1 & mask);
-        else if (0 < y)
+            if (CSSStyleDeclarationPtr rowStyle = rowGroups[y]) {
+                if (y == 0 || rowStyle != rowGroups[y - 1])
+                    b->resolveBorderConflict(rowStyle, 0x1 & mask);
+            }
+        } else {
             b->resolveBorderConflict(rows[y - 1], 0x4 & mask);
-        if (y < yHeight) {
-            b->resolveBorderConflict(rowGroups[y], 0x5 & mask);  // TODO: check span
+            if (CSSStyleDeclarationPtr rowStyle = rowGroups[y - 1]) {
+                if (y + 1 == yHeight || rowStyle != rowGroups[y]);
+                    b->resolveBorderConflict(rowStyle , 0x4 & mask);
+            }
         }
         if (y == 0 || y == yHeight) {
             b->resolveBorderConflict(columns[x], 0x5 & mask);
@@ -392,14 +398,20 @@ void TableWrapperBox::resolveVerticalBorderConflict(unsigned x, unsigned y, Bord
         b->resolveBorderConflict(c->getStyle(), mask);
         if (x == 0 || x == xWidth) {
             b->resolveBorderConflict(rows[y], 0xa & mask);
-            b->resolveBorderConflict(rowGroups[y], 0xa & mask);  // TODO: check span
+            b->resolveBorderConflict(rowGroups[y], 0xa & mask);
         }
-        if (mask & 0x8)
+        if (mask & 0x8) {
             b->resolveBorderConflict(columns[x], 0x8 & mask);
-        else if (0 < x)
+            if (CSSStyleDeclarationPtr colStyle = columnGroups[x]) {
+                if (x == 0 || colStyle != columnGroups[x - 1])
+                    b->resolveBorderConflict(colStyle, 0x08 & mask);
+            }
+        } else {
             b->resolveBorderConflict(columns[x - 1], 0x2 & mask);
-        if (x < xWidth) {
-            b->resolveBorderConflict(columnGroups[x], 0x0a & mask);
+            if (CSSStyleDeclarationPtr colStyle = columnGroups[x - 1]) {
+                if (x + 1 == xWidth || colStyle != columnGroups[x]);
+                    b->resolveBorderConflict(colStyle, 0x0a & mask);
+            }
         }
         if (x == 0 || x == xWidth)
             b->resolveBorderConflict(style, 0x0a & mask);
