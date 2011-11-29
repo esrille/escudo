@@ -69,7 +69,7 @@ public:
         return col != x || row != y;
     }
 
-    void separatedBorders(CSSStyleDeclarationPtr style, unsigned xWidth, unsigned yHeight);
+    void separateBorders(CSSStyleDeclarationPtr style, unsigned xWidth, unsigned yHeight);
     void collapseBorder(TableWrapperBox* wrapper);
 
     virtual float shrinkTo() {

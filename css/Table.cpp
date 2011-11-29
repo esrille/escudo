@@ -45,14 +45,12 @@ void CellBox::fit(float w)
 {
     if (getBlockWidth() == w)
         return;
-    if (!isAnonymous() && !style->width.isAuto())
-        return;
     width = w - getBlankLeft() - getBlankRight();
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
         child->fit(width);
 }
 
-void CellBox::separatedBorders(CSSStyleDeclarationPtr style, unsigned xWidth, unsigned yHeight)
+void CellBox::separateBorders(CSSStyleDeclarationPtr style, unsigned xWidth, unsigned yHeight)
 {
     float hs = style->borderSpacing.getHorizontalSpacing();
     float vs = style->borderSpacing.getVerticalSpacing();
@@ -476,14 +474,14 @@ bool TableWrapperBox::resolveBorderConflict()
 
 void TableWrapperBox::layOutFixed(ViewCSSImp* view, const ContainingBlock* containingBlock, bool collapsingModel)
 {
-    float spacing = 0.0f;
+    float hs = 0.0f;
     if (!collapsingModel) {
-        spacing = style->borderSpacing.getHorizontalSpacing();
+        hs = style->borderSpacing.getHorizontalSpacing();
         tableBox->width -= tableBox->getBorderWidth() - tableBox->width;  // TODO: HTML, XHTML only
         if (tableBox->width < 0.0f)
             tableBox->width = 0.0f;
     }
-    float sum = spacing * (xWidth + 1);
+    float sum = hs;
     unsigned remainingColumns = xWidth;
     for (unsigned x = 0; x < xWidth; ++x) {
         if (CSSStyleDeclarationPtr colStyle = columns[x]) {
@@ -493,7 +491,8 @@ void TableWrapperBox::layOutFixed(ViewCSSImp* view, const ContainingBlock* conta
                             colStyle->paddingLeft.getPx() +
                             colStyle->width.getPx() +
                             colStyle->paddingRight.getPx() +
-                            colStyle->borderRightWidth.getPx();
+                            colStyle->borderRightWidth.getPx() +
+                            hs;
                 sum += widths[x];
                 --remainingColumns;
                 continue;
@@ -511,8 +510,9 @@ void TableWrapperBox::layOutFixed(ViewCSSImp* view, const ContainingBlock* conta
                   cellStyle->paddingLeft.getPx() +
                   cellStyle->width.getPx() +
                   cellStyle->paddingRight.getPx() +
-                  cellStyle->borderRightWidth.getPx();
-        w = std::max(0.0f, w - spacing * (span - 1)) / span;
+                  cellStyle->borderRightWidth.getPx() +
+                  hs * span;
+        w /= span;
         for (unsigned i = x; i < x + span; ++i) {
             widths[i] = w;
             sum += w;
@@ -535,6 +535,8 @@ void TableWrapperBox::layOutFixed(ViewCSSImp* view, const ContainingBlock* conta
         for (unsigned x = 0; x < xWidth; ++x)
             widths[x] += w;
     }
+    widths[0] += hs / 2.0f;
+    widths[xWidth - 1] += hs / 2.0f;
 }
 
 bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
@@ -559,14 +561,14 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
     context = updateFormattingContext(context);
 
     if (tableBox) {
-        float spacing = 0.0f;
         tableBox->setStyle(style.get());
         tableBox->resolveBackground(view);
         tableBox->updatePadding();
-         if (!collapsingModel) {
+        float hs = 0.0f;
+        if (!collapsingModel) {
             tableBox->updateBorderWidth();
-            spacing = style->borderSpacing.getHorizontalSpacing();
-         }
+            hs = style->borderSpacing.getHorizontalSpacing();
+        }
         tableBox->resolveMargin(view, containingBlock, 0.0f);
         tableBox->width = width;
         tableBox->height = height;
@@ -587,14 +589,19 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
                 if (fixedLayout) {
                     tableBox->width = widths[x];
                     for (unsigned i = x + 1; i < x + cellBox->getColSpan(); ++i)
-                        tableBox->width += spacing + widths[i];
+                        tableBox->width += widths[i];
+                    tableBox->width -= hs;
+                    if (x == 0)
+                        tableBox->width -= hs / 2.0f;
+                    if (x + cellBox->getColSpan() == xWidth)
+                        tableBox->width -= hs / 2.0f;
                     cellBox->fixedLayout = true;
                 }
                 cellBox->layOut(view, context);
                 if (collapsingModel)
                     cellBox->collapseBorder(this);
                 else
-                    cellBox->separatedBorders(style, xWidth, yHeight);
+                    cellBox->separateBorders(style, xWidth, yHeight);
                 if (!fixedLayout && cellBox->getColSpan() == 1)
                     widths[x] = std::max(widths[x], cellBox->getTotalWidth());
                 if (cellBox->getRowSpan() == 1)
@@ -611,7 +618,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
                 if (!fixedLayout) {
                     unsigned span = cellBox->getColSpan();
                     if (1 < span) {
-                        float sum = spacing * (span - 1);
+                        float sum = 0.0f;
                         for (unsigned c = 0; c < span; ++c)
                             sum += widths[x + c];
                         if (sum < cellBox->getTotalWidth()) {
@@ -623,7 +630,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
                 }
                 unsigned span = cellBox->getRowSpan();
                 if (1 < span) {
-                    float sum = spacing * (span - 1);
+                    float sum = 0.0f;
                     for (unsigned r = 0; r < span; ++r)
                         sum += heights[y + r];
                     if (sum < cellBox->getTotalHeight()) {
@@ -636,7 +643,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
         }
 
         if (!fixedLayout) {
-            float w = spacing * (xWidth - 1);
+            float w = 0.0f;
             for (unsigned x = 0; x < xWidth; ++x)
                 w += widths[x];
             if (style->width.isAuto())
@@ -647,7 +654,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
                     widths[x] += w;
             }
         }
-        float h = spacing * (yHeight - 1);
+        float h = 0.0f;
         for (unsigned y = 0; y < yHeight; ++y)
             h += heights[y];
         if (style->height.isAuto())
@@ -666,12 +673,12 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
                 if (!fixedLayout) {
                     float w = widths[x];
                     for (unsigned c = 1; c < cellBox->getColSpan(); ++c)
-                        w += spacing + widths[x + c];
+                        w += widths[x + c];
                     cellBox->fit(w);
                 }
                 float h = heights[y];
                 for (unsigned r = 1; r < cellBox->getRowSpan(); ++r)
-                    h += spacing + heights[y + r];
+                    h += heights[y + r];
                 cellBox->height = h - cellBox->getBlankTop() - cellBox->getBlankBottom();
             }
         }
