@@ -367,24 +367,37 @@ BorderValue::resolveBorderConflict(CSSStyleDeclarationPtr s, unsigned trbl)
         resolveBorderConflict(style->borderLeftColor, style->borderLeftStyle, style->borderLeftWidth);
 }
 
-void TableWrapperBox::resolveHorizontalBorderConflict(unsigned x, unsigned y, BorderValue* b, CellBox* c, unsigned mask)
+void TableWrapperBox::resolveHorizontalBorderConflict(unsigned x, unsigned y, BorderValue* b, CellBox* top, CellBox* bottom)
 {
-    if (c) {
-        b->resolveBorderConflict(c->getStyle(), mask);
-        if (mask & 0x1) {
-            b->resolveBorderConflict(rows[y], 0x1 & mask);
-            if (CSSStyleDeclarationPtr rowStyle = rowGroups[y]) {
-                if (y == 0 || rowStyle != rowGroups[y - 1])
-                    b->resolveBorderConflict(rowStyle, 0x1 & mask);
-            }
-        } else {
-            b->resolveBorderConflict(rows[y - 1], 0x4 & mask);
+    if (top != bottom) {
+        unsigned mask;
+        if (y == 0)
+            mask = 0x1;
+        else if (y == yHeight)
+            mask = 0x4;
+        else
+            mask = 0;
+        if (bottom)
+            b->resolveBorderConflict(bottom->getStyle(), 0x4);
+        if (top)
+            b->resolveBorderConflict(top->getStyle(), 0x1);
+        if (0 < y)
+            b->resolveBorderConflict(rows[y - 1], 0x4);
+        if (y < yHeight)
+            b->resolveBorderConflict(rows[y], 0x1);
+        if (0 < y) {
             if (CSSStyleDeclarationPtr rowStyle = rowGroups[y - 1]) {
                 if (y + 1 == yHeight || rowStyle != rowGroups[y]);
-                    b->resolveBorderConflict(rowStyle , 0x4 & mask);
+                    b->resolveBorderConflict(rowStyle , 0x4);
             }
         }
-        if (y == 0 || y == yHeight) {
+        if (y < yHeight) {
+            if (CSSStyleDeclarationPtr rowStyle = rowGroups[y]) {
+                if (y == 0 || rowStyle != rowGroups[y - 1])
+                    b->resolveBorderConflict(rowStyle, 0x1);
+            }
+        }
+        if (mask) {
             b->resolveBorderConflict(columns[x], 0x5 & mask);
             b->resolveBorderConflict(columnGroups[x], 0x05 & mask);
             b->resolveBorderConflict(style, 0x05 & mask);
@@ -392,28 +405,41 @@ void TableWrapperBox::resolveHorizontalBorderConflict(unsigned x, unsigned y, Bo
     }
 }
 
-void TableWrapperBox::resolveVerticalBorderConflict(unsigned x, unsigned y, BorderValue* b, CellBox* c, unsigned mask)
+void TableWrapperBox::resolveVerticalBorderConflict(unsigned x, unsigned y, BorderValue* b, CellBox* left, CellBox* right)
 {
-    if (c) {
-        b->resolveBorderConflict(c->getStyle(), mask);
-        if (x == 0 || x == xWidth) {
+    if (left != right) {
+        unsigned mask;
+        if (x == 0)
+            mask = 0x8;
+        else if (x == xWidth)
+            mask = 0x2;
+        else
+            mask = 0;
+        if (right)
+            b->resolveBorderConflict(right->getStyle(), 0x2);
+        if (left)
+            b->resolveBorderConflict(left->getStyle(), 0x8);
+        if (mask) {
             b->resolveBorderConflict(rows[y], 0xa & mask);
             b->resolveBorderConflict(rowGroups[y], 0xa & mask);
         }
-        if (mask & 0x8) {
-            b->resolveBorderConflict(columns[x], 0x8 & mask);
-            if (CSSStyleDeclarationPtr colStyle = columnGroups[x]) {
-                if (x == 0 || colStyle != columnGroups[x - 1])
-                    b->resolveBorderConflict(colStyle, 0x08 & mask);
-            }
-        } else {
-            b->resolveBorderConflict(columns[x - 1], 0x2 & mask);
+        if (0 < x)
+            b->resolveBorderConflict(columns[x - 1], 0x2);
+        if (x < xWidth)
+            b->resolveBorderConflict(columns[x], 0x8);
+        if (0 < x) {
             if (CSSStyleDeclarationPtr colStyle = columnGroups[x - 1]) {
                 if (x + 1 == xWidth || colStyle != columnGroups[x]);
-                    b->resolveBorderConflict(colStyle, 0x0a & mask);
+                    b->resolveBorderConflict(colStyle, 0x2);
             }
         }
-        if (x == 0 || x == xWidth)
+        if (x < xWidth) {
+            if (CSSStyleDeclarationPtr colStyle = columnGroups[x]) {
+                if (x == 0 || colStyle != columnGroups[x - 1])
+                    b->resolveBorderConflict(colStyle, 0x8);
+            }
+        }
+        if (mask)
             b->resolveBorderConflict(style, 0x0a & mask);
     }
 }
@@ -435,19 +461,13 @@ bool TableWrapperBox::resolveBorderConflict()
                 BorderValue* br = getRowBorderValue(x, y);
                 CellBox* top = (y < yHeight) ? grid[y][x].get() : 0;
                 CellBox* bottom = (0 < y) ? grid[y - 1][x].get() : 0;
-                if (top != bottom) {
-                    resolveHorizontalBorderConflict(x, y, br, top, 0x1);
-                    resolveHorizontalBorderConflict(x, y, br, bottom, 0x4);
-                }
+                resolveHorizontalBorderConflict(x, y, br, top, bottom);
             }
             if (y < yHeight) {
                 BorderValue* bc = getColumnBorderValue(x, y);
                 CellBox* left = (x < xWidth) ? grid[y][x].get() : 0;
                 CellBox* right = (0 < x) ? grid[y][x - 1].get() : 0;
-                if (left != right) {
-                    resolveVerticalBorderConflict(x, y, bc, left, 0x8);
-                    resolveVerticalBorderConflict(x, y, bc, right, 0x2);
-                }
+                resolveVerticalBorderConflict(x, y, bc, left, right);
             }
         }
     }

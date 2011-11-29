@@ -96,7 +96,8 @@ class TableWrapperBox : public BlockLevelBox
     typedef std::deque<CellBoxPtr> Row;
     typedef std::deque<Row> Grid;
 
-    struct BorderValue {
+    struct BorderValue
+    {
         CSSBorderColorValueImp color;
         CSSBorderStyleValueImp style;
         CSSBorderWidthValueImp width;
@@ -144,8 +145,8 @@ class TableWrapperBox : public BlockLevelBox
     unsigned endRowGroup(int yCurrent);
     void growDownwardGrowingCells();
 
-    void resolveHorizontalBorderConflict(unsigned x, unsigned y, BorderValue* b, CellBox* c, unsigned mask);
-    void resolveVerticalBorderConflict(unsigned x, unsigned y, BorderValue* b, CellBox* c, unsigned mask);
+    void resolveHorizontalBorderConflict(unsigned x, unsigned y, BorderValue* b, CellBox* top, CellBox* bottom);
+    void resolveVerticalBorderConflict(unsigned x, unsigned y, BorderValue* b, CellBox* left, CellBox* right);
     bool resolveBorderConflict();
 
     void layOutFixed(ViewCSSImp* view, const ContainingBlock* containingBlock, bool collapsingModel);
