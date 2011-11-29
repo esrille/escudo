@@ -371,11 +371,11 @@ void TableWrapperBox::resolveHorizontalBorderConflict(unsigned x, unsigned y, Bo
 {
     if (c) {
         b->resolveBorderConflict(c->getStyle(), mask);
+        if (mask & 0x1)
+            b->resolveBorderConflict(rows[y], 0x1 & mask);
+        else if (0 < y)
+            b->resolveBorderConflict(rows[y - 1], 0x4 & mask);
         if (y < yHeight) {
-            if (mask & 0x1)
-                b->resolveBorderConflict(rows[y], 0x1 & mask);
-            else if (0 < y)
-                b->resolveBorderConflict(rows[y - 1], 0x4 & mask);
             b->resolveBorderConflict(rowGroups[y], 0x5 & mask);  // TODO: check span
         }
         if (y == 0 || y == yHeight) {
@@ -394,11 +394,11 @@ void TableWrapperBox::resolveVerticalBorderConflict(unsigned x, unsigned y, Bord
             b->resolveBorderConflict(rows[y], 0xa & mask);
             b->resolveBorderConflict(rowGroups[y], 0xa & mask);  // TODO: check span
         }
+        if (mask & 0x8)
+            b->resolveBorderConflict(columns[x], 0x8 & mask);
+        else if (0 < x)
+            b->resolveBorderConflict(columns[x - 1], 0x2 & mask);
         if (x < xWidth) {
-            if (mask & 0x8)
-                b->resolveBorderConflict(columns[x], 0x8 & mask);
-            else if (0 < x)
-                b->resolveBorderConflict(columns[x - 1], 0x2 & mask);
             b->resolveBorderConflict(columnGroups[x], 0x0a & mask);
         }
         if (x == 0 || x == xWidth)
