@@ -1371,7 +1371,7 @@ size_t CSSStyleDeclarationImp::processWhiteSpace(std::u16string& data, char16_t&
                     data.erase(j, i - j);
                     i = j;
                 }
-                for (int j = i + 1; j < data.length() && isSpace(data[j]); ++j)
+                for (j = i + 1; j < data.length() && isSpace(data[j]); ++j)
                     ;
                 --j;
                 if (i < j)
@@ -1385,7 +1385,7 @@ size_t CSSStyleDeclarationImp::processWhiteSpace(std::u16string& data, char16_t&
                 if (i != 0)
                     prevChar = 0;
             } else if (c == '\t')
-                data[i] = ' ';
+                c = data[i] = ' ';
             if (c == ' ' && prevChar == ' ') {
                 data.erase(i, 1);
                 continue;  // do not increment i.
