@@ -107,16 +107,6 @@ FontInfo fontDatabase[] = {
     },
 #endif
     {
-        u"LiberationSerif",
-        CSSFontFamilyValueImp::Serif,
-        {
-            { LIBERATON_TTF "/LiberationSerif-BoldItalic.ttf", 700, CSSFontStyleValueImp::Italic },
-            { LIBERATON_TTF "/LiberationSerif-Italic.ttf", 400, CSSFontStyleValueImp::Italic },
-            { LIBERATON_TTF "/LiberationSerif-Regular.ttf", 400 },
-            { LIBERATON_TTF "/LiberationSerif-Bold.ttf", 700 },
-        }
-    },
-    {
         u"LiberationSans",
         CSSFontFamilyValueImp::SansSerif,
         {
@@ -124,6 +114,16 @@ FontInfo fontDatabase[] = {
             { LIBERATON_TTF "/LiberationSans-Italic.ttf", 400, CSSFontStyleValueImp::Italic },
             { LIBERATON_TTF "/LiberationSans-Regular.ttf", 400 },
             { LIBERATON_TTF "/LiberationSans-Bold.ttf", 700 },
+        }
+    },
+    {
+        u"LiberationSerif",
+        CSSFontFamilyValueImp::Serif,
+        {
+            { LIBERATON_TTF "/LiberationSerif-BoldItalic.ttf", 700, CSSFontStyleValueImp::Italic },
+            { LIBERATON_TTF "/LiberationSerif-Italic.ttf", 400, CSSFontStyleValueImp::Italic },
+            { LIBERATON_TTF "/LiberationSerif-Regular.ttf", 400 },
+            { LIBERATON_TTF "/LiberationSerif-Bold.ttf", 700 },
         }
     },
     {

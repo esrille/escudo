@@ -705,8 +705,10 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
     }
 
     for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
-        if (child != tableBox)
+        if (child != tableBox) {
             child->layOut(view, context);
+            width = std::max(width, child->getBlockWidth());
+        }
     }
 
     height = 0.0f;
