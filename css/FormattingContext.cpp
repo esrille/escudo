@@ -260,24 +260,34 @@ float FormattingContext::clear(unsigned value)
 {
     if (!value)
         return 0.0f;
-    float h = 0.0f;
+    float h = NAN;
     if (value & 1) {  // clear left
         for (auto i = left.begin(); i != left.end(); ++i) {
             float w = (*i)->getEffectiveTotalWidth();
             x -= w;
             leftover += w;
-            h = std::max(h, (*i)->remainingHeight);
+            if (isnan(h))
+                h = (*i)->remainingHeight;
+            else
+                h = std::max(h, (*i)->remainingHeight);
         }
     }
     if (value & 2) {  // clear right
         for (auto i = right.begin(); i != right.end(); ++i) {
             float w = (*i)->getEffectiveTotalWidth();
             leftover += w;
-            h = std::max(h, (*i)->remainingHeight);
+            if (isnan(h))
+                h = (*i)->remainingHeight;
+            else
+                h = std::max(h, (*i)->remainingHeight);
         }
     }
-    // Note there could be a floating box whose remainingHeight is zero.
-    updateRemainingHeight(h - getMargin());
+    if (isnan(h))
+        h = 0.0f;
+    else {
+        // Note there could be a floating box whose remainingHeight is zero.
+        updateRemainingHeight(h - getMargin());
+    }
     assert(!(value & 1) || left.empty());
     assert(!(value & 2) || right.empty());
     return h;
