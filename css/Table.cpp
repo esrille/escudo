@@ -700,6 +700,8 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
                 cellBox->offsetH += xOffset;
             }
         }
+
+        width = tableBox->width;
     }
 
     for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
@@ -707,14 +709,9 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
             child->layOut(view, context);
     }
 
-    width = 0.0f;
-    for (Box* child = getFirstChild(); child; child = child->getNextSibling())
-        width = std::max(width, child->getTotalWidth());
     height = 0.0f;
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
         height += child->getTotalHeight() + child->getClearance();
-
-    style->width.setValue();
 
     collapseMarginBottom(context);
     if (!isAnonymous()) {

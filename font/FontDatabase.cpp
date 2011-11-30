@@ -106,15 +106,6 @@ FontInfo fontDatabase[] = {
         }
     },
 #endif
-#ifdef HAVE_AHEM
-    {
-        u"Ahem",
-        CSSFontFamilyValueImp::Monospace,
-        {
-            { HAVE_AHEM, 400 }
-        }
-    },
-#endif
     {
         u"LiberationSerif",
         CSSFontFamilyValueImp::Serif,
@@ -145,6 +136,15 @@ FontInfo fontDatabase[] = {
             { LIBERATON_TTF "/LiberationMono-Bold.ttf", 700 },
         }
     },
+#ifdef HAVE_AHEM
+    {
+        u"Ahem",
+        CSSFontFamilyValueImp::Monospace,
+        {
+            { HAVE_AHEM, 400 }
+        }
+    },
+#endif
 };
 
 const int fontDatabaseSize = sizeof fontDatabase / sizeof fontDatabase[0];
