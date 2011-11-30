@@ -120,6 +120,8 @@ void DocumentImp::setDefaultView(WindowImp* view)
 
 void DocumentImp::setReadyState(const std::u16string& readyState)
 {
+    if (this->readyState == readyState)
+        return;
     this->readyState = readyState;
     if (readyState == u"complete") {
         if (defaultView) {

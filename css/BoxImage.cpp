@@ -226,7 +226,7 @@ void BoxImage::notify()
 {
     if (state == Sent) {
         if (request.getStatus() == 200)
-            box->flags = 1;  // for updating render tree.
+            box->setFlags(1);   // for updating render tree.
         else
             state = Unavailable;
     }
