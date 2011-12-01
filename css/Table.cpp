@@ -697,7 +697,8 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
                     xOffset += widths[x];
                     continue;
                 }
-                cellBox->offsetH += xOffset;
+                if (!cellBox->isSpanned(x, y))
+                    cellBox->offsetH += xOffset;
             }
         }
 
