@@ -55,8 +55,8 @@ void CellBox::separateBorders(CSSStyleDeclarationPtr style, unsigned xWidth, uns
     float hs = style->borderSpacing.getHorizontalSpacing();
     float vs = style->borderSpacing.getVerticalSpacing();
     marginTop = (row == 0) ? vs : (vs / 2.0f);
-    marginRight = (col + 1 == xWidth) ? hs : (hs / 2.0f);
-    marginBottom = (row + 1 == yHeight) ? vs : (vs / 2.0f);
+    marginRight = (col + colSpan == xWidth) ? hs : (hs / 2.0f);
+    marginBottom = (row + rowSpan == yHeight) ? vs : (vs / 2.0f);
     marginLeft = (col == 0) ? hs : (hs / 2.0f);
 }
 
