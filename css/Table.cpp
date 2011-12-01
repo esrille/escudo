@@ -472,6 +472,23 @@ bool TableWrapperBox::resolveBorderConflict()
     return true;
 }
 
+void TableWrapperBox::computeTableBorders()
+{
+    float t = 0.0f;
+    float b = 0.0f;
+    for (unsigned x = 0; x < xWidth; ++x) {
+        t = std::max(t, getRowBorderValue(x, 0)->getWidth() / 2.0f);
+        b = std::max(b, getRowBorderValue(x, yHeight)->getWidth() / 2.0f);
+    }
+    float l = getColumnBorderValue(0, 0)->getWidth() / 2.0f;
+    float r = getColumnBorderValue(xWidth, 0)->getWidth() / 2.0f;
+    tableBox->expandMargins(t, r, b, l);
+    for (unsigned y = 0; y < yHeight; ++y) {
+        marginLeft = std::max(marginLeft, getColumnBorderValue(0, y)->getWidth() / 2.0f - l);
+        marginRight = std::max(marginRight, getColumnBorderValue(xWidth, y)->getWidth() / 2.0f - r);
+    }
+}
+
 void TableWrapperBox::layOutFixed(ViewCSSImp* view, const ContainingBlock* containingBlock, bool collapsingModel)
 {
     float hs = 0.0f;
@@ -569,7 +586,6 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
             tableBox->updateBorderWidth();
             hs = style->borderSpacing.getHorizontalSpacing();
         }
-        tableBox->resolveMargin(view, containingBlock, 0.0f);
         tableBox->width = width;
         tableBox->height = height;
         widths.resize(xWidth);
@@ -702,7 +718,9 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
             }
         }
 
-        width = tableBox->width;
+        if (collapsingModel)
+            computeTableBorders();
+        width = tableBox->getBlockWidth();
     }
 
     for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {

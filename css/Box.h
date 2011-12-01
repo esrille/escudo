@@ -304,6 +304,19 @@ public:
         return y;
     }
 
+    float getMarginTop() const {
+        return marginTop;
+    }
+    float getMarginRight() const {
+        return marginRight;
+    }
+    float getMarginBottom() const {
+        return marginBottom;
+    }
+    float getMarginLeft() const {
+        return marginLeft;
+    }
+
     bool hasMargins() const {  // have non-zero margins?
         return marginTop != 0.0f || marginRight != 0.0f || marginBottom != 0.0f || marginLeft != 0.0f;
     }
@@ -360,6 +373,13 @@ public:
 
     float getVerticalOffset() const {
         return offsetV;
+    }
+
+    void expandMargins(float t, float r, float b, float l) {
+        marginTop += t;
+        marginRight += r;
+        marginBottom += b;
+        marginLeft += l;
     }
 
     virtual float shrinkTo();

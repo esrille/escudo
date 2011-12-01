@@ -41,9 +41,9 @@ void TableWrapperBox::renderTableBorders(ViewCSSImp* view)
         return;
 
     glDisable(GL_TEXTURE_2D);
-    float h = tableBox->getY();
+    float h = tableBox->getY() + tableBox->getMarginTop();
     for (unsigned y = 0; y < yHeight + 1; h += heights[y], ++y) {
-        float w = tableBox->getX();
+        float w = tableBox->getX() + tableBox->getMarginLeft();
         for (unsigned x = 0; x < xWidth + 1; w += widths[x], ++x) {
             if (x < xWidth) {
                 BorderValue* br = getRowBorderValue(x, y);

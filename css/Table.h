@@ -148,6 +148,7 @@ class TableWrapperBox : public BlockLevelBox
     void resolveHorizontalBorderConflict(unsigned x, unsigned y, BorderValue* b, CellBox* top, CellBox* bottom);
     void resolveVerticalBorderConflict(unsigned x, unsigned y, BorderValue* b, CellBox* left, CellBox* right);
     bool resolveBorderConflict();
+    void computeTableBorders();
 
     void layOutFixed(ViewCSSImp* view, const ContainingBlock* containingBlock, bool collapsingModel);
 
