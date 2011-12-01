@@ -18,9 +18,10 @@
 
 #include <assert.h>
 
-#include "css/CSSStyleDeclarationImp.h"
-#include "css/ViewCSSImp.h"
 #include "CSSPropertyValueImp.h"
+#include "CSSStyleDeclarationImp.h"
+#include "StackingContext.h"
+#include "ViewCSSImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -31,7 +32,9 @@ FormattingContext::FormattingContext() :
     prevChar(0),
     positiveMargin(0.0f),
     negativeMargin(0.0f),
-    previousMargin(NAN)
+    previousMargin(NAN),
+    baseline(0.0f),
+    lineHeight(0.0f)
 {
 }
 
@@ -62,6 +65,7 @@ float FormattingContext::getRightRemainingHeight() const {
 LineBox* FormattingContext::addLineBox(ViewCSSImp* view, BlockLevelBox* parentBox) {
     assert(!lineBox);
     assert(parentBox);
+    baseline = lineHeight = 0.0f;
     lineBox = new(std::nothrow) LineBox(parentBox->getStyle());
     if (lineBox) {
         parentBox->appendChild(lineBox);
@@ -191,6 +195,31 @@ bool FormattingContext::hasNewFloats() const
     return false;
 }
 
+void FormattingContext::appendInlineBox(InlineLevelBox* inlineBox, CSSStyleDeclarationImp* activeStyle)
+{
+    assert(lineBox);
+    baseline = lineBox->baseline;
+    lineHeight = lineBox->height;
+
+    assert(activeStyle);
+    float offset = activeStyle->verticalAlign.getOffset(lineBox, inlineBox);
+    if (offset < 0.0f) {
+        lineBox->baseline -= offset;
+        offset = 0.0f;
+    }
+
+    if (0.0f < inlineBox->height)
+        lineBox->height = std::max(lineBox->height, offset + inlineBox->height);
+    lineBox->height = std::max(lineBox->height, activeStyle->lineHeight.getPx());
+    lineBox->height = std::max(lineBox->height, lineBox->getStyle()->lineHeight.getPx());
+
+    lineBox->width += inlineBox->getTotalWidth();
+
+    lineBox->appendChild(inlineBox);
+    if (activeStyle->isPositioned() && !inlineBox->isAnonymous())
+        activeStyle->getStackingContext()->addBase(inlineBox);
+}
+
 // Complete the current lineBox by adding float boxes if any.
 // Then update remainingHeight.
 void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, unsigned clearValue)
@@ -201,6 +230,10 @@ void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, uns
     if (InlineLevelBox* inlineLevelBox = dynamic_cast<InlineLevelBox*>(lineBox->getLastChild())) {
         float w = inlineLevelBox->atEndOfLine();
         if (w < 0.0f) {
+            if (inlineLevelBox->width <= 0.0f) {
+                lineBox->baseline = baseline;
+                lineBox->height = lineHeight;
+            }
             lineBox->width += w;
             leftover -= w;
             tryAddFloat(view);

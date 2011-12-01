@@ -87,6 +87,10 @@ class FormattingContext
     float previousMargin;
     bool withClearance;
 
+    // Previous height and baseline of the current lineBox used in nextLine()
+    float baseline;
+    float lineHeight;
+
 public:
     FormattingContext();
     LineBox* addLineBox(ViewCSSImp* view, BlockLevelBox* parentBox);
@@ -98,6 +102,7 @@ public:
     float shiftDown();
     bool shiftDownLineBox();
     bool hasNewFloats() const;
+    void appendInlineBox(InlineLevelBox* inlineBox, CSSStyleDeclarationImp* activeStyle);
     void nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, unsigned clearValue = 0);
     void tryAddFloat(ViewCSSImp* view);
     void adjustRemainingHeight(float height);
@@ -629,6 +634,7 @@ typedef boost::intrusive_ptr<BlockLevelBox> BlockLevelBoxPtr;
 class LineBox : public Box
 {
     friend class BlockLevelBox;
+    friend void FormattingContext::appendInlineBox(InlineLevelBox* inlineBox, CSSStyleDeclarationImp* activeStyle);
     friend void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, unsigned clearValue);
 
     float baseline;
@@ -676,8 +682,6 @@ public:
     float getUnderlineThickness() const {
         return underlineThickness;
     }
-
-    void appendInlineBox(InlineLevelBox* inlineBox, CSSStyleDeclarationImp* activeStyle);
 
     virtual void resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip);
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context);

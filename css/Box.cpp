@@ -715,7 +715,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
             lineBox->underlineThickness = std::max(lineBox->underlineThickness, font->getUnderlineThickness(point));
         }
         context->x += advanced + blankRight;
-        lineBox->appendInlineBox(inlineLevelBox, activeStyle);
+        context->appendInlineBox(inlineLevelBox, activeStyle);
         // Switch height from 'line-height' to the content height.
         if (inlineLevelBox->hasHeight())
             inlineLevelBox->height = font->getLineHeight(point);
@@ -784,8 +784,7 @@ void BlockLevelBox::layOutInlineLevelBox(ViewCSSImp* view, Node node, Formatting
 
     context->x += inlineLevelBox->getTotalWidth();
     context->leftover -= inlineLevelBox->getTotalWidth();
-    LineBox* lineBox = context->lineBox;
-    lineBox->appendInlineBox(inlineLevelBox, style);
+    context->appendInlineBox(inlineLevelBox, style);
 }
 
 void BlockLevelBox::layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floatBox, FormattingContext* context)
@@ -1669,27 +1668,6 @@ void BlockLevelBox::dump(std::string indent)
     indent += "  ";
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
         child->dump(indent);
-}
-
-void LineBox::appendInlineBox(InlineLevelBox* inlineBox, CSSStyleDeclarationImp* activeStyle)
-{
-    assert(activeStyle);
-    float offset = activeStyle->verticalAlign.getOffset(this, inlineBox);
-    if (offset < 0.0f) {
-        baseline -= offset;
-        offset = 0.0f;
-    }
-
-    if (0.0f < inlineBox->height)
-        height = std::max(height, offset + inlineBox->height);
-    height = std::max(height, activeStyle->lineHeight.getPx());
-    height = std::max(height, style->lineHeight.getPx());
-
-    width += inlineBox->getTotalWidth();
-
-    appendChild(inlineBox);
-    if (activeStyle->isPositioned() && !inlineBox->isAnonymous())
-        activeStyle->getStackingContext()->addBase(inlineBox);
 }
 
 bool LineBox::layOut(ViewCSSImp* view, FormattingContext* context)
