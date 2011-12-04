@@ -70,6 +70,7 @@ class WindowImp : public ObjectMixin<WindowImp>
 
     // for MouseEvent
     int detail;
+    unsigned short buttons;
 
     // for display
     unsigned width;

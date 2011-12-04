@@ -61,6 +61,7 @@ WindowImp::WindowImp(WindowImp* parent) :
     boxTree(0),
     parent(parent),
     detail(0),
+    buttons(0),
     width(816),     // US letter size, 96 DPI
     height(1056),
     redisplay(false)
@@ -218,10 +219,21 @@ void WindowImp::render()
 void WindowImp::mouse(int button, int up, int x, int y, int modifiers)
 {
     recordTime("mouse");
+
+    int shift = button;
+    if (shift == 1)
+        shift = 2;
+    else if (shift == 2)
+        shift = 1;
+    if (up)
+        buttons &= ~(1u << shift);
+    else
+        buttons |= (1u << shift);
+
     if (!view)
         return;
 
-    events::MouseEvent event(0);
+    MouseEventImp* event = 0;
 
     Box* box = view->boxFromPoint(x, y);
     ViewCSSImp* shadow = box->getShadow();
@@ -238,9 +250,10 @@ void WindowImp::mouse(int button, int up, int x, int y, int modifiers)
     if (event = new(std::nothrow) MouseEventImp) {
         if (!up)
             ++detail;
-        event.initMouseEvent(up ? u"mouseup" : u"mousedown",
+        event->initMouseEvent(up ? u"mouseup" : u"mousedown",
                             true, true, this, detail, x, y, x, y,
                             modifiers & 2, modifiers & 4, modifiers & 1, false, button, 0);
+        event->setButtons(buttons);
         box->getTargetNode().dispatchEvent(event);
     }
 
@@ -252,9 +265,10 @@ void WindowImp::mouse(int button, int up, int x, int y, int modifiers)
 
     // click
     if (event = new(std::nothrow) MouseEventImp) {
-        event.initMouseEvent(u"click",
+        event->initMouseEvent(u"click",
                             true, true, this, detail, x, y, x, y,
                             modifiers & 2, modifiers & 4, modifiers & 1, false, button, 0);
+        event->setButtons(buttons);
         box->getTargetNode().dispatchEvent(event);
     }
 }
@@ -278,12 +292,13 @@ void WindowImp::mouseMove(int x, int y, int modifiers)
     view->setHovered(box->getTargetNode());
 
     // mousemove
-    events::MouseEvent event(0);
+    MouseEventImp* event = 0;
     if (event = new(std::nothrow) MouseEventImp) {
         detail = 0;
-        event.initMouseEvent(u"mousemove",
-                            true, true, this, detail, x, y, x, y,
-                            modifiers & 2, modifiers & 4, modifiers & 1, false, 0, 0);
+        event->initMouseEvent(u"mousemove",
+                              true, true, this, detail, x, y, x, y,
+                              modifiers & 2, modifiers & 4, modifiers & 1, false, 0, 0);
+        event->setButtons(buttons);
         view->getHovered().dispatchEvent(event);
     }
 }

@@ -51,6 +51,11 @@ public:
     {
     }
 
+    void setButtons(unsigned short value)
+    {
+        buttons = value;
+    }
+
     // MouseEvent
     int getScreenX()
     {
