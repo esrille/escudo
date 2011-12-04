@@ -117,6 +117,9 @@ void DocumentWindow::handleClick(events::Event event)
         moveX = mouse.getScreenX();
         moveY = mouse.getScreenY();
         break;
+    case 1:
+        view->setZoom(1.0f);
+        break;
     case 3:
         view->setZoom(view->getZoom() - 0.1f);
         break;
