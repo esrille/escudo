@@ -19,7 +19,7 @@
 
 FontManagerBackEndGL backend;
 
-unsigned int point = 32;
+unsigned int point = 48;
 
 void reshape(int w, int h)
 {
@@ -41,31 +41,81 @@ void reshape(int w, int h)
 
 double renderStrings(FontTexture* font, double y)
 {
+    float scale = point * 96.0f / 72.0f;
     glPushMatrix();
     glTranslatef(24.0, y, 0.0);
-    glScalef(48.0 / point, 48.0 / point, 1.0);
-    font->renderText(u"ABCDEFGHIJKLMNOPQRSTUVWXYZ", 26);
+    glScalef(48.0 / scale, 48.0 / scale, 1.0);
+    font->renderText(u"ABCDEFGHIJKLMNOPQRSTUVWXYZ(+-*/=)", 33);
     glPopMatrix();
-    y += 48.0;
+    y += 30.0;
 
     glPushMatrix();
     glTranslatef(24.0, y, 0.0);
-    glScalef(24.0 / point, 24.0 / point, 1.0);
-    font->renderText(u"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", 62);
+    glScalef(24.0 / scale, 24.0 / scale, 1.0);
+    font->renderText(u"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789(+-*/=)", 69);
     glPopMatrix();
     y += 24.0;
 
     glPushMatrix();
     glTranslatef(24.0, y, 0.0);
-    glScalef(16.0 / point, 16.0 / point, 1.0);
-    font->renderText(u"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", 62);
+    glScalef(16.0 / scale, 16.0 / scale, 1.0);
+    font->renderText(u"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789(+-*/=)", 69);
     glPopMatrix();
     y += 16.0;
 
     glPushMatrix();
     glTranslatef(24.0, y, 0.0);
-    glScalef(12.0 / point, 12.0 / point, 1.0);
-    font->renderText(u"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", 62);
+    glScalef(12.0 / scale, 12.0 / scale, 1.0);
+    font->renderText(u"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789(+-*/=)", 69);
+    glPopMatrix();
+    y += 16.0;
+
+    glPushMatrix();
+    glTranslatef(24.0, y, 0.0);
+    glScalef(10.0 / scale, 10.0 / scale, 1.0);
+    font->renderText(u"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789(+-*/=)", 69);
+    glPopMatrix();
+    y += 64.0;
+
+    return y;
+}
+
+double renderCJKStrings(FontTexture* font, double y)
+{
+    float scale = point * 96.0f / 72.0f;
+
+    glPushMatrix();
+    glTranslatef(24.0, y, 0.0);
+    glScalef(48.0 / scale, 48.0 / scale, 1.0);
+    backend.renderString("こんにちは世界 コーヒー いろはにほへと");
+    glPopMatrix();
+    y += 30.0;
+
+    glPushMatrix();
+    glTranslatef(24.0, y, 0.0);
+    glScalef(24.0 / scale, 24.0 / scale, 1.0);
+    backend.renderString("こんにちは世界 コーヒー いろはにほへと");
+    glPopMatrix();
+    y += 24.0;
+
+    glPushMatrix();
+    glTranslatef(24.0, y, 0.0);
+    glScalef(16.0 / scale, 16.0 / scale, 1.0);
+    backend.renderString("こんにちは世界 コーヒー いろはにほへと");
+    glPopMatrix();
+    y += 16.0;
+
+    glPushMatrix();
+    glTranslatef(24.0, y, 0.0);
+    glScalef(12.0 / scale, 12.0 / scale, 1.0);
+    backend.renderString("こんにちは世界 コーヒー いろはにほへと");
+    glPopMatrix();
+    y += 16.0;
+
+    glPushMatrix();
+    glTranslatef(24.0, y, 0.0);
+    glScalef(10.0 / scale, 10.0 / scale, 1.0);
+    backend.renderString("こんにちは世界 コーヒー いろはにほへと");
     glPopMatrix();
     y += 64.0;
 
@@ -79,7 +129,6 @@ void display()
     glColor3f(0.0, 0.0, 0.0);
 
     double y = 64.0f;
-
     backend.getFontFace("/usr/share/fonts/liberation/LiberationSans-Regular.ttf");
     FontTexture* sans = backend.getFontTexture(point);
 
@@ -93,51 +142,22 @@ void display()
     y = renderStrings(serif, y);
     y = renderStrings(mono, y);
 
+    backend.getFontFace("/usr/share/fonts/ipa-pgothic/ipagp.ttf");
+    y = renderCJKStrings(backend.getFontTexture(point), y);
     backend.getFontFace("/usr/share/fonts/ipa-pmincho/ipamp.ttf");
-    // backend.getFontFace("/usr/share/fonts/ipa-mincho/ipam.ttf");
-    // backend.getFontFace("/usr/share/fonts/ipa-pgothic/ipagp.ttf");
-    // backend.getFontFace("/usr/share/fonts/ipa-gothic/ipag.ttf");
-    backend.getFontTexture(point);
-
-    glPushMatrix();
-    glTranslatef(24.0, y, 0.0);
-    glScalef(48.0 / point, 48.0 / point, 1.0);
-    backend.renderString("こんにちは世界 Hello");
-    glPopMatrix();
-    y += 48.0;
-
-    glPushMatrix();
-    glTranslatef(24.0, y, 0.0);
-    glScalef(24.0 / point, 24.0 / point, 1.0);
-    backend.renderString("こんにちは世界");
-    glPopMatrix();
-    y += 24.0;
-
-    glPushMatrix();
-    glTranslatef(24.0, y, 0.0);
-    glScalef(16.0 / point, 16.0 / point, 1.0);
-    backend.renderString("こんにちは世界");
-    glPopMatrix();
-    y += 16.0;
-
-    glPushMatrix();
-    glTranslatef(24.0, y, 0.0);
-    glScalef(12.0 / point, 12.0 / point, 1.0);
-    backend.renderString("こんにちは世界");
-    glPopMatrix();
-    y += 12.0;
+    y = renderCJKStrings(backend.getFontTexture(point), y);
 
 #if 0
     glColor3f(0.0, 0.0, 0.0);
     glBegin(GL_QUADS);
             glTexCoord2i(0 , 0);
-            glVertex2f(0, 0);
+            glVertex2f(0, y);
             glTexCoord2i(1024, 0);
-            glVertex2f(512, 0);
+            glVertex2f(1024, y);
             glTexCoord2i(1024, 1024);
-            glVertex2f(512, 512);
+            glVertex2f(1024, y + 1024);
             glTexCoord2i(0 , 1024);
-            glVertex2f(0, 512);
+            glVertex2f(0, y + 1024);
     glEnd();
 #endif
 
@@ -155,10 +175,10 @@ int main(int argc, char* argv[])
     glClearColor(1.0, 1.0, 1.0, 1.0);
     glEnable(GL_TEXTURE_2D);
     glDisable(GL_CULL_FACE);
-    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_DEPTH_TEST);
     glDisable(GL_ALPHA_TEST);
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
     if (2 <= argc) {

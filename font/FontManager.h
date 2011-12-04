@@ -42,7 +42,7 @@ public:
 
     virtual void addImage(uint8_t* image) = 0;
     virtual void deleteImage(uint8_t* image) = 0;
-    virtual void updateImage(uint8_t* image, FontGlyph* glyph, FT_GlyphSlot slot) = 0;
+    virtual void updateImage(uint8_t* image, FontGlyph* glyph) = 0;
     virtual void renderText(FontTexture* font, const char16_t* text, size_t length) = 0;
 };
 
@@ -105,22 +105,7 @@ class FontFace
     }
 
 public:
-    FontFace(FontManager* manager, const std::string fontFilename, long index = 0) try :
-        manager(manager),
-        charmap(0)
-    {
-        FT_Error error = FT_New_Face(manager->library, fontFilename.c_str(), index, &face);
-        if (error) {
-            face = 0;
-            throw std::runtime_error(__func__);
-        }
-        initCharmap();
-    } catch (...) {
-        if (face)
-            FT_Done_Face(face);
-        throw;
-    }
-
+    FontFace(FontManager* manager, const std::string fontFilename, long index = 0);
     ~FontFace();
 
     /** Gets the font texture object of the specified font size.
@@ -132,8 +117,11 @@ public:
 
 class FontTexture
 {
+    static const size_t Sizes = 3;  // for 11px, 22px, 44px, etc.
+
     FontFace* face;
     FontGlyph* glyphs;
+    FT_Size sizes[Sizes];
     unsigned int point; // nominal font point sized
     short ascender;
     short descender;
@@ -141,18 +129,20 @@ class FontTexture
     short xHeight;
 
     std::vector<uint8_t*> images;
-    uint8_t* image;  // intensity texture image of Width x Height texels
     FT_Vector pen;
     unsigned ymax;
     float bearingGap;
 
     // Allocates a new texture plane
-    void addImage()
+    uint8_t* addImage()
     {
-        image = new uint8_t[Width * Height];
+        uint8_t* image = new uint8_t[Width * (Height + Height / 3 + 1)];
+        // Way small font glyphs are rendered as gray boxes.
+        memset(getMipmapImage(image, Sizes), 0x20, Width * (Height + Height / 3 + 1) - ((getMipmapImage(image, Sizes) - image)));
         images.push_back(image);
         FontManagerBackEnd* backend = face->manager->getBackEnd();
         backend->addImage(image);
+        return image;
     }
 
     // Releases the texture plane
@@ -164,14 +154,15 @@ class FontTexture
     }
 
     // Updates texture sub image
-    void updateImage(uint8_t* image, FontGlyph* glyph, FT_GlyphSlot slot)
+    void updateImage(uint8_t* image, FontGlyph* glyph)
     {
         FontManagerBackEnd* backend = face->manager->getBackEnd();
-        backend->updateImage(image, glyph, slot);
+        backend->updateImage(image, glyph);
     }
 
     bool storeGlyph(FontGlyph* glyph, FT_UInt glyphIndex);
-    void drawBitmap(FontGlyph* glyph, FT_GlyphSlot slot);
+    uint8_t* drawBitmap(FontGlyph* glyph, FT_GlyphSlot slot);
+    void drawBitmap(FontGlyph* glyph, FT_GlyphSlot slot, int level);
 
 public:
     FontTexture(FontFace* face, unsigned int point);
@@ -239,9 +230,20 @@ public:
         return bearingGap;
     }
 
+    static uint8_t* getMipmapImage(uint8_t* image, unsigned int level) {
+        unsigned px = Width;
+        while (0 < level--) {
+            image += px * px;
+            px >>= 1;
+        }
+        return image;
+    }
+
     static const int Width = 1024;
     static const int Height = 1024;
-    static const int Offset = 1;
+    static const int Level = 11;    // 2^(Level-1) = Width = Height
+    static const int Offset = 1 << Sizes;
+    static const int Align = 1 << (Sizes - 1);
 };
 
 struct FontGlyph

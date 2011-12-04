@@ -87,9 +87,13 @@ public:
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_INTENSITY4, FontTexture::Width, FontTexture::Height, 0,
-                     GL_LUMINANCE, GL_UNSIGNED_BYTE, image);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        unsigned px = FontTexture::Width;
+        for (int level = 0; level < FontTexture::Level; ++level) {
+            glTexImage2D(GL_TEXTURE_2D, level, GL_INTENSITY4, px, px, 0,
+                         GL_LUMINANCE, GL_UNSIGNED_BYTE, FontTexture::getMipmapImage(image, level));
+            px >>= 1;
+        }
         texnames.insert(std::pair<uint8_t*, GLuint>(image, texname));
     }
 
@@ -101,12 +105,28 @@ public:
         texnames.erase(it);
     }
 
-    void updateImage(uint8_t* image, FontGlyph* glyph, FT_GlyphSlot slot)
+    void updateImage(uint8_t* image, FontGlyph* glyph)
     {
         bindImage(image);
-        glTexSubImage2D(GL_TEXTURE_2D, 0, glyph->x, glyph->y % FontTexture::Height,
-                        glyph->width, glyph->height,
-                        GL_LUMINANCE, GL_UNSIGNED_BYTE, slot->bitmap.buffer);
+        unsigned x = glyph->x;
+        unsigned y = glyph->y % FontTexture::Height;
+        unsigned w = glyph->width;
+        unsigned h = glyph->height;
+        unsigned px = FontTexture::Width;
+        for (int level = 0; level < FontTexture::Level; ++level) {
+            uint8_t* p = FontTexture::getMipmapImage(image, level) + px * y + x;
+            for (int i = 0; i < h; ++i, p += px) {
+                glTexSubImage2D(GL_TEXTURE_2D, level, x, y + i, w, 1,
+                                GL_LUMINANCE, GL_UNSIGNED_BYTE, p);
+            }
+            px >>= 1;
+            x >>= 1;
+            y >>= 1;
+            w >>= 1;
+            h >>= 1;
+            if (w == 0 || h == 0)
+                break;
+        }
     }
 
     FontFace* getFontFace(const char* fontFilename) throw ()

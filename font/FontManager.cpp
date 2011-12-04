@@ -19,6 +19,7 @@
 #include <algorithm>
 
 #include <freetype/tttables.h>
+#include <freetype/ftsizes.h>
 #include <unicode/utypes.h>
 
 #include "utf.h"
@@ -80,6 +81,22 @@ FontFace* FontManager::getFontFace(const std::string fontFilename) throw ()
 // FontFace
 //
 
+FontFace::FontFace(FontManager* manager, const std::string fontFilename, long index) try :
+    manager(manager),
+    charmap(0)
+{
+    FT_Error error = FT_New_Face(manager->library, fontFilename.c_str(), index, &face);
+    if (error) {
+        face = 0;
+        throw std::runtime_error(__func__);
+    }
+    initCharmap();
+} catch (...) {
+    if (face)
+        FT_Done_Face(face);
+    throw;
+}
+
 FontFace::~FontFace()
 {
     for (std::map<unsigned int, FontTexture*>::iterator it = textures.begin(); it != textures.end(); ++it)
@@ -111,19 +128,31 @@ FontTexture::FontTexture(FontFace* face, unsigned int point) try :
     face(face),
     glyphs(0),
     point(point),
-    image(0),
     bearingGap(0.0f)
 {
     addImage();
     glyphs = new FontGlyph[face->glyphCount];
-    // TODO: make dpi configurable
-    FT_Error error = FT_Set_Pixel_Sizes(face->face, 0, (point * 96) / 72);
-    // FT_Error error = FT_Set_Char_Size(face->face, point * 64, point * 64, 96, 96);
-    if (error)
-        throw std::runtime_error(__func__);
+
+    sizes[0] = face->face->size;
+    for (int i = 1; i < Sizes; ++i) {
+        FT_Error error = FT_New_Size(face->face, &sizes[i]);
+        if (error)
+            throw std::runtime_error(__func__);
+    }
+
+    unsigned px = (point * 96) / 72;  // TODO: make dpi configurable
+    for (int i = 0; i < Sizes; ++i) {
+        FT_Activate_Size(sizes[i]);
+        FT_Error error = FT_Set_Pixel_Sizes(face->face, 0, px);
+        if (error)
+            throw std::runtime_error(__func__);
+        px >>= 1;
+    }
+    FT_Activate_Size(sizes[0]);
+
     ascender = face->face->ascender;
     descender = face->face->descender;
-    pen.x = pen.y = 1;  // (0, 0) is reserved for an uninitialized font glyph
+    pen.x = pen.y = Offset;  // (0, 0) is reserved for an uninitialized font glyph
     ymax = 0;
 
     lineGap = 0;
@@ -143,9 +172,8 @@ FontTexture::FontTexture(FontFace* face, unsigned int point) try :
     // Store the missing glyph (0) as the 1st entry
     if (!storeGlyph(glyphs, 0))
         throw std::runtime_error(__func__);
-    } catch (...) {
+} catch (...) {
     delete glyphs;
-    delete image;
     throw;
 }
 
@@ -183,7 +211,7 @@ uint8_t* FontTexture::getImage(FontGlyph* glyph)
 bool FontTexture::storeGlyph(FontGlyph* glyph, FT_UInt glyphIndex)
 {
     // load glyph image into the slot (erase previous one)
-    FT_Error error = FT_Load_Glyph(face->face, glyphIndex, FT_LOAD_DEFAULT);
+    FT_Error error = FT_Load_Glyph(face->face, glyphIndex, FT_LOAD_NO_HINTING);
     if (error)
         return false;
 
@@ -192,26 +220,55 @@ bool FontTexture::storeGlyph(FontGlyph* glyph, FT_UInt glyphIndex)
     if (error)
         return false;
 
+    uint8_t* image;
+
     FT_GlyphSlot slot = face->face->glyph;
     try {
-        drawBitmap(glyph, slot);
+        image = drawBitmap(glyph, slot);
     } catch (...) {
         return false;
     }
     assert(glyph->isInitialized());
+
+    // update mipmap textures.
+    for (int i = 1; i < Sizes; ++i) {
+        FT_Activate_Size(sizes[i]);
+        // load glyph image into the slot (erase previous one)
+        FT_Error error = FT_Load_Glyph(face->face, glyphIndex, FT_LOAD_NO_HINTING);
+        if (error)
+            return false;
+        // convert to an anti-aliased bitmap
+        error = FT_Render_Glyph(face->face->glyph, FT_RENDER_MODE_NORMAL);
+        if (error)
+            return false;
+        FT_GlyphSlot slot = face->face->glyph;
+        try {
+            drawBitmap(glyph, slot, i);
+        } catch (...) {
+            return false;
+        }
+    }
+    FT_Activate_Size(sizes[0]);
+
+    updateImage(image, glyph);
+
     return true;
 }
 
-void FontTexture::drawBitmap(FontGlyph* glyph, FT_GlyphSlot slot)
+uint8_t* FontTexture::drawBitmap(FontGlyph* glyph, FT_GlyphSlot slot)
 {
+    uint8_t* image = images.back();
+
     FT_Bitmap* bitmap = &slot->bitmap;
-    if (Width < pen.x + bitmap->width) {
+    unsigned w = (bitmap->width + Offset + Align - 1) & ~(Align - 1);
+    unsigned h = (bitmap->rows + Offset + Align - 1) & ~(Align - 1);
+    if (Width < pen.x + w) {
         pen.x = 0;
-        pen.y += ymax + Offset;
+        pen.y += ymax;
         ymax = 0;
     }
-    if (pen.y / Height != (pen.y + bitmap->rows) / Height) {
-        addImage();
+    if (pen.y / Height != (pen.y + h) / Height) {
+        image = addImage();
         pen.x = 0;
         pen.y = (pen.y / Height + 1) * Height;
         ymax = 0;
@@ -225,16 +282,34 @@ void FontTexture::drawBitmap(FontGlyph* glyph, FT_GlyphSlot slot)
     glyph->height = bitmap->rows;
     glyph->advance = slot->advance.x;
 
-    for (FT_Int i = glyph->y, p = 0; p < bitmap->rows; ++i, ++p) {
-        for (FT_Int j = glyph->x, q = 0; q < bitmap->width; ++j, ++q) {
+    for (FT_Int i = glyph->y % Height, p = 0; p < bitmap->rows; ++i, ++p) {
+        for (FT_Int j = glyph->x, q = 0; q < bitmap->width; ++j, ++q)
             image[i * Width + j] |= bitmap->buffer[p * bitmap->width + q];
-        }
     }
-    pen.x += glyph->width + Offset;
-    if (ymax < glyph->height)
-        ymax = glyph->height;
+    assert(((glyph->width + Offset + Align -1) & ~(Align - 1)) <= w);
 
-    updateImage(image, glyph, slot);
+    pen.x += w;
+    if (ymax < h)
+        ymax = h;
+    return image;
+}
+
+void FontTexture::drawBitmap(FontGlyph* glyph, FT_GlyphSlot slot, int level)
+{
+    uint8_t* image = images.back();
+
+    FT_Bitmap* bitmap = &slot->bitmap;
+    unsigned x = glyph->x >> level;
+    unsigned y = (glyph->y % Height) >> level;
+    uint8_t* m = getMipmapImage(image, level);
+    unsigned px = Width >> level;
+    for (FT_Int i = y, p = 0; p < bitmap->rows; ++i, ++p) {
+        for (FT_Int j = x, q = 0; q < bitmap->width; ++j, ++q)
+            m[i * px + j] = bitmap->buffer[p * bitmap->width + q];
+    }
+
+    glyph->width = std::max(static_cast<unsigned short>(bitmap->width << level), glyph->width);
+    glyph->height = std::max(static_cast<unsigned short>(bitmap->rows << level), glyph->height);
 }
 
 float FontTexture::measureText(const char16_t* text, float point)
@@ -252,7 +327,6 @@ size_t FontTexture::fitText(const char16_t* text, size_t length, float point, fl
 {
     const float scale = point / this->point / 64.0f;
     char32_t u = 0;
-    float width = 0.0f;
     size_t posLast = 0;
     TextIterator ti;  // TODO: keep one ti
     ti.setText(text, length);
@@ -304,7 +378,6 @@ fitTextWithTransformation(const char16_t* text, size_t length, float point, unsi
     std::u16string transformed;
     const float scale = point / this->point / 64.0f;
     char32_t u = 0;
-    float width = 0.0f;
     size_t posLast = 0;
     size_t posLastTransformed = 0;
     TextIterator ti;  // TODO: keep one ti
