@@ -42,11 +42,15 @@ class DocumentWindow : public EventTargetImp
     std::list<HttpRequest*> cache;
     int scrollX;
     int scrollY;
+    int moveX;
+    int moveY;
     Retained<EventListenerImp> clickListener;
+    Retained<EventListenerImp> mouseMoveListener;
 
     DocumentWindow(const DocumentWindow& window);
 
     void handleClick(events::Event event);
+    void handleMouseMove(events::Event event);
     void notify();
 
 public:

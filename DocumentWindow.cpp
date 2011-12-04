@@ -32,9 +32,11 @@ DocumentWindow::DocumentWindow() :
     global(0),
     scrollX(0),
     scrollY(0),
-    clickListener(boost::bind(&DocumentWindow::handleClick, this, _1))
+    clickListener(boost::bind(&DocumentWindow::handleClick, this, _1)),
+    mouseMoveListener(boost::bind(&DocumentWindow::handleMouseMove, this, _1))
 {
     addEventListener(u"click", &clickListener);
+    addEventListener(u"mousemove", &mouseMoveListener);
 }
 
 DocumentWindow::~DocumentWindow()
@@ -105,25 +107,21 @@ void DocumentWindow::handleClick(events::Event event)
     WindowImp* imp = dynamic_cast<WindowImp*>(defaultView.self());
     if (!imp)
         return;
-    bool canScroll = imp->getView()->canScroll();
+    ViewCSSImp* view = imp->getView();
 
     events::MouseEvent mouse = interface_cast<events::MouseEvent>(event);
+    unsigned short buttons = mouse.getButtons();
+
     switch (mouse.getButton()) {
+    case 0:
+        moveX = mouse.getScreenX();
+        moveY = mouse.getScreenY();
+        break;
     case 3:
-        if (canScroll)
-            defaultView.scrollBy(0, -16);
+        view->setZoom(view->getZoom() - 0.1f);
         break;
     case 4:
-        if (canScroll)
-            defaultView.scrollBy(0, 16);
-        break;
-    case 5:
-        if (canScroll)
-            defaultView.scrollBy(-64, 0);
-        break;
-    case 6:
-        if (canScroll)
-            defaultView.scrollBy(64, 0);
+        view->setZoom(view->getZoom() + 0.1f);
         break;
     case 7:
         defaultView.getHistory().back();
@@ -134,6 +132,27 @@ void DocumentWindow::handleClick(events::Event event)
     default:
         break;
     }
+}
+
+void DocumentWindow::handleMouseMove(events::Event event)
+{
+    html::Window defaultView = document.getDefaultView();
+    if (!defaultView)
+        return;
+    WindowImp* imp = dynamic_cast<WindowImp*>(defaultView.self());
+    if (!imp)
+        return;
+    ViewCSSImp* view = imp->getView();
+    bool canScroll = view->canScroll();
+
+    events::MouseEvent mouse = interface_cast<events::MouseEvent>(event);
+    unsigned short buttons = mouse.getButtons();
+
+    if ((buttons & 1) && canScroll)
+        defaultView.scrollBy(moveX - mouse.getScreenX(), moveY - mouse.getScreenY());
+
+    moveX = mouse.getScreenX();
+    moveY = mouse.getScreenY();
 }
 
 }}}}  // org::w3c::dom::bootstrap

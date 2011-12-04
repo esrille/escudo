@@ -43,6 +43,7 @@ ViewCSSImp::ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyle
     stackingContexts(0),
     overflow(CSSOverflowValueImp::Auto),
     scrollWidth(0.0f),
+    zoom(1.0f),
     hovered(0),
     dpi(96),
     mutationListener(boost::bind(&ViewCSSImp::handleMutation, this, _1))

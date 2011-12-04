@@ -74,6 +74,7 @@ class ViewCSSImp
     unsigned overflow;
 
     float scrollWidth;
+    float zoom;
 
     Node hovered;
 
@@ -251,6 +252,17 @@ public:
     bool canScroll() const {
         // Note the 'visible' value is interpreted as 'auto' in the viewport.
         return overflow != CSSOverflowValueImp::Hidden;
+    }
+
+    float getZoom() const {
+        return zoom;
+    }
+    void setZoom(float value) {
+        if (value < 0.01f || 100.0f < value || zoom == value)
+            return;
+        zoom = value;
+        if (boxTree)
+            boxTree->setFlags(2);
     }
 
     CSSStyleDeclarationImp* getStyle(Element elt, Nullable<std::u16string> pseudoElt = Nullable<std::u16string>());

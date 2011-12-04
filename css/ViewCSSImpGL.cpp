@@ -52,6 +52,7 @@ FontTexture* ViewCSSImp::selectFont(CSSStyleDeclarationImp* style)
 void ViewCSSImp::render()
 {
     glPushMatrix();
+    glScalef(zoom, zoom, zoom);
     glTranslatef(-window->getScrollX(), -window->getScrollY(), 0.0f);
     if (stackingContexts)
         stackingContexts->render(this);
