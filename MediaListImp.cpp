@@ -25,8 +25,9 @@ using namespace stylesheets;
 
 namespace {
 
+const char16_t* const allType = u"all";
+
 const char16_t* const mediaTypes[] = {
-    u"all",
     u"braille",
     u"embossed",
     u"handheld",
@@ -40,16 +41,17 @@ const char16_t* const mediaTypes[] = {
 
 const size_t mediaTypesCount = sizeof mediaTypes / sizeof mediaTypes[0];
 
-int getMediaTypeNumber(std::u16string& media)
+unsigned getMediaTypeBits(std::u16string& media)
 {
     assert(mediaTypesCount <= 32);
-    int n = 0;
     toLower(media);
-    for (auto i = mediaTypes; i < mediaTypes + mediaTypesCount; ++i, ++n) {
-        if (media.compare(*i) == 0)
-            return n;
+    if (media.compare(allType) == 0)
+        return MediaListImp::All;
+    for (int i = 0; i < mediaTypesCount; ++i) {
+        if (media.compare(mediaTypes[i]) == 0)
+            return 1u << i;
     }
-    return -1;
+    return 0;
 }
 
 }
@@ -57,11 +59,12 @@ int getMediaTypeNumber(std::u16string& media)
 // MediaList
 std::u16string MediaListImp::getMediaText()
 {
+    if (types == All)
+        return allType;
     std::u16string text;
     bool first = true;
-
-    for (size_t i = 0; i < mediaTypesCount; ++i) {
-        if (types.test(i)) {
+    for (int i = 0; i < mediaTypesCount; ++i) {
+        if (types & (1u << i)) {
             if (first)
                 first = false;
             else
@@ -79,15 +82,17 @@ void MediaListImp::setMediaText(std::u16string mediaText)
 
 unsigned int MediaListImp::getLength()
 {
-    return types.count();
+    return (types == All) ? 1 : __builtin_popcount(types);
 }
 
 std::u16string MediaListImp::item(unsigned int index)
 {
     if (getLength() <= index)
         return u"";
+    if (types == All)
+        return allType;
     for (size_t i = 0; i < mediaTypesCount; ++i) {
-        if (types.test(i)) {
+        if (types & (1u << i)) {
             if (index == 0)
                 return mediaTypes[i];
             --index;
@@ -98,19 +103,16 @@ std::u16string MediaListImp::item(unsigned int index)
 
 void MediaListImp::appendMedium(std::u16string medium)
 {
-    int n = getMediaTypeNumber(medium);
-    if (0 <= n)
-        types.set(n, true);
+    types |= getMediaTypeBits(medium);
 }
 
 void MediaListImp::deleteMedium(std::u16string medium)
 {
-    int n = getMediaTypeNumber(medium);
-    if (0 <= n)
-        types.set(n, false);
+    types &= ~getMediaTypeBits(medium);
 }
 
-MediaListImp::MediaListImp()
+MediaListImp::MediaListImp() :
+    types(0)
 {
 }
 

@@ -24,10 +24,12 @@
 #include <new>
 #include <boost/bind.hpp>
 
+#include "CSSMediaRuleImp.h"
 #include "CSSStyleRuleImp.h"
 #include "CSSStyleDeclarationImp.h"
 #include "CSSStyleSheetImp.h"
 #include "DocumentImp.h"
+#include "MediaListImp.h"
 
 #include "Box.h"
 #include "Table.h"
@@ -97,6 +99,10 @@ void ViewCSSImp::findDeclarations(DeclarationSet& set, Element element, css::CSS
                 pseudoElementID = pseudo->getID();
             PrioritizedDeclaration decl(imp->getLastSpecificity(), dynamic_cast<CSSStyleDeclarationImp*>(imp->getStyle().self()), pseudoElementID);
             set.insert(decl);
+        } else if (CSSMediaRuleImp* imp = dynamic_cast<CSSMediaRuleImp*>(rule.self())) {
+            MediaListImp* mediaList = dynamic_cast<MediaListImp*>(imp->getMedia().self());
+            if (mediaList ->hasMedium(MediaListImp::Screen))  // TODO: support other mediums, too.
+                findDeclarations(set, element, imp->getCssRules());
         }
     }
 }

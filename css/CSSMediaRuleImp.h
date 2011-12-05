@@ -35,12 +35,11 @@ class CSSMediaRuleImp : public ObjectMixin<CSSMediaRuleImp, CSSRuleImp>
     Retained<MediaListImp> mediaList;
 
 public:
-    void append(css::CSSRule rule) {
-        ruleList.push_back(rule);
-    }
+    void append(css::CSSRule rule);
 
     // CSSRule
     virtual unsigned short getType();
+    virtual std::u16string getCssText();
 
     // CSSMediaRule
     stylesheets::MediaList getMedia();

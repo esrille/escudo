@@ -21,10 +21,23 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 using namespace css;
 
+void CSSMediaRuleImp::append(css::CSSRule rule)
+{
+    ruleList.push_back(rule);
+}
+
 // CSSRule
 unsigned short CSSMediaRuleImp::getType()
 {
     return CSSRule::MEDIA_RULE;
+}
+
+std::u16string CSSMediaRuleImp::getCssText()
+{
+    std::u16string text = u"@media " + mediaList.getMediaText() + u" {";
+    for (auto i = ruleList.begin(); i != ruleList.end(); ++i)
+        text += (*i).getCssText();
+    return text += u"}";
 }
 
 // CSSMediaRule

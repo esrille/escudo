@@ -20,25 +20,42 @@
 #include <Object.h>
 #include <org/w3c/dom/stylesheets/MediaList.h>
 
-#include <bitset>
-
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class MediaListImp : public ObjectMixin<MediaListImp>
 {
+public:
+    enum {
+        All = 0x1ff,
+
+        Braille = 0x1,
+        Embossed = 0x2,
+        Handheld = 0x4,
+        Print = 0x8,
+        Projection = 0x10,
+        Screen = 0x20,
+        Speech = 0x40,
+        Tty = 0x80,
+        Tv = 0x100,
+    };
+
 private:
-    std::bitset<32> types;
+    unsigned types;
 
 public:
     MediaListImp();
 
+    bool hasMedium(unsigned bit) {
+        return types & bit;
+    }
+
     // MediaList
-    virtual std::u16string getMediaText();
-    virtual void setMediaText(std::u16string mediaText);
-    virtual unsigned int getLength();
-    virtual std::u16string item(unsigned int index);
-    virtual void appendMedium(std::u16string medium);
-    virtual void deleteMedium(std::u16string medium);
+    std::u16string getMediaText();
+    void setMediaText(std::u16string mediaText);
+    unsigned int getLength();
+    std::u16string item(unsigned int index);
+    void appendMedium(std::u16string medium);
+    void deleteMedium(std::u16string medium);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {
