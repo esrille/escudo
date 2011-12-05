@@ -49,6 +49,8 @@ bool isCollapsingSpace(unsigned value) {
     }
 }
 
+const bool USE_HINTING = false;
+
 }
 //
 // FontManager
@@ -161,11 +163,16 @@ FontTexture::FontTexture(FontFace* face, unsigned int point) try :
         if (TT_OS2_* os2 = static_cast<TT_OS2_*>(FT_Get_Sfnt_Table(face->face, ft_sfnt_os2))) {
             lineGap = os2->usWinAscent + os2->usWinDescent - face->face->units_per_EM;
             xHeight = os2->sxHeight;
-
             float b = (point * 96.0f) / 72.0f * 64.0f;
             b *= static_cast<float>(ascender) / (ascender - descender);
-            b /= 64.0f;
-            bearingGap = (roundf(b) - b) * 64.0f;
+            if (USE_HINTING) {
+                b /= 64.0f;
+                bearingGap = (roundf(b) - b) * 64.0f;
+            } else {
+                bearingGap = ceilf(b) - b;
+                if (0.0f < bearingGap)
+                    bearingGap -= 64.0f;
+            }
         }
     }
 
@@ -211,7 +218,7 @@ uint8_t* FontTexture::getImage(FontGlyph* glyph)
 bool FontTexture::storeGlyph(FontGlyph* glyph, FT_UInt glyphIndex)
 {
     // load glyph image into the slot (erase previous one)
-    FT_Error error = FT_Load_Glyph(face->face, glyphIndex, FT_LOAD_NO_HINTING);
+    FT_Error error = FT_Load_Glyph(face->face, glyphIndex, USE_HINTING ? FT_LOAD_DEFAULT : FT_LOAD_NO_HINTING);
     if (error)
         return false;
 
@@ -234,7 +241,7 @@ bool FontTexture::storeGlyph(FontGlyph* glyph, FT_UInt glyphIndex)
     for (int i = 1; i < Sizes; ++i) {
         FT_Activate_Size(sizes[i]);
         // load glyph image into the slot (erase previous one)
-        FT_Error error = FT_Load_Glyph(face->face, glyphIndex, FT_LOAD_NO_HINTING);
+        FT_Error error = FT_Load_Glyph(face->face, glyphIndex, USE_HINTING ? FT_LOAD_DEFAULT : FT_LOAD_NO_HINTING);
         if (error)
             return false;
         // convert to an anti-aliased bitmap
