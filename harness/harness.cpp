@@ -34,7 +34,8 @@
 enum {
     INTERACTIVE,
     HEADLESS,
-    REPORT
+    REPORT,
+    UPDATE
 };
 
 int processOutput(std::istream& stream, std::string& result)
@@ -141,6 +142,9 @@ int main(int argc, char* argv[])
         case 'r':
             mode = REPORT;
             break;
+        case 'u':
+            mode = UPDATE;
+            break;
         default:
             break;
         }
@@ -194,21 +198,29 @@ int main(int argc, char* argv[])
         if (url.empty())
             continue;
 
-        pid_t pid = -1;
-        std::string output;
-        if (mode != REPORT)
-            pid = runTest(argc - argi, args, url, output);
-
         std::string path(url);
         size_t pos = path.rfind('.');
         if (pos != std::string::npos) {
             path.erase(pos);
             path += ".log";
         }
-
         std::string evaluation;
         std::string log;
         loadLog(path, evaluation, log);
+
+        pid_t pid = -1;
+        std::string output;
+        switch (mode) {
+        case REPORT:
+            break;
+        case UPDATE:
+            if (evaluation[0] == '?')
+                break;
+            // FALL THROUGH
+        default:
+            pid = runTest(argc - argi, args, url, output);
+            break;
+        }
 
         if (0 < pid && output.empty())
             result = "fatal";
@@ -259,6 +271,15 @@ int main(int argc, char* argv[])
         } else if (mode == REPORT) {
             result = evaluation;
             std::cout << url << '\t' << result << '\n';
+        } else if (mode == UPDATE) {
+            result = evaluation;
+            if (result[0] != '?') {
+                if (!saveLog(path, url, result, output)) {
+                    std::cerr << "error: failed to open the report file\n";
+                    return EXIT_FAILURE;
+                }
+                std::cout << url << '\t' << result << '\n';
+            }
         }
 
         if (0 < pid)
