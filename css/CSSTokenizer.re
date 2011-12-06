@@ -84,7 +84,7 @@ start:
 
     [ \t\r\n\f]+        {return S;}
 
-    "/*" [^*]* "*"+ ([^/][^*]* "*"+)* "/"   {goto start;}
+    "/*" [^*]* "*"+ ([^/*][^*]* "*"+)* "/"   {goto start;}
 
     "<!--"              {return CDO;}
     "-->"               {return CDC;}
