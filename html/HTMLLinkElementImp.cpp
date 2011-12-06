@@ -78,7 +78,7 @@ void HTMLLinkElementImp::notify()
         boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request->getContentDescriptor(), false);
 #endif
         CSSParser parser;
-        CSSInputStream cssStream(stream, "utf-8");  // TODO detect encode
+        CSSInputStream cssStream(stream);  // TODO detect encode
         styleSheet = parser.parse(cssStream);
         document->addStyleSheet(styleSheet);
     }

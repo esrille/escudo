@@ -23,6 +23,12 @@
 
 #include <algorithm>
 
+namespace {
+
+const char* const CSSDefaultEncoding = "utf-8";
+
+}
+
 CSSInputStream::CSSInputStream(std::istream& stream, const std::string optionalEncoding) :
     U16InputStream(stream, optionalEncoding)
 {
@@ -38,7 +44,7 @@ void CSSInputStream::detect(const char* p)
     encoding = "";
 
     if (strncmp(p, "@charset", 8) != 0) {
-        encoding = DefaultEncoding;
+        encoding = CSSDefaultEncoding;
         return;
     }
     p = skipSpace(p + 8);
@@ -61,5 +67,5 @@ void CSSInputStream::detect(const char* p)
         }
     }
     if (encoding.length() == 0)
-        encoding = DefaultEncoding;
+        encoding = CSSDefaultEncoding;
 }
