@@ -1109,6 +1109,8 @@ void BlockLevelBox::moveUpCollapsedThroughMargins()
     BlockLevelBox* curr = this;
     BlockLevelBox* prev = dynamic_cast<BlockLevelBox*>(curr->getPreviousSibling());
     if (hasClearance()) {
+        if (!prev)
+            return;
         from = curr = prev;
         prev = dynamic_cast<BlockLevelBox*>(curr->getPreviousSibling());
         if (from->hasClearance() || !from->isCollapsedThrough())
@@ -1698,34 +1700,28 @@ void LineBox::fit(float w)
 {
     assert(parentBox);
     assert(dynamic_cast<BlockLevelBox*>(parentBox));
+    float leftover = w - shrinkTo();
     switch (dynamic_cast<BlockLevelBox*>(parentBox)->getTextAlign()) {
     case CSSTextAlignValueImp::Left:
+    case CSSTextAlignValueImp::Default: // TODO: rtl
+        leftGap = 0.0f;
+        rightGap = leftover;
         break;
     case CSSTextAlignValueImp::Right:
-        offsetH = w - Box::shrinkTo();
+        leftGap = leftover;
+        rightGap = 0.0f;
         break;
     case CSSTextAlignValueImp::Center:
-        offsetH = (w - Box::shrinkTo()) / 2.0f;
+        leftGap = rightGap = leftover / 2.0f;
         break;
     default:  // TODO: support Justify and Default
         break;
-    }
-
-    // Adjust the gap between the last inline box and the leftmost float at the right side.
-    if (rightBox) {
-        gap = w - Box::shrinkTo();
-        for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
-            if (child->isFloat()) {
-                BlockLevelBox* box = dynamic_cast<BlockLevelBox*>(child);
-                assert(box);
-                gap -= box->getEffectiveTotalWidth();
-            }
-        }
     }
 }
 
 void LineBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip)
 {
+
     left += offsetH;
     top += offsetV + getClearance();
     x = left;
@@ -1734,18 +1730,25 @@ void LineBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* 
     left += getBlankLeft();  // Node floats are placed inside margins.
     top += getBlankTop();
     float next = 0.0f;
+    bool usedLeftGap = false;
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
+        BlockLevelBox* floatingBox = 0;
         next = left;
         if (!child->isAbsolutelyPositioned()) {
             if (!child->isFloat())
                 next += child->getTotalWidth();
             else {
-                BlockLevelBox* box = dynamic_cast<BlockLevelBox*>(child);
-                assert(box);
-                if (box == rightBox)
-                    left += gap;
-                next = left + box->getEffectiveTotalWidth();
+                floatingBox = dynamic_cast<BlockLevelBox*>(child);
+                assert(floatingBox);
+                if (floatingBox == rightBox)
+                    left += rightGap;
+                next = left + floatingBox->getEffectiveTotalWidth();
             }
+        }
+        if (!usedLeftGap && (!floatingBox || floatingBox == rightBox)) {
+            left += leftGap;
+            next += leftGap;
+            usedLeftGap = true;
         }
         child->resolveXY(view, left, top, clip);
         left = next;

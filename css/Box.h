@@ -661,7 +661,8 @@ class LineBox : public Box
     float underlinePosition;
     float underlineThickness;
 
-    float gap;  // the gap between the last inline box and the 1st right floating box
+    float leftGap;    // the gap between the first inline box and the last left floating box
+    float rightGap;   // the gap between the last inline box and the 1st right floating box
     BlockLevelBox* rightBox;  // the 1st right floating box
 
 public:
@@ -670,7 +671,8 @@ public:
         baseline(0.0f),
         underlinePosition(0.0f),
         underlineThickness(1.0f),
-        gap(0.0f),
+        leftGap(0.0f),
+        rightGap(0.0f),
         rightBox(0)
     {
         setStyle(style);

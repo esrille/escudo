@@ -491,6 +491,8 @@ void TableWrapperBox::computeTableBorders()
 
 void TableWrapperBox::layOutFixed(ViewCSSImp* view, const ContainingBlock* containingBlock, bool collapsingModel)
 {
+    if (xWidth == 0 || yHeight == 0)
+        return;
     float hs = 0.0f;
     if (!collapsingModel) {
         hs = style->borderSpacing.getHorizontalSpacing();
