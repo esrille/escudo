@@ -69,6 +69,8 @@ void DocumentWindow::activate(WindowImp* proxy)
 void DocumentWindow::preload(const std::u16string& base, const std::u16string& urlString)
 {
     URL url(base, urlString);
+    if (url.isEmpty())
+        return;
 
     for (auto i = cache.begin(); i != cache.end(); ++i) {
         HttpRequest* request = *i;

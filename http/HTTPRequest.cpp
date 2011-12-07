@@ -99,6 +99,10 @@ void HttpRequest::constructResponseFromCache()
 
 void HttpRequest::send()
 {
+    if (request.getURL().isEmpty()) {
+        abort();
+        return;
+    }
     cache = HttpCacheManager::getInstance().send(this);
     if (!cache || cache->isBusy())
         return;
