@@ -27,6 +27,17 @@ namespace bootstrap
 class HTMLTableCellElementImp : public ObjectMixin<HTMLTableCellElementImp, HTMLElementImp>
 {
 public:
+    HTMLTableCellElementImp(DocumentImp* ownerDocument, const std::u16string& localName) :
+        ObjectMixin(ownerDocument, localName)
+    {
+    }
+    HTMLTableCellElementImp(HTMLTableCellElementImp* org, bool deep) :
+        ObjectMixin(org, deep)
+    {
+    }
+
+    virtual void eval();
+
     // HTMLTableCellElement
     unsigned int getColSpan();
     void setColSpan(unsigned int colSpan);
@@ -64,12 +75,6 @@ public:
     static const char* const getMetaData()
     {
         return html::HTMLTableCellElement::getMetaData();
-    }
-    HTMLTableCellElementImp(DocumentImp* ownerDocument, const std::u16string& localName) :
-        ObjectMixin(ownerDocument, localName) {
-    }
-    HTMLTableCellElementImp(HTMLTableCellElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
     }
 };
 
