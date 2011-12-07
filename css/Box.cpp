@@ -968,7 +968,7 @@ bool BlockLevelBox::isCollapsableInside() const
 
 bool BlockLevelBox::isCollapsableOutside() const
 {
-    if (isFloat() || isAbsolutelyPositioned() || !getParentBox())
+    if (!isInFlow())
         return false;
     if (!isAnonymous() && style) {
         if (style->isInlineBlock() || style->display.getValue() == CSSDisplayValueImp::TableCell)
@@ -997,7 +997,30 @@ bool BlockLevelBox::isCollapsedThrough() const
 
 float BlockLevelBox::collapseMarginTop(FormattingContext* context)
 {
-    assert(isCollapsableOutside());
+    if (!isCollapsableOutside()) {
+        assert(!isAnonymous());
+        if (isFloat() || isAbsolutelyPositioned() || !getParentBox())
+            return NAN;
+        assert(context);
+        BlockLevelBox* prev = dynamic_cast<BlockLevelBox*>(getPreviousSibling());
+        if (prev && prev->isCollapsableOutside())
+            context->collapseMargins(prev->marginBottom);
+        context->fixMargin();
+
+        float clearance = context->clear(style->clear.getValue());
+        if (clearance == 0.0f)
+            clearance = NAN;
+        else {
+            if (clearance < marginTop)
+                clearance = marginTop;
+            clearance -= marginTop;
+            context->collapseMargins(marginTop);
+            context->setClearance();
+        }
+        return NAN;
+    }
+
+    float original = marginTop;
     float before = NAN;
     if (BlockLevelBox* parent = dynamic_cast<BlockLevelBox*>(getParentBox())) {
         if (parent->getFirstChild() == this) {
@@ -1017,6 +1040,38 @@ float BlockLevelBox::collapseMarginTop(FormattingContext* context)
         }
     }
     marginTop = context->collapseMargins(marginTop);
+
+    if (isAnonymous())
+        return before;
+
+    clearance = context->clear(style->clear.getValue());
+    BlockLevelBox* prev = dynamic_cast<BlockLevelBox*>(getPreviousSibling());
+    if (clearance == 0.0f)
+        clearance = NAN;
+    else if (prev && prev->isCollapsedThrough()) {
+        if (clearance < marginTop)
+            clearance = marginTop;
+        prev->marginBottom = before;
+        clearance -= original + before;
+        marginTop = original;
+        before = NAN;
+        context->collapseMargins(marginTop);
+        context->setClearance();
+    } else if (clearance < marginTop) {
+        clearance = NAN;
+        before = NAN;
+        context->collapseMargins(marginTop);
+    } else {
+        if (undoCollapseMarginTop(context, before))
+            clearance -= original + before;
+        else
+            clearance -= original;
+        marginTop = original;
+        before = NAN;
+        context->collapseMargins(marginTop);
+        context->setClearance();
+    }
+
     return before;
 }
 
@@ -1154,26 +1209,8 @@ void BlockLevelBox::layOutChildren(ViewCSSImp* view, FormattingContext* context)
     Box* next;
     for (Box* child = getFirstChild(); child; child = next) {
         next = child->getNextSibling();
-        if (!child->layOut(view, context)) {
+        if (!child->layOut(view, context))
             removeChild(child);
-            continue;
-        }
-        if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(child)) {
-            if (!block->isCollapsableOutside()) {
-                assert(!child->isAnonymous());
-
-                // TODO: Verify what if child is the first one, etc.
-                Box* prev = child->getPreviousSibling();
-                if (prev && 0.0f != context->getMargin())
-                    prev->marginBottom = context->getMargin();
-
-                context->fixMargin();
-                float clearance = context->clear(child->style->clear.getValue());
-                if (child->marginTop < clearance)
-                    child->marginTop = clearance;
-                context->updateRemainingHeight(child->getTotalHeight() - clearance);
-            }
-        }
     }
 }
 
@@ -1228,42 +1265,8 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
 
     textAlign = style->textAlign.getValue();
 
-    float before = NAN;
-
-    if (isCollapsableOutside()) {
-        float original = marginTop;
-        before = collapseMarginTop(context);
-        if (!isAnonymous()) {
-            clearance = context->clear(style->clear.getValue());
-            BlockLevelBox* prev = dynamic_cast<BlockLevelBox*>(getPreviousSibling());
-            if (clearance == 0.0f)
-                clearance = NAN;
-            else if (prev && prev->isCollapsedThrough()) {
-                if (clearance < marginTop)
-                    clearance = marginTop;
-                prev->marginBottom = before;
-                clearance -= original + before;
-                marginTop = original;
-                before = NAN;
-                context->collapseMargins(marginTop);
-                context->setClearance();
-            } else if (clearance < marginTop) {
-                clearance = NAN;
-                before = NAN;
-                context->collapseMargins(marginTop);
-            } else {
-                if (undoCollapseMarginTop(context, before))
-                    clearance -= original + before;
-                else
-                    clearance -= original;
-                marginTop = original;
-                before = NAN;
-                context->collapseMargins(marginTop);
-                context->setClearance();
-            }
-        }
-    }
-    if (!isFlowRoot() && 0.0f < borderTop + paddingTop)
+    float before = collapseMarginTop(context);
+    if (isInFlow() && 0.0f < borderTop + paddingTop)
         context->updateRemainingHeight(borderTop + paddingTop);
 
     FormattingContext* parentContext = context;
@@ -1323,13 +1326,17 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         backgroundTop = style->backgroundPosition.getTopPx();
     }
 
-    if (parentContext && parentContext != context && isCollapsableOutside()) {
-        parentContext->inheritMarginContext(context);
+    if (parentContext && parentContext != context) {
+        if (isCollapsableOutside()) {
+            parentContext->inheritMarginContext(context);
+            if (0.0f < height)
+                parentContext->updateRemainingHeight(height);
+        }
         context = parentContext;
     }
 
     adjustCollapsedThroughMargins(context);
-    if (!isFlowRoot() && 0.0f < paddingBottom + borderBottom)
+    if (isInFlow() && 0.0f < paddingBottom + borderBottom)
         context->updateRemainingHeight(paddingBottom + borderBottom);
 
     return true;

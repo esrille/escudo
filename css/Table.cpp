@@ -577,8 +577,15 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
     resolveMargin(view, containingBlock, 0.0f);
     stackingContext = style->getStackingContext();
 
+    collapseMarginTop(context);
+    FormattingContext* parentContext = context;
     context = updateFormattingContext(context);
-
+    if (isCollapsableOutside()) {
+        if (context != parentContext) {
+            context->inheritMarginContext(parentContext);
+            context->fixMargin();
+        }
+    }
     if (tableBox) {
         tableBox->setStyle(style.get());
         tableBox->resolveBackground(view);
@@ -735,15 +742,17 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
     height = 0.0f;
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
         height += child->getTotalHeight() + child->getClearance();
-
-    collapseMarginBottom(context);
     if (!isAnonymous()) {
         width = std::max(width, style->minWidth.getPx());
         height = std::max(height, style->minHeight.getPx());
     }
 
-    adjustCollapsedThroughMargins(context);
-
+    if (parentContext && parentContext != context) {
+        if (isCollapsableOutside())
+            parentContext->inheritMarginContext(context);
+        context = parentContext;
+        context->updateRemainingHeight(height);
+    }
     return true;
 }
 

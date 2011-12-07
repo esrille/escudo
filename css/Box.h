@@ -424,6 +424,11 @@ public:
     }
     bool isFlowOf(const Box* floatRoot) const;
 
+    bool isInFlow() const {
+        // cf. 9.3 Positioning schemes
+        return !isFloat() && !isAbsolutelyPositioned() && getParentBox();
+    }
+
     virtual bool isAbsolutelyPositioned() const {
         return false;
     }
