@@ -1686,8 +1686,13 @@ bool LineBox::layOut(ViewCSSImp* view, FormattingContext* context)
             continue;
         box->resolveOffset(view);
         if (InlineLevelBox* inlineBox = dynamic_cast<InlineLevelBox*>(box)) {
-            if (CSSStyleDeclarationImp* style = box->getStyle())
+            CSSStyleDeclarationImp* style = box->getStyle();
+            if (style && style->display.isInlineLevel())
                 inlineBox->offsetV += style->verticalAlign.getOffset(this, inlineBox);
+            else {
+                float leading = inlineBox->getLeading() / 2.0f;
+                inlineBox->offsetV += getBaseline() - (leading + inlineBox->getBaseline());
+            }
         }
     }
     return true;

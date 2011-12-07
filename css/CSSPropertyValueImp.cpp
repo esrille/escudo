@@ -1445,7 +1445,7 @@ void CSSVerticalAlignValueImp::resolve(ViewCSSImp* view, CSSStyleDeclarationImp*
 
 float CSSVerticalAlignValueImp::getOffset(LineBox* line, InlineLevelBox* text) const
 {
-    float leading = text->getLeading() / 2;
+    float leading = text->getLeading() / 2.0f;
     // TODO: Check if there is a parent inline element firstly.
     switch (value.getIndex()) {
     case Top:
