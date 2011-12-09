@@ -79,7 +79,7 @@ class FormattingContext
     std::list<BlockLevelBox*> right;  // active float boxes at the right side
     std::list<Node> floatNodes;       // float boxes not layed out yet
 
-    std::list<BlockLevelBox*> floatList;  // list of floating boxes just inserted inside the same block box.
+    float usedMargin;
 
     // Adjoining margins
     float positiveMargin;
@@ -106,6 +106,7 @@ public:
     void nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, unsigned clearValue = 0);
     void tryAddFloat(ViewCSSImp* view);
     void adjustRemainingHeight(float height);
+    void useMargin();
     void updateRemainingHeight(float height);
     float clear(unsigned value);
 
@@ -116,6 +117,7 @@ public:
         return positiveMargin + negativeMargin;
     }
     void clearMargin() {
+        usedMargin = 0.0f;
         positiveMargin = negativeMargin = 0.0f;
         previousMargin = NAN;
         withClearance = false;
@@ -134,8 +136,6 @@ public:
     void setClearance() {
         withClearance = true;
     }
-
-    void adjustRemainingFloatingBoxes(float topBorderEdge);
 };
 
 class BoxImage

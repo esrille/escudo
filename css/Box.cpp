@@ -833,6 +833,9 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view, Node node, BlockLevelBox* a
 // Generate line boxes
 bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, float originalMargin)
 {
+    // Use the positive margin stored in context to consume the remaining height of floating boxes.
+    context->useMargin();
+
     assert(!hasChildBoxes());
     bool collapsed = true;
     for (auto i = inlines.begin(); i != inlines.end(); ++i) {
@@ -1153,7 +1156,6 @@ void BlockLevelBox::adjustCollapsedThroughMargins(FormattingContext* context)
         context->fixMargin();
         moveUpCollapsedThroughMargins();
     }
-    context->adjustRemainingFloatingBoxes(topBorderEdge);
 }
 
 void BlockLevelBox::moveUpCollapsedThroughMargins()
