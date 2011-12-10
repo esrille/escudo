@@ -875,35 +875,36 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
         }
     }
 
-    if (context->lineBox) {
-        // Layout remaining floats in context
-        float clearance = 0.0f;
-        while (!context->floatNodes.empty()) {
-            LineBox* currentLine = context->lineBox;
-            float saved = 0.0f;
-            if (clearance != 0.0f) {
-                Box* prevLine = currentLine->getPreviousSibling();
-                saved = prevLine->marginBottom;
-                prevLine->marginBottom = 0.0f;
-            }
-            BlockLevelBox* floatBox = view->getFloatBox(context->floatNodes.front());
-            if (unsigned clear = floatBox->style->clear.getValue())
-                context->nextLine(view, this, clear);
-            else {
-                clearance = context->shiftDown();
-                if (0.0f < clearance) {
-                    clearance -= currentLine->height;
-                    if (clearance < 0.0f)
-                        clearance = 0.0f;
-                }
-                currentLine->marginBottom += clearance;
-                context->nextLine(view, this);
-            }
+    // Layout remaining floats in context
+    float clearance = 0.0f;
+    while (!context->floatNodes.empty()) {
+        if (!context->lineBox)
             context->addLineBox(view, this);
-            currentLine->marginTop += saved;
+        LineBox* currentLine = context->lineBox;
+        float saved = 0.0f;
+        if (clearance != 0.0f) {
+            Box* prevLine = currentLine->getPreviousSibling();
+            saved = prevLine->marginBottom;
+            prevLine->marginBottom = 0.0f;
         }
-        context->nextLine(view, this);
+        BlockLevelBox* floatBox = view->getFloatBox(context->floatNodes.front());
+        if (unsigned clear = floatBox->style->clear.getValue())
+            context->nextLine(view, this, clear);
+        else {
+            clearance = context->shiftDown();
+            if (0.0f < clearance) {
+                clearance -= currentLine->height;
+                if (clearance < 0.0f)
+                    clearance = 0.0f;
+            }
+            currentLine->marginBottom += clearance;
+            context->nextLine(view, this);
+        }
+        context->addLineBox(view, this);
+        currentLine->marginTop += saved;
     }
+    if (context->lineBox)
+        context->nextLine(view, this);
 
     if (collapsed && isAnonymous()) {
         undoCollapseMarginTop(context, originalMargin);
@@ -1093,6 +1094,7 @@ void BlockLevelBox::collapseMarginBottom(FormattingContext* context)
             } else {
                 last->marginBottom = lm;
                 context->fixMargin();
+                // TODO: The following moveUpCollapsedThroughMargins can actually introduce a new clearance; cf. clear-float-003.
                 if (!last->hasClearance())
                     last->moveUpCollapsedThroughMargins();
             }
@@ -1150,12 +1152,22 @@ void BlockLevelBox::adjustCollapsedThroughMargins(FormattingContext* context)
 {
     if (isCollapsedThrough()) {
         topBorderEdge = marginTop;
+
+        if (BlockLevelBox* parent = dynamic_cast<BlockLevelBox*>(getParentBox())) {
+            if (parent->getFirstChild() == this) {
+                if (parent->isCollapsableInside() && parent->borderTop == 0 && parent->paddingTop == 0 && !hasClearance())
+                    topBorderEdge = 0.0f;
+            }
+        }
+
+        context->usedMargin = 0.0f;
         if (hasClearance())
             moveUpCollapsedThroughMargins();
     } else if (isCollapsableOutside()) {
         context->fixMargin();
         moveUpCollapsedThroughMargins();
     }
+    context->adjustRemainingFloatingBoxes(topBorderEdge);
 }
 
 void BlockLevelBox::moveUpCollapsedThroughMargins()
@@ -1172,8 +1184,8 @@ void BlockLevelBox::moveUpCollapsedThroughMargins()
         prev = dynamic_cast<BlockLevelBox*>(curr->getPreviousSibling());
         if (from->hasClearance() || !from->isCollapsedThrough())
             return;
-    }
-    if (curr->isCollapsedThrough()) {
+        m = curr->marginTop;
+    } else if (curr->isCollapsedThrough()) {
         assert(curr->marginTop == 0.0f);
         m = curr->marginBottom;
         curr->topBorderEdge -= m;
@@ -1195,11 +1207,11 @@ void BlockLevelBox::moveUpCollapsedThroughMargins()
         assert(curr->marginTop == 0.0f);
         assert(curr->marginBottom == 0.0f);
         curr->marginTop = m;
-        if (!from->isCollapsedThrough())
+        if (!from->isCollapsedThrough() || hasClearance())
             from->marginTop = 0.0f;
         else
             from->marginBottom = 0.0f;
-    } else if (curr->isCollapsedThrough()) {
+    } else if (curr->isCollapsedThrough() && !hasClearance()) {
         curr->marginTop = m;
         curr->marginBottom = 0.0f;
         curr->topBorderEdge = 0.0f;

@@ -129,9 +129,10 @@ void FormattingContext::adjustRemainingHeight(float h)
 
 void FormattingContext::useMargin()
 {
-    if (usedMargin == 0.0f && 0.0f < positiveMargin) {
-        usedMargin = positiveMargin;
-        adjustRemainingHeight(usedMargin);
+    float m = getMargin();
+    if (usedMargin < m) {
+        adjustRemainingHeight(m - usedMargin);
+        usedMargin = m;
     }
 }
 
@@ -260,6 +261,7 @@ void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, uns
         if (!floatBox->inserted) {
             floatBox->inserted = true;
             lineBox->insertBefore(floatBox, lineBox->getFirstChild());
+            floatList.push_back(floatBox);
         }
     }
     for (auto i = right.begin(); i != right.end(); ++i) {
@@ -270,6 +272,7 @@ void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, uns
             if (!lineBox->rightBox)
                 lineBox->rightBox = floatBox;
             lineBox->appendChild(*i);
+            floatList.push_back(floatBox);
         }
     }
     float height = lineBox->getTotalHeight();
@@ -330,7 +333,8 @@ float FormattingContext::clear(unsigned value)
         h = 0.0f;
     else {
         // Note there could be a floating box whose remainingHeight is zero.
-        updateRemainingHeight(h - getMargin());
+        adjustRemainingHeight(h);
+        clearMargin();
     }
     assert(!(value & 1) || left.empty());
     assert(!(value & 2) || right.empty());
@@ -364,6 +368,15 @@ float FormattingContext::undoCollapseMargins()
 float FormattingContext::fixMargin()
 {
     updateRemainingHeight(0.0f);
+}
+
+void FormattingContext::adjustRemainingFloatingBoxes(float topBorderEdge)
+{
+    if (!isnan(topBorderEdge) && topBorderEdge != 0.0f) {
+        for (auto i = floatList.begin(); i != floatList.end(); ++i)
+            (*i)->remainingHeight += topBorderEdge;
+    }
+    floatList.clear();
 }
 
 }}}}  // org::w3c::dom::bootstrap
