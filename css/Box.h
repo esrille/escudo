@@ -569,7 +569,7 @@ protected:
     bool undoCollapseMarginTop(FormattingContext* context, float before);
     void collapseMarginBottom(FormattingContext* context);
     void adjustCollapsedThroughMargins(FormattingContext* context);
-    void moveUpCollapsedThroughMargins();
+    void moveUpCollapsedThroughMargins(FormattingContext* context);
 
 public:
     BlockLevelBox(Node node = 0, CSSStyleDeclarationImp* style = 0);

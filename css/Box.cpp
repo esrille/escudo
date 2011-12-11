@@ -1096,7 +1096,7 @@ void BlockLevelBox::collapseMarginBottom(FormattingContext* context)
                 context->fixMargin();
                 // TODO: The following moveUpCollapsedThroughMargins can actually introduce a new clearance; cf. clear-float-003.
                 if (!last->hasClearance())
-                    last->moveUpCollapsedThroughMargins();
+                    last->moveUpCollapsedThroughMargins(context);
             }
         } else if (isCollapsableInside() && borderBottom == 0 && paddingBottom == 0 && style->height.isAuto()) {
             last->marginBottom = 0.0f;
@@ -1162,15 +1162,15 @@ void BlockLevelBox::adjustCollapsedThroughMargins(FormattingContext* context)
 
         context->usedMargin = 0.0f;
         if (hasClearance())
-            moveUpCollapsedThroughMargins();
+            moveUpCollapsedThroughMargins(context);
     } else if (isCollapsableOutside()) {
         context->fixMargin();
-        moveUpCollapsedThroughMargins();
+        moveUpCollapsedThroughMargins(context);
     }
     context->adjustRemainingFloatingBoxes(topBorderEdge);
 }
 
-void BlockLevelBox::moveUpCollapsedThroughMargins()
+void BlockLevelBox::moveUpCollapsedThroughMargins(FormattingContext* context)
 {
     assert(isCollapsableOutside());
     float m;
