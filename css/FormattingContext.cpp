@@ -111,29 +111,35 @@ void FormattingContext::tryAddFloat(ViewCSSImp* view)
     }
 }
 
-void FormattingContext::adjustRemainingHeight(float h)
+float FormattingContext::adjustRemainingHeight(float h)
 {
+    float consumed = 0.0f;
     for (auto i = left.begin(); i != left.end();) {
+        consumed = std::max(consumed, std::min(h, (*i)->remainingHeight));
         if (((*i)->remainingHeight -= h) <= 0.0f)
             i = left.erase(i);
         else
-            ++i;
+            ++i;    // consumed = h;
     }
     for (auto i = right.begin(); i != right.end();) {
+        consumed = std::max(consumed, std::min(h, (*i)->remainingHeight));
         if (((*i)->remainingHeight -= h) <= 0.0f)
             i = right.erase(i);
         else
             ++i;
     }
+    return consumed;
 }
 
-void FormattingContext::useMargin()
+float FormattingContext::useMargin()
 {
+    float consumed = 0.0f;
     float m = getMargin();
     if (usedMargin < m) {
-        adjustRemainingHeight(m - usedMargin);
+        consumed = adjustRemainingHeight(m - usedMargin);
         usedMargin = m;
     }
+    return consumed;
 }
 
 void FormattingContext::updateRemainingHeight(float h)

@@ -324,6 +324,7 @@ BlockLevelBox::BlockLevelBox(Node node, CSSStyleDeclarationImp* style) :
     Box(node),
     textAlign(CSSTextAlignValueImp::Default),
     topBorderEdge(0.0f),
+    consumed(0.0f),
     inserted(false),
     edge(0.0f),
     remainingHeight(0.0f)
@@ -834,7 +835,7 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view, Node node, BlockLevelBox* a
 bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, float originalMargin)
 {
     // Use the positive margin stored in context to consume the remaining height of floating boxes.
-    context->useMargin();
+    consumed = context->useMargin();
 
     assert(!hasChildBoxes());
     bool collapsed = true;
@@ -1094,7 +1095,6 @@ void BlockLevelBox::collapseMarginBottom(FormattingContext* context)
             } else {
                 last->marginBottom = lm;
                 context->fixMargin();
-                // TODO: The following moveUpCollapsedThroughMargins can actually introduce a new clearance; cf. clear-float-003.
                 if (!last->hasClearance())
                     last->moveUpCollapsedThroughMargins(context);
             }
@@ -1124,12 +1124,8 @@ void BlockLevelBox::collapseMarginBottom(FormattingContext* context)
             first->marginTop = 0.0f;
         } else
             std::swap(first->marginTop, marginTop);
-        while (first->isCollapsedThrough()) {
+        if (first->isCollapsedThrough())
             first->topBorderEdge = 0.0f;
-            first = dynamic_cast<BlockLevelBox*>(first->getNextSibling());
-            if (!first || first->hasClearance())
-                break;
-        }
     }
 }
 
@@ -1187,8 +1183,11 @@ void BlockLevelBox::moveUpCollapsedThroughMargins(FormattingContext* context)
         m = curr->marginTop;
     } else if (curr->isCollapsedThrough()) {
         assert(curr->marginTop == 0.0f);
-        m = curr->marginBottom;
-        curr->topBorderEdge -= m;
+        // cf. If previously a part of marginTop has been used for consuming some
+        // floating box heights, leave it as marginTop; cf. clear-float-003.
+        curr->marginTop = consumed;
+        m = curr->marginBottom - consumed;
+        curr->topBorderEdge = 0.0f;
         for (BlockLevelBox* last = dynamic_cast<BlockLevelBox*>(curr->getLastChild());
              last && last->isCollapsedThrough();
              last = dynamic_cast<BlockLevelBox*>(last->getPreviousSibling())) {
@@ -1212,7 +1211,7 @@ void BlockLevelBox::moveUpCollapsedThroughMargins(FormattingContext* context)
         else
             from->marginBottom = 0.0f;
     } else if (curr->isCollapsedThrough() && !hasClearance()) {
-        curr->marginTop = m;
+        curr->marginTop += m;
         curr->marginBottom = 0.0f;
         curr->topBorderEdge = 0.0f;
     }

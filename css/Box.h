@@ -106,8 +106,8 @@ public:
     void appendInlineBox(InlineLevelBox* inlineBox, CSSStyleDeclarationImp* activeStyle);
     void nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, unsigned clearValue = 0);
     void tryAddFloat(ViewCSSImp* view);
-    void adjustRemainingHeight(float height);
-    void useMargin();
+    float adjustRemainingHeight(float height);
+    float useMargin();
     void updateRemainingHeight(float height);
     float clear(unsigned value);
 
@@ -525,6 +525,7 @@ class BlockLevelBox : public Box
 
     // for a collapsed-through box
     float topBorderEdge;
+    float consumed;
 
     // for float box
     bool inserted;  // set to true if inserted in a linebox.
