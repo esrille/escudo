@@ -284,8 +284,10 @@ void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, uns
     float height = lineBox->getTotalHeight();
     if (height != 0.0f)
         updateRemainingHeight(height);
-    else if (clearValue)
+    else if (clearValue) {
+        lineBox->marginBottom -= usedMargin;
         lineBox->marginBottom += clear(clearValue);
+    }
     lineBox = 0;
     x = leftover = 0.0f;
 }
@@ -340,6 +342,7 @@ float FormattingContext::clear(unsigned value)
     else {
         // Note there could be a floating box whose remainingHeight is zero.
         adjustRemainingHeight(h);
+        h += usedMargin;
         clearMargin();
     }
     assert(!(value & 1) || left.empty());
@@ -376,12 +379,9 @@ float FormattingContext::fixMargin()
     updateRemainingHeight(0.0f);
 }
 
+// TODO: Remove this function.
 void FormattingContext::adjustRemainingFloatingBoxes(float topBorderEdge)
 {
-    if (!isnan(topBorderEdge) && topBorderEdge != 0.0f) {
-        for (auto i = floatList.begin(); i != floatList.end(); ++i)
-            (*i)->remainingHeight += topBorderEdge;
-    }
     floatList.clear();
 }
 

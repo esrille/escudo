@@ -577,6 +577,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
         if (!context->lineBox) {
             if (style->processLineHeadWhiteSpace(data) == 0 && discardable)
                 return !isAnonymous();
+            discardable = false;
             if (!context->addLineBox(view, this))
                 return false;  // TODO error
             if (!psuedoChecked && getFirstChild() == context->lineBox) {
@@ -1122,10 +1123,11 @@ void BlockLevelBox::collapseMarginBottom(FormattingContext* context)
                 marginTop = original;
             }
             first->marginTop = 0.0f;
-        } else
+        } else if (first->marginTop != 0.0f) {
             std::swap(first->marginTop, marginTop);
-        if (first->isCollapsedThrough())
-            first->topBorderEdge = 0.0f;
+            if (first->isCollapsedThrough())
+                first->topBorderEdge = 0.0f;
+        }
     }
 }
 
@@ -1148,22 +1150,14 @@ void BlockLevelBox::adjustCollapsedThroughMargins(FormattingContext* context)
 {
     if (isCollapsedThrough()) {
         topBorderEdge = marginTop;
-
-        if (BlockLevelBox* parent = dynamic_cast<BlockLevelBox*>(getParentBox())) {
-            if (parent->getFirstChild() == this) {
-                if (parent->isCollapsableInside() && parent->borderTop == 0 && parent->paddingTop == 0 && !hasClearance())
-                    topBorderEdge = 0.0f;
-            }
-        }
-
-        context->usedMargin = 0.0f;
         if (hasClearance())
             moveUpCollapsedThroughMargins(context);
+        context->adjustRemainingFloatingBoxes(topBorderEdge);
     } else if (isCollapsableOutside()) {
+        assert(topBorderEdge == 0.0f);
         context->fixMargin();
         moveUpCollapsedThroughMargins(context);
     }
-    context->adjustRemainingFloatingBoxes(topBorderEdge);
 }
 
 void BlockLevelBox::moveUpCollapsedThroughMargins(FormattingContext* context)
@@ -1196,7 +1190,7 @@ void BlockLevelBox::moveUpCollapsedThroughMargins(FormattingContext* context)
                 break;
         }
     } else
-        m = curr->marginTop;
+        m = curr->marginTop - consumed;
     while (prev && prev->isCollapsedThrough() && !prev->hasClearance()) {
         prev->topBorderEdge -= m;
         curr = prev;
@@ -1207,7 +1201,7 @@ void BlockLevelBox::moveUpCollapsedThroughMargins(FormattingContext* context)
         assert(curr->marginBottom == 0.0f);
         curr->marginTop = m;
         if (!from->isCollapsedThrough() || hasClearance())
-            from->marginTop = 0.0f;
+            from->marginTop -= m;
         else
             from->marginBottom = 0.0f;
     } else if (curr->isCollapsedThrough() && !hasClearance()) {
