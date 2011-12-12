@@ -836,6 +836,7 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view, Node node, BlockLevelBox* a
 bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, float originalMargin)
 {
     // Use the positive margin stored in context to consume the remaining height of floating boxes.
+    bool keepConsumed = false;
     consumed = context->useMargin();
 
     assert(!hasChildBoxes());
@@ -843,9 +844,11 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
     for (auto i = inlines.begin(); i != inlines.end(); ++i) {
         Node node = *i;
         if (BlockLevelBox* box = view->getFloatBox(node)) {
-            if (box->isFloat())
+            if (box->isFloat()) {
+                if (box->style->clear.getValue())
+                    keepConsumed = true;
                 layOutFloat(view, node, box, context);
-            else if (box->isAbsolutelyPositioned())
+            } else if (box->isAbsolutelyPositioned())
                 layOutAbsolute(view, node, box, context);
             collapsed = false;
         } else {
@@ -890,9 +893,10 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
             prevLine->marginBottom = 0.0f;
         }
         BlockLevelBox* floatBox = view->getFloatBox(context->floatNodes.front());
-        if (unsigned clear = floatBox->style->clear.getValue())
+        if (unsigned clear = floatBox->style->clear.getValue()) {
+            keepConsumed = true;
             context->nextLine(view, this, clear);
-        else {
+        } else {
             clearance = context->shiftDown();
             if (0.0f < clearance) {
                 clearance -= currentLine->height;
@@ -907,7 +911,8 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
     }
     if (context->lineBox)
         context->nextLine(view, this);
-
+    if (!keepConsumed)
+        consumed = 0.0f;
     if (collapsed && isAnonymous()) {
         undoCollapseMarginTop(context, originalMargin);
         return false;
