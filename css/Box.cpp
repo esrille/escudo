@@ -882,9 +882,10 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
 
     // Layout remaining floats in context
     float clearance = 0.0f;
+    LineBox* gapLine = 0;
     while (!context->floatNodes.empty()) {
         if (!context->lineBox)
-            context->addLineBox(view, this);
+            gapLine = context->addLineBox(view, this);
         LineBox* currentLine = context->lineBox;
         float saved = 0.0f;
         if (clearance != 0.0f) {
@@ -911,6 +912,14 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
     }
     if (context->lineBox)
         context->nextLine(view, this);
+    if (gapLine && getFirstChild() == gapLine && !gapLine->hasChildBoxes()) {
+        assert(gapLine->marginTop == 0.0f);
+        assert(gapLine->height == 0.0f);
+        consumed += gapLine->marginBottom;
+        marginTop += gapLine->marginBottom;
+        removeChild(gapLine);
+        gapLine->release_();
+    }
     if (!keepConsumed)
         consumed = 0.0f;
     if (collapsed && isAnonymous()) {
@@ -1092,6 +1101,7 @@ void BlockLevelBox::collapseMarginBottom(FormattingContext* context)
     if (last && last->isCollapsableOutside()) {
         float lm = context->collapseMargins(last->marginBottom);
         if (last->isCollapsedThrough()) {
+            lm = context->collapseMargins(last->marginTop);
             last->marginTop = 0.0f;
             if (isCollapsableInside() && borderBottom == 0 && paddingBottom == 0 && style->height.isAuto() &&
                 !context->hasClearance())
@@ -1130,8 +1140,12 @@ void BlockLevelBox::collapseMarginBottom(FormattingContext* context)
             first->marginTop = 0.0f;
         } else if (first->marginTop != 0.0f) {
             std::swap(first->marginTop, marginTop);
-            if (first->isCollapsedThrough())
+            while (first->isCollapsedThrough()) {
                 first->topBorderEdge = 0.0f;
+                first = dynamic_cast<BlockLevelBox*>(first->getNextSibling());
+                if (!first || first->hasClearance() || 0.0f < first->consumed)
+                    break;
+            }
         }
     }
 }
