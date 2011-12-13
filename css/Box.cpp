@@ -274,8 +274,22 @@ FormattingContext* Box::updateFormattingContext(FormattingContext* context)
 {
     if (isFlowRoot()) {
         assert(formattingContext);
-        // TODO: adjust left and right blanks.
         return formattingContext;
+    } else {
+        // adjust left and right blanks.
+        context->marginLeft += marginLeft;
+        context->marginRight += marginRight;
+    }
+    return context;
+}
+
+FormattingContext* Box::restoreFormattingContext(FormattingContext* context)
+{
+    if (isFlowRoot()) 
+        return formattingContext;
+    else {
+        context->marginLeft -= marginLeft;
+        context->marginRight -= marginRight;
     }
     return context;
 }
@@ -1352,6 +1366,7 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         backgroundTop = style->backgroundPosition.getTopPx();
     }
 
+    restoreFormattingContext(context);
     if (parentContext && parentContext != context) {
         if (isCollapsableOutside()) {
             parentContext->inheritMarginContext(context);
@@ -1633,6 +1648,7 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
         child->fit(width);
     }
 
+    restoreFormattingContext(context);
     adjustCollapsedThroughMargins(context);
 
     offsetH += left;

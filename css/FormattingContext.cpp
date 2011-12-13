@@ -30,6 +30,8 @@ FormattingContext::FormattingContext() :
     x(0.0f),
     leftover(0.0f),
     prevChar(0),
+    marginLeft(0.0f),
+    marginRight(0.0f),
     usedMargin(0.0f),
     positiveMargin(0.0f),
     negativeMargin(0.0f),
@@ -42,13 +44,13 @@ FormattingContext::FormattingContext() :
 float FormattingContext::getLeftEdge() const {
     if (left.empty())
         return 0.0f;
-    return left.back()->edge;
+    return left.back()->edge - marginLeft;
 }
 
 float FormattingContext::getRightEdge() const {
     if (right.empty())
         return 0.0f;
-    return right.front()->edge;
+    return right.front()->edge - marginRight;
 }
 
 float FormattingContext::getLeftRemainingHeight() const {
@@ -162,11 +164,17 @@ float FormattingContext::shiftDown()
             w = left.back()->getEffectiveTotalWidth();
             x -= w;
             leftover += w;
+            if (left.size() == 1) {
+                leftover += x;
+                x = 0.0f;
+            }
             h += lh;
         } else if (0.0f < rh && (rh < lh || lh <= 0.0f)) {
             // Shift down to right
             w = right.front()->getEffectiveTotalWidth();
             leftover += w;
+            if (right.size() == 1) 
+                leftover = lineBox->getParentBox()->width - x;
             h += rh;
         } else if (0.0f < lh) {
             // Shift down to both
@@ -174,6 +182,12 @@ float FormattingContext::shiftDown()
             w = l + right.front()->getEffectiveTotalWidth();
             x -= l;
             leftover += w;
+            if (left.size() == 1) {
+                leftover += x;
+                x = 0.0f;
+            }
+            if (right.size() == 1)
+                leftover = lineBox->getParentBox()->width - x;
             h += lh;
         } else
             break;
@@ -296,14 +310,14 @@ void FormattingContext::addFloat(BlockLevelBox* floatBox, float totalWidth)
 {
     if (floatBox->style->float_.getValue() == CSSFloatValueImp::Left) {
         if (left.empty())
-            floatBox->edge = totalWidth;
+            floatBox->edge = marginLeft + totalWidth;
         else
             floatBox->edge = left.back()->edge + totalWidth;
         left.push_back(floatBox);
         x += totalWidth;
     } else {
         if (right.empty())
-            floatBox->edge = totalWidth;
+            floatBox->edge = marginRight + totalWidth;
         else
             floatBox->edge = right.front()->edge + totalWidth;
         right.push_front(floatBox);

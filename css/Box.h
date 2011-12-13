@@ -69,12 +69,15 @@ public:
 
 class FormattingContext
 {
+    friend class Box;
     friend class BlockLevelBox;
 
     LineBox* lineBox;
     float x;
     float leftover;
     char16_t prevChar;
+    float marginLeft;
+    float marginRight;
     std::list<BlockLevelBox*> left;   // active float boxes at the left side
     std::list<BlockLevelBox*> right;  // active float boxes at the right side
     std::list<Node> floatNodes;       // float boxes not layed out yet
@@ -417,6 +420,7 @@ public:
     virtual const ContainingBlock* getContainingBlock(ViewCSSImp* view) const;
 
     FormattingContext* updateFormattingContext(FormattingContext* context);
+    FormattingContext* restoreFormattingContext(FormattingContext* context);
     FormattingContext* establishFormattingContext() {
         if (!formattingContext);
             formattingContext = new(std::nothrow) FormattingContext;

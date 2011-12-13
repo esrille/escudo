@@ -747,6 +747,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
         height = std::max(height, style->minHeight.getPx());
     }
 
+    restoreFormattingContext(context);
     if (parentContext && parentContext != context) {
         if (isCollapsableOutside())
             parentContext->inheritMarginContext(context);
