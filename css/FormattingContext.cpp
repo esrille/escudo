@@ -151,9 +151,8 @@ void FormattingContext::updateRemainingHeight(float h)
     adjustRemainingHeight(h);
 }
 
-float FormattingContext::shiftDown()
+float FormattingContext::shiftDown(float width)
 {
-    assert(lineBox);
     float h = 0.0f;
     float w = 0.0f;
     do {
@@ -174,7 +173,7 @@ float FormattingContext::shiftDown()
             w = right.front()->getEffectiveTotalWidth();
             leftover += w;
             if (right.size() == 1) 
-                leftover = lineBox->getParentBox()->width - x;
+                leftover = width - x;
             h += rh;
         } else if (0.0f < lh) {
             // Shift down to both
@@ -187,7 +186,7 @@ float FormattingContext::shiftDown()
                 x = 0.0f;
             }
             if (right.size() == 1)
-                leftover = lineBox->getParentBox()->width - x;
+                leftover = width - x;
             h += lh;
         } else
             break;
@@ -200,9 +199,12 @@ float FormattingContext::shiftDown()
 bool FormattingContext::shiftDownLineBox(ViewCSSImp* view)
 {
     assert(lineBox);
-    if (float h = shiftDown()) {
+    if (float h = shiftDown(lineBox->getParentBox()->width)) {
         updateRemainingHeight(h);
-        lineBox->marginTop += h;
+        if (lineBox->hasClearance())
+            lineBox->clearance += h;
+        else
+            lineBox->clearance = h;
         // Note updateRemainingHeight() could remove more than one floating box from this
         // context, and thus x and leftover have to be recalculated.
         lineBox->marginLeft = getLeftEdge();
@@ -268,7 +270,7 @@ void FormattingContext::appendInlineBox(InlineLevelBox* inlineBox, CSSStyleDecla
 
 // Complete the current lineBox by adding float boxes if any.
 // Then update remainingHeight.
-void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, unsigned clearValue)
+void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox)
 {
     assert(lineBox);
     assert(lineBox == parentBox->lastChild);
@@ -305,13 +307,9 @@ void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, uns
             floatList.push_back(floatBox);
         }
     }
-    float height = lineBox->getTotalHeight();
+    float height = lineBox->getClearance() + lineBox->getTotalHeight();
     if (height != 0.0f)
         updateRemainingHeight(height);
-    else if (clearValue) {
-        lineBox->marginBottom -= usedMargin;
-        lineBox->marginBottom += clear(clearValue);
-    }
     lineBox = 0;
     x = leftover = 0.0f;
 }

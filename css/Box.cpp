@@ -893,46 +893,25 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
             }
         }
     }
-
-    // Layout remaining floats in context
-    float clearance = 0.0f;
-    LineBox* gapLine = 0;
-    while (!context->floatNodes.empty()) {
-        if (!context->lineBox)
-            gapLine = context->addLineBox(view, this);
-        LineBox* currentLine = context->lineBox;
-        float saved = 0.0f;
-        if (clearance != 0.0f) {
-            Box* prevLine = currentLine->getPreviousSibling();
-            saved = prevLine->marginBottom;
-            prevLine->marginBottom = 0.0f;
-        }
-        BlockLevelBox* floatBox = view->getFloatBox(context->floatNodes.front());
-        if (unsigned clear = floatBox->style->clear.getValue()) {
-            keepConsumed = true;
-            context->nextLine(view, this, clear);
-        } else {
-            clearance = context->shiftDown();
-            if (0.0f < clearance) {
-                clearance -= currentLine->height;
-                if (clearance < 0.0f)
-                    clearance = 0.0f;
-            }
-            currentLine->marginBottom += clearance;
-            context->nextLine(view, this);
-        }
-        context->addLineBox(view, this);
-        currentLine->marginTop += saved;
-    }
     if (context->lineBox)
         context->nextLine(view, this);
-    if (gapLine && getFirstChild() == gapLine && !gapLine->hasChildBoxes()) {
-        assert(gapLine->marginTop == 0.0f);
-        assert(gapLine->height == 0.0f);
-        consumed += gapLine->marginBottom;
-        marginTop += gapLine->marginBottom;
-        removeChild(gapLine);
-        gapLine->release_();
+
+    // Layout remaining floats in context
+    while (!context->floatNodes.empty()) {
+        BlockLevelBox* floatBox = view->getFloatBox(context->floatNodes.front());
+        float clearance = 0.0f;
+        if (unsigned clear = floatBox->style->clear.getValue()) {
+            keepConsumed = true;
+            clearance = -context->usedMargin;
+            clearance += context->clear(clear);
+        } else {
+            clearance = context->shiftDown(width);
+            context->adjustRemainingHeight(clearance);
+        }
+        LineBox* nextLine = context->addLineBox(view, this);
+        context->nextLine(view, this);
+        if (nextLine && clearance != 0.0f)
+            nextLine->clearance = clearance;
     }
     if (!keepConsumed)
         consumed = 0.0f;
@@ -1341,13 +1320,20 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     }
 
     if ((style->height.isAuto() && !intrinsic) || isAnonymous()) {
+        float totalClearance = 0.0f;
         height = 0.0f;
-        for (Box* child = getFirstChild(); child; child = child->getNextSibling())
-            height += child->getTotalHeight() + child->getClearance();
+        for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
+            height += child->getTotalHeight();
+            totalClearance += child->getClearance();
+        }
         if (Box* last = getLastChild()) {
             if (last->marginBottom < 0.0f)
                 height -= last->marginBottom;
         }
+        // Note if height is zero, clearances are used only to layout floating boxes,
+        // and thus totalClearance should not be added to height.
+        if (height != 0.0f)
+            height += totalClearance;
     }
     if (!isAnonymous()) {
         applyMinMaxHeight(context);
@@ -1630,13 +1616,20 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
 
     if (maskV == (Top | Height) || maskV == (Height | Bottom)) {
         float before = height;
+        float totalClearance = 0.0f;
         height = 0;
-        for (Box* child = getFirstChild(); child; child = child->getNextSibling())
-            height += child->getTotalHeight() + child->getClearance();
+        for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
+            height += child->getTotalHeight();
+            totalClearance += child->getClearance();
+        }
         if (Box* last = getLastChild()) {
             if (last->marginBottom < 0.0f)
                 height -= last->marginBottom;
         }
+        // Note if height is zero, clearances are used only to layout floating boxes,
+        // and thus totalClearance should not be added to height.
+        if (height != 0.0f)
+            height += totalClearance;        
         if (maskV == (Top | Height))
             top = before - height;
     }
@@ -1776,7 +1769,6 @@ void LineBox::fit(float w)
 
 void LineBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip)
 {
-
     left += offsetH;
     top += offsetV + getClearance();
     x = left;

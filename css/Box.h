@@ -103,11 +103,11 @@ public:
     float getRightEdge() const;
     float getLeftRemainingHeight() const;
     float getRightRemainingHeight() const;
-    float shiftDown();
+    float shiftDown(float width);
     bool shiftDownLineBox(ViewCSSImp* view);
     bool hasNewFloats() const;
     void appendInlineBox(InlineLevelBox* inlineBox, CSSStyleDeclarationImp* activeStyle);
-    void nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, unsigned clearValue = 0);
+    void nextLine(ViewCSSImp* view, BlockLevelBox* parentBox);
     void tryAddFloat(ViewCSSImp* view);
     float adjustRemainingHeight(float height);
     float useMargin();
@@ -668,7 +668,7 @@ class LineBox : public Box
 {
     friend class BlockLevelBox;
     friend void FormattingContext::appendInlineBox(InlineLevelBox* inlineBox, CSSStyleDeclarationImp* activeStyle);
-    friend void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, unsigned clearValue);
+    friend void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox);
 
     float baseline;
     float underlinePosition;
