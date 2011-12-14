@@ -197,14 +197,24 @@ float FormattingContext::shiftDown()
 
 // If there's a float, shiftDownLineBox() will expand leftover by extending
 // marginTop in lineBox down to the bottom of the nearest float box.
-bool FormattingContext::shiftDownLineBox()
+bool FormattingContext::shiftDownLineBox(ViewCSSImp* view)
 {
     assert(lineBox);
     if (float h = shiftDown()) {
         updateRemainingHeight(h);
         lineBox->marginTop += h;
-        lineBox->marginLeft = x;
-        lineBox->marginRight = lineBox->getParentBox()->width - x - leftover;
+        // Note updateRemainingHeight() could remove more than one floating box from this
+        // context, and thus x and leftover have to be recalculated.
+        lineBox->marginLeft = getLeftEdge();
+        lineBox->marginRight = getRightEdge();
+        x = lineBox->marginLeft;
+        leftover = lineBox->getParentBox()->width - x - lineBox->marginRight;
+        
+        // If there are floating boxes in floatNodes, try adding those first;
+        // cf. c414-flt-fit-001.
+        tryAddFloat(view);
+        x = getLeftEdge();
+        leftover = lineBox->getParentBox()->width - x - getRightEdge();
         return true;
     }
     return false;  // no floats

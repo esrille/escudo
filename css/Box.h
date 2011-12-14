@@ -104,7 +104,7 @@ public:
     float getLeftRemainingHeight() const;
     float getRightRemainingHeight() const;
     float shiftDown();
-    bool shiftDownLineBox();
+    bool shiftDownLineBox(ViewCSSImp* view);
     bool hasNewFloats() const;
     void appendInlineBox(InlineLevelBox* inlineBox, CSSStyleDeclarationImp* activeStyle);
     void nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, unsigned clearValue = 0);

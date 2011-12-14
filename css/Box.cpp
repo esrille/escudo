@@ -703,7 +703,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                     delete inlineLevelBox;
                     goto NextLine;
                 }
-                if (!context->shiftDownLineBox()) {
+                if (!context->shiftDownLineBox(view)) {
                     context->leftover -= required;
                     advanced -= context->leftover;
                     length = next;
@@ -794,7 +794,7 @@ void BlockLevelBox::layOutInlineLevelBox(ViewCSSImp* view, Node node, Formatting
             if (!context->addLineBox(view, this))
                 return;  // TODO error
         }
-        if (!context->shiftDownLineBox())
+        if (!context->shiftDownLineBox(view))
             break;
     }
 
@@ -1844,9 +1844,16 @@ float InlineLevelBox::atEndOfLine()
         return 0.0f;
     if (style->whiteSpace.isCollapsingSpace() && data[length - 1] == u' ') {
         data.erase(length - 1);
-        float w = -font->measureText(u" ", point);
-        width += w;
-        return w;
+        if (data.length() == 0) {
+            // Deal with the errors in floating point operations.
+            float w = -width;
+            width = 0.0f;
+            return w;
+        } else {
+            float w = -font->measureText(u" ", point);
+            width += w;
+            return w;
+        }
     }
     return 0.0f;
 }
