@@ -1096,9 +1096,10 @@ float BlockLevelBox::collapseMarginTop(FormattingContext* context)
         before = NAN;
         context->collapseMargins(marginTop);
     } else {
-        if (undoCollapseMarginTop(context, before))
+        if (prev) {
+            prev->marginBottom = context->undoCollapseMargins();
             clearance -= original + before;
-        else
+        } else
             clearance -= original;
         marginTop = original;
         before = NAN;
