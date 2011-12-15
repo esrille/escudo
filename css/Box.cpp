@@ -793,6 +793,7 @@ void BlockLevelBox::layOutInlineLevelBox(ViewCSSImp* view, Node node, Formatting
             context->nextLine(view, this);
             if (!context->addLineBox(view, this))
                 return;  // TODO error
+            continue;
         }
         if (!context->shiftDownLineBox(view))
             break;
