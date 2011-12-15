@@ -1061,7 +1061,11 @@ float BlockLevelBox::collapseMarginTop(FormattingContext* context)
     if (isAnonymous())
         return before;
 
-    clearance = context->clear(style->clear.getValue());
+    unsigned clearValue = style->clear.getValue();
+    if (isFlowRoot())
+        clearValue = CSSFloatValueImp::Left | CSSFloatValueImp::Right;
+    
+    clearance = context->clear(clearValue);
     BlockLevelBox* prev = dynamic_cast<BlockLevelBox*>(getPreviousSibling());
     if (clearance == 0.0f)
         clearance = NAN;
