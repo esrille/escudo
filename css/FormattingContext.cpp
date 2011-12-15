@@ -41,16 +41,33 @@ FormattingContext::FormattingContext() :
 {
 }
 
+float FormattingContext::getLeftoverForFloat(unsigned floatValue) const
+{
+    switch (floatValue) {
+    case CSSFloatValueImp::Left:
+        if (!right.empty() && right.front()->edge < marginRight)
+            return leftover + marginRight - right.front()->edge;
+        break;
+    case CSSFloatValueImp::Right:
+        if (!left.empty() && left.front()->edge < marginLeft)
+            return leftover + marginLeft - left.front()->edge;
+        break;
+    default:
+        break;
+    }
+    return leftover;
+}
+
 float FormattingContext::getLeftEdge() const {
     if (left.empty())
         return 0.0f;
-    return left.back()->edge - marginLeft;
+    return std::max(0.0f, left.back()->edge - marginLeft);
 }
 
 float FormattingContext::getRightEdge() const {
     if (right.empty())
         return 0.0f;
-    return right.front()->edge - marginRight;
+    return std::max(0.0f, right.front()->edge - marginRight);
 }
 
 float FormattingContext::getLeftRemainingHeight() const {

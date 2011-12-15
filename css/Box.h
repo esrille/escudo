@@ -99,6 +99,14 @@ public:
     FormattingContext();
     LineBox* addLineBox(ViewCSSImp* view, BlockLevelBox* parentBox);
     void addFloat(BlockLevelBox* floatBox, float totalWidth);
+
+    float hasLeft() const {
+        return !left.empty();
+    }
+    float hasRight() const {
+        return !right.empty();
+    }
+    float getLeftoverForFloat(unsigned floatValue) const;
     float getLeftEdge() const;
     float getRightEdge() const;
     float getLeftRemainingHeight() const;
