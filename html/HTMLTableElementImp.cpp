@@ -27,6 +27,20 @@ namespace dom
 namespace bootstrap
 {
 
+void HTMLTableElementImp::eval()
+{
+    HTMLElementImp::eval();
+
+    Nullable<std::u16string> attr = getAttribute(u"cellspacing");
+    if (attr.hasValue()) {
+        std::u16string value = attr.value();
+        if (toPx(value)) {
+            css::CSSStyleDeclaration style = getStyle();
+            style.setBorderSpacing(value);
+        }
+    }
+}
+
 html::HTMLTableCaptionElement HTMLTableElementImp::getCaption()
 {
     for (Element child = getFirstElementChild(); child; child = child.getNextElementSibling()) {

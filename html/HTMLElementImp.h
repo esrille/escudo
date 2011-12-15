@@ -255,7 +255,8 @@ public:
         return html::HTMLElement::getMetaData();
     }
 
-    static bool toPxOrPercentage(std::u16string& value);  // for the width and heigth attributes
+    static bool toPx(std::u16string& value);  // for cellspacing, cellpadding, etc.
+    static bool toPxOrPercentage(std::u16string& value);  // for width, heigth, etc.
 };
 
 }}}}  // org::w3c::dom::bootstrap
