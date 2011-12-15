@@ -905,8 +905,13 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
             clearance = -context->usedMargin;
             clearance += context->clear(clear);
         } else {
-            clearance = context->shiftDown(width);
-            context->adjustRemainingHeight(clearance);
+            while (width - context->getLeftEdge() - context->getRightEdge() < floatBox->getEffectiveTotalWidth()) {
+                float d = context->shiftDown(width);
+                if (d <= 0.0f)
+                    break;
+                clearance += d;
+                context->adjustRemainingHeight(clearance);
+            }
         }
         LineBox* nextLine = context->addLineBox(view, this);
         context->nextLine(view, this);
