@@ -32,6 +32,7 @@ FormattingContext::FormattingContext() :
     prevChar(0),
     marginLeft(0.0f),
     marginRight(0.0f),
+    clearance(0.0f),
     usedMargin(0.0f),
     positiveMargin(0.0f),
     negativeMargin(0.0f),
@@ -222,6 +223,7 @@ bool FormattingContext::shiftDownLineBox(ViewCSSImp* view)
             lineBox->clearance += h;
         else
             lineBox->clearance = h;
+        clearance += h;
         // Note updateRemainingHeight() could remove more than one floating box from this
         // context, and thus x and leftover have to be recalculated.
         lineBox->marginLeft = getLeftEdge();

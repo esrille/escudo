@@ -894,7 +894,7 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
     if (context->lineBox)
         context->nextLine(view, this);
 
-    // Layout remaining floats in context
+    // Layout remaining floating boxes in context
     while (!context->floatNodes.empty()) {
         BlockLevelBox* floatBox = view->getFloatBox(context->floatNodes.front());
         float clearance = 0.0f;
@@ -904,10 +904,11 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
             clearance += context->clear(clear);
         } else {
             while (width - context->getLeftEdge() - context->getRightEdge() < floatBox->getEffectiveTotalWidth()) {
-                float d = context->shiftDown(width);
-                if (d <= 0.0f)
+                float h = context->shiftDown(width);
+                if (h <= 0.0f)
                     break;
-                clearance += d;
+                clearance += h;
+                context->clearance += h;
                 context->adjustRemainingHeight(clearance);
             }
         }
@@ -1057,39 +1058,46 @@ float BlockLevelBox::collapseMarginTop(FormattingContext* context)
     }
     marginTop = context->collapseMargins(marginTop);
 
-    if (isAnonymous())
-        return before;
+    if (!isAnonymous()) {
+        unsigned clearValue = style->clear.getValue();
+        if (isFlowRoot())
+            clearValue = CSSFloatValueImp::Left | CSSFloatValueImp::Right;
 
-    unsigned clearValue = style->clear.getValue();
-    if (isFlowRoot())
-        clearValue = CSSFloatValueImp::Left | CSSFloatValueImp::Right;
-    
-    clearance = context->clear(clearValue);
-    BlockLevelBox* prev = dynamic_cast<BlockLevelBox*>(getPreviousSibling());
-    if (clearance == 0.0f)
-        clearance = NAN;
-    else if (prev && prev->isCollapsedThrough()) {
-        if (clearance < marginTop)
-            clearance = marginTop;
-        prev->marginBottom = before;
-        clearance -= original + before;
-        marginTop = original;
-        before = NAN;
-        context->collapseMargins(marginTop);
-        context->setClearance();
-    } else if (clearance < marginTop) {
-        clearance = NAN;
-        before = NAN;
-        context->collapseMargins(marginTop);
-    } else {
-        if (prev) {
-            prev->marginBottom = context->undoCollapseMargins();
+        clearance = context->clear(clearValue);
+        BlockLevelBox* prev = dynamic_cast<BlockLevelBox*>(getPreviousSibling());
+        if (clearance == 0.0f)
+            clearance = NAN;
+        else if (prev && prev->isCollapsedThrough()) {
+            if (clearance < marginTop)
+                clearance = marginTop;
+            prev->marginBottom = before;
             clearance -= original + before;
-        } else
-            clearance -= original;
-        marginTop = original;
-        before = NAN;
-        context->collapseMargins(marginTop);
+            marginTop = original;
+            before = NAN;
+            context->collapseMargins(marginTop);
+            context->setClearance();
+        } else if (clearance < marginTop) {
+            clearance = NAN;
+            before = NAN;
+            context->collapseMargins(marginTop);
+        } else {
+            if (prev) {
+                prev->marginBottom = context->undoCollapseMargins();
+                clearance -= original + before;
+            } else
+                clearance -= original;
+            marginTop = original;
+            before = NAN;
+            context->collapseMargins(marginTop);
+            context->setClearance();
+        }
+    }
+    
+    if (0.0f < context->clearance) {
+        if (isnan(clearance))
+            clearance = context->clearance;
+        else
+            clearance += context->clearance;
         context->setClearance();
     }
 

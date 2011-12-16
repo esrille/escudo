@@ -82,6 +82,8 @@ class FormattingContext
     std::list<BlockLevelBox*> right;  // active float boxes at the right side
     std::list<Node> floatNodes;       // float boxes not layed out yet
 
+    float clearance;  // The clearance introduced by the previous collapsed through boxes.
+
     float usedMargin;
     std::list<BlockLevelBox*> floatList;  // list of floating boxes just inserted inside the same block box.
 
@@ -129,6 +131,7 @@ public:
         return positiveMargin + negativeMargin;
     }
     void clearMargin() {
+        clearance = 0.0f;
         usedMargin = 0.0f;
         positiveMargin = negativeMargin = 0.0f;
         previousMargin = NAN;
