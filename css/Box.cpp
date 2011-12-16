@@ -591,7 +591,6 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
         if (!context->lineBox) {
             if (style->processLineHeadWhiteSpace(data) == 0 && discardable)
                 return !isAnonymous();
-            discardable = false;
             if (!context->addLineBox(view, this))
                 return false;  // TODO error
             if (!psuedoChecked && getFirstChild() == context->lineBox) {
@@ -1140,13 +1139,19 @@ void BlockLevelBox::collapseMarginBottom(FormattingContext* context)
                 marginTop = original;
             }
             first->marginTop = 0.0f;
-        } else if (first->marginTop != 0.0f) {
+        } else {
+            // Note even if first->marginTop is zero, first->topBorderEdge
+            // still needs to be cleared; cf. margin-bottom-103.
             std::swap(first->marginTop, marginTop);
-            while (first->isCollapsedThrough()) {
-                first->topBorderEdge = 0.0f;
-                first = dynamic_cast<BlockLevelBox*>(first->getNextSibling());
-                if (!first || first->hasClearance() || 0.0f < first->consumed)
+            while (first && first->isCollapsedThrough()) {
+                // The top border edge must not be cleared if the next adjacent sibling has a clearance;
+                // cf. clear-001.
+                BlockLevelBox* next = dynamic_cast<BlockLevelBox*>(first->getNextSibling());
+                if (!next || (!next->hasClearance() && next->consumed <= 0.0f))
+                    first->topBorderEdge = 0.0f;
+                else
                     break;
+                first = next;
             }
         }
     }
@@ -1584,11 +1589,11 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
         // This box is originally a block-level box inside an inline context.
         // Set the static position to the beginning of the next line.
         if (const Box* lineBox = getParentBox()) {  // A root element can be absolutely positioned.
-            if (maskV == (Top | Height | Bottom) || maskV == (Top | Bottom))
-                offsetV += lineBox->height + lineBox->getBlankBottom();
-            if (maskH == (Left | Width | Right) || maskH == (Left | Right)) {
-                for (const Box* box = getPreviousSibling(); box; box = box->getPreviousSibling()) {
-                    if (!box->isAbsolutelyPositioned())
+            for (const Box* box = getPreviousSibling(); box; box = box->getPreviousSibling()) {
+                if (!box->isAbsolutelyPositioned()) {
+                    if (maskV == (Top | Height | Bottom) || maskV == (Top | Bottom))
+                        offsetV += lineBox->height + lineBox->getBlankBottom();
+                    if (maskH == (Left | Width | Right) || maskH == (Left | Right)) 
                         offsetH -= box->getTotalWidth();
                 }
             }
