@@ -903,7 +903,8 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
             clearance = -context->usedMargin;
             clearance += context->clear(clear);
         } else {
-            while (width - context->getLeftEdge() - context->getRightEdge() < floatBox->getEffectiveTotalWidth()) {
+            context->leftover = width - context->getLeftEdge() - context->getRightEdge();
+            while (context->getLeftoverForFloat(floatBox->style->float_.getValue()) < floatBox->getEffectiveTotalWidth()) {
                 float h = context->shiftDown(width);
                 if (h <= 0.0f)
                     break;
@@ -1769,7 +1770,7 @@ void LineBox::fit(float w)
 {
     assert(parentBox);
     assert(dynamic_cast<BlockLevelBox*>(parentBox));
-    float leftover = w - shrinkTo();
+    float leftover = std::max(0.0f, w - shrinkTo());
     switch (dynamic_cast<BlockLevelBox*>(parentBox)->getTextAlign()) {
     case CSSTextAlignValueImp::Left:
     case CSSTextAlignValueImp::Default: // TODO: rtl

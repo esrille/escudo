@@ -44,6 +44,7 @@ FormattingContext::FormattingContext() :
 
 float FormattingContext::getLeftoverForFloat(unsigned floatValue) const
 {
+    // cf. floats-rule3-outside-left-001 and floats-rule3-outside-right-001.
     switch (floatValue) {
     case CSSFloatValueImp::Left:
         if (!right.empty() && right.front()->edge < marginRight)
