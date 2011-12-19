@@ -375,7 +375,9 @@ const char16_t* pseudoElementNames[] = {
     u"first-line",
     u"first-letter",
     u"before",
-    u"after"
+    u"after",
+    // CSS 3 - cf. http://www.w3.org/TR/css3-lists/#marker-pseudoelement
+    u"marker",
 };
 
 const char16_t* pseudoClassNames[] = {

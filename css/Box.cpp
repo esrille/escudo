@@ -1664,6 +1664,9 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
         child->fit(width);
     }
 
+    if (style->getPseudoElementSelectorType() == CSSPseudoElementSelector::Marker)
+        offsetH -= getTotalWidth();
+    
     restoreFormattingContext(context);
     adjustCollapsedThroughMargins(context);
 

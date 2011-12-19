@@ -236,6 +236,7 @@ private:
     StackingContext* stackingContext;
     FontTexture* fontTexture;
 
+    int pseudoElementSelectorType;
     CSSStyleDeclarationPtr pseudoElements[CSSPseudoElementSelector::MaxPseudoElements];
 
     void specify(const CSSStyleDeclarationImp* decl, unsigned id);
@@ -351,7 +352,7 @@ public:
     CSSStyleDeclarationImp(const CSSStyleDeclarationImp&);
 
 public:
-    CSSStyleDeclarationImp();
+    CSSStyleDeclarationImp(int pseudoElementSelectorType = CSSPseudoElementSelector::NonPseudo);
     ~CSSStyleDeclarationImp();
 
     void setOwner(Object* owner) {
@@ -369,6 +370,9 @@ public:
 
     CSSPropertyValueImp* getProperty(unsigned id);
 
+    int getPseudoElementSelectorType() const {
+        return pseudoElementSelectorType;
+    }
     CSSStyleDeclarationImp* getPseudoElementStyle(int id);
     CSSStyleDeclarationImp* getPseudoElementStyle(const std::u16string& name);
     CSSStyleDeclarationImp* createPseudoElementStyle(int id);

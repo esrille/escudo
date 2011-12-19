@@ -353,6 +353,7 @@ public:
         FirstLetter,
         Before,
         After,
+        Marker,     // cf. http://www.w3.org/TR/css3-lists/#marker-pseudoelement
 
         MaxPseudoElements
     };

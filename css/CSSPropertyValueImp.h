@@ -169,7 +169,10 @@ public:
         UpperAlpha,
         None
     };
-    CSSListStyleTypeValueImp& setValue(unsigned value = None) {
+    unsigned getValue() const {
+        return value;
+    }
+    CSSListStyleTypeValueImp& setValue(unsigned value = Disc) {
         this->value = value;
         return *this;
     }
@@ -1010,13 +1013,22 @@ public:
     }
     virtual void setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
 
-    Element eval(Document document, Element element);
+    bool isNone() const {
+        return contents.empty() && value == None;
+    }
+    bool isNormal() const {
+        return contents.empty() && value == Normal;
+    }
 
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl);
     void specify(const CSSContentValueImp& specified) {
         value = specified.value;
         contents = specified.contents;
     }
+
+    void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
+    Element eval(Document document, Element element);
+
     CSSContentValueImp(unsigned initial = Normal) :
         value(initial) {
     }

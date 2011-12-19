@@ -1012,6 +1012,45 @@ std::u16string CSSContentValueImp::getCssText(CSSStyleDeclarationImp* decl)
     return cssText;
 }
 
+void CSSContentValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style)
+{
+    switch (style->getPseudoElementSelectorType()) {
+    case CSSPseudoElementSelector::Before:
+    case CSSPseudoElementSelector::After:
+        if (isNormal()) {
+            value = None;
+            clearContents();
+        }
+        break;
+    case CSSPseudoElementSelector::Marker:
+        if (isNormal()) {
+            value = None;
+            // TODO: Support 'list-style-image'.
+            switch (style->listStyleType.getValue()) {
+            case CSSListStyleTypeValueImp::Disc:
+                if (Content* content = new(std::nothrow) StringContent(u"\u2022"))  // •
+                    contents.push_back(content);
+                break;
+            case CSSListStyleTypeValueImp::Circle:
+                if (Content* content = new(std::nothrow) StringContent(u"\u25E6"))  // ◦
+                    contents.push_back(content);
+                break;
+            case CSSListStyleTypeValueImp::Square:
+                // Use u25A0 instead of u25FE for the IPA font for now
+                if (Content* content = new(std::nothrow) StringContent(u"\u25A0"))  // ◾ "\u25FE"
+                    contents.push_back(content);
+                break;
+            // TODO: Support counter types
+            default:
+                break;
+            }
+        }
+        break;
+    default:
+        break;
+    }
+}
+
 Element CSSContentValueImp::eval(Document document, Element element)
 {
     if (contents.empty())

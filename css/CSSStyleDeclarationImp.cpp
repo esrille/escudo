@@ -1218,6 +1218,8 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
 
     borderSpacing.compute(view, this);
 
+    content.compute(view, this);
+
     if (isFloat() || isAbsolutelyPositioned() || !parentStyle)  // TODO or the contents of atomic inline-level descendants such as inline blocks and inline tables.
         textDecorationContext.update(this);
     else if (parentStyle->textDecorationContext.hasDecoration())
@@ -1459,7 +1461,7 @@ CSSStyleDeclarationImp* CSSStyleDeclarationImp::createPseudoElementStyle(int id)
     assert(0 <= id && id < CSSPseudoElementSelector::MaxPseudoElements);
     CSSStyleDeclarationImp* style = pseudoElements[id].get();
     if (!style) {
-        if (style = new(std::nothrow) CSSStyleDeclarationImp)
+        if (style = new(std::nothrow) CSSStyleDeclarationImp(id))
             pseudoElements[id] = style;
     }
     return style;
@@ -2893,7 +2895,7 @@ void CSSStyleDeclarationImp::setHTMLAlign(Nullable<std::u16string> align)
     setProperty(HtmlAlign);
 }
 
-CSSStyleDeclarationImp::CSSStyleDeclarationImp() :
+CSSStyleDeclarationImp::CSSStyleDeclarationImp(int pseudoElementSelectorType) :
     owner(0),
     parentRule(0),
     resolved(false),
@@ -2902,6 +2904,7 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp() :
     lastBox(0),
     stackingContext(0),
     fontTexture(0),
+    pseudoElementSelectorType(pseudoElementSelectorType),
     backgroundColor(CSSColorValueImp::Transparent),
     counterIncrement(1),
     counterReset(0),
