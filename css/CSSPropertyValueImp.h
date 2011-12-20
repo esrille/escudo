@@ -1151,6 +1151,9 @@ public:
     bool isNone() const {
         return value == None;
     }
+    bool isListItem() const {
+        return value == ListItem;
+    }
     bool isTableParts() const {
         switch (value) {
         case Table:
