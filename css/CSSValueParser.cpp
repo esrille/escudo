@@ -45,6 +45,7 @@ CSSValueRule CSSValueParser::slash;
 CSSValueRule CSSValueParser::string;
 CSSValueRule CSSValueParser::uri;
 CSSValueRule CSSValueParser::lineHeight;
+CSSValueRule CSSValueParser::list_style_type;
 CSSValueRule CSSValueParser::listStyleType;
 CSSValueRule CSSValueParser::absolute_size;
 CSSValueRule CSSValueParser::border_width;
@@ -86,7 +87,9 @@ CSSValueRule CSSValueParser::fontVariant;
 CSSValueRule CSSValueParser::fontWeight;
 CSSValueRule CSSValueParser::font;
 CSSValueRule CSSValueParser::letterSpacing;
+CSSValueRule CSSValueParser::listStyleImage;
 CSSValueRule CSSValueParser::listStylePosition;
+CSSValueRule CSSValueParser::listStyle;
 CSSValueRule CSSValueParser::margin;
 CSSValueRule CSSValueParser::outlineColor;
 CSSValueRule CSSValueParser::outlineStyle;
@@ -167,22 +170,26 @@ void CSSValueParser::initializeRules()
         |  length
         |  percentage)
             [CSSStyleDeclarationImp::LineHeight];
+    list_style_type
+        = (CSSValueRule(u"disc", CSSListStyleTypeValueImp::Disc)
+        |  CSSValueRule(u"circle", CSSListStyleTypeValueImp::Circle)
+        |  CSSValueRule(u"square", CSSListStyleTypeValueImp::Square)
+        |  CSSValueRule(u"decimal", CSSListStyleTypeValueImp::Decimal)
+        |  CSSValueRule(u"decimal-leading-zero", CSSListStyleTypeValueImp::DecimalLeadingZero)
+        |  CSSValueRule(u"lower-roman", CSSListStyleTypeValueImp::LowerRoman)
+        |  CSSValueRule(u"upper-roman", CSSListStyleTypeValueImp::UpperRoman)
+        |  CSSValueRule(u"lower-greek", CSSListStyleTypeValueImp::LowerGreek)
+        |  CSSValueRule(u"lower-latin", CSSListStyleTypeValueImp::LowerLatin)
+        |  CSSValueRule(u"upper-latin", CSSListStyleTypeValueImp::UpperLatin)
+        |  CSSValueRule(u"armenian", CSSListStyleTypeValueImp::Armenian)
+        |  CSSValueRule(u"georgian", CSSListStyleTypeValueImp::Georgian)
+        |  CSSValueRule(u"lower-alpha", CSSListStyleTypeValueImp::LowerAlpha)
+        |  CSSValueRule(u"upper-alpha", CSSListStyleTypeValueImp::UpperAlpha))
+            [CSSStyleDeclarationImp::ListStyleType];
     listStyleType
-        = CSSValueRule(u"disc", CSSListStyleTypeValueImp::Disc)
-        | CSSValueRule(u"circle", CSSListStyleTypeValueImp::Circle)
-        | CSSValueRule(u"square", CSSListStyleTypeValueImp::Square)
-        | CSSValueRule(u"decimal", CSSListStyleTypeValueImp::Decimal)
-        | CSSValueRule(u"decimal-leading-zero", CSSListStyleTypeValueImp::DecimalLeadingZero)
-        | CSSValueRule(u"lower-roman", CSSListStyleTypeValueImp::LowerRoman)
-        | CSSValueRule(u"upper-roman", CSSListStyleTypeValueImp::UpperRoman)
-        | CSSValueRule(u"lower-greek", CSSListStyleTypeValueImp::LowerGreek)
-        | CSSValueRule(u"lower-latin", CSSListStyleTypeValueImp::LowerLatin)
-        | CSSValueRule(u"upper-latin", CSSListStyleTypeValueImp::UpperLatin)
-        | CSSValueRule(u"armenian", CSSListStyleTypeValueImp::Armenian)
-        | CSSValueRule(u"georgian", CSSListStyleTypeValueImp::Georgian)
-        | CSSValueRule(u"lower-alpha", CSSListStyleTypeValueImp::LowerAlpha)
-        | CSSValueRule(u"upper-alpha", CSSListStyleTypeValueImp::UpperAlpha)
-        | CSSValueRule(u"none", CSSListStyleTypeValueImp::None);
+        = (CSSValueRule(u"none", CSSListStyleTypeValueImp::None)
+        |  list_style_type)
+            [CSSStyleDeclarationImp::ListStyleType];
 
     absolute_size
         = CSSValueRule(u"xx-small", CSSFontSizeValueImp::XxSmall)
@@ -411,9 +418,19 @@ void CSSValueParser::initializeRules()
         = CSSValueRule(u"normal")
         | length;
         
+    listStyleImage
+        = (uri
+        |  CSSValueRule(u"none", CSSListStyleImageValueImp::None))
+            [CSSStyleDeclarationImp::ListStyleImage];
     listStylePosition
-        = CSSValueRule(u"inside", CSSListStylePositionValueImp::Inside)
-        | CSSValueRule(u"outside", CSSListStylePositionValueImp::Outside);
+        = (CSSValueRule(u"inside", CSSListStylePositionValueImp::Inside)
+         | CSSValueRule(u"outside", CSSListStylePositionValueImp::Outside))
+            [CSSStyleDeclarationImp::ListStylePosition];
+    listStyle
+        = CSSValueRule(u"none", CSSListStyleShorthandImp::None) ||
+          list_style_type ||
+          listStylePosition ||
+          uri;
         
     margin
         = CSSValueRule(1, 4, auto_length);
@@ -970,11 +987,17 @@ CSSValueParser::CSSValueParser(int propertyID) :
     case CSSStyleDeclarationImp::LineHeight:
         rule = &lineHeight;
         break;
-    case CSSStyleDeclarationImp::ListStyleType:
-        rule = &listStyleType;
+    case CSSStyleDeclarationImp::ListStyleImage:
+        rule = &listStyleImage;
         break;
     case CSSStyleDeclarationImp::ListStylePosition:
         rule = &listStylePosition;
+        break;
+    case CSSStyleDeclarationImp::ListStyleType:
+        rule = &listStyleType;
+        break;
+    case CSSStyleDeclarationImp::ListStyle:
+        rule = &listStyle;
         break;
     case CSSStyleDeclarationImp::Margin:
         rule = &margin;

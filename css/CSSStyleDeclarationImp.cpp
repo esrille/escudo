@@ -261,10 +261,14 @@ CSSPropertyValueImp* CSSStyleDeclarationImp::getProperty(unsigned id)
         return &font;
     case LineHeight:
         return &lineHeight;
+    case ListStyleImage:
+        return &listStyleImage;
     case ListStylePosition:
         return &listStylePosition;
     case ListStyleType:
         return &listStyleType;
+    case ListStyle:
+        return &listStyle;
     case Margin:
         return &margin;
     case MarginTop:
@@ -394,6 +398,11 @@ void CSSStyleDeclarationImp::setInherit(unsigned id)
         setInherit(LineHeight);
         setInherit(FontFamily);
         break;
+    case ListStyle:
+        setInherit(ListStyleType);
+        setInherit(ListStylePosition);
+        setInherit(ListStyleImage);
+        break;
     case Margin:
         setInherit(MarginTop);
         setInherit(MarginRight);
@@ -472,6 +481,11 @@ void CSSStyleDeclarationImp::resetInherit(unsigned id)
         resetInherit(FontSize);
         resetInherit(LineHeight);
         resetInherit(FontFamily);
+        break;
+    case ListStyle:
+        resetInherit(ListStyleType);
+        resetInherit(ListStylePosition);
+        resetInherit(ListStyleImage);
         break;
     case Margin:
         resetInherit(MarginTop);
@@ -703,11 +717,17 @@ void CSSStyleDeclarationImp::specify(const CSSStyleDeclarationImp* decl, unsigne
     case LineHeight:
         lineHeight.specify(decl->lineHeight);
         break;
+    case ListStyleImage:
+        listStyleImage.specify(decl->listStyleImage);
+        break;
     case ListStylePosition:
         listStylePosition.specify(decl->listStylePosition);
         break;
     case ListStyleType:
         listStyleType.specify(decl->listStyleType);
+        break;
+    case ListStyle:
+        listStyle.specify(this, decl);
         break;
     case Margin:
         margin.specify(this, decl);
@@ -1010,11 +1030,19 @@ void CSSStyleDeclarationImp::reset(unsigned id)
     case LineHeight:
         lineHeight.setValue();
         break;
+    case ListStyleImage:
+        listStyleImage.setValue();
+        break;
     case ListStylePosition:
         listStylePosition.setValue();
         break;
     case ListStyleType:
         listStyleType.setValue();
+        break;
+    case ListStyle:
+        reset(ListStyleType);
+        reset(ListStylePosition);
+        reset(ListStyleImage);
         break;
     case Margin:
         reset(MarginTop);
@@ -1135,6 +1163,7 @@ void CSSStyleDeclarationImp::resetInheritedProperties()
         case BorderLeft:
         case Border:
         case Font:  // TODO
+        case ListStyle:
         case Margin:
         case Padding:
             // ignore shorthand
@@ -1162,6 +1191,7 @@ void CSSStyleDeclarationImp::copy(const CSSStyleDeclarationImp* parentStyle, uns
     case BorderLeft:
     case Border:
     case Font:  // TODO
+    case ListStyle:
     case Margin:
     case Padding:
         // ignore shorthand
@@ -2209,8 +2239,7 @@ void CSSStyleDeclarationImp::setLineHeight(Nullable<std::u16string> lineHeight)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getListStyle()
 {
-    // TODO: implement me!
-    return Nullable<std::u16string>();
+    return listStyle.getCssText(this);
 }
 
 void CSSStyleDeclarationImp::setListStyle(Nullable<std::u16string> listStyle)
@@ -2220,8 +2249,7 @@ void CSSStyleDeclarationImp::setListStyle(Nullable<std::u16string> listStyle)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getListStyleImage()
 {
-    // TODO: implement me!
-    return Nullable<std::u16string>();
+    return listStyleImage.getCssText(this);
 }
 
 void CSSStyleDeclarationImp::setListStyleImage(Nullable<std::u16string> listStyleImage)

@@ -153,6 +153,7 @@ class CSSListStyleTypeValueImp : public CSSPropertyValueImp
     unsigned value;
 public:
     enum {
+        None,
         Disc,
         Circle,
         Square,
@@ -166,8 +167,7 @@ public:
         Armenian,
         Georgian,
         LowerAlpha,
-        UpperAlpha,
-        None
+        UpperAlpha
     };
     unsigned getValue() const {
         return value;
@@ -1572,6 +1572,40 @@ public:
     }
 };
 
+class CSSListStyleImageValueImp : public CSSPropertyValueImp
+{
+    std::u16string uri;
+public:
+    enum {
+        None
+    };
+    CSSListStyleImageValueImp& setValue(const std::u16string uri = u"") {
+        this->uri = uri;
+    }
+    CSSListStyleImageValueImp& setValue(CSSParserTerm* term) {
+        if (0 <= term->getIndex())
+            return setValue();
+        else
+            return setValue(term->getString());
+    }
+    std::u16string getValue() const {
+        return uri;
+    }
+    bool isNone() const {
+        return uri.length() == 0;
+    }
+    virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
+        if (isNone())
+            return u"none";
+        return u"url(" + CSSSerializeString(uri) + u')';
+    }
+    void specify(const CSSListStyleImageValueImp& specified) {
+        uri = specified.uri;
+    }
+    CSSListStyleImageValueImp() {
+    }
+};
+
 class CSSListStylePositionValueImp : public CSSPropertyValueImp
 {
     unsigned value;
@@ -1601,6 +1635,18 @@ public:
         value(initial) {
     }
     static const char16_t* Options[];
+};
+
+class CSSListStyleShorthandImp : public CSSPropertyValueImp
+{
+public:
+    enum {
+        None
+    };
+    virtual void setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
+    void reset(CSSStyleDeclarationImp* self);
+    virtual std::u16string getCssText(CSSStyleDeclarationImp* decl);
+    void specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl);
 };
 
 class CSSOverflowValueImp : public CSSPropertyValueImp

@@ -205,6 +205,7 @@ class CSSValueParser
     static CSSValueRule string;
     static CSSValueRule uri;
     static CSSValueRule lineHeight;
+    static CSSValueRule list_style_type;
     static CSSValueRule listStyleType;
     static CSSValueRule absolute_size;
     static CSSValueRule border_width;
@@ -246,7 +247,9 @@ class CSSValueParser
     static CSSValueRule fontWeight;
     static CSSValueRule font;
     static CSSValueRule letterSpacing;
+    static CSSValueRule listStyleImage;
     static CSSValueRule listStylePosition;
+    static CSSValueRule listStyle;
     static CSSValueRule margin;
     static CSSValueRule outlineColor;
     static CSSValueRule outlineStyle;

@@ -187,6 +187,7 @@ const char16_t* CSSListStylePositionValueImp::Options[] = {
 };
 
 const char16_t* CSSListStyleTypeValueImp::Options[] = {
+    u"none",
     u"disc",
     u"circle",
     u"square",
@@ -200,8 +201,7 @@ const char16_t* CSSListStyleTypeValueImp::Options[] = {
     u"armenian",
     u"georgian",
     u"lower-alpha",
-    u"upper-alpha",
-    u"none"
+    u"upper-alpha"
 };
 
 const char16_t* CSSOverflowValueImp::Options[] = {
@@ -1382,6 +1382,61 @@ void CSSListStylePositionValueImp::compute(ViewCSSImp* view, CSSStyleDeclaration
         style->display.setValue(CSSDisplayValueImp::Block);
         style->position.setValue(CSSPositionValueImp::Absolute);
     }
+}
+
+void CSSListStyleShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
+{
+    bool none = false;
+    bool type = false;
+    bool position = false;
+    bool image = false;
+    std::deque<CSSParserTerm*>& stack = parser->getStack();
+    for (auto i = stack.begin(); i != stack.end(); ++i) {
+        CSSParserTerm* term = *i;
+        if (term->propertyID == CSSStyleDeclarationImp::ListStyleType) {
+            type = true;
+            decl->listStyleType.setValue(term);
+        } else if (term->propertyID == CSSStyleDeclarationImp::ListStylePosition) {
+            position = true;
+            decl->listStylePosition.setValue(term);
+        } else if (term->unit == css::CSSPrimitiveValue::CSS_URI) {
+            image = true;
+            decl->listStyleImage.setValue(term);
+        } else if (term->getIndex() == CSSListStyleShorthandImp::None)
+            none = true;
+    }
+    if (!type) {
+        if (none)
+            decl->listStyleType.setValue(CSSListStyleTypeValueImp::None);
+        else
+            decl->listStyleType.setValue();
+    }
+    if (!position)
+        decl->listStylePosition.setValue();
+    if (!image)
+        decl->listStyleImage.setValue();
+    // TODO: none && type && image ==> error
+}
+
+std::u16string CSSListStyleShorthandImp::getCssText(CSSStyleDeclarationImp* decl)
+{
+    return decl->listStyleType.getCssText(decl) + u' ' +
+           decl->listStylePosition.getCssText(decl) + u' ' +
+           decl->listStyleImage.getCssText(decl);
+}
+
+void CSSListStyleShorthandImp::specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl)
+{
+    self->listStyleImage.specify(decl->listStyleImage);
+    self->listStylePosition.specify(decl->listStylePosition);
+    self->listStyleType.specify(decl->listStyleType);
+}
+
+void CSSListStyleShorthandImp::reset(CSSStyleDeclarationImp* self)
+{
+    self->listStyleImage.setValue();
+    self->listStylePosition.setValue();
+    self->listStyleType.setValue();
 }
 
 void CSSMarginShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)

@@ -205,6 +205,10 @@ int main(int argc, char** argv)
 
     test("p { list-style-position: inside; }");
     test("p { list-style-position: outside; }");
+    test("p { list-style: square inside; }");
+    test("p { list-style: none; }");
+    test("p { list-style: none disc; }");
+    test("p { list-style: none url(\"http://www.example.com/pinkish.png\"); }");
     
     // test @media
     test("@media print {"

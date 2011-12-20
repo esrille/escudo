@@ -302,9 +302,10 @@ public:
     CSSAutoLengthValueImp left;
 
     CSSLineHeightValueImp lineHeight;
-
+    CSSListStyleImageValueImp listStyleImage;
     CSSListStylePositionValueImp listStylePosition;
     CSSListStyleTypeValueImp listStyleType;
+    CSSListStyleShorthandImp listStyle;
     CSSAutoLengthValueImp marginTop;
     CSSAutoLengthValueImp marginRight;
     CSSAutoLengthValueImp marginBottom;
