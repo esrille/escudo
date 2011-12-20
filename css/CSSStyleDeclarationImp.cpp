@@ -261,6 +261,8 @@ CSSPropertyValueImp* CSSStyleDeclarationImp::getProperty(unsigned id)
         return &font;
     case LineHeight:
         return &lineHeight;
+    case ListStylePosition:
+        return &listStylePosition;
     case ListStyleType:
         return &listStyleType;
     case Margin:
@@ -701,6 +703,9 @@ void CSSStyleDeclarationImp::specify(const CSSStyleDeclarationImp* decl, unsigne
     case LineHeight:
         lineHeight.specify(decl->lineHeight);
         break;
+    case ListStylePosition:
+        listStylePosition.specify(decl->listStylePosition);
+        break;
     case ListStyleType:
         listStyleType.specify(decl->listStyleType);
         break;
@@ -1005,6 +1010,9 @@ void CSSStyleDeclarationImp::reset(unsigned id)
     case LineHeight:
         lineHeight.setValue();
         break;
+    case ListStylePosition:
+        listStylePosition.setValue();
+        break;
     case ListStyleType:
         listStyleType.setValue();
         break;
@@ -1219,6 +1227,7 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     borderSpacing.compute(view, this);
 
     content.compute(view, this);
+    listStylePosition.compute(view, this);
 
     if (isFloat() || isAbsolutelyPositioned() || !parentStyle)  // TODO or the contents of atomic inline-level descendants such as inline blocks and inline tables.
         textDecorationContext.update(this);
@@ -2222,8 +2231,7 @@ void CSSStyleDeclarationImp::setListStyleImage(Nullable<std::u16string> listStyl
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getListStylePosition()
 {
-    // TODO: implement me!
-    return Nullable<std::u16string>();
+    return listStylePosition.getCssText(this);
 }
 
 void CSSStyleDeclarationImp::setListStylePosition(Nullable<std::u16string> listStylePosition)

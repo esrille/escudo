@@ -303,6 +303,7 @@ public:
 
     CSSLineHeightValueImp lineHeight;
 
+    CSSListStylePositionValueImp listStylePosition;
     CSSListStyleTypeValueImp listStyleType;
     CSSAutoLengthValueImp marginTop;
     CSSAutoLengthValueImp marginRight;

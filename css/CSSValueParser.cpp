@@ -86,6 +86,7 @@ CSSValueRule CSSValueParser::fontVariant;
 CSSValueRule CSSValueParser::fontWeight;
 CSSValueRule CSSValueParser::font;
 CSSValueRule CSSValueParser::letterSpacing;
+CSSValueRule CSSValueParser::listStylePosition;
 CSSValueRule CSSValueParser::margin;
 CSSValueRule CSSValueParser::outlineColor;
 CSSValueRule CSSValueParser::outlineStyle;
@@ -409,7 +410,11 @@ void CSSValueParser::initializeRules()
     letterSpacing
         = CSSValueRule(u"normal")
         | length;
-
+        
+    listStylePosition
+        = CSSValueRule(u"inside", CSSListStylePositionValueImp::Inside)
+        | CSSValueRule(u"outside", CSSListStylePositionValueImp::Outside);
+        
     margin
         = CSSValueRule(1, 4, auto_length);
 
@@ -967,6 +972,9 @@ CSSValueParser::CSSValueParser(int propertyID) :
         break;
     case CSSStyleDeclarationImp::ListStyleType:
         rule = &listStyleType;
+        break;
+    case CSSStyleDeclarationImp::ListStylePosition:
+        rule = &listStylePosition;
         break;
     case CSSStyleDeclarationImp::Margin:
         rule = &margin;

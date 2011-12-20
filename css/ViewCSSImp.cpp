@@ -414,9 +414,6 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
                 markerStyle->compute(this, style, element);
                 if (Element marker = markerStyle->content.eval(getDocument(), element)) {
                     emptyInline = false;
-                    // TODO: Support 'list-style-position'.
-                    markerStyle->display.setValue(CSSDisplayValueImp::Block);
-                    markerStyle->position.setValue(CSSPositionValueImp::Absolute);
                     map[marker] = markerStyle;
                     if (BlockLevelBox* box = layOutBlockBoxes(marker, currentBox, childBox, style))
                         childBox = box;

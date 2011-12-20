@@ -181,6 +181,11 @@ const char16_t* CSSFontShorthandImp::Options[] = {
     u"status-bar"
 };
 
+const char16_t* CSSListStylePositionValueImp::Options[] = {
+    u"inside",
+    u"outside"
+};
+
 const char16_t* CSSListStyleTypeValueImp::Options[] = {
     u"disc",
     u"circle",
@@ -954,8 +959,10 @@ void CSSContentValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* 
                 case CSSPrimitiveValue::CSS_STRING:
                     string = term->getString();
                     break;
-                default:
+                case CSSParserTerm::CSS_TERM_INDEX:
                     listStyleType = term->getIndex();
+                    break;
+                default:
                     break;
                 }
                 ++i;
@@ -1364,6 +1371,17 @@ void CSSLineHeightValueImp::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* st
         return;
     }
     value.setValue(w, css::CSSPrimitiveValue::CSS_PX);
+}
+
+void CSSListStylePositionValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style)
+{
+    if (style->getPseudoElementSelectorType() != CSSPseudoElementSelector::Marker)
+        return;
+    
+    if (value == Outside) {
+        style->display.setValue(CSSDisplayValueImp::Block);
+        style->position.setValue(CSSPositionValueImp::Absolute);
+    }
 }
 
 void CSSMarginShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)

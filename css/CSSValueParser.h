@@ -246,6 +246,7 @@ class CSSValueParser
     static CSSValueRule fontWeight;
     static CSSValueRule font;
     static CSSValueRule letterSpacing;
+    static CSSValueRule listStylePosition;
     static CSSValueRule margin;
     static CSSValueRule outlineColor;
     static CSSValueRule outlineStyle;

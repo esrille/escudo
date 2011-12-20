@@ -1572,6 +1572,37 @@ public:
     }
 };
 
+class CSSListStylePositionValueImp : public CSSPropertyValueImp
+{
+    unsigned value;
+public:
+    enum {
+        Inside,
+        Outside,
+    };
+    unsigned getValue() const {
+        return value;
+    }
+    CSSListStylePositionValueImp& setValue(unsigned value = Outside) {
+        this->value = value;
+        return *this;
+    }
+    CSSListStylePositionValueImp& setValue(CSSParserTerm* term) {
+        return setValue(term->getIndex());
+    }
+    virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
+        return Options[value];
+    }
+    void specify(const CSSListStylePositionValueImp& specified) {
+        value = specified.value;
+    }
+    void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
+    CSSListStylePositionValueImp(unsigned initial = Outside) :
+        value(initial) {
+    }
+    static const char16_t* Options[];
+};
+
 class CSSOverflowValueImp : public CSSPropertyValueImp
 {
     unsigned value;

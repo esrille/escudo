@@ -203,6 +203,9 @@ int main(int argc, char** argv)
     test("p { font: bold italic large Palatino, serif }");
     test("p { font: normal small-caps 120%/120% fantasy }");
 
+    test("p { list-style-position: inside; }");
+    test("p { list-style-position: outside; }");
+    
     // test @media
     test("@media print {"
          "  h1            { page-break-before: always }"
