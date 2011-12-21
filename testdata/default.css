@@ -84,9 +84,6 @@ ol, ul {
 	counter-reset: list-item; 
 	padding-left: 40px; 
 }
-li { 
-	counter-increment: list-item;
-}
 li::marker { 
 	display: inline-block;
 	margin-right: 1em;

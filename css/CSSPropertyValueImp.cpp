@@ -1083,7 +1083,7 @@ void CSSContentValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style
             case CSSListStyleTypeValueImp::Georgian:
             case CSSListStyleTypeValueImp::LowerAlpha:
             case CSSListStyleTypeValueImp::UpperAlpha:
-                if (Content* content = new CounterContent(u"list-item", u"", style->listStyleType.getValue()))
+                if (CounterContent* content = new CounterContent(u"list-item", u"", style->listStyleType.getValue()))
                     contents.push_back(content);
                 break;
             default:

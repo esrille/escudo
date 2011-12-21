@@ -385,9 +385,24 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
         bool emptyInline = style->display.isInline() && !element.hasChildNodes();
         BlockLevelBox* childBox = 0;
 
-        CSSStyleDeclarationImp* markerStyle = style->display.isListItem() ? style->getPseudoElementStyle(CSSPseudoElementSelector::Marker) : 0;
+        CSSStyleDeclarationImp* markerStyle = 0;
+        if (style->display.isListItem()) {
+            markerStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::Marker);
+            if (!markerStyle) {
+                // Generate the default markerStyle.
+                markerStyle = style->createPseudoElementStyle(CSSPseudoElementSelector::Marker);
+                if (markerStyle) {
+                    // Set the default marker style
+                    markerStyle->setDisplay(u"inline-block");
+                }
+            }
+        }
         if (markerStyle) {
             markerStyle->compute(this, style, element);
+            // Execute implicit 'counter-increment: list-item;'
+            CounterImpPtr counter = getCounter(u"list-item");
+            if (counter)
+                counter->increment(1);
             CSSStyleDeclarationImp::CounterContext ccMarker = markerStyle->updateCounters(this);
             if (Element marker = markerStyle->content.eval(this, element)) {
                 emptyInline = false;

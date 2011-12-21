@@ -33,7 +33,7 @@ void CounterImp::reset(int number)
 void CounterImp::increment(int number)
 {
     if (counters.empty())
-        return;
+        counters.push_back(0);
     counters.back() += number;
 }
 
@@ -49,10 +49,28 @@ std::u16string CounterImp::eval(const std::u16string& separator, unsigned type)
     this->listStyle.setValue(type);
     if (counters.empty())
         return u"";
-    // TODO: Support type
-    if (separator.empty())
-        return toString(counters.back());
     std::u16string value;
+    if (separator.empty()) {
+        switch (type) {
+        case CSSListStyleTypeValueImp::Decimal:
+            value = toString(counters.back()) + u".\u00A0";
+            break;
+        case CSSListStyleTypeValueImp::DecimalLeadingZero:
+        case CSSListStyleTypeValueImp::LowerRoman:
+        case CSSListStyleTypeValueImp::UpperRoman:
+        case CSSListStyleTypeValueImp::LowerGreek:
+        case CSSListStyleTypeValueImp::LowerLatin:
+        case CSSListStyleTypeValueImp::UpperLatin:
+        case CSSListStyleTypeValueImp::Armenian:
+        case CSSListStyleTypeValueImp::Georgian:
+        case CSSListStyleTypeValueImp::LowerAlpha:
+        case CSSListStyleTypeValueImp::UpperAlpha:
+        default:
+            value = toString(counters.back());
+            break;
+        }
+        return value;
+    }
     for (auto i = counters.begin(); i != counters.end(); ++i) {
         if (i != counters.begin())
             value += separator;
