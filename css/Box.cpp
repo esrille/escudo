@@ -1663,14 +1663,19 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
         child->fit(width);
     }
 
-    if (style->getPseudoElementSelectorType() == CSSPseudoElementSelector::Marker)
-        offsetH -= getTotalWidth();
-    
     restoreFormattingContext(context);
     adjustCollapsedThroughMargins(context);
 
     offsetH += left;
     offsetV += top;
+
+    if (style->getPseudoElementSelectorType() == CSSPseudoElementSelector::Marker) {
+        // The horizontal static position of the marker is such that the
+        // marker's "end" edge is placed against the "start" edge of the
+        // list item's parent.
+        Box* list = getParentBox()->getParentBox()->getParentBox();
+        offsetH = (list->x + list->getBlankLeft()) - x - getTotalWidth() + getMarginRight();
+    }
 }
 
 void BlockLevelBox::resolveOffset(ViewCSSImp* view)

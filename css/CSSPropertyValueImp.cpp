@@ -1115,8 +1115,11 @@ Element CSSContentValueImp::eval(ViewCSSImp* view, Element element)
     if (URIContent* content = dynamic_cast<URIContent*>(contents.front())) {
         // TODO: if the image is not valid, use the 'list-style-type' instead.
         html::HTMLImageElement img = interface_cast<html::HTMLImageElement>(view->getDocument().createElement(u"img"));
-        if (img)
+        if (img) {
             img.setSrc(content->value);
+            if (NodeImp* imp = dynamic_cast<NodeImp*>(img.self()))
+                imp->setParentNode(static_cast<NodeImp*>(element.self()));
+        }
         return img;
     }
     
