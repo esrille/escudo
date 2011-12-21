@@ -585,9 +585,9 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
     float point = view->getPointFromPx(activeStyle->fontSize.getPx());
     size_t position = 0;
     for (;;) {
+        if (context->atLineHead && discardable && style->processLineHeadWhiteSpace(data) == 0)
+            return !isAnonymous();
         if (!context->lineBox) {
-            if (style->processLineHeadWhiteSpace(data) == 0 && discardable)
-                return !isAnonymous();
             if (!context->addLineBox(view, this))
                 return false;  // TODO error
             if (!psuedoChecked && getFirstChild() == context->lineBox) {
@@ -847,6 +847,8 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
     // Use the positive margin stored in context to consume the remaining height of floating boxes.
     bool keepConsumed = false;
     consumed = context->useMargin();
+
+    context->atLineHead = true;
 
     assert(!hasChildBoxes());
     bool collapsed = true;

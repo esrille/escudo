@@ -96,7 +96,8 @@ class FormattingContext
     // Previous height and baseline of the current lineBox used in nextLine()
     float baseline;
     float lineHeight;
-
+    bool atLineHead;
+    
 public:
     FormattingContext();
     LineBox* addLineBox(ViewCSSImp* view, BlockLevelBox* parentBox);

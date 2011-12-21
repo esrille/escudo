@@ -221,6 +221,11 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Text text, BlockLevelBox* parentBox,
     if (!parentBox || !style)
         return 0;
     if (!parentBox->hasChildBoxes()) {
+        if (!parentBox->hasInline() && style->whiteSpace.isCollapsingSpace()) {
+            std::u16string data = text.getData();
+            if (style->processLineHeadWhiteSpace(data) == 0)
+                return 0;
+        }
         parentBox->insertInline(text);
         return 0;
     }
@@ -230,15 +235,8 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Text text, BlockLevelBox* parentBox,
         // away according to the 'white-space' property does not
         // generate any anonymous inline boxes.
         if (style->whiteSpace.isCollapsingSpace()) {
-            std::u16string data = text.getData();  // TODO: make this faster
-            bool whiteSpace = true;
-            for (auto i = data.begin(); i != data.end(); ++i) {
-                if (!isSpace(*i)) {
-                    whiteSpace = false;
-                    break;
-                }
-            }
-            if (whiteSpace)
+            std::u16string data = text.getData();
+            if (style->processLineHeadWhiteSpace(data) == 0)
                 return 0;
         }
     }

@@ -38,7 +38,8 @@ FormattingContext::FormattingContext() :
     negativeMargin(0.0f),
     previousMargin(NAN),
     baseline(0.0f),
-    lineHeight(0.0f)
+    lineHeight(0.0f),
+    atLineHead(true)
 {
 }
 
@@ -105,6 +106,8 @@ LineBox* FormattingContext::addLineBox(ViewCSSImp* view, BlockLevelBox* parentBo
 
         x = getLeftEdge();
         leftover = parentBox->width - x - getRightEdge();
+
+        atLineHead = true;
     }
     return lineBox;
 }
@@ -286,6 +289,8 @@ void FormattingContext::appendInlineBox(InlineLevelBox* inlineBox, CSSStyleDecla
     lineBox->appendChild(inlineBox);
     if (activeStyle->isPositioned() && !inlineBox->isAnonymous())
         activeStyle->getStackingContext()->addBase(inlineBox);
+
+    atLineHead = false;
 }
 
 // Complete the current lineBox by adding float boxes if any.
