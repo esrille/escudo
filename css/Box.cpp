@@ -365,17 +365,14 @@ BlockLevelBox* BlockLevelBox::getAnonymousBox()
 {
     BlockLevelBox* anonymousBox;
     if (hasAnonymousBox()) {
-        anonymousBox = dynamic_cast<BlockLevelBox*>(firstChild);
+        anonymousBox = dynamic_cast<BlockLevelBox*>(lastChild);
         if (anonymousBox)
             return anonymousBox;
     }
     anonymousBox = new(std::nothrow) BlockLevelBox;
     if (anonymousBox) {
         anonymousBox->spliceInline(this);
-        if (firstChild)
-            insertBefore(anonymousBox, firstChild);
-        else
-            appendChild(anonymousBox);
+        appendChild(anonymousBox);
     }
     return anonymousBox;
 }

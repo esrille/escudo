@@ -81,7 +81,11 @@ BDO[DIR="rtl"]  { direction: rtl; unicode-bidi: bidi-override }
 
 /* CSS 3 Lists */
 ol, ul { 
+	counter-reset: list-item; 
 	padding-left: 40px; 
+}
+li { 
+	counter-increment: list-item;
 }
 li::marker { 
 	display: inline-block;

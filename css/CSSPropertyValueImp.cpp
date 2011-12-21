@@ -18,6 +18,7 @@
 
 #include <org/w3c/dom/Element.h>
 
+#include "CounterImp.h"
 #include "CSSStyleDeclarationImp.h"
 #include "ViewCSSImp.h"
 #include "Box.h"
@@ -397,6 +398,30 @@ std::u16string CSSAutoNumberingValueImp::getCssText(CSSStyleDeclarationImp* decl
         cssText += (*i)->getCssText(defaultNumber);
     }
     return cssText;
+}
+
+void CSSAutoNumberingValueImp::incrementCounter(ViewCSSImp* view)
+{
+    for (auto i = contents.begin(); i != contents.end(); ++i) {
+        if (CounterImpPtr counter = view->getCounter((*i)->name))
+            counter->increment((*i)->number);
+    }
+}
+
+void CSSAutoNumberingValueImp::resetCounter(ViewCSSImp* view)
+{
+    for (auto i = contents.begin(); i != contents.end(); ++i) {
+        if (CounterImpPtr counter = view->getCounter((*i)->name))
+            counter->reset((*i)->number);
+    }
+}
+
+void CSSAutoNumberingValueImp::restoreCounter(ViewCSSImp* view)
+{
+    for (auto i = contents.begin(); i != contents.end(); ++i) {
+        if (CounterImpPtr counter = view->getCounter((*i)->name))
+            counter->restore();
+    }
 }
 
 std::deque<CSSParserTerm*>::iterator CSSBackgroundPositionValueImp::setValue(std::deque<CSSParserTerm*>& stack, std::deque<CSSParserTerm*>::iterator i)
@@ -1047,7 +1072,20 @@ void CSSContentValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style
                 if (Content* content = new(std::nothrow) StringContent(u"\u25A0"))  // ◾ "\u25FE"
                     contents.push_back(content);
                 break;
-            // TODO: Support counter types
+            case CSSListStyleTypeValueImp::Decimal:
+            case CSSListStyleTypeValueImp::DecimalLeadingZero:
+            case CSSListStyleTypeValueImp::LowerRoman:
+            case CSSListStyleTypeValueImp::UpperRoman:
+            case CSSListStyleTypeValueImp::LowerGreek:
+            case CSSListStyleTypeValueImp::LowerLatin:
+            case CSSListStyleTypeValueImp::UpperLatin:
+            case CSSListStyleTypeValueImp::Armenian:
+            case CSSListStyleTypeValueImp::Georgian:
+            case CSSListStyleTypeValueImp::LowerAlpha:
+            case CSSListStyleTypeValueImp::UpperAlpha:
+                if (Content* content = new CounterContent(u"list-item", u"", style->listStyleType.getValue()))
+                    contents.push_back(content);
+                break;
             default:
                 break;
             }
@@ -1058,20 +1096,24 @@ void CSSContentValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style
     }
 }
 
-Element CSSContentValueImp::eval(Document document, Element element)
+std::u16string CSSContentValueImp::CounterContent::eval(ViewCSSImp* view)
+{
+    if (CounterImpPtr counter = view->getCounter(identifier))
+        return counter->eval(string, listStyleType.getValue());
+    return u"";
+}
+
+Element CSSContentValueImp::eval(ViewCSSImp* view, Element element)
 {
     if (contents.empty())
         return 0;
-    Element span = document.createElement(u"span");
+    Element span = view->getDocument().createElement(u"span");
     if (!span)
         return 0;
     std::u16string data;
-    for (auto i = contents.begin(); i != contents.end(); ++i) {
-        // TODO: process other content types
-        if (StringContent* content = dynamic_cast<StringContent*>(*i))
-            data += content->value;
-    }
-    if (org::w3c::dom::Text text = document.createTextNode(data))
+    for (auto i = contents.begin(); i != contents.end(); ++i)
+        data += (*i)->eval(view);
+    if (org::w3c::dom::Text text = view->getDocument().createTextNode(data))
         span.appendChild(text);
 
     // Set the pseudo parentNode of the new span element so that

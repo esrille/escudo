@@ -615,7 +615,7 @@ public:
         return !inlines.empty();
     }
     void insertInline(Node node) {
-        inlines.push_front(node);
+        inlines.push_back(node);
     }
     void spliceInline(BlockLevelBox* box) {
         inlines.splice(inlines.begin(), box->inlines);
@@ -638,12 +638,12 @@ public:
 
     void layOutAbsolute(ViewCSSImp* view);  // 2nd pass
 
-    // Gets the first child box which is an anonymous box. Creates one if there's none
-    // even if there's no children; if so, the existing texts are moved to the
+    // Gets the last, anonymous child box. Creates one if there's none even 
+    // if there's no children; if so, the existing texts are moved to the 
     // new anonymous box.
     bool hasAnonymousBox()
     {
-        return firstChild && firstChild->isAnonymous();
+        return lastChild && lastChild->isAnonymous();
     }
     BlockLevelBox* getAnonymousBox();
 

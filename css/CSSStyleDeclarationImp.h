@@ -219,6 +219,28 @@ public:
         }
     };
 
+    struct CounterContext
+    {
+        ViewCSSImp* view;
+        CSSStyleDeclarationImp* style;
+    public:
+        CounterContext() :
+            view(0),
+            style(0)
+        {
+        }
+        CounterContext(ViewCSSImp* view, CSSStyleDeclarationImp* style) :
+            view(view),
+            style(style)
+        {
+        }
+        ~CounterContext()
+        {
+            if (view && style)
+                style->counterReset.restoreCounter(view);
+        }
+    };
+
 private:
     static const size_t PropertyCount = MaxProperties;
     static const char16_t* PropertyNames[PropertyCount];
@@ -391,6 +413,12 @@ public:
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle, Element element);
 
     void resolve(ViewCSSImp* view, const ContainingBlock* containingBlock);
+
+    CounterContext updateCounters(ViewCSSImp* view) {
+        counterReset.resetCounter(view);
+        counterIncrement.incrementCounter(view);
+        return CounterContext(view, this);
+    }
 
     size_t processWhiteSpace(std::u16string& data, char16_t& prevChar);
     size_t processLineHeadWhiteSpace(std::u16string& data);

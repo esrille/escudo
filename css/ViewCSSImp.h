@@ -29,7 +29,7 @@
 #include "EventListenerImp.h"
 
 #include "Box.h"
-#include "CSSPropertyValueImp.h"
+#include "CounterImp.h"
 
 #include "font/FontManager.h"
 
@@ -72,6 +72,8 @@ class ViewCSSImp
     Retained<ContainingBlock> initialContainingBlock;
     StackingContext* stackingContexts;
     unsigned overflow;
+
+    std::list<CounterImpPtr> counterList;
 
     float scrollWidth;
     float zoom;
@@ -263,6 +265,11 @@ public:
         zoom = value;
         if (boxTree)
             boxTree->setFlags(2);
+    }
+
+    CounterImpPtr getCounter(const std::u16string identifier);
+    void clearCounters() {
+        counterList.clear();
     }
 
     CSSStyleDeclarationImp* getStyle(Element elt, Nullable<std::u16string> pseudoElt = Nullable<std::u16string>());

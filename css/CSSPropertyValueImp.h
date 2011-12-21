@@ -414,6 +414,11 @@ public:
     void specify(const CSSAutoNumberingValueImp& specified) {
         contents = specified.contents;
     }
+
+    void incrementCounter(ViewCSSImp* view);
+    void resetCounter(ViewCSSImp* view);
+    void restoreCounter(ViewCSSImp* view);
+    
     CSSAutoNumberingValueImp(int defaultNumber) :
         defaultNumber(defaultNumber) {
     }
@@ -938,6 +943,9 @@ public:
     struct Content {
         virtual ~Content() {}
         virtual std::u16string getCssText() = 0;
+        virtual std::u16string eval(ViewCSSImp* view) {
+            return u"";
+        }
     };
     struct StringContent : public Content {
         std::u16string value;
@@ -947,6 +955,9 @@ public:
         virtual std::u16string getCssText() {
             return CSSSerializeString(value);
         }
+        virtual std::u16string eval(ViewCSSImp* view) {
+            return value;
+        }        
     };
     struct URIContent : public Content {
         std::u16string value;
@@ -967,10 +978,11 @@ public:
             listStyleType(listStyleType) {
         }
         virtual std::u16string getCssText() {
-            if (string.length() == 0)
+            if (string.empty())
                 return u"counter(" +  CSSSerializeIdentifier(identifier) + u", " + listStyleType.getCssText() + u')';
             return u"counters(" +  CSSSerializeIdentifier(identifier) + u", " + CSSSerializeString(string) + u", " + listStyleType.getCssText() + u')';
         }
+        virtual std::u16string eval(ViewCSSImp* view);
     };
     struct AttrContent : public Content {
         std::u16string identifier;
@@ -1027,7 +1039,7 @@ public:
     }
 
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
-    Element eval(Document document, Element element);
+    Element eval(ViewCSSImp* view, Element element);
 
     CSSContentValueImp(unsigned initial = Normal) :
         value(initial) {
