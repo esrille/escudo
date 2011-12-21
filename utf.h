@@ -218,4 +218,12 @@ inline std::u16string toString(unsigned int value)
     return std::u16string(p, &buf[MaxDigits] - p);
 }
 
+inline std::u16string toString(int value)
+{
+    if (value < 0)
+        return u"-" + toString(-value);
+    else
+        return toString(static_cast<unsigned int>(value));
+}
+
 #endif  // #ifndef ES_UTF_H_INCLUDED
