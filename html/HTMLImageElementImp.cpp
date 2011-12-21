@@ -91,7 +91,7 @@ std::u16string HTMLImageElementImp::getSrc()
 
 void HTMLImageElementImp::setSrc(std::u16string src)
 {
-    // TODO: implement me!
+    setAttribute(u"src", src);
 }
 
 std::u16string HTMLImageElementImp::getCrossOrigin()

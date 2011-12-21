@@ -1057,37 +1057,41 @@ void CSSContentValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style
     case CSSPseudoElementSelector::Marker:
         if (isNormal()) {
             value = None;
-            // TODO: Support 'list-style-image'.
-            switch (style->listStyleType.getValue()) {
-            case CSSListStyleTypeValueImp::Disc:
-                if (Content* content = new(std::nothrow) StringContent(u"\u2022"))  // •
+            if (!style->listStyleImage.isNone()) {
+                if (URIContent* content = new(std::nothrow) URIContent(style->listStyleImage.getValue()))
                     contents.push_back(content);
-                break;
-            case CSSListStyleTypeValueImp::Circle:
-                if (Content* content = new(std::nothrow) StringContent(u"\u25E6"))  // ◦
-                    contents.push_back(content);
-                break;
-            case CSSListStyleTypeValueImp::Square:
-                // Use u25A0 instead of u25FE for the IPA font for now
-                if (Content* content = new(std::nothrow) StringContent(u"\u25A0"))  // ◾ "\u25FE"
-                    contents.push_back(content);
-                break;
-            case CSSListStyleTypeValueImp::Decimal:
-            case CSSListStyleTypeValueImp::DecimalLeadingZero:
-            case CSSListStyleTypeValueImp::LowerRoman:
-            case CSSListStyleTypeValueImp::UpperRoman:
-            case CSSListStyleTypeValueImp::LowerGreek:
-            case CSSListStyleTypeValueImp::LowerLatin:
-            case CSSListStyleTypeValueImp::UpperLatin:
-            case CSSListStyleTypeValueImp::Armenian:
-            case CSSListStyleTypeValueImp::Georgian:
-            case CSSListStyleTypeValueImp::LowerAlpha:
-            case CSSListStyleTypeValueImp::UpperAlpha:
-                if (CounterContent* content = new CounterContent(u"list-item", u"", style->listStyleType.getValue()))
-                    contents.push_back(content);
-                break;
-            default:
-                break;
+            } else {
+                switch (style->listStyleType.getValue()) {
+                case CSSListStyleTypeValueImp::Disc:
+                    if (Content* content = new(std::nothrow) StringContent(u"\u2022"))  // •
+                        contents.push_back(content);
+                    break;
+                case CSSListStyleTypeValueImp::Circle:
+                    if (Content* content = new(std::nothrow) StringContent(u"\u25E6"))  // ◦
+                        contents.push_back(content);
+                    break;
+                case CSSListStyleTypeValueImp::Square:
+                    // Use u25A0 instead of u25FE for the IPA font for now
+                    if (Content* content = new(std::nothrow) StringContent(u"\u25A0"))  // ◾ "\u25FE"
+                        contents.push_back(content);
+                    break;
+                case CSSListStyleTypeValueImp::Decimal:
+                case CSSListStyleTypeValueImp::DecimalLeadingZero:
+                case CSSListStyleTypeValueImp::LowerRoman:
+                case CSSListStyleTypeValueImp::UpperRoman:
+                case CSSListStyleTypeValueImp::LowerGreek:
+                case CSSListStyleTypeValueImp::LowerLatin:
+                case CSSListStyleTypeValueImp::UpperLatin:
+                case CSSListStyleTypeValueImp::Armenian:
+                case CSSListStyleTypeValueImp::Georgian:
+                case CSSListStyleTypeValueImp::LowerAlpha:
+                case CSSListStyleTypeValueImp::UpperAlpha:
+                    if (CounterContent* content = new CounterContent(u"list-item", u"", style->listStyleType.getValue()))
+                        contents.push_back(content);
+                    break;
+                default:
+                    break;
+                }
             }
         }
         break;
@@ -1107,6 +1111,15 @@ Element CSSContentValueImp::eval(ViewCSSImp* view, Element element)
 {
     if (contents.empty())
         return 0;
+
+    if (URIContent* content = dynamic_cast<URIContent*>(contents.front())) {
+        // TODO: if the image is not valid, use the 'list-style-type' instead.
+        html::HTMLImageElement img = interface_cast<html::HTMLImageElement>(view->getDocument().createElement(u"img"));
+        if (img)
+            img.setSrc(content->value);
+        return img;
+    }
+    
     Element span = view->getDocument().createElement(u"span");
     if (!span)
         return 0;
