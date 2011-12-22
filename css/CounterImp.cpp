@@ -132,7 +132,7 @@ std::u16string CounterImp::eval(const std::u16string& separator, unsigned type)
         case CSSListStyleTypeValueImp::LowerGreek:
             // This style is only defined because CSS2.1 has it.
             // It doesn't appear to actually be used in Greek texts.
-            value = std::u16string(1, u"αβγδεζηθικλμνξοπρστυφχψω"[static_cast<unsigned>(counters.back()) % 24 - 1]);
+            value = std::u16string(1, u"αβγδεζηθικλμνξοπρστυφχψω"[static_cast<unsigned>(counters.back() - 1) % 24]);
             break;
         case CSSListStyleTypeValueImp::LowerRoman:
             value = convertToRoman(counters.back(), lowerRoman);

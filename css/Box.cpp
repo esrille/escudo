@@ -1852,6 +1852,7 @@ bool InlineLevelBox::isAnonymous() const
 
 void InlineLevelBox::setData(FontTexture* font, float point, std::u16string data)
 {
+    assert(data[0] != 0 || data.empty());
     this->font = font;
     this->point = point;
     this->data = data;
