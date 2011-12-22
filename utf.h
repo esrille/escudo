@@ -221,7 +221,7 @@ inline std::u16string toString(unsigned int value)
 inline std::u16string toString(int value)
 {
     if (value < 0)
-        return u"-" + toString(-value);
+        return u"-" + toString(static_cast<unsigned int>(-value));
     else
         return toString(static_cast<unsigned int>(value));
 }
