@@ -337,6 +337,7 @@ void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox)
         updateRemainingHeight(height);
     lineBox = 0;
     x = leftover = 0.0f;
+    atLineHead = true;
 }
 
 void FormattingContext::addFloat(BlockLevelBox* floatBox, float totalWidth)
