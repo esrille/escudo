@@ -348,7 +348,9 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
         return 0;
     bool runIn = style->display.isRunIn() && parentBox;
 
-    CSSStyleDeclarationImp::CounterContext cc = style->updateCounters(this);
+    CSSStyleDeclarationImp::CounterContext cc;
+    if (style->getPseudoElementSelectorType() == CSSPseudoElementSelector::NonPseudo)
+        cc = style->updateCounters(this);
 
     BlockLevelBox* currentBox = parentBox;
     if (style->isFloat() || style->isAbsolutelyPositioned() || !parentBox) {

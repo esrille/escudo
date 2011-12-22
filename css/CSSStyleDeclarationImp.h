@@ -221,8 +221,8 @@ public:
 
     struct CounterContext
     {
-        ViewCSSImp* view;
-        CSSStyleDeclarationImp* style;
+        mutable ViewCSSImp* view;
+        mutable CSSStyleDeclarationImp* style;
     public:
         CounterContext() :
             view(0),
@@ -233,6 +233,19 @@ public:
             view(view),
             style(style)
         {
+        }
+        CounterContext(const CounterContext& other) :
+            view(other.view),
+            style(other.style)
+        {
+            other.view = 0;
+            other.style = 0;
+        }
+        CounterContext& operator=(const CounterContext& other)
+        {
+            std::swap(view, other.view);
+            std::swap(style, other.style);
+            return *this;
         }
         ~CounterContext()
         {

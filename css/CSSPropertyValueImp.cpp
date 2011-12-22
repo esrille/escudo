@@ -1063,16 +1063,16 @@ void CSSContentValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style
             } else {
                 switch (style->listStyleType.getValue()) {
                 case CSSListStyleTypeValueImp::Disc:
-                    if (Content* content = new(std::nothrow) StringContent(u"\u2022"))  // •
+                    if (Content* content = new(std::nothrow) StringContent(u"\u2022\u00A0"))  // •
                         contents.push_back(content);
                     break;
                 case CSSListStyleTypeValueImp::Circle:
-                    if (Content* content = new(std::nothrow) StringContent(u"\u25E6"))  // ◦
+                    if (Content* content = new(std::nothrow) StringContent(u"\u25E6\u00A0"))  // ◦
                         contents.push_back(content);
                     break;
                 case CSSListStyleTypeValueImp::Square:
                     // Use u25A0 instead of u25FE for the IPA font for now
-                    if (Content* content = new(std::nothrow) StringContent(u"\u25A0"))  // ◾ "\u25FE"
+                    if (Content* content = new(std::nothrow) StringContent(u"\u25A0\u00A0"))  // ◾ "\u25FE"
                         contents.push_back(content);
                     break;
                 case CSSListStyleTypeValueImp::Decimal:
@@ -1087,6 +1087,8 @@ void CSSContentValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style
                 case CSSListStyleTypeValueImp::LowerAlpha:
                 case CSSListStyleTypeValueImp::UpperAlpha:
                     if (CounterContent* content = new CounterContent(u"list-item", u"", style->listStyleType.getValue()))
+                        contents.push_back(content);
+                    if (Content* content = new(std::nothrow) StringContent(u".\u00A0"))
                         contents.push_back(content);
                     break;
                 default:

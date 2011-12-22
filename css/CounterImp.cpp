@@ -146,7 +146,6 @@ std::u16string CounterImp::eval(const std::u16string& separator, unsigned type)
             value = toString(counters.back());
             break;
         }
-        value += u".\u00A0";
         return value;
     }
     for (auto i = counters.begin(); i != counters.end(); ++i) {
