@@ -22,6 +22,7 @@
 #include <boost/iostreams/device/file_descriptor.hpp>
 
 #include "DocumentImp.h"
+#include "WindowImp.h"
 #include "css/CSSInputStream.h"
 #include "css/CSSParser.h"
 
@@ -109,6 +110,9 @@ void CSSImportRuleImp::notify()
         styleSheet = parser.parse(cssStream);
     }
     document->decrementLoadEventDelayCount();
+
+    if (WindowImp* view = document->getDefaultWindow())
+        view->setFlagsToBoxTree(1);
 }
 
 }
