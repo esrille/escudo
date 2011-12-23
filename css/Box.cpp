@@ -1673,7 +1673,9 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
         // The horizontal static position of the marker is such that the
         // marker's "end" edge is placed against the "start" edge of the
         // list item's parent.
-        Box* list = getParentBox()->getParentBox()->getParentBox();
+        Box* list = getParentBox()->getParentBox();
+        if (list->getParentBox() && list->getParentBox()->style->counterReset.hasCounter())
+            list = list->getParentBox();
         offsetH = (list->x + list->getBlankLeft()) - x - getTotalWidth() + getMarginRight();
     }
 }

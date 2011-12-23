@@ -415,6 +415,9 @@ public:
         contents = specified.contents;
     }
 
+    bool hasCounter() const {
+        return !contents.empty();
+    }
     void incrementCounter(ViewCSSImp* view);
     void resetCounter(ViewCSSImp* view);
     void restoreCounter(ViewCSSImp* view);
