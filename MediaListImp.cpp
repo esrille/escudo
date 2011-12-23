@@ -111,9 +111,4 @@ void MediaListImp::deleteMedium(std::u16string medium)
     types &= ~getMediaTypeBits(medium);
 }
 
-MediaListImp::MediaListImp() :
-    types(0)
-{
-}
-
 }}}}  // org::w3c::dom::bootstrap

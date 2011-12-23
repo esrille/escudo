@@ -37,7 +37,11 @@ std::u16string CSSMediaRuleImp::getCssText()
     std::u16string text = u"@media " + mediaList.getMediaText() + u" {";
     for (auto i = ruleList.begin(); i != ruleList.end(); ++i)
         text += (*i).getCssText();
-    return text += u"}";
+    text += u"}";
+    std::u16string media = mediaList.getMediaText();
+    if (!media.empty())
+        text += u" " + media;
+    return text;
 }
 
 // CSSMediaRule

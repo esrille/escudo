@@ -28,6 +28,7 @@
 
 #include "CSSTokenizer.h"
 #include "CSSSerialize.h"
+#include "MediaListImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -218,6 +219,8 @@ class CSSParser
     CSSMediaRuleImp* mediaRule;
     bool caseSensitive;  // for element names and attribute names.
 
+    Retained<MediaListImp> mediaList;
+
     void reset(const std::u16string cssText) {
         tokenizer.reset(cssText);
     }
@@ -253,6 +256,10 @@ public:
         return mediaRule;
     }
 
+    MediaListImp* getMediaList() {
+        return &mediaList;
+    }
+    
     bool getCaseSensitivity() const {
         return caseSensitive;
     }

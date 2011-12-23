@@ -43,8 +43,21 @@ private:
     unsigned types;
 
 public:
-    MediaListImp();
+    MediaListImp(unsigned types = 0) :
+        types(types)
+    {}
+    MediaListImp(const MediaListImp& other) :
+        types(other.types)
+    {}
 
+    MediaListImp& operator=(const MediaListImp& other) {
+        types = other.types;
+        return *this;
+    }
+    
+    void clear() {
+        types = 0;
+    }
     bool hasMedium(unsigned bit) {
         return types & bit;
     }

@@ -24,6 +24,7 @@
 #include <new>
 #include <boost/bind.hpp>
 
+#include "CSSImportRuleImp.h"
 #include "CSSMediaRuleImp.h"
 #include "CSSStyleRuleImp.h"
 #include "CSSStyleDeclarationImp.h"
@@ -90,19 +91,26 @@ void ViewCSSImp::findDeclarations(DeclarationSet& set, Element element, css::CSS
     unsigned int size = list.getLength();
     for (unsigned int i = 0; i < size; ++i) {
         css::CSSRule rule = list.getElement(i);
-        if (CSSStyleRuleImp* imp = dynamic_cast<CSSStyleRuleImp*>(rule.self())) {
-            CSSSelector* selector = imp->match(element, this);
+        if (CSSStyleRuleImp* styleRule = dynamic_cast<CSSStyleRuleImp*>(rule.self())) {
+            CSSSelector* selector = styleRule->match(element, this);
             if (!selector)
                 continue;
             unsigned pseudoElementID = 0;
             if (CSSPseudoElementSelector* pseudo = selector->getPseudoElement())
                 pseudoElementID = pseudo->getID();
-            PrioritizedDeclaration decl(imp->getLastSpecificity(), dynamic_cast<CSSStyleDeclarationImp*>(imp->getStyle().self()), pseudoElementID);
+            PrioritizedDeclaration decl(styleRule->getLastSpecificity(), dynamic_cast<CSSStyleDeclarationImp*>(styleRule->getStyle().self()), pseudoElementID);
             set.insert(decl);
-        } else if (CSSMediaRuleImp* imp = dynamic_cast<CSSMediaRuleImp*>(rule.self())) {
-            MediaListImp* mediaList = dynamic_cast<MediaListImp*>(imp->getMedia().self());
+        } else if (CSSMediaRuleImp* mediaRule = dynamic_cast<CSSMediaRuleImp*>(rule.self())) {
+            MediaListImp* mediaList = dynamic_cast<MediaListImp*>(mediaRule->getMedia().self());
             if (mediaList ->hasMedium(MediaListImp::Screen))  // TODO: support other mediums, too.
-                findDeclarations(set, element, imp->getCssRules());
+                findDeclarations(set, element, mediaRule->getCssRules());
+        } else if (CSSImportRuleImp* importRule = dynamic_cast<CSSImportRuleImp*>(rule.self())) {
+            MediaListImp* mediaList = dynamic_cast<MediaListImp*>(importRule->getMedia().self());
+            if (mediaList->hasMedium(MediaListImp::Screen)) { // TODO: support other mediums, too.
+                importRule->setDocument(dynamic_cast<DocumentImp*>(getDocument().self()));
+                if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(importRule->getStyleSheet().self()))
+                    findDeclarations(set, element, sheet->getCssRules());
+            }
         }
     }
 }

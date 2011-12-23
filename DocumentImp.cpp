@@ -126,6 +126,7 @@ void DocumentImp::setReadyState(const std::u16string& readyState)
     if (readyState == u"complete") {
         if (defaultView) {
             std::cout << "## complete\n";
+            defaultView->setFlagsToBoxTree(1);
             if (EventImp* event = new(std::nothrow) EventImp) {
                 event->initEvent(u"load", false, false);
                 defaultView->dispatchEvent(event);
@@ -158,8 +159,9 @@ void DocumentImp::activate()
 
 unsigned DocumentImp::decrementLoadEventDelayCount() {
     assert(0 < loadEventDelayCount);
-    if (--loadEventDelayCount == 0)
+    if (--loadEventDelayCount == 0) {
         setReadyState(u"complete");
+    }
     return loadEventDelayCount;
 }
 

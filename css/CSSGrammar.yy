@@ -25,8 +25,10 @@
 
 #include "utf.h"
 
+#include "MediaListImp.h"
 #include "css/CSSRuleImp.h"
 #include "css/CSSSelector.h"
+#include "css/CSSImportRuleImp.h"
 #include "css/CSSMediaRuleImp.h"
 #include "css/CSSStyleDeclarationImp.h"
 #include "css/CSSStyleRuleImp.h"
@@ -113,6 +115,7 @@ int CSSlex(CSSParser* parser);
 %type <text> ident_term;
 %type <text> property;
 %type <text> prio;
+%type <text> uri_term;
 %type <integer> combinator
 %type <integer> attrib_op
 %type <integer> unary_operator
@@ -127,6 +130,7 @@ int CSSlex(CSSParser* parser);
 %type <term> function
 %type <term> functional_pseudo
 %type <term> expression_term
+%type <cssRule> import
 %type <cssRule> ruleset
 %type <cssRule> media
 %type <cssRule> page
@@ -159,8 +163,20 @@ stylesheet
   | optional_sgml optional_imports optional_namespaces statement_list
   ;
 import
-  : IMPORT_SYM optional_space uri_term optional_space medium_list ';' optional_space
-  | IMPORT_SYM optional_space uri_term optional_space             ';' optional_space
+  : IMPORT_SYM optional_space uri_term optional_space medium_list ';' optional_space {
+        CSSImportRuleImp* rule = new(std::nothrow) CSSImportRuleImp($3);
+        if (rule) {
+            if (MediaListImp* mediaList = parser->getMediaList()) {
+                rule->setMediaList(mediaList);
+                mediaList->clear();
+            }
+        }
+        $$ = rule;
+    }
+  | IMPORT_SYM optional_space uri_term optional_space             ';' optional_space {
+        CSSImportRuleImp* rule = new(std::nothrow) CSSImportRuleImp($3);
+        $$ = rule;
+    }
   ;
 namespace
   : NAMESPACE_SYM optional_space namespace_prefix optional_space uri_term optional_space ';' optional_space
@@ -175,16 +191,21 @@ media
     }
     medium_list
    '{' optional_space optional_rulesets '}' optional_space {
-        $$ = parser->getMediaRule();
-        parser->setMediaRule(0);
+        CSSMediaRuleImp* mediaRule = parser->getMediaRule();
+        if (mediaRule) {
+            if (MediaListImp* mediaList = parser->getMediaList()) {
+                mediaRule->setMediaList(mediaList);
+                mediaList->clear();
+            }
+            parser->setMediaRule(0);
+        }
+        $$ = mediaRule;
     }
   ;
 medium
   : IDENT optional_space {
-        if (CSSMediaRuleImp* mediaRule = parser->getMediaRule()) {
-            auto media = mediaRule->getMedia();
-            media.appendMedium($1);
-        }
+        if (MediaListImp* mediaList = parser->getMediaList())
+            mediaList->appendMedium($1);
     }
   ;
 page
@@ -529,7 +550,11 @@ statement_list
   ;
 optional_imports
   : /* empty */
-  | optional_imports import optional_sgml
+  | optional_imports import optional_sgml {
+        if (CSSStyleSheetImp* styleSheet = parser->getStyleSheet()) {
+            styleSheet->append($2);
+        }
+    }
   ;
 optional_namespaces
   : /* empty */

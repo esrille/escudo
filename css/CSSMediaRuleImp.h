@@ -27,8 +27,6 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
-class MediaListImp;
-
 class CSSMediaRuleImp : public ObjectMixin<CSSMediaRuleImp, CSSRuleImp>
 {
     std::deque<css::CSSRule> ruleList;
@@ -36,6 +34,10 @@ class CSSMediaRuleImp : public ObjectMixin<CSSMediaRuleImp, CSSRuleImp>
 
 public:
     void append(css::CSSRule rule);
+    void setMediaList(MediaListImp* list) {
+        if (list)
+            mediaList = *list;
+    }
 
     // CSSRule
     virtual unsigned short getType();
