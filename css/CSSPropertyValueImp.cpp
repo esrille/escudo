@@ -367,13 +367,13 @@ void CSSNoneLengthValueImp::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* st
     length.resolve(view, style, fullSize);
 }
 
-void CSSAutoNumberingValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
+bool CSSAutoNumberingValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
 {
     std::deque<CSSParserTerm*>& stack = parser->getStack();
     for (auto i = stack.begin(); i != stack.end(); ++i) {
         CSSParserTerm* term = *i;
         if (term->getIndex() == 0)  // 'none'
-            return;
+            return true;
         assert(term->unit == CSSPrimitiveValue::CSS_IDENT);
         std::u16string name = term->text;
         int number = defaultNumber;
@@ -385,6 +385,7 @@ void CSSAutoNumberingValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValuePa
         if (Content* content = new(std::nothrow) Content(name, number))
             contents.push_back(content);
     }
+    return true;
 }
 
 std::u16string CSSAutoNumberingValueImp::getCssText(CSSStyleDeclarationImp* decl)
@@ -477,10 +478,11 @@ std::deque<CSSParserTerm*>::iterator CSSBackgroundPositionValueImp::setValue(std
     return --i;
 }
 
-void CSSBackgroundPositionValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
+bool CSSBackgroundPositionValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
 {
     std::deque<CSSParserTerm*>& stack = parser->getStack();
     setValue(stack, stack.begin());
+    return true;
 }
 
 void CSSBackgroundPositionValueImp::resolve(ViewCSSImp* view, BoxImage* image, CSSStyleDeclarationImp* style, float width, float height)
@@ -490,7 +492,7 @@ void CSSBackgroundPositionValueImp::resolve(ViewCSSImp* view, BoxImage* image, C
     vertical.resolve(view, style, height - image->getHeight());  // TODO: negative height case
 }
 
-void CSSBackgroundShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
+bool CSSBackgroundShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
 {
     bool color = false;
     bool attachment = false;
@@ -527,6 +529,7 @@ void CSSBackgroundShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueP
         decl->backgroundImage.setValue();
     if (!position)
         decl->backgroundPosition.setValue();
+    return true;
 }
 
 std::u16string CSSBackgroundShorthandImp::getCssText(CSSStyleDeclarationImp* decl)
@@ -569,7 +572,7 @@ void CSSBorderSpacingValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp*
     vertical.compute(view, style);
 }
 
-void CSSBorderColorShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
+bool CSSBorderColorShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
 {
     std::deque<CSSParserTerm*>& stack = parser->getStack();
     switch (stack.size()) {
@@ -592,6 +595,7 @@ void CSSBorderColorShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValue
         decl->borderLeftColor.setValue(stack[3]);
         break;
     }
+    return true;
 }
 
 std::u16string CSSBorderColorShorthandImp::getCssText(CSSStyleDeclarationImp* decl)
@@ -620,7 +624,7 @@ void CSSBorderColorShorthandImp::specify(CSSStyleDeclarationImp* self, const CSS
     self->borderLeftColor.specify(decl->borderLeftColor);
 }
 
-void CSSBorderStyleShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
+bool CSSBorderStyleShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
 {
     std::deque<CSSParserTerm*>& stack = parser->getStack();
     switch (stack.size()) {
@@ -643,6 +647,7 @@ void CSSBorderStyleShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValue
         decl->borderLeftStyle.setValue(stack[3]);
         break;
     }
+    return true;
 }
 
 std::u16string CSSBorderStyleShorthandImp::getCssText(CSSStyleDeclarationImp* decl)
@@ -708,7 +713,7 @@ void CSSBorderWidthValueImp::compute(ViewCSSImp* view, const CSSBorderStyleValue
     }
 }
 
-void CSSBorderWidthShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
+bool CSSBorderWidthShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
 {
     std::deque<CSSParserTerm*>& stack = parser->getStack();
     switch (stack.size()) {
@@ -731,6 +736,7 @@ void CSSBorderWidthShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValue
         decl->borderLeftWidth.setValue(stack[3]);
         break;
     }
+    return true;
 }
 
 std::u16string CSSBorderWidthShorthandImp::getCssText(CSSStyleDeclarationImp* decl)
@@ -759,7 +765,7 @@ void CSSBorderWidthShorthandImp::specify(CSSStyleDeclarationImp* self, const CSS
     self->borderLeftWidth.specify(decl->borderLeftWidth);
 }
 
-void CSSBorderValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
+bool CSSBorderValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
 {
     bool style = false;
     bool width = false;
@@ -877,6 +883,7 @@ void CSSBorderValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* p
             break;
         }
     }
+    return true;
 }
 
 std::u16string CSSBorderValueImp::getCssText(CSSStyleDeclarationImp* decl)
@@ -923,7 +930,7 @@ void CSSBorderValueImp::specify(CSSStyleDeclarationImp* self, const CSSStyleDecl
     }
 }
 
-void CSSBorderShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
+bool CSSBorderShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
 {
     bool style = false;
     bool width = false;
@@ -948,6 +955,7 @@ void CSSBorderShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParse
         decl->borderBottomWidth = decl->borderLeftWidth = decl->borderRightWidth = decl->borderTopWidth.setValue();
     if (!color)
         decl->borderBottomColor = decl->borderLeftColor = decl->borderRightColor = decl->borderTopColor.reset();
+    return true;
 }
 
 std::u16string CSSBorderShorthandImp::getCssText(CSSStyleDeclarationImp* decl)
@@ -964,7 +972,7 @@ void CSSBorderShorthandImp::specify(CSSStyleDeclarationImp* self, const CSSStyle
     self->borderColor.specify(self, decl);
 }
 
-void CSSContentValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
+bool CSSContentValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
 {
     std::deque<CSSParserTerm*>& stack = parser->getStack();
     for (auto i = stack.begin(); i != stack.end(); ++i) {
@@ -1006,7 +1014,7 @@ void CSSContentValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* 
             case Normal:
             case None:
                 value = index;
-                return;
+                return true;
             case OpenQuote:
             case CloseQuote:
             case NoOpenQuote:
@@ -1029,6 +1037,7 @@ void CSSContentValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* 
         if (content)
             contents.push_back(content);
     }
+    return true;
 }
 
 std::u16string CSSContentValueImp::getCssText(CSSStyleDeclarationImp* decl)
@@ -1207,10 +1216,11 @@ std::deque<CSSParserTerm*>::iterator CSSFontFamilyValueImp::setValue(std::deque<
     return --i;
 }
 
-void CSSFontFamilyValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
+bool CSSFontFamilyValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
 {
     std::deque<CSSParserTerm*>& stack = parser->getStack();
     setValue(stack, stack.begin());
+    return true;
 }
 
 std::u16string CSSFontFamilyValueImp::getCssText(CSSStyleDeclarationImp* decl)
@@ -1317,7 +1327,7 @@ void CSSFontWeightValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* pa
     value.setValue(w, css::CSSPrimitiveValue::CSS_NUMBER);
 }
 
-void CSSFontShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
+bool CSSFontShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
 {
     reset(decl);
     std::deque<CSSParserTerm*>& stack = parser->getStack();
@@ -1348,6 +1358,7 @@ void CSSFontShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser*
             break;
         }
     }
+    return true;
 }
 
 std::u16string CSSFontShorthandImp::getCssText(CSSStyleDeclarationImp* decl)
@@ -1444,7 +1455,7 @@ void CSSListStylePositionValueImp::compute(ViewCSSImp* view, CSSStyleDeclaration
     }
 }
 
-void CSSListStyleShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
+bool CSSListStyleShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
 {
     bool none = false;
     bool type = false;
@@ -1475,7 +1486,11 @@ void CSSListStyleShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValuePa
         decl->listStylePosition.setValue();
     if (!image)
         decl->listStyleImage.setValue();
-    // TODO: none && type && image ==> error
+    if (none && type && image) {
+        reset(decl);
+        return false;
+    }
+    return true;
 }
 
 std::u16string CSSListStyleShorthandImp::getCssText(CSSStyleDeclarationImp* decl)
@@ -1499,7 +1514,7 @@ void CSSListStyleShorthandImp::reset(CSSStyleDeclarationImp* self)
     self->listStyleType.setValue();
 }
 
-void CSSMarginShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
+bool CSSMarginShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
 {
     std::deque<CSSParserTerm*>& stack = parser->getStack();
     switch (stack.size()) {
@@ -1522,6 +1537,7 @@ void CSSMarginShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParse
         decl->marginLeft.setValue(stack[3]);
         break;
     }
+    return true;
 }
 
 std::u16string CSSMarginShorthandImp::getCssText(CSSStyleDeclarationImp* decl)
@@ -1550,7 +1566,7 @@ void CSSMarginShorthandImp::specify(CSSStyleDeclarationImp* self, const CSSStyle
     self->marginLeft.specify(decl->marginLeft);
 }
 
-void CSSPaddingShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
+bool CSSPaddingShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
 {
     std::deque<CSSParserTerm*>& stack = parser->getStack();
     switch (stack.size()) {
@@ -1573,6 +1589,7 @@ void CSSPaddingShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValuePars
         decl->paddingLeft.setValue(stack[3]);
         break;
     }
+    return true;
 }
 
 std::u16string CSSPaddingShorthandImp::getCssText(CSSStyleDeclarationImp* decl)

@@ -546,7 +546,8 @@ bool CSSStyleDeclarationImp::setProperty(int id, CSSParserExpr* expr, const std:
             // TODO: delete expr; ?
             return false;
         }
-        property->setValue(this, &parser);
+        if (!property->setValue(this, &parser))
+            return false;
         resetInherit(id);
     }
     if (prio == u"!important")

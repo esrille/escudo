@@ -137,9 +137,10 @@ class CSSPropertyValueImp
 public:
     virtual CSSPropertyValueImp& setValue(CSSParserTerm* term) {
     }
-    virtual void setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser) {
+    virtual bool setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser) {
         CSSParserTerm* term = parser->getStack().back();
         setValue(term);
+        return true;
     }
     // CSSPropertyValue
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
@@ -409,7 +410,7 @@ public:
     void reset() {
         clearContents();
     }
-    virtual void setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
+    virtual bool setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl);
     void specify(const CSSAutoNumberingValueImp& specified) {
         contents = specified.contents;
@@ -507,7 +508,7 @@ public:
         return *this;
     }
     std::deque<CSSParserTerm*>::iterator setValue(std::deque<CSSParserTerm*>& stack, std::deque<CSSParserTerm*>::iterator i);
-    virtual void setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
+    virtual bool setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
         return horizontal.getCssText() + u' ' + vertical.getCssText();
     }
@@ -563,7 +564,7 @@ public:
 class CSSBackgroundShorthandImp : public CSSPropertyValueImp
 {
 public:
-    virtual void setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
+    virtual bool setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
     void reset(CSSStyleDeclarationImp* self);
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl);
     void specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl);
@@ -628,7 +629,7 @@ public:
         vertical.setValue(v, verticalUnit);
         return *this;
     }
-    virtual void setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser) {
+    virtual bool setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser) {
         std::deque<CSSParserTerm*>& stack = parser->getStack();
         if (stack.size() == 1)
             setValue(stack[0]->number, stack[0]->unit, stack[0]->number, stack[0]->unit);
@@ -694,7 +695,7 @@ public:
 class CSSBorderColorShorthandImp : public CSSPropertyValueImp
 {
 public:
-    virtual void setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
+    virtual bool setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl);
     void specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl);
 };
@@ -750,7 +751,7 @@ public:
 class CSSBorderStyleShorthandImp : public CSSPropertyValueImp
 {
 public:
-    virtual void setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
+    virtual bool setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl);
     void specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl);
 };
@@ -807,7 +808,7 @@ public:
 class CSSBorderWidthShorthandImp : public CSSPropertyValueImp
 {
 public:
-    virtual void setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
+    virtual bool setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl);
     void specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl);
 };
@@ -820,7 +821,7 @@ public:
         index(index)
     {
     }
-    virtual void setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
+    virtual bool setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl);
     void specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl);
 };
@@ -828,7 +829,7 @@ public:
 class CSSBorderShorthandImp : public CSSPropertyValueImp
 {
 public:
-    virtual void setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
+    virtual bool setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl);
     void specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl);
 };
@@ -1026,7 +1027,7 @@ public:
         value = Normal;
         clearContents();
     }
-    virtual void setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
+    virtual bool setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
 
     bool isNone() const {
         return contents.empty() && value == None;
@@ -1345,7 +1346,7 @@ public:
         familyNames.push_back(name);
     }
     std::deque<CSSParserTerm*>::iterator setValue(std::deque<CSSParserTerm*>& stack, std::deque<CSSParserTerm*>::iterator i);
-    virtual void setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
+    virtual bool setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl);
     void specify(const CSSFontFamilyValueImp& specified) {
         generic = specified.generic;
@@ -1530,7 +1531,7 @@ public:
         SmallCaption,
         StatusBar
     };
-    virtual void setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
+    virtual bool setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
     void reset(CSSStyleDeclarationImp* self);
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl);
     void specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl);
@@ -1658,7 +1659,7 @@ public:
     enum {
         None
     };
-    virtual void setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
+    virtual bool setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
     void reset(CSSStyleDeclarationImp* self);
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl);
     void specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl);
@@ -1739,7 +1740,7 @@ public:
 class CSSMarginShorthandImp : public CSSPropertyValueImp
 {
 public:
-    virtual void setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
+    virtual bool setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl);
     void specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl);
 };
@@ -1747,7 +1748,7 @@ public:
 class CSSPaddingShorthandImp : public CSSPropertyValueImp
 {
 public:
-    virtual void setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
+    virtual bool setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl);
     void specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl);
 };
@@ -1880,7 +1881,7 @@ public:
         this->value = value;
         return *this;
     }
-    virtual void setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser) {
+    virtual bool setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser) {
         unsigned decoration = None;
         std::deque<CSSParserTerm*>& stack = parser->getStack();
         for (auto i = stack.begin(); i != stack.end(); ++i)
