@@ -428,6 +428,7 @@ void CSSValueParser::initializeRules()
             [CSSStyleDeclarationImp::ListStylePosition];
     listStyle
         = CSSValueRule(u"none", CSSListStyleShorthandImp::None) ||
+          CSSValueRule(u"none", CSSListStyleShorthandImp::None) ||  // 'none' can appear twice.
           list_style_type ||
           listStylePosition ||
           uri;
