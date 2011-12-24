@@ -307,8 +307,8 @@ public:
         MaxPseudoClasses
     };
 
-    CSSPseudoClassSelector(const std::u16string& ident, int id = -1);
-    CSSPseudoClassSelector(const CSSParserTerm& function);
+    CSSPseudoClassSelector(const std::u16string& ident, int id);
+    CSSPseudoClassSelector(const CSSParserTerm& function, int id);
     virtual void serialize(std::u16string& text) {
         text += u':';
         CSSPseudoSelector::serialize(text);
@@ -323,6 +323,20 @@ public:
     }
 };
 
+// :lang
+class CSSLangPseudoClassSelector : public CSSPseudoClassSelector
+{
+    std::u16string lang;
+public:
+    CSSLangPseudoClassSelector(const std::u16string& lang) :
+        CSSPseudoClassSelector(u"lang", CSSPseudoClassSelector::Lang),
+        lang(lang)
+    {
+    }
+    virtual void serialize(std::u16string& text);
+    virtual bool match(Element element, ViewCSSImp* view);
+};
+
 // :nth-
 class CSSNthPseudoClassSelector : public CSSPseudoClassSelector
 {
@@ -330,8 +344,8 @@ class CSSNthPseudoClassSelector : public CSSPseudoClassSelector
     long a;
     long b;
 public:
-    CSSNthPseudoClassSelector(long a, long b) :
-        CSSPseudoClassSelector(u""),
+    CSSNthPseudoClassSelector(long a, long b, int id) :
+        CSSPseudoClassSelector(u"", id),
         a(a),
         b(b) {
     }
@@ -381,7 +395,7 @@ class CSSNegationPseudoClassSelector : public CSSPseudoClassSelector
     CSSSimpleSelector* selector;
 public:
     CSSNegationPseudoClassSelector(CSSSimpleSelector* selector) :
-        CSSPseudoClassSelector(u"not"),
+        CSSPseudoClassSelector(u"not", -1),
         selector(selector) {
     }
     virtual void serialize(std::u16string& text) {

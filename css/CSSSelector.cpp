@@ -60,6 +60,13 @@ inline bool endsWith(const std::u16string& s, const std::u16string& t)
     return !s.compare(s.length() - t.length(), t.length(), t);
 }
 
+inline bool dashMatch(const std::u16string& s, const std::u16string& t)
+{
+    if (!startsWith(s, t))
+        return false;
+    return s.length() == t.length() || s[t.length()] == u'-';
+}
+
 }
 
 void CSSSelectorsGroup::serialize(std::u16string& result)
@@ -111,6 +118,11 @@ void CSSAttributeSelector::serialize(std::u16string& result)
         result += CSSSerializeString(value);
     }
     result += u']';
+}
+
+void CSSLangPseudoClassSelector::serialize(std::u16string& text)
+{
+    text += u':' + CSSSerializeIdentifier(name) + u'(' + lang + u')';
 }
 
 void CSSNthPseudoClassSelector::serialize(std::u16string& text)
@@ -198,9 +210,7 @@ bool CSSAttributeSelector::match(Element e, ViewCSSImp* view)
             return false;
         return contains(attr.value(), value);
     case DashMatch:
-        if (!startsWith(attr.value(), value))
-            return false;
-        return attr.value().length() == value.length() || attr.value()[value.length()] == u'-';
+        return dashMatch(attr.value(), value);
     case PrefixMatch:
         if (attr.value().length() == 0)
             return false;
@@ -299,6 +309,11 @@ bool CSSPseudoClassSelector::match(Element element, ViewCSSImp* view)
     return false;
 }
 
+bool CSSLangPseudoClassSelector::match(Element element, ViewCSSImp* view)
+{
+    return dashMatch(lang, interface_cast<html::HTMLElement>(element).getLang());
+}
+
 CSSPseudoElementSelector* CSSPrimarySelector::getPseudoElement() const {
     if (chain.empty())
         return 0;
@@ -319,9 +334,9 @@ CSSPseudoClassSelector::CSSPseudoClassSelector(const std::u16string& ident, int 
 {
 }
 
-CSSPseudoClassSelector::CSSPseudoClassSelector(const CSSParserTerm& function) :
+CSSPseudoClassSelector::CSSPseudoClassSelector(const CSSParserTerm& function, int id) :
     CSSPseudoSelector(function),
-    id(-1)
+    id(id)
 {
 }
 
@@ -358,9 +373,19 @@ CSSPseudoSelector* CSSPseudoSelector::createPseudoSelector(int type, const std::
 
 CSSPseudoSelector* CSSPseudoSelector::createPseudoSelector(int type, const CSSParserTerm& function)
 {
+    int id = -1;
     switch (type) {
     case PseudoClass:
-        return new(std::nothrow) CSSPseudoClassSelector(function);
+        id = getPseudoClassID(function.getString(false));
+        if (id == CSSPseudoClassSelector::Lang) {
+            std::u16string lang;
+            if (function.expr && function.expr->list.size() == 1) {
+                lang = function.expr->list.front().getString(false);
+                if (!lang.empty())
+                    return new(std::nothrow) CSSLangPseudoClassSelector(lang);
+            }
+        } else if (0 <= id)
+            return new(std::nothrow) CSSPseudoClassSelector(function, id);
         break;
     case PseudoElement:
         // No functional pseudo element is defined in CSS 2.1
