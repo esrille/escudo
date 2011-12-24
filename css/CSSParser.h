@@ -94,7 +94,7 @@ struct CSSParserString
                 char16_t s[2];
                 if (char16_t* t = utf32to16(code, s)) {
                     for (char16_t* p = s; p < t; ++p)
-                        string += *p;
+                        string += caseSensitive ? *p : toLower(*p);
                 }
             } else {
                 while (0 < count--)
