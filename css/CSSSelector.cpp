@@ -289,6 +289,10 @@ bool CSSPseudoClassSelector::match(Element element, ViewCSSImp* view)
         if (view->isHovered(element))
             return true;
         break;
+    case FirstChild:
+        if (element.getParentElement().getFirstElementChild() == element)
+            return true;
+        break;
     default:
         break;
     }
