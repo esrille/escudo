@@ -375,7 +375,7 @@ bool CSSAutoNumberingValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValuePa
         if (term->getIndex() == 0)  // 'none'
             return true;
         assert(term->unit == CSSPrimitiveValue::CSS_IDENT);
-        std::u16string name = term->text;
+        std::u16string name = term->text.toString(true);
         int number = defaultNumber;
         ++i;
         if (i != stack.end() && (*i)->unit == CSSPrimitiveValue::CSS_NUMBER)
