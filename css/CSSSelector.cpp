@@ -311,7 +311,9 @@ bool CSSPseudoClassSelector::match(Element element, ViewCSSImp* view)
 
 bool CSSLangPseudoClassSelector::match(Element element, ViewCSSImp* view)
 {
-    return dashMatch(lang, interface_cast<html::HTMLElement>(element).getLang());
+    std::u16string value = interface_cast<html::HTMLElement>(element).getLang();
+    toLower(value);
+    return dashMatch(lang, value);
 }
 
 CSSPseudoElementSelector* CSSPrimarySelector::getPseudoElement() const {
