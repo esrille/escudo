@@ -235,6 +235,7 @@ int main(int argc, char** argv)
     test("LI.red.level    /* a=0 b=2 c=1 -> specificity =   201 */ {}");
     test("#x34y           /* a=1 b=0 c=0 -> specificity = 10000 */ {}");
     test("#s12:not(FOO)   /* a=1 b=0 c=1 -> specificity = 10001 */ {}");
+    CSSSerializeControl.serializeSpecificity = false;
 
     // test syntax errors
     test("#g0{ color: red; filter: alpha(opacity=100) }");
@@ -242,6 +243,7 @@ int main(int argc, char** argv)
     test(".g2{ color: red; *opacity: 1 }");
     test(".g3{ color: red; -ms-filter: \"progid:DXImageTransform.Microsoft.Blur(pixelradius=5)\" }");
     test(".g4{ color: red; opacity: 1\\0/; }");
+    test("#-1ident, .four { color: red; }");
 
     return 0;
 }

@@ -66,6 +66,7 @@ start:
     url = ([!#$%&*-~] | nonascii | escape)*;
     w =[ \t\r\n\f]*;
     range = "?"{1,6} | h ("?"{0,5} | h ("?"{0,4} | h ("?"{0,3} | h ("?"{0,2} | h ("?"? | h)))));
+    hexcolor = h{3} | h{6};
 
     D = 'd' | "\\" "0"{0,4} ("44"|"64") ("\r\n" | [ \t\r\n\f])?;
     E = 'e' | "\\" "0"{0,4} ("45"|"65") ("\r\n" | [ \t\r\n\f])?;
@@ -104,9 +105,14 @@ start:
                             return IDENT;
                         }
 
-    "#" name            {
+    "#" hexcolor        {
                             CSSlval.text = { yytext + 1, yyin - yytext - 1 };
-                            return HASH;
+                            return HASH_COLOR;
+                        }
+
+    "#" ident           {
+                            CSSlval.text = { yytext + 1, yyin - yytext - 1 };
+                            return HASH_IDENT;
                         }
 
     ":" N O T "("       {return NOT;}

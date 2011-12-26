@@ -34,7 +34,8 @@ class CSSStyleSheetImp : public ObjectMixin<CSSStyleSheetImp, StyleSheetImp>
     std::deque<css::CSSRule> ruleList;
 public:
     void append(css::CSSRule rule) {
-        ruleList.push_back(rule);
+        if (rule)
+            ruleList.push_back(rule);
     }
 
     // StyleSheet

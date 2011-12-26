@@ -79,7 +79,8 @@ int CSSlex(CSSParser* parser);
 %token <number> FREQ_HZ
 %token <number> FREQ_KHZ
 %token <text> FUNCTION
-%token <text> HASH
+%token <text> HASH_COLOR
+%token <text> HASH_IDENT
 %token <text> IDENT
 %token IMPORT_SYM
 %token <text> IMPORTANT_SYM
@@ -258,11 +259,15 @@ property
   ;
 ruleset
   : selectors_group {
-        parser->setStyleDeclaration(new(std::nothrow) CSSStyleDeclarationImp);
+        if ($1)
+            parser->setStyleDeclaration(new(std::nothrow) CSSStyleDeclarationImp);
     }
     '{' optional_space declaration_list '}' optional_space {
-        $$ = new(std::nothrow) CSSStyleRuleImp($1, parser->getStyleDeclaration());
-        parser->setStyleDeclaration(0);
+        if ($1) {
+            $$ = new(std::nothrow) CSSStyleRuleImp($1, parser->getStyleDeclaration());
+            parser->setStyleDeclaration(0);
+        } else
+            $$ = 0;
     }
   ;
 selectors_group
@@ -273,6 +278,9 @@ selectors_group
         if ($1)
             $1->append($4);
         $$ = $1;
+    }
+  | error {
+        $$ = 0;
     }
   ;
 selector
@@ -423,7 +431,7 @@ function
  * after the "#"; e.g., "#000" is OK, but "#abcd" is not.
  */
 hexcolor
-  : HASH optional_space {
+  : HASH_COLOR optional_space {
         $$.unit = CSSPrimitiveValue::CSS_RGBCOLOR;
         $$.text = $1;
         $$.rgb = $$.text.toRGB();
@@ -512,7 +520,7 @@ negation_arg
   | universal {
         $$ = new(std::nothrow) CSSPrimarySelector($1);
     }
-  | HASH {
+  | HASH_IDENT {
         $$ = new(std::nothrow) CSSIDSelector($1.toString(true));
     }
   | class {
@@ -581,7 +589,7 @@ declaration_list
   | declaration_list ';' optional_space declaration
   ;
 simple_selector_term
-  : HASH {
+  : HASH_IDENT {
         $$ = new(std::nothrow) CSSIDSelector($1.toString(true));
     }
   | class {
