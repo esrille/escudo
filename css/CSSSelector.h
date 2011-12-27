@@ -102,6 +102,9 @@ public:
     virtual bool match(Element element, ViewCSSImp* view) {
         return false;
     }
+    virtual bool isValid() const {
+        return true;
+    }
 };
 
 // a type selector, or a universal selector
@@ -156,7 +159,7 @@ public:
     virtual void serialize(std::u16string& text);
     virtual CSSSpecificity getSpecificity();
     virtual bool match(Element element, ViewCSSImp* view);
-
+    virtual bool isValid() const;
     CSSPseudoElementSelector* getPseudoElement() const;
 };
 
@@ -282,6 +285,7 @@ public:
     // The order needs to be in sync with pseudoClassNames[]
     enum
     {
+        Unknown = -1,
         // CSS 2.1
         Link,
         Visited,
@@ -317,6 +321,9 @@ public:
         return CSSSpecificity(0, 0, 1, 0);
     }
     virtual bool match(Element element, ViewCSSImp* view);
+    virtual bool isValid() const {
+        return id != Unknown;
+    }
 
     unsigned getID() const {
         return id;
@@ -362,6 +369,7 @@ public:
     // The order needs to be in sync with pseudoElementNames[]
     enum
     {
+        Unknown = -1,
         NonPseudo,
         FirstLine,
         FirstLetter,
@@ -381,7 +389,10 @@ public:
         return CSSSpecificity(0, 0, 0, 1);
     }
     virtual bool match(Element element, ViewCSSImp* view) {
-        return true;
+        return id != Unknown;
+    }
+    virtual bool isValid() const {
+        return id != Unknown;
     }
 
     unsigned getID() const {
@@ -406,6 +417,9 @@ public:
     virtual CSSSpecificity getSpecificity() {
         return selector->getSpecificity();
     }
+    virtual bool isValid() const {
+        return selector && selector->isValid();
+    }
 };
 
 class CSSSelector
@@ -426,6 +440,8 @@ public:
 
     bool match(Element element, ViewCSSImp* view);
     CSSPseudoElementSelector* getPseudoElement() const;
+
+    bool isValid() const;
 };
 
 class CSSSelectorsGroup
@@ -444,6 +460,15 @@ public:
     CSSSelector* match(Element element, ViewCSSImp* view);
     CSSSpecificity getLastSpecificity() {  // of the last matched selector
         return specificity;
+    }
+    bool isValid() const {
+        if (selectors.empty())
+            return false;
+        for (auto i = selectors.begin(); i != selectors.end(); ++i) {
+            if (!(*i)->isValid())
+                return false;
+        }
+        return true;
     }
 };
 

@@ -269,8 +269,13 @@ property
   ;
 ruleset
   : selectors_group {
-        if ($1)
-            parser->setStyleDeclaration(new(std::nothrow) CSSStyleDeclarationImp);
+        if ($1) {
+            if (!$1->isValid()) {
+                delete $1;
+                $1 = 0;
+            } else 
+                parser->setStyleDeclaration(new(std::nothrow) CSSStyleDeclarationImp);
+        }
     }
     '{' optional_space declaration_list '}' optional_space {
         if ($1) {
@@ -639,19 +644,7 @@ optional_simple_selector_seq
   : /* empty */ {
         $$ = 0;
     }
-  | optional_simple_selector_seq simple_selector_term {
-        CSSPrimarySelector* primary;
-        if (primary = dynamic_cast<CSSPrimarySelector*>($1))
-            primary->append($2);
-        else {
-            primary = new(std::nothrow) CSSPrimarySelector;
-            if (primary) {
-                primary->append($1);
-                primary->append($2);
-            }
-        }
-        $$ = primary;
-    }
+  | simple_selector_seq
   ;
 ident_term
   : IDENT

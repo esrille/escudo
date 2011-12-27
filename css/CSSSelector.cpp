@@ -265,6 +265,7 @@ bool CSSSelector::match(Element e, ViewCSSImp* view)
             }
             if (!e)
                 return false;
+            break;
         default:
             return false;
         }
@@ -316,6 +317,28 @@ bool CSSLangPseudoClassSelector::match(Element element, ViewCSSImp* view)
     return dashMatch(lang, value);
 }
 
+bool CSSPrimarySelector::isValid() const
+{
+    for (auto i = chain.begin(); i != chain.end(); ++i) {
+        if (!(*i)->isValid())
+            return false;
+    }
+    return true;
+}
+
+bool CSSSelector::isValid() const
+{
+    if (simpleSelectors.empty())
+        return false;
+    int combinator;
+    for (auto i = simpleSelectors.begin(); i != simpleSelectors.end(); ++i) {
+        if (!(*i)->isValid())
+            return false;
+        combinator = (*i)->getCombinator();
+    }
+    return combinator == CSSPrimarySelector::None;
+}
+
 CSSPseudoElementSelector* CSSPrimarySelector::getPseudoElement() const {
     if (chain.empty())
         return 0;
@@ -359,13 +382,11 @@ CSSPseudoSelector* CSSPseudoSelector::createPseudoSelector(int type, const std::
     switch (type) {
     case PseudoClass:
         id = getPseudoClassID(ident);
-        if (0 <= id)
-            return new(std::nothrow) CSSPseudoClassSelector(ident, id);
+        return new(std::nothrow) CSSPseudoClassSelector(ident, id);
         break;
     case PseudoElement:
         id = getPseudoElementID(ident);
-        if (0 <= id)
-            return new(std::nothrow) CSSPseudoElementSelector(id);
+        return new(std::nothrow) CSSPseudoElementSelector(id);
         break;
     default:
         break;
@@ -386,8 +407,9 @@ CSSPseudoSelector* CSSPseudoSelector::createPseudoSelector(int type, const CSSPa
                 if (!lang.empty())
                     return new(std::nothrow) CSSLangPseudoClassSelector(lang);
             }
-        } else if (0 <= id)
-            return new(std::nothrow) CSSPseudoClassSelector(function, id);
+            id = -1;
+        }
+        return new(std::nothrow) CSSPseudoClassSelector(function, id);
         break;
     case PseudoElement:
         // No functional pseudo element is defined in CSS 2.1
