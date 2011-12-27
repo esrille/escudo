@@ -218,6 +218,7 @@ class CSSParser
     CSSParserExpr* styleExpression;
     CSSMediaRuleImp* mediaRule;
     bool caseSensitive;  // for element names and attribute names.
+    bool importable;
 
     Retained<MediaListImp> mediaList;
 
@@ -225,6 +226,16 @@ class CSSParser
         tokenizer.reset(cssText);
     }
 public:
+    CSSParser() :
+        styleSheet(0),
+        styleDeclaration(0),
+        styleExpression(0),
+        mediaRule(0),
+        caseSensitive(false),
+        importable(true)
+    {
+    }
+
     css::CSSStyleSheet parse(const std::u16string& cssText);
     css::CSSStyleDeclaration parseDeclarations(const std::u16string& cssDecl);
     CSSParserExpr* parseExpression(const std::u16string& cssExpr);
@@ -267,12 +278,11 @@ public:
         caseSensitive = value;
     }
 
-    CSSParser() :
-        styleSheet(0),
-        styleDeclaration(0),
-        styleExpression(0),
-        mediaRule(0),
-        caseSensitive(false) {
+    void disableImport() {
+        importable = false;
+    }
+    bool isImportable() {
+        return importable;
     }
 };
 

@@ -159,24 +159,34 @@ start
   ;
 
 stylesheet
-  : CHARSET_SYM optional_space STRING optional_space ';'
-    optional_sgml optional_imports optional_namespaces statement_list
-  | optional_sgml optional_imports optional_namespaces statement_list
+  : optional_sgml CHARSET_SYM optional_space STRING optional_space ';'
+    optional_sgml optional_namespaces statement_list
+  | optional_sgml optional_namespaces statement_list
+  | optional_sgml CHARSET_SYM error ';'
+    optional_sgml optional_namespaces statement_list
   ;
 import
   : IMPORT_SYM optional_space uri_term optional_space medium_list ';' optional_space {
-        CSSImportRuleImp* rule = new(std::nothrow) CSSImportRuleImp($3);
-        if (rule) {
-            if (MediaListImp* mediaList = parser->getMediaList()) {
-                rule->setMediaList(mediaList);
-                mediaList->clear();
+        if (!parser->isImportable())
+            $$ = 0;
+        else {
+            CSSImportRuleImp* rule = new(std::nothrow) CSSImportRuleImp($3);
+            if (rule) {
+                if (MediaListImp* mediaList = parser->getMediaList()) {
+                    rule->setMediaList(mediaList);
+                    mediaList->clear();
+                }
             }
+            $$ = rule;
         }
-        $$ = rule;
     }
   | IMPORT_SYM optional_space uri_term optional_space             ';' optional_space {
-        CSSImportRuleImp* rule = new(std::nothrow) CSSImportRuleImp($3);
-        $$ = rule;
+        if (!parser->isImportable())
+            $$ = 0;
+        else {
+            CSSImportRuleImp* rule = new(std::nothrow) CSSImportRuleImp($3);
+            $$ = rule;
+        }
     }
   ;
 namespace
@@ -535,34 +545,44 @@ negation_arg
  */
 statement_list
   : /* empty */
-  | statement_list ruleset   optional_sgml {
+  | statement_list import optional_sgml {
         if (CSSStyleSheetImp* styleSheet = parser->getStyleSheet()) {
             styleSheet->append($2);
+        }
+    }
+  | statement_list ruleset   optional_sgml {
+        if (CSSStyleSheetImp* styleSheet = parser->getStyleSheet()) {
+            if ($2) {
+                styleSheet->append($2);
+                parser->disableImport();
+            }
         }
     }
   | statement_list media     optional_sgml {
         if (CSSStyleSheetImp* styleSheet = parser->getStyleSheet()) {
-            styleSheet->append($2);
+            if ($2) {
+                styleSheet->append($2);
+                parser->disableImport();
+            }
         }
     }
   | statement_list page      optional_sgml {
         if (CSSStyleSheetImp* styleSheet = parser->getStyleSheet()) {
-            styleSheet->append($2);
+            if ($2) {
+                styleSheet->append($2);
+                parser->disableImport();
+            }
         }
     }
   | statement_list font_face optional_sgml {
         if (CSSStyleSheetImp* styleSheet = parser->getStyleSheet()) {
-            styleSheet->append($2);
+            if ($2) {
+                styleSheet->append($2);
+                parser->disableImport();
+            }
         }
     }
-  ;
-optional_imports
-  : /* empty */
-  | optional_imports import optional_sgml {
-        if (CSSStyleSheetImp* styleSheet = parser->getStyleSheet()) {
-            styleSheet->append($2);
-        }
-    }
+  | statement_list error optional_sgml
   ;
 optional_namespaces
   : /* empty */
