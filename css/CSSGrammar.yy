@@ -399,6 +399,7 @@ declaration
         if (CSSStyleDeclarationImp* decl = parser->getStyleDeclaration())
             decl->setProperty($1, $4);
     }
+  | error invalid_block_list
   | error
   | /* empty */
   ;
@@ -596,13 +597,13 @@ statement_list
             }
         }
     }
-  | statement_list '@' error '{' error '}' optional_sgml {
+  | statement_list '@' error invalid_block optional_sgml {
         CSSerror(parser, "syntax error, invalid at rule");
     }
   | statement_list '@' error ';' optional_sgml {
         CSSerror(parser, "syntax error, invalid at rule");
     }
-  | statement_list error '{' error '}' optional_sgml {
+  | statement_list error invalid_block optional_sgml {
         CSSerror(parser, "syntax error, invalid rule set");
     }
   ;
@@ -787,4 +788,12 @@ optional_sgml
 optional_space
   : /* empty */
   | optional_space S
+  ;
+invalid_block
+  : '{' error invalid_block_list error '}'
+  | '{' error '}'
+  ;
+invalid_block_list
+  : invalid_block
+  | invalid_block_list error invalid_block
   ;
