@@ -19,6 +19,7 @@
 
 #include <cstring>
 #include <deque>
+#include <iostream>
 #include <string>
 
 #include <Object.h>
@@ -137,6 +138,10 @@ struct CSSParserString
     }
     bool operator==(const char16_t* s) const {
         return std::memcmp(text, s, length * sizeof(char16_t)) == 0 && s[length] == 0;
+    }
+
+    void clear() {
+        length = 0;
     }
 };
 
@@ -285,6 +290,16 @@ public:
         return importable;
     }
 };
+
+inline void CSSerror(CSSParser* parser, const char* message, ...)
+{
+    std::cerr << message << '\n';
+}
+
+inline int CSSlex(CSSParser* parser)
+{
+    return parser->getTokenizer()->getToken();
+}
 
 }}}}  // org::w3c::dom::bootstrap
 

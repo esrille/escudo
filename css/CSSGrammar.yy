@@ -40,9 +40,6 @@
 using namespace org::w3c::dom::bootstrap;
 using namespace org::w3c::dom::css;
 
-void CSSerror(CSSParser* parser, const char* message, ...);
-int CSSlex(CSSParser* parser);
-
 %}
 
 %union {
@@ -110,6 +107,7 @@ int CSSlex(CSSParser* parser);
 %token <text> URI
 
 %type <text> class;
+%type <text> id;
 %type <text> element_name;
 %type <text> namespace_prefix;
 %type <text> universal;
@@ -349,6 +347,17 @@ class
   : '.' IDENT {
         $$ = $2;
     }
+  | '.' error IDENT {
+        $3.clear();
+        $$ = $3;
+    }
+  ;
+id
+  : HASH_IDENT
+  | '#' error IDENT {
+        $3.clear();
+        $$ = $3;
+    }
   ;
 element_name
   : IDENT
@@ -535,7 +544,7 @@ negation_arg
   | universal {
         $$ = new(std::nothrow) CSSPrimarySelector($1);
     }
-  | HASH_IDENT {
+  | id {
         $$ = new(std::nothrow) CSSIDSelector($1.toString(true));
     }
   | class {
@@ -614,7 +623,7 @@ declaration_list
   | declaration_list ';' optional_space declaration
   ;
 simple_selector_term
-  : HASH_IDENT {
+  : id {
         $$ = new(std::nothrow) CSSIDSelector($1.toString(true));
     }
   | class {
@@ -771,15 +780,3 @@ optional_space
   : /* empty */
   | optional_space S
   ;
-
-%%
-
-void CSSerror(CSSParser* parser, const char* message, ...)
-{
-    std::cerr << message << '\n';
-}
-
-int CSSlex(CSSParser* parser)
-{
-    return parser->getTokenizer()->getToken();
-}

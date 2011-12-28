@@ -177,6 +177,9 @@ public:
         return CSSSpecificity(0, 1, 0, 0);
     }
     virtual bool match(Element element, ViewCSSImp* view);
+    virtual bool isValid() const {
+        return !name.empty();
+    }
 };
 
 // '.' IDENT
@@ -193,6 +196,9 @@ public:
             return CSSSpecificity(0, 0, 1, 0);
     }
     virtual bool match(Element element, ViewCSSImp* view);
+    virtual bool isValid() const {
+        return !name.empty();
+    }
 };
 
 class CSSAttributeSelector : public CSSSimpleSelector
