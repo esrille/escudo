@@ -596,7 +596,15 @@ statement_list
             }
         }
     }
-  | statement_list error optional_sgml
+  | statement_list '@' error '{' error '}' optional_sgml {
+        CSSerror(parser, "syntax error, invalid at rule");
+    }
+  | statement_list '@' error ';' optional_sgml {
+        CSSerror(parser, "syntax error, invalid at rule");
+    }
+  | statement_list error '{' error '}' optional_sgml {
+        CSSerror(parser, "syntax error, invalid rule set");
+    }
   ;
 optional_namespaces
   : /* empty */
