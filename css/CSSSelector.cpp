@@ -331,7 +331,7 @@ bool CSSSelector::isValid() const
     if (simpleSelectors.empty())
         return false;
     int combinator;
-    for (auto i = simpleSelectors.begin(); i != simpleSelectors.end(); ++i) {
+    for (auto i = simpleSelectors.rbegin(); i != simpleSelectors.rend(); ++i) {
         if (!(*i)->isValid())
             return false;
         combinator = (*i)->getCombinator();
