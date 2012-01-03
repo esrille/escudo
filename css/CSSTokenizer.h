@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
 #define ES_CSSTOKENIZER_H
 
 #include <string>
+#include <deque>
 
 #include "CSSSerialize.h"
 
@@ -34,7 +35,7 @@ public:
         StartDeclarationList,
         StartExpression,
         Normal,
-        Nth
+        End
     };
 
     static unsigned long parseInt(const char16_t* text, ssize_t length) {
@@ -81,6 +82,7 @@ private:
     const char16_t* yyin;
     const char16_t* yylimit;
     const char16_t* yymarker;
+    std::deque<int> openConstructs;
 
     static void parseURL(const char16_t* text, ssize_t length, CSSParserString* string);
 
@@ -98,6 +100,7 @@ public:
         yyin = this->cssText.c_str();
         yylimit = yyin + this->cssText.length();
         yymarker = 0;
+        openConstructs.clear();
     }
 
     int getToken();

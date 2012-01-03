@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,13 @@ start:
     case StartExpression:
         mode = Normal;
         return START_EXPRESSION;
+    case End:
+        if (!openConstructs.empty()) {
+            int token = openConstructs.front();
+            openConstructs.pop_front();
+            return token;
+        }
+        return END;
     default:
         break;
     }
@@ -232,8 +239,19 @@ start:
                                     CSSlval.text = { yytext, yyin - yytext };
                                     return UNICODERANGE;
                                 }
-
-    "\X0000"            {return END;}
+    "{"                 {
+                            openConstructs.push_front('}');
+                            return *yytext;
+                        }
+    "}"                 {
+                            if (!openConstructs.empty() && openConstructs.front() == '}')
+                                openConstructs.pop_front();
+                            return *yytext;
+                        }
+    "\X0000"            {
+                            mode = End;
+                            goto start;
+                        }
     .                   {return *yytext;}
 
 */
