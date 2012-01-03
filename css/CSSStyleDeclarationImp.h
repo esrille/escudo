@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -271,6 +271,10 @@ private:
     StackingContext* stackingContext;
     FontTexture* fontTexture;
 
+    int propertyID;
+    CSSParserExpr* expression;
+    std::u16string priority;
+    
     int pseudoElementSelectorType;
     CSSStyleDeclarationPtr pseudoElements[CSSPseudoElementSelector::MaxPseudoElements];
 
@@ -399,8 +403,14 @@ public:
     void setParentRule(css::CSSRule parentRule) {
         this->parentRule = parentRule;
     }
-    bool setProperty(int id, CSSParserExpr* expr, const std::u16string& prio = u"");
-    bool setProperty(std::u16string property, CSSParserExpr* expr, const std::u16string& prio = u"");
+
+    int appendProperty(std::u16string property, CSSParserExpr* expr, const std::u16string& prio = u"");
+    int commitAppend();
+    int cancelAppend();
+    
+    int setProperty(int id, CSSParserExpr* expr, const std::u16string& prio = u"");
+    int setProperty(std::u16string property, CSSParserExpr* expr, const std::u16string& prio = u"");
+    
     void setColor(unsigned color) {
         this->color = color;
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -119,6 +119,7 @@ using namespace org::w3c::dom::css;
 %type <integer> attrib_op
 %type <integer> unary_operator
 %type <integer> operator
+%type <integer> declaration
 %type <expr> expr
 %type <expr> term_list
 %type <expr> expression
@@ -393,22 +394,22 @@ pseudo
 declaration
   : property ':' optional_space expr prio {
         if (CSSStyleDeclarationImp* decl = parser->getStyleDeclaration())
-            decl->setProperty($1, $4, $5);
+            $$ = decl->appendProperty($1, $4, $5);
+        else
+            $$ = CSSStyleDeclarationImp::Unknown;
     }
   | property ':' optional_space expr {
         if (CSSStyleDeclarationImp* decl = parser->getStyleDeclaration())
-            decl->setProperty($1, $4);
+            decl->appendProperty($1, $4);
+        else
+            $$ = CSSStyleDeclarationImp::Unknown;
     }
-  | property ':' optional_space expr prio error {
-        CSSerror(parser, "syntax error, invalid declaration");
+  | /* empty */ {
+        if (CSSStyleDeclarationImp* decl = parser->getStyleDeclaration())
+            $$ = decl->cancelAppend();
+        else
+            $$ = CSSStyleDeclarationImp::Unknown;
     }
-  | error invalid_block_list error {
-        CSSerror(parser, "syntax error, invalid declaration");
-    }
-  | error {
-        CSSerror(parser, "syntax error, invalid declaration");
-    }
-  | /* empty */
   ;
 prio
   : IMPORTANT_SYM optional_space
@@ -635,8 +636,26 @@ medium_list
   | medium_list ',' optional_space medium
   ;
 declaration_list
-  : declaration
-  | declaration_list ';' optional_space declaration
+  : declaration {
+        if (CSSStyleDeclarationImp* decl = parser->getStyleDeclaration())
+            decl->commitAppend();
+    }
+  | declaration_list ';' optional_space declaration {
+        if (CSSStyleDeclarationImp* decl = parser->getStyleDeclaration())
+            decl->commitAppend();
+    }
+  | declaration error {
+        if (CSSStyleDeclarationImp* decl = parser->getStyleDeclaration())
+            decl->cancelAppend();
+    }
+  | declaration_list ';' optional_space declaration error {
+        if (CSSStyleDeclarationImp* decl = parser->getStyleDeclaration())
+            decl->cancelAppend();
+    }
+  | declaration_list ';' optional_space error invalid_block_list error
+  | declaration_list ';' optional_space error
+  | error invalid_block_list error
+  | error
   ;
 simple_selector_term
   : id {

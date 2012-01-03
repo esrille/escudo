@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -526,12 +526,12 @@ void CSSStyleDeclarationImp::resetProperty(unsigned id)
     propertySet.reset(id);
 }
 
-bool CSSStyleDeclarationImp::setProperty(int id, CSSParserExpr* expr, const std::u16string& prio)
+int CSSStyleDeclarationImp::setProperty(int id, CSSParserExpr* expr, const std::u16string& prio)
 {
     assert(expr);
     if (id == Unknown) {
         // TODO: delete expr; ?
-        return false;
+        return Unknown;
     }
     if (expr->isInherit())
         setInherit(id);
@@ -539,32 +539,57 @@ bool CSSStyleDeclarationImp::setProperty(int id, CSSParserExpr* expr, const std:
         CSSValueParser parser(id);
         if (!parser.isValid(expr)) {
             // TODO: delete expr; ?
-            return false;
+            return Unknown;
         }
         CSSPropertyValueImp* property = getProperty(id);
         if (!property) {
             // TODO: delete expr; ?
-            return false;
+            return Unknown;
         }
         if (!property->setValue(this, &parser))
-            return false;
+            return Unknown;
         resetInherit(id);
     }
     if (prio == u"!important")
         setImportant(id);
     else
         setProperty(id);
-    return true;
+    return id;
 }
 
-bool CSSStyleDeclarationImp::setProperty(std::u16string property, CSSParserExpr* expr, const std::u16string& prio)
+int CSSStyleDeclarationImp::setProperty(std::u16string property, CSSParserExpr* expr, const std::u16string& prio)
 {
     if (!expr)
-        return false;
+        return Unknown;
     toLower(property);
     return setProperty(getPropertyID(property), expr, prio);
 }
 
+int CSSStyleDeclarationImp::appendProperty(std::u16string property, CSSParserExpr* expr, const std::u16string& prio)
+{
+    propertyID = Unknown;
+    if (expr) {
+        toLower(property);
+        propertyID = getPropertyID(property);
+        expression = expr;
+        priority = prio;
+    }
+    return propertyID;
+}
+
+int CSSStyleDeclarationImp::commitAppend()
+{
+    if (propertyID)
+        propertyID = setProperty(propertyID, expression, priority);
+    return propertyID;
+}
+
+int CSSStyleDeclarationImp::cancelAppend()
+{
+    propertyID = Unknown;
+    return propertyID;
+}
+    
 void CSSStyleDeclarationImp::specify(const CSSStyleDeclarationImp* decl, unsigned id)
 {
     switch (id) {
@@ -2941,6 +2966,8 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp(int pseudoElementSelectorType) :
     lastBox(0),
     stackingContext(0),
     fontTexture(0),
+    propertyID(Unknown),
+    expression(0),
     pseudoElementSelectorType(pseudoElementSelectorType),
     backgroundColor(CSSColorValueImp::Transparent),
     counterIncrement(1),
