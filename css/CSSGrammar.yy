@@ -399,8 +399,15 @@ declaration
         if (CSSStyleDeclarationImp* decl = parser->getStyleDeclaration())
             decl->setProperty($1, $4);
     }
-  | error invalid_block_list error
-  | error
+  | property ':' optional_space expr prio error {
+        CSSerror(parser, "syntax error, invalid declaration");
+    }
+  | error invalid_block_list error {
+        CSSerror(parser, "syntax error, invalid declaration");
+    }
+  | error {
+        CSSerror(parser, "syntax error, invalid declaration");
+    }
   | /* empty */
   ;
 prio
