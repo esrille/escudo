@@ -75,6 +75,10 @@ start:
     range = "?"{1,6} | h ("?"{0,5} | h ("?"{0,4} | h ("?"{0,3} | h ("?"{0,2} | h ("?"? | h)))));
     hexcolor = h{3} | h{6};
 
+    bad_string1 = "\"" ([^\n\r\f\\"] | "\\" nl | "'" | nonascii | escape)* nl;
+    bad_string2 = "'" ([^\n\r\f\\'] | "\\" nl | "\"" | nonascii | escape)* nl;
+    bad_string = bad_string1 | bad_string2;
+    
     D = 'd' | "\\" "0"{0,4} ("44"|"64") ("\r\n" | [ \t\r\n\f])?;
     E = 'e' | "\\" "0"{0,4} ("45"|"65") ("\r\n" | [ \t\r\n\f])?;
     N = 'n' | "\\" "0"{0,4} ("4e"|"6e") ("\r\n" | [ \t\r\n\f])? | '\\n';
@@ -239,6 +243,10 @@ start:
                                     CSSlval.text = { yytext, yyin - yytext };
                                     return UNICODERANGE;
                                 }
+    bad_string          {
+                            CSSlval.text = { yytext + 1, yyin - yytext - 1 };
+                            return BAD_STRING;
+                        }
     "{"                 {
                             openConstructs.push_front('}');
                             return *yytext;

@@ -99,6 +99,7 @@ using namespace org::w3c::dom::css;
 %token <number> PX
 %token S
 %token <text> STRING
+%token <text> BAD_STRING
 %token SUBSTRINGMATCH
 %token SUFFIXMATCH
 %token <number> TIME_MS
