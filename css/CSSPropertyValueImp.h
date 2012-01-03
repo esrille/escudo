@@ -422,7 +422,7 @@ public:
     void incrementCounter(ViewCSSImp* view);
     void resetCounter(ViewCSSImp* view);
     void restoreCounter(ViewCSSImp* view);
-    
+
     CSSAutoNumberingValueImp(int defaultNumber) :
         defaultNumber(defaultNumber) {
     }
@@ -635,6 +635,7 @@ public:
             setValue(stack[0]->number, stack[0]->unit, stack[0]->number, stack[0]->unit);
         else
             setValue(stack[0]->number, stack[0]->unit, stack[1]->number, stack[1]->unit);
+        return true;
     }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
         if (horizontal == vertical)
@@ -961,7 +962,7 @@ public:
         }
         virtual std::u16string eval(ViewCSSImp* view) {
             return value;
-        }        
+        }
     };
     struct URIContent : public Content {
         std::u16string value;
@@ -1887,6 +1888,7 @@ public:
         for (auto i = stack.begin(); i != stack.end(); ++i)
             decoration |= (*i)->getIndex();
         setValue(decoration);
+        return true;
     }
     unsigned getValue() const {
         return value;
