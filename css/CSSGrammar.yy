@@ -399,7 +399,7 @@ declaration
         if (CSSStyleDeclarationImp* decl = parser->getStyleDeclaration())
             decl->setProperty($1, $4);
     }
-  | error invalid_block_list
+  | error invalid_block_list error
   | error
   | /* empty */
   ;
