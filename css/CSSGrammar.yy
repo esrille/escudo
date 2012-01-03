@@ -597,10 +597,10 @@ statement_list
             }
         }
     }
-  | statement_list '@' error invalid_block optional_sgml {
+  | statement_list '@' IDENT error invalid_block optional_sgml {
         CSSerror(parser, "syntax error, invalid at rule");
     }
-  | statement_list '@' error ';' optional_sgml {
+  | statement_list '@' IDENT error ';' optional_sgml {
         CSSerror(parser, "syntax error, invalid at rule");
     }
   | statement_list error invalid_block optional_sgml {
