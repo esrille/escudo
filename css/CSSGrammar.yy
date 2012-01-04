@@ -458,12 +458,7 @@ function
         $$.text = $1;
         $$.expr = $3;
     }
-  | FUNCTION optional_space error invalid_construct_list error ')' optional_space {
-        $$.unit = CSSParserTerm::CSS_TERM_FUNCTION;
-        $$.text = $1;
-        $$.expr = 0;
-    }
-  | FUNCTION optional_space error ')' optional_space {
+  | FUNCTION optional_space error_parenthesis ')' optional_space {
         $$.unit = CSSParserTerm::CSS_TERM_FUNCTION;
         $$.text = $1;
         $$.expr = 0;
@@ -852,6 +847,13 @@ invalid_non_block_list
   : invalid_non_block
   | invalid_non_block_list error invalid_non_block
   ;
+invalid_parenthesis
+  : '(' error invalid_parenthesis_list error ')'
+  | '(' error ')'
+invalid_parenthesis_list
+  : invalid_parenthesis
+  | invalid_parenthesis_list error invalid_parenthesis
+  ;
 error_block
   : error invalid_non_block_list error invalid_block
   | error invalid_block
@@ -859,5 +861,9 @@ error_block
   ;
 error_non_block
   : error invalid_non_block_list error
+  | error
+  ;
+error_parenthesis
+  : error invalid_parenthesis_list error
   | error
   ;
