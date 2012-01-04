@@ -97,6 +97,14 @@ start:
     [ \t\r\n\f]+        {return S;}
 
     "/*" [^\X0000*]* "*"+ ([^\X0000/*][^\X0000*]* "*"+)* "/"   {goto start;}
+    "/*" [^\X0000*]* "*"* "\X0000"  {
+                            mode = End;
+                            goto start;
+                        }
+    "/*" [^\X0000*]* "*"+ ([^\X0000/*][^\X0000*]* "*"+)* "\X0000"   {
+                            mode = End;
+                            goto start;
+                        }
 
     "<!--"              {
                             openConstructs.push_front(CDC);
