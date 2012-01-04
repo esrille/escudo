@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -156,10 +156,15 @@ bool URL::parsePrivate(size_t& pos)
 bool URL::parseUnreservedChar(size_t& pos)
 {
     char16_t c = url[pos];
-    if (isAlnum(c) || c == '-' || c == '.' || c == '_' || c == '~') {
+    if (isAlnum(c) || c == '-' || c == '.' || c == '_' || c == '~' ||
+        c <= 0x0020 || 0x007f <= c ||
+        c == '"' || c == '<' || c == '>' || c == '[' || c == '\\' ||
+        c == ']' || c == '^' || c == '`' || c == '{' || c == '|' || c == '}')
+    {
         ++pos;
         return true;
     }
+    
     return parseUCSChar(pos);
 }
 
@@ -373,7 +378,7 @@ bool URL::parseFragment(size_t& pos)
         if (parsePchar(pos))
             continue;
         char16_t c = url[pos];
-        if (c == '/' || c == '?') {
+        if (c == '/' || c == '?' || c == '#') {  // Note '#' is allowed by HTML 5.
             ++pos;
             continue;
         }
