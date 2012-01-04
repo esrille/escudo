@@ -819,6 +819,10 @@ optional_space
 invalid_block
   : '{' error invalid_block_list error '}'
   | '{' error '}'
+  | '(' error invalid_block_list error ')'
+  | '(' error ')'
+  | '[' error invalid_block_list error ']'
+  | '[' error ']'
   ;
 invalid_block_list
   : invalid_block
