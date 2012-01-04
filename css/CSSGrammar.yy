@@ -458,6 +458,16 @@ function
         $$.text = $1;
         $$.expr = $3;
     }
+  | FUNCTION optional_space error invalid_block error ')' optional_space {
+        $$.unit = CSSParserTerm::CSS_TERM_FUNCTION;
+        $$.text = $1;
+        $$.expr = 0;
+    }
+  | FUNCTION optional_space error ')' optional_space {
+        $$.unit = CSSParserTerm::CSS_TERM_FUNCTION;
+        $$.text = $1;
+        $$.expr = 0;
+    }
   ;
 /*
  * There is a constraint on the color that it must
