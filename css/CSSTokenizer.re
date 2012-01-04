@@ -98,8 +98,15 @@ start:
 
     "/*" [^*]* "*"+ ([^/*][^*]* "*"+)* "/"   {goto start;}
 
-    "<!--"              {return CDO;}
-    "-->"               {return CDC;}
+    "<!--"              {
+                            openConstructs.push_front(CDC);
+                            return CDO;
+                        }
+    "-->"               {
+                            if (!openConstructs.empty() && openConstructs.front() == CDC)
+                                openConstructs.pop_front();
+                            return CDC;
+                        }
     "~="                {return INCLUDES;}
     "|="                {return DASHMATCH;}
     "^="                {return PREFIXMATCH;}
@@ -126,7 +133,10 @@ start:
                             return HASH_IDENT;
                         }
 
-    ":" N O T "("       {return NOT;}
+    ":" N O T "("       {
+                            openConstructs.push_front(')');
+                            return NOT;
+                        }
 
     '@import'           {return IMPORT_SYM;}
     '@page'             {return PAGE_SYM;}
@@ -231,6 +241,7 @@ start:
                             }
 
     ident "("               {
+                                openConstructs.push_front(')');
                                 CSSlval.text = { yytext, yyin - yytext - 1 };
                                 return FUNCTION;
                             }
@@ -253,6 +264,24 @@ start:
                         }
     "}"                 {
                             if (!openConstructs.empty() && openConstructs.front() == '}')
+                                openConstructs.pop_front();
+                            return *yytext;
+                        }
+    "["                 {
+                            openConstructs.push_front(']');
+                            return *yytext;
+                        }
+    "]"                 {
+                            if (!openConstructs.empty() && openConstructs.front() == ']')
+                                openConstructs.pop_front();
+                            return *yytext;
+                        }
+    "("                 {
+                            openConstructs.push_front(')');
+                            return *yytext;
+                        }
+    ")"                 {
+                            if (!openConstructs.empty() && openConstructs.front() == ')')
                                 openConstructs.pop_front();
                             return *yytext;
                         }
