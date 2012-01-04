@@ -458,7 +458,7 @@ function
         $$.text = $1;
         $$.expr = $3;
     }
-  | FUNCTION optional_space error invalid_block error ')' optional_space {
+  | FUNCTION optional_space error invalid_construct_list error ')' optional_space {
         $$.unit = CSSParserTerm::CSS_TERM_FUNCTION;
         $$.text = $1;
         $$.expr = 0;
@@ -616,13 +616,13 @@ statement_list
             }
         }
     }
-  | statement_list '@' IDENT error invalid_block optional_sgml {
+  | statement_list '@' IDENT error_block optional_sgml {
         CSSerror(parser, "syntax error, invalid at rule");
     }
-  | statement_list '@' IDENT error ';' optional_sgml {
+  | statement_list '@' IDENT error_non_block ';' optional_sgml {
         CSSerror(parser, "syntax error, invalid at rule");
     }
-  | statement_list error invalid_block optional_sgml {
+  | statement_list error_block optional_sgml {
         CSSerror(parser, "syntax error, invalid rule set");
     }
   ;
@@ -663,9 +663,9 @@ declaration_list
         if (CSSStyleDeclarationImp* decl = parser->getStyleDeclaration())
             decl->cancelAppend();
     }
-  | declaration_list ';' optional_space error invalid_block_list error
+  | declaration_list ';' optional_space error invalid_construct_list error
   | declaration_list ';' optional_space error
-  | error invalid_block_list error
+  | error invalid_construct_list error
   | error
   ;
 simple_selector_term
@@ -826,15 +826,38 @@ optional_space
   : /* empty */
   | optional_space S
   ;
-invalid_block
-  : '{' error invalid_block_list error '}'
+invalid_construct
+  : '{' error invalid_construct_list error '}'
   | '{' error '}'
-  | '(' error invalid_block_list error ')'
+  | '(' error invalid_construct_list error ')'
   | '(' error ')'
-  | '[' error invalid_block_list error ']'
+  | '[' error invalid_construct_list error ']'
   | '[' error ']'
   ;
-invalid_block_list
-  : invalid_block
-  | invalid_block_list error invalid_block
+invalid_construct_list
+  : invalid_construct
+  | invalid_construct_list error invalid_construct
+  ;
+invalid_block
+  : '{' error invalid_construct_list error '}'
+  | '{' error '}'
+  ;
+invalid_non_block
+  : '(' error invalid_non_block_list error ')'
+  | '(' error ')'
+  | '[' error invalid_non_block_list error ']'
+  | '[' error ']'
+  ;
+invalid_non_block_list
+  : invalid_non_block
+  | invalid_non_block_list error invalid_non_block
+  ;
+error_block
+  : error invalid_non_block_list error invalid_block
+  | error invalid_block
+  | invalid_block
+  ;
+error_non_block
+  : error invalid_non_block_list error
+  | error
   ;
