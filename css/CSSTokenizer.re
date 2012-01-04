@@ -63,8 +63,8 @@ start:
     nmstart = [_a-zA-Z] | nonascii | escape;
     nmchar = [_a-zA-Z0-9-] | nonascii | escape;
     nl = "\n" | "\r\n" | "\r" | "\f";
-    string1 = "\"" ([^\n\r\f\\"] | "\\" nl | "'" | nonascii | escape)* "\"";
-    string2 = "'" ([^\n\r\f\\'] | "\\" nl | "\"" | nonascii | escape)* "'";
+    string1 = "\"" ([^\X0000\n\r\f\\"] | "\\" nl | "'" | nonascii | escape)* "\"";
+    string2 = "'" ([^\X0000\n\r\f\\'] | "\\" nl | "\"" | nonascii | escape)* "'";
     ident = [-]? nmstart nmchar*;
     name = nmchar+;
     num = [0-9]+ | [0-9]* "." [0-9]+;
@@ -75,10 +75,10 @@ start:
     range = "?"{1,6} | h ("?"{0,5} | h ("?"{0,4} | h ("?"{0,3} | h ("?"{0,2} | h ("?"? | h)))));
     hexcolor = h{3} | h{6};
 
-    bad_string1 = "\"" ([^\n\r\f\\"] | "\\" nl | "'" | nonascii | escape)* nl;
-    bad_string2 = "'" ([^\n\r\f\\'] | "\\" nl | "\"" | nonascii | escape)* nl;
+    bad_string1 = "\"" ([^\X0000\n\r\f\\"] | "\\" nl | "'" | nonascii | escape)* (nl | "\X0000");
+    bad_string2 = "'" ([^\X0000\n\r\f\\'] | "\\" nl | "\"" | nonascii | escape)* (nl | "\X0000");
     bad_string = bad_string1 | bad_string2;
-    
+
     D = 'd' | "\\" "0"{0,4} ("44"|"64") ("\r\n" | [ \t\r\n\f])?;
     E = 'e' | "\\" "0"{0,4} ("45"|"65") ("\r\n" | [ \t\r\n\f])?;
     N = 'n' | "\\" "0"{0,4} ("4e"|"6e") ("\r\n" | [ \t\r\n\f])? | '\\n';
@@ -96,7 +96,7 @@ start:
 
     [ \t\r\n\f]+        {return S;}
 
-    "/*" [^*]* "*"+ ([^/*][^*]* "*"+)* "/"   {goto start;}
+    "/*" [^\X0000*]* "*"+ ([^\X0000/*][^\X0000*]* "*"+)* "/"   {goto start;}
 
     "<!--"              {
                             openConstructs.push_front(CDC);
@@ -255,6 +255,11 @@ start:
                                     return UNICODERANGE;
                                 }
     bad_string          {
+                            if (yylimit <= yyin) {
+                                CSSlval.text = { yytext + 1, yylimit - yytext - 1 };
+                                mode = End;
+                                return STRING;
+                            }
                             CSSlval.text = { yytext + 1, yyin - yytext - 1 };
                             return BAD_STRING;
                         }
