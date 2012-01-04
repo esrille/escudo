@@ -138,12 +138,18 @@ start:
                             return NOT;
                         }
 
-    '@import'           {return IMPORT_SYM;}
+    '@import'           {
+                            openConstructs.push_front(';');
+                            return IMPORT_SYM;
+                        }
     '@page'             {return PAGE_SYM;}
     '@media'            {return MEDIA_SYM;}
     '@font-face'        {return FONT_FACE_SYM;}
     '@charset'          {return CHARSET_SYM;}
-    '@namespace'        {return NAMESPACE_SYM;}
+    '@namespace'        {
+                            openConstructs.push_front(';');
+                            return NAMESPACE_SYM;
+                        }
 
     "!" w 'important'   {
                             CSSlval.text = { u"!important", 10 };
@@ -287,6 +293,11 @@ start:
                         }
     ")"                 {
                             if (!openConstructs.empty() && openConstructs.front() == ')')
+                                openConstructs.pop_front();
+                            return *yytext;
+                        }
+    ";"                 {
+                            if (!openConstructs.empty() && openConstructs.front() == ';')
                                 openConstructs.pop_front();
                             return *yytext;
                         }
