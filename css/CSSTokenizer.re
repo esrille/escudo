@@ -75,10 +75,14 @@ start:
     range = "?"{1,6} | h ("?"{0,5} | h ("?"{0,4} | h ("?"{0,3} | h ("?"{0,2} | h ("?"? | h)))));
     hexcolor = h{3} | h{6};
 
-    bad_string1 = "\"" ([^\X0000\n\r\f\\"] | "\\" nl | "'" | nonascii | escape)* (nl | "\X0000");
-    bad_string2 = "'" ([^\X0000\n\r\f\\'] | "\\" nl | "\"" | nonascii | escape)* (nl | "\X0000");
+    bad_string1 = "\"" ([^\X0000\n\r\f\\"] | "\\" nl | "'" | nonascii | escape)* nl;
+    bad_string2 = "'" ([^\X0000\n\r\f\\'] | "\\" nl | "\"" | nonascii | escape)* nl;
     bad_string = bad_string1 | bad_string2;
 
+    eof_string1 = "\"" ([^\X0000\n\r\f\\"] | "\\" nl | "'" | nonascii | escape)* "\X0000";
+    eof_string2 = "'" ([^\X0000\n\r\f\\'] | "\\" nl | "\"" | nonascii | escape)* "\X0000";
+    eof_string = eof_string1 | eof_string2;
+    
     D = 'd' | "\\" "0"{0,4} ("44"|"64") ("\r\n" | [ \t\r\n\f])?;
     E = 'e' | "\\" "0"{0,4} ("45"|"65") ("\r\n" | [ \t\r\n\f])?;
     N = 'n' | "\\" "0"{0,4} ("4e"|"6e") ("\r\n" | [ \t\r\n\f])? | '\\n';
@@ -244,36 +248,34 @@ start:
                             CSSlval.integer = parseInt(yytext, yyin - yytext);
                             return INTEGER;
                         }
-
     'url(' w string w ")"   {
-                                parseURL(yytext, yyin - yytext, &CSSlval.text);
-                                return URI;
-                            }
-    'url(' w url w ")"      {
-                                parseURL(yytext, yyin - yytext, &CSSlval.text);
-                                return URI;
-                            }
+                            parseURL(yytext, yyin - yytext, &CSSlval.text);
+                            return URI;
+                        }
+    'url(' w url w ")"  {
+                            parseURL(yytext, yyin - yytext, &CSSlval.text);
+                            return URI;
+                        }
+    ident "("           {
+                            openConstructs.push_front(')');
+                            CSSlval.text = { yytext, yyin - yytext - 1 };
+                            return FUNCTION;
+                        }
 
-    ident "("               {
-                                openConstructs.push_front(')');
-                                CSSlval.text = { yytext, yyin - yytext - 1 };
-                                return FUNCTION;
-                            }
-
-    'U+' range                  {
-                                    CSSlval.text = { yytext, yyin - yytext };
-                                    return UNICODERANGE;
-                                }
-    'U+' h{1,6} "-" h{1,6}      {
-                                    CSSlval.text = { yytext, yyin - yytext };
-                                    return UNICODERANGE;
-                                }
+    'U+' range          {
+                            CSSlval.text = { yytext, yyin - yytext };
+                            return UNICODERANGE;
+                        }
+    'U+' h{1,6} "-" h{1,6}  {
+                            CSSlval.text = { yytext, yyin - yytext };
+                            return UNICODERANGE;
+                        }
+    eof_string          {
+                            CSSlval.text = { yytext + 1, yylimit - yytext - 1 };
+                            mode = End;
+                            return STRING;
+                        }
     bad_string          {
-                            if (yylimit <= yyin) {
-                                CSSlval.text = { yytext + 1, yylimit - yytext - 1 };
-                                mode = End;
-                                return STRING;
-                            }
                             CSSlval.text = { yytext + 1, yyin - yytext - 1 };
                             return BAD_STRING;
                         }
