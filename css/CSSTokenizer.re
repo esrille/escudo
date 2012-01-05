@@ -256,6 +256,14 @@ start:
                             parseURL(yytext, yyin - yytext, &CSSlval.text);
                             return URI;
                         }
+    'url(' w eof_string {
+                            parseURL(yytext, yyin - yytext, &CSSlval.text);
+                            return URI;
+                        }
+    'url(' w url "\X0000"   {
+                            parseURL(yytext, yyin - yytext, &CSSlval.text);
+                            return URI;
+                        }
     ident "("           {
                             openConstructs.push_front(')');
                             CSSlval.text = { yytext, yyin - yytext - 1 };
