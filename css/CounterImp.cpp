@@ -78,8 +78,11 @@ std::u16string convertToRoman(int n, AdditiveGlyph* glyphList)
     std::u16string value;
     for (AdditiveGlyph* i = glyphList; i->glyph; ++i) {
         int t = n / i->weight;
-        while (0 < t--)
-            value += i->glyph;
+        if (0 < t) {
+            n -= t * i->weight;
+            while (0 < t--)
+                value += i->glyph;
+        }
     }
     return value;
 }
