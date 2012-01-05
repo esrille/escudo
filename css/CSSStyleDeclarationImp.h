@@ -27,6 +27,7 @@
 #include <org/w3c/dom/css/CSSStyleDeclarationValue.h>
 
 #include <bitset>
+#include <list>
 #include <map>
 #include <boost/intrusive_ptr.hpp>
 
@@ -221,36 +222,23 @@ public:
 
     struct CounterContext
     {
-        mutable ViewCSSImp* view;
-        mutable CSSStyleDeclarationImp* style;
+        ViewCSSImp* view;
+        std::list<CSSStyleDeclarationImp*> styles;
     public:
-        CounterContext() :
-            view(0),
-            style(0)
+        CounterContext(ViewCSSImp* view) :
+            view(view)
         {
-        }
-        CounterContext(ViewCSSImp* view, CSSStyleDeclarationImp* style) :
-            view(view),
-            style(style)
-        {
-        }
-        CounterContext(const CounterContext& other) :
-            view(other.view),
-            style(other.style)
-        {
-            other.view = 0;
-            other.style = 0;
-        }
-        CounterContext& operator=(const CounterContext& other)
-        {
-            std::swap(view, other.view);
-            std::swap(style, other.style);
-            return *this;
         }
         ~CounterContext()
         {
-            if (view && style)
-                style->counterReset.restoreCounter(view);
+            if (!view)
+                return;
+            for (auto i = styles.begin(); i != styles.end(); ++i)
+                (*i)->counterReset.restoreCounter(view);
+        }
+        void update(CSSStyleDeclarationImp* style) {
+            if (style->updateCounters(view))
+                styles.push_front(style);
         }
     };
 
@@ -437,10 +425,10 @@ public:
 
     void resolve(ViewCSSImp* view, const ContainingBlock* containingBlock);
 
-    CounterContext updateCounters(ViewCSSImp* view) {
+    bool updateCounters(ViewCSSImp* view) {
         counterReset.resetCounter(view);
         counterIncrement.incrementCounter(view);
-        return CounterContext(view, this);
+        return counterReset.hasCounter();
     }
 
     size_t processWhiteSpace(std::u16string& data, char16_t& prevChar);

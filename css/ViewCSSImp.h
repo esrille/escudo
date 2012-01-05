@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,9 +113,9 @@ public:
     }
 
     BlockLevelBox* createBlockLevelBox(Element element, CSSStyleDeclarationImp* style, bool newContext);
-    BlockLevelBox* layOutBlockBoxes(Node node, BlockLevelBox* parentBox, BlockLevelBox* siblingBox, CSSStyleDeclarationImp* style);
-    BlockLevelBox* layOutBlockBoxes(Text text, BlockLevelBox* parentBox, BlockLevelBox* siblingBox, CSSStyleDeclarationImp* style);
-    BlockLevelBox* layOutBlockBoxes(Element element, BlockLevelBox* parentBox, BlockLevelBox* siblingBox, CSSStyleDeclarationImp* style, bool asBlock = false);
+    BlockLevelBox* layOutBlockBoxes(Node node, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSStyleDeclarationImp::CounterContext* counterContext);
+    BlockLevelBox* layOutBlockBoxes(Text text, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSStyleDeclarationImp::CounterContext* counterContext);
+    BlockLevelBox* layOutBlockBoxes(Element element, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSStyleDeclarationImp::CounterContext* counterContext, bool asBlock = false);
     BlockLevelBox* layOutBlockBoxes();
     BlockLevelBox* layOut();
     BlockLevelBox* dump();

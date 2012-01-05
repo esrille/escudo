@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -147,7 +147,7 @@ void TableWrapperBox::formTable(ViewCSSImp* view)
         }
         unsigned display = currentStyle->display.getValue();
         if (display == CSSDisplayValueImp::TableCaption) {
-            BlockLevelBox* caption = view->layOutBlockBoxes(current, 0, 0, currentStyle, false);
+            BlockLevelBox* caption = view->layOutBlockBoxes(current, 0, currentStyle, 0, false);  // TODO: counterContext
             if (!caption)
                 continue;
             if (currentStyle->captionSide.getValue() == CSSCaptionSideValueImp::Top)
@@ -215,7 +215,7 @@ unsigned TableWrapperBox::processRow(ViewCSSImp* view, Element row, unsigned yCu
             appendColumn();
         while (yHeight < yCurrent + rowspan)
             appendRow();
-        CellBox* cellBox = static_cast<CellBox*>(view->layOutBlockBoxes(child, 0, 0, childStyle, true));
+        CellBox* cellBox = static_cast<CellBox*>(view->layOutBlockBoxes(child, 0, childStyle, 0, true));  // TODO counterContext
         if (cellBox) {
             cellBox->setPosition(xCurrent, yCurrent);
             cellBox->setColSpan(colspan);

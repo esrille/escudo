@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -202,19 +202,19 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle)
 
 // In this step, neither inline-level boxes nor line boxes are generated.
 // Those will be generated later by layOut().
-BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Node node, BlockLevelBox* parentBox, BlockLevelBox* siblingBox, CSSStyleDeclarationImp* style)
+BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Node node, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSStyleDeclarationImp::CounterContext* counterContext)
 {
     BlockLevelBox* newBox = 0;
     switch (node.getNodeType()) {
     case Node::TEXT_NODE:
-        newBox = layOutBlockBoxes(interface_cast<Text>(node), parentBox, siblingBox, style);
+        newBox = layOutBlockBoxes(interface_cast<Text>(node), parentBox, style, counterContext);
         break;
     case Node::ELEMENT_NODE:
-        newBox = layOutBlockBoxes(interface_cast<Element>(node), parentBox, siblingBox, style);
+        newBox = layOutBlockBoxes(interface_cast<Element>(node), parentBox, style, counterContext);
         break;
     case Node::DOCUMENT_NODE:
         for (Node child = node.getFirstChild(); child; child = child.getNextSibling()) {
-            if (BlockLevelBox* box = layOutBlockBoxes(child, parentBox, newBox, style))
+            if (BlockLevelBox* box = layOutBlockBoxes(child, parentBox, style, counterContext))
                 newBox = box;
         }
         break;
@@ -224,7 +224,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Node node, BlockLevelBox* parentBox,
     return newBox;
 }
 
-BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Text text, BlockLevelBox* parentBox, BlockLevelBox* siblingBox, CSSStyleDeclarationImp* style)
+BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Text text, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSStyleDeclarationImp::CounterContext* counterContext)
 {
     if (!parentBox || !style)
         return 0;
@@ -349,16 +349,17 @@ BlockLevelBox* ViewCSSImp::createBlockLevelBox(Element element, CSSStyleDeclarat
     return block;
 }
 
-BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* parentBox, BlockLevelBox* siblingBox, CSSStyleDeclarationImp* style, bool asBlock)
+BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSStyleDeclarationImp::CounterContext* counterContext, bool asBlock)
 {
     style = map[element].get();
     if (!style || style->display.isNone())
         return 0;
     bool runIn = style->display.isRunIn() && parentBox;
 
-    CSSStyleDeclarationImp::CounterContext cc;
+    CSSStyleDeclarationImp::CounterContext cc(this);
+    
     if (style->getPseudoElementSelectorType() == CSSPseudoElementSelector::NonPseudo)
-        cc = style->updateCounters(this);
+        counterContext->update(style);
 
     BlockLevelBox* currentBox = parentBox;
     if (style->isFloat() || style->isAbsolutelyPositioned() || !parentBox) {
@@ -413,11 +414,11 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
             CounterImpPtr counter = getCounter(u"list-item");
             if (counter)
                 counter->increment(1);
-            CSSStyleDeclarationImp::CounterContext ccMarker = markerStyle->updateCounters(this);
+            counterContext->update(markerStyle);
             if (Element marker = markerStyle->content.eval(this, element)) {
                 emptyInline = false;
                 map[marker] = markerStyle;
-                if (BlockLevelBox* box = layOutBlockBoxes(marker, currentBox, childBox, style))
+                if (BlockLevelBox* box = layOutBlockBoxes(marker, currentBox, style, &cc))
                     childBox = box;
             }
         }
@@ -425,35 +426,35 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
         CSSStyleDeclarationImp* beforeStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::Before);
         if (beforeStyle) {
             beforeStyle->compute(this, style, element);
-            CSSStyleDeclarationImp::CounterContext ccBefore = beforeStyle->updateCounters(this);
+            counterContext->update(beforeStyle);
             if (Element before = beforeStyle->content.eval(this, element)) {
                 emptyInline = false;
                 map[before] = beforeStyle;
-                if (BlockLevelBox* box = layOutBlockBoxes(before, currentBox, childBox, style))
+                if (BlockLevelBox* box = layOutBlockBoxes(before, currentBox, style, &cc))
                     childBox = box;
             }
         }
 
         for (Node child = element.getFirstChild(); child; child = child.getNextSibling()) {
-            if (BlockLevelBox* box = layOutBlockBoxes(child, currentBox, childBox, style))
+            if (BlockLevelBox* box = layOutBlockBoxes(child, currentBox, style, &cc))
                 childBox = box;
         }
 
         CSSStyleDeclarationImp* afterStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::After);
         if (afterStyle) {
             afterStyle->compute(this, style, element);
-            CSSStyleDeclarationImp::CounterContext ccAfter = afterStyle->updateCounters(this);
+            counterContext->update(afterStyle);
             if (Element after = afterStyle->content.eval(this, element)) {
                 emptyInline = false;
                 map[after] = afterStyle;
-                if (BlockLevelBox* box = layOutBlockBoxes(after, currentBox, childBox, style))
+                if (BlockLevelBox* box = layOutBlockBoxes(after, currentBox, style, &cc))
                     childBox = box;
             }
         }
 
         if (emptyInline) {
             // Empty inline elements still have margins, padding, borders and a line height. cf. 10.8
-            layOutBlockBoxes(Text(element.self()), currentBox, 0, style);
+            layOutBlockBoxes(Text(element.self()), currentBox, style, &cc);
         }
     }
 
@@ -493,8 +494,9 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
 // Lay out a tree box block-level boxes
 BlockLevelBox* ViewCSSImp::layOutBlockBoxes()
 {
+    CSSStyleDeclarationImp::CounterContext cc(this);
     floatMap.clear();
-    boxTree = layOutBlockBoxes(getDocument(), 0, 0, 0);
+    boxTree = layOutBlockBoxes(getDocument(), 0, 0, &cc);
     clearCounters();
     return boxTree.get();
 }
