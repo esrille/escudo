@@ -188,6 +188,12 @@ import
             $$ = rule;
         }
     }
+  | IMPORT_SYM error_block optional_sgml {
+        $$ = 0;
+    }
+  | IMPORT_SYM error_non_block ';' optional_sgml {
+        $$ = 0;
+    }
   ;
 namespace
   : NAMESPACE_SYM optional_space namespace_prefix optional_space uri_term optional_space ';' optional_space
@@ -212,6 +218,12 @@ media
         }
         $$ = mediaRule;
     }
+  | MEDIA_SYM error_block optional_sgml {
+        $$ = 0;
+    }
+  | MEDIA_SYM error_non_block ';' optional_sgml {
+        $$ = 0;
+    }
   ;
 medium
   : IDENT optional_space {
@@ -224,12 +236,24 @@ page
   | PAGE_SYM optional_space       pseudo_page optional_space '{' optional_space declaration_list '}' optional_space
   | PAGE_SYM optional_space IDENT             optional_space '{' optional_space declaration_list '}' optional_space
   | PAGE_SYM optional_space                                  '{' optional_space declaration_list '}' optional_space
+  | PAGE_SYM error_block optional_sgml {
+        $$ = 0;
+    }
+  | PAGE_SYM error_non_block ';' optional_sgml {
+        $$ = 0;
+    }
   ;
 pseudo_page
   : ':' IDENT
   ;
 font_face
   : FONT_FACE_SYM optional_space '{' optional_space declaration_list '}' optional_space
+  | FONT_FACE_SYM error_block optional_sgml {
+        $$ = 0;
+    }
+  | FONT_FACE_SYM error_non_block ';' optional_sgml {
+        $$ = 0;
+    }
   ;
 operator
   : '/' optional_space {
@@ -616,6 +640,12 @@ statement_list
     }
   | statement_list '@' IDENT error_non_block ';' optional_sgml {
         CSSerror(parser, "syntax error, invalid at rule");
+    }
+  | statement_list CHARSET_SYM error_block optional_sgml {
+        CSSerror(parser, "syntax error, invalid charset rule");
+    }
+  | statement_list CHARSET_SYM error_non_block ';' optional_sgml {
+        CSSerror(parser, "syntax error, invalid charset rule");
     }
   | statement_list error_block optional_sgml {
         CSSerror(parser, "syntax error, invalid rule set");
