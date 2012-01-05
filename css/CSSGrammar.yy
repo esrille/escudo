@@ -666,6 +666,12 @@ optional_rulesets
             mediaRule->append($2);
         }
     }
+  | optional_rulesets error_block optional_sgml {
+        CSSerror(parser, "syntax error, invalid ruleset");
+    }
+  | optional_rulesets error_non_block ';' optional_sgml {
+        CSSerror(parser, "syntax error, invalid ruleset");
+    }
   ;
 medium_list
   : medium
