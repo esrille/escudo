@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,6 +84,46 @@ std::u16string convertToRoman(int n, AdditiveGlyph* glyphList)
     return value;
 }
 
+std::u16string emit(int i, unsigned type)
+{
+    std::u16string value;
+    switch (type) {
+    case CSSListStyleTypeValueImp::Decimal:
+        value = toString(i);
+        break;
+    case CSSListStyleTypeValueImp::DecimalLeadingZero:
+        value = toString(i % 100);
+        if (value.length() == 1)
+            value = u"0" + value;
+        break;
+    case CSSListStyleTypeValueImp::LowerAlpha:
+    case CSSListStyleTypeValueImp::LowerLatin:
+        value = std::u16string(1, u'a' + static_cast<unsigned>(i) % 26 - 1);
+        break;
+    case CSSListStyleTypeValueImp::UpperAlpha:
+    case CSSListStyleTypeValueImp::UpperLatin:
+        value = std::u16string(1, u'A' + static_cast<unsigned>(i) % 26 - 1);
+        break;
+    case CSSListStyleTypeValueImp::LowerGreek:
+        // This style is only defined because CSS2.1 has it.
+        // It doesn't appear to actually be used in Greek texts.
+        value = std::u16string(1, u"αβγδεζηθικλμνξοπρστυφχψω"[static_cast<unsigned>(i - 1) % 24]);
+        break;
+    case CSSListStyleTypeValueImp::LowerRoman:
+        value = convertToRoman(i, lowerRoman);
+        break;
+    case CSSListStyleTypeValueImp::UpperRoman:
+        value = convertToRoman(i, upperRoman);
+        break;
+    case CSSListStyleTypeValueImp::Armenian:
+    case CSSListStyleTypeValueImp::Georgian:
+    default:
+        value = toString(i);
+        break;
+    }
+    return value;
+}
+
 }
 
 void CounterImp::reset(int number)
@@ -111,47 +151,14 @@ std::u16string CounterImp::eval(const std::u16string& separator, unsigned type)
     if (counters.empty())
         return u"";
     std::u16string value;
-    if (separator.empty()) {
-        switch (type) {
-        case CSSListStyleTypeValueImp::Decimal:
-            value = toString(counters.back());
-            break;
-        case CSSListStyleTypeValueImp::DecimalLeadingZero:
-            value = toString(counters.back() % 100);
-            if (value.length() == 1)
-                value = u"0" + value;
-            break;
-        case CSSListStyleTypeValueImp::LowerAlpha:
-        case CSSListStyleTypeValueImp::LowerLatin:
-            value = std::u16string(1, u'a' + static_cast<unsigned>(counters.back()) % 26 - 1);
-            break;
-        case CSSListStyleTypeValueImp::UpperAlpha:
-        case CSSListStyleTypeValueImp::UpperLatin:
-            value = std::u16string(1, u'A' + static_cast<unsigned>(counters.back()) % 26 - 1);
-            break;
-        case CSSListStyleTypeValueImp::LowerGreek:
-            // This style is only defined because CSS2.1 has it.
-            // It doesn't appear to actually be used in Greek texts.
-            value = std::u16string(1, u"αβγδεζηθικλμνξοπρστυφχψω"[static_cast<unsigned>(counters.back() - 1) % 24]);
-            break;
-        case CSSListStyleTypeValueImp::LowerRoman:
-            value = convertToRoman(counters.back(), lowerRoman);
-            break;
-        case CSSListStyleTypeValueImp::UpperRoman:
-            value = convertToRoman(counters.back(), upperRoman);
-            break;
-        case CSSListStyleTypeValueImp::Armenian:
-        case CSSListStyleTypeValueImp::Georgian:
-        default:
-            value = toString(counters.back());
-            break;
+    if (separator.empty())
+        value = emit(counters.back(), type);
+    else {
+        for (auto i = counters.begin(); i != counters.end(); ++i) {
+            if (i != counters.begin())
+                value += separator;
+            value += emit(*i, type);
         }
-        return value;
-    }
-    for (auto i = counters.begin(); i != counters.end(); ++i) {
-        if (i != counters.begin())
-            value += separator;
-        value += toString(*i);
     }
     return value;
 }
