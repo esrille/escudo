@@ -207,7 +207,7 @@ media
         parser->setMediaRule(new(std::nothrow) CSSMediaRuleImp);
     }
     medium_list
-   '{' optional_space optional_rulesets '}' optional_space {
+   '{' optional_space optional_rulesets error_non_block '}' optional_space {
         CSSMediaRuleImp* mediaRule = parser->getMediaRule();
         if (mediaRule) {
             if (MediaListImp* mediaList = parser->getMediaList()) {
