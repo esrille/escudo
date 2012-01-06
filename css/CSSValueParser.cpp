@@ -39,6 +39,7 @@ CSSValueRule CSSValueParser::comma;
 CSSValueRule CSSValueParser::ident;
 CSSValueRule CSSValueParser::integer;
 CSSValueRule CSSValueParser::length;
+CSSValueRule CSSValueParser::non_negative_length;
 CSSValueRule CSSValueParser::number;
 CSSValueRule CSSValueParser::percentage;
 CSSValueRule CSSValueParser::slash;
@@ -118,6 +119,7 @@ void CSSValueParser::initializeRules()
     comma = CSSValueRule(CSSValueRule::Comma);
     ident = CSSValueRule(CSSValueRule::AnyIdent);
     length = CSSValueRule(CSSValueRule::Length);
+    non_negative_length = CSSValueRule(CSSValueRule::NonNegativeLength);
     integer = CSSValueRule(CSSValueRule::AnyInteger);
     number = CSSValueRule(CSSValueRule::AnyNumber);
     percentage = CSSValueRule(CSSValueRule::Percentage);
@@ -203,7 +205,7 @@ void CSSValueParser::initializeRules()
         = (CSSValueRule(u"thin", CSSBorderWidthValueImp::Thin)
         |  CSSValueRule(u"medium", CSSBorderWidthValueImp::Medium)
         |  CSSValueRule(u"thick", CSSBorderWidthValueImp::Thick)
-        |  length)
+        |  non_negative_length)
             [CSSStyleDeclarationImp::BorderWidth];
     border_style
         = (CSSValueRule(u"none", CSSBorderStyleValueImp::None)
@@ -578,6 +580,8 @@ CSSValueRule::operator std::u16string() const
         return u"Juxtapose";
     case Length:
         return u"Length";
+    case NonNegativeLength:
+        return u"NonNegativeLength";
     case Number:
         return u"Number";
     case Percentage:
@@ -742,6 +746,17 @@ bool CSSValueRule::isValid(CSSValueParser* parser, unsigned propertyID) const
         if (term.unit == CSSPrimitiveValue::CSS_NUMBER && term.number == 0.0)
             term.unit = CSSPrimitiveValue::CSS_PX;  // TODO: check this is okay for any other rules.
         if (CSSPrimitiveValue::CSS_EMS <= term.unit && term.unit <= CSSPrimitiveValue::CSS_PC) {
+            if (!f || (parser->*f)(*this)) {
+                parser->push(&term, propertyID);
+                return parser->acceptToken();
+            }
+        }
+        break;
+    case NonNegativeLength:
+        if (term.unit == CSSPrimitiveValue::CSS_NUMBER && term.number == 0.0)
+            term.unit = CSSPrimitiveValue::CSS_PX;  // TODO: check this is okay for any other rules.
+        if (CSSPrimitiveValue::CSS_EMS <= term.unit && term.unit <= CSSPrimitiveValue::CSS_PC &&
+            0.0f <= term.getNumber()) {
             if (!f || (parser->*f)(*this)) {
                 parser->push(&term, propertyID);
                 return parser->acceptToken();

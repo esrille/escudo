@@ -45,6 +45,7 @@ public:
         Ident,
         Juxtapose,
         Length,
+        NonNegativeLength,
         Number,
         Percentage,
         Slash,
@@ -200,6 +201,7 @@ class CSSValueParser
     static CSSValueRule inherit;
     static CSSValueRule integer;
     static CSSValueRule length;
+    static CSSValueRule non_negative_length;
     static CSSValueRule number;
     static CSSValueRule percentage;
     static CSSValueRule slash;
