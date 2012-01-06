@@ -48,6 +48,7 @@ public:
         NonNegativeLength,
         Number,
         Percentage,
+        NonNegativePercentage,
         Slash,
         String,
         Uri,
@@ -204,6 +205,7 @@ class CSSValueParser
     static CSSValueRule non_negative_length;
     static CSSValueRule number;
     static CSSValueRule percentage;
+    static CSSValueRule non_negative_percentage;
     static CSSValueRule slash;
     static CSSValueRule string;
     static CSSValueRule uri;

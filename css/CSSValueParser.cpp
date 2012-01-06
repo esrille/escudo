@@ -42,6 +42,7 @@ CSSValueRule CSSValueParser::length;
 CSSValueRule CSSValueParser::non_negative_length;
 CSSValueRule CSSValueParser::number;
 CSSValueRule CSSValueParser::percentage;
+CSSValueRule CSSValueParser::non_negative_percentage;
 CSSValueRule CSSValueParser::slash;
 CSSValueRule CSSValueParser::string;
 CSSValueRule CSSValueParser::uri;
@@ -123,6 +124,7 @@ void CSSValueParser::initializeRules()
     integer = CSSValueRule(CSSValueRule::AnyInteger);
     number = CSSValueRule(CSSValueRule::AnyNumber);
     percentage = CSSValueRule(CSSValueRule::Percentage);
+    non_negative_percentage = CSSValueRule(CSSValueRule::NonNegativePercentage);
     slash = CSSValueRule(CSSValueRule::Slash);
     string = CSSValueRule(CSSValueRule::String);
     uri = CSSValueRule(CSSValueRule::Uri);
@@ -392,8 +394,8 @@ void CSSValueParser::initializeRules()
     fontSize
         = (absolute_size
         |  relative_size
-        |  length
-        |  percentage)
+        |  non_negative_length
+        |  non_negative_percentage)
             [CSSStyleDeclarationImp::FontSize];
     fontStyle
         = CSSValueRule(u"normal", CSSFontStyleValueImp::Normal)
@@ -586,6 +588,8 @@ CSSValueRule::operator std::u16string() const
         return u"Number";
     case Percentage:
         return u"Percentage";
+    case NonNegativePercentage:
+        return u"NonNegativePercentage";
     case Slash:
         return u"Slash";
     case String:
@@ -773,6 +777,14 @@ bool CSSValueRule::isValid(CSSValueParser* parser, unsigned propertyID) const
         break;
     case Percentage:
         if (term.unit == CSSPrimitiveValue::CSS_PERCENTAGE) {
+            if (!f || (parser->*f)(*this)) {
+                parser->push(&term, propertyID);
+                return parser->acceptToken();
+            }
+        }
+        break;
+    case NonNegativePercentage:
+        if (term.unit == CSSPrimitiveValue::CSS_PERCENTAGE && 0.0f <= term.getNumber()) {
             if (!f || (parser->*f)(*this)) {
                 parser->push(&term, propertyID);
                 return parser->acceptToken();
