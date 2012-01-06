@@ -133,6 +133,8 @@ void TableWrapperBox::formTable(ViewCSSImp* view)
     if (table.getChildElementCount() == 0)
         return;
 
+    CSSStyleDeclarationImp::CounterContext cc(view);
+
     // 10.
     unsigned yCurrent = 0;
     // 11.
@@ -147,7 +149,7 @@ void TableWrapperBox::formTable(ViewCSSImp* view)
         }
         unsigned display = currentStyle->display.getValue();
         if (display == CSSDisplayValueImp::TableCaption) {
-            BlockLevelBox* caption = view->layOutBlockBoxes(current, 0, currentStyle, 0, false);  // TODO: counterContext
+            BlockLevelBox* caption = view->layOutBlockBoxes(current, 0, currentStyle, &cc, false);
             if (!caption)
                 continue;
             if (currentStyle->captionSide.getValue() == CSSCaptionSideValueImp::Top)
@@ -168,7 +170,7 @@ void TableWrapperBox::formTable(ViewCSSImp* view)
         // 13.
         if (display == CSSDisplayValueImp::TableRow) {
             // TODO
-            yCurrent = processRow(view, current, yCurrent);
+            yCurrent = processRow(view, current, yCurrent, &cc);
             continue;
         }
         if (display == CSSDisplayValueImp::TableFooterGroup) {
@@ -176,16 +178,16 @@ void TableWrapperBox::formTable(ViewCSSImp* view)
             continue;
         }
         assert(display == CSSDisplayValueImp::TableHeaderGroup || display == CSSDisplayValueImp::TableRowGroup);
-        yCurrent = processRowGruop(view, current, yCurrent);
+        yCurrent = processRowGruop(view, current, yCurrent, &cc);
     }
     while (!pendingTfootElements.empty()) {
         Element tfoot = pendingTfootElements.front();
-        yCurrent = processRowGruop(view, tfoot, yCurrent);
+        yCurrent = processRowGruop(view, tfoot, yCurrent, &cc);
         pendingTfootElements.pop_front();
     }
 }
 
-unsigned TableWrapperBox::processRow(ViewCSSImp* view, Element row, unsigned yCurrent)
+unsigned TableWrapperBox::processRow(ViewCSSImp* view, Element row, unsigned yCurrent, CSSStyleDeclarationImp::CounterContext* counterContext)
 {
     if (yHeight == yCurrent)
         appendRow();
@@ -215,7 +217,7 @@ unsigned TableWrapperBox::processRow(ViewCSSImp* view, Element row, unsigned yCu
             appendColumn();
         while (yHeight < yCurrent + rowspan)
             appendRow();
-        CellBox* cellBox = static_cast<CellBox*>(view->layOutBlockBoxes(child, 0, childStyle, 0, true));  // TODO counterContext
+        CellBox* cellBox = static_cast<CellBox*>(view->layOutBlockBoxes(child, 0, childStyle, counterContext, true));
         if (cellBox) {
             cellBox->setPosition(xCurrent, yCurrent);
             cellBox->setColSpan(colspan);
@@ -233,7 +235,7 @@ unsigned TableWrapperBox::processRow(ViewCSSImp* view, Element row, unsigned yCu
     return ++yCurrent;
 }
 
-unsigned TableWrapperBox::processRowGruop(ViewCSSImp* view, Element section, unsigned yCurrent)
+unsigned TableWrapperBox::processRowGruop(ViewCSSImp* view, Element section, unsigned yCurrent, CSSStyleDeclarationImp::CounterContext* counterContext)
 {
     unsigned yStart = yHeight;
     for (Element child = section.getFirstElementChild(); child; child = child.getNextElementSibling()) {
@@ -241,7 +243,7 @@ unsigned TableWrapperBox::processRowGruop(ViewCSSImp* view, Element section, uns
         assert(childStyle);
         if (childStyle->display.getValue() != CSSDisplayValueImp::TableRow)
             continue;
-        unsigned next = processRow(view, child, yCurrent);
+        unsigned next = processRow(view, child, yCurrent, counterContext);
         rowGroups[yCurrent] = view->getStyle(section);
         yCurrent = next;
     }

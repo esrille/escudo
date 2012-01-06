@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -140,8 +140,8 @@ class TableWrapperBox : public BlockLevelBox
 
     void formTable(ViewCSSImp* view);
     void processColGruop(ViewCSSImp* view, Element colgroup);
-    unsigned processRow(ViewCSSImp* view, Element row, unsigned yCurrent);
-    unsigned processRowGruop(ViewCSSImp* view, Element section, unsigned yCurrent);
+    unsigned processRow(ViewCSSImp* view, Element row, unsigned yCurrent, CSSStyleDeclarationImp::CounterContext* counterContext);
+    unsigned processRowGruop(ViewCSSImp* view, Element section, unsigned yCurrent, CSSStyleDeclarationImp::CounterContext* counterContext);
     unsigned endRowGroup(int yCurrent);
     void growDownwardGrowingCells();
 
