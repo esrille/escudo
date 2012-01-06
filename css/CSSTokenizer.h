@@ -24,6 +24,7 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
+struct CSSParserNumber;
 struct CSSParserString;
 
 class CSSTokenizer
@@ -57,8 +58,9 @@ public:
         if (endptr)
             *endptr = 0;
         for (const char16_t* p = text; p < end; ++p) {
-            if (endptr && !isDigit(*p) && (*p != '.' || hasE)) {
-                *endptr = p;
+            if (!isDigit(*p) && (*p != '.' || hasE)) {
+                if (endptr)
+                    *endptr = p;
                 break;
             }
             if (*p == '.') {
@@ -84,6 +86,7 @@ private:
     const char16_t* yymarker;
     std::deque<int> openConstructs;
 
+    static void parseNumber(const char16_t* text, ssize_t length, CSSParserNumber* number, const char16_t** endptr = 0);
     static void parseURL(const char16_t* text, ssize_t length, CSSParserString* string);
 
 public:

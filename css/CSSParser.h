@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,22 @@ class CSSStyleSheetImp;
 class CSSStyleDeclarationImp;
 class CSSMediaRuleImp;
 class CSSRuleImp;
+
+struct CSSParserNumber
+{
+    double number;
+    bool integer;   // true if number was expressed in an integer format.
+
+    operator double() const {
+        return number;
+    }
+    bool isInteger() const {
+        return integer;
+    }
+    int toInteger() const {
+        return static_cast<int>(number);
+    }
+};
 
 struct CSSParserString
 {
@@ -157,7 +173,7 @@ struct CSSParserTerm
 
     short op;  // '/', ',', or '\0'
     unsigned short unit;
-    double number;  // TODO: number should be float
+    CSSParserNumber number;  // TODO: number should be float
     unsigned rgb;   // also used as the keyword index
     CSSParserString text;
     CSSParserExpr* expr;  // for function
@@ -275,7 +291,7 @@ public:
     MediaListImp* getMediaList() {
         return &mediaList;
     }
-    
+
     bool getCaseSensitivity() const {
         return caseSensitive;
     }

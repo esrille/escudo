@@ -44,7 +44,7 @@ using namespace org::w3c::dom::css;
 
 %union {
     long integer;
-    double number;
+    org::w3c::dom::bootstrap::CSSParserNumber number;
     org::w3c::dom::bootstrap::CSSParserString text;
     org::w3c::dom::bootstrap::CSSParserTerm term;
     org::w3c::dom::bootstrap::CSSParserExpr* expr;
@@ -82,7 +82,6 @@ using namespace org::w3c::dom::css;
 %token IMPORT_SYM
 %token <text> IMPORTANT_SYM
 %token INCLUDES
-%token <integer> INTEGER
 %token <number> LENGTH_PX
 %token <number> LENGTH_CM
 %token <number> LENGTH_MM
@@ -297,7 +296,7 @@ ruleset
             if (!$1->isValid()) {
                 delete $1;
                 $1 = 0;
-            } else 
+            } else
                 parser->setStyleDeclaration(new(std::nothrow) CSSStyleDeclarationImp);
         }
     }
@@ -752,7 +751,7 @@ term_list
   ;
 unary_term
   : unary_operator numeric_term {
-        $2.number *= $1;
+        $2.number.number *= $1;
         $$ = $2;
     }
   | numeric_term

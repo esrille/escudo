@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -417,7 +417,7 @@ void CSSValueParser::initializeRules()
     letterSpacing
         = CSSValueRule(u"normal")
         | length;
-        
+
     listStyleImage
         = (uri
         |  CSSValueRule(u"none", CSSListStyleImageValueImp::None))
@@ -432,7 +432,7 @@ void CSSValueParser::initializeRules()
           list_style_type ||
           listStylePosition ||
           uri;
-        
+
     margin
         = CSSValueRule(1, 4, auto_length);
 
@@ -709,7 +709,8 @@ bool CSSValueRule::isValid(CSSValueParser* parser, unsigned propertyID) const
                 term.rgb = b;
             } else if (hasHint() == Number) {
                 term.unit = CSSPrimitiveValue::CSS_NUMBER;
-                term.number = number;
+                term.number.number = number;
+                term.number.integer = false;
             }
             if (!f || (parser->*f)(*this)) {
                 parser->push(&term, propertyID);
@@ -851,11 +852,11 @@ bool CSSValueParser::rgb(const CSSValueRule& rule)
         CSSParserTerm* term = stack.at(i);
         if (term->unit == CSSPrimitiveValue::CSS_NUMBER) {
             rgb <<= 8;
-            rgb += static_cast<unsigned char>(std::max(0.0, std::min(255.0, term->number)));
+            rgb += static_cast<unsigned char>(std::max(0.0, std::min(255.0, term->getNumber())));
         } else {
             assert(term->unit == CSSPrimitiveValue::CSS_PERCENTAGE);
             rgb <<= 8;
-            rgb += static_cast<unsigned char>(roundf(255.0f * (std::max(0.0, std::min(100.0, term->number) / 100.0f))));
+            rgb += static_cast<unsigned char>(roundf(255.0f * (std::max(0.0, std::min(100.0, term->getNumber()) / 100.0f))));
         }
     }
     rgb |= 0xFF000000;

@@ -68,7 +68,6 @@ start:
     ident = [-]? nmstart nmchar*;
     name = nmchar+;
     num = [0-9]+ | [0-9]* "." [0-9]+;
-    integer = [0-9]+;
     string = string1 | string2;
     url = ([!#$%&*-~] | nonascii | escape)*;
     w =[ \t\r\n\f]*;
@@ -82,7 +81,7 @@ start:
     eof_string1 = "\"" ([^\X0000\n\r\f\\"] | "\\" nl | "'" | nonascii | escape)* "\X0000";
     eof_string2 = "'" ([^\X0000\n\r\f\\'] | "\\" nl | "\"" | nonascii | escape)* "\X0000";
     eof_string = eof_string1 | eof_string2;
-    
+
     D = 'd' | "\\" "0"{0,4} ("44"|"64") ("\r\n" | [ \t\r\n\f])?;
     E = 'e' | "\\" "0"{0,4} ("45"|"65") ("\r\n" | [ \t\r\n\f])?;
     N = 'n' | "\\" "0"{0,4} ("4e"|"6e") ("\r\n" | [ \t\r\n\f])? | '\\n';
@@ -169,84 +168,79 @@ start:
                         }
 
     num 'em'            {
-                            CSSlval.number = parseNumber(yytext, yyin - yytext - 2);
+                            parseNumber(yytext, yyin - yytext - 2, &CSSlval.number);
                             return EMS;
                         }
     num 'ex'            {
-                            CSSlval.number = parseNumber(yytext, yyin - yytext - 2);
+                            parseNumber(yytext, yyin - yytext - 2, &CSSlval.number);
                             return EXS;
                         }
     num 'px'            {
-                            CSSlval.number = parseNumber(yytext, yyin - yytext - 2);
+                            parseNumber(yytext, yyin - yytext - 2, &CSSlval.number);
                             return LENGTH_PX;
                         }
     num 'cm'            {
-                            CSSlval.number = parseNumber(yytext, yyin - yytext - 2);
+                            parseNumber(yytext, yyin - yytext - 2, &CSSlval.number);
                             return LENGTH_CM;
                         }
     num 'mm'            {
-                            CSSlval.number = parseNumber(yytext, yyin - yytext - 2);
+                            parseNumber(yytext, yyin - yytext - 2, &CSSlval.number);
                             return LENGTH_MM;
                         }
     num 'in'            {
-                            CSSlval.number = parseNumber(yytext, yyin - yytext - 2);
+                            parseNumber(yytext, yyin - yytext - 2, &CSSlval.number);
                             return LENGTH_IN;
                         }
     num 'pt'            {
-                            CSSlval.number = parseNumber(yytext, yyin - yytext - 2);
+                            parseNumber(yytext, yyin - yytext - 2, &CSSlval.number);
                             return LENGTH_PT;
                         }
     num 'pc'            {
-                            CSSlval.number = parseNumber(yytext, yyin - yytext - 2);
+                            parseNumber(yytext, yyin - yytext - 2, &CSSlval.number);
                             return LENGTH_PC;
                         }
     num 'deg'           {
-                            CSSlval.number = parseNumber(yytext, yyin - yytext - 3);
+                            parseNumber(yytext, yyin - yytext - 3, &CSSlval.number);
                             return ANGLE_DEG;
                         }
     num 'rad'           {
-                            CSSlval.number = parseNumber(yytext, yyin - yytext - 3);
+                            parseNumber(yytext, yyin - yytext - 3, &CSSlval.number);
                             return ANGLE_RAD;
                         }
     num 'grad'          {
-                            CSSlval.number = parseNumber(yytext, yyin - yytext - 4);
+                            parseNumber(yytext, yyin - yytext - 4, &CSSlval.number);
                             return ANGLE_GRAD;
                         }
     num 'ms'            {
-                            CSSlval.number = parseNumber(yytext, yyin - yytext - 2);
+                            parseNumber(yytext, yyin - yytext - 2, &CSSlval.number);
                             return TIME_MS;
                         }
     num 's'             {
-                            CSSlval.number = parseNumber(yytext, yyin - yytext - 1);
+                            parseNumber(yytext, yyin - yytext - 1, &CSSlval.number);
                             return TIME_S;
                         }
     num 'Hz'            {
-                            CSSlval.number = parseNumber(yytext, yyin - yytext - 2);
+                            parseNumber(yytext, yyin - yytext - 2, &CSSlval.number);
                             return FREQ_HZ;
                         }
     num 'kHz'           {
-                            CSSlval.number = parseNumber(yytext, yyin - yytext - 3);
+                            parseNumber(yytext, yyin - yytext - 3, &CSSlval.number);
                             return FREQ_KHZ;
                         }
     num  ident          {
                             const char16_t* end;
                             CSSlval.term.unit = css::CSSPrimitiveValue::CSS_DIMENSION;
-                            CSSlval.term.number = parseNumber(yytext, yyin - yytext, &end);
+                            parseNumber(yytext, yyin - yytext, &CSSlval.term.number, &end);
                             CSSlval.term.text = { end, yyin - end };
                             return DIMEN;
                         }
     num '%'             {
-                            CSSlval.number = parseNumber(yytext, yyin - yytext - 1);
+                            parseNumber(yytext, yyin - yytext - 1, &CSSlval.number);
                             return PERCENTAGE;
                         }
     num                 {
-                            CSSlval.number = parseNumber(yytext, yyin - yytext);
+                            parseNumber(yytext, yyin - yytext, &CSSlval.number);
                             return NUMBER;
-                        }
-
-    integer             {
-                            CSSlval.integer = parseInt(yytext, yyin - yytext);
-                            return INTEGER;
                         }
     'url(' w string w ")"   {
                             parseURL(yytext, yyin - yytext, &CSSlval.text);
@@ -327,6 +321,37 @@ start:
 
 */
     ;
+}
+
+void CSSTokenizer::parseNumber(const char16_t* text, ssize_t length, CSSParserNumber* number, const char16_t** endptr)
+{
+    const char16_t* end = text + length;
+    double value = 0.0;
+    double frac = 0.0;
+    double e = 0.1;
+    bool hasE = false;
+    if (endptr)
+        *endptr = 0;
+    for (const char16_t* p = text; p < end; ++p) {
+        if (!isDigit(*p) && (*p != '.' || hasE)) {
+            if (endptr)
+                *endptr = p;
+            break;
+        }
+        if (*p == '.') {
+            hasE = true;
+            continue;
+        }
+        if (!hasE) {
+            value *= 10;
+            value += *p - '0';
+            continue;
+        }
+        frac += (*p - '0') * e;
+        e *= 0.1;
+    }
+    number->number = value + frac;
+    number->integer = !hasE;
 }
 
 void CSSTokenizer::parseURL(const char16_t* text, ssize_t length, CSSParserString* string)
