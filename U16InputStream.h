@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ class U16InputStream
     static const size_t ChunkSize = 512;
 
 public:
-    static const char* DefaultEncoding;  // "windows-1252"
+    static const char* DefaultEncoding;  // "utf-8"
     enum Confidence
     {
         Certain,
