@@ -251,10 +251,12 @@ start:
                             return URI;
                         }
     'url(' w eof_string {
-                            parseURL(yytext, yyin - yytext, &CSSlval.text);
+                            mode = End;
+                            parseURL(yytext, yylimit + 2 - yytext, &CSSlval.text);
                             return URI;
                         }
     'url(' w url "\X0000"   {
+                            mode = End;
                             parseURL(yytext, yyin - yytext, &CSSlval.text);
                             return URI;
                         }
