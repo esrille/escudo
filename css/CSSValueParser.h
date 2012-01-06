@@ -194,8 +194,11 @@ class CSSValueParser
 
     static CSSValueRule angle;
     static CSSValueRule percent_length;
+    static CSSValueRule percent_non_negative_length;
     static CSSValueRule auto_length;
+    static CSSValueRule auto_non_negative_length;
     static CSSValueRule none_length;
+    static CSSValueRule none_non_negative_length;
     static CSSValueRule auto_numbering;
     static CSSValueRule comma;
     static CSSValueRule ident;

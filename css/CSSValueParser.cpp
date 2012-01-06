@@ -32,8 +32,11 @@ using namespace css;
 
 CSSValueRule CSSValueParser::angle;
 CSSValueRule CSSValueParser::percent_length;
+CSSValueRule CSSValueParser::percent_non_negative_length;
 CSSValueRule CSSValueParser::auto_length;
+CSSValueRule CSSValueParser::auto_non_negative_length;
 CSSValueRule CSSValueParser::none_length;
+CSSValueRule CSSValueParser::none_non_negative_length;
 CSSValueRule CSSValueParser::auto_numbering;
 CSSValueRule CSSValueParser::comma;
 CSSValueRule CSSValueParser::ident;
@@ -132,13 +135,24 @@ void CSSValueParser::initializeRules()
     percent_length
         = percentage
         | length;
+    percent_non_negative_length
+        = non_negative_percentage
+        | non_negative_length;
     auto_length
         = length
         | percentage
         | CSSValueRule(u"auto", 0);
+    auto_non_negative_length
+        = non_negative_length
+        | non_negative_percentage
+        | CSSValueRule(u"auto", 0);
     none_length
         = length
         | percentage
+        | CSSValueRule(u"none", 0);
+    none_non_negative_length
+        = non_negative_length
+        | non_negative_percentage
         | CSSValueRule(u"none", 0);
     auto_numbering
         = CSSValueRule(1, CSSValueRule::Inf, ident + CSSValueRule(0, 1, integer))
@@ -171,8 +185,8 @@ void CSSValueParser::initializeRules()
     lineHeight
         = (CSSValueRule(u"normal", CSSLineHeightValueImp::Normal)
         |  number
-        |  length
-        |  percentage)
+        |  non_negative_length
+        |  non_negative_percentage)
             [CSSStyleDeclarationImp::LineHeight];
     list_style_type
         = (CSSValueRule(u"disc", CSSListStyleTypeValueImp::Disc)
@@ -325,7 +339,7 @@ void CSSValueParser::initializeRules()
     borderColor
         = CSSValueRule(1, 4, color);
     borderSpacing
-        = length + CSSValueRule(0, 1, length);
+        = non_negative_length + CSSValueRule(0, 1, non_negative_length);
     borderStyle
         = CSSValueRule(1, 4, border_style);
     borderTopStyle // = borderRightStyle, borderBottomStyle, borderLeftStyle
@@ -457,7 +471,7 @@ void CSSValueParser::initializeRules()
         | CSSValueRule(u"scroll", CSSOverflowValueImp::Scroll)
         | CSSValueRule(u"auto", CSSOverflowValueImp::Auto);
     padding
-        = CSSValueRule(1, 4, percent_length);
+        = CSSValueRule(1, 4, percent_non_negative_length);
     pageBreak // = pageBreakAfter, pageBreakBefore
         = CSSValueRule(u"auto", CSSPageBreakValueImp::Auto)
         | CSSValueRule(u"always", CSSPageBreakValueImp::Always)
@@ -914,9 +928,11 @@ CSSValueParser::CSSValueParser(int propertyID) :
     case CSSStyleDeclarationImp::Right:
     case CSSStyleDeclarationImp::Left:
     case CSSStyleDeclarationImp::Bottom:
+        rule = &auto_length;
+        break;
     case CSSStyleDeclarationImp::Width:
     case CSSStyleDeclarationImp::Height:
-        rule = &auto_length;
+        rule = &auto_non_negative_length;
         break;
     case CSSStyleDeclarationImp::BackgroundAttachment:
         rule = &backgroundAttachment;
@@ -1047,11 +1063,11 @@ CSSValueParser::CSSValueParser(int propertyID) :
         break;
     case CSSStyleDeclarationImp::MaxHeight:
     case CSSStyleDeclarationImp::MaxWidth:
-        rule = &none_length;
+        rule = &none_non_negative_length;
         break;
     case CSSStyleDeclarationImp::MinHeight:
     case CSSStyleDeclarationImp::MinWidth:
-        rule = &percent_length;
+        rule = &percent_non_negative_length;
         break;
     case CSSStyleDeclarationImp::Overflow:
         rule = &overflow;
@@ -1060,7 +1076,7 @@ CSSValueParser::CSSValueParser(int propertyID) :
     case CSSStyleDeclarationImp::PaddingRight:
     case CSSStyleDeclarationImp::PaddingBottom:
     case CSSStyleDeclarationImp::PaddingLeft:
-        rule = &percent_length;
+        rule = &percent_non_negative_length;
         break;
     case CSSStyleDeclarationImp::Padding:
         rule = &padding;
