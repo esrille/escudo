@@ -118,7 +118,7 @@ void CSSValueParser::initializeRules()
     comma = CSSValueRule(CSSValueRule::Comma);
     ident = CSSValueRule(CSSValueRule::AnyIdent);
     length = CSSValueRule(CSSValueRule::Length);
-    integer = CSSValueRule(CSSValueRule::AnyNumber);
+    integer = CSSValueRule(CSSValueRule::AnyInteger);
     number = CSSValueRule(CSSValueRule::AnyNumber);
     percentage = CSSValueRule(CSSValueRule::Percentage);
     slash = CSSValueRule(CSSValueRule::Slash);
@@ -558,6 +558,8 @@ CSSValueRule::operator std::u16string() const
         return u"AnyIdent";
     case AnyNumber:
         return u"AnyNumber";
+    case AnyInteger:
+        return u"AnyInteger";
     case Angle:
         return u"Angle";
     case Bar:
@@ -627,6 +629,12 @@ bool CSSValueRule::isValid(CSSValueParser* parser, unsigned propertyID) const
         break;
     case AnyNumber:
         if (term.unit == CSSPrimitiveValue::CSS_NUMBER) {
+            parser->push(&term, propertyID);
+            return parser->acceptToken();
+        }
+        break;
+    case AnyInteger:
+        if (term.unit == CSSPrimitiveValue::CSS_NUMBER && term.number.isInteger()) {
             parser->push(&term, propertyID);
             return parser->acceptToken();
         }
