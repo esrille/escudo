@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -483,6 +483,12 @@ bool CSSBackgroundPositionValueImp::setValue(CSSStyleDeclarationImp* decl, CSSVa
     std::deque<CSSParserTerm*>& stack = parser->getStack();
     setValue(stack, stack.begin());
     return true;
+}
+
+void CSSBackgroundPositionValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style)
+{
+    horizontal.compute(view, style);
+    vertical.compute(view, style);
 }
 
 void CSSBackgroundPositionValueImp::resolve(ViewCSSImp* view, BoxImage* image, CSSStyleDeclarationImp* style, float width, float height)
@@ -1133,7 +1139,7 @@ Element CSSContentValueImp::eval(ViewCSSImp* view, Element element)
         }
         return img;
     }
-    
+
     Element span = view->getDocument().createElement(u"span");
     if (!span)
         return 0;
@@ -1448,7 +1454,7 @@ void CSSListStylePositionValueImp::compute(ViewCSSImp* view, CSSStyleDeclaration
 {
     if (style->getPseudoElementSelectorType() != CSSPseudoElementSelector::Marker)
         return;
-    
+
     if (value == Outside) {
         style->display.setValue(CSSDisplayValueImp::Block);
         style->position.setValue(CSSPositionValueImp::Absolute);

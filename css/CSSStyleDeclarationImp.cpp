@@ -589,7 +589,7 @@ int CSSStyleDeclarationImp::cancelAppend()
     propertyID = Unknown;
     return propertyID;
 }
-    
+
 void CSSStyleDeclarationImp::specify(const CSSStyleDeclarationImp* decl, unsigned id)
 {
     switch (id) {
@@ -1279,6 +1279,8 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     borderRightColor.compute(this);
     borderBottomColor.compute(this);
     borderLeftColor.compute(this);
+
+    backgroundPosition.compute(view, this);
 
     borderSpacing.compute(view, this);
 
