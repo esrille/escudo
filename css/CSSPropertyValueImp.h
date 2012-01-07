@@ -126,9 +126,7 @@ struct CSSNumericValue
         index = value.index;
         number = value.number;
     }
-    void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style) {
-        resolve(view, style, 0.0f);
-    }
+    void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize);
 };
 

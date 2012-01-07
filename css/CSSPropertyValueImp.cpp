@@ -314,8 +314,17 @@ const char16_t* CSSBindingValueImp::Options[] = {
     u"time",
 };
 
+void CSSNumericValue::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style)
+{
+    if (isIndex() || isPercentage())
+        return;
+    resolve(view, style, 0.0f);
+}
+
 void CSSNumericValue::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize)
 {
+    if (isIndex())
+        return;
     float w;
     switch (unit) {
     case css::CSSPrimitiveValue::CSS_PERCENTAGE:
@@ -337,31 +346,32 @@ void CSSNumericValue::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, f
     setValue(w, css::CSSPrimitiveValue::CSS_PX);
 }
 
-void CSSNumericValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style) {
-    if (value.isIndex() || value.isPercentage())
-        return;
+void CSSNumericValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style)
+{
     value.compute(view, style);
 }
 
-void CSSNumericValueImp::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize) {
-    if (value.isIndex())
-        return;
+void CSSNumericValueImp::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize)
+{
     value.resolve(view, style, fullSize);
 }
 
-void CSSAutoLengthValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style) {
+void CSSAutoLengthValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style)
+{
     if (isAuto() || length.isPercentage())
         return;  // leave as it is
     length.compute(view, style);
 }
 
-void CSSAutoLengthValueImp::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize) {
+void CSSAutoLengthValueImp::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize)
+{
     if (isAuto())
         return;  // leave length as auto
     length.resolve(view, style, fullSize);
 }
 
-void CSSNoneLengthValueImp::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize) {
+void CSSNoneLengthValueImp::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize)
+{
     if (isNone())
         return;  // leave length as none
     length.resolve(view, style, fullSize);
