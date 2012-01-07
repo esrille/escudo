@@ -357,7 +357,9 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
     bool runIn = style->display.isRunIn() && parentBox;
 
     CSSStyleDeclarationImp::CounterContext cc(this);
-    
+    if (!counterContext)    // TODO: This is only to workaround the fatal errors.
+        counterContext = &cc;
+
     if (style->getPseudoElementSelectorType() == CSSPseudoElementSelector::NonPseudo)
         counterContext->update(style);
 
@@ -467,7 +469,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
         delete currentBox;
         currentBox = 0;
     }
-#endif    
+#endif
 
     if (!currentBox || currentBox == parentBox)
         return 0;
