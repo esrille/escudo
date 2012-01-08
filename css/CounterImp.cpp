@@ -107,9 +107,11 @@ std::u16string emit(int i, unsigned type)
         value = toString(i);
         break;
     case CSSListStyleTypeValueImp::DecimalLeadingZero:
-        value = toString(i % 100);
-        if (value.length() == 1)
+        value = toString(i < 0 ? -i : i);
+        if (-9 <= i && i <= 9)
             value = u"0" + value;
+        if (i < 0)
+            value = u"-" + value;
         break;
     case CSSListStyleTypeValueImp::LowerAlpha:
     case CSSListStyleTypeValueImp::LowerLatin:
