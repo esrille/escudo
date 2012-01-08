@@ -91,6 +91,8 @@ std::u16string emit(int i, unsigned type)
 {
     std::u16string value;
     switch (type) {
+    case CSSListStyleTypeValueImp::None:
+        break;
     case CSSListStyleTypeValueImp::Decimal:
         value = toString(i);
         break;
