@@ -93,6 +93,16 @@ std::u16string emit(int i, unsigned type)
     switch (type) {
     case CSSListStyleTypeValueImp::None:
         break;
+    case CSSListStyleTypeValueImp::Disc:
+        value = u"\u2022";    // •
+        break;
+    case CSSListStyleTypeValueImp::Circle:
+        value = u"\u25E6";    // ◦
+        break;
+    case CSSListStyleTypeValueImp::Square:
+        // Use u25A0 instead of u25FE for the IPA font for now
+        value = u"\u25A0";    // ◾ "\u25FE"
+        break;
     case CSSListStyleTypeValueImp::Decimal:
         value = toString(i);
         break;
