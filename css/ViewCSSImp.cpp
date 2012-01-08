@@ -412,28 +412,32 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
         }
         if (markerStyle) {
             markerStyle->compute(this, style, element);
-            // Execute implicit 'counter-increment: list-item;'
-            CounterImpPtr counter = getCounter(u"list-item");
-            if (counter)
-                counter->increment(1);
-            counterContext->update(markerStyle);
-            if (Element marker = markerStyle->content.eval(this, element)) {
-                emptyInline = false;
-                map[marker] = markerStyle;
-                if (BlockLevelBox* box = layOutBlockBoxes(marker, currentBox, style, &cc))
-                    childBox = box;
+            if (!markerStyle->content.isNone()) {
+                // Execute implicit 'counter-increment: list-item;'
+                CounterImpPtr counter = getCounter(u"list-item");
+                if (counter)
+                    counter->increment(1);
+                counterContext->update(markerStyle);
+                if (Element marker = markerStyle->content.eval(this, element)) {
+                    emptyInline = false;
+                    map[marker] = markerStyle;
+                    if (BlockLevelBox* box = layOutBlockBoxes(marker, currentBox, style, &cc))
+                        childBox = box;
+                }
             }
         }
 
         CSSStyleDeclarationImp* beforeStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::Before);
         if (beforeStyle) {
             beforeStyle->compute(this, style, element);
-            counterContext->update(beforeStyle);
-            if (Element before = beforeStyle->content.eval(this, element)) {
-                emptyInline = false;
-                map[before] = beforeStyle;
-                if (BlockLevelBox* box = layOutBlockBoxes(before, currentBox, style, &cc))
-                    childBox = box;
+            if (!beforeStyle->content.isNone()) {
+                counterContext->update(beforeStyle);
+                if (Element before = beforeStyle->content.eval(this, element)) {
+                    emptyInline = false;
+                    map[before] = beforeStyle;
+                    if (BlockLevelBox* box = layOutBlockBoxes(before, currentBox, style, &cc))
+                        childBox = box;
+                }
             }
         }
 
@@ -445,12 +449,14 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
         CSSStyleDeclarationImp* afterStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::After);
         if (afterStyle) {
             afterStyle->compute(this, style, element);
-            counterContext->update(afterStyle);
-            if (Element after = afterStyle->content.eval(this, element)) {
-                emptyInline = false;
-                map[after] = afterStyle;
-                if (BlockLevelBox* box = layOutBlockBoxes(after, currentBox, style, &cc))
-                    childBox = box;
+            if (!afterStyle->content.isNone()) {
+                counterContext->update(afterStyle);
+                if (Element after = afterStyle->content.eval(this, element)) {
+                    emptyInline = false;
+                    map[after] = afterStyle;
+                    if (BlockLevelBox* box = layOutBlockBoxes(after, currentBox, style, &cc))
+                        childBox = box;
+                }
             }
         }
 
