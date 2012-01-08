@@ -143,15 +143,23 @@ std::u16string emit(int i, unsigned type)
 
 }
 
-void CounterImp::reset(int number)
+void CounterImp::nest(int number)
 {
     counters.push_back(number);
+}
+
+void CounterImp::reset(int number)
+{
+    if (counters.empty())
+        nest(number);
+    else
+        counters.back() = number;
 }
 
 void CounterImp::increment(int number)
 {
     if (counters.empty())
-        counters.push_back(0);
+        nest(0);
     counters.back() += number;
 }
 

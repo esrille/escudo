@@ -202,7 +202,7 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle)
 
 // In this step, neither inline-level boxes nor line boxes are generated.
 // Those will be generated later by layOut().
-BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Node node, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSStyleDeclarationImp::CounterContext* counterContext)
+BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Node node, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSAutoNumberingValueImp::CounterContext* counterContext)
 {
     BlockLevelBox* newBox = 0;
     switch (node.getNodeType()) {
@@ -224,7 +224,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Node node, BlockLevelBox* parentBox,
     return newBox;
 }
 
-BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Text text, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSStyleDeclarationImp::CounterContext* counterContext)
+BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Text text, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSAutoNumberingValueImp::CounterContext* counterContext)
 {
     if (!parentBox || !style)
         return 0;
@@ -349,14 +349,14 @@ BlockLevelBox* ViewCSSImp::createBlockLevelBox(Element element, CSSStyleDeclarat
     return block;
 }
 
-BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSStyleDeclarationImp::CounterContext* counterContext, bool asBlock)
+BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSAutoNumberingValueImp::CounterContext* counterContext, bool asBlock)
 {
     style = map[element].get();
     if (!style || style->display.isNone())
         return 0;
     bool runIn = style->display.isRunIn() && parentBox;
 
-    CSSStyleDeclarationImp::CounterContext cc(this);
+    CSSAutoNumberingValueImp::CounterContext cc(this);
     if (!counterContext)    // TODO: This is only to workaround the fatal errors.
         counterContext = &cc;
 
@@ -496,7 +496,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
 // Lay out a tree box block-level boxes
 BlockLevelBox* ViewCSSImp::layOutBlockBoxes()
 {
-    CSSStyleDeclarationImp::CounterContext cc(this);
+    CSSAutoNumberingValueImp::CounterContext cc(this);
     floatMap.clear();
     boxTree = layOutBlockBoxes(getDocument(), 0, 0, &cc);
     clearCounters();

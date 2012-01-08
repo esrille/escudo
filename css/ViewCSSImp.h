@@ -113,9 +113,9 @@ public:
     }
 
     BlockLevelBox* createBlockLevelBox(Element element, CSSStyleDeclarationImp* style, bool newContext);
-    BlockLevelBox* layOutBlockBoxes(Node node, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSStyleDeclarationImp::CounterContext* counterContext);
-    BlockLevelBox* layOutBlockBoxes(Text text, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSStyleDeclarationImp::CounterContext* counterContext);
-    BlockLevelBox* layOutBlockBoxes(Element element, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSStyleDeclarationImp::CounterContext* counterContext, bool asBlock = false);
+    BlockLevelBox* layOutBlockBoxes(Node node, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSAutoNumberingValueImp::CounterContext* counterContext);
+    BlockLevelBox* layOutBlockBoxes(Text text, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSAutoNumberingValueImp::CounterContext* counterContext);
+    BlockLevelBox* layOutBlockBoxes(Element element, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSAutoNumberingValueImp::CounterContext* counterContext, bool asBlock = false);
     BlockLevelBox* layOutBlockBoxes();
     BlockLevelBox* layOut();
     BlockLevelBox* dump();

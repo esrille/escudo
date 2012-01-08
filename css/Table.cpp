@@ -133,7 +133,7 @@ void TableWrapperBox::formTable(ViewCSSImp* view)
     if (table.getChildElementCount() == 0)
         return;
 
-    CSSStyleDeclarationImp::CounterContext cc(view);
+    CSSAutoNumberingValueImp::CounterContext cc(view);
 
     // 10.
     unsigned yCurrent = 0;
@@ -187,7 +187,7 @@ void TableWrapperBox::formTable(ViewCSSImp* view)
     }
 }
 
-unsigned TableWrapperBox::processRow(ViewCSSImp* view, Element row, unsigned yCurrent, CSSStyleDeclarationImp::CounterContext* counterContext)
+unsigned TableWrapperBox::processRow(ViewCSSImp* view, Element row, unsigned yCurrent, CSSAutoNumberingValueImp::CounterContext* counterContext)
 {
     if (yHeight == yCurrent)
         appendRow();
@@ -235,7 +235,7 @@ unsigned TableWrapperBox::processRow(ViewCSSImp* view, Element row, unsigned yCu
     return ++yCurrent;
 }
 
-unsigned TableWrapperBox::processRowGruop(ViewCSSImp* view, Element section, unsigned yCurrent, CSSStyleDeclarationImp::CounterContext* counterContext)
+unsigned TableWrapperBox::processRowGruop(ViewCSSImp* view, Element section, unsigned yCurrent, CSSAutoNumberingValueImp::CounterContext* counterContext)
 {
     unsigned yStart = yHeight;
     for (Element child = section.getFirstElementChild(); child; child = child.getNextElementSibling()) {

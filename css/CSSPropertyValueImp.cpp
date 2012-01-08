@@ -377,6 +377,21 @@ void CSSNoneLengthValueImp::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* st
     length.resolve(view, style, fullSize);
 }
 
+void CSSAutoNumberingValueImp::CounterContext::update(CSSStyleDeclarationImp* style)
+{
+    style->updateCounters(view, this);
+}
+
+CSSAutoNumberingValueImp::CounterContext::~CounterContext()
+{
+    if (!view)
+        return;
+    for (auto i = counters.begin(); i != counters.end(); ++i) {
+        if (CounterImpPtr counter = view->getCounter((*i)->name))
+            counter->restore();
+    }
+}
+
 bool CSSAutoNumberingValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
 {
     std::deque<CSSParserTerm*>& stack = parser->getStack();
@@ -419,19 +434,17 @@ void CSSAutoNumberingValueImp::incrementCounter(ViewCSSImp* view)
     }
 }
 
-void CSSAutoNumberingValueImp::resetCounter(ViewCSSImp* view)
+void CSSAutoNumberingValueImp::resetCounter(ViewCSSImp* view, CounterContext* context)
 {
     for (auto i = contents.begin(); i != contents.end(); ++i) {
-        if (CounterImpPtr counter = view->getCounter((*i)->name))
-            counter->reset((*i)->number);
-    }
-}
-
-void CSSAutoNumberingValueImp::restoreCounter(ViewCSSImp* view)
-{
-    for (auto i = contents.begin(); i != contents.end(); ++i) {
-        if (CounterImpPtr counter = view->getCounter((*i)->name))
-            counter->restore();
+        if (CounterImpPtr counter = view->getCounter((*i)->name)) {
+            if (context->hasCounter((*i)->name))
+                counter->reset((*i)->number);
+            else {
+                counter->nest((*i)->number);
+                context->addCounter(*i);
+            }
+        }
     }
 }
 
@@ -1091,6 +1104,11 @@ void CSSContentValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style
                 case CSSListStyleTypeValueImp::Disc:
                 case CSSListStyleTypeValueImp::Circle:
                 case CSSListStyleTypeValueImp::Square:
+                    if (CounterContent* content = new CounterContent(u"list-item", u"", style->listStyleType.getValue()))
+                        contents.push_back(content);
+                    if (Content* content = new(std::nothrow) StringContent(u"\u00A0"))
+                        contents.push_back(content);
+                    break;
                 case CSSListStyleTypeValueImp::Decimal:
                 case CSSListStyleTypeValueImp::DecimalLeadingZero:
                 case CSSListStyleTypeValueImp::LowerRoman:

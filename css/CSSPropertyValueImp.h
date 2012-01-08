@@ -389,6 +389,29 @@ public:
         }
     };
 
+    struct CounterContext
+    {
+        ViewCSSImp* view;
+        std::list<Content*> counters;
+    public:
+        CounterContext(ViewCSSImp* view) :
+            view(view)
+        {}
+        ~CounterContext();
+        bool hasCounter(const std::u16string& name) const {
+            for (auto i = counters.begin(); i != counters.end(); ++i) {
+                if ((*i)->name == name)
+                    return true;
+            }
+            return false;
+        }
+        void addCounter(Content* counter) {
+            counters.push_front(counter);
+        }
+        void update(CSSStyleDeclarationImp* style);
+    };
+
+
 private:
     std::list<Content*> contents;
     int defaultNumber;
@@ -413,13 +436,11 @@ public:
     void specify(const CSSAutoNumberingValueImp& specified) {
         contents = specified.contents;
     }
-
     bool hasCounter() const {
         return !contents.empty();
     }
     void incrementCounter(ViewCSSImp* view);
-    void resetCounter(ViewCSSImp* view);
-    void restoreCounter(ViewCSSImp* view);
+    void resetCounter(ViewCSSImp* view, CounterContext* context);
 
     CSSAutoNumberingValueImp(int defaultNumber) :
         defaultNumber(defaultNumber) {

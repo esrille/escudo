@@ -220,28 +220,6 @@ public:
         }
     };
 
-    struct CounterContext
-    {
-        ViewCSSImp* view;
-        std::list<CSSStyleDeclarationImp*> styles;
-    public:
-        CounterContext(ViewCSSImp* view) :
-            view(view)
-        {
-        }
-        ~CounterContext()
-        {
-            if (!view)
-                return;
-            for (auto i = styles.begin(); i != styles.end(); ++i)
-                (*i)->counterReset.restoreCounter(view);
-        }
-        void update(CSSStyleDeclarationImp* style) {
-            if (style->updateCounters(view))
-                styles.push_front(style);
-        }
-    };
-
 private:
     static const size_t PropertyCount = MaxProperties;
     static const char16_t* PropertyNames[PropertyCount];
@@ -262,7 +240,7 @@ private:
     int propertyID;
     CSSParserExpr* expression;
     std::u16string priority;
-    
+
     int pseudoElementSelectorType;
     CSSStyleDeclarationPtr pseudoElements[CSSPseudoElementSelector::MaxPseudoElements];
 
@@ -395,10 +373,10 @@ public:
     int appendProperty(std::u16string property, CSSParserExpr* expr, const std::u16string& prio = u"");
     int commitAppend();
     int cancelAppend();
-    
+
     int setProperty(int id, CSSParserExpr* expr, const std::u16string& prio = u"");
     int setProperty(std::u16string property, CSSParserExpr* expr, const std::u16string& prio = u"");
-    
+
     void setColor(unsigned color) {
         this->color = color;
     }
@@ -425,10 +403,9 @@ public:
 
     void resolve(ViewCSSImp* view, const ContainingBlock* containingBlock);
 
-    bool updateCounters(ViewCSSImp* view) {
-        counterReset.resetCounter(view);
+    void updateCounters(ViewCSSImp* view, CSSAutoNumberingValueImp::CounterContext* context) {
+        counterReset.resetCounter(view, context);
         counterIncrement.incrementCounter(view);
-        return counterReset.hasCounter();
     }
 
     size_t processWhiteSpace(std::u16string& data, char16_t& prevChar);

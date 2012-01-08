@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,13 +44,14 @@ class CounterImp : public ObjectMixin<CounterImp>
     CSSListStyleTypeValueImp listStyle;
 
     std::deque<int> counters;
-    
+
 public:
     CounterImp(const std::u16string& id) :
         identifier(id)
     {
     }
 
+    void nest(int number);
     void reset(int number);
     void increment(int number);
     bool restore();
