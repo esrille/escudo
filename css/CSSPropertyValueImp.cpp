@@ -1012,6 +1012,7 @@ bool CSSContentValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* 
         case Counter: {
             std::u16string name;
             std::u16string string;
+            bool nested = false;
             unsigned listStyleType = CSSListStyleTypeValueImp::Decimal;
             do {
                 switch (term->unit) {
@@ -1019,6 +1020,7 @@ bool CSSContentValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* 
                     name = term->getString();
                     break;
                 case CSSPrimitiveValue::CSS_STRING:
+                    nested = true;
                     string = term->getString();
                     break;
                 case CSSParserTerm::CSS_TERM_INDEX:
@@ -1030,7 +1032,10 @@ bool CSSContentValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* 
                 ++i;
                 term = *i;
             } while (term->unit != CSSParserTerm::CSS_TERM_FUNCTION);
-            content = new CounterContent(name, string, listStyleType);
+            if (nested)
+                content = new CounterContent(name, string, listStyleType);
+            else
+                content = new CounterContent(name, listStyleType);
             break;
         }
         case Attr:
@@ -1104,7 +1109,7 @@ void CSSContentValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style
                 case CSSListStyleTypeValueImp::Disc:
                 case CSSListStyleTypeValueImp::Circle:
                 case CSSListStyleTypeValueImp::Square:
-                    if (CounterContent* content = new CounterContent(u"list-item", u"", style->listStyleType.getValue()))
+                    if (CounterContent* content = new CounterContent(u"list-item", style->listStyleType.getValue()))
                         contents.push_back(content);
                     if (Content* content = new(std::nothrow) StringContent(u"\u00A0"))
                         contents.push_back(content);
@@ -1120,7 +1125,7 @@ void CSSContentValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style
                 case CSSListStyleTypeValueImp::Georgian:
                 case CSSListStyleTypeValueImp::LowerAlpha:
                 case CSSListStyleTypeValueImp::UpperAlpha:
-                    if (CounterContent* content = new CounterContent(u"list-item", u"", style->listStyleType.getValue()))
+                    if (CounterContent* content = new CounterContent(u"list-item", style->listStyleType.getValue()))
                         contents.push_back(content);
                     if (Content* content = new(std::nothrow) StringContent(u".\u00A0"))
                         contents.push_back(content);
@@ -1138,8 +1143,12 @@ void CSSContentValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style
 
 std::u16string CSSContentValueImp::CounterContent::eval(ViewCSSImp* view)
 {
-    if (CounterImpPtr counter = view->getCounter(identifier))
-        return counter->eval(string, listStyleType.getValue());
+    if (CounterImpPtr counter = view->getCounter(identifier)) {
+        if (nested)
+            return counter->eval(string, listStyleType.getValue());
+        else
+            return counter->eval(listStyleType.getValue());
+    }
     return u"";
 }
 

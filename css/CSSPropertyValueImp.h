@@ -996,16 +996,23 @@ public:
     struct CounterContent : public Content {
         std::u16string identifier;
         std::u16string string;
+        bool nested;
         CSSListStyleTypeValueImp listStyleType;
+        CounterContent(const std::u16string& identifier, unsigned listStyleType) :
+            identifier(identifier),
+            nested(false),
+            listStyleType(listStyleType) {
+        }
         CounterContent(const std::u16string& identifier, const std::u16string& string, unsigned listStyleType) :
             identifier(identifier),
             string(string),
+            nested(true),
             listStyleType(listStyleType) {
         }
         virtual std::u16string getCssText() {
-            if (string.empty())
-                return u"counter(" +  CSSSerializeIdentifier(identifier) + u", " + listStyleType.getCssText() + u')';
-            return u"counters(" +  CSSSerializeIdentifier(identifier) + u", " + CSSSerializeString(string) + u", " + listStyleType.getCssText() + u')';
+            if (nested)
+                return u"counters(" +  CSSSerializeIdentifier(identifier) + u", " + CSSSerializeString(string) + u", " + listStyleType.getCssText() + u')';
+            return u"counter(" +  CSSSerializeIdentifier(identifier) + u", " + listStyleType.getCssText() + u')';
         }
         virtual std::u16string eval(ViewCSSImp* view);
     };

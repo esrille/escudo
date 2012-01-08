@@ -169,6 +169,15 @@ bool CounterImp::restore()
     return counters.empty();
 }
 
+std::u16string CounterImp::eval(unsigned type)
+{
+    this->separator = u"";
+    this->listStyle.setValue(type);
+    if (counters.empty())
+        return u"";
+    return emit(counters.back(), type);
+}
+
 std::u16string CounterImp::eval(const std::u16string& separator, unsigned type)
 {
     this->separator = separator;
@@ -176,14 +185,10 @@ std::u16string CounterImp::eval(const std::u16string& separator, unsigned type)
     if (counters.empty())
         return u"";
     std::u16string value;
-    if (separator.empty())
-        value = emit(counters.back(), type);
-    else {
-        for (auto i = counters.begin(); i != counters.end(); ++i) {
-            if (i != counters.begin())
-                value += separator;
-            value += emit(*i, type);
-        }
+    for (auto i = counters.begin(); i != counters.end(); ++i) {
+        if (i != counters.begin())
+            value += separator;
+        value += emit(*i, type);
     }
     return value;
 }
