@@ -51,6 +51,9 @@ public:
     {
     }
 
+    bool empty() {
+        return counters.empty();
+    }
     void nest(int number);
     void reset(int number);
     void increment(int number);

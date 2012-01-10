@@ -438,8 +438,13 @@ std::u16string CSSAutoNumberingValueImp::getCssText(CSSStyleDeclarationImp* decl
 void CSSAutoNumberingValueImp::incrementCounter(ViewCSSImp* view, CSSAutoNumberingValueImp::CounterContext* context)
 {
     for (auto i = contents.begin(); i != contents.end(); ++i) {
-        if (CounterImpPtr counter = view->getCounter((*i)->name))
+        if (CounterImpPtr counter = view->getCounter((*i)->name)) {
+            if (counter->empty()) {
+                counter->nest(0);
+                context->addCounter(counter.get());
+            }
             counter->increment((*i)->number);
+        }
     }
 }
 
