@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,9 +39,8 @@ class CSSStyleRuleImp : public ObjectMixin<CSSStyleRuleImp, CSSRuleImp>
 public:
     CSSStyleRuleImp(CSSSelectorsGroup* selectorsGroup, css::CSSStyleDeclaration styleDeclaration);
 
-    CSSSelector* match(Element element, ViewCSSImp* view);
-    CSSSpecificity getLastSpecificity() {  // of the last matched selector
-        return selectorsGroup->getLastSpecificity();
+    CSSSelectorsGroup* getSelectorsGroup() const {
+        return selectorsGroup;
     }
 
     // CSSRule

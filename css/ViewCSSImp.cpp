@@ -92,14 +92,18 @@ void ViewCSSImp::findDeclarations(DeclarationSet& set, Element element, css::CSS
     for (unsigned int i = 0; i < size; ++i) {
         css::CSSRule rule = list.getElement(i);
         if (CSSStyleRuleImp* styleRule = dynamic_cast<CSSStyleRuleImp*>(rule.self())) {
-            CSSSelector* selector = styleRule->match(element, this);
-            if (!selector)
-                continue;
-            unsigned pseudoElementID = 0;
-            if (CSSPseudoElementSelector* pseudo = selector->getPseudoElement())
-                pseudoElementID = pseudo->getID();
-            PrioritizedDeclaration decl(styleRule->getLastSpecificity(), dynamic_cast<CSSStyleDeclarationImp*>(styleRule->getStyle().self()), pseudoElementID);
-            set.insert(decl);
+            if (CSSSelectorsGroup* selectorsGroup = styleRule->getSelectorsGroup()) {
+                for (auto j = selectorsGroup->begin(); j != selectorsGroup->end(); ++j) {
+                    CSSSelector* selector = *j;
+                    if (selector->match(element, this)) {
+                        unsigned pseudoElementID = 0;
+                        if (CSSPseudoElementSelector* pseudo = selector->getPseudoElement())
+                            pseudoElementID = pseudo->getID();
+                        PrioritizedDeclaration decl(selector->getSpecificity(), dynamic_cast<CSSStyleDeclarationImp*>(styleRule->getStyle().self()), pseudoElementID);
+                        set.insert(decl);
+                    }
+                }
+            }
         } else if (CSSMediaRuleImp* mediaRule = dynamic_cast<CSSMediaRuleImp*>(rule.self())) {
             MediaListImp* mediaList = dynamic_cast<MediaListImp*>(mediaRule->getMedia().self());
             if (mediaList ->hasMedium(MediaListImp::Screen))  // TODO: support other mediums, too.

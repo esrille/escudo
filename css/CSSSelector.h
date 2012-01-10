@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -453,20 +453,23 @@ public:
 class CSSSelectorsGroup
 {
     std::deque<CSSSelector*> selectors;
-    CSSSpecificity specificity;
 public:
     CSSSelectorsGroup(CSSSelector* selector) {
         selectors.push_back(selector);
     }
+
+    std::deque<CSSSelector*>::iterator begin() {
+        return selectors.begin();
+    }
+    std::deque<CSSSelector*>::iterator end() {
+        return selectors.end();
+    }
+
     void append(CSSSelector* selector) {
         if (selector)
             selectors.push_back(selector);
     }
     void serialize(std::u16string& text);
-    CSSSelector* match(Element element, ViewCSSImp* view);
-    CSSSpecificity getLastSpecificity() {  // of the last matched selector
-        return specificity;
-    }
     bool isValid() const {
         if (selectors.empty())
             return false;

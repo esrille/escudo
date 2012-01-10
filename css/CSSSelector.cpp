@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -275,18 +275,6 @@ bool CSSSelector::match(Element e, ViewCSSImp* view)
     if (combinator != CSSPrimarySelector::None)
         return false;
     return true;
-}
-
-CSSSelector* CSSSelectorsGroup::match(Element e, ViewCSSImp* view)
-{
-    specificity = CSSSpecificity();
-    for (auto i = selectors.begin(); i != selectors.end(); ++i) {
-        if ((*i)->match(e, view)) {
-            specificity = (*i)->getSpecificity();
-            return *i;
-        }
-    }
-    return 0;
 }
 
 bool CSSPseudoClassSelector::match(Element element, ViewCSSImp* view)
