@@ -399,6 +399,9 @@ public:
             view(view)
         {}
         ~CounterContext();
+        bool hasCounter() const {
+            return !counters.empty();
+        }
         bool hasCounter(const std::u16string& name) const {
             for (auto i = counters.begin(); i != counters.end(); ++i) {
                 if ((*i)->name == name)
