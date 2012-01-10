@@ -134,6 +134,7 @@ class CSSPropertyValueImp
 {
 public:
     virtual CSSPropertyValueImp& setValue(CSSParserTerm* term) {
+        return *this;
     }
     virtual bool setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser) {
         CSSParserTerm* term = parser->getStack().back();
@@ -483,6 +484,7 @@ public:
     };
     CSSBackgroundImageValueImp& setValue(const std::u16string uri = u"") {
         this->uri = uri;
+        return *this;
     }
     CSSBackgroundImageValueImp& setValue(CSSParserTerm* term) {
         if (0 <= term->getIndex())
@@ -1625,6 +1627,7 @@ public:
     };
     CSSListStyleImageValueImp& setValue(const std::u16string uri = u"") {
         this->uri = uri;
+        return *this;
     }
     CSSListStyleImageValueImp& setValue(CSSParserTerm* term) {
         if (0 <= term->getIndex())
@@ -2248,6 +2251,7 @@ public:
         case Select:  // multi-select list box
         case Textarea:
         case Keygen:
+            return true;
             break;
         default:
             return false;
