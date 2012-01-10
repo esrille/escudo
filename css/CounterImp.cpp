@@ -169,21 +169,25 @@ bool CounterImp::restore()
     return counters.empty();
 }
 
-std::u16string CounterImp::eval(unsigned type)
+std::u16string CounterImp::eval(unsigned type, CSSAutoNumberingValueImp::CounterContext* context)
 {
     this->separator = u"";
     this->listStyle.setValue(type);
-    if (counters.empty())
-        return u"";
+    if (counters.empty()) {
+        nest(0);
+        context->addCounter(this);
+    }
     return emit(counters.back(), type);
 }
 
-std::u16string CounterImp::eval(const std::u16string& separator, unsigned type)
+std::u16string CounterImp::eval(const std::u16string& separator, unsigned type, CSSAutoNumberingValueImp::CounterContext* context)
 {
     this->separator = separator;
     this->listStyle.setValue(type);
-    if (counters.empty())
-        return u"";
+    if (counters.empty()) {
+        nest(0);
+        context->addCounter(this);
+    }
     std::u16string value;
     for (auto i = counters.begin(); i != counters.end(); ++i) {
         if (i != counters.begin())

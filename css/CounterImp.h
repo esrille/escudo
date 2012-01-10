@@ -56,8 +56,8 @@ public:
     void increment(int number);
     bool restore();
 
-    std::u16string eval(unsigned type);
-    std::u16string eval(const std::u16string& separator, unsigned type);
+    std::u16string eval(unsigned type, CSSAutoNumberingValueImp::CounterContext* context);
+    std::u16string eval(const std::u16string& separator, unsigned type, CSSAutoNumberingValueImp::CounterContext* context);
 
     // Counter
     std::u16string getIdentifier();

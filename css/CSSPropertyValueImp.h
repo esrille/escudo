@@ -373,6 +373,8 @@ public:
     }
 };
 
+class CounterImp;
+
 class CSSAutoNumberingValueImp : public CSSPropertyValueImp
 {
 public:
@@ -393,7 +395,7 @@ public:
     struct CounterContext
     {
         ViewCSSImp* view;
-        std::list<Content*> counters;
+        std::list<CounterImp*> counters;
     public:
         CounterContext(ViewCSSImp* view) :
             view(view)
@@ -402,14 +404,8 @@ public:
         bool hasCounter() const {
             return !counters.empty();
         }
-        bool hasCounter(const std::u16string& name) const {
-            for (auto i = counters.begin(); i != counters.end(); ++i) {
-                if ((*i)->name == name)
-                    return true;
-            }
-            return false;
-        }
-        void addCounter(Content* counter) {
+        bool hasCounter(const std::u16string& name) const;
+        void addCounter(CounterImp* counter) {
             counters.push_front(counter);
         }
         void update(CSSStyleDeclarationImp* style);
@@ -443,7 +439,7 @@ public:
     bool hasCounter() const {
         return !contents.empty();
     }
-    void incrementCounter(ViewCSSImp* view);
+    void incrementCounter(ViewCSSImp* view, CSSAutoNumberingValueImp::CounterContext* context);
     void resetCounter(ViewCSSImp* view, CounterContext* context);
 
     CSSAutoNumberingValueImp(int defaultNumber) :
@@ -973,7 +969,7 @@ public:
     struct Content {
         virtual ~Content() {}
         virtual std::u16string getCssText() = 0;
-        virtual std::u16string eval(ViewCSSImp* view) {
+        virtual std::u16string eval(ViewCSSImp* view, CSSAutoNumberingValueImp::CounterContext* context) {
             return u"";
         }
     };
@@ -985,7 +981,7 @@ public:
         virtual std::u16string getCssText() {
             return CSSSerializeString(value);
         }
-        virtual std::u16string eval(ViewCSSImp* view) {
+        virtual std::u16string eval(ViewCSSImp* view, CSSAutoNumberingValueImp::CounterContext* context) {
             return value;
         }
     };
@@ -1019,7 +1015,7 @@ public:
                 return u"counters(" +  CSSSerializeIdentifier(identifier) + u", " + CSSSerializeString(string) + u", " + listStyleType.getCssText() + u')';
             return u"counter(" +  CSSSerializeIdentifier(identifier) + u", " + listStyleType.getCssText() + u')';
         }
-        virtual std::u16string eval(ViewCSSImp* view);
+        virtual std::u16string eval(ViewCSSImp* view, CSSAutoNumberingValueImp::CounterContext* context);
     };
     struct AttrContent : public Content {
         std::u16string identifier;
@@ -1076,7 +1072,7 @@ public:
     }
 
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
-    Element eval(ViewCSSImp* view, Element element);
+    Element eval(ViewCSSImp* view, Element element, CSSAutoNumberingValueImp::CounterContext* context);
 
     CSSContentValueImp(unsigned initial = Normal) :
         value(initial) {

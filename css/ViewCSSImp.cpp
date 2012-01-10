@@ -424,7 +424,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
                 if (counter)
                     counter->increment(1);
                 ccPseudo.update(markerStyle);
-                if (Element marker = markerStyle->content.eval(this, element)) {
+                if (Element marker = markerStyle->content.eval(this, element, &cc)) {
                     emptyInline = false;
                     map[marker] = markerStyle;
                     if (BlockLevelBox* box = layOutBlockBoxes(marker, currentBox, style, &cc))
@@ -438,7 +438,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
             beforeStyle->compute(this, style, element);
             if (!beforeStyle->content.isNone()) {
                 ccPseudo.update(beforeStyle);
-                if (Element before = beforeStyle->content.eval(this, element)) {
+                if (Element before = beforeStyle->content.eval(this, element, &cc)) {
                     emptyInline = false;
                     map[before] = beforeStyle;
                     if (BlockLevelBox* box = layOutBlockBoxes(before, currentBox, style, &cc))
@@ -457,7 +457,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
             afterStyle->compute(this, style, element);
             if (!afterStyle->content.isNone()) {
                 ccPseudo.update(afterStyle);
-                if (Element after = afterStyle->content.eval(this, element)) {
+                if (Element after = afterStyle->content.eval(this, element, &cc)) {
                     emptyInline = false;
                     map[after] = afterStyle;
                     if (BlockLevelBox* box = layOutBlockBoxes(after, currentBox, style, &cc))

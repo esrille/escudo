@@ -377,6 +377,15 @@ void CSSNoneLengthValueImp::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* st
     length.resolve(view, style, fullSize);
 }
 
+bool CSSAutoNumberingValueImp::CounterContext::hasCounter(const std::u16string& name) const
+{
+    for (auto i = counters.begin(); i != counters.end(); ++i) {
+        if ((*i)->getIdentifier() == name)
+            return true;
+    }
+    return false;
+}
+
 void CSSAutoNumberingValueImp::CounterContext::update(CSSStyleDeclarationImp* style)
 {
     style->updateCounters(view, this);
@@ -387,7 +396,7 @@ CSSAutoNumberingValueImp::CounterContext::~CounterContext()
     if (!view)
         return;
     for (auto i = counters.begin(); i != counters.end(); ++i) {
-        if (CounterImpPtr counter = view->getCounter((*i)->name))
+        if (CounterImpPtr counter = view->getCounter((*i)->getIdentifier()))
             counter->restore();
     }
 }
@@ -426,11 +435,14 @@ std::u16string CSSAutoNumberingValueImp::getCssText(CSSStyleDeclarationImp* decl
     return cssText;
 }
 
-void CSSAutoNumberingValueImp::incrementCounter(ViewCSSImp* view)
+void CSSAutoNumberingValueImp::incrementCounter(ViewCSSImp* view, CSSAutoNumberingValueImp::CounterContext* context)
 {
     for (auto i = contents.begin(); i != contents.end(); ++i) {
-        if (CounterImpPtr counter = view->getCounter((*i)->name))
+        if (CounterImpPtr counter = view->getCounter((*i)->name)) {
+            if (!context->hasCounter((*i)->name))
+                context->addCounter(counter.get());
             counter->increment((*i)->number);
+        }
     }
 }
 
@@ -442,7 +454,7 @@ void CSSAutoNumberingValueImp::resetCounter(ViewCSSImp* view, CounterContext* co
                 counter->reset((*i)->number);
             else {
                 counter->nest((*i)->number);
-                context->addCounter(*i);
+                context->addCounter(counter.get());
             }
         }
     }
@@ -1141,18 +1153,18 @@ void CSSContentValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style
     }
 }
 
-std::u16string CSSContentValueImp::CounterContent::eval(ViewCSSImp* view)
+std::u16string CSSContentValueImp::CounterContent::eval(ViewCSSImp* view, CSSAutoNumberingValueImp::CounterContext* context)
 {
     if (CounterImpPtr counter = view->getCounter(identifier)) {
         if (nested)
-            return counter->eval(string, listStyleType.getValue());
+            return counter->eval(string, listStyleType.getValue(), context);
         else
-            return counter->eval(listStyleType.getValue());
+            return counter->eval(listStyleType.getValue(), context);
     }
     return u"";
 }
 
-Element CSSContentValueImp::eval(ViewCSSImp* view, Element element)
+Element CSSContentValueImp::eval(ViewCSSImp* view, Element element, CSSAutoNumberingValueImp::CounterContext* context)
 {
     if (contents.empty())
         return 0;
@@ -1173,7 +1185,7 @@ Element CSSContentValueImp::eval(ViewCSSImp* view, Element element)
         return 0;
     std::u16string data;
     for (auto i = contents.begin(); i != contents.end(); ++i)
-        data += (*i)->eval(view);
+        data += (*i)->eval(view, context);
     if (org::w3c::dom::Text text = view->getDocument().createTextNode(data))
         span.appendChild(text);
 

@@ -405,7 +405,7 @@ public:
 
     void updateCounters(ViewCSSImp* view, CSSAutoNumberingValueImp::CounterContext* context) {
         counterReset.resetCounter(view, context);
-        counterIncrement.incrementCounter(view);
+        counterIncrement.incrementCounter(view, context);
     }
 
     size_t processWhiteSpace(std::u16string& data, char16_t& prevChar);
