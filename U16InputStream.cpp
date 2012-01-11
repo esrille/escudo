@@ -92,21 +92,21 @@ const char* U16InputStream::skipOver(const char* p, const char* target, size_t l
 
 void U16InputStream::detect(const char* p)
 {
-    if (confidence == Certain)
+    if (confidence != Tentative)
         return;
     if (strncmp(p, "\xfe\xff", 2) == 0) {
         encoding = "utf-16be";
-        confidence == Irrelevant;
+        confidence = Irrelevant;
         return;
     }
     if (strncmp(p, "\xff\xfe", 2) == 0) {
         encoding = "utf-16le";
-        confidence == Irrelevant;
+        confidence = Irrelevant;
         return;
     }
     if (strncmp(p, "\xef\xbb\xbf", 3) == 0) {
         encoding = "utf-8";
-        confidence == Irrelevant;
+        confidence = Irrelevant;
         return;
     }
     encoding = "";

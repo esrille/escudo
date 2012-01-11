@@ -37,7 +37,7 @@ CSSInputStream::CSSInputStream(std::istream& stream, const std::string& optional
 void CSSInputStream::detect(const char* p)
 {
     U16InputStream::detect(p);
-    if (confidence == Certain)
+    if (confidence != Tentative)
         return;
 
     confidence = Tentative;

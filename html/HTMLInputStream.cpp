@@ -143,7 +143,7 @@ const char* HTMLInputStream::handleMeta(const char* p)
 void HTMLInputStream::detect(const char* p)
 {
     U16InputStream::detect(p);
-    if (confidence == Certain)
+    if (confidence != Tentative)
         return;
 
     confidence = Tentative;
