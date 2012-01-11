@@ -92,14 +92,17 @@ const char* U16InputStream::skipOver(const char* p, const char* target, size_t l
 
 void U16InputStream::detect(const char* p)
 {
+    static char le[] = { 0x40, 0x00, 0x63, 0x00, 0x68, 0x00, 0x61, 0x00, 0x72, 0x00, 0x73, 0x00, 0x65, 0x00, 0x74, 0x00 };
+    static char be[] = { 0x00, 0x40, 0x00, 0x63, 0x00, 0x68, 0x00, 0x61, 0x00, 0x72, 0x00, 0x73, 0x00, 0x65, 0x00, 0x74 };
+
     if (confidence != Tentative)
         return;
-    if (strncmp(p, "\xfe\xff", 2) == 0) {
+    if (strncmp(p, "\xfe\xff", 2) == 0 || strncmp(p, be, sizeof(be)) == 0) {
         encoding = "utf-16be";
         confidence = Irrelevant;
         return;
     }
-    if (strncmp(p, "\xff\xfe", 2) == 0) {
+    if (strncmp(p, "\xff\xfe", 2) == 0 || strncmp(p, le, sizeof(le)) == 0) {
         encoding = "utf-16le";
         confidence = Irrelevant;
         return;
