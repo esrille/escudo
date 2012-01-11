@@ -65,23 +65,21 @@ bool CSSInputStream::detect(const char* p)
     }
     std::string tentative;
     p += 8;
-    if (*p++ != ' ' || *p++ != '"') {
-        encoding = "";
-        return false;
-    }
-    for (;;) {
-        if (!*p) {
-            encoding = "";
-            return false;
-        }
-        if (*p == '"') {
-            if (*++p != ';') {
+    if (*p++ != ' ' || *p++ != '"')
+        tentative = CSSDefaultEncoding;
+    else {
+        for (;;) {
+            if (!*p) {
                 encoding = "";
                 return false;
             }
-            break;
+            if (*p == '"') {
+                if (*++p != ';')
+                    tentative = CSSDefaultEncoding;
+                break;
+            }
+            tentative += *p++;
         }
-        tentative += *p++;
     }
     if (confidence == Tentative) {
         encoding = tentative;
