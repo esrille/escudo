@@ -52,12 +52,15 @@ Override overrides[] = {
 
 }  // namespace
 
-U16InputStream::U16InputStream(std::istream& stream, const std::string optionalEncoding) :
+U16InputStream::U16InputStream(std::istream& stream, const std::string& optionalEncoding) :
     confidence(Certain),
+    encoding(optionalEncoding),
     stream(stream)
 {
     initializeConverter();
-    encoding = checkEncoding(optionalEncoding);
+    encoding = checkEncoding(encoding);
+    if (encoding.empty())
+        confidence = Tentative;
 }
 
 U16InputStream::~U16InputStream()
@@ -89,16 +92,21 @@ const char* U16InputStream::skipOver(const char* p, const char* target, size_t l
 
 void U16InputStream::detect(const char* p)
 {
+    if (confidence == Certain)
+        return;
     if (strncmp(p, "\xfe\xff", 2) == 0) {
         encoding = "utf-16be";
+        confidence == Irrelevant;
         return;
     }
     if (strncmp(p, "\xff\xfe", 2) == 0) {
         encoding = "utf-16le";
+        confidence == Irrelevant;
         return;
     }
     if (strncmp(p, "\xef\xbb\xbf", 3) == 0) {
         encoding = "utf-8";
+        confidence == Irrelevant;
         return;
     }
     encoding = "";

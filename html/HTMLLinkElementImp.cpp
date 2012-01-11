@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,8 @@
 #include "DocumentImp.h"
 #include "css/CSSInputStream.h"
 #include "css/CSSParser.h"
+
+#include "Test.util.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -78,8 +80,11 @@ void HTMLLinkElementImp::notify()
         boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request->getContentDescriptor(), false);
 #endif
         CSSParser parser;
-        CSSInputStream cssStream(stream);  // TODO detect encode
+        CSSInputStream cssStream(stream, request->getResponseMessage().getContentCharset());
         styleSheet = parser.parse(cssStream);
+
+        dumpStyleSheet(std::cerr, styleSheet.self());
+
         document->addStyleSheet(styleSheet);
     }
     document->decrementLoadEventDelayCount();

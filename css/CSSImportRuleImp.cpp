@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,8 @@
 #include "css/CSSParser.h"
 
 #include "http/HTTPRequest.h"
+
+#include "Test.util.h"
 
 namespace org
 {
@@ -106,8 +108,9 @@ void CSSImportRuleImp::notify()
         boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request->getContentDescriptor(), false);
 #endif
         CSSParser parser;
-        CSSInputStream cssStream(stream);  // TODO detect encode
+        CSSInputStream cssStream(stream, request->getResponseMessage().getContentCharset());
         styleSheet = parser.parse(cssStream);
+        dumpStyleSheet(std::cerr, styleSheet.self());
     }
     document->decrementLoadEventDelayCount();
 

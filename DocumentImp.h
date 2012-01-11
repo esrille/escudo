@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,6 +68,7 @@ class DocumentImp : public ObjectMixin<DocumentImp, NodeImp>
     std::u16string url;
     DocumentType doctype;
     int mode;
+    std::u16string charset;
     std::u16string readyState;
     std::u16string compatMode;
     std::deque<stylesheets::StyleSheet> styleSheets;

@@ -65,8 +65,12 @@ private:
     void readChunk();
 
 public:
-    U16InputStream(std::istream& stream, const std::string optionalEncoding = "");
+    U16InputStream(std::istream& stream, const std::string& optionalEncoding = "");
     virtual ~U16InputStream();
+
+    enum Confidence getConfidence() const {
+        return confidence;
+    }
 
     const std::string& getEncoding()
     {

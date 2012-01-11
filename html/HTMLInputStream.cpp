@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@
 
 #include <algorithm>
 
-HTMLInputStream::HTMLInputStream(std::istream& stream, const std::string optionalEncoding) :
+HTMLInputStream::HTMLInputStream(std::istream& stream, const std::string& optionalEncoding) :
     U16InputStream(stream, optionalEncoding)
 {
 }
@@ -143,7 +143,7 @@ const char* HTMLInputStream::handleMeta(const char* p)
 void HTMLInputStream::detect(const char* p)
 {
     U16InputStream::detect(p);
-    if (0 < encoding.length())
+    if (confidence == Certain)
         return;
 
     confidence = Tentative;
@@ -166,4 +166,6 @@ void HTMLInputStream::detect(const char* p)
     }
     if (encoding.empty())
         encoding = DefaultEncoding;
+    else
+        confidence = Certain;
 }

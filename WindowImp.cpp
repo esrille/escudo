@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -167,6 +167,8 @@ bool WindowImp::poll()
             HTMLTokenizer tokenizer(&htmlInputStream);
             HTMLParser parser(window->getDocument(), &tokenizer);
             parser.mainLoop();  // TODO: run thin in background
+            if (imp)
+                imp->setCharset(utfconv(htmlInputStream.getEncoding()));
 
             // Each HTML element will have a style attribute if there's the style content attribute.
             // Each HTML style element will have a style sheet.

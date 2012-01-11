@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ class HTMLInputStream : public U16InputStream
     const char* handleMeta(const char* p);
     virtual void detect(const char* p);
 public:
-    HTMLInputStream(std::istream& stream, const std::string optionalEncoding = "");
+    HTMLInputStream(std::istream& stream, const std::string& optionalEncoding = "");
 };
 
 #endif  // ES_HTMLINPUTSTREAM_H

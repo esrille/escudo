@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -534,19 +534,21 @@ std::u16string DocumentImp::getLastModified()
 
 std::u16string DocumentImp::getCharset()
 {
-    // TODO: implement me!
-    return u"";
+    return charset;
 }
 
 void DocumentImp::setCharset(std::u16string charset)
 {
-    // TODO: implement me!
+    if (this->charset.empty()) {
+        this->charset = charset;
+        return;
+    }
+    // TODO: Change the  character encoding.
 }
 
 std::u16string DocumentImp::getCharacterSet()
 {
-    // TODO: implement me!
-    return u"";
+    return  charset;
 }
 
 std::u16string DocumentImp::getDefaultCharset()

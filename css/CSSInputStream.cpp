@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ const char* const CSSDefaultEncoding = "utf-8";
 
 }
 
-CSSInputStream::CSSInputStream(std::istream& stream, const std::string optionalEncoding) :
+CSSInputStream::CSSInputStream(std::istream& stream, const std::string& optionalEncoding) :
     U16InputStream(stream, optionalEncoding)
 {
 }
@@ -37,7 +37,7 @@ CSSInputStream::CSSInputStream(std::istream& stream, const std::string optionalE
 void CSSInputStream::detect(const char* p)
 {
     U16InputStream::detect(p);
-    if (0 < encoding.length())
+    if (confidence == Certain)
         return;
 
     confidence = Tentative;
