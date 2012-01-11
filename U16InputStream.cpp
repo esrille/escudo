@@ -91,29 +91,27 @@ const char* U16InputStream::skipOver(const char* p, const char* target, size_t l
     return p;
 };
 
-void U16InputStream::detect(const char* p)
+bool U16InputStream::detect(const char* p)
 {
-    static char le[] = { 0x40, 0x00, 0x63, 0x00, 0x68, 0x00, 0x61, 0x00, 0x72, 0x00, 0x73, 0x00, 0x65, 0x00, 0x74, 0x00 };
-    static char be[] = { 0x00, 0x40, 0x00, 0x63, 0x00, 0x68, 0x00, 0x61, 0x00, 0x72, 0x00, 0x73, 0x00, 0x65, 0x00, 0x74 };
-
     if (confidence != Tentative)
-        return;
-    if (strncmp(p, "\xfe\xff", 2) == 0 || strncmp(p, be, sizeof(be)) == 0) {
+        return true;
+    if (strncmp(p, "\xfe\xff", 2) == 0) {
         encoding = "utf-16be";
         confidence = Irrelevant;
-        return;
+        return true;
     }
-    if (strncmp(p, "\xff\xfe", 2) == 0 || strncmp(p, le, sizeof(le)) == 0) {
+    if (strncmp(p, "\xff\xfe", 2) == 0) {
         encoding = "utf-16le";
         confidence = Irrelevant;
-        return;
+        return true;
     }
     if (strncmp(p, "\xef\xbb\xbf", 3) == 0) {
         encoding = "utf-8";
         confidence = Irrelevant;
-        return;
+        return true;
     }
     encoding = "";
+    return true;
 }
 
 std::string U16InputStream::checkEncoding(std::string value)
@@ -143,18 +141,25 @@ std::string U16InputStream::checkEncoding(std::string value)
     return value;
 }
 
-void U16InputStream::setEncoding(std::string value)
+void U16InputStream::setEncoding(std::string value, bool useDefault)
 {
     value = checkEncoding(value);
-    if (value.empty())
+    if (value.empty()) {
+        if (!useDefault) {
+            eof = true;
+            return;
+        }
         value = DefaultEncoding;
+    }
 
     // Re-check encoding with ICU for conversion
     UErrorCode error = U_ZERO_ERROR;
     converter = ucnv_open(value.c_str(), &error);
     if (!converter) {
-        value = DefaultEncoding;
-        converter = ucnv_open(value.c_str(), &error);
+        if (useDefault) {
+            value = DefaultEncoding;
+            converter = ucnv_open(value.c_str(), &error);
+        }
         if (!converter)
             eof = true;
     }
@@ -185,11 +190,12 @@ void U16InputStream::updateSource()
         stream.read(sourceLimit, count);
         count = stream.gcount();
         if (!converter) {
+            bool useDefault = true;
             if (encoding.empty()) {
                 sourceLimit[count] = '\0';
-                detect(sourceLimit);
+                useDefault = detect(sourceLimit);
             }
-            setEncoding(encoding);
+            setEncoding(encoding, useDefault);
         }
         sourceLimit += count;
         if (count == 0)

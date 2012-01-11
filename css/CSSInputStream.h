@@ -21,7 +21,7 @@
 
 class CSSInputStream : public U16InputStream
 {
-    virtual void detect(const char* p);
+    virtual bool detect(const char* p);
 public:
     CSSInputStream(std::istream& stream, const std::string& optionalEncoding = "");
 };

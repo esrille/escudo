@@ -24,9 +24,8 @@ struct UConverter;
 
 class U16InputStream
 {
-    static const size_t ChunkSize = 512;
-
 public:
+    static const size_t ChunkSize = 512;
     static const char* DefaultEncoding;  // "utf-8"
     enum Confidence
     {
@@ -41,9 +40,37 @@ protected:
 
     static const char* skipSpace(const char* p);
     static const char* skipOver(const char* p, const char* target, size_t length);
-    void setEncoding(std::string value);
+    void setEncoding(std::string value, bool useDefault);
 
-    virtual void detect(const char* p);
+    virtual bool detect(const char* p);
+    std::string beToAscii(const char* p) {
+        std::string s;
+        while (p < sourceBuffer + ChunkSize) {
+            if (*p++)
+                return "";
+            char u = *p++;
+            if (!u)
+                return "";
+            s += u;
+            if (u == ';')
+                break;
+        }
+        return s;
+    }
+    std::string leToAscii(const char* p) {
+        std::string s;
+        while (p < sourceBuffer + ChunkSize) {
+            char u = *p++;
+            if (!u)
+                return "";
+            if (*p++)
+                return "";
+            s += u;
+            if (u == ';')
+                break;
+        }
+        return s;
+    }
 
 private:
     UConverter* converter;

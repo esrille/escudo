@@ -26,7 +26,7 @@ class HTMLInputStream : public U16InputStream
     static const char* handleTag(const char* p);
     static std::string handleContentType(const char* p);
     const char* handleMeta(const char* p);
-    virtual void detect(const char* p);
+    virtual bool detect(const char* p);
 public:
     HTMLInputStream(std::istream& stream, const std::string& optionalEncoding = "");
 };

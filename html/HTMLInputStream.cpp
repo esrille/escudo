@@ -140,11 +140,11 @@ const char* HTMLInputStream::handleMeta(const char* p)
     return p;
 };
 
-void HTMLInputStream::detect(const char* p)
+bool HTMLInputStream::detect(const char* p)
 {
     U16InputStream::detect(p);
     if (confidence != Tentative)
-        return;
+        return true;
 
     confidence = Tentative;
     encoding.clear();
@@ -168,4 +168,5 @@ void HTMLInputStream::detect(const char* p)
         encoding = DefaultEncoding;
     else
         confidence = Certain;
+    return true;
 }

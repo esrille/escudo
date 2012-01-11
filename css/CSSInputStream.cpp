@@ -34,38 +34,62 @@ CSSInputStream::CSSInputStream(std::istream& stream, const std::string& optional
 {
 }
 
-void CSSInputStream::detect(const char* p)
+bool CSSInputStream::detect(const char* p)
 {
-    U16InputStream::detect(p);
-    if (confidence != Tentative)
-        return;
+    static char be[] = { 0x00, 0x40, 0x00, 0x63, 0x00, 0x68, 0x00, 0x61, 0x00, 0x72, 0x00, 0x73, 0x00, 0x65, 0x00, 0x74 };
+    static char le[] = { 0x40, 0x00, 0x63, 0x00, 0x68, 0x00, 0x61, 0x00, 0x72, 0x00, 0x73, 0x00, 0x65, 0x00, 0x74, 0x00 };
 
-    confidence = Tentative;
-    encoding = "";
+    std::string u16 = "";
+    if (confidence == Certain)
+        return false;
+    if (strncmp(p, "\xfe\xff", 2) == 0 || strncmp(p, be, sizeof(be)) == 0) {
+        encoding = "utf-16be";
+        confidence = Irrelevant;
+        u16 = beToAscii((*p == '\xfe') ? p + 2 : p);
+        p = u16.c_str();
+    } else if (strncmp(p, "\xff\xfe", 2) == 0 || strncmp(p, le, sizeof(le)) == 0) {
+        encoding = "utf-16le";
+        confidence = Irrelevant;
+        u16 = leToAscii((*p == '\xff') ? p + 2 : p);
+        p = u16.c_str();
+    } else if (strncmp(p, "\xef\xbb\xbf", 3) == 0) {
+        encoding = "utf-8";
+        confidence = Irrelevant;
+        p += 3;
+    }
 
     if (strncmp(p, "@charset", 8) != 0) {
-        encoding = CSSDefaultEncoding;
-        return;
+        if (confidence == Tentative)
+            encoding = CSSDefaultEncoding;
+        return false;
     }
+    std::string tentative;
     p = skipSpace(p + 8);
     char quote = *p++;
     if (quote == '\'' || quote == '"') {
         for (;;) {
             if (!*p) {
-                encoding = DefaultEncoding;
-                return;
+                encoding = "";
+                return false;
             }
             if (*p == quote) {
                 p = skipSpace(++p);
                 if (*p != ';') {
-                    encoding = DefaultEncoding;
-                    return;
+                    encoding = "";
+                    return false;
                 }
                 break;
             }
-            encoding += *p++;
+            tentative += *p++;
         }
     }
-    if (encoding.length() == 0)
-        encoding = CSSDefaultEncoding;
+    if (confidence == Tentative) {
+        encoding = tentative;
+        return false;
+    }
+    if (strcasecmp(tentative.c_str(), "utf-16") == 0 && strncmp(encoding.c_str(), "utf-16", 6) == 0 ||
+        strcasecmp(encoding.c_str(), tentative.c_str()) == 0)
+        return false;
+    encoding = "";
+    return false;
 }
