@@ -64,24 +64,24 @@ bool CSSInputStream::detect(const char* p)
         return false;
     }
     std::string tentative;
-    p = skipSpace(p + 8);
-    char quote = *p++;
-    if (quote == '\'' || quote == '"') {
-        for (;;) {
-            if (!*p) {
+    p += 8;
+    if (*p++ != ' ' || *p++ != '"') {
+        encoding = "";
+        return false;
+    }
+    for (;;) {
+        if (!*p) {
+            encoding = "";
+            return false;
+        }
+        if (*p == '"') {
+            if (*++p != ';') {
                 encoding = "";
                 return false;
             }
-            if (*p == quote) {
-                p = skipSpace(++p);
-                if (*p != ';') {
-                    encoding = "";
-                    return false;
-                }
-                break;
-            }
-            tentative += *p++;
+            break;
         }
+        tentative += *p++;
     }
     if (confidence == Tentative) {
         encoding = tentative;
