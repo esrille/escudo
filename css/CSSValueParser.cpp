@@ -161,9 +161,9 @@ void CSSValueParser::initializeRules()
         = CSSValueRule(CSSValueRule::Color)
         | ident
             [&CSSValueParser::colorKeyword]
-        | CSSValueRule(u"rgb", (integer | percentage) + comma +
-                               (integer | percentage) + comma +
-                               (integer | percentage))
+        | CSSValueRule(u"rgb", integer + comma + integer + comma + integer)
+            [&CSSValueParser::rgb]
+        | CSSValueRule(u"rgb", percentage + comma + percentage + comma + percentage)
             [&CSSValueParser::rgb]
 #if 0
         | CSSValueRule(u"rgba", (integer | percentage) + comma +
