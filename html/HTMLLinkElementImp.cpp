@@ -54,7 +54,7 @@ void HTMLLinkElementImp::eval()
     if (href.empty())
         return;
     HTMLElementImp::eval();
-    if (getRel() == u"stylesheet") {
+    if (compareIgnoreCase(getRel(), u"stylesheet") == 0) {  // CI
         // TODO: check type
         if (!getAttribute(u"title").hasValue()) {
             // non-alternate style sheet
