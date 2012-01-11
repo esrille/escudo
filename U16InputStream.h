@@ -108,6 +108,10 @@ public:
                 case '\0':
                     c = u'\xfffd';
                     break;
+                case 0xFEFF:  // BOM
+                    ++nextChar;
+                    continue;
+                    break;
                 default:
                     break;
                 }
