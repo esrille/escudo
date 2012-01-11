@@ -46,7 +46,6 @@ Override overrides[] = {
     { "iso-8859-11", "windows-874" },
     { "ks_c_5601-1987", "windows-949" },
     { "shift_jis", "Windows-31j" },
-    { "shift-jis", "" },              // ucnv_open() may accept shift-jis as shift_jis; cf. at-charset-056.
     { "tis-620", "windows-874" },
     { "us-ascii", "windows-1252" }
 };
