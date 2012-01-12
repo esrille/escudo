@@ -161,7 +161,9 @@ stylesheet
   : optional_sgml CHARSET_SYM optional_space STRING optional_space ';'
     optional_sgml optional_namespaces statement_list
   | optional_sgml optional_namespaces statement_list
-  | optional_sgml CHARSET_SYM error ';'
+  | optional_sgml CHARSET_SYM error_non_block ';'
+    optional_sgml optional_namespaces statement_list
+  | optional_sgml CHARSET_SYM error_block
     optional_sgml optional_namespaces statement_list
   ;
 import
