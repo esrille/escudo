@@ -23,14 +23,9 @@
 
 #include <algorithm>
 
-namespace {
-
-const char* const CSSDefaultEncoding = "utf-8";
-
-}
-
-CSSInputStream::CSSInputStream(std::istream& stream, const std::string& optionalEncoding) :
-    U16InputStream(stream, optionalEncoding)
+CSSInputStream::CSSInputStream(std::istream& stream, const std::string& optionalEncoding, const std::string& fallbackEncoding) :
+    U16InputStream(stream, optionalEncoding),
+    fallbackEncoding(fallbackEncoding)
 {
 }
 
@@ -60,13 +55,13 @@ bool CSSInputStream::detect(const char* p)
 
     if (strncmp(p, "@charset", 8) != 0) {
         if (confidence == Tentative)
-            encoding = CSSDefaultEncoding;
+            encoding = fallbackEncoding;
         return false;
     }
     std::string tentative;
     p += 8;
     if (*p++ != ' ' || *p++ != '"')
-        tentative = CSSDefaultEncoding;
+        tentative = fallbackEncoding;
     else {
         for (;;) {
             if (!*p) {
@@ -75,7 +70,7 @@ bool CSSInputStream::detect(const char* p)
             }
             if (*p == '"') {
                 if (*++p != ';')
-                    tentative = CSSDefaultEncoding;
+                    tentative = fallbackEncoding;
                 break;
             }
             tentative += *p++;

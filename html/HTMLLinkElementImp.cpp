@@ -80,7 +80,7 @@ void HTMLLinkElementImp::notify()
         boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request->getContentDescriptor(), false);
 #endif
         CSSParser parser;
-        CSSInputStream cssStream(stream, request->getResponseMessage().getContentCharset());
+        CSSInputStream cssStream(stream, request->getResponseMessage().getContentCharset(), utfconv(document->getCharset()));
         styleSheet = parser.parse(cssStream);
 
         dumpStyleSheet(std::cerr, styleSheet.self());

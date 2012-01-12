@@ -21,9 +21,10 @@
 
 class CSSInputStream : public U16InputStream
 {
+    const std::string fallbackEncoding;
     virtual bool detect(const char* p);
 public:
-    CSSInputStream(std::istream& stream, const std::string& optionalEncoding = "");
+    CSSInputStream(std::istream& stream, const std::string& optionalEncoding = "", const std::string& fallbackEncoding = "utf-8");
 };
 
 #endif  // ES_CSSINPUTSTREAM_H
