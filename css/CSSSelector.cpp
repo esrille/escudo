@@ -307,35 +307,37 @@ bool CSSLangPseudoClassSelector::match(Element element, ViewCSSImp* view)
 
 bool CSSPrimarySelector::isValid() const
 {
+    const CSSPseudoElementSelector* pseudoElementSelector = 0;
     for (auto i = chain.begin(); i != chain.end(); ++i) {
-        if (!(*i)->isValid())
+        if (pseudoElementSelector || !(*i)->isValid())
             return false;
+        pseudoElementSelector = dynamic_cast<const CSSPseudoElementSelector*>(*i);
     }
     return true;
 }
 
 bool CSSSelector::isValid() const
 {
-    if (simpleSelectors.empty())
+    if (simpleSelectors.empty() || simpleSelectors.front()->getCombinator() != CSSPrimarySelector::None)
         return false;
-    int combinator;
-    for (auto i = simpleSelectors.rbegin(); i != simpleSelectors.rend(); ++i) {
-        if (!(*i)->isValid())
+    const CSSPseudoElementSelector* pseudoElementSelector = 0;
+    for (auto i = simpleSelectors.begin(); i != simpleSelectors.end(); ++i) {
+        if (pseudoElementSelector || !(*i)->isValid())
             return false;
-        combinator = (*i)->getCombinator();
+        pseudoElementSelector = (*i)->getPseudoElement();
     }
-    return combinator == CSSPrimarySelector::None;
+    return true;
 }
 
-CSSPseudoElementSelector* CSSPrimarySelector::getPseudoElement() const {
+CSSPseudoElementSelector* CSSPrimarySelector::getPseudoElement() const
+{
     if (chain.empty())
         return 0;
-    if (CSSPseudoElementSelector* pseudo = dynamic_cast<CSSPseudoElementSelector*>(chain.back()))
-        return pseudo;
-    return 0;
+    return dynamic_cast<CSSPseudoElementSelector*>(chain.back());
 }
 
-CSSPseudoElementSelector* CSSSelector::getPseudoElement() const {
+CSSPseudoElementSelector* CSSSelector::getPseudoElement() const
+{
     if (simpleSelectors.empty())
         return 0;
     return simpleSelectors.back()->getPseudoElement();
