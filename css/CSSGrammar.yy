@@ -391,13 +391,13 @@ element_name
   ;
 attrib
   : '[' optional_space namespace_prefix IDENT optional_space attrib_op optional_space ident_term optional_space ']' {
-        $$ = new(std::nothrow) CSSAttributeSelector($3, $4.toString(parser->getCaseSensitivity()), $6, $8);
+        $$ = new(std::nothrow) CSSAttributeSelector($3, $4.toString(parser->getCaseSensitivity()), $6, $8.toString(true));
     }
   | '[' optional_space namespace_prefix IDENT optional_space                                                    ']' {
         $$ = new(std::nothrow) CSSAttributeSelector($3, $4.toString(parser->getCaseSensitivity()));
     }
   | '[' optional_space                  IDENT optional_space attrib_op optional_space ident_term optional_space ']' {
-        $$ = new(std::nothrow) CSSAttributeSelector($3.toString(parser->getCaseSensitivity()), $5, $7);
+        $$ = new(std::nothrow) CSSAttributeSelector($3.toString(parser->getCaseSensitivity()), $5, $7.toString(true));
     }
   | '[' optional_space                  IDENT optional_space                                                    ']' {
         $$ = new(std::nothrow) CSSAttributeSelector($3.toString(parser->getCaseSensitivity()));
