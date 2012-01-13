@@ -281,8 +281,11 @@ bool CSSPseudoClassSelector::match(Element element, ViewCSSImp* view)
 {
     switch (id) {
     case Link:
-        if (html::HTMLAnchorElement::hasInstance(element))
-            return true;
+        if (html::HTMLAnchorElement anchor = interface_cast<html::HTMLAnchorElement>(element)) {
+            Nullable<std::u16string> href = anchor.getAttribute(u"href");
+            if (href.hasValue())
+                return true;
+        }
         break;
     case Hover:
         if (view->isHovered(element))
