@@ -627,7 +627,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                 if (firstLetterStyle) {
                     for (auto i = firstLetterStyles.begin(); i != firstLetterStyles.end(); ++i)
                         firstLetterStyle->specify(*i);
-                    firstLetterStyle->compute(view, style, 0);
+                    firstLetterStyle->compute(view, firstLineStyle.get() ? firstLineStyle.get() : style, 0);
                     // TODO: resolve?
                 }
             }
