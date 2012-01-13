@@ -285,7 +285,7 @@ FormattingContext* Box::updateFormattingContext(FormattingContext* context)
 
 FormattingContext* Box::restoreFormattingContext(FormattingContext* context)
 {
-    if (isFlowRoot()) 
+    if (isFlowRoot())
         return formattingContext;
     else {
         context->marginLeft -= marginLeft;
@@ -590,53 +590,55 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
         if (!context->lineBox) {
             if (!context->addLineBox(view, this))
                 return false;  // TODO error
-            if (!psuedoChecked && getFirstChild() == context->lineBox) {
-                psuedoChecked  = true;
-                // The current line box is the 1st line of this block box.
-                // style to use can be a pseudo element styles from any ancestor elements.
-                // Note the :first-line, first-letter pseudo-elements can only be attached to a block container element.
-                std::list<CSSStyleDeclarationImp*> firstLineStyles;
-                std::list<CSSStyleDeclarationImp*> firstLetterStyles;
-                Box* box = this;
-                for (;;) {
-                    if (CSSStyleDeclarationImp* s = box->getStyle()) {
-                        if (CSSStyleDeclarationImp* p = s->getPseudoElementStyle(CSSPseudoElementSelector::FirstLine))
-                            firstLineStyles.push_front(p);
+        }
+        if (!psuedoChecked && getFirstChild() == context->lineBox) {
+            psuedoChecked  = true;
+            // The current line box is the 1st line of this block box.
+            // style to use can be a pseudo element styles from any ancestor elements.
+            // Note the :first-line, first-letter pseudo-elements can only be attached to a block container element.
+            std::list<CSSStyleDeclarationImp*> firstLineStyles;
+            std::list<CSSStyleDeclarationImp*> firstLetterStyles;
+            Box* box = this;
+            for (;;) {
+                if (CSSStyleDeclarationImp* s = box->getStyle()) {
+                    if (CSSStyleDeclarationImp* p = s->getPseudoElementStyle(CSSPseudoElementSelector::FirstLine))
+                        firstLineStyles.push_front(p);
+                    if (!context->lineBox->hasChildBoxes()) {
                         if (CSSStyleDeclarationImp* p = s->getPseudoElementStyle(CSSPseudoElementSelector::FirstLetter))
                             firstLetterStyles.push_front(p);
                     }
-                    Box* parent = box->getParentBox();
-                    if (!parent || parent->getFirstChild() != box)
-                        break;
-                    box = parent;
                 }
-                if (!firstLineStyles.empty()) {
-                    firstLineStyle = new(std::nothrow) CSSStyleDeclarationImp;
-                    if (firstLineStyle) {
-                        for (auto i = firstLineStyles.begin(); i != firstLineStyles.end(); ++i)
-                            firstLineStyle->specify(*i);
-                        firstLineStyle->compute(view, style, 0);
-                        // TODO: resolve?
-                    }
+                Box* parent = box->getParentBox();
+                if (!parent || parent->getFirstChild() != box)
+                    break;
+                box = parent;
+            }
+            if (!firstLineStyles.empty()) {
+                firstLineStyle = new(std::nothrow) CSSStyleDeclarationImp;
+                if (firstLineStyle) {
+                    for (auto i = firstLineStyles.begin(); i != firstLineStyles.end(); ++i)
+                        firstLineStyle->specify(*i);
+                    firstLineStyle->compute(view, style, 0);
+                    // TODO: resolve?
                 }
-                if (!firstLetterStyles.empty()) {
-                    firstLetterStyle = new(std::nothrow) CSSStyleDeclarationImp;
-                    if (firstLetterStyle) {
-                        for (auto i = firstLetterStyles.begin(); i != firstLetterStyles.end(); ++i)
-                            firstLetterStyle->specify(*i);
-                        firstLetterStyle->compute(view, style, 0);
-                        // TODO: resolve?
-                    }
-                }
+            }
+            if (!firstLetterStyles.empty()) {
+                firstLetterStyle = new(std::nothrow) CSSStyleDeclarationImp;
                 if (firstLetterStyle) {
-                    activeStyle = firstLetterStyle.get();
-                    font = activeStyle->getFontTexture();
-                    point = view->getPointFromPx(activeStyle->fontSize.getPx());
-                } else if (firstLineStyle) {
-                    activeStyle = firstLineStyle.get();
-                    font = activeStyle->getFontTexture();
-                    point = view->getPointFromPx(activeStyle->fontSize.getPx());
+                    for (auto i = firstLetterStyles.begin(); i != firstLetterStyles.end(); ++i)
+                        firstLetterStyle->specify(*i);
+                    firstLetterStyle->compute(view, style, 0);
+                    // TODO: resolve?
                 }
+            }
+            if (firstLetterStyle) {
+                activeStyle = firstLetterStyle.get();
+                font = activeStyle->getFontTexture();
+                point = view->getPointFromPx(activeStyle->fontSize.getPx());
+            } else if (firstLineStyle) {
+                activeStyle = firstLineStyle.get();
+                font = activeStyle->getFontTexture();
+                point = view->getPointFromPx(activeStyle->fontSize.getPx());
             }
         }
         LineBox* lineBox = context->lineBox;
@@ -1092,7 +1094,7 @@ float BlockLevelBox::collapseMarginTop(FormattingContext* context)
             context->setClearance();
         }
     }
-    
+
     if (0.0f < context->clearance) {
         if (isnan(clearance))
             clearance = context->clearance;
@@ -1601,7 +1603,7 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
                 if (!box->isAbsolutelyPositioned()) {
                     if (maskV == (Top | Height | Bottom) || maskV == (Top | Bottom))
                         offsetV += lineBox->height + lineBox->getBlankBottom();
-                    if (maskH == (Left | Width | Right) || maskH == (Left | Right)) 
+                    if (maskH == (Left | Width | Right) || maskH == (Left | Right))
                         offsetH -= box->getTotalWidth();
                 }
             }
@@ -1650,7 +1652,7 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
         // Note if height is zero, clearances are used only to layout floating boxes,
         // and thus totalClearance should not be added to height.
         if (height != 0.0f)
-            height += totalClearance;        
+            height += totalClearance;
         if (maskV == (Top | Height))
             top = before - height;
     }
