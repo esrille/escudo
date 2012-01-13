@@ -1472,16 +1472,12 @@ size_t CSSStyleDeclarationImp::processWhiteSpace(std::u16string& data, char16_t&
 
 size_t CSSStyleDeclarationImp::processLineHeadWhiteSpace(std::u16string& data)
 {
-    std::u16string::iterator i;
     switch (whiteSpace.getValue()) {
     case CSSWhiteSpaceValueImp::Normal:
     case CSSWhiteSpaceValueImp::Nowrap:
     case CSSWhiteSpaceValueImp::PreLine:
-        i = data.begin();
-        while (i != data.end() && isSpace(*i))
-            ++i;
-        if (i != data.begin())
-            i = data.erase(data.begin(), i);
+        if (0 < data.length() && data[0] == u' ')
+            data.erase(0, 1);
         break;
     default:
         break;
