@@ -30,6 +30,7 @@
 
 #include "CSSParser.h"
 #include "CSSSerialize.h"
+#include "utf.h"
 
 namespace org { namespace w3c { namespace dom {
 
@@ -345,6 +346,7 @@ public:
         CSSPseudoClassSelector(u"lang", CSSPseudoClassSelector::Lang),
         lang(lang)
     {
+        toLower(this->lang);    // TODO: html only
     }
     virtual void serialize(std::u16string& text);
     virtual bool match(Element element, ViewCSSImp* view);
