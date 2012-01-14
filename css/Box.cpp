@@ -16,6 +16,8 @@
 
 #include "Box.h"
 
+#include <unicode/uchar.h>
+
 #include <algorithm>
 #include <new>
 #include <iostream>
@@ -676,7 +678,12 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
             length = 1;
             advanced = 0.0f;
         } else {
-            size_t fitLength = firstLetterStyle ? 1 : data.length();  // TODO: 1 is absolutely wrong...
+            size_t fitLength = data.length();
+            if (1 < fitLength && firstLetterStyle) {
+                fitLength = 1;
+                while (fitLength < data.length() && u_ispunct(data[fitLength - 1]))
+                    ++fitLength;
+            }
             // We are still not sure if there's a room for text in context->lineBox.
             // If there's no room due to float box(es), move the linebox down to
             // the closest bottom of float box.
