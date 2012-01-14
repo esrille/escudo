@@ -679,12 +679,14 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
             advanced = 0.0f;
         } else {
             size_t fitLength = data.length();
-            if (1 < fitLength && firstLetterStyle) {
-                fitLength = 1;
-                while (fitLength <= data.length() && u_ispunct(data[fitLength - 1]))
-                    ++fitLength;
-                while (fitLength < data.length() && u_ispunct(data[fitLength]))
-                    ++fitLength;
+            if (0 < fitLength && firstLetterStyle) {
+                size_t pos = 0;
+                fitLength = 0;
+                while (u_ispunct(nextChar(data, pos)))
+                    fitLength = pos;
+                nextChar(data, fitLength);
+                while (u_ispunct(nextChar(data, pos)))
+                    fitLength = pos;
             }
             // We are still not sure if there's a room for text in context->lineBox.
             // If there's no room due to float box(es), move the linebox down to
