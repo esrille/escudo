@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -618,7 +618,9 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                 if (firstLineStyle) {
                     for (auto i = firstLineStyles.begin(); i != firstLineStyles.end(); ++i)
                         firstLineStyle->specify(*i);
-                    firstLineStyle->compute(view, style, 0);
+                    if (style->display.isInline())
+                        firstLineStyle->specify(style);
+                    firstLineStyle->compute(view, getStyle(), 0);
                     // TODO: resolve?
                 }
             }
@@ -627,6 +629,8 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                 if (firstLetterStyle) {
                     for (auto i = firstLetterStyles.begin(); i != firstLetterStyles.end(); ++i)
                         firstLetterStyle->specify(*i);
+                    if (style->display.isInline())
+                        firstLineStyle->specify(style);
                     firstLetterStyle->compute(view, firstLineStyle.get() ? firstLineStyle.get() : style, 0);
                     // TODO: resolve?
                 }

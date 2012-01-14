@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,7 +97,7 @@ class FormattingContext
     float baseline;
     float lineHeight;
     bool atLineHead;
-    
+
 public:
     FormattingContext();
     LineBox* addLineBox(ViewCSSImp* view, BlockLevelBox* parentBox);
@@ -639,8 +639,8 @@ public:
 
     void layOutAbsolute(ViewCSSImp* view);  // 2nd pass
 
-    // Gets the last, anonymous child box. Creates one if there's none even 
-    // if there's no children; if so, the existing texts are moved to the 
+    // Gets the last, anonymous child box. Creates one if there's none even
+    // if there's no children; if so, the existing texts are moved to the
     // new anonymous box.
     bool hasAnonymousBox()
     {
