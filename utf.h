@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  * Copyright 2008 Google Inc.
  * Copyright 2006 Nintendo Co., Ltd.
  *
@@ -224,6 +224,19 @@ inline std::u16string toString(int value)
         return u"-" + toString(static_cast<unsigned int>(-value));
     else
         return toString(static_cast<unsigned int>(value));
+}
+
+inline char32_t nextChar(const std::u16string& s, size_t& pos)
+{
+    if (s.length() <= pos)
+        return 0;
+    char32_t c;
+    const char16_t* u = s.c_str();
+    if (const char16_t* next = utf16to32(u + pos, &c)) {
+        pos = next - u;
+        return c;
+    }
+    return 0;
 }
 
 #endif  // #ifndef ES_UTF_H_INCLUDED
