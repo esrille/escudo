@@ -578,7 +578,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
     if (style->processWhiteSpace(data, context->prevChar) == 0 && discardable)
         return !isAnonymous();
 
-    bool psuedoChecked = isAnonymous();
+    bool psuedoChecked = isAnonymous() && getParentBox()->getFirstChild() != this;
     CSSStyleDeclarationPtr firstLineStyle;
     CSSStyleDeclarationPtr firstLetterStyle;
     CSSStyleDeclarationImp* activeStyle = style;
