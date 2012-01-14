@@ -632,7 +632,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                     for (auto i = firstLetterStyles.begin(); i != firstLetterStyles.end(); ++i)
                         firstLetterStyle->specify(*i);
                     if (style->display.isInline())
-                        firstLineStyle->specify(style);
+                        firstLetterStyle->specify(style);
                     firstLetterStyle->compute(view, firstLineStyle.get() ? firstLineStyle.get() : style, 0);
                     // TODO: resolve?
                 }
