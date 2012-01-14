@@ -631,7 +631,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                 if (firstLetterStyle) {
                     for (auto i = firstLetterStyles.begin(); i != firstLetterStyles.end(); ++i)
                         firstLetterStyle->specify(*i);
-                    if (style->display.isInline())
+                    if (style->display.isInline() && style->getPseudoElementSelectorType() == CSSPseudoElementSelector::NonPseudo)
                         firstLetterStyle->specify(style);
                     firstLetterStyle->compute(view, firstLineStyle.get() ? firstLineStyle.get() : style, 0);
                     // TODO: resolve?
