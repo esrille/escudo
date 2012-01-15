@@ -172,6 +172,12 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle)
                 styleSheets.push_back(sheet);
         }
 
+        CSSStyleDeclarationImp* elementDecl = 0;
+        if (html::HTMLElement ::hasInstance(element)) {
+            html::HTMLElement htmlElement = interface_cast<html::HTMLElement>(element);
+            elementDecl = dynamic_cast<CSSStyleDeclarationImp*>(htmlElement.getStyle().self());
+        }
+
         DeclarationSet set;
         for (auto i = styleSheets.begin(); i != styleSheets.end(); ++i) {
             CSSStyleSheetImp* sheet = *i;
@@ -181,19 +187,17 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle)
             if (CSSStyleDeclarationImp* pseudo = style->createPseudoElementStyle((*i).pseudoElementID))
                 pseudo->specify((*i).decl);
         }
+        if (elementDecl)
+            style->specify(elementDecl);
         for (auto i = set.begin(); i != set.end(); ++i) {
             if (CSSStyleDeclarationImp* pseudo = style->createPseudoElementStyle((*i).pseudoElementID))
                 pseudo->specifyImportant((*i).decl);
         }
+        if (elementDecl)
+            style->specifyImportant(elementDecl);
         set.clear();
 
         // TODO: process user normal declarations and user important declarations
-
-        if (html::HTMLElement ::hasInstance(element)) {
-            html::HTMLElement htmlElement = interface_cast<html::HTMLElement>(element);
-            if (css::CSSStyleDeclaration decl = htmlElement.getStyle())
-                style->specify(static_cast<CSSStyleDeclarationImp*>(decl.self()));
-        }
 
         style->compute(this, parentStyle, element);
     }
