@@ -20,6 +20,8 @@
 #include <org/w3c/dom/Comment.h>
 #include <org/w3c/dom/html/HTMLDivElement.h>
 #include <org/w3c/dom/html/HTMLInputElement.h>
+#include <org/w3c/dom/html/HTMLLinkElement.h>
+#include <org/w3c/dom/html/HTMLStyleElement.h>
 
 #include <new>
 #include <boost/bind.hpp>
@@ -127,12 +129,22 @@ void ViewCSSImp::resolveXY(float left, float top)
 
 void ViewCSSImp::cascade()
 {
+    Document document = getDocument();
+
     map.clear();
+    styleSheets.clear();
+    if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(defaultStyleSheet.self()))
+        styleSheets.push_back(sheet);
     delete stackingContexts;
     stackingContexts = 0;
-    cascade(getDocument(), 0);
-
-    printComputedValues(getDocument(), this);  // for debug
+    cascade(document, 0);
+    if (DocumentImp* imp = dynamic_cast<DocumentImp*>(document.self())) {
+        imp->clearStyleSheets();
+        for (auto i = styleSheets.begin(); i != styleSheets.end(); ++i)
+            imp->addStyleSheet(*i);
+    }
+    styleSheets.clear();
+    printComputedValues(document, this);  // for debug
 }
 
 void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle)
@@ -147,19 +159,23 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle)
             return;  // TODO: error
         }
         map[element] = style;
-        DeclarationSet set;
-        findDeclarations(set, element, defaultStyleSheet.getCssRules());
-        for (auto i = set.begin(); i != set.end(); ++i) {
-            if (CSSStyleDeclarationImp* pseudo = style->createPseudoElementStyle((*i).pseudoElementID))
-                pseudo->specify((*i).decl);
-        }
-        set.clear();
 
-        stylesheets::StyleSheetList styleSheets = element.getOwnerDocument().getStyleSheets();
-        for (unsigned i = 0; i < styleSheets.getLength(); ++i) {
-            stylesheets::StyleSheet sheet = styleSheets.getElement(i);
-            if (CSSStyleSheetImp* imp = dynamic_cast<CSSStyleSheetImp*>(sheet.self()))
-                findDeclarations(set, element, imp->getCssRules());
+        if (html::HTMLStyleElement::hasInstance(element)) {
+            html::HTMLStyleElement styleElement = interface_cast<html::HTMLStyleElement>(element);
+            stylesheets::StyleSheet styleSheet = styleElement.getSheet();
+            if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(styleSheet.self()))
+                styleSheets.push_back(sheet);
+        } else if (html::HTMLLinkElement::hasInstance(element)) {
+            html::HTMLLinkElement linkElement = interface_cast<html::HTMLLinkElement>(element);
+            stylesheets::StyleSheet styleSheet = linkElement.getSheet();
+            if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(styleSheet.self()))
+                styleSheets.push_back(sheet);
+        }
+
+        DeclarationSet set;
+        for (auto i = styleSheets.begin(); i != styleSheets.end(); ++i) {
+            CSSStyleSheetImp* sheet = *i;
+            findDeclarations(set, element, sheet->getCssRules());
         }
         for (auto i = set.begin(); i != set.end(); ++i) {
             if (CSSStyleDeclarationImp* pseudo = style->createPseudoElementStyle((*i).pseudoElementID))
@@ -173,7 +189,8 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle)
 
         // TODO: process user normal declarations and user important declarations
 
-        if (html::HTMLElement htmlElement = interface_cast<html::HTMLElement>(element)) {  // TODO: type check
+        if (html::HTMLElement ::hasInstance(element)) {
+            html::HTMLElement htmlElement = interface_cast<html::HTMLElement>(element);
             if (css::CSSStyleDeclaration decl = htmlElement.getStyle())
                 style->specify(static_cast<CSSStyleDeclarationImp*>(decl.self()));
         }

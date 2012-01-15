@@ -134,12 +134,6 @@ void DocumentImp::setReadyState(const std::u16string& readyState)
     }
 }
 
-void DocumentImp::addStyleSheet(stylesheets::StyleSheet sheet) {
-    styleSheets.push_back(sheet);
-    if (defaultView)
-        defaultView->setFlagsToBoxTree(1);
-}
-
 void DocumentImp::setURL(const std::u16string& url)
 {
     this->url = url;

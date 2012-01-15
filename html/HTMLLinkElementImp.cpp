@@ -22,6 +22,7 @@
 #include <boost/iostreams/device/file_descriptor.hpp>
 
 #include "DocumentImp.h"
+#include "WindowImp.h"
 #include "css/CSSInputStream.h"
 #include "css/CSSParser.h"
 
@@ -85,7 +86,8 @@ void HTMLLinkElementImp::notify()
 
         dumpStyleSheet(std::cerr, styleSheet.self());
 
-        document->addStyleSheet(styleSheet);
+        if (WindowImp* view = document->getDefaultWindow())
+            view->setFlagsToBoxTree(1);
     }
     document->decrementLoadEventDelayCount();
 }

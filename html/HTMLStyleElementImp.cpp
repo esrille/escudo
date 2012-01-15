@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
 #include "css/CSSParser.h"
 #include "TextImp.h"
 #include "DocumentImp.h"
+#include "WindowImp.h"
 
 #include "Test.util.h"
 
@@ -38,8 +39,10 @@ void HTMLStyleElementImp::eval()
 
     dumpStyleSheet(std::cerr, styleSheet.self());
 
-    if (DocumentImp* document = getOwnerDocumentImp())
-        document->addStyleSheet(styleSheet);
+    if (DocumentImp* document = getOwnerDocumentImp()) {
+        if (WindowImp* view = document->getDefaultWindow())
+            view->setFlagsToBoxTree(1);
+    }
 }
 
 // Node

@@ -73,6 +73,7 @@ class ViewCSSImp
     StackingContext* stackingContexts;
     unsigned overflow;
 
+    std::list<CSSStyleSheetImp*> styleSheets;
     std::list<CounterImpPtr> counterList;
 
     float scrollWidth;

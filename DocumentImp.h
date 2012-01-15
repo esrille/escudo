@@ -103,7 +103,12 @@ public:
 
     void setReadyState(const std::u16string& readyState);
 
-    void addStyleSheet(stylesheets::StyleSheet sheet);
+    void clearStyleSheets() {
+        styleSheets.clear();
+    }
+    void addStyleSheet(stylesheets::StyleSheet sheet) {
+        styleSheets.push_back(sheet);
+    }
 
     void setURL(const std::u16string& url);
 
