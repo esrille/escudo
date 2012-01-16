@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
-    init(argc, argv);
+    init(&argc, argv);
 
     Document document(0);
 
@@ -63,7 +63,7 @@ int main(int argc, char** argv)
         std::cerr << "error: cannot open " << argv[1] << ".\n";
         return EXIT_FAILURE;
     }
-    getDOMImplementation()->setDefaultCSSStyleSheet(loadDefaultSheet(styleStream));
+    getDOMImplementation()->setDefaultCSSStyleSheet(loadStyleSheet(styleStream));
 
     std::ifstream htmlStream(argv[2]);
     if (!htmlStream) {

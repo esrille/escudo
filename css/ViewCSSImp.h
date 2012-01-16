@@ -65,6 +65,7 @@ class ViewCSSImp
 
     DocumentWindowPtr window;
     css::CSSStyleSheet defaultStyleSheet;
+    css::CSSStyleSheet userStyleSheet;
     std::map<Element, CSSStyleDeclarationPtr> map;
     std::map<Node, BlockLevelBoxPtr> floatMap;
     std::list<BlockLevelBox*> absoluteList;
@@ -93,7 +94,7 @@ class ViewCSSImp
     void findDeclarations(DeclarationSet& set, Element element, css::CSSRuleList list);
 
 public:
-    ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyleSheet);
+    ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyleSheet, css::CSSStyleSheet userStyleSheet = 0);
     ~ViewCSSImp();
 
     Document getDocument() const {

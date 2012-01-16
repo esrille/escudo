@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,11 +34,11 @@ html::Window window(0);
 int main(int argc, char* argv[])
 {
     if (argc < 3) {
-        std::cout << "usage : " << argv[0] << " default.css url\n";
+        std::cout << "usage : " << argv[0] << " default.css [user.css] url\n";
         return EXIT_FAILURE;
     }
 
-    init(argc, argv);
+    init(&argc, argv);
 
     // Load the default CSS file
     std::ifstream styleStream(argv[1]);
@@ -46,10 +46,20 @@ int main(int argc, char* argv[])
         std::cerr << "error: cannot open " << argv[1] << ".\n";
         return EXIT_FAILURE;
     }
-    getDOMImplementation()->setDefaultCSSStyleSheet(loadDefaultSheet(styleStream));
+    getDOMImplementation()->setDefaultCSSStyleSheet(loadStyleSheet(styleStream));
+
+    if (4 <= argc) {
+        // Load the user CSS file
+        std::ifstream styleStream(argv[2]);
+        if (!styleStream) {
+            std::cerr << "error: cannot open " << argv[2] << ".\n";
+            return EXIT_FAILURE;
+        }
+        getDOMImplementation()->setUserCSSStyleSheet(loadStyleSheet(styleStream));
+    }
 
     window = new WindowImp();
-    window.open(utfconv(argv[2]), u"_self", u"", true);
+    window.open(utfconv(argv[argc - 1]), u"_self", u"", true);
 
     glutMainLoop();
 

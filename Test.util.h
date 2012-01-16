@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ void dumpStyleSheet(std::ostream& result, org::w3c::dom::css::CSSStyleSheet shee
 
 void printComputedValues(org::w3c::dom::Node node, org::w3c::dom::bootstrap::ViewCSSImp* view, std::string indent = "");
 
-org::w3c::dom::css::CSSStyleSheet loadDefaultSheet(std::istream& stream);
+org::w3c::dom::css::CSSStyleSheet loadStyleSheet(std::istream& stream);
 void eval(org::w3c::dom::Node node);
 
 org::w3c::dom::Document loadDocument(std::istream& stream);
@@ -57,6 +57,6 @@ void display() __attribute__((weak));
 void keyboard(unsigned char key, int x, int y);
 void mouse(int button, int state, int x, int y);
 void timer(int value);
-void init(int argc, char* argv[]);
+void init(int* argc, char* argv[]);
 
 #endif  // TEST_UTIL_H

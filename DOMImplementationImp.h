@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 class DOMImplementationImp : public ObjectMixin<DOMImplementationImp>
 {
     css::CSSStyleSheet defaultCSSStyleSheet;
+    css::CSSStyleSheet userCSSStyleSheet;
 
 public:
     DOMImplementationImp();
@@ -38,6 +39,13 @@ public:
     }
     void setDefaultCSSStyleSheet(css::CSSStyleSheet sheet) {
         defaultCSSStyleSheet = sheet;
+    }
+
+    css::CSSStyleSheet getUserCSSStyleSheet() {
+        return userCSSStyleSheet;
+    }
+    void setUserCSSStyleSheet(css::CSSStyleSheet sheet) {
+        userCSSStyleSheet = sheet;
     }
 
     // DOMImplementation

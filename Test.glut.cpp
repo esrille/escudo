@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -174,9 +174,9 @@ void timer(int value)
     // TODO: do GC here or maybe in the idle proc
  }
 
-void init(int argc, char* argv[])
+void init(int* argc, char* argv[])
 {
-    glutInit(&argc, argv);
+    glutInit(argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
     glutInitWindowSize(816, 1056);
     glutCreateWindow(argv[0]);

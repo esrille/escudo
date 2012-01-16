@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,7 +107,7 @@ void printComputedValues(Node node, ViewCSSImp* view, std::string indent)
     }
 }
 
-css::CSSStyleSheet loadDefaultSheet(std::istream& stream)
+css::CSSStyleSheet loadStyleSheet(std::istream& stream)
 {
     CSSParser parser;
     CSSInputStream cssStream(stream, "utf-8");

@@ -42,9 +42,10 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
-ViewCSSImp::ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyleSheet) :
+ViewCSSImp::ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyleSheet, css::CSSStyleSheet userStyleSheet) :
     window(window),
     defaultStyleSheet(defaultStyleSheet),
+    userStyleSheet(userStyleSheet),
     stackingContexts(0),
     overflow(CSSOverflowValueImp::Auto),
     scrollWidth(0.0f),
@@ -135,6 +136,8 @@ void ViewCSSImp::cascade()
     styleSheets.clear();
     if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(defaultStyleSheet.self()))
         styleSheets.push_back(sheet);
+    if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(userStyleSheet.self()))
+        styleSheets.push_back(sheet);
     delete stackingContexts;
     stackingContexts = 0;
     cascade(document, 0);
@@ -197,7 +200,7 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle)
             style->specifyImportant(elementDecl);
         set.clear();
 
-        // TODO: process user normal declarations and user important declarations
+        // TODO: Support user important declarations
 
         style->compute(this, parentStyle, element);
     }

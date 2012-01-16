@@ -103,7 +103,7 @@ void WindowImp::refreshView()
 
     delete view;
 
-    view = new(std::nothrow) ViewCSSImp(window, getDOMImplementation()->getDefaultCSSStyleSheet());
+    view = new(std::nothrow) ViewCSSImp(window, getDOMImplementation()->getDefaultCSSStyleSheet(), getDOMImplementation()->getUserCSSStyleSheet());
     if (!view)
         return;
     view->cascade();
@@ -374,7 +374,7 @@ html::Window WindowImp::getSelf()
 
 Document WindowImp::getDocument()
 {
-    return window->getDocument();
+    return !window ? 0 : window->getDocument();
 }
 
 html::Location WindowImp::getLocation()
