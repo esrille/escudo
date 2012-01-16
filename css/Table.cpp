@@ -761,7 +761,18 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
 
 float TableWrapperBox::shrinkTo()
 {
-    return getTotalWidth();
+    float min = width;
+    min += borderLeft + paddingLeft + paddingRight + borderRight;
+    if (style) {
+        if (!style->marginLeft.isAuto())
+            min += style->marginLeft.getPx();
+        if (!style->marginRight.isAuto()) {
+            float m  = style->marginRight.getPx();
+            if (0.0f < m)
+                min += m;
+        }
+    }
+    return min;
 }
 
 void TableWrapperBox::dump(std::string indent)
