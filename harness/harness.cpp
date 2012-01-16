@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ int processOutput(std::istream& stream, std::string& result)
     return 0;
 }
 
-int runTest(int argc, char* argv[], std::string url, std::string& result)
+int runTest(int argc, char* argv[], std::string userStyle, std::string url, std::string& result)
 {
     int pipefd[2];
     pipe(pipefd);
@@ -69,9 +69,12 @@ int runTest(int argc, char* argv[], std::string url, std::string& result)
         close(1);
         dup(pipefd[1]);
         close(pipefd[0]);
-
+        int argi = argc - 1;
+        if (!userStyle.empty())
+            argv[argi++] = strdup(userStyle.c_str());
         url = "http://localhost:8000/" + url;
-        argv[argc - 1] = strdup(url.c_str());
+        argv[argi++] = strdup(url.c_str());
+        argv[argi] = 0;
         execvp(argv[0], argv);
         exit(EXIT_FAILURE);
     }
@@ -168,14 +171,15 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
-    char* args[argc - argi + 1];
+    char* args[argc - argi + 2];
     for (int i = 2; i < argc; ++i)
         args[i - 2] = argv[i + argi - 1];
-    args[argc - argi] = 0;
+    args[argc - argi] = args[argc - argi + 1] = 0;
 
     std::string result;
     std::string url;
     std::string undo;
+    std::string userStyle;
     bool redo = false;
     while (data) {
         if (result == "undo") {
@@ -187,7 +191,18 @@ int main(int argc, char* argv[])
         } else {
             std::string line;
             std::getline(data, line);
-            if (line.empty() || line[0] == '#' || line == "testname    result  comment") {
+            if (line.empty() || line == "testname    result  comment") {
+                report << line << '\n';
+                continue;
+            }
+            if (line[0] == '#') {
+                if (line.compare(1, 9, "userstyle") == 0) {
+                    if (10 < line.length()) {
+                        std::stringstream s(line.substr(10), std::stringstream::in);
+                        s >> userStyle;
+                    } else
+                        userStyle.clear();
+                }
                 report << line << '\n';
                 continue;
             }
@@ -218,7 +233,7 @@ int main(int argc, char* argv[])
                 break;
             // FALL THROUGH
         default:
-            pid = runTest(argc - argi, args, url, output);
+            pid = runTest(argc - argi, args, userStyle, url, output);
             break;
         }
 
