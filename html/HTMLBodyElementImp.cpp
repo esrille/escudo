@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,17 @@
 #include <org/w3c/dom/html/Window.h>
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
+
+void HTMLBodyElementImp::eval()
+{
+    HTMLElementImp::eval();
+
+    Nullable<std::u16string> attr = getAttribute(u"background");
+    if (attr.hasValue()) {
+        css::CSSStyleDeclaration style = getStyle();
+        style.setBackgroundImage(u"url(" + attr.value() + u")");
+    }
+}
 
 // Node
 Node HTMLBodyElementImp::cloneNode(bool deep)
