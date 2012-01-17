@@ -48,11 +48,13 @@ class ViewCSSImp
         unsigned priority;
         CSSStyleDeclarationImp* decl;
         unsigned pseudoElementID;
+        bool userStyle;
 
-        PrioritizedDeclaration(unsigned priority, CSSStyleDeclarationImp* decl, unsigned pseudoElementID) :
+        PrioritizedDeclaration(unsigned priority, CSSStyleDeclarationImp* decl, unsigned pseudoElementID, bool userStyle) :
             priority(priority),
             decl(decl),
-            pseudoElementID(pseudoElementID)
+            pseudoElementID(pseudoElementID),
+            userStyle(userStyle)
         {
         }
         bool operator <(const PrioritizedDeclaration& decl) const
@@ -91,7 +93,7 @@ class ViewCSSImp
     Retained<EventListenerImp> mutationListener;
     void handleMutation(events::Event event);
 
-    void findDeclarations(DeclarationSet& set, Element element, css::CSSRuleList list);
+    void findDeclarations(DeclarationSet& set, Element element, css::CSSRuleList list, bool userStyle);
 
 public:
     ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyleSheet, css::CSSStyleSheet userStyleSheet = 0);
