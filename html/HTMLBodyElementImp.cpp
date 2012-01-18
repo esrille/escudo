@@ -24,6 +24,7 @@ void HTMLBodyElementImp::eval()
 {
     HTMLElementImp::eval();
     HTMLElementImp::evalBackground(this);
+    HTMLElementImp::evalBgcolor(this);
 }
 
 // Node

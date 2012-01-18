@@ -259,6 +259,10 @@ public:
     static bool toPxOrPercentage(std::u16string& value);  // for width, heigth, etc.
 
     static void evalBackground(HTMLElementImp* element);
+    static void evalColor(HTMLElementImp* element, const std::u16string& attr, const std::u16string& prop);
+    static void evalBgcolor(HTMLElementImp* element) {
+        evalColor(element, u"bgcolor", u"background-color");
+    }
 };
 
 }}}}  // org::w3c::dom::bootstrap

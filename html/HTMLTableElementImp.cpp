@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,8 @@ namespace bootstrap
 void HTMLTableElementImp::eval()
 {
     HTMLElementImp::eval();
+    HTMLElementImp::evalBackground(this);
+    HTMLElementImp::evalBgcolor(this);
 
     Nullable<std::u16string> attr = getAttribute(u"cellspacing");
     if (attr.hasValue()) {

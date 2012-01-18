@@ -1215,4 +1215,13 @@ void HTMLElementImp::evalBackground(HTMLElementImp* element)
     }
 }
 
+void HTMLElementImp::evalColor(HTMLElementImp* element, const std::u16string& attr, const std::u16string& prop)
+{
+    Nullable<std::u16string> value = element->getAttribute(attr);
+    if (value.hasValue()) {
+        css::CSSStyleDeclaration style = element->getStyle();
+        style.setProperty(prop, value.value(), u"non-css");
+    }
+}
+
 }}}}  // org::w3c::dom::bootstrap
