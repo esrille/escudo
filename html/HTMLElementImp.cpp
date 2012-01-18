@@ -1224,4 +1224,17 @@ void HTMLElementImp::evalColor(HTMLElementImp* element, const std::u16string& at
     }
 }
 
+void HTMLElementImp::evalBorder(HTMLElementImp* element)
+{
+    Nullable<std::u16string> value = element->getAttribute(u"border");
+    if (value.hasValue()) {
+        std::u16string px = value.value();
+        if (toPx(px)) {
+            css::CSSStyleDeclaration style = element->getStyle();
+            style.setProperty(u"border-width", px, u"non-css");
+            style.setProperty(u"border-style", u"solid", u"non-css");
+        }
+    }
+}
+
 }}}}  // org::w3c::dom::bootstrap

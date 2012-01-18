@@ -263,6 +263,7 @@ public:
     static void evalBgcolor(HTMLElementImp* element) {
         evalColor(element, u"bgcolor", u"background-color");
     }
+    static void evalBorder(HTMLElementImp* element);
 };
 
 }}}}  // org::w3c::dom::bootstrap
