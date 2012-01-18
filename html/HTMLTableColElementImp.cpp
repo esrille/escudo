@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,12 @@ namespace dom
 {
 namespace bootstrap
 {
+
+void HTMLTableColElementImp::eval()
+{
+    HTMLElementImp::eval();
+    HTMLElementImp::evalWidth(this);
+}
 
 unsigned int HTMLTableColElementImp::getSpan()
 {

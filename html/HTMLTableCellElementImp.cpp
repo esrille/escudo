@@ -34,24 +34,8 @@ void HTMLTableCellElementImp::eval()
     HTMLElementImp::eval();
     HTMLElementImp::evalBackground(this);
     HTMLElementImp::evalBgcolor(this);
-
-    Nullable<std::u16string> attr = getAttribute(u"width");
-    if (attr.hasValue()) {
-        std::u16string value = attr.value();
-        if (toPxOrPercentage(value)) {
-            css::CSSStyleDeclaration style = getStyle();
-            style.setWidth(value);
-        }
-    }
-
-    attr = getAttribute(u"height");
-    if (attr.hasValue()) {
-        std::u16string value = attr.value();
-        if (toPxOrPercentage(value)) {
-            css::CSSStyleDeclaration style = getStyle();
-            style.setHeight(value);
-        }
-    }
+    HTMLElementImp::evalHeight(this);
+    HTMLElementImp::evalWidth(this);
 }
 
 unsigned int HTMLTableCellElementImp::getColSpan()

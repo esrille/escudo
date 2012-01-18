@@ -29,6 +29,7 @@ void HTMLHRElementImp::eval()
 {
     HTMLElementImp::eval();
     HTMLElementImp::evalColor(this, u"color", u"border-color");
+    HTMLElementImp::evalWidth(this);
 }
 
 std::u16string HTMLHRElementImp::getAlign()

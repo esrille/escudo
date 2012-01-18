@@ -264,6 +264,13 @@ public:
         evalColor(element, u"bgcolor", u"background-color");
     }
     static void evalBorder(HTMLElementImp* element);
+    static void evalPxOrPercentage(HTMLElementImp* element, const std::u16string& attr, const std::u16string& prop);
+    static void evalHeight(HTMLElementImp* element) {
+        evalPxOrPercentage(element, u"height", u"height");
+    }
+    static void evalWidth(HTMLElementImp* element) {
+        evalPxOrPercentage(element, u"width", u"width");
+    }
 };
 
 }}}}  // org::w3c::dom::bootstrap

@@ -1224,6 +1224,18 @@ void HTMLElementImp::evalColor(HTMLElementImp* element, const std::u16string& at
     }
 }
 
+void HTMLElementImp::evalPxOrPercentage(HTMLElementImp* element, const std::u16string& attr, const std::u16string& prop)
+{
+    Nullable<std::u16string> value = element->getAttribute(attr);
+    if (value.hasValue()) {
+        std::u16string length = value.value();
+        if (toPxOrPercentage(length)) {
+            css::CSSStyleDeclaration style = element->getStyle();
+            style.setProperty(prop, length, u"non-css");
+        }
+    }
+}
+
 void HTMLElementImp::evalBorder(HTMLElementImp* element)
 {
     Nullable<std::u16string> value = element->getAttribute(u"border");

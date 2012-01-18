@@ -32,6 +32,7 @@ void HTMLTableElementImp::eval()
     HTMLElementImp::eval();
     HTMLElementImp::evalBackground(this);
     HTMLElementImp::evalBgcolor(this);
+    HTMLElementImp::evalWidth(this);
 
     Nullable<std::u16string> attr = getAttribute(u"cellspacing");
     if (attr.hasValue()) {
