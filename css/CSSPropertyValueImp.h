@@ -1573,6 +1573,7 @@ public:
 // normal | <number> | <length> | <percentage>
 class CSSLineHeightValueImp : public CSSPropertyValueImp
 {
+    CSSNumericValue computed;
 protected:
     CSSNumericValue value;
 public:
@@ -1588,6 +1589,7 @@ public:
             value.setValue(term);
         else
             value.setIndex(Normal);
+        computed = value;
         return *this;
     }
     bool isNormal() const {
@@ -1605,7 +1607,8 @@ public:
         return value != lineHeight.value;
     }
     void specify(const CSSLineHeightValueImp& specified) {
-        value.specify(specified.value);
+        value.specify(specified.computed);
+        computed = value;
     }
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style);
@@ -1613,7 +1616,9 @@ public:
         return value.getPx();
     }
     CSSLineHeightValueImp() :
-        value(Normal) {
+        value(Normal),
+        computed(Normal)
+    {
     }
 };
 

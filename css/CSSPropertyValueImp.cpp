@@ -1470,6 +1470,7 @@ void CSSLineHeightValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* st
         break;
     default:
         value.resolve(view, style, style->fontSize.getPx());
+        computed = value;
         break;
     }
 }

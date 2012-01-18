@@ -623,7 +623,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                     if (style->display.isInline())
                         firstLineStyle->specify(style);
                     firstLineStyle->compute(view, getStyle(), 0);
-                    // TODO: resolve?
+                    firstLineStyle->resolve(view, this);
                 }
             }
             if (!firstLetterStyles.empty()) {
@@ -634,7 +634,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                     if (style->display.isInline() && style->getPseudoElementSelectorType() == CSSPseudoElementSelector::NonPseudo)
                         firstLetterStyle->specify(style);
                     firstLetterStyle->compute(view, firstLineStyle.get() ? firstLineStyle.get() : style, 0);
-                    // TODO: resolve?
+                    firstLetterStyle->resolve(view, this);
                 }
             }
             if (firstLetterStyle) {
