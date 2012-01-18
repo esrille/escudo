@@ -163,7 +163,7 @@ start:
                         }
 
     "!" w 'important'   {
-                            CSSlval.text = { u"!important", 10 };
+                            CSSlval.text = { u"important", 9 };
                             return IMPORTANT_SYM;
                         }
 

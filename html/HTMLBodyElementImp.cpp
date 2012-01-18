@@ -27,7 +27,7 @@ void HTMLBodyElementImp::eval()
     Nullable<std::u16string> attr = getAttribute(u"background");
     if (attr.hasValue()) {
         css::CSSStyleDeclaration style = getStyle();
-        style.setBackgroundImage(u"url(" + attr.value() + u")");
+        style.setProperty(u"background-image", u"url(" + attr.value() + u")", u"non-css");
     }
 }
 

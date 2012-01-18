@@ -418,6 +418,7 @@ namespace
 
 const char16_t* pseudoElementNames[] = {
     u"",
+    u"non-css",     // ES extension
     u"first-line",
     u"first-letter",
     u"before",

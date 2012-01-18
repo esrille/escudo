@@ -134,15 +134,15 @@ void ViewCSSImp::cascade()
 
     map.clear();
     styleSheets.clear();
-    if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(defaultStyleSheet.self()))
-        styleSheets.push_back(sheet);
-    if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(userStyleSheet.self()))
-        styleSheets.push_back(sheet);
     delete stackingContexts;
     stackingContexts = 0;
     cascade(document, 0);
     if (DocumentImp* imp = dynamic_cast<DocumentImp*>(document.self())) {
         imp->clearStyleSheets();
+        if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(defaultStyleSheet.self()))
+            imp->addStyleSheet(sheet);
+        if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(userStyleSheet.self()))
+            imp->addStyleSheet(sheet);
         for (auto i = styleSheets.begin(); i != styleSheets.end(); ++i)
             imp->addStyleSheet(*i);
     }
@@ -176,12 +176,23 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle)
         }
 
         CSSStyleDeclarationImp* elementDecl = 0;
-        if (html::HTMLElement ::hasInstance(element)) {
+        if (html::HTMLElement::hasInstance(element)) {
             html::HTMLElement htmlElement = interface_cast<html::HTMLElement>(element);
             elementDecl = dynamic_cast<CSSStyleDeclarationImp*>(htmlElement.getStyle().self());
         }
 
         DeclarationSet set;
+        if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(defaultStyleSheet.self()))
+            findDeclarations(set, element, sheet->getCssRules(), false);
+        if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(userStyleSheet.self()))
+            findDeclarations(set, element, sheet->getCssRules(), true);
+        if (elementDecl) {
+            CSSStyleDeclarationImp* nonCSS = elementDecl->getPseudoElementStyle(CSSPseudoElementSelector::NonCSS);
+            if (nonCSS) {
+                PrioritizedDeclaration decl(0, nonCSS, CSSPseudoElementSelector::NonPseudo, false);
+                set.insert(decl);
+            }
+        }
         for (auto i = styleSheets.begin(); i != styleSheets.end(); ++i) {
             CSSStyleSheetImp* sheet = *i;
             findDeclarations(set, element, sheet->getCssRules(), sheet == dynamic_cast<CSSStyleSheetImp*>(userStyleSheet.self()));

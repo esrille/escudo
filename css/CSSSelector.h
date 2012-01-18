@@ -379,6 +379,7 @@ public:
     {
         Unknown = -1,
         NonPseudo,
+        NonCSS,     // translated, non-CSS presentational hints
         FirstLine,
         FirstLetter,
         Before,

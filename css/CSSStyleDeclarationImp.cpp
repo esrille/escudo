@@ -550,7 +550,7 @@ int CSSStyleDeclarationImp::setProperty(int id, CSSParserExpr* expr, const std::
             return Unknown;
         resetInherit(id);
     }
-    if (prio == u"!important")
+    if (prio == u"important")
         setImportant(id);
     else
         setProperty(id);
@@ -1635,6 +1635,12 @@ void CSSStyleDeclarationImp::setProperty(Nullable<std::u16string> property, Null
 
 void CSSStyleDeclarationImp::setProperty(Nullable<std::u16string> property, Nullable<std::u16string> value, Nullable<std::u16string> priority)
 {
+    if (priority.hasValue() && priority.value() == u"non-css") {  // ES extension
+        if (CSSStyleDeclarationImp* nonCSS = createPseudoElementStyle(CSSPseudoElementSelector::NonCSS))
+            nonCSS->setProperty(property, value);
+        return;
+    }
+
     if (!property.hasValue())
         return;
     std::u16string propertyName = property.value();
