@@ -23,12 +23,7 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 void HTMLBodyElementImp::eval()
 {
     HTMLElementImp::eval();
-
-    Nullable<std::u16string> attr = getAttribute(u"background");
-    if (attr.hasValue()) {
-        css::CSSStyleDeclaration style = getStyle();
-        style.setProperty(u"background-image", u"url(" + attr.value() + u")", u"non-css");
-    }
+    HTMLElementImp::evalBackground(this);
 }
 
 // Node

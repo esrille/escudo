@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1204,6 +1204,15 @@ bool HTMLElementImp::toPxOrPercentage(std::u16string& value)
     if (!s[1] && 1 < value.length())
         return true;
     return false;
+}
+
+void HTMLElementImp::evalBackground(HTMLElementImp* element)
+{
+    Nullable<std::u16string> attr = element->getAttribute(u"background");
+    if (attr.hasValue()) {
+        css::CSSStyleDeclaration style = element->getStyle();
+        style.setProperty(u"background-image", u"url(" + attr.value() + u")", u"non-css");
+    }
 }
 
 }}}}  // org::w3c::dom::bootstrap
