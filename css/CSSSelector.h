@@ -43,7 +43,6 @@ class CSSSpecificity
     unsigned char a;
     unsigned char b;
     unsigned char c;
-    unsigned char d;
 
     static unsigned char sum(unsigned char x, unsigned char y) {
         unsigned value = x + y;
@@ -53,24 +52,23 @@ public:
     CSSSpecificity() :
         a(0),
         b(0),
-        c(0),
-        d(0) {
+        c(0)
+    {
     }
-    CSSSpecificity(unsigned char a, unsigned char b, unsigned char c, unsigned char d) :
+    CSSSpecificity(unsigned char a, unsigned char b, unsigned char c) :
         a(a),
         b(b),
-        c(c),
-        d(d) {
+        c(c)
+    {
     }
     operator unsigned() const {
-        return (a << 24) | (b << 16) | (c << 8) | d;
+        return (a << 16) | (b << 8) | c;
     }
     CSSSpecificity& operator +=(const CSSSpecificity& value)
     {
         a = sum(a, value.a);
         b = sum(b, value.b);
         c = sum(c, value.c);
-        d = sum(d, value.d);
         return *this;
     }
 };
@@ -175,7 +173,7 @@ public:
         text += u'#' + CSSSerializeIdentifier(name);
     }
     virtual CSSSpecificity getSpecificity() {
-        return CSSSpecificity(0, 1, 0, 0);
+        return CSSSpecificity(1, 0, 0);
     }
     virtual bool match(Element element, ViewCSSImp* view);
     virtual bool isValid() const {
@@ -194,7 +192,7 @@ public:
         text += u'.' + CSSSerializeIdentifier(name);
     }
     virtual CSSSpecificity getSpecificity() {
-            return CSSSpecificity(0, 0, 1, 0);
+            return CSSSpecificity(0, 1, 0);
     }
     virtual bool match(Element element, ViewCSSImp* view);
     virtual bool isValid() const {
@@ -245,7 +243,7 @@ public:
     }
     virtual void serialize(std::u16string& text);
     virtual CSSSpecificity getSpecificity() {
-            return CSSSpecificity(0, 0, 1, 0);
+            return CSSSpecificity(0, 1, 0);
     }
     virtual bool match(Element element, ViewCSSImp* view);
 };
@@ -325,7 +323,7 @@ public:
         CSSPseudoSelector::serialize(text);
     }
     virtual CSSSpecificity getSpecificity() {
-        return CSSSpecificity(0, 0, 1, 0);
+        return CSSSpecificity(0, 1, 0);
     }
     virtual bool match(Element element, ViewCSSImp* view);
     virtual bool isValid() const {
@@ -395,7 +393,7 @@ public:
         CSSPseudoSelector::serialize(text);
     }
     virtual CSSSpecificity getSpecificity() {
-        return CSSSpecificity(0, 0, 0, 1);
+        return CSSSpecificity(0, 0, 1);
     }
     virtual bool match(Element element, ViewCSSImp* view) {
         return id != Unknown;

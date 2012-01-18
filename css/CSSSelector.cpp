@@ -148,7 +148,7 @@ void CSSNthPseudoClassSelector::serialize(std::u16string& text)
 CSSSpecificity CSSPrimarySelector::getSpecificity() {
     CSSSpecificity specificity;
     if (name != u"*")
-        specificity += CSSSpecificity(0, 0, 0, 1);
+        specificity += CSSSpecificity(0, 0, 1);
     for (auto i = chain.begin(); i != chain.end(); ++i)
         specificity += (*i)->getSpecificity();
     return specificity;
