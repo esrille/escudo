@@ -1224,6 +1224,18 @@ void HTMLElementImp::evalColor(HTMLElementImp* element, const std::u16string& at
     }
 }
 
+void HTMLElementImp::evalPx(HTMLElementImp* element, const std::u16string& attr, const std::u16string& prop)
+{
+    Nullable<std::u16string> value = element->getAttribute(attr);
+    if (value.hasValue()) {
+        std::u16string length = value.value();
+        if (toPx(length)) {
+            css::CSSStyleDeclaration style = element->getStyle();
+            style.setProperty(prop, length, u"non-css");
+        }
+    }
+}
+
 void HTMLElementImp::evalPxOrPercentage(HTMLElementImp* element, const std::u16string& attr, const std::u16string& prop)
 {
     Nullable<std::u16string> value = element->getAttribute(attr);
@@ -1249,9 +1261,9 @@ void HTMLElementImp::evalBorder(HTMLElementImp* element)
     }
 }
 
-void HTMLElementImp::evalHspace(HTMLElementImp* element)
+void HTMLElementImp::evalHspace(HTMLElementImp* element, const std::u16string& prop)
 {
-    Nullable<std::u16string> value = element->getAttribute(u"hspace");
+    Nullable<std::u16string> value = element->getAttribute(prop);
     if (value.hasValue()) {
         std::u16string px = value.value();
         if (toPx(px)) {
@@ -1262,9 +1274,9 @@ void HTMLElementImp::evalHspace(HTMLElementImp* element)
     }
 }
 
-void HTMLElementImp::evalVspace(HTMLElementImp* element)
+void HTMLElementImp::evalVspace(HTMLElementImp* element, const std::u16string& prop)
 {
-    Nullable<std::u16string> value = element->getAttribute(u"vspace");
+    Nullable<std::u16string> value = element->getAttribute(prop);
     if (value.hasValue()) {
         std::u16string px = value.value();
         if (toPx(px)) {

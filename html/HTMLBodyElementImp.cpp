@@ -26,6 +26,12 @@ void HTMLBodyElementImp::eval()
     HTMLElementImp::evalBackground(this);
     HTMLElementImp::evalBgcolor(this);
     HTMLElementImp::evalColor(this, u"text", u"color");
+    HTMLElementImp::evalPx(this, u"margintop", u"margin-top");
+    HTMLElementImp::evalPx(this, u"marginright", u"margin-right");
+    HTMLElementImp::evalPx(this, u"marginbottom", u"margin-bottom");
+    HTMLElementImp::evalPx(this, u"marginleft", u"margin-left");
+    HTMLElementImp::evalMarginHeight(this);
+    HTMLElementImp::evalMarginWidth(this);
 }
 
 // Node

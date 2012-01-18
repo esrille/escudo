@@ -264,6 +264,7 @@ public:
         evalColor(element, u"bgcolor", u"background-color");
     }
     static void evalBorder(HTMLElementImp* element);
+    static void evalPx(HTMLElementImp* element, const std::u16string& attr, const std::u16string& prop);
     static void evalPxOrPercentage(HTMLElementImp* element, const std::u16string& attr, const std::u16string& prop);
     static void evalHeight(HTMLElementImp* element) {
         evalPxOrPercentage(element, u"height", u"height");
@@ -271,8 +272,14 @@ public:
     static void evalWidth(HTMLElementImp* element) {
         evalPxOrPercentage(element, u"width", u"width");
     }
-    static void evalHspace(HTMLElementImp* element);
-    static void evalVspace(HTMLElementImp* element);
+    static void evalHspace(HTMLElementImp* element, const std::u16string& prop = u"hspace");
+    static void evalVspace(HTMLElementImp* element, const std::u16string& prop = u"vspace");
+    static void evalMarginHeight(HTMLElementImp* element) {
+        evalVspace(element, u"marginheight");
+    }
+    static void evalMarginWidth(HTMLElementImp* element) {
+        evalHspace(element, u"marginwidth");
+    }
 };
 
 }}}}  // org::w3c::dom::bootstrap

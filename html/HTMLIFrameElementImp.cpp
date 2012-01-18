@@ -54,6 +54,8 @@ void HTMLIFrameElementImp::eval()
     HTMLElementImp::evalWidth(this);
     HTMLElementImp::evalHspace(this);
     HTMLElementImp::evalVspace(this);
+    HTMLElementImp::evalMarginHeight(this);
+    HTMLElementImp::evalMarginWidth(this);
 }
 
 //
