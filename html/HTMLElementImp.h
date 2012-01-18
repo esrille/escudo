@@ -271,6 +271,8 @@ public:
     static void evalWidth(HTMLElementImp* element) {
         evalPxOrPercentage(element, u"width", u"width");
     }
+    static void evalHspace(HTMLElementImp* element);
+    static void evalVspace(HTMLElementImp* element);
 };
 
 }}}}  // org::w3c::dom::bootstrap

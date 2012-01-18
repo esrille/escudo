@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,6 +91,8 @@ HTMLInputElementImp::HTMLInputElementImp(HTMLInputElementImp* org, bool deep) :
 void HTMLInputElementImp::eval()
 {
     HTMLElementImp::eval();
+    HTMLElementImp::evalHspace(this);
+    HTMLElementImp::evalVspace(this);
 
     setType(getAttribute(u"type"));
 }

@@ -47,6 +47,15 @@ HTMLIFrameElementImp::~HTMLIFrameElementImp()
 {
 }
 
+void HTMLIFrameElementImp::eval()
+{
+    HTMLElementImp::eval();
+    HTMLElementImp::evalHeight(this);
+    HTMLElementImp::evalWidth(this);
+    HTMLElementImp::evalHspace(this);
+    HTMLElementImp::evalVspace(this);
+}
+
 //
 // HTMLIFrameElement
 //

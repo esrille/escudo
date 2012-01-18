@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,6 +42,12 @@ class HTMLIFrameElementImp : public ObjectMixin<HTMLIFrameElementImp, HTMLElemen
     html::Window window;
 
 public:
+    HTMLIFrameElementImp(DocumentImp* ownerDocument);
+    HTMLIFrameElementImp(HTMLIFrameElementImp* org, bool deep);
+    ~HTMLIFrameElementImp();
+
+    void eval();
+
     // HTMLIFrameElement
     std::u16string getSrc();
     void setSrc(std::u16string src);
@@ -81,9 +87,6 @@ public:
     {
         return html::HTMLIFrameElement::getMetaData();
     }
-    HTMLIFrameElementImp(DocumentImp* ownerDocument);
-    HTMLIFrameElementImp(HTMLIFrameElementImp* org, bool deep);
-    ~HTMLIFrameElementImp();
 };
 
 }

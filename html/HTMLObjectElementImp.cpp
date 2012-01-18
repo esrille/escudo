@@ -29,6 +29,10 @@ void HTMLObjectElementImp::eval()
 {
     HTMLElementImp::eval();
     HTMLElementImp::evalBorder(this);
+    HTMLElementImp::evalHeight(this);
+    HTMLElementImp::evalWidth(this);
+    HTMLElementImp::evalHspace(this);
+    HTMLElementImp::evalVspace(this);
 }
 
 std::u16string HTMLObjectElementImp::getData()

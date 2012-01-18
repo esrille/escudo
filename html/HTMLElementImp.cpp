@@ -1249,4 +1249,30 @@ void HTMLElementImp::evalBorder(HTMLElementImp* element)
     }
 }
 
+void HTMLElementImp::evalHspace(HTMLElementImp* element)
+{
+    Nullable<std::u16string> value = element->getAttribute(u"hspace");
+    if (value.hasValue()) {
+        std::u16string px = value.value();
+        if (toPx(px)) {
+            css::CSSStyleDeclaration style = element->getStyle();
+            style.setProperty(u"margin-left", px, u"non-css");
+            style.setProperty(u"margin-right", px, u"non-css");
+        }
+    }
+}
+
+void HTMLElementImp::evalVspace(HTMLElementImp* element)
+{
+    Nullable<std::u16string> value = element->getAttribute(u"vspace");
+    if (value.hasValue()) {
+        std::u16string px = value.value();
+        if (toPx(px)) {
+            css::CSSStyleDeclaration style = element->getStyle();
+            style.setProperty(u"margin-top", px, u"non-css");
+            style.setProperty(u"margin-bottom", px, u"non-css");
+        }
+    }
+}
+
 }}}}  // org::w3c::dom::bootstrap

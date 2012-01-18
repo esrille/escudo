@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -123,6 +123,7 @@ layOutReplacedElement(ViewCSSImp* view, Box* replaced, Element element, CSSStyle
         }
     } else if (tag == u"iframe") {
         html::HTMLIFrameElement iframe = interface_cast<html::HTMLIFrameElement>(element);
+        // TODO: Use width and height given by CSS.
         replaced->width = CSSTokenizer::parseInt(iframe.getWidth().c_str(), iframe.getWidth().size());
         replaced->height = CSSTokenizer::parseInt(iframe.getHeight().c_str(), iframe.getHeight().size());
         html::Window contentWindow = iframe.getContentWindow();
