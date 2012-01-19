@@ -43,6 +43,7 @@
 #include "html/HTMLEmbedElementImp.h"
 #include "html/HTMLFieldSetElementImp.h"
 #include "html/HTMLFormElementImp.h"
+#include "html/HTMLFontElementImp.h"
 #include "html/HTMLHeadElementImp.h"
 #include "html/HTMLHeadingElementImp.h"
 #include "html/HTMLHRElementImp.h"
@@ -414,10 +415,10 @@ Element DocumentImp::createElement(std::u16string localName)
         return new(std::nothrow) HTMLMenuElementImp(this);
 
     // Deprecated elements
-    if (localName == u"center") {  // shorthand for DIV align=center
-        HTMLDivElementImp* div = new(std::nothrow) HTMLDivElementImp(this, localName);
-        return div;
-    }
+    if (localName == u"center")   // shorthand for DIV align=center
+        return new(std::nothrow) HTMLDivElementImp(this, localName);
+    if (localName == u"font")
+        return new(std::nothrow) HTMLFontElementImp(this);
 
     return new(std::nothrow) HTMLUnknownElementImp(this, localName);
 }

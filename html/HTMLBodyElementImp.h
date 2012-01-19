@@ -27,6 +27,13 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 class HTMLBodyElementImp : public ObjectMixin<HTMLBodyElementImp, HTMLElementImp>
 {
 public:
+    HTMLBodyElementImp(DocumentImp* ownerDocument) :
+        ObjectMixin(ownerDocument, u"body")
+    {}
+    HTMLBodyElementImp(HTMLBodyElementImp* org, bool deep) :
+        ObjectMixin(org, deep)
+    {}
+
     virtual void eval();
 
     // Node
@@ -91,13 +98,6 @@ public:
     static const char* const getMetaData()
     {
         return html::HTMLBodyElement::getMetaData();
-    }
-
-    HTMLBodyElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"body") {
-    }
-    HTMLBodyElementImp(HTMLBodyElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
     }
 };
 
