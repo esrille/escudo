@@ -599,6 +599,15 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
         }
         if (!psuedoChecked && getFirstChild() == context->lineBox) {
             psuedoChecked  = true;
+
+            bool isFirstLetter = true;
+            for (Box* i = context->lineBox->getFirstChild(); i; i = i->getNextSibling()) {
+                if (dynamic_cast<InlineLevelBox*>(i)) {
+                    isFirstLetter = false;
+                    break;
+                }
+            }
+
             // The current line box is the 1st line of this block box.
             // style to use can be a pseudo element styles from any ancestor elements.
             // Note the :first-line, first-letter pseudo-elements can only be attached to a block container element.
@@ -609,9 +618,11 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                 if (CSSStyleDeclarationImp* s = box->getStyle()) {
                     if (CSSStyleDeclarationImp* p = s->getPseudoElementStyle(CSSPseudoElementSelector::FirstLine))
                         firstLineStyles.push_front(p);
-                    if (!context->lineBox->hasChildBoxes()) {
+                    if (isFirstLetter) {
                         if (CSSStyleDeclarationImp* p = s->getPseudoElementStyle(CSSPseudoElementSelector::FirstLetter))
                             firstLetterStyles.push_front(p);
+                        if (s->getPseudoElementSelectorType() == CSSPseudoElementSelector::Marker)
+                            isFirstLetter = false;
                     }
                 }
                 Box* parent = box->getParentBox();
