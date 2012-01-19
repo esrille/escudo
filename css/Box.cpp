@@ -541,6 +541,13 @@ bool isAtRightEdge(Element& element, Node& node)
 
 }
 
+void BlockLevelBox::setActiveStyle(ViewCSSImp* view, CSSStyleDeclarationImp*& activeStyle, CSSStyleDeclarationImp* style, FontTexture*& font, float& point)
+{
+    activeStyle = style;
+    font = activeStyle->getFontTexture();
+    point = view->getPointFromPx(activeStyle->fontSize.getPx());
+}
+
 void BlockLevelBox::nextLine(ViewCSSImp* view, FormattingContext* context, CSSStyleDeclarationImp*& activeStyle,
                              CSSStyleDeclarationPtr& firstLetterStyle, CSSStyleDeclarationPtr& firstLineStyle,
                              CSSStyleDeclarationImp* style, FontTexture*& font, float& point)
@@ -548,18 +555,14 @@ void BlockLevelBox::nextLine(ViewCSSImp* view, FormattingContext* context, CSSSt
     if (firstLetterStyle) {
         firstLetterStyle = 0;
         if (firstLineStyle)
-            activeStyle = firstLineStyle.get();
+            setActiveStyle(view, activeStyle, firstLineStyle.get(), font, point);
         else
-            activeStyle = style;
-        font = activeStyle->getFontTexture();
-        point = view->getPointFromPx(activeStyle->fontSize.getPx());
+            setActiveStyle(view, activeStyle, style, font, point);
     } else {
         context->nextLine(view, this);
         if (firstLineStyle) {
             firstLineStyle = 0;
-            activeStyle = style;
-            font = activeStyle->getFontTexture();
-            point = view->getPointFromPx(activeStyle->fontSize.getPx());
+            setActiveStyle(view, activeStyle, style, font, point);
         }
     }
 }
@@ -581,10 +584,11 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
     bool psuedoChecked = isAnonymous() && getParentBox()->getFirstChild() != this;
     CSSStyleDeclarationPtr firstLineStyle;
     CSSStyleDeclarationPtr firstLetterStyle;
-    CSSStyleDeclarationImp* activeStyle = style;
+    CSSStyleDeclarationImp* activeStyle;
+    FontTexture* font;
+    float point;
+    setActiveStyle(view, activeStyle, style, font, point);
 
-    FontTexture* font = activeStyle->getFontTexture();
-    float point = view->getPointFromPx(activeStyle->fontSize.getPx());
     size_t position = 0;
     for (;;) {
         if (context->atLineHead && discardable && style->processLineHeadWhiteSpace(data) == 0)
@@ -637,15 +641,10 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                     firstLetterStyle->resolve(view, this);
                 }
             }
-            if (firstLetterStyle) {
-                activeStyle = firstLetterStyle.get();
-                font = activeStyle->getFontTexture();
-                point = view->getPointFromPx(activeStyle->fontSize.getPx());
-            } else if (firstLineStyle) {
-                activeStyle = firstLineStyle.get();
-                font = activeStyle->getFontTexture();
-                point = view->getPointFromPx(activeStyle->fontSize.getPx());
-            }
+            if (firstLetterStyle)
+                setActiveStyle(view, activeStyle, firstLetterStyle.get(), font, point);
+            else if (firstLineStyle)
+                setActiveStyle(view, activeStyle, firstLineStyle.get(), font, point);
         }
         LineBox* lineBox = context->lineBox;
 
