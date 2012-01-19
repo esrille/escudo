@@ -166,6 +166,12 @@ public:
         // TODO: update fontSizeTable, too?
     }
 
+    void addFloatBox(Element element, BlockLevelBox* floatingBox, CSSStyleDeclarationImp* style) {
+        if (floatingBox) {
+            floatMap[element] = floatingBox;
+            map[element] = style;
+        }
+    }
     BlockLevelBox* getFloatBox(Node node) {
         auto i = floatMap.find(node);
         if (i == floatMap.end())

@@ -28,6 +28,7 @@
 #include <org/w3c/dom/Text.h>
 #include <org/w3c/dom/html/HTMLIFrameElement.h>
 #include <org/w3c/dom/html/HTMLImageElement.h>
+#include <org/w3c/dom/html/HTMLDivElement.h>
 
 #include "CSSSerialize.h"
 #include "CSSStyleDeclarationImp.h"
@@ -567,6 +568,21 @@ void BlockLevelBox::nextLine(ViewCSSImp* view, FormattingContext* context, CSSSt
     }
 }
 
+size_t BlockLevelBox::getfirstLetterLength(const std::u16string& data)
+{
+    size_t fitLength = data.size();
+    if (0 < fitLength) {
+        size_t pos = 0;
+        fitLength = 0;
+        while (u_ispunct(nextChar(data, pos)))
+            fitLength = pos;
+        nextChar(data, fitLength);
+        while (u_ispunct(nextChar(data, pos)))
+            fitLength = pos;
+    }
+    return fitLength;
+}
+
 bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
                                std::u16string data, Element element, CSSStyleDeclarationImp* style)
 {
@@ -652,9 +668,26 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                     firstLetterStyle->resolve(view, this);
                 }
             }
-            if (firstLetterStyle)
+            if (firstLetterStyle) {
                 setActiveStyle(view, activeStyle, firstLetterStyle.get(), font, point);
-            else if (firstLineStyle)
+                if (firstLetterStyle->isFloat()) {
+                    size_t length = getfirstLetterLength(data);
+                    Document document = view->getDocument();
+                    html::HTMLDivElement div = interface_cast<html::HTMLDivElement>(document.createElement(u"div"));
+                    Text text = document.createTextNode(data.substr(0, length));
+                    div.appendChild(text);
+                    BlockLevelBox* floatingBox = view->createBlockLevelBox(div, firstLetterStyle.get(), true);
+                    floatingBox->insertInline(text);
+                    view->addFloatBox(div, floatingBox, firstLetterStyle.get());
+                    inlines.push_front(div);
+                    layOutFloat(view, div, floatingBox, context);
+                    data.erase(0, length);
+                    if (data.length() == 0)
+                        break;
+                    nextLine(view, context, activeStyle, firstLetterStyle, firstLineStyle, style, font, point);
+                    continue;
+                }
+            } else if (firstLineStyle)
                 setActiveStyle(view, activeStyle, firstLineStyle.get(), font, point);
         }
         LineBox* lineBox = context->lineBox;
@@ -689,15 +722,8 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
             advanced = 0.0f;
         } else {
             size_t fitLength = data.length();
-            if (0 < fitLength && firstLetterStyle) {
-                size_t pos = 0;
-                fitLength = 0;
-                while (u_ispunct(nextChar(data, pos)))
-                    fitLength = pos;
-                nextChar(data, fitLength);
-                while (u_ispunct(nextChar(data, pos)))
-                    fitLength = pos;
-            }
+            if (firstLetterStyle)
+                fitLength = getfirstLetterLength(data);
             // We are still not sure if there's a room for text in context->lineBox.
             // If there's no room due to float box(es), move the linebox down to
             // the closest bottom of float box.
