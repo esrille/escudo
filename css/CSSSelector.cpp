@@ -351,11 +351,15 @@ void CSSPrimarySelector::registerToRuleList(CSSRuleListImp* ruleList, CSSSelecto
     }
     if (hadID)
         return;
+    bool hadClass = false;
     for (auto i = chain.begin(); i != chain.end(); ++i) {
-        if (CSSClassSelector* classSelector = dynamic_cast<CSSClassSelector*>(*i))
-            ruleList->appendID(selector, declaration, classSelector->getName());
+        if (CSSClassSelector* classSelector = dynamic_cast<CSSClassSelector*>(*i)) {
+            hadClass = true;
+            ruleList->appendClass(selector, declaration, classSelector->getName());
+        }
     }
-    ruleList->appendMisc(selector, declaration);
+    if (!hadClass)
+        ruleList->appendMisc(selector, declaration);
 }
 
 CSSPseudoElementSelector* CSSPrimarySelector::getPseudoElement() const

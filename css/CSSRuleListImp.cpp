@@ -26,22 +26,22 @@ using namespace css;
 
 void CSSRuleListImp::appendMisc(CSSSelector* selector, CSSStyleDeclarationImp* declaration)
 {
-    misc.push_back(Rule{ selector, declaration });
+    misc.push_back(Rule{ selector, declaration, ++order });
 }
 
 void CSSRuleListImp::appendID(CSSSelector* selector, CSSStyleDeclarationImp* declaration, const std::u16string& key)
 {
-    mapID.insert(std::pair<std::u16string, Rule>(key, Rule{ selector, declaration }));
+    mapID.insert(std::pair<std::u16string, Rule>(key, Rule{ selector, declaration, ++order }));
 }
 
 void CSSRuleListImp::appendClass(CSSSelector* selector, CSSStyleDeclarationImp* declaration, const std::u16string& key)
 {
-    mapClass.insert(std::pair<std::u16string, Rule>(key, Rule{ selector, declaration }));
+    mapClass.insert(std::pair<std::u16string, Rule>(key, Rule{ selector, declaration, ++order }));
 }
 
 void CSSRuleListImp::appendType(CSSSelector* selector, CSSStyleDeclarationImp* declaration, const std::u16string& key)
 {
-    mapType.insert(std::pair<std::u16string, Rule>(key, Rule{ selector, declaration }));
+    mapType.insert(std::pair<std::u16string, Rule>(key, Rule{ selector, declaration, ++order }));
 }
 
 void CSSRuleListImp::append(css::CSSRule rule, DocumentImp* document)
@@ -86,7 +86,7 @@ void CSSRuleListImp::find(DeclarationSet& set, ViewCSSImp* view, Element element
         unsigned pseudoElementID = 0;
         if (CSSPseudoElementSelector* pseudo = selector->getPseudoElement())
             pseudoElementID = pseudo->getID();
-        PrioritizedDeclaration decl(importance | selector->getSpecificity(), (*i).second.declaration, pseudoElementID);
+        PrioritizedDeclaration decl(importance | selector->getSpecificity(), (*i).second.declaration, pseudoElementID, (*i).second.order);
         set.insert(decl);
     }
 }
@@ -101,8 +101,19 @@ void CSSRuleListImp::findByID(DeclarationSet& set, ViewCSSImp* view, Element ele
 void CSSRuleListImp::findByClass(DeclarationSet& set, ViewCSSImp* view, Element element)
 {
     Nullable<std::u16string> attr = element.getAttribute(u"class");
-    if (attr.hasValue())
-        find(set, view, element, mapClass, attr.value());
+    if (attr.hasValue()) {
+        std::u16string classes = attr.value();
+        for (size_t pos = 0; pos < classes.length();) {
+            if (isSpace(classes[pos])) {
+                ++pos;
+                continue;
+            }
+            size_t start = pos++;
+            while (pos < classes.length() && !isSpace(classes[pos]))
+                ++pos;
+            find(set, view, element, mapClass, classes.substr(start, pos - start));
+        }
+    }
 }
 
 void CSSRuleListImp::findByType(DeclarationSet& set, ViewCSSImp* view, Element element)
@@ -119,7 +130,7 @@ void CSSRuleListImp::findMisc(DeclarationSet& set, ViewCSSImp* view, Element ele
         unsigned pseudoElementID = 0;
         if (CSSPseudoElementSelector* pseudo = selector->getPseudoElement())
             pseudoElementID = pseudo->getID();
-        PrioritizedDeclaration decl(importance | selector->getSpecificity(), (*i).declaration, pseudoElementID);
+        PrioritizedDeclaration decl(importance | selector->getSpecificity(), (*i).declaration, pseudoElementID, (*i).order);
         set.insert(decl);
     }
 }
@@ -135,10 +146,10 @@ void CSSRuleListImp::find(DeclarationSet& set, ViewCSSImp* view, Element element
         }
     }
 
-    findByID(set, view, element);
-    findByClass(set, view, element);
-    findByType(set, view, element);
     findMisc(set, view, element);
+    findByType(set, view, element);
+    findByClass(set, view, element);
+    findByID(set, view, element);
 }
 
 }}}}  // org::w3c::dom::bootstrap

@@ -163,13 +163,15 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle)
         if (elementDecl) {
             CSSStyleDeclarationImp* nonCSS = elementDecl->getPseudoElementStyle(CSSPseudoElementSelector::NonCSS);
             if (nonCSS) {
-                CSSRuleListImp::PrioritizedDeclaration decl(CSSRuleListImp::User | 0, nonCSS, CSSPseudoElementSelector::NonPseudo);
+                CSSRuleListImp::PrioritizedDeclaration decl(CSSRuleListImp::User | 0, nonCSS, CSSPseudoElementSelector::NonPseudo, 0);
                 set.insert(decl);
             }
         }
+        unsigned importance = CSSRuleListImp::Author;
         for (auto i = styleSheets.begin(); i != styleSheets.end(); ++i) {
             CSSStyleSheetImp* sheet = *i;
-            findDeclarations(set, element, sheet->getCssRules(), CSSRuleListImp::Author);
+            findDeclarations(set, element, sheet->getCssRules(), importance++);
+            // TODO: Check overflow of importance
         }
         for (auto i = set.begin(); i != set.end(); ++i) {
             if (CSSStyleDeclarationImp* pseudo = style->createPseudoElementStyle((*i).pseudoElementID))

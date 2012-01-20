@@ -44,18 +44,20 @@ public:
     struct PrioritizedDeclaration
     {
         unsigned priority;
+        unsigned order;
         CSSStyleDeclarationImp* decl;
         unsigned pseudoElementID;
 
-        PrioritizedDeclaration(unsigned priority, CSSStyleDeclarationImp* decl, unsigned pseudoElementID) :
+        PrioritizedDeclaration(unsigned priority, CSSStyleDeclarationImp* decl, unsigned pseudoElementID, unsigned order) :
             priority(priority),
+            order(order),
             decl(decl),
             pseudoElementID(pseudoElementID)
         {
         }
         bool operator <(const PrioritizedDeclaration& decl) const
         {
-            return priority < decl.priority;
+            return (priority < decl.priority) || (priority == decl.priority && order < decl.order) ;
         }
         bool isUserStyle() const {
             return (priority & 0xff000000) == User;
@@ -69,9 +71,11 @@ private:
     {
         CSSSelector* selector;
         CSSStyleDeclarationImp* declaration;
+        unsigned order;
     };
 
     unsigned importance;  // TODO: SET THIS!!
+    unsigned order;
     std::deque<css::CSSRule> ruleList;
 
     std::deque<CSSImportRuleImp*> importList;
@@ -87,6 +91,11 @@ private:
     void findMisc(DeclarationSet& set, ViewCSSImp* view, Element element);
 
 public:
+    CSSRuleListImp() :
+        importance(0),
+        order(0)
+    {}
+
     void append(css::CSSRule rule, DocumentImp* document);
 
     void appendMisc(CSSSelector* selector, CSSStyleDeclarationImp* declaration);
