@@ -149,16 +149,19 @@ Document loadDocument(const char* html)
     return loadDocument(stream);
 }
 
-void recordTime(const char* msg)
+double recordTime(const char* msg)
 {
     if (logLevel == 0)
-        return;
+        return 0.0;
     static double last = 0.0;
     timespec spec;
     clock_gettime(CLOCK_REALTIME, &spec);
     double now = spec.tv_sec + (spec.tv_nsec / 1000000000.0);
-    std::cerr << msg << ": " << now - last << '\n';
+    double diff = now - last;
+    if (msg)
+        std::cerr << msg << ": " << now - last << '\n';
     last = now;
+    return diff;
 }
 
 void initLogLevel(int* argc, char* argv[])
