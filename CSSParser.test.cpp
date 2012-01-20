@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ void test(std::istream& stream)
     CSSInputStream cssStream(stream, "utf-8");
     std::u16string cssText = cssStream;
 
-    css::CSSStyleSheet styleSheet = parser.parse(cssText);
+    css::CSSStyleSheet styleSheet = parser.parse(0, cssText);
     if (!styleSheet)
         return;
     css::CSSRuleList list = styleSheet.getCssRules();
@@ -209,7 +209,7 @@ int main(int argc, char** argv)
     test("p { list-style: none; }");
     test("p { list-style: none disc; }");
     test("p { list-style: none url(\"http://www.example.com/pinkish.png\"); }");
-    
+
     // test @media
     test("@media print {"
          "  h1            { page-break-before: always }"

@@ -87,39 +87,12 @@ void ViewCSSImp::handleMutation(events::Event event)
         boxTree->setFlags(1);
 }
 
-void ViewCSSImp::findDeclarations(DeclarationSet& set, Element element, css::CSSRuleList list, unsigned importance)
+void ViewCSSImp::findDeclarations(CSSRuleListImp::DeclarationSet& set, Element element, css::CSSRuleList list, unsigned importance)
 {
-    if (!list)
+    CSSRuleListImp* ruleList = dynamic_cast<CSSRuleListImp*>(list.self());
+    if (!ruleList)
         return;
-    unsigned int size = list.getLength();
-    for (unsigned int i = 0; i < size; ++i) {
-        css::CSSRule rule = list.getElement(i);
-        if (CSSStyleRuleImp* styleRule = dynamic_cast<CSSStyleRuleImp*>(rule.self())) {
-            if (CSSSelectorsGroup* selectorsGroup = styleRule->getSelectorsGroup()) {
-                for (auto j = selectorsGroup->begin(); j != selectorsGroup->end(); ++j) {
-                    CSSSelector* selector = *j;
-                    if (selector->match(element, this)) {
-                        unsigned pseudoElementID = 0;
-                        if (CSSPseudoElementSelector* pseudo = selector->getPseudoElement())
-                            pseudoElementID = pseudo->getID();
-                        PrioritizedDeclaration decl(importance | selector->getSpecificity(), dynamic_cast<CSSStyleDeclarationImp*>(styleRule->getStyle().self()), pseudoElementID);
-                        set.insert(decl);
-                    }
-                }
-            }
-        } else if (CSSMediaRuleImp* mediaRule = dynamic_cast<CSSMediaRuleImp*>(rule.self())) {
-            MediaListImp* mediaList = dynamic_cast<MediaListImp*>(mediaRule->getMedia().self());
-            if (mediaList ->hasMedium(MediaListImp::Screen))  // TODO: support other mediums, too.
-                findDeclarations(set, element, mediaRule->getCssRules(), importance);
-        } else if (CSSImportRuleImp* importRule = dynamic_cast<CSSImportRuleImp*>(rule.self())) {
-            MediaListImp* mediaList = dynamic_cast<MediaListImp*>(importRule->getMedia().self());
-            if (mediaList->hasMedium(MediaListImp::Screen)) { // TODO: support other mediums, too.
-                importRule->setDocument(dynamic_cast<DocumentImp*>(getDocument().self()));
-                if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(importRule->getStyleSheet().self()))
-                    findDeclarations(set, element, sheet->getCssRules(), importance);
-            }
-        }
-    }
+    ruleList->find(set, this, element, importance);
 }
 
 void ViewCSSImp::resolveXY(float left, float top)
@@ -181,21 +154,21 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle)
             elementDecl = dynamic_cast<CSSStyleDeclarationImp*>(htmlElement.getStyle().self());
         }
 
-        DeclarationSet set;
+        CSSRuleListImp::DeclarationSet set;
         if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(defaultStyleSheet.self()))
-            findDeclarations(set, element, sheet->getCssRules(), PrioritizedDeclaration::UserAgent);
+            findDeclarations(set, element, sheet->getCssRules(), CSSRuleListImp::UserAgent);
         if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(userStyleSheet.self()))
-            findDeclarations(set, element, sheet->getCssRules(), PrioritizedDeclaration::User);
+            findDeclarations(set, element, sheet->getCssRules(), CSSRuleListImp::User);
         if (elementDecl) {
             CSSStyleDeclarationImp* nonCSS = elementDecl->getPseudoElementStyle(CSSPseudoElementSelector::NonCSS);
             if (nonCSS) {
-                PrioritizedDeclaration decl(PrioritizedDeclaration::User | 0, nonCSS, CSSPseudoElementSelector::NonPseudo);
+                CSSRuleListImp::PrioritizedDeclaration decl(CSSRuleListImp::User | 0, nonCSS, CSSPseudoElementSelector::NonPseudo);
                 set.insert(decl);
             }
         }
         for (auto i = styleSheets.begin(); i != styleSheets.end(); ++i) {
             CSSStyleSheetImp* sheet = *i;
-            findDeclarations(set, element, sheet->getCssRules(), PrioritizedDeclaration::Author);
+            findDeclarations(set, element, sheet->getCssRules(), CSSRuleListImp::Author);
         }
         for (auto i = set.begin(); i != set.end(); ++i) {
             if (CSSStyleDeclarationImp* pseudo = style->createPseudoElementStyle((*i).pseudoElementID))
@@ -220,8 +193,6 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle)
             }
         }
         set.clear();
-
-        // TODO: Support user important declarations
 
         style->compute(this, parentStyle, element);
     }

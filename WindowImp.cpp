@@ -162,6 +162,7 @@ bool WindowImp::poll()
 #else
             boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request.getContentDescriptor(), false);
 #endif
+            recordTime("request done");
             stream.seekg(0, std::ios::beg);
             HTMLInputStream htmlInputStream(stream, request.getResponseMessage().getContentCharset());
             HTMLTokenizer tokenizer(&htmlInputStream);
@@ -174,6 +175,7 @@ bool WindowImp::poll()
             // Each HTML style element will have a style sheet.
             evalTree(window->getDocument());
             dumpTree(std::cerr, window->getDocument());
+            recordTime("html parsed");
 
             if (EventImp* event = new(std::nothrow) EventImp) {
                 event->initEvent(u"DOMContentLoaded", true, false);

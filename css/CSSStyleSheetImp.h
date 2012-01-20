@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,16 +26,18 @@
 #include <deque>
 
 #include "StyleSheetImp.h"
+#include "CSSRuleListImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
+class DocumentImp;
+
 class CSSStyleSheetImp : public ObjectMixin<CSSStyleSheetImp, StyleSheetImp>
 {
-    std::deque<css::CSSRule> ruleList;
+    Retained<CSSRuleListImp> ruleList;
 public:
-    void append(css::CSSRule rule) {
-        if (rule)
-            ruleList.push_back(rule);
+    void append(css::CSSRule rule, DocumentImp* document) {
+        ruleList.append(rule, document);
     }
 
     // StyleSheet

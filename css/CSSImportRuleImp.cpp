@@ -109,7 +109,7 @@ void CSSImportRuleImp::notify()
 #endif
         CSSParser parser;
         CSSInputStream cssStream(stream, request->getResponseMessage().getContentCharset(), utfconv(document->getCharset()));
-        styleSheet = parser.parse(cssStream);
+        styleSheet = parser.parse(document, cssStream);
         dumpStyleSheet(std::cerr, styleSheet.self());
     }
     document->decrementLoadEventDelayCount();

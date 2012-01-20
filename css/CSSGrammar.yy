@@ -601,13 +601,13 @@ statement_list
   : /* empty */
   | statement_list import optional_sgml {
         if (CSSStyleSheetImp* styleSheet = parser->getStyleSheet()) {
-            styleSheet->append($2);
+            styleSheet->append($2, parser->getDocument());
         }
     }
   | statement_list ruleset   optional_sgml {
         if (CSSStyleSheetImp* styleSheet = parser->getStyleSheet()) {
             if ($2) {
-                styleSheet->append($2);
+                styleSheet->append($2, parser->getDocument());
                 parser->disableImport();
             }
         }
@@ -615,7 +615,7 @@ statement_list
   | statement_list media     optional_sgml {
         if (CSSStyleSheetImp* styleSheet = parser->getStyleSheet()) {
             if ($2) {
-                styleSheet->append($2);
+                styleSheet->append($2, parser->getDocument());
                 parser->disableImport();
             }
         }
@@ -623,7 +623,7 @@ statement_list
   | statement_list page      optional_sgml {
         if (CSSStyleSheetImp* styleSheet = parser->getStyleSheet()) {
             if ($2) {
-                styleSheet->append($2);
+                styleSheet->append($2, parser->getDocument());
                 parser->disableImport();
             }
         }
@@ -631,7 +631,7 @@ statement_list
   | statement_list font_face optional_sgml {
         if (CSSStyleSheetImp* styleSheet = parser->getStyleSheet()) {
             if ($2) {
-                styleSheet->append($2);
+                styleSheet->append($2, parser->getDocument());
                 parser->disableImport();
             }
         }

@@ -30,6 +30,7 @@
 
 #include "Box.h"
 #include "CounterImp.h"
+#include "CSSRuleListImp.h"
 
 #include "font/FontManager.h"
 
@@ -43,36 +44,6 @@ class StackingContext;
 
 class ViewCSSImp
 {
-    struct PrioritizedDeclaration
-    {
-        enum Importance
-        {
-            UserAgent = (1 << 24),
-            User = (2 << 24),
-            Author = (4 << 24)
-        };
-
-        unsigned priority;
-        CSSStyleDeclarationImp* decl;
-        unsigned pseudoElementID;
-
-        PrioritizedDeclaration(unsigned priority, CSSStyleDeclarationImp* decl, unsigned pseudoElementID) :
-            priority(priority),
-            decl(decl),
-            pseudoElementID(pseudoElementID)
-        {
-        }
-        bool operator <(const PrioritizedDeclaration& decl) const
-        {
-            return priority < decl.priority;
-        }
-        bool isUserStyle() const {
-            return (priority & 0xff000000) == User;
-        }
-    };
-
-    typedef std::multiset<PrioritizedDeclaration> DeclarationSet;
-
     DocumentWindowPtr window;
     css::CSSStyleSheet defaultStyleSheet;
     css::CSSStyleSheet userStyleSheet;
@@ -101,7 +72,7 @@ class ViewCSSImp
     Retained<EventListenerImp> mutationListener;
     void handleMutation(events::Event event);
 
-    void findDeclarations(DeclarationSet& set, Element element, css::CSSRuleList list, unsigned importance);
+    void findDeclarations(CSSRuleListImp::DeclarationSet& set, Element element, css::CSSRuleList list, unsigned importance);
 
 public:
     ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyleSheet, css::CSSStyleSheet userStyleSheet = 0);

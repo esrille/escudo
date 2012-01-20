@@ -22,6 +22,7 @@
 #include <org/w3c/dom/html/HTMLAnchorElement.h>
 
 #include "CSSStyleDeclarationImp.h"
+#include "CSSRuleListImp.h"
 #include "ViewCSSImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
@@ -330,6 +331,31 @@ bool CSSSelector::isValid() const
         pseudoElementSelector = (*i)->getPseudoElement();
     }
     return true;
+}
+
+void CSSPrimarySelector::registerToRuleList(CSSRuleListImp* ruleList, CSSSelector* selector, CSSStyleDeclarationImp* declaration)
+{
+    if (chain.empty()) {
+        if (name == u"*")
+            ruleList->appendMisc(selector, declaration);
+        else
+            ruleList->appendType(selector, declaration, name);
+        return;
+    }
+    bool hadID = false;
+    for (auto i = chain.begin(); i != chain.end(); ++i) {
+        if (CSSIDSelector* idSelector = dynamic_cast<CSSIDSelector*>(*i)) {
+            hadID = true;
+            ruleList->appendID(selector, declaration, idSelector->getName());
+        }
+    }
+    if (hadID)
+        return;
+    for (auto i = chain.begin(); i != chain.end(); ++i) {
+        if (CSSClassSelector* classSelector = dynamic_cast<CSSClassSelector*>(*i))
+            ruleList->appendID(selector, declaration, classSelector->getName());
+    }
+    ruleList->appendMisc(selector, declaration);
 }
 
 CSSPseudoElementSelector* CSSPrimarySelector::getPseudoElement() const

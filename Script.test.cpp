@@ -56,6 +56,7 @@ int main(int argc, char* argv[])
             return EXIT_FAILURE;
         }
         getDOMImplementation()->setUserCSSStyleSheet(loadStyleSheet(styleStream));
+        dumpStyleSheet(std::cerr, getDOMImplementation()->getUserCSSStyleSheet());
     }
 
     window = new WindowImp();

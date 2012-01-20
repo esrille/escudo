@@ -813,6 +813,8 @@ libeshtml5_a_SOURCES += \
 	css/CSSPropertyValueListImp.h \
 	css/CSSRuleImp.cpp \
 	css/CSSRuleImp.h \
+	css/CSSRuleListImp.cpp \
+	css/CSSRuleListImp.h \
 	css/CSSStringComponentValueImp.cpp \
 	css/CSSStringComponentValueImp.h \
 	css/CSSStyleDeclarationImp.cpp \

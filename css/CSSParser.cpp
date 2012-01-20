@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,9 @@
 using namespace org::w3c::dom::bootstrap;
 using namespace org::w3c::dom::css;
 
-CSSStyleSheet CSSParser::parse(const std::u16string& cssText)
+CSSStyleSheet CSSParser::parse(DocumentImp* document, const std::u16string& cssText)
 {
+    this->document = document;
     styleSheet = new(std::nothrow) CSSStyleSheetImp;
     if (!styleSheet)
         return 0;

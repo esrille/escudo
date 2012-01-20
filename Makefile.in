@@ -156,7 +156,7 @@ am_libeshtml5_a_OBJECTS = Any.$(OBJEXT) utf.$(OBJEXT) \
 	CSSPercentageComponentValueImp.$(OBJEXT) \
 	CSSPrimitiveValueImp.$(OBJEXT) \
 	CSSPropertyValueListImp.$(OBJEXT) CSSRuleImp.$(OBJEXT) \
-	CSSStringComponentValueImp.$(OBJEXT) \
+	CSSRuleListImp.$(OBJEXT) CSSStringComponentValueImp.$(OBJEXT) \
 	CSSStyleDeclarationImp.$(OBJEXT) \
 	CSSStyleDeclarationValueImp.$(OBJEXT) \
 	CSSStyleRuleImp.$(OBJEXT) CSSStyleSheetImp.$(OBJEXT) \
@@ -1206,8 +1206,8 @@ libeshtml5_a_SOURCES = Object.h ObjectArrayImp.h Any.cpp Any.h \
 	css/CSSPercentageComponentValueImp.h \
 	css/CSSPrimitiveValueImp.cpp css/CSSPrimitiveValueImp.h \
 	css/CSSPropertyValueListImp.cpp css/CSSPropertyValueListImp.h \
-	css/CSSRuleImp.cpp css/CSSRuleImp.h \
-	css/CSSStringComponentValueImp.cpp \
+	css/CSSRuleImp.cpp css/CSSRuleImp.h css/CSSRuleListImp.cpp \
+	css/CSSRuleListImp.h css/CSSStringComponentValueImp.cpp \
 	css/CSSStringComponentValueImp.h \
 	css/CSSStyleDeclarationImp.cpp css/CSSStyleDeclarationImp.h \
 	css/CSSStyleDeclarationValueImp.cpp \
@@ -1700,6 +1700,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CSSPropertyValueListImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CSSRule.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CSSRuleImp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CSSRuleListImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CSSSelector.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CSSSerialize.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CSSStringComponentValue.Po@am__quote@
@@ -2818,6 +2819,20 @@ CSSRuleImp.obj: css/CSSRuleImp.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='css/CSSRuleImp.cpp' object='CSSRuleImp.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o CSSRuleImp.obj `if test -f 'css/CSSRuleImp.cpp'; then $(CYGPATH_W) 'css/CSSRuleImp.cpp'; else $(CYGPATH_W) '$(srcdir)/css/CSSRuleImp.cpp'; fi`
+
+CSSRuleListImp.o: css/CSSRuleListImp.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT CSSRuleListImp.o -MD -MP -MF $(DEPDIR)/CSSRuleListImp.Tpo -c -o CSSRuleListImp.o `test -f 'css/CSSRuleListImp.cpp' || echo '$(srcdir)/'`css/CSSRuleListImp.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/CSSRuleListImp.Tpo $(DEPDIR)/CSSRuleListImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='css/CSSRuleListImp.cpp' object='CSSRuleListImp.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o CSSRuleListImp.o `test -f 'css/CSSRuleListImp.cpp' || echo '$(srcdir)/'`css/CSSRuleListImp.cpp
+
+CSSRuleListImp.obj: css/CSSRuleListImp.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT CSSRuleListImp.obj -MD -MP -MF $(DEPDIR)/CSSRuleListImp.Tpo -c -o CSSRuleListImp.obj `if test -f 'css/CSSRuleListImp.cpp'; then $(CYGPATH_W) 'css/CSSRuleListImp.cpp'; else $(CYGPATH_W) '$(srcdir)/css/CSSRuleListImp.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/CSSRuleListImp.Tpo $(DEPDIR)/CSSRuleListImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='css/CSSRuleListImp.cpp' object='CSSRuleListImp.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o CSSRuleListImp.obj `if test -f 'css/CSSRuleListImp.cpp'; then $(CYGPATH_W) 'css/CSSRuleListImp.cpp'; else $(CYGPATH_W) '$(srcdir)/css/CSSRuleListImp.cpp'; fi`
 
 CSSStringComponentValueImp.o: css/CSSStringComponentValueImp.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT CSSStringComponentValueImp.o -MD -MP -MF $(DEPDIR)/CSSStringComponentValueImp.Tpo -c -o CSSStringComponentValueImp.o `test -f 'css/CSSStringComponentValueImp.cpp' || echo '$(srcdir)/'`css/CSSStringComponentValueImp.cpp

@@ -111,7 +111,7 @@ css::CSSStyleSheet loadStyleSheet(std::istream& stream)
 {
     CSSParser parser;
     CSSInputStream cssStream(stream, "utf-8");
-    return parser.parse(cssStream);
+    return parser.parse(0, cssStream);
 }
 
 void eval(Node node)

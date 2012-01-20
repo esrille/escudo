@@ -34,12 +34,11 @@ void HTMLStyleElementImp::eval()
         if (TextImp* text = dynamic_cast<TextImp*>(node.self()))  // TODO better to avoid imp call?
             content += text->getData();
     }
-    CSSParser parser;
-    styleSheet = parser.parse(content);
-
-    dumpStyleSheet(std::cerr, styleSheet.self());
-
     if (DocumentImp* document = getOwnerDocumentImp()) {
+        CSSParser parser;
+        styleSheet = parser.parse(document, content);
+        dumpStyleSheet(std::cerr, styleSheet.self());
+
         if (WindowImp* view = document->getDefaultWindow())
             view->setFlagsToBoxTree(1);
     }

@@ -33,6 +33,7 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
+class DocumentImp;
 class CSSStyleRuleImp;
 class CSSStyleSheetImp;
 class CSSStyleDeclarationImp;
@@ -233,6 +234,7 @@ struct CSSParserExpr
 
 class CSSParser
 {
+    DocumentImp* document;
     CSSTokenizer tokenizer;
     CSSStyleSheetImp* styleSheet;
     CSSStyleDeclarationImp* styleDeclaration;
@@ -248,6 +250,7 @@ class CSSParser
     }
 public:
     CSSParser() :
+        document(0),
         styleSheet(0),
         styleDeclaration(0),
         styleExpression(0),
@@ -257,9 +260,13 @@ public:
     {
     }
 
-    css::CSSStyleSheet parse(const std::u16string& cssText);
+    css::CSSStyleSheet parse(DocumentImp* document, const std::u16string& cssText);
     css::CSSStyleDeclaration parseDeclarations(const std::u16string& cssDecl);
     CSSParserExpr* parseExpression(const std::u16string& cssExpr);
+
+    DocumentImp* getDocument() const {
+        return document;
+    }
 
     CSSTokenizer* getTokenizer() {
         return &tokenizer;

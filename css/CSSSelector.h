@@ -36,6 +36,8 @@ namespace org { namespace w3c { namespace dom {
 
 namespace bootstrap {
 
+class CSSRuleListImp;
+class CSSSelector;
 class ViewCSSImp;
 
 class CSSSpecificity
@@ -159,6 +161,7 @@ public:
     virtual CSSSpecificity getSpecificity();
     virtual bool match(Element element, ViewCSSImp* view);
     virtual bool isValid() const;
+    void registerToRuleList(CSSRuleListImp* ruleList, CSSSelector* selector, CSSStyleDeclarationImp* declaration);
     CSSPseudoElementSelector* getPseudoElement() const;
 };
 
@@ -449,6 +452,12 @@ public:
     CSSPseudoElementSelector* getPseudoElement() const;
 
     bool isValid() const;
+
+    void registerToRuleList(CSSRuleListImp* ruleList, CSSStyleDeclarationImp* declaration) {
+        if (simpleSelectors.empty())
+            return;
+        simpleSelectors.back()->registerToRuleList(ruleList, this, declaration);
+    }
 };
 
 class CSSSelectorsGroup

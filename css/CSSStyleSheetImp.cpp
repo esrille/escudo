@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,22 +29,22 @@ std::u16string CSSStyleSheetImp::getType()
 css::CSSRule CSSStyleSheetImp::getOwnerRule()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);}
+    return static_cast<Object*>(0);
+}
 
 css::CSSRuleList CSSStyleSheetImp::getCssRules()
 {
-    return new(std::nothrow) ObjectArrayImp<CSSStyleSheetImp, css::CSSRule, &CSSStyleSheetImp::ruleList>(this);
+    return ruleList.self();
 }
 
 unsigned int CSSStyleSheetImp::insertRule(std::u16string rule, unsigned int index)
 {
-    // TODO: implement me!
-    return 0;
+    return ruleList.insertRule(rule, index);
 }
 
 void CSSStyleSheetImp::deleteRule(unsigned int index)
 {
-    // TODO: implement me!
+    ruleList.deleteRule(index);
 }
 
 }}}}  // org::w3c::dom::bootstrap
