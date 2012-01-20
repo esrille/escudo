@@ -219,7 +219,8 @@ void WindowImp::render()
             view->dump();
             std::cout << "##\n";
             std::cout.flush();
-        }
+        } else if (1 <= getLogLevel())
+            std::cout << "##\n";
     }
 }
 

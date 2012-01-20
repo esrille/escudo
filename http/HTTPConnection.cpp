@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@
 
 #include "url/URI.h"
 #include "http/HTTPUtil.h"
+
+#include "Test.util.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -79,7 +81,8 @@ void HttpConnection::retry()
 
 void HttpConnection::handleResolve(const boost::system::error_code& err, boost::asio::ip::tcp::resolver::iterator endpointIterator)
 {
-    std::cerr << __func__ << ' ' << err << '\n';
+    if (3 <= getLogLevel())
+        std::cerr << __func__ << ' ' << err << '\n';
 
     if (!err) {
         state = Resolved;
@@ -92,7 +95,8 @@ void HttpConnection::handleResolve(const boost::system::error_code& err, boost::
 
 void HttpConnection::handleConnect(const boost::system::error_code& err, boost::asio::ip::tcp::resolver::iterator endpointIterator)
 {
-    std::cerr << __func__ << ' ' << err << '\n';
+    if (3 <= getLogLevel())
+        std::cerr << __func__ << ' ' << err << '\n';
 
     if (!err) {
         state = Connected;
@@ -113,7 +117,9 @@ void HttpConnection::handleConnect(const boost::system::error_code& err, boost::
 
 void HttpConnection::handleRead(const boost::system::error_code& err)
 {
-    std::cerr << __func__ << ' ' << state << ' ' << err << '\n';
+    if (3 <= getLogLevel())
+        std::cerr << __func__ << ' ' << state << ' ' << err << '\n';
+
     switch (state) {
     case Closed:
         break;
@@ -144,7 +150,8 @@ void HttpConnection::handleRead(const boost::system::error_code& err)
 
 void HttpConnection::handleWriteRequest(const boost::system::error_code& err)
 {
-    std::cerr << __func__ << ' ' << err <<  '\n';
+    if (3 <= getLogLevel())
+        std::cerr << __func__ << ' ' << err <<  '\n';
 
     if (!err && current) {
         if (current->getRequestMessage().getVersion() < 10)
@@ -184,7 +191,10 @@ void HttpConnection::readStatusLine(const boost::system::error_code& err)
         start = line.c_str();
         eol = start + line.length();
     }
-    // std::cerr << __func__ << ": " <<  std::string(start, eol - start) << '\n';
+
+    if (3 <= getLogLevel())
+        std::cerr << __func__ << ": " <<  std::string(start, eol - start) << '\n';
+
     const char* statusLine = current->getResponseMessage().parseStatusLine(start, eol);
     if (!statusLine) {
         close();
@@ -228,7 +238,10 @@ void HttpConnection::readHead(const boost::system::error_code& err)
             start = line.c_str();
             eol = start + line.length();
         }
-        // std::cerr << __func__ << ": " <<  std::string(start, eol - start) << '\n';
+
+        if (3 <= getLogLevel())
+            std::cerr << __func__ << ": " <<  std::string(start, eol - start) << '\n';
+
         const char* header = parseCRLF(start, eol);
         if (*header == '\n') {
             if (line.empty())
