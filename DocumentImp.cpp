@@ -94,6 +94,8 @@
 
 #include "EventImp.h"
 
+#include "Test.util.h"
+
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 DocumentImp::DocumentImp(const std::u16string& url) :
@@ -126,7 +128,8 @@ void DocumentImp::setReadyState(const std::u16string& readyState)
     this->readyState = readyState;
     if (readyState == u"complete") {
         if (defaultView) {
-            std::cout << "\n## complete\n";
+            if (1 <= getLogLevel())
+                std::cout << "\n## complete\n";
             if (EventImp* event = new(std::nothrow) EventImp) {
                 event->initEvent(u"load", false, false);
                 defaultView->dispatchEvent(event);

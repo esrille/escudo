@@ -120,7 +120,8 @@ void ViewCSSImp::cascade()
             imp->addStyleSheet(*i);
     }
     styleSheets.clear();
-    printComputedValues(document, this);  // for debug
+    if (3 <= getLogLevel())
+        printComputedValues(document, this);
 }
 
 void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle)
@@ -557,8 +558,10 @@ BlockLevelBox* ViewCSSImp::layOut()
 
     if (stackingContexts) {
         stackingContexts->addBase(boxTree.get());
-        std::cout << "## stacking contexts\n";
-        stackingContexts->dump();
+        if (3 <= getLogLevel()) {
+            std::cout << "## stacking contexts\n";
+            stackingContexts->dump();
+        }
     }
     return boxTree.get();
 }

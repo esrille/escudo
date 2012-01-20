@@ -31,6 +31,8 @@
 #include "CSSSerialize.h"
 #include "MediaListImp.h"
 
+extern int getLogLevel();
+
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class DocumentImp;
@@ -316,7 +318,8 @@ public:
 
 inline void CSSerror(CSSParser* parser, const char* message, ...)
 {
-    std::cerr << message << '\n';
+    if (3 <= getLogLevel())
+        std::cerr << message << '\n';
 }
 
 inline int CSSlex(CSSParser* parser)

@@ -49,6 +49,9 @@ inline bool isReplacedElement(org::w3c::dom::Element& element)
     return false;
 }
 
+void initLogLevel(int* argc, char* argv[]);
+int getLogLevel();
+
 //
 // Test.glut.cpp
 //

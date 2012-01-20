@@ -37,7 +37,9 @@ void HTMLStyleElementImp::eval()
     if (DocumentImp* document = getOwnerDocumentImp()) {
         CSSParser parser;
         styleSheet = parser.parse(document, content);
-        dumpStyleSheet(std::cerr, styleSheet.self());
+
+        if (3 <= getLogLevel())
+            dumpStyleSheet(std::cerr, styleSheet.self());
 
         if (WindowImp* view = document->getDefaultWindow())
             view->setFlagsToBoxTree(1);

@@ -39,6 +39,7 @@ int main(int argc, char* argv[])
     }
 
     init(&argc, argv);
+    initLogLevel(&argc, argv);
 
     // Load the default CSS file
     std::ifstream styleStream(argv[1]);

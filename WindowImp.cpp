@@ -174,7 +174,8 @@ bool WindowImp::poll()
             // Each HTML element will have a style attribute if there's the style content attribute.
             // Each HTML style element will have a style sheet.
             evalTree(window->getDocument());
-            dumpTree(std::cerr, window->getDocument());
+            if (3 <= getLogLevel())
+                dumpTree(std::cerr, window->getDocument());
             recordTime("html parsed");
 
             if (EventImp* event = new(std::nothrow) EventImp) {
@@ -214,9 +215,11 @@ void WindowImp::render()
         recordTime("render begin");
         view->render();
         recordTime("render end  ");
-        view->dump();
-        std::cout << "##\n";
-        std::cout.flush();
+        if (2 <= getLogLevel()) {
+            view->dump();
+            std::cout << "##\n";
+            std::cout.flush();
+        }
     }
 }
 

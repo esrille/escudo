@@ -84,7 +84,8 @@ void HTMLLinkElementImp::notify()
         CSSInputStream cssStream(stream, request->getResponseMessage().getContentCharset(), utfconv(document->getCharset()));
         styleSheet = parser.parse(document, cssStream);
 
-        dumpStyleSheet(std::cerr, styleSheet.self());
+        if (3 <= getLogLevel())
+            dumpStyleSheet(std::cerr, styleSheet.self());
 
         if (WindowImp* view = document->getDefaultWindow())
             view->setFlagsToBoxTree(1);

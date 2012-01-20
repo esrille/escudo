@@ -1706,5 +1706,4 @@ float CSSVerticalAlignValueImp::getOffset(LineBox* line, InlineLevelBox* text) c
     }
 }
 
-
 }}}}  // org::w3c::bootstrap
