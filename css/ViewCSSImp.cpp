@@ -106,9 +106,27 @@ void ViewCSSImp::cascade()
     Document document = getDocument();
 
     map.clear();
-    styleSheets.clear();
     delete stackingContexts;
     stackingContexts = 0;
+
+    styleSheets.clear();
+    html::HTMLHeadElement head = document.getHead();
+    if (head) {
+        for (auto element = head.getFirstElementChild(); element; element = element.getNextElementSibling()) {
+            if (html::HTMLStyleElement::hasInstance(element)) {
+                html::HTMLStyleElement styleElement = interface_cast<html::HTMLStyleElement>(element);
+                stylesheets::StyleSheet styleSheet = styleElement.getSheet();
+                if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(styleSheet.self()))
+                    styleSheets.push_back(sheet);
+            } else if (html::HTMLLinkElement::hasInstance(element)) {
+                html::HTMLLinkElement linkElement = interface_cast<html::HTMLLinkElement>(element);
+                stylesheets::StyleSheet styleSheet = linkElement.getSheet();
+                if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(styleSheet.self()))
+                    styleSheets.push_back(sheet);
+            }
+        }
+    }
+
     cascade(document, 0);
     if (DocumentImp* imp = dynamic_cast<DocumentImp*>(document.self())) {
         imp->clearStyleSheets();
@@ -136,18 +154,6 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle)
             return;  // TODO: error
         }
         map[element] = style;
-
-        if (html::HTMLStyleElement::hasInstance(element)) {
-            html::HTMLStyleElement styleElement = interface_cast<html::HTMLStyleElement>(element);
-            stylesheets::StyleSheet styleSheet = styleElement.getSheet();
-            if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(styleSheet.self()))
-                styleSheets.push_back(sheet);
-        } else if (html::HTMLLinkElement::hasInstance(element)) {
-            html::HTMLLinkElement linkElement = interface_cast<html::HTMLLinkElement>(element);
-            stylesheets::StyleSheet styleSheet = linkElement.getSheet();
-            if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(styleSheet.self()))
-                styleSheets.push_back(sheet);
-        }
 
         CSSStyleDeclarationImp* elementDecl = 0;
         if (html::HTMLElement::hasInstance(element)) {
