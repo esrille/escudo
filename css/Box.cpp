@@ -1404,9 +1404,11 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
             if (last->marginBottom < 0.0f)
                 height -= last->marginBottom;
         }
-        // Note if height is zero, clearances are used only to layout floating boxes,
-        // and thus totalClearance should not be added to height.
-        if (height != 0.0f)
+        // If height is zero and this block-box contains only line-boxes,
+        // clearances are used just to layout floating boxes, and thus
+        // totalClearance should not be added to height.
+        // TODO: test more conditions.
+        if (height != 0.0f || !dynamic_cast<LineBox*>(getFirstChild()))
             height += totalClearance;
     }
     if (!isAnonymous()) {
