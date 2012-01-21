@@ -560,7 +560,7 @@ BlockLevelBox* ViewCSSImp::layOut()
 
     if (stackingContexts) {
         stackingContexts->addBase(boxTree.get());
-        if (3 <= getLogLevel()) {
+        if (2 <= getLogLevel()) {
             std::cout << "## stacking contexts\n";
             stackingContexts->dump();
         }
