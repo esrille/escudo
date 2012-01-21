@@ -233,10 +233,18 @@ medium
     }
   ;
 page
-  : PAGE_SYM optional_space IDENT pseudo_page optional_space '{' optional_space declaration_list '}' optional_space
-  | PAGE_SYM optional_space       pseudo_page optional_space '{' optional_space declaration_list '}' optional_space
-  | PAGE_SYM optional_space IDENT             optional_space '{' optional_space declaration_list '}' optional_space
-  | PAGE_SYM optional_space                                  '{' optional_space declaration_list '}' optional_space
+  : PAGE_SYM optional_space IDENT pseudo_page optional_space '{' optional_space declaration_list '}' optional_space {
+        $$ = 0;
+    }
+  | PAGE_SYM optional_space       pseudo_page optional_space '{' optional_space declaration_list '}' optional_space {
+        $$ = 0;
+    }
+  | PAGE_SYM optional_space IDENT             optional_space '{' optional_space declaration_list '}' optional_space {
+        $$ = 0;
+    }
+  | PAGE_SYM optional_space                                  '{' optional_space declaration_list '}' optional_space {
+        $$ = 0;
+    }
   | PAGE_SYM error_block optional_sgml {
         $$ = 0;
     }
