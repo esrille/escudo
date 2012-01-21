@@ -158,7 +158,8 @@ void CounterImp::reset(int number)
 
 void CounterImp::increment(int number)
 {
-    assert(!counters.empty());
+    if (counters.empty())
+        nest(0);
     counters.back() += number;
 }
 
