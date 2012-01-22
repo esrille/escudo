@@ -74,7 +74,7 @@ private:
         unsigned order;
     };
 
-    unsigned importance;  // TODO: SET THIS!!
+    unsigned importance;
     unsigned order;
     std::deque<css::CSSRule> ruleList;
 
