@@ -651,8 +651,12 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                 if (firstLineStyle) {
                     for (auto i = firstLineStyles.begin(); i != firstLineStyles.end(); ++i)
                         firstLineStyle->specify(*i);
-                    if (style->display.isInline())
-                        firstLineStyle->specify(style);
+                    if (style->display.isInline()) {
+                        // 'style' should inherit properties from 'firstLineStyle'.
+                        // cf. 7.1.1. First formatted line definition in CSS - Selectors Level 3
+                        // cf. http://test.csswg.org/suites/css2.1/20110323/html4/first-line-pseudo-021.htm
+                        firstLineStyle->specifyWithoutInherited(style);
+                    }
                     firstLineStyle->compute(view, getStyle(), 0);
                     firstLineStyle->resolve(view, this);
                 }

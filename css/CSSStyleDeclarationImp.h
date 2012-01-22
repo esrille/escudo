@@ -390,6 +390,7 @@ public:
     CSSStyleDeclarationImp* getPseudoElementStyle(const std::u16string& name);
     CSSStyleDeclarationImp* createPseudoElementStyle(int id);
 
+    void specifyWithoutInherited(const CSSStyleDeclarationImp* style);
     void specify(const CSSStyleDeclarationImp* style);
     void specifyImportant(const CSSStyleDeclarationImp* style);
 

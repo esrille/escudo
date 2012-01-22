@@ -868,6 +868,20 @@ void CSSStyleDeclarationImp::specify(const CSSStyleDeclarationImp* decl, const s
     }
 }
 
+void CSSStyleDeclarationImp::specifyWithoutInherited(const CSSStyleDeclarationImp* style)
+{
+    if (!style)
+        return;
+
+    for (unsigned id = 1; id < MaxProperties; ++id) {
+        if (!style->propertySet.test(id) || style->inheritSet.test(id))
+            continue;
+        resetInherit(id);
+        specify(style, id);
+        propertySet.set(id);  // Note computed values do not have any important bit set.
+    }
+}
+
 void CSSStyleDeclarationImp::specify(const CSSStyleDeclarationImp* style)
 {
     if (style)
