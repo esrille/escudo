@@ -527,6 +527,14 @@ public:
         }
         w = h = 0.0f;
     }
+
+    static Element getContainingElement(Node node) {
+        for (; node; node = node.getParentNode()) {
+            if (node.getNodeType() == Node::ELEMENT_NODE)
+                return interface_cast<Element>(node);
+        }
+        return 0;
+    }
 };
 
 typedef boost::intrusive_ptr<Box> BoxPtr;
@@ -746,7 +754,7 @@ typedef boost::intrusive_ptr<LineBox> LineBoxPtr;
 // words inside a line
 class InlineLevelBox : public Box
 {
-    friend class BlockLevelBox ;
+    friend class BlockLevelBox;
 
     FontTexture* font;
     float point;

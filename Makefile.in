@@ -103,9 +103,9 @@ am_libeshtml5_a_OBJECTS = Any.$(OBJEXT) utf.$(OBJEXT) \
 	HTMLInputStream.$(OBJEXT) HTMLParser.$(OBJEXT) \
 	HTMLTokenizer.$(OBJEXT) Box.$(OBJEXT) BoxGL.$(OBJEXT) \
 	BoxImage.$(OBJEXT) FormattingContext.$(OBJEXT) \
-	StackingContext.$(OBJEXT) CSSPropertyValueImp.$(OBJEXT) \
-	CSSSerialize.$(OBJEXT) CSSGrammar.$(OBJEXT) \
-	CSSSelector.$(OBJEXT) CSSParser.$(OBJEXT) \
+	LineBox.$(OBJEXT) StackingContext.$(OBJEXT) \
+	CSSPropertyValueImp.$(OBJEXT) CSSSerialize.$(OBJEXT) \
+	CSSGrammar.$(OBJEXT) CSSSelector.$(OBJEXT) CSSParser.$(OBJEXT) \
 	CSSValueParser.$(OBJEXT) CSSInputStream.$(OBJEXT) \
 	Replaced.$(OBJEXT) Table.$(OBJEXT) TableGL.$(OBJEXT) \
 	ViewCSSImp.$(OBJEXT) ViewCSSImpGL.$(OBJEXT) \
@@ -1129,15 +1129,15 @@ libeshtml5_a_SOURCES = Object.h ObjectArrayImp.h Any.cpp Any.h \
 	html/HTMLInputStream.h html/HTMLParser.cpp html/HTMLParser.h \
 	html/HTMLTokenizer.cpp html/HTMLTokenizer.h css/Box.cpp \
 	css/Box.h css/BoxGL.cpp css/BoxImage.cpp \
-	css/FormattingContext.cpp css/StackingContext.cpp \
-	css/StackingContext.h css/CSSColor.re css/CSSPropertyNames.re \
-	css/CSSPropertyValueImp.cpp css/CSSPropertyValueImp.h \
-	css/CSSSerialize.cpp css/CSSSerialize.h css/CSSGrammar.yy \
-	css/CSSSelector.cpp css/CSSSelector.h css/CSSTokenizer.re \
-	css/CSSParser.cpp css/CSSParser.h css/CSSValueParser.cpp \
-	css/CSSValueParser.h css/CSSInputStream.cpp \
-	css/CSSInputStream.h css/Replaced.cpp css/Table.cpp \
-	css/Table.h css/TableGL.cpp css/ViewCSSImp.cpp \
+	css/FormattingContext.cpp css/LineBox.cpp \
+	css/StackingContext.cpp css/StackingContext.h css/CSSColor.re \
+	css/CSSPropertyNames.re css/CSSPropertyValueImp.cpp \
+	css/CSSPropertyValueImp.h css/CSSSerialize.cpp \
+	css/CSSSerialize.h css/CSSGrammar.yy css/CSSSelector.cpp \
+	css/CSSSelector.h css/CSSTokenizer.re css/CSSParser.cpp \
+	css/CSSParser.h css/CSSValueParser.cpp css/CSSValueParser.h \
+	css/CSSInputStream.cpp css/CSSInputStream.h css/Replaced.cpp \
+	css/Table.cpp css/Table.h css/TableGL.cpp css/ViewCSSImp.cpp \
 	css/ViewCSSImp.h css/ViewCSSImpGL.cpp Test.util.h \
 	Test.util.cpp Test.glut.cpp ApplicationCacheImp.cpp \
 	ApplicationCacheImp.h AttrImp.cpp AttrImp.h BarPropImp.cpp \
@@ -2010,6 +2010,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/KeyboardEvent.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/KeyboardEventImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Layout.test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LineBox.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LinkStyle.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/LinkStyleImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Location.Po@am__quote@
@@ -2413,6 +2414,20 @@ FormattingContext.obj: css/FormattingContext.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='css/FormattingContext.cpp' object='FormattingContext.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o FormattingContext.obj `if test -f 'css/FormattingContext.cpp'; then $(CYGPATH_W) 'css/FormattingContext.cpp'; else $(CYGPATH_W) '$(srcdir)/css/FormattingContext.cpp'; fi`
+
+LineBox.o: css/LineBox.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT LineBox.o -MD -MP -MF $(DEPDIR)/LineBox.Tpo -c -o LineBox.o `test -f 'css/LineBox.cpp' || echo '$(srcdir)/'`css/LineBox.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/LineBox.Tpo $(DEPDIR)/LineBox.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='css/LineBox.cpp' object='LineBox.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o LineBox.o `test -f 'css/LineBox.cpp' || echo '$(srcdir)/'`css/LineBox.cpp
+
+LineBox.obj: css/LineBox.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT LineBox.obj -MD -MP -MF $(DEPDIR)/LineBox.Tpo -c -o LineBox.obj `if test -f 'css/LineBox.cpp'; then $(CYGPATH_W) 'css/LineBox.cpp'; else $(CYGPATH_W) '$(srcdir)/css/LineBox.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/LineBox.Tpo $(DEPDIR)/LineBox.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='css/LineBox.cpp' object='LineBox.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o LineBox.obj `if test -f 'css/LineBox.cpp'; then $(CYGPATH_W) 'css/LineBox.cpp'; else $(CYGPATH_W) '$(srcdir)/css/LineBox.cpp'; fi`
 
 StackingContext.o: css/StackingContext.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT StackingContext.o -MD -MP -MF $(DEPDIR)/StackingContext.Tpo -c -o StackingContext.o `test -f 'css/StackingContext.cpp' || echo '$(srcdir)/'`css/StackingContext.cpp
