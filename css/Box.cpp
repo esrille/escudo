@@ -16,8 +16,6 @@
 
 #include "Box.h"
 
-#include <unicode/uchar.h>
-
 #include <algorithm>
 #include <new>
 #include <iostream>

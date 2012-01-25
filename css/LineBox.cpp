@@ -37,8 +37,6 @@
 #include "ViewCSSImp.h"
 #include "WindowImp.h"
 
-#include "Table.h"
-
 #include "Test.util.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
@@ -57,13 +55,28 @@ bool isAtRightEdge(Element& element, Node& node)
     return element == node || element.getLastChild() == node;
 }
 
-}
-
-void BlockLevelBox::setActiveStyle(ViewCSSImp* view, CSSStyleDeclarationImp*& activeStyle, CSSStyleDeclarationImp* style, FontTexture*& font, float& point)
+void setActiveStyle(ViewCSSImp* view, CSSStyleDeclarationImp*& activeStyle, CSSStyleDeclarationImp* style, FontTexture*& font, float& point)
 {
     activeStyle = style;
     font = activeStyle->getFontTexture();
     point = view->getPointFromPx(activeStyle->fontSize.getPx());
+}
+
+size_t getfirstLetterLength(const std::u16string& data)
+{
+    size_t fitLength = data.size();
+    if (0 < fitLength) {
+        size_t pos = 0;
+        fitLength = 0;
+        while (u_ispunct(nextChar(data, pos)))
+            fitLength = pos;
+        nextChar(data, fitLength);
+        while (u_ispunct(nextChar(data, pos)))
+            fitLength = pos;
+    }
+    return fitLength;
+}
+
 }
 
 void BlockLevelBox::nextLine(ViewCSSImp* view, FormattingContext* context, CSSStyleDeclarationImp*& activeStyle,
@@ -83,21 +96,6 @@ void BlockLevelBox::nextLine(ViewCSSImp* view, FormattingContext* context, CSSSt
             setActiveStyle(view, activeStyle, style, font, point);
         }
     }
-}
-
-size_t BlockLevelBox::getfirstLetterLength(const std::u16string& data)
-{
-    size_t fitLength = data.size();
-    if (0 < fitLength) {
-        size_t pos = 0;
-        fitLength = 0;
-        while (u_ispunct(nextChar(data, pos)))
-            fitLength = pos;
-        nextChar(data, fitLength);
-        while (u_ispunct(nextChar(data, pos)))
-            fitLength = pos;
-    }
-    return fitLength;
 }
 
 bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* context,

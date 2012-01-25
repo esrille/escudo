@@ -562,9 +562,6 @@ class BlockLevelBox : public Box
     // A block-level box may contain either line boxes or block-level boxes, but not both.
     std::list<Node> inlines;
 
-    static size_t getfirstLetterLength(const std::u16string& data);
-
-    void setActiveStyle(ViewCSSImp* view, CSSStyleDeclarationImp*& activeStyle, CSSStyleDeclarationImp* style, FontTexture*& font, float& point);
     void nextLine(ViewCSSImp* view, FormattingContext* context, CSSStyleDeclarationImp*& activeStyle,
                   CSSStyleDeclarationPtr& firstLetterStyle, CSSStyleDeclarationPtr& firstLineStyle,
                   CSSStyleDeclarationImp* style, FontTexture*& font, float& point);
