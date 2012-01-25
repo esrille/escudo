@@ -98,6 +98,67 @@ void BlockLevelBox::nextLine(ViewCSSImp* view, FormattingContext* context, CSSSt
     }
 }
 
+void BlockLevelBox::getPsuedoStyles(ViewCSSImp* view, FormattingContext* context, CSSStyleDeclarationImp* style,
+                                    CSSStyleDeclarationPtr& firstLetterStyle, CSSStyleDeclarationPtr& firstLineStyle)
+{
+    bool isFirstLetter = true;
+    for (Box* i = context->lineBox->getFirstChild(); i; i = i->getNextSibling()) {
+        if (dynamic_cast<InlineLevelBox*>(i)) {
+            isFirstLetter = false;
+            break;
+        }
+    }
+
+    // The current line box is the 1st line of this block box.
+    // style to use can be a pseudo element styles from any ancestor elements.
+    // Note the :first-line, first-letter pseudo-elements can only be attached to a block container element.
+    std::list<CSSStyleDeclarationImp*> firstLineStyles;
+    std::list<CSSStyleDeclarationImp*> firstLetterStyles;
+    Box* box = this;
+    for (;;) {
+        if (CSSStyleDeclarationImp* s = box->getStyle()) {
+            if (CSSStyleDeclarationImp* p = s->getPseudoElementStyle(CSSPseudoElementSelector::FirstLine))
+                firstLineStyles.push_front(p);
+            if (isFirstLetter) {
+                if (CSSStyleDeclarationImp* p = s->getPseudoElementStyle(CSSPseudoElementSelector::FirstLetter))
+                    firstLetterStyles.push_front(p);
+                if (s->getPseudoElementSelectorType() == CSSPseudoElementSelector::Marker)
+                    isFirstLetter = false;
+            }
+        }
+        Box* parent = box->getParentBox();
+        if (!parent || parent->getFirstChild() != box)
+            break;
+        box = parent;
+    }
+    if (!firstLineStyles.empty()) {
+        firstLineStyle = new(std::nothrow) CSSStyleDeclarationImp;
+        if (firstLineStyle) {
+            for (auto i = firstLineStyles.begin(); i != firstLineStyles.end(); ++i)
+                firstLineStyle->specify(*i);
+            if (style->display.isInline()) {
+                // 'style' should inherit properties from 'firstLineStyle'.
+                // cf. 7.1.1. First formatted line definition in CSS - Selectors Level 3
+                // cf. http://test.csswg.org/suites/css2.1/20110323/html4/first-line-pseudo-021.htm
+                firstLineStyle->specifyWithoutInherited(style);
+            }
+            firstLineStyle->compute(view, getStyle(), 0);
+            firstLineStyle->resolve(view, this);
+        }
+    }
+    if (!firstLetterStyles.empty()) {
+        firstLetterStyle = new(std::nothrow) CSSStyleDeclarationImp;
+        if (firstLetterStyle) {
+            for (auto i = firstLetterStyles.begin(); i != firstLetterStyles.end(); ++i)
+                firstLetterStyle->specify(*i);
+            if (style->display.isInline() && style->getPseudoElementSelectorType() == CSSPseudoElementSelector::NonPseudo)
+                firstLetterStyle->specify(style);
+            firstLetterStyle->compute(view, firstLineStyle.get() ? firstLineStyle.get() : style, 0);
+            firstLetterStyle->resolve(view, this);
+        }
+    }
+}
+
 bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
                                std::u16string data, Element element, CSSStyleDeclarationImp* style)
 {
@@ -130,63 +191,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
         }
         if (!psuedoChecked && getFirstChild() == context->lineBox) {
             psuedoChecked  = true;
-
-            bool isFirstLetter = true;
-            for (Box* i = context->lineBox->getFirstChild(); i; i = i->getNextSibling()) {
-                if (dynamic_cast<InlineLevelBox*>(i)) {
-                    isFirstLetter = false;
-                    break;
-                }
-            }
-
-            // The current line box is the 1st line of this block box.
-            // style to use can be a pseudo element styles from any ancestor elements.
-            // Note the :first-line, first-letter pseudo-elements can only be attached to a block container element.
-            std::list<CSSStyleDeclarationImp*> firstLineStyles;
-            std::list<CSSStyleDeclarationImp*> firstLetterStyles;
-            Box* box = this;
-            for (;;) {
-                if (CSSStyleDeclarationImp* s = box->getStyle()) {
-                    if (CSSStyleDeclarationImp* p = s->getPseudoElementStyle(CSSPseudoElementSelector::FirstLine))
-                        firstLineStyles.push_front(p);
-                    if (isFirstLetter) {
-                        if (CSSStyleDeclarationImp* p = s->getPseudoElementStyle(CSSPseudoElementSelector::FirstLetter))
-                            firstLetterStyles.push_front(p);
-                        if (s->getPseudoElementSelectorType() == CSSPseudoElementSelector::Marker)
-                            isFirstLetter = false;
-                    }
-                }
-                Box* parent = box->getParentBox();
-                if (!parent || parent->getFirstChild() != box)
-                    break;
-                box = parent;
-            }
-            if (!firstLineStyles.empty()) {
-                firstLineStyle = new(std::nothrow) CSSStyleDeclarationImp;
-                if (firstLineStyle) {
-                    for (auto i = firstLineStyles.begin(); i != firstLineStyles.end(); ++i)
-                        firstLineStyle->specify(*i);
-                    if (style->display.isInline()) {
-                        // 'style' should inherit properties from 'firstLineStyle'.
-                        // cf. 7.1.1. First formatted line definition in CSS - Selectors Level 3
-                        // cf. http://test.csswg.org/suites/css2.1/20110323/html4/first-line-pseudo-021.htm
-                        firstLineStyle->specifyWithoutInherited(style);
-                    }
-                    firstLineStyle->compute(view, getStyle(), 0);
-                    firstLineStyle->resolve(view, this);
-                }
-            }
-            if (!firstLetterStyles.empty()) {
-                firstLetterStyle = new(std::nothrow) CSSStyleDeclarationImp;
-                if (firstLetterStyle) {
-                    for (auto i = firstLetterStyles.begin(); i != firstLetterStyles.end(); ++i)
-                        firstLetterStyle->specify(*i);
-                    if (style->display.isInline() && style->getPseudoElementSelectorType() == CSSPseudoElementSelector::NonPseudo)
-                        firstLetterStyle->specify(style);
-                    firstLetterStyle->compute(view, firstLineStyle.get() ? firstLineStyle.get() : style, 0);
-                    firstLetterStyle->resolve(view, this);
-                }
-            }
+            getPsuedoStyles(view, context, style, firstLetterStyle, firstLineStyle);
             if (firstLetterStyle) {
                 setActiveStyle(view, activeStyle, firstLetterStyle.get(), font, point);
                 if (firstLetterStyle->isFloat()) {

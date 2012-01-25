@@ -562,6 +562,8 @@ class BlockLevelBox : public Box
     // A block-level box may contain either line boxes or block-level boxes, but not both.
     std::list<Node> inlines;
 
+    void getPsuedoStyles(ViewCSSImp* view, FormattingContext* context, CSSStyleDeclarationImp* style,
+                         CSSStyleDeclarationPtr& firstLetterStyle, CSSStyleDeclarationPtr& firstLineStyle);
     void nextLine(ViewCSSImp* view, FormattingContext* context, CSSStyleDeclarationImp*& activeStyle,
                   CSSStyleDeclarationPtr& firstLetterStyle, CSSStyleDeclarationPtr& firstLineStyle,
                   CSSStyleDeclarationImp* style, FontTexture*& font, float& point);
