@@ -28,6 +28,7 @@
 
 #include <boost/intrusive_ptr.hpp>
 
+#include "TextIterator.h"
 #include "http/HTTPRequest.h"
 #include "css/CSSStyleDeclarationImp.h"
 
@@ -71,6 +72,9 @@ class FormattingContext
 {
     friend class Box;
     friend class BlockLevelBox;
+
+    TextIterator textIterator;
+    size_t textLength;
 
     LineBox* lineBox;
     float x;
@@ -154,6 +158,18 @@ public:
     }
 
     void adjustRemainingFloatingBoxes(float topBorderEdge);
+
+    //
+    // Text
+    //
+    void setText(const char16_t* text, size_t length) {
+        textLength = length;
+        textIterator.setText(text, length);
+    }
+    size_t getNextTextBoundary() {
+        return textIterator.next() ? *textIterator : textIterator.size();
+    }
+    InlineLevelBox* getWrapBox(const std::u16string& text);
 };
 
 class BoxImage
@@ -761,13 +777,18 @@ class InlineLevelBox : public Box
     float leading;
     std::u16string data;
 
+    size_t wrap;
+    float wrapWidth;
+
 public:
     InlineLevelBox(Node node, CSSStyleDeclarationImp* style) :
         Box(node),
         font(0),
         point(0.0f),
         baseline(0.0f),
-        leading(0.0f)
+        leading(0.0f),
+        wrap(0),
+        wrapWidth(0.0f)
     {
         setStyle(style);
     }
@@ -782,7 +803,30 @@ public:
         return this;
     }
 
-    virtual bool isAnonymous() const;
+    virtual bool isAnonymous() const {
+        return !style || !style->display.isInlineLevel();
+    }
+    bool isInline() const {
+        return style && style->display.isInline();
+    }
+
+    void clearBlankLeft() {
+        marginLeft = paddingLeft = borderLeft = 0.0f;
+    }
+    void clearBlankRight() {
+        marginRight = paddingRight = borderRight = 0.0f;
+    }
+
+    size_t getWrap() const {
+        return wrap;
+    }
+    bool hasWrapBox() const {
+        return wrap < data.length();
+    }
+    std::u16string getWrapText() const {
+        return data.substr(wrap);
+    }
+    InlineLevelBox* split();
 
     // has non-zero margins, padding, or borders?
     bool hasHeight() const {
@@ -800,8 +844,8 @@ public:
     }
     void resolveWidth();
     virtual void resolveOffset(ViewCSSImp* view);
-    void setData(FontTexture* font, float point, std::u16string data);
-    std::u16string getData() const {
+    void setData(FontTexture* font, float point, std::u16string data, size_t wrap, float wrapWidth);
+    const std::u16string& getData() const {
         return data;
     }
     virtual void resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,13 @@ class TextIterator
 {
     UBreakIterator* bi;
     size_t current;
+    size_t length;
 public:
     TextIterator(UBreakIteratorType type = UBRK_LINE) :
         bi(0),
-        current(UBRK_DONE) {
+        current(UBRK_DONE),
+        length(0)
+    {
         UErrorCode err = U_ZERO_ERROR;
         bi = ubrk_open(UBRK_LINE, 0, 0, 0, &err);
         if (U_FAILURE(err))
@@ -47,6 +50,7 @@ public:
             return;
         }
         current = ubrk_first(bi);
+        length = length;
     }
     bool next() {
         if (current != UBRK_DONE)
@@ -55,6 +59,9 @@ public:
     }
     size_t operator*() {
         return current;
+    }
+    size_t size() const {
+        return length;
     }
 };
 

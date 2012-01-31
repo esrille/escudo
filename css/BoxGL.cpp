@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -585,7 +585,7 @@ void InlineLevelBox::render(ViewCSSImp* view, StackingContext* stackingContext)
                 unsigned color = getStyle()->color.getARGB();
                 glColor4ub(color >> 16, color >> 8, color, color >> 24);
                 glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-                font->renderText(data.c_str(), data.length());
+                font->renderText(data.c_str(), data.length(), getStyle()->textTransform.getValue());
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             glPopMatrix();
             // TODO: line-through

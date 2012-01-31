@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ public:
     virtual void addImage(uint8_t* image) = 0;
     virtual void deleteImage(uint8_t* image) = 0;
     virtual void updateImage(uint8_t* image, FontGlyph* glyph) = 0;
-    virtual void renderText(FontTexture* font, const char16_t* text, size_t length) = 0;
+    virtual void renderText(FontTexture* font, const char16_t* text, size_t length, unsigned transform) = 0;
 };
 
 class FontManager
@@ -183,15 +183,16 @@ public:
         return face;
     }
 
-    float measureText(const char16_t* text, float point);
-    size_t fitText(const char16_t* text, size_t length, float point, float& leftover, unsigned ws = 0, size_t* next = 0, float* required = 0);
-    std::u16string fitTextWithTransformation(const char16_t* text, size_t length, float point, unsigned transform,
-                                             float& leftover,
-                                             size_t* lenght, size_t* transformedLength,
-                                             unsigned ws = 0, size_t* next = 0, float* required = 0);
+    float getScale(float point) const {
+        return point / this->point / 64.0f;
+    }
 
-    void renderText(const char16_t* text, size_t length) {
-        face->manager->getBackEnd()->renderText(this, text, length);
+    float measureText(const char16_t* text, float point);
+    float measureText(const char16_t* text, size_t length, float point, unsigned transform,
+                      FontGlyph*& glyph, char32_t& u);
+
+    void renderText(const char16_t* text, size_t length, unsigned transform = 0) {
+        face->manager->getBackEnd()->renderText(this, text, length, transform);
     }
 
     float getSize(float point) const {

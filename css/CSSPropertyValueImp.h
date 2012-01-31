@@ -2117,6 +2117,16 @@ public:
             return false;
         }
     }
+    bool isBreakingLines() const {
+        switch (value) {
+        case Normal:
+        case PreWrap:
+        case PreLine:
+            return true;
+        default:
+            return false;
+        }
+    }
     CSSWhiteSpaceValueImp(unsigned initial = Normal) :
         value(initial) {
     }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
 #include "FontManager.h"
 
 #include <GL/glut.h>
+#include <unicode/uchar.h>
 
 #include "utf.h"
 
@@ -170,14 +171,29 @@ public:
         }
     }
 
-    void renderText(FontTexture* fontTexture, const char16_t* text, size_t length)
+    void renderText(FontTexture* fontTexture, const char16_t* text, size_t length, unsigned transform)
     {
         setMatrixMode();
         const char16_t* last = text + length;
-        while (text < last) {
+        const char16_t* p = text;
+        while (p < last) {
             char32_t u;
-            text = utf16to32(text, &u);
+            p = utf16to32(p, &u);
             if (u != '\n') {
+                switch (transform) {
+                case 1:  // capitalize
+                    if (p == text)
+                        u = u_totitle(u);
+                    break;
+                case 2:  // uppercase
+                    u = u_toupper(u);
+                    break;
+                case 3:  // lowercase
+                    u = u_tolower(u);
+                    break;
+                default:  // none
+                    break;
+                }
                 FontGlyph* glyph = fontTexture->getGlyph(u);
                 uint8_t* image = fontTexture->getImage(glyph);
                 bindImage(image);

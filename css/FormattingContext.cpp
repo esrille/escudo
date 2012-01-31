@@ -194,7 +194,7 @@ float FormattingContext::shiftDown(float width)
             // Shift down to right
             w = right.front()->getEffectiveTotalWidth();
             leftover += w;
-            if (right.size() == 1) 
+            if (right.size() == 1)
                 leftover = width - x;
             h += rh;
         } else if (0.0f < lh) {
@@ -234,7 +234,7 @@ bool FormattingContext::shiftDownLineBox(ViewCSSImp* view)
         lineBox->marginRight = getRightEdge();
         x = lineBox->marginLeft;
         leftover = lineBox->getParentBox()->width - x - lineBox->marginRight;
-        
+
         // If there are floating boxes in floatNodes, try adding those first;
         // cf. c414-flt-fit-001.
         tryAddFloat(view);
@@ -431,6 +431,24 @@ float FormattingContext::fixMargin()
 void FormattingContext::adjustRemainingFloatingBoxes(float topBorderEdge)
 {
     floatList.clear();
+}
+
+InlineLevelBox* FormattingContext::getWrapBox(const std::u16string& text)
+{
+    InlineLevelBox* lastBox = dynamic_cast<InlineLevelBox*>(lineBox->getLastChild());
+    if (!lastBox || !lastBox->hasWrapBox())
+        return 0;
+
+    std::u16string wrapText = lastBox->getWrapText();
+    size_t wrapLength = wrapText.length();
+    size_t pos = 0;
+    wrapText += nextChar(text, pos); // TODO: check this works with surrogate pairs.
+    TextIterator ti;
+    ti.setText(wrapText.c_str(), wrapText.length());
+    if (!ti.next() || *ti == wrapLength)
+        return 0;
+
+    return lastBox->split();
 }
 
 }}}}  // org::w3c::dom::bootstrap

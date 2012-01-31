@@ -410,7 +410,7 @@ public:
     }
 
     size_t processWhiteSpace(std::u16string& data, char16_t& prevChar);
-    size_t processLineHeadWhiteSpace(std::u16string& data);
+    size_t processLineHeadWhiteSpace(const std::u16string& data, size_t position);
 
     bool isFlowRoot() const;
 

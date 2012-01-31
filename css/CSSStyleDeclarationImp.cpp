@@ -1484,19 +1484,19 @@ size_t CSSStyleDeclarationImp::processWhiteSpace(std::u16string& data, char16_t&
     return data.length();
 }
 
-size_t CSSStyleDeclarationImp::processLineHeadWhiteSpace(std::u16string& data)
+size_t CSSStyleDeclarationImp::processLineHeadWhiteSpace(const std::u16string& data, size_t position)
 {
     switch (whiteSpace.getValue()) {
     case CSSWhiteSpaceValueImp::Normal:
     case CSSWhiteSpaceValueImp::Nowrap:
     case CSSWhiteSpaceValueImp::PreLine:
-        if (0 < data.length() && data[0] == u' ')
-            data.erase(0, 1);
+        if (position < data.length() && data[position] == u' ')
+            ++position;
         break;
     default:
         break;
     }
-    return data.length();
+    return position;
 }
 
 bool CSSStyleDeclarationImp::isFlowRoot() const

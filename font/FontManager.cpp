@@ -17,6 +17,7 @@
 #include "FontManager.h"
 
 #include <algorithm>
+#include <iostream>
 
 #include <freetype/tttables.h>
 #include <freetype/ftsizes.h>
@@ -327,127 +328,36 @@ float FontTexture::measureText(const char16_t* text, float point)
         FontGlyph* glyph = getGlyph(u);
         width += glyph->advance;
     }
-    return width / 64.0f * point / this->point;
+    return width * getScale(point);
 }
 
-size_t FontTexture::fitText(const char16_t* text, size_t length, float point, float& leftover, unsigned ws, size_t* next, float* required)
+float FontTexture::measureText(const char16_t* text, size_t length, float point, unsigned transform,
+                               FontGlyph*& glyph, char32_t& u)
 {
-    const float scale = point / this->point / 64.0f;
-    char32_t u = 0;
-    size_t posLast = 0;
-    TextIterator ti;  // TODO: keep one ti
-    ti.setText(text, length);
-    if (next)
-        *next = 0;
-    char32_t c = 0;
-    while (ti.next() && c != '\n') {
-        size_t pos = *ti;
-        float advance = 0.0f;
-        FontGlyph* glyph;
-        for (size_t i = posLast; i < pos; ++i) {
-            text = utf16to32(text, &c);
-            if (c != '\n') {
-                u = c;
-                glyph = getGlyph(u);
-                advance += glyph->advance;
-            }
-        }
-        advance *= scale;
-        if (leftover < advance && ws != Pre && ws != Nowrap) {
-            if (u == u' ' && isCollapsingSpace(ws) && posLast < pos) {
-                float trimmed = advance - glyph->advance * scale;
-                if (trimmed <= leftover) {
-                    leftover -= trimmed;
-                    posLast = pos - 1;
-                    break;
-                }
-            }
-            if (next)
-                *next = pos;
-            if (required)
-                *required = advance;
-            break;
-        }
-        leftover -= advance;
-        posLast = pos;
-    }
-    return posLast;
-}
-
-// TODO: Support full (language-specific) case mapping at some point.
-// cf. http://userguide.icu-project.org/transforms/casemappings
-std::u16string FontTexture::
-fitTextWithTransformation(const char16_t* text, size_t length, float point, unsigned transform,
-                          float& leftover,
-                          size_t* lenght, size_t* transformedLength,
-                          unsigned ws, size_t* next, float* required)
-{
-    std::u16string transformed;
-    const float scale = point / this->point / 64.0f;
-    char32_t u = 0;
-    size_t posLast = 0;
-    size_t posLastTransformed = 0;
-    TextIterator ti;  // TODO: keep one ti
-    ti.setText(text, length);
-    if (next)
-        *next = 0;
+    const char16_t* p = text;
+    const char16_t* end = text + length;
+    int width = 0;
     char32_t c;
-    while (ti.next() && c != '\n') {
-        size_t pos = *ti;
-        float advance = 0.0f;
-        FontGlyph* glyph;
-        for (size_t i = posLast; i < pos; ++i) {
-            text = utf16to32(text, &c);
-            if (c != '\n') {
-                u = c;
-                switch (transform) {
-                case 1:  // capitalize
-                    if (i == posLast)
-                        u = u_totitle(u);
-                    break;
-                case 2:  // uppercase
-                    u = u_toupper(u);
-                    break;
-                case 3:  // lowercase
-                    u = u_tolower(u);
-                    break;
-                default:  // none
-                    break;
-                }
-                char16_t buffer[3];
-                if (char16_t* p = utf32to16(u, buffer)) {
-                    *p = 0;
-                    transformed += buffer;
-                }
-                glyph = getGlyph(u);
-                advance += glyph->advance;
+    while (p < end && (p = utf16to32(p, &c)) && c) {
+        if (c != '\n') {
+            u = c;
+            switch (transform) {
+            case 1:  // capitalize
+                if (p == text)
+                    u = u_totitle(u);
+                break;
+            case 2:  // uppercase
+                u = u_toupper(u);
+                break;
+            case 3:  // lowercase
+                u = u_tolower(u);
+                break;
+            default:  // none
+                break;
             }
+            glyph = getGlyph(u);
+            width += glyph->advance;
         }
-        advance *= scale;
-        if (leftover < advance && ws != Pre && ws != Nowrap) {
-            if (u == u' ' && isCollapsingSpace(ws) && posLast < pos) {
-                float trimmed = advance - glyph->advance * scale;
-                if (trimmed <= leftover) {
-                    leftover -= trimmed;
-                    posLast = pos - 1;
-                    posLastTransformed = transformed.length() - 1;
-                    transformed.erase(posLastTransformed);
-                    break;
-                }
-            }
-            if (next)
-                *next = pos;
-            if (required)
-                *required = advance;
-            break;
-        }
-        leftover -= advance;
-        posLast = pos;
-        posLastTransformed = transformed.length();
     }
-    if (lenght)
-        *lenght = posLast;
-    if (transformedLength)
-        *transformedLength = posLastTransformed;
-    return transformed;
+    return width * getScale(point);
 }
