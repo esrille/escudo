@@ -173,6 +173,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
         return !isAnonymous();
 
     bool psuedoChecked = isAnonymous() && getParentBox()->getFirstChild() != this;
+    bool isFirstLine = false;
     CSSStyleDeclarationPtr firstLineStyle;
     CSSStyleDeclarationPtr firstLetterStyle;
     CSSStyleDeclarationImp* activeStyle;
@@ -196,6 +197,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
         }
         if (!psuedoChecked && getFirstChild() == context->lineBox) {
             psuedoChecked  = true;
+            isFirstLine = true;
             getPsuedoStyles(view, context, style, firstLetterStyle, firstLineStyle);
             if (firstLetterStyle) {
                 assert(position == 0);
@@ -219,14 +221,15 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                 }
             } else if (firstLineStyle)
                 activeStyle = setActiveStyle(view, firstLineStyle.get(), font, point);
-        }
+        } else
+            isFirstLine = false;
         LineBox* lineBox = context->lineBox;
 
         if (wrapBox) {
             float wrapWidth = wrapBox->getTotalWidth();
             context->x += wrapWidth;
             context->leftover -= wrapWidth;
-            if (context->leftover < 0.0f && (context->lineBox->hasChildBoxes() || context->hasNewFloats())) {
+            if (context->leftover < 0.0f && (lineBox->hasChildBoxes() || context->hasNewFloats())) {
                 nextLine(view, context, activeStyle, firstLetterStyle, firstLineStyle, style, font, point);
                 continue;
             }
@@ -250,6 +253,13 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
 
         context->x += blankLeft;
         context->leftover -= blankLeft;
+
+        if (isFirstLine) {
+            float indent = getStyle()->textIndent.getPx();
+            context->x += indent;
+            context->leftover -= indent;
+            lineBox->marginLeft += indent;
+        }
 
         bool linefeed = false;
         float advanced = 0.0f;
@@ -317,7 +327,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                             wrapBox->width = font->measureText(wrapBox->getData().c_str(), wrapBox->getData().length(), point, wrapStyle->textTransform.getValue(), glyph, u);
                         }
                     }
-                    if (context->lineBox->hasChildBoxes() || context->hasNewFloats() || 0.0f < advanced) {
+                    if (lineBox->hasChildBoxes() || context->hasNewFloats() || 0.0f < advanced) {
                         breakLine = true;
                         break;
                     }
@@ -353,7 +363,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
             if (!wrapBox && inlineBox->hasWrapBox() && inlineBox->getWrap() && 0.0f <= context->leftover + (inlineBox->width - inlineBox->wrapWidth) + blankRight) {
                 wrapBox = inlineBox->split();
                 blankRight = 0;
-            } else if (context->lineBox->hasChildBoxes() || context->hasNewFloats()) {
+            } else if (lineBox->hasChildBoxes() || context->hasNewFloats()) {
                 nextLine(view, context, activeStyle, firstLetterStyle, firstLineStyle, style, font, point);
                 continue;
             } else if (wrapBox) {

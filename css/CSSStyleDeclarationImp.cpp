@@ -1301,6 +1301,8 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     content.compute(view, this);
     listStylePosition.compute(view, this);
 
+    textIndent.compute(view, this);
+
     if (isFloat() || isAbsolutelyPositioned() || !parentStyle)  // TODO or the contents of atomic inline-level descendants such as inline blocks and inline tables.
         textDecorationContext.update(this);
     else if (parentStyle->textDecorationContext.hasDecoration())
@@ -1432,6 +1434,8 @@ void CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* co
         maxHeight.setValue();
     else
         maxHeight.resolve(view, this, containingBlock->height);
+
+    textIndent.resolve(view, this, containingBlock->width);
 
     resolved = true;
 }
