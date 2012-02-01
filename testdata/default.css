@@ -66,6 +66,7 @@ ol ul, ul ol,
 ul ul, ol ol    { margin-top: 0; margin-bottom: 0 }
 u, ins          { text-decoration: underline }
 br:before       { content: "\A"; white-space: pre-line }
+wbr:before      { content: "\200B" } /* HTML 5 */
 center          { text-align: center }
 :link           { color: blue; }
 :visited        { color: purple; }

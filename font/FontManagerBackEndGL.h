@@ -179,7 +179,7 @@ public:
         while (p < last) {
             char32_t u;
             p = utf16to32(p, &u);
-            if (u != '\n') {
+            if (u != '\n' && u != u'\u200B') {
                 switch (transform) {
                 case 1:  // capitalize
                     if (p == text)

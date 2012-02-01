@@ -339,7 +339,7 @@ float FontTexture::measureText(const char16_t* text, size_t length, float point,
     int width = 0;
     char32_t c;
     while (p < end && (p = utf16to32(p, &c)) && c) {
-        if (c != '\n') {
+        if (c != '\n' && c != u'\u200B') {
             u = c;
             switch (transform) {
             case 1:  // capitalize
