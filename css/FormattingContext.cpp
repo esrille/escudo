@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 FormattingContext::FormattingContext() :
+    isFirstLine(false),
     lineBox(0),
     x(0.0f),
     leftover(0.0f),
@@ -89,6 +90,7 @@ LineBox* FormattingContext::addLineBox(ViewCSSImp* view, BlockLevelBox* parentBo
     assert(!lineBox);
     assert(parentBox);
     baseline = lineHeight = 0.0f;
+    isFirstLine = false;
     lineBox = new(std::nothrow) LineBox(parentBox->getStyle());
     if (lineBox) {
         parentBox->appendChild(lineBox);
@@ -102,9 +104,18 @@ LineBox* FormattingContext::addLineBox(ViewCSSImp* view, BlockLevelBox* parentBo
         x = lineBox->marginLeft;
         leftover = parentBox->width - x - lineBox->marginRight;
 
-        tryAddFloat(view);
+        float indent = 0.0f;
+        if (parentBox->getFirstChild() == lineBox &&
+            (!parentBox->isAnonymous() || parentBox->getParentBox()->getFirstChild() == parentBox))
+        {
+            indent = parentBox->getStyle()->textIndent.getPx();
+            x += indent;
+            leftover -= indent;
+            isFirstLine = true;
+        }
 
-        x = getLeftEdge();
+        tryAddFloat(view);
+        x = getLeftEdge() + indent;
         leftover = parentBox->width - x - getRightEdge();
 
         atLineHead = true;
@@ -335,6 +346,19 @@ void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox)
     float height = lineBox->getClearance() + lineBox->getTotalHeight();
     if (height != 0.0f)
         updateRemainingHeight(height);
+
+    if (isFirstLine) {
+        float indent = parentBox->getStyle()->textIndent.getPx();
+        for (auto i = lineBox->getFirstChild(); i; i = i->getNextSibling()) {
+            if (i->isAbsolutelyPositioned() || i->isFloat())
+                continue;
+            i->marginLeft += indent;
+            break;
+        }
+        lineBox->width += indent;
+        isFirstLine = false;
+    }
+
     lineBox = 0;
     x = leftover = 0.0f;
     atLineHead = true;

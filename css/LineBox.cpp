@@ -173,7 +173,6 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
         return !isAnonymous();
 
     bool psuedoChecked = isAnonymous() && getParentBox()->getFirstChild() != this;
-    bool isFirstLine = false;
     CSSStyleDeclarationPtr firstLineStyle;
     CSSStyleDeclarationPtr firstLetterStyle;
     CSSStyleDeclarationImp* activeStyle;
@@ -197,7 +196,6 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
         }
         if (!psuedoChecked && getFirstChild() == context->lineBox) {
             psuedoChecked  = true;
-            isFirstLine = true;
             getPsuedoStyles(view, context, style, firstLetterStyle, firstLineStyle);
             if (firstLetterStyle) {
                 assert(position == 0);
@@ -221,8 +219,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                 }
             } else if (firstLineStyle)
                 activeStyle = setActiveStyle(view, firstLineStyle.get(), font, point);
-        } else
-            isFirstLine = false;
+        }
         LineBox* lineBox = context->lineBox;
 
         if (wrapBox) {
@@ -253,13 +250,6 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
 
         context->x += blankLeft;
         context->leftover -= blankLeft;
-
-        if (isFirstLine) {
-            float indent = getStyle()->textIndent.getPx();
-            context->x += indent;
-            context->leftover -= indent;
-            lineBox->marginLeft += indent;
-        }
 
         bool linefeed = false;
         float advanced = 0.0f;
@@ -608,7 +598,7 @@ void InlineLevelBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLev
     if (shadow)
         shadow->resolveXY(left, top);
     else if (getFirstChild())
-        getFirstChild()->resolveXY(view, left, top, clip);
+        getFirstChild()->resolveXY(view, left + getBlankLeft(), top + getBlankTop(), clip);
     x = left;
     y = top;
     clipBox = clip;

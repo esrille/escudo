@@ -76,6 +76,7 @@ class FormattingContext
     TextIterator textIterator;
     size_t textLength;
 
+    bool isFirstLine;
     LineBox* lineBox;
     float x;
     float leftover;
