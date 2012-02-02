@@ -36,6 +36,7 @@ void HTMLTableCellElementImp::eval()
     HTMLElementImp::evalBgcolor(this);
     HTMLElementImp::evalHeight(this);
     HTMLElementImp::evalWidth(this);
+    HTMLElementImp::evalNoWrap(this);
 }
 
 unsigned int HTMLTableCellElementImp::getColSpan()

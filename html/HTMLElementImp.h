@@ -280,6 +280,11 @@ public:
     static void evalMarginWidth(HTMLElementImp* element) {
         evalHspace(element, u"marginwidth");
     }
+    static void evalNoWrap(HTMLElementImp* element) {
+        Nullable<std::u16string> value = element->getAttribute(u"nowrap");
+        if (value.hasValue())
+            element->getStyle().setProperty(u"white-space", u"nowrap", u"non-css");
+    }
 };
 
 }}}}  // org::w3c::dom::bootstrap
