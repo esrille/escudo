@@ -26,6 +26,7 @@
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 FormattingContext::FormattingContext() :
+    whiteSpace(CSSWhiteSpaceValueImp::Normal),
     isFirstLine(false),
     lineBox(0),
     x(0.0f),

@@ -169,8 +169,10 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
     // cf. 10.8 Line height calculations: the ’line-height’ and ’vertical-align’ properties
     bool discardable = !data.empty();
 
-    if (style->processWhiteSpace(data, context->prevChar) == 0 && discardable)
+    if (style->processWhiteSpace(data, context->prevChar) == 0 && discardable) {
+        context->whiteSpace = style->whiteSpace.getValue();
         return !isAnonymous();
+    }
 
     bool psuedoChecked = isAnonymous() && getParentBox()->getFirstChild() != this;
     CSSStyleDeclarationPtr firstLineStyle;
@@ -186,8 +188,10 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
     for (;;) {
         if (context->atLineHead && discardable && !wrapBox) {
             size_t next = style->processLineHeadWhiteSpace(data, position);
-            if (position != next && data.length() <= next)
+            if (position != next && data.length() <= next) {
+                context->whiteSpace = style->whiteSpace.getValue();
                 return !isAnonymous();
+            }
             position = next;
         }
         if (!context->lineBox) {
@@ -284,7 +288,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                 char32_t u = 0;
                 float w = font->measureText(p, next - wrap, point, transform, glyph, u);
                 p += next - wrap;
-                while (context->leftover < w && activeStyle->whiteSpace.isBreakingLines()) {
+                while (context->leftover < w && CSSWhiteSpaceValueImp::isBreakingLines(context->whiteSpace)) {
                     if (activeStyle->whiteSpace.isCollapsingSpace() && u == u' ') {
                         float lineEnd = (next - wrap == 1) ? 0 : w - glyph->advance * font->getScale(point);
                         if (lineEnd <= context->leftover) {
@@ -335,7 +339,10 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                 advanced += w;
                 context->leftover -= w;
                 length = next - position;
-            } while (!breakLine && next < position + fitLength);
+                if (breakLine)
+                    break;
+                context->whiteSpace = activeStyle->whiteSpace.getValue();
+            } while (next < position + fitLength);
         BreakLine:
             inlineBox->setData(font, point, data.substr(position, length), wrap - position, wrapWidth);
             inlineBox->width += advanced;
@@ -348,7 +355,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
             blankRight = 0;
         } else
             context->leftover -= blankRight;
-        if (context->leftover < 0.0f && activeStyle->whiteSpace.isBreakingLines()) {
+        if (context->leftover < 0.0f && CSSWhiteSpaceValueImp::isBreakingLines(context->whiteSpace)) {
             // check wrap
             if (!wrapBox && inlineBox->hasWrapBox() && inlineBox->getWrap() && 0.0f <= context->leftover + (inlineBox->width - inlineBox->wrapWidth) + blankRight) {
                 wrapBox = inlineBox->split();
@@ -374,6 +381,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
         }
         context->x += advanced + blankRight;
         context->appendInlineBox(inlineBox, activeStyle);
+        context->whiteSpace = activeStyle->whiteSpace.getValue();
         // Switch height from 'line-height' to the content height.
         if (inlineBox->hasHeight())
             inlineBox->height = font->getLineHeight(point);

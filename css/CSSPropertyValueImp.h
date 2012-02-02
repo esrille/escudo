@@ -2108,6 +2108,17 @@ public:
         value = specified.value;
     }
     bool isCollapsingSpace() const {
+        return isCollapsingSpace(value);
+    }
+    bool isBreakingLines() const {
+        return isBreakingLines(value);
+    }
+    CSSWhiteSpaceValueImp(unsigned initial = Normal) :
+        value(initial) {
+    }
+    static const char16_t* Options[];
+
+    static bool isCollapsingSpace(unsigned value) {
         switch (value) {
         case Normal:
         case Nowrap:
@@ -2117,7 +2128,7 @@ public:
             return false;
         }
     }
-    bool isBreakingLines() const {
+    static bool isBreakingLines(unsigned value) {
         switch (value) {
         case Normal:
         case PreWrap:
@@ -2127,10 +2138,6 @@ public:
             return false;
         }
     }
-    CSSWhiteSpaceValueImp(unsigned initial = Normal) :
-        value(initial) {
-    }
-    static const char16_t* Options[];
 };
 
 class CSSZIndexValueImp : public CSSPropertyValueImp
