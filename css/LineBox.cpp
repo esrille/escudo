@@ -257,6 +257,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
 
         bool linefeed = false;
         float advanced = 0.0f;
+        bool breakLine = false;
 
         if (data.empty())
             inlineBox->setData(font, point, data, 0, 0);
@@ -277,7 +278,6 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
             float advanced = 0.0f;
             float wrapWidth = 0.0f;
             context->setText(p, fitLength);
-            bool breakLine = false;
             unsigned transform = activeStyle->textTransform.getValue();
 
             do {
@@ -291,7 +291,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                 while (context->leftover < w && CSSWhiteSpaceValueImp::isBreakingLines(context->whiteSpace)) {
                     if (activeStyle->whiteSpace.isCollapsingSpace() && u == u' ') {
                         float lineEnd = (next - wrap == 1) ? 0 : w - glyph->advance * font->getScale(point);
-                        if (lineEnd <= context->leftover) {
+                        if (lineEnd == 0 || lineEnd <= context->leftover) {
                             w = lineEnd;
                             advanced += w;
                             context->leftover = 0.0f;
@@ -390,8 +390,11 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
         if (data.length() <= position) {  // layout done?
             if (linefeed)
                 context->nextLine(view, this);
-            if (!wrapBox)
+            if (!wrapBox) {
+                if (breakLine)
+                    nextLine(view, context, activeStyle, firstLetterStyle, firstLineStyle, style, font, point);
                 break;
+            }
             inlineBox = wrapBox;
             wrapBox = 0;
             goto NextLine;
