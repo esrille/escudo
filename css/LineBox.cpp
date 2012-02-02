@@ -342,8 +342,10 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                 if (breakLine)
                     break;
                 context->whiteSpace = activeStyle->whiteSpace.getValue();
-                if (wrap < next && data[next - 1] == '\n')
+                if (wrap < next && data[next - 1] == '\n') {
+                    breakLine = true;
                     break;
+                }
             } while (next < position + fitLength);
         BreakLine:
             inlineBox->setData(font, point, data.substr(position, length), wrap - position, wrapWidth);
