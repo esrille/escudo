@@ -1446,43 +1446,68 @@ size_t CSSStyleDeclarationImp::processWhiteSpace(std::u16string& data, char16_t&
     switch (prop) {
     case CSSWhiteSpaceValueImp::Normal:
     case CSSWhiteSpaceValueImp::Nowrap:
-    case CSSWhiteSpaceValueImp::PreLine:
-        for (int i = 0; i < data.length();) {
+    case CSSWhiteSpaceValueImp::PreLine: {
+        size_t spacePos;
+        size_t spaceLen = 0;
+        for (size_t i = 0; i < data.length(); ++i) {
             char16_t c = data[i];
-            if (c == '\n') {  // linefeed
-                int j;
-                for (j = i - 1; 0 <= j && isSpace(data[j]); --j)
-                    ;
-                ++j;
-                if (j < i) {
-                    data.erase(j, i - j);
-                    i = j;
-                }
-                for (j = i + 1; j < data.length() && isSpace(data[j]); ++j)
-                    ;
-                --j;
-                if (i < j)
-                    data.erase(i + 1, j - i);
-                switch (prop) {
-                case CSSWhiteSpaceValueImp::Normal:
-                case CSSWhiteSpaceValueImp::Nowrap:
-                    c = data[i] = ' ';
-                    break;
-                }
-                if (i != 0)
-                    prevChar = 0;
-            } else if (c == '\t')
+            switch (c) {
+            case '\t':
                 c = data[i] = ' ';
-            if (c == ' ' && prevChar == ' ') {
-                data.erase(i, 1);
-                continue;  // do not increment i.
+                break;
+            case '\r':
+                c = data[i] = '\n';
+                // FALL THROUGH
+            case '\n':
+                if (prop == CSSWhiteSpaceValueImp::Normal || prop == CSSWhiteSpaceValueImp::Nowrap)
+                    c = data[i] = ' ';
+                break;
+            default:
+                break;
             }
-            prevChar = c;
-            ++i;
+            if (c == ' ') {
+                if (spaceLen == 0)
+                    spacePos = i;
+                ++spaceLen;
+            } else {
+                if (0 < spaceLen) {
+                    if (prevChar == ' ' || c == '\n') {
+                        data.erase(spacePos, spaceLen);
+                        i = spacePos;
+                    } else if (1 < spaceLen) {
+                        ++spacePos;
+                        --spaceLen;
+                        data.erase(spacePos, spaceLen);
+                        i = spacePos;
+                    }
+                    spaceLen = 0;
+                }
+                if (c == '\n') {
+                    size_t j;
+                    for (j = i + 1; j < data.length() && isSpace(data[j]); ++j)
+                        ;
+                    --j;
+                    if (i < j)
+                        data.erase(i + 1, j - i);
+                }
+                prevChar = c;
+            }
+        }
+        if (0 < spaceLen) {
+            if (prevChar == ' ')
+                data.erase(spacePos, spaceLen);
+            else if (1 < spaceLen) {
+                ++spacePos;
+                --spaceLen;
+                data.erase(spacePos, spaceLen);
+            }
+            prevChar = ' ';
         }
         break;
+    }
     default:
-        prevChar = 0;
+        if (0 < data.length())
+            prevChar = 0;
         break;
     }
     return data.length();
