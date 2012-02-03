@@ -26,7 +26,7 @@
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 FormattingContext::FormattingContext() :
-    whiteSpace(CSSWhiteSpaceValueImp::Normal),
+    breakable(false),
     isFirstLine(false),
     lineBox(0),
     x(0.0f),
@@ -303,6 +303,7 @@ void FormattingContext::appendInlineBox(InlineLevelBox* inlineBox, CSSStyleDecla
         activeStyle->getStackingContext()->addBase(inlineBox);
 
     atLineHead = false;
+    breakable = false;
 }
 
 // Complete the current lineBox by adding float boxes if any.
@@ -363,6 +364,7 @@ void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox)
     lineBox = 0;
     x = leftover = 0.0f;
     atLineHead = true;
+    breakable = false;
 }
 
 void FormattingContext::addFloat(BlockLevelBox* floatBox, float totalWidth)

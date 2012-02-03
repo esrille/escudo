@@ -616,7 +616,6 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
     consumed = context->useMargin();
 
     context->atLineHead = true;
-    context->whiteSpace = getStyle()->whiteSpace.getValue();
 
     assert(!hasChildBoxes());
     bool collapsed = true;

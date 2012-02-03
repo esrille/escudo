@@ -76,7 +76,7 @@ class FormattingContext
     TextIterator textIterator;
     size_t textLength;
 
-    unsigned whiteSpace;
+    bool breakable;
     bool isFirstLine;
     LineBox* lineBox;
     float x;
