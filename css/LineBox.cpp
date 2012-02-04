@@ -231,9 +231,11 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
         LineBox* lineBox = context->lineBox;
 
         if (wrapBox) {
-            float wrapWidth = wrapBox->getTotalWidth();
-            context->x += wrapWidth;
-            context->leftover -= wrapWidth;
+            for (InlineLevelBox* box = wrapBox; box; box = dynamic_cast<InlineLevelBox*>(box->getNextSibling())) {
+                float wrapWidth = box->getTotalWidth();
+                context->x += wrapWidth;
+                context->leftover -= wrapWidth;
+            }
             if (context->leftover < 0.0f && (lineBox->hasChildBoxes() || context->hasNewFloats())) {
                 nextLine(view, context, activeStyle, firstLetterStyle, firstLineStyle, style, font, point);
                 continue;
@@ -261,7 +263,6 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
 
         bool linefeed = false;
         float advanced = 0.0f;
-        bool dontBreak = false;
 
         if (data.empty())
             inlineBox->setData(font, point, data, 0, 0);
@@ -293,7 +294,6 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                 if (data.length() <= next && isAtRightEdge(element, text))
                     w += blankRight;
                 while (context->leftover < w && (context->breakable || activeStyle->whiteSpace.isBreakingLines())) {
-                    dontBreak = false;
                     if (activeStyle->whiteSpace.isCollapsingSpace() && u == u' ') {
                         float lineEnd = (next - wrap == 1) ? 0 : w - glyph->advance * font->getScale(point);
                         if (lineEnd == 0 || lineEnd <= context->leftover) {
@@ -312,23 +312,22 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                     if (!wrapBox && position == 0) {
                         wrapBox = context->getWrapBox(data);
                         if (wrapBox) {
-                            if (!wrapBox->getStyle()->whiteSpace.isBreakingLines()) {
-                                // TODO: Deal with a single word that is split over more than two elements.
-                                dontBreak = true;
+                            if (!wrapBox->getStyle()->whiteSpace.isBreakingLines())
                                 break;
-                            }
                             if (firstLineStyle) {
                                 // If the current line is the first line, the style applied to the wrap-box has to be changed.
-                                Node node = wrapBox->getNode();
-                                CSSStyleDeclarationImp* wrapStyle = view->getStyle(interface_cast<Element>(node));
-                                if (!wrapStyle)
-                                    wrapStyle = getStyle();
-                                FontTexture* font;
-                                float point;
-                                wrapBox->style = setActiveStyle(view, wrapStyle, font, point);
-                                FontGlyph* glyph;
-                                char32_t u = 0;
-                                wrapBox->width = font->measureText(wrapBox->getData().c_str(), wrapBox->getData().length(), point, wrapStyle->textTransform.getValue(), glyph, u);
+                                for (InlineLevelBox* box = wrapBox; box; box = dynamic_cast<InlineLevelBox*>(box->getNextSibling())) {
+                                    Node node = box->getNode();
+                                    CSSStyleDeclarationImp* wrapStyle = view->getStyle(interface_cast<Element>(node));
+                                    if (!wrapStyle)
+                                        wrapStyle = getStyle();
+                                    FontTexture* font;
+                                    float point;
+                                    box->style = setActiveStyle(view, wrapStyle, font, point);
+                                    FontGlyph* glyph;
+                                    char32_t u = 0;
+                                    box->width = font->measureText(box->getData().c_str(), box->getData().length(), point, wrapStyle->textTransform.getValue(), glyph, u);
+                                }
                             }
                         }
                     }
@@ -336,9 +335,11 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                         goto NextLine;
                     if (context->shiftDownLineBox(view)) {
                         if (wrapBox) {
-                            float wrapWidth = wrapBox->getTotalWidth();
-                            context->x += wrapWidth;
-                            context->leftover -= wrapWidth;
+                            for (InlineLevelBox* box = wrapBox; box; box = dynamic_cast<InlineLevelBox*>(box->getNextSibling())) {
+                                float wrapWidth = box->getTotalWidth();
+                                context->x += wrapWidth;
+                                context->leftover -= wrapWidth;
+                            }
                         }
                     } else {
                         advanced += w;
@@ -370,9 +371,10 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
             blankRight = 0;
         }
 
-        if (wrapBox) {
+        while (wrapBox) {
+            InlineLevelBox* next = dynamic_cast<InlineLevelBox*>(wrapBox->getNextSibling());
             context->appendInlineBox(wrapBox, wrapBox->getStyle()); // TODO: leading, etc.
-            wrapBox = 0;
+            wrapBox = next;
         }
 
         if (inlineBox->hasHeight()) {
@@ -535,6 +537,8 @@ InlineLevelBox* InlineLevelBox::split()
     wrapBox->borderBottom = borderBottom;
     wrapBox->setData(font, point, data.substr(wrap), data.length() - wrap, 0.0f);
     wrapBox->width = width - wrapWidth;
+    wrapBox->wrap = 0;
+    wrapBox->wrapWidth = 0.0f;
     clearBlankRight();
     data.erase(wrap);
     wrap = data.length();

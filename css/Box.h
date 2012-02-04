@@ -824,7 +824,7 @@ public:
         return wrap;
     }
     bool hasWrapBox() const {
-        return wrap < data.length();
+        return data.empty() || wrap < data.length();
     }
     std::u16string getWrapText() const {
         return data.substr(wrap);

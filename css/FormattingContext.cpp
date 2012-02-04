@@ -462,20 +462,43 @@ void FormattingContext::adjustRemainingFloatingBoxes(float topBorderEdge)
 
 InlineLevelBox* FormattingContext::getWrapBox(const std::u16string& text)
 {
-    InlineLevelBox* lastBox = dynamic_cast<InlineLevelBox*>(lineBox->getLastChild());
-    if (!lastBox || !lastBox->hasWrapBox())
-        return 0;
-
-    std::u16string wrapText = lastBox->getWrapText();
-    size_t wrapLength = wrapText.length();
+    InlineLevelBox* wrapBox = 0;
+    InlineLevelBox* box = dynamic_cast<InlineLevelBox*>(lineBox->getLastChild());
     size_t pos = 0;
-    wrapText += nextChar(text, pos); // TODO: check this works with surrogate pairs.
-    TextIterator ti;
-    ti.setText(wrapText.c_str(), wrapText.length());
-    if (!ti.next() || *ti == wrapLength)
+    char32_t ch = nextChar(text, pos);
+    while (box && box->hasWrapBox()) {
+        std::u16string wrapText = box->getWrapText();
+        size_t wrapLength = wrapText.length();
+        size_t pos = 0;
+        if (ch)
+            wrapText += ch; // TODO: check this works with surrogate pairs.
+        TextIterator ti;
+        ti.setText(wrapText.c_str(), wrapText.length());
+        if (!ti.next() || *ti == wrapLength)
+            break;
+        wrapBox = box;
+        if (0 < box->getWrap())
+            break;
+        box = dynamic_cast<InlineLevelBox*>(box->getPreviousSibling());
+        pos = 0;
+        if (char32_t n = nextChar(wrapBox->getData(), pos))
+            ch = n;
+    }
+    if (!wrapBox)
         return 0;
-
-    return lastBox->split();
+    if (0 < wrapBox->getWrap()) {
+        box = dynamic_cast<InlineLevelBox*>(wrapBox->getNextSibling());
+        wrapBox = wrapBox->split();
+        wrapBox->nextSibling = box;
+    } else
+        box = wrapBox;
+    while (box) {
+        InlineLevelBox* next = dynamic_cast<InlineLevelBox*>(box->getNextSibling());
+        box->getParentBox()->removeChild(box);
+        box->nextSibling = next;
+        box = next;
+    }
+    return wrapBox;
 }
 
 }}}}  // org::w3c::dom::bootstrap
