@@ -390,11 +390,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
         if (data.length() <= position) {  // layout done?
             if (linefeed)
                 context->nextLine(view, this);
-            if (!wrapBox)
-                break;
-            inlineBox = wrapBox;
-            wrapBox = 0;
-            goto NextLine;
+            break;
         }
         inlineBox = 0;
     NextLine:
