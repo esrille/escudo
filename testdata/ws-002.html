@@ -1,0 +1,18 @@
+<html>
+ <head>
+  <title>CSS Test: white-space: mixed tests</title>
+  <style type="text/css">
+   .test { font: 20px/1 Ahem; background: yellow; color: orange; width: 5em; }
+   .normal { white-space: normal; }
+   .nowrap { white-space: nowrap; }
+   .pre { white-space: pre; }
+  </style>
+ </head>
+ <body>
+  <p>The following two lines should look the same:</p>
+  <div class="test pre">x x<span class="normal">x</span><span class="normal">x</span><span class="normal"></span><span class="normal">x</span><span class="normal">x</span></div>
+  <p />
+  <div class="test pre">x xxxxx</div>
+
+ </body>
+</html>
