@@ -270,6 +270,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
             ++position;
             linefeed = true;
         } else {
+            std::u16string inlineData;
             size_t fitLength = firstLetterStyle ? getfirstLetterLength(data, position) : (data.length() - position);
             // We are still not sure if there's a room for text in context->lineBox.
             // If there's no room due to float box(es), move the linebox down to
@@ -283,21 +284,29 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
             float wrapWidth = 0.0f;
             context->setText(p, fitLength);
             unsigned transform = activeStyle->textTransform.getValue();
+            bool isFirstCharacter = wrapBox ? false : true;
+            if (transform == CSSTextTransformValueImp::Capitalize) {
+                if (!wrapBox && position == 0)
+                    isFirstCharacter = !context->hasWrapBox(data);
+            }
             do {
                 wrap = next;
                 wrapWidth = advanced;
                 next = position + context->getNextTextBoundary();
                 FontGlyph* glyph;
-                char32_t u = 0;
-                float w = font->measureText(p, next - wrap, point, transform, glyph, u);
+                std::u16string transformed;
+                float w = font->measureText(p, next - wrap, point, transform, isFirstCharacter, glyph, transformed);
                 p += next - wrap;
+                isFirstCharacter = true;
                 if (data.length() <= next && isAtRightEdge(element, text))
                     w += blankRight;
                 while (context->leftover < w && (context->breakable || activeStyle->whiteSpace.isBreakingLines())) {
-                    if (activeStyle->whiteSpace.isCollapsingSpace() && u == u' ') {
+                    if (activeStyle->whiteSpace.isCollapsingSpace() && 0 < transformed.length() && transformed[transformed.length() - 1] == u' ') {
                         float lineEnd = (next - wrap == 1) ? 0 : w - glyph->advance * font->getScale(point);
                         if (lineEnd == 0 || lineEnd <= context->leftover) {
                             w = lineEnd;
+                            transformed.erase(transformed.length() - 1);
+                            inlineData += transformed;
                             advanced += w;
                             context->leftover = 0.0f;
                             wrap = length = next - position - 1;
@@ -316,6 +325,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                                 break;
                             if (firstLineStyle) {
                                 // If the current line is the first line, the style applied to the wrap-box has to be changed.
+                                bool isFirstCharacter = true;
                                 for (InlineLevelBox* box = wrapBox; box; box = dynamic_cast<InlineLevelBox*>(box->getNextSibling())) {
                                     Node node = box->getNode();
                                     CSSStyleDeclarationImp* wrapStyle = view->getStyle(interface_cast<Element>(node));
@@ -325,8 +335,11 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                                     float point;
                                     box->style = setActiveStyle(view, wrapStyle, font, point);
                                     FontGlyph* glyph;
-                                    char32_t u = 0;
-                                    box->width = font->measureText(box->getData().c_str(), box->getData().length(), point, wrapStyle->textTransform.getValue(), glyph, u);
+                                    std::u16string transformed;
+                                    // TODO: measureText using the original text data
+                                    box->width = font->measureText(box->getData().c_str(), box->getData().length(), point, wrapStyle->textTransform.getValue(), isFirstCharacter, glyph, transformed);
+                                    box->setData(font, point, transformed, 0, 0.0f);
+                                    isFirstCharacter = false;
                                 }
                             }
                         }
@@ -342,6 +355,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                             }
                         }
                     } else {
+                        inlineData += transformed;
                         advanced += w;
                         context->leftover -= w;
                         length = next - position;
@@ -349,6 +363,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                         goto BreakLine;
                     }
                 }
+                inlineData += transformed;
                 advanced += w;
                 context->leftover -= w;
                 length = next - position;
@@ -359,7 +374,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                 }
             } while (next < position + fitLength);
         BreakLine:
-            inlineBox->setData(font, point, data.substr(position, length), wrap - position, wrapWidth);
+            inlineBox->setData(font, point, inlineData, wrap - position, wrapWidth);
             inlineBox->width += advanced;
             position = next;
         }

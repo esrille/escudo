@@ -171,29 +171,15 @@ public:
         }
     }
 
-    void renderText(FontTexture* fontTexture, const char16_t* text, size_t length, unsigned transform)
+    void renderText(FontTexture* fontTexture, const char16_t* text, size_t length)
     {
         setMatrixMode();
-        const char16_t* last = text + length;
-        const char16_t* p = text;
-        while (p < last) {
+        const char16_t* end = text + length;
+        const char16_t* n;
+        for (const char16_t* p = text; p < end; p = n) {
             char32_t u;
-            p = utf16to32(p, &u);
+            n = utf16to32(p, &u);
             if (u != '\n' && u != u'\u200B') {
-                switch (transform) {
-                case 1:  // capitalize
-                    if (p == text)
-                        u = u_totitle(u);
-                    break;
-                case 2:  // uppercase
-                    u = u_toupper(u);
-                    break;
-                case 3:  // lowercase
-                    u = u_tolower(u);
-                    break;
-                default:  // none
-                    break;
-                }
                 FontGlyph* glyph = fontTexture->getGlyph(u);
                 uint8_t* image = fontTexture->getImage(glyph);
                 bindImage(image);

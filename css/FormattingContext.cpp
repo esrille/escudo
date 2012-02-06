@@ -460,6 +460,24 @@ void FormattingContext::adjustRemainingFloatingBoxes(float topBorderEdge)
     floatList.clear();
 }
 
+bool FormattingContext::hasWrapBox(const std::u16string& text)
+{
+    InlineLevelBox* box = dynamic_cast<InlineLevelBox*>(lineBox->getLastChild());
+    if (!box || !box->hasWrapBox())
+        return false;
+    size_t pos = 0;
+    char32_t ch = nextChar(text, pos);
+    if (!ch)
+        return false;
+    std::u16string wrapText = box->getWrapText();
+    size_t wrapLength = wrapText.length();
+    pos = 0;
+    wrapText += ch; // TODO: check this works with surrogate pairs.
+    TextIterator ti;
+    ti.setText(wrapText.c_str(), wrapText.length());
+    return ti.next() && *ti != wrapLength;
+}
+
 InlineLevelBox* FormattingContext::getWrapBox(const std::u16string& text)
 {
     InlineLevelBox* wrapBox = 0;

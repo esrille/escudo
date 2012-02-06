@@ -331,20 +331,21 @@ float FontTexture::measureText(const char16_t* text, float point)
     return width * getScale(point);
 }
 
-float FontTexture::measureText(const char16_t* text, size_t length, float point, unsigned transform,
-                               FontGlyph*& glyph, char32_t& u)
+float FontTexture::measureText(const char16_t* text, size_t length, float point, unsigned transform, bool isFirstCharacter,
+                               FontGlyph*& glyph, std::u16string& transformed)
 {
+    float width = 0.0f;
     const char16_t* p = text;
     const char16_t* end = text + length;
-    int width = 0;
-    char32_t c;
-    while (p < end && (p = utf16to32(p, &c)) && c) {
-        if (c != '\n' && c != u'\u200B') {
-            u = c;
+    char32_t u;
+    while (p < end && (p = utf16to32(p, &u)) && u) {
+        if (u != '\n' && u != u'\u200B') {
             switch (transform) {
             case 1:  // capitalize
-                if (p == text)
+                if (isFirstCharacter) {
                     u = u_totitle(u);
+                    isFirstCharacter = false;
+                }
                 break;
             case 2:  // uppercase
                 u = u_toupper(u);
@@ -357,6 +358,7 @@ float FontTexture::measureText(const char16_t* text, size_t length, float point,
             }
             glyph = getGlyph(u);
             width += glyph->advance;
+            transformed += u;
         }
     }
     return width * getScale(point);

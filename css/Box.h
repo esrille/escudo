@@ -171,6 +171,7 @@ public:
     size_t getNextTextBoundary() {
         return textIterator.next() ? *textIterator : textIterator.size();
     }
+    bool hasWrapBox(const std::u16string& text);
     InlineLevelBox* getWrapBox(const std::u16string& text);
 };
 
