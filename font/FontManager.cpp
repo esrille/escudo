@@ -342,7 +342,9 @@ float FontTexture::measureText(const char16_t* text, size_t length, float point,
         if (u != '\n' && u != u'\u200B') {
             switch (transform) {
             case 1:  // capitalize
-                if (isFirstCharacter) {
+                if (u == u'\u00A0')  // NBSP
+                    isFirstCharacter = true;
+                else if (isFirstCharacter && !u_ispunct(u)) {
                     u = u_totitle(u);
                     isFirstCharacter = false;
                 }
