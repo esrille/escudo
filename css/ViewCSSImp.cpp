@@ -438,6 +438,9 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
                 if (markerStyle) {
                     // Set the default marker style
                     markerStyle->setDisplay(u"inline-block");
+                    markerStyle->setLetterSpacing(u"normal");
+                    markerStyle->setWordSpacing(u"normal");
+                    markerStyle->setFontFamily(u"sans-serif");
                 }
             }
         }
