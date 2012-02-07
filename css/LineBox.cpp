@@ -404,6 +404,8 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
             // TODO: XXX
             lineBox->underlinePosition = std::max(lineBox->underlinePosition, font->getUnderlinePosition(point));
             lineBox->underlineThickness = std::max(lineBox->underlineThickness, font->getUnderlineThickness(point));
+            lineBox->lineThroughPosition = std::max(lineBox->lineThroughPosition, font->getLineThroughPosition(point));
+            lineBox->lineThroughThickness = std::max(lineBox->lineThroughThickness, font->getLineThroughThickness(point));
         }
         context->x += advanced + blankRight;
         context->appendInlineBox(inlineBox, activeStyle);

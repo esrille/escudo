@@ -563,11 +563,11 @@ void InlineLevelBox::render(ViewCSSImp* view, StackingContext* stackingContext)
     else if (font) {
         glPushMatrix();
             glTranslatef(x + getBlankLeft(), y + font->getAscender(point), 0.0f);
-            if (getStyle()->textDecorationContext.hasDecoration()) {
-                unsigned lineDecoration = getStyle()->textDecorationContext.decoration;
+            LineBox* lineBox = dynamic_cast<LineBox*>(getParentBox());
+            assert(lineBox);
+            unsigned lineDecoration = getStyle()->textDecorationContext.decoration;
+            if (lineDecoration & (CSSTextDecorationValueImp::Underline | CSSTextDecorationValueImp::Overline)) {
                 glDisable(GL_TEXTURE_2D);
-                LineBox* lineBox = dynamic_cast<LineBox*>(getParentBox());
-                assert(lineBox);
                 glLineWidth(lineBox->getUnderlineThickness());
                 unsigned color = getStyle()->textDecorationContext.color;
                 glColor4ub(color >> 16, color >> 8, color, color >> 24);
@@ -590,7 +590,17 @@ void InlineLevelBox::render(ViewCSSImp* view, StackingContext* stackingContext)
                                  getStyle()->wordSpacing.getPx() * font->getPoint() / point);
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             glPopMatrix();
-            // TODO: line-through
+            if (lineDecoration & CSSTextDecorationValueImp::LineThrough) {
+                glDisable(GL_TEXTURE_2D);
+                glLineWidth(lineBox->getLineThroughThickness());
+                unsigned color = getStyle()->textDecorationContext.color;
+                glColor4ub(color >> 16, color >> 8, color, color >> 24);
+                glBegin(GL_LINES);
+                    glVertex2f(0.0f, -lineBox->getLineThroughPosition());
+                    glVertex2f(getTotalWidth(), -lineBox->getLineThroughPosition());
+                glEnd();
+                glEnable(GL_TEXTURE_2D);
+            }
         glPopMatrix();
     }
 }

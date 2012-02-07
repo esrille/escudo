@@ -127,6 +127,8 @@ class FontTexture
     short descender;
     short lineGap;
     short xHeight;
+    short lineThroughPosition;
+    short lineThroughSize;
 
     std::vector<uint8_t*> images;
     FT_Vector pen;
@@ -224,9 +226,16 @@ public:
     float getUnderlinePosition(float point) const {
         return (getSize(point) * -face->face->underline_position) / (ascender - descender);
     }
-
     float getUnderlineThickness(float point) const {
         return (getSize(point) * face->face->underline_thickness) / (ascender - descender);
+    }
+
+    float getLineThroughPosition(float point) const{
+        return (getSize(point) * lineThroughPosition) / (ascender - descender);
+    }
+
+    float getLineThroughThickness(float point) const{
+        return (getSize(point) * lineThroughSize) / (ascender - descender);
     }
 
     float getBearingGap() const {

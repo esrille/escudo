@@ -713,8 +713,12 @@ class LineBox : public Box
     friend void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, bool linefeed);
 
     float baseline;
+    float overlinePosition;
+    float overlineThickness;
     float underlinePosition;
     float underlineThickness;
+    float lineThroughPosition;
+    float lineThroughThickness;
 
     float leftGap;    // the gap between the first inline box and the last left floating box
     float rightGap;   // the gap between the last inline box and the 1st right floating box
@@ -724,8 +728,12 @@ public:
     LineBox(CSSStyleDeclarationImp* style) :
         Box(0),
         baseline(0.0f),
+        overlinePosition(0.0f),
+        overlineThickness(1.0f),
         underlinePosition(0.0f),
         underlineThickness(1.0f),
+        lineThroughPosition(0.0f),
+        lineThroughThickness(1.0f),
         leftGap(0.0f),
         rightGap(0.0f),
         rightBox(0)
@@ -758,6 +766,12 @@ public:
     }
     float getUnderlineThickness() const {
         return underlineThickness;
+    }
+    float getLineThroughPosition() const {
+        return lineThroughPosition;
+    }
+    float getLineThroughThickness() const {
+        return lineThroughThickness;
     }
 
     virtual void resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip);
