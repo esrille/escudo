@@ -305,7 +305,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                     w += blankRight;
                 while (context->leftover < w && (context->breakable || activeStyle->whiteSpace.isBreakingLines())) {
                     if (activeStyle->whiteSpace.isCollapsingSpace() && 0 < transformed.length() && transformed[transformed.length() - 1] == u' ') {
-                        float lineEnd = (next - wrap == 1) ? 0 : w - glyph->advance * font->getScale(point);
+                        float lineEnd = (next - wrap == 1) ? 0 : w - glyph->advance * font->getScale(point) - activeStyle->letterSpacing.getPx() - activeStyle->wordSpacing.getPx();
                         if (lineEnd == 0 || lineEnd <= context->leftover) {
                             w = lineEnd;
                             transformed.erase(transformed.length() - 1);
@@ -580,7 +580,7 @@ float InlineLevelBox::atEndOfLine()
             width = 0.0f;
             return w;
         } else {
-            float w = -font->measureText(u" ", point);
+            float w = -font->measureText(u" ", point) - getStyle()->letterSpacing.getPx() - getStyle()->wordSpacing.getPx();
             width += w;
             return w;
         }
