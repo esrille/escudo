@@ -80,7 +80,8 @@ size_t getfirstLetterLength(const std::u16string& data, size_t position)
 
 void BlockLevelBox::nextLine(ViewCSSImp* view, FormattingContext* context, CSSStyleDeclarationImp*& activeStyle,
                              CSSStyleDeclarationPtr& firstLetterStyle, CSSStyleDeclarationPtr& firstLineStyle,
-                             CSSStyleDeclarationImp* style, FontTexture*& font, float& point)
+                             CSSStyleDeclarationImp* style, bool linefeed,
+                             FontTexture*& font, float& point)
 {
     if (firstLetterStyle) {
         firstLetterStyle = 0;
@@ -89,7 +90,7 @@ void BlockLevelBox::nextLine(ViewCSSImp* view, FormattingContext* context, CSSSt
         else
             activeStyle = setActiveStyle(view, style, font, point);
     } else {
-        context->nextLine(view, this);
+        context->nextLine(view, this, linefeed);
         if (firstLineStyle) {
             firstLineStyle = 0;
             activeStyle = setActiveStyle(view, style, font, point);
@@ -222,7 +223,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                     position += layOutFloatingFirstLetter(view, context, data, firstLetterStyle.get());
                     if (data.length() <= position)
                         break;
-                    nextLine(view, context, activeStyle, firstLetterStyle, firstLineStyle, style, font, point);
+                    nextLine(view, context, activeStyle, firstLetterStyle, firstLineStyle, style, false, font, point);
                     continue;
                 }
             } else if (firstLineStyle)
@@ -237,7 +238,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                 context->leftover -= wrapWidth;
             }
             if (context->leftover < 0.0f && (lineBox->hasChildBoxes() || context->hasNewFloats())) {
-                nextLine(view, context, activeStyle, firstLetterStyle, firstLineStyle, style, font, point);
+                nextLine(view, context, activeStyle, firstLetterStyle, firstLineStyle, style, false, font, point);
                 continue;
             }
         }
@@ -287,7 +288,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
             bool isFirstCharacter = wrapBox ? false : true;
             if (transform == CSSTextTransformValueImp::Capitalize) {
                 if (!wrapBox && position == 0)
-                    isFirstCharacter = !context->hasWrapBox(data);
+                    isFirstCharacter = context->isFirstCharacter(data);
             }
             do {
                 wrap = next;
@@ -295,7 +296,9 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                 next = position + context->getNextTextBoundary();
                 FontGlyph* glyph;
                 std::u16string transformed;
-                float w = font->measureText(p, next - wrap, point, transform, isFirstCharacter, glyph, transformed);
+                float w = font->measureText(p, next - wrap, point, transform, isFirstCharacter,
+                                            activeStyle->letterSpacing.getPx(), activeStyle->wordSpacing.getPx(),
+                                            glyph, transformed);
                 p += next - wrap;
                 isFirstCharacter = true;
                 if (data.length() <= next && isAtRightEdge(element, text))
@@ -337,7 +340,10 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                                     FontGlyph* glyph;
                                     std::u16string transformed;
                                     // TODO: measureText using the original text data
-                                    box->width = font->measureText(box->getData().c_str(), box->getData().length(), point, wrapStyle->textTransform.getValue(), isFirstCharacter, glyph, transformed);
+                                    box->width = font->measureText(box->getData().c_str(), box->getData().length(), point,
+                                                                   wrapStyle->textTransform.getValue(), isFirstCharacter,
+                                                                   wrapStyle->letterSpacing.getPx(), wrapStyle->wordSpacing.getPx(),
+                                                                   glyph, transformed);
                                     box->setData(font, point, transformed, 0, 0.0f);
                                     isFirstCharacter = false;
                                 }
@@ -406,12 +412,12 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
             inlineBox->height = font->getLineHeight(point);
         if (data.length() <= position) {  // layout done?
             if (linefeed)
-                context->nextLine(view, this);
+                context->nextLine(view, this, linefeed);
             break;
         }
         inlineBox = 0;
     NextLine:
-        nextLine(view, context, activeStyle, firstLetterStyle, firstLineStyle, style, font, point);
+        nextLine(view, context, activeStyle, firstLetterStyle, firstLineStyle, style, linefeed, font, point);
     }
     return true;
 }

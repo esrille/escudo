@@ -43,7 +43,7 @@ public:
     virtual void addImage(uint8_t* image) = 0;
     virtual void deleteImage(uint8_t* image) = 0;
     virtual void updateImage(uint8_t* image, FontGlyph* glyph) = 0;
-    virtual void renderText(FontTexture* font, const char16_t* text, size_t length) = 0;
+    virtual void renderText(FontTexture* font, const char16_t* text, size_t length, float letterSpacing, float wordSpacing) = 0;
 };
 
 class FontManager
@@ -188,11 +188,13 @@ public:
     }
 
     float measureText(const char16_t* text, float point);
-    float measureText(const char16_t* text, size_t length, float point, unsigned transform, bool isFirstCharacter,
+    float measureText(const char16_t* text, size_t length, float point,
+                      unsigned transform, bool isFirstCharacter,
+                      float letterSpacing, float wordSpacing,
                       FontGlyph*& glyph, std::u16string& transformed);
 
-    void renderText(const char16_t* text, size_t length) {
-        face->manager->getBackEnd()->renderText(this, text, length);
+    void renderText(const char16_t* text, size_t length, float letterSpacing = 0.0f, float wordSpacing = 0.0f) {
+        face->manager->getBackEnd()->renderText(this, text, length, letterSpacing, wordSpacing);
     }
 
     float getSize(float point) const {

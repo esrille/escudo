@@ -553,7 +553,7 @@ void BlockLevelBox::layOutInlineLevelBox(ViewCSSImp* view, Node node, Formatting
 
     while (context->leftover < inlineLevelBox->getTotalWidth()) {
         if (context->lineBox->hasChildBoxes() || context->hasNewFloats()) {
-            context->nextLine(view, this);
+            context->nextLine(view, this, false);
             if (!context->addLineBox(view, this))
                 return;  // TODO error
             continue;
@@ -658,7 +658,7 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
         }
     }
     if (context->lineBox)
-        context->nextLine(view, this);
+        context->nextLine(view, this, false);
 
     // Layout remaining floating boxes in context
     while (!context->floatNodes.empty()) {
@@ -680,7 +680,7 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
             }
         }
         LineBox* nextLine = context->addLineBox(view, this);
-        context->nextLine(view, this);
+        context->nextLine(view, this, false);
         if (nextLine && clearance != 0.0f)
             nextLine->clearance = clearance;
     }

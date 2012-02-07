@@ -37,6 +37,7 @@ CSSValueRule CSSValueParser::auto_length;
 CSSValueRule CSSValueParser::auto_non_negative_length;
 CSSValueRule CSSValueParser::none_length;
 CSSValueRule CSSValueParser::none_non_negative_length;
+CSSValueRule CSSValueParser::normal_length;
 CSSValueRule CSSValueParser::auto_numbering;
 CSSValueRule CSSValueParser::comma;
 CSSValueRule CSSValueParser::ident;
@@ -154,6 +155,9 @@ void CSSValueParser::initializeRules()
         = non_negative_length
         | non_negative_percentage
         | CSSValueRule(u"none", 0);
+    normal_length
+        = length
+        | CSSValueRule(u"normal", 0);
     auto_numbering
         = CSSValueRule(1, CSSValueRule::Inf, ident + CSSValueRule(0, 1, integer))
         | CSSValueRule(u"none", 0);
@@ -1037,6 +1041,9 @@ CSSValueParser::CSSValueParser(int propertyID) :
     case CSSStyleDeclarationImp::Font:
         rule = &font;
         break;
+    case CSSStyleDeclarationImp::LetterSpacing:
+        rule = &normal_length;
+        break;
     case CSSStyleDeclarationImp::LineHeight:
         rule = &lineHeight;
         break;
@@ -1117,6 +1124,9 @@ CSSValueParser::CSSValueParser(int propertyID) :
         break;
     case CSSStyleDeclarationImp::WhiteSpace:
         rule = &whiteSpace;
+        break;
+    case CSSStyleDeclarationImp::WordSpacing:
+        rule = &normal_length;
         break;
     case CSSStyleDeclarationImp::ZIndex:
         rule = &zIndex;

@@ -305,7 +305,7 @@ public:
     CSSFontShorthandImp font;
     CSSAutoLengthValueImp height;
     CSSAutoLengthValueImp left;
-
+    CSSLetterSpacingValueImp letterSpacing;
     CSSLineHeightValueImp lineHeight;
     CSSListStyleImageValueImp listStyleImage;
     CSSListStylePositionValueImp listStylePosition;
@@ -346,7 +346,7 @@ public:
     CSSVisibilityValueImp visibility;
 
     CSSWhiteSpaceValueImp whiteSpace;
-
+    CSSWordSpacingValueImp wordSpacing;
     CSSAutoLengthValueImp width;
 
     CSSZIndexValueImp zIndex;

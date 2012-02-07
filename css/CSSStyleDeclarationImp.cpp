@@ -259,6 +259,8 @@ CSSPropertyValueImp* CSSStyleDeclarationImp::getProperty(unsigned id)
         return &fontWeight;
     case Font:
         return &font;
+    case LetterSpacing:
+        return &letterSpacing;
     case LineHeight:
         return &lineHeight;
     case ListStyleImage:
@@ -325,6 +327,8 @@ CSSPropertyValueImp* CSSStyleDeclarationImp::getProperty(unsigned id)
         return &visibility;
     case WhiteSpace:
         return &whiteSpace;
+    case WordSpacing:
+        return &wordSpacing;
     case ZIndex:
         return &zIndex;
     case Binding:
@@ -740,6 +744,9 @@ void CSSStyleDeclarationImp::specify(const CSSStyleDeclarationImp* decl, unsigne
     case Font:
         font.specify(this, decl);
         break;
+    case LetterSpacing:
+        letterSpacing.specify(decl->letterSpacing);
+        break;
     case LineHeight:
         lineHeight.specify(decl->lineHeight);
         break;
@@ -838,6 +845,9 @@ void CSSStyleDeclarationImp::specify(const CSSStyleDeclarationImp* decl, unsigne
         break;
     case WhiteSpace:
         whiteSpace.specify(decl->whiteSpace);
+        break;
+    case WordSpacing:
+        wordSpacing.specify(decl->wordSpacing);
         break;
     case ZIndex:
         zIndex.specify(decl->zIndex);
@@ -1067,6 +1077,9 @@ void CSSStyleDeclarationImp::reset(unsigned id)
     case Font:
         font.reset(this);
         break;
+    case LetterSpacing:
+        letterSpacing.setValue();
+        break;
     case LineHeight:
         lineHeight.setValue();
         break;
@@ -1173,6 +1186,9 @@ void CSSStyleDeclarationImp::reset(unsigned id)
         break;
     case WhiteSpace:
         whiteSpace.setValue();
+        break;
+    case WordSpacing:
+        wordSpacing.setValue();
         break;
     case ZIndex:
         zIndex.setValue();
@@ -1302,6 +1318,8 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     listStylePosition.compute(view, this);
 
     textIndent.compute(view, this);
+    letterSpacing.compute(view, this);
+    wordSpacing.compute(view, this);
 
     if (isFloat() || isAbsolutelyPositioned() || !parentStyle)  // TODO or the contents of atomic inline-level descendants such as inline blocks and inline tables.
         textDecorationContext.update(this);
@@ -1436,6 +1454,7 @@ void CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* co
         maxHeight.resolve(view, this, containingBlock->height);
 
     textIndent.resolve(view, this, containingBlock->width);
+    letterSpacing.resolve(view, this, containingBlock->width);
 
     resolved = true;
 }
@@ -2291,8 +2310,7 @@ void CSSStyleDeclarationImp::setLeft(Nullable<std::u16string> left)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getLetterSpacing()
 {
-    // TODO: implement me!
-    return Nullable<std::u16string>();
+    return letterSpacing.getCssText(this);
 }
 
 void CSSStyleDeclarationImp::setLetterSpacing(Nullable<std::u16string> letterSpacing)
@@ -2959,8 +2977,7 @@ void CSSStyleDeclarationImp::setWidth(Nullable<std::u16string> width)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getWordSpacing()
 {
-    // TODO: implement me!
-    return Nullable<std::u16string>();
+    return wordSpacing.getCssText(this);
 }
 
 void CSSStyleDeclarationImp::setWordSpacing(Nullable<std::u16string> wordSpacing)

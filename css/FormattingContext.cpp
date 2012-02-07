@@ -308,10 +308,17 @@ void FormattingContext::appendInlineBox(InlineLevelBox* inlineBox, CSSStyleDecla
 
 // Complete the current lineBox by adding float boxes if any.
 // Then update remainingHeight.
-void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox)
+void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, bool linefeed)
 {
     assert(lineBox);
     assert(lineBox == parentBox->lastChild);
+
+    if (linefeed) {
+        if (InlineLevelBox* box = dynamic_cast<InlineLevelBox*>(lineBox->getLastChild())) {
+            box->wrap = box->data.length();
+            box->wrapWidth = box->width;
+        }
+    }
 
     if (InlineLevelBox* inlineLevelBox = dynamic_cast<InlineLevelBox*>(lineBox->getLastChild())) {
         float w = inlineLevelBox->atEndOfLine();
@@ -460,22 +467,34 @@ void FormattingContext::adjustRemainingFloatingBoxes(float topBorderEdge)
     floatList.clear();
 }
 
-bool FormattingContext::hasWrapBox(const std::u16string& text)
+bool FormattingContext::isFirstCharacter(const std::u16string& text)
 {
-    InlineLevelBox* box = dynamic_cast<InlineLevelBox*>(lineBox->getLastChild());
-    if (!box || !box->hasWrapBox())
-        return false;
+    bool result = true;
     size_t pos = 0;
     char32_t ch = nextChar(text, pos);
     if (!ch)
         return false;
-    std::u16string wrapText = box->getWrapText();
-    size_t wrapLength = wrapText.length();
-    pos = 0;
-    wrapText += ch; // TODO: check this works with surrogate pairs.
-    TextIterator ti;
-    ti.setText(wrapText.c_str(), wrapText.length());
-    return ti.next() && *ti != wrapLength;
+    InlineLevelBox* box = dynamic_cast<InlineLevelBox*>(lineBox->getLastChild());
+    while (box && box->hasWrapBox()) {
+        std::u16string wrapText = box->getWrapText();
+        size_t wrapLength = wrapText.length();
+        if (0 < wrapLength) {
+            wrapText += ch; // TODO: check this works with surrogate pairs.
+            TextIterator ti;
+            ti.setText(wrapText.c_str(), wrapText.length());
+            if (!ti.next() || *ti == wrapLength)
+                return true;
+
+            char32_t last;
+            pos = 0;
+            while (pos < wrapLength)
+                last = nextChar(wrapText, pos);
+            return u_ispunct(last);
+        }
+        result = false;
+        box = dynamic_cast<InlineLevelBox*>(box->getPreviousSibling());
+    }
+    return result;
 }
 
 InlineLevelBox* FormattingContext::getWrapBox(const std::u16string& text)
@@ -487,7 +506,6 @@ InlineLevelBox* FormattingContext::getWrapBox(const std::u16string& text)
     while (box && box->hasWrapBox()) {
         std::u16string wrapText = box->getWrapText();
         size_t wrapLength = wrapText.length();
-        size_t pos = 0;
         if (ch)
             wrapText += ch; // TODO: check this works with surrogate pairs.
         TextIterator ti;

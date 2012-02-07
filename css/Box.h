@@ -124,7 +124,7 @@ public:
     bool shiftDownLineBox(ViewCSSImp* view);
     bool hasNewFloats() const;
     void appendInlineBox(InlineLevelBox* inlineBox, CSSStyleDeclarationImp* activeStyle);
-    void nextLine(ViewCSSImp* view, BlockLevelBox* parentBox);
+    void nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, bool linefeed);
     void tryAddFloat(ViewCSSImp* view);
     float adjustRemainingHeight(float height);
     float useMargin();
@@ -171,7 +171,7 @@ public:
     size_t getNextTextBoundary() {
         return textIterator.next() ? *textIterator : textIterator.size();
     }
-    bool hasWrapBox(const std::u16string& text);
+    bool isFirstCharacter(const std::u16string& text);
     InlineLevelBox* getWrapBox(const std::u16string& text);
 };
 
@@ -585,7 +585,7 @@ class BlockLevelBox : public Box
                          CSSStyleDeclarationPtr& firstLetterStyle, CSSStyleDeclarationPtr& firstLineStyle);
     void nextLine(ViewCSSImp* view, FormattingContext* context, CSSStyleDeclarationImp*& activeStyle,
                   CSSStyleDeclarationPtr& firstLetterStyle, CSSStyleDeclarationPtr& firstLineStyle,
-                  CSSStyleDeclarationImp* style, FontTexture*& font, float& point);
+                  CSSStyleDeclarationImp* style, bool linefeed, FontTexture*& font, float& point);
     size_t layOutFloatingFirstLetter(ViewCSSImp* view, FormattingContext* context, const std::u16string& data, CSSStyleDeclarationImp* firstLetterStyle);
     bool layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
                     std::u16string data, Element element, CSSStyleDeclarationImp* style);
@@ -710,7 +710,7 @@ class LineBox : public Box
 {
     friend class BlockLevelBox;
     friend void FormattingContext::appendInlineBox(InlineLevelBox* inlineBox, CSSStyleDeclarationImp* activeStyle);
-    friend void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox);
+    friend void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, bool linefeed);
 
     float baseline;
     float underlinePosition;
@@ -774,6 +774,7 @@ typedef boost::intrusive_ptr<LineBox> LineBoxPtr;
 class InlineLevelBox : public Box
 {
     friend class BlockLevelBox;
+    friend void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, bool linefeed);
 
     FontTexture* font;
     float point;

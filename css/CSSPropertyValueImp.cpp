@@ -377,6 +377,28 @@ void CSSNoneLengthValueImp::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* st
     length.resolve(view, style, fullSize);
 }
 
+void CSSLetterSpacingValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style)
+{
+    if (isNormal())
+        return;  // leave as it is
+    length.compute(view, style);
+}
+
+void CSSLetterSpacingValueImp::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize)
+{
+    if (isNormal())
+        length.setValue(0.0f, CSSPrimitiveValue::CSS_PX);
+}
+
+void CSSWordSpacingValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style)
+{
+    if (isNormal()) {
+        length.setValue(0.0f, CSSPrimitiveValue::CSS_PX);
+        return;  // leave as it is
+    }
+    length.compute(view, style);
+}
+
 bool CSSAutoNumberingValueImp::CounterContext::hasCounter(const std::u16string& name) const
 {
     for (auto i = counters.begin(); i != counters.end(); ++i) {

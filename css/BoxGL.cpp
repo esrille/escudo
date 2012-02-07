@@ -585,7 +585,9 @@ void InlineLevelBox::render(ViewCSSImp* view, StackingContext* stackingContext)
                 unsigned color = getStyle()->color.getARGB();
                 glColor4ub(color >> 16, color >> 8, color, color >> 24);
                 glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-                font->renderText(data.c_str(), data.length());
+                font->renderText(data.c_str(), data.length(),
+                                 getStyle()->letterSpacing.getPx() * font->getPoint() / point,
+                                 getStyle()->wordSpacing.getPx() * font->getPoint() / point);
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             glPopMatrix();
             // TODO: line-through

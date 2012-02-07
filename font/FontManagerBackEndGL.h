@@ -156,7 +156,7 @@ public:
             uint8_t* image = fontTexture->getImage(glyph);
             bindImage(image);
             unsigned y = glyph->y % FontTexture::Height;
-            glTranslatef(glyph->left / 64.f, -(glyph->top - fontTexture->getBearingGap()) / 64.f, 0.0);
+            glTranslatef(glyph->left / 64.0f, -(glyph->top - fontTexture->getBearingGap()) / 64.0f, 0.0f);
             glBegin(GL_QUADS);
                     glTexCoord2i(glyph->x, y);
                     glVertex2i(0, 0);
@@ -167,11 +167,12 @@ public:
                     glTexCoord2i(glyph->x, y + glyph->height);
                     glVertex2i(0, glyph->height);
             glEnd();
-            glTranslatef((-glyph->left + glyph->advance) / 64.0, (glyph->top - fontTexture->getBearingGap()) / 64.f, 0.0);
+            glTranslatef((-glyph->left + glyph->advance) / 64.0f, (glyph->top - fontTexture->getBearingGap()) / 64.0f, 0.0f);
         }
     }
 
-    void renderText(FontTexture* fontTexture, const char16_t* text, size_t length)
+    void renderText(FontTexture* fontTexture, const char16_t* text, size_t length,
+                    float letterSpacing, float wordSpacing)
     {
         setMatrixMode();
         const char16_t* end = text + length;
@@ -184,7 +185,7 @@ public:
                 uint8_t* image = fontTexture->getImage(glyph);
                 bindImage(image);
                 unsigned y = glyph->y % FontTexture::Height;
-                glTranslatef(glyph->left / 64.f, -(glyph->top - fontTexture->getBearingGap()) / 64.f, 0.0);
+                glTranslatef(glyph->left / 64.0f, -(glyph->top - fontTexture->getBearingGap()) / 64.0f, 0.0f);
                 glBegin(GL_QUADS);
                         glTexCoord2i(glyph->x, y);
                         glVertex2i(0, 0);
@@ -195,7 +196,11 @@ public:
                         glTexCoord2i(glyph->x, y + glyph->height);
                         glVertex2i(0, glyph->height);
                 glEnd();
-                glTranslatef((-glyph->left + glyph->advance) / 64.0, (glyph->top - fontTexture->getBearingGap()) / 64.f, 0.0);
+                float spacing = 0.0f;
+                if (u == ' ' || u == u'\u00A0')  // SP or NBSP
+                    spacing += wordSpacing;
+                spacing += letterSpacing;
+                glTranslatef((-glyph->left + glyph->advance) / 64.0f + spacing, (glyph->top - fontTexture->getBearingGap()) / 64.0f, 0.0f);
             }
         }
     }

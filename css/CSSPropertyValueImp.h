@@ -373,6 +373,72 @@ public:
     }
 };
 
+// <length>, normal
+class CSSNormalLengthValueImp : public CSSPropertyValueImp
+{
+protected:
+    CSSNumericValue length;
+public:
+    CSSNormalLengthValueImp& setValue(float number, unsigned short unit) {
+        length.setValue(number, unit);
+        return *this;
+    }
+    CSSNormalLengthValueImp& setValue(CSSParserTerm* term = 0) {
+        if (term)
+            length.setValue(term);
+        else
+            length.setIndex(0);
+        return *this;
+    }
+    bool isNormal() const {
+        return length.getIndex() == 0;
+    }
+    virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
+        if (isNormal())
+            return u"normal";
+        return length.getCssText();
+    }
+    bool operator==(const CSSNormalLengthValueImp& value) {
+        return length == value.length;
+    }
+    bool operator!=(const CSSNormalLengthValueImp& value) {
+        return length != value.length;
+    }
+    void specify(const CSSNormalLengthValueImp& specified) {
+        length.specify(specified.length);
+    }
+    float getPx() const {
+        return length.getPx();
+    }
+    CSSNormalLengthValueImp() :
+        length(0) {
+    }
+    CSSNormalLengthValueImp(float number, unsigned short unit) :
+        length(number, unit) {
+    }
+};
+
+class CSSLetterSpacingValueImp : public CSSNormalLengthValueImp
+{
+public:
+    CSSLetterSpacingValueImp() {}
+    CSSLetterSpacingValueImp(float number, unsigned short unit) :
+        CSSNormalLengthValueImp(number, unit)
+    {}
+    void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
+    void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize);
+};
+
+class CSSWordSpacingValueImp : public CSSNormalLengthValueImp
+{
+public:
+    CSSWordSpacingValueImp() {}
+    CSSWordSpacingValueImp(float number, unsigned short unit) :
+        CSSNormalLengthValueImp(number, unit)
+    {}
+    void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
+};
+
 class CounterImp;
 
 class CSSAutoNumberingValueImp : public CSSPropertyValueImp

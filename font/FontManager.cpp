@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -331,7 +331,9 @@ float FontTexture::measureText(const char16_t* text, float point)
     return width * getScale(point);
 }
 
-float FontTexture::measureText(const char16_t* text, size_t length, float point, unsigned transform, bool isFirstCharacter,
+float FontTexture::measureText(const char16_t* text, size_t length, float point,
+                               unsigned transform, bool isFirstCharacter,
+                               float letterSpacing, float wordSpacing,
                                FontGlyph*& glyph, std::u16string& transformed)
 {
     float width = 0.0f;
@@ -359,9 +361,12 @@ float FontTexture::measureText(const char16_t* text, size_t length, float point,
                 break;
             }
             glyph = getGlyph(u);
-            width += glyph->advance;
+            width += glyph->advance * getScale(point);
             transformed += u;
         }
+        if (u == ' ' || u == u'\u00A0')  // SP or NBSP
+            width += wordSpacing;
+        width += letterSpacing;
     }
-    return width * getScale(point);
+    return width;
 }
