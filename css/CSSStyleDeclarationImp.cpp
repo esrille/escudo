@@ -1321,7 +1321,7 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     letterSpacing.compute(view, this);
     wordSpacing.compute(view, this);
 
-    if (isFloat() || isAbsolutelyPositioned() || !parentStyle)  // TODO or the contents of atomic inline-level descendants such as inline blocks and inline tables.
+    if (isFloat() || isAbsolutelyPositioned() || !parentStyle || isInlineBlock())
         textDecorationContext.update(this);
     else if (parentStyle->textDecorationContext.hasDecoration())
         textDecorationContext = parentStyle->textDecorationContext;
