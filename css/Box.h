@@ -713,8 +713,6 @@ class LineBox : public Box
     friend void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, bool linefeed);
 
     float baseline;
-    float overlinePosition;
-    float overlineThickness;
     float underlinePosition;
     float underlineThickness;
     float lineThroughPosition;
@@ -728,8 +726,6 @@ public:
     LineBox(CSSStyleDeclarationImp* style) :
         Box(0),
         baseline(0.0f),
-        overlinePosition(0.0f),
-        overlineThickness(1.0f),
         underlinePosition(0.0f),
         underlineThickness(1.0f),
         lineThroughPosition(0.0f),

@@ -577,7 +577,12 @@ void InlineLevelBox::render(ViewCSSImp* view, StackingContext* stackingContext)
                         glVertex2f(getTotalWidth(), lineBox->getUnderlinePosition());
                     glEnd();
                 }
-                // TODO: overlining
+                if (lineDecoration & CSSTextDecorationValueImp::Overline) {
+                    glBegin(GL_LINES);
+                        glVertex2f(0.0f, -lineBox->getBaseline());
+                        glVertex2f(getTotalWidth(), -lineBox->getBaseline());
+                    glEnd();
+                }
                 glEnable(GL_TEXTURE_2D);
             }
             glPushMatrix();
