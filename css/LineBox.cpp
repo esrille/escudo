@@ -301,7 +301,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                                             glyph, transformed);
                 p += next - wrap;
                 isFirstCharacter = true;
-                if (data.length() <= next && isAtRightEdge(element, text))
+                if (firstLetterStyle || data.length() <= next && isAtRightEdge(element, text))
                     w += blankRight;
                 while (context->leftover < w && (context->breakable || activeStyle->whiteSpace.isBreakingLines())) {
                     if (activeStyle->whiteSpace.isCollapsingSpace() && 0 < transformed.length() && transformed[transformed.length() - 1] == u' ') {
@@ -387,7 +387,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
             position = next;
         }
 
-        if (data.length() <= position && isAtRightEdge(element, text))
+        if (firstLetterStyle || data.length() <= position && isAtRightEdge(element, text))
             inlineBox->width -= blankRight;
         else {
             inlineBox->clearBlankRight();
