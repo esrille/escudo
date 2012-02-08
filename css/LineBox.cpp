@@ -346,6 +346,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                                                                    wrapStyle->textTransform.getValue(), isFirstCharacter,
                                                                    wrapStyle->letterSpacing.getPx(), wrapStyle->wordSpacing.getPx(),
                                                                    glyph, transformed);
+                                    box->data.clear();
                                     box->setData(font, point, transformed, 0, 0.0f);
                                     isFirstCharacter = false;
                                 }
