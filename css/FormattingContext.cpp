@@ -303,7 +303,15 @@ void FormattingContext::appendInlineBox(InlineLevelBox* inlineBox, CSSStyleDecla
         activeStyle->getStackingContext()->addBase(inlineBox);
 
     atLineHead = false;
-    breakable = false;
+}
+
+void FormattingContext::dontWrap()
+{
+    assert(lineBox);
+    if (InlineLevelBox* box = dynamic_cast<InlineLevelBox*>(lineBox->getLastChild())) {
+        box->wrap = box->data.length();
+        box->wrapWidth = box->width;
+    }
 }
 
 // Complete the current lineBox by adding float boxes if any.
@@ -313,12 +321,8 @@ void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, boo
     assert(lineBox);
     assert(lineBox == parentBox->lastChild);
 
-    if (linefeed) {
-        if (InlineLevelBox* box = dynamic_cast<InlineLevelBox*>(lineBox->getLastChild())) {
-            box->wrap = box->data.length();
-            box->wrapWidth = box->width;
-        }
-    }
+    if (linefeed)
+        dontWrap();
 
     if (InlineLevelBox* inlineLevelBox = dynamic_cast<InlineLevelBox*>(lineBox->getLastChild())) {
         float w = inlineLevelBox->atEndOfLine();

@@ -124,6 +124,7 @@ public:
     bool shiftDownLineBox(ViewCSSImp* view);
     bool hasNewFloats() const;
     void appendInlineBox(InlineLevelBox* inlineBox, CSSStyleDeclarationImp* activeStyle);
+    void dontWrap();
     void nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, bool linefeed);
     void tryAddFloat(ViewCSSImp* view);
     float adjustRemainingHeight(float height);
@@ -784,7 +785,7 @@ typedef boost::intrusive_ptr<LineBox> LineBoxPtr;
 class InlineLevelBox : public Box
 {
     friend class BlockLevelBox;
-    friend void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, bool linefeed);
+    friend class FormattingContext;
 
     FontTexture* font;
     float point;

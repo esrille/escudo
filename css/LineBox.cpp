@@ -306,12 +306,14 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                 while (context->leftover < w && (context->breakable || activeStyle->whiteSpace.isBreakingLines())) {
                     if (activeStyle->whiteSpace.isCollapsingSpace() && 0 < transformed.length() && transformed[transformed.length() - 1] == u' ') {
                         float lineEnd = (next - wrap == 1) ? 0.0f : w - glyph->advance * font->getScale(point) - activeStyle->letterSpacing.getPx() - activeStyle->wordSpacing.getPx();
-                        if (lineEnd < context->leftover || lineEnd == context->leftover && 0.0f < lineEnd) {
+                        if (lineEnd == 0 || lineEnd <= context->leftover) {
+                            context->breakable = true;
+                            context->dontWrap();
                             w = lineEnd;
                             transformed.erase(transformed.length() - 1);
                             inlineData += transformed;
                             advanced += w;
-                            context->leftover = 0.0f;
+                            context->leftover -= w;
                             wrap = length = next - position - 1;
                             goto BreakLine;
                         }
