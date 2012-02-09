@@ -66,7 +66,6 @@ ol ul, ul ol,
 ul ul, ol ol    { margin-top: 0; margin-bottom: 0 }
 u, ins          { text-decoration: underline }
 br:before       { content: "\A"; white-space: pre-line }
-wbr:before      { content: "\200B" } /* HTML 5 */
 center          { text-align: center }
 :link           { color: blue; }
 :visited        { color: purple; }
@@ -79,6 +78,11 @@ BDO[DIR="rtl"]  { direction: rtl; unicode-bidi: bidi-override }
 
 *[DIR="ltr"]    { direction: ltr; unicode-bidi: embed }
 *[DIR="rtl"]    { direction: rtl; unicode-bidi: embed }
+
+/* HTML 5 */
+nobr		{ white-space: nowrap; }
+wbr:before	{ content: "\200B" }
+nobr wbr	{ white-space: normal; }
 
 /* CSS 3 Lists */
 ol, ul { 
