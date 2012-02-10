@@ -548,7 +548,8 @@ libesfontmanager_a_CPPFLAGS = \
 	-DHAVE_IPA_GOTHIC=\"$(HAVE_IPA_GOTHIC)\" \
 	-DHAVE_IPA_MINCHO=\"$(HAVE_IPA_MINCHO)\" \
 	-DHAVE_IPA_PGOTHIC=\"$(HAVE_IPA_PGOTHIC)\" \
-	-DHAVE_IPA_PMINCHO=\"$(HAVE_IPA_PMINCHO)\"
+	-DHAVE_IPA_PMINCHO=\"$(HAVE_IPA_PMINCHO)\" \
+	-DHAVE_AEGEAN=\"$(HAVE_AEGEAN)\"
 
 libesfontmanager_a_SOURCES = \
 	font/FontManager.cpp \

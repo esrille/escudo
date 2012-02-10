@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 
 #include "FontDatabase.h"
+#include "FontManager.h"
 
 #include "css/CSSStyleDeclarationImp.h"
 
@@ -70,6 +71,36 @@ struct FontInfo
 namespace {
 
 FontInfo fontDatabase[] = {
+    {
+        u"LiberationSans",
+        CSSFontFamilyValueImp::SansSerif,
+        {
+            { LIBERATON_TTF "/LiberationSans-BoldItalic.ttf", 700, CSSFontStyleValueImp::Italic },
+            { LIBERATON_TTF "/LiberationSans-Italic.ttf", 400, CSSFontStyleValueImp::Italic },
+            { LIBERATON_TTF "/LiberationSans-Regular.ttf", 400 },
+            { LIBERATON_TTF "/LiberationSans-Bold.ttf", 700 },
+        }
+    },
+    {
+        u"LiberationSerif",
+        CSSFontFamilyValueImp::Serif,
+        {
+            { LIBERATON_TTF "/LiberationSerif-BoldItalic.ttf", 700, CSSFontStyleValueImp::Italic },
+            { LIBERATON_TTF "/LiberationSerif-Italic.ttf", 400, CSSFontStyleValueImp::Italic },
+            { LIBERATON_TTF "/LiberationSerif-Regular.ttf", 400 },
+            { LIBERATON_TTF "/LiberationSerif-Bold.ttf", 700 },
+        }
+    },
+    {
+        u"LiberationMono",
+        CSSFontFamilyValueImp::Monospace,
+        {
+            { LIBERATON_TTF "/LiberationMono-BoldItalic.ttf", 700, CSSFontStyleValueImp::Italic },
+            { LIBERATON_TTF "/LiberationMono-Italic.ttf", 400, CSSFontStyleValueImp::Italic },
+            { LIBERATON_TTF "/LiberationMono-Regular.ttf", 400 },
+            { LIBERATON_TTF "/LiberationMono-Bold.ttf", 700 },
+        }
+    },
 #ifdef HAVE_IPA_PGOTHIC
     {
         u"IPAPGothic",
@@ -106,36 +137,15 @@ FontInfo fontDatabase[] = {
         }
     },
 #endif
+#ifdef HAVE_AEGEAN
     {
-        u"LiberationSans",
+        u"Aegean",
         CSSFontFamilyValueImp::SansSerif,
         {
-            { LIBERATON_TTF "/LiberationSans-BoldItalic.ttf", 700, CSSFontStyleValueImp::Italic },
-            { LIBERATON_TTF "/LiberationSans-Italic.ttf", 400, CSSFontStyleValueImp::Italic },
-            { LIBERATON_TTF "/LiberationSans-Regular.ttf", 400 },
-            { LIBERATON_TTF "/LiberationSans-Bold.ttf", 700 },
+            { HAVE_AEGEAN, 400 },
         }
     },
-    {
-        u"LiberationSerif",
-        CSSFontFamilyValueImp::Serif,
-        {
-            { LIBERATON_TTF "/LiberationSerif-BoldItalic.ttf", 700, CSSFontStyleValueImp::Italic },
-            { LIBERATON_TTF "/LiberationSerif-Italic.ttf", 400, CSSFontStyleValueImp::Italic },
-            { LIBERATON_TTF "/LiberationSerif-Regular.ttf", 400 },
-            { LIBERATON_TTF "/LiberationSerif-Bold.ttf", 700 },
-        }
-    },
-    {
-        u"LiberationMono",
-        CSSFontFamilyValueImp::Monospace,
-        {
-            { LIBERATON_TTF "/LiberationMono-BoldItalic.ttf", 700, CSSFontStyleValueImp::Italic },
-            { LIBERATON_TTF "/LiberationMono-Italic.ttf", 400, CSSFontStyleValueImp::Italic },
-            { LIBERATON_TTF "/LiberationMono-Regular.ttf", 400 },
-            { LIBERATON_TTF "/LiberationMono-Bold.ttf", 700 },
-        }
-    },
+#endif
 #ifdef HAVE_AHEM
     {
         u"Ahem",
@@ -185,14 +195,55 @@ FontFileInfo* FontFileInfo::chooseFont(const CSSStyleDeclarationImp* style)
     FontInfo* fontInfo = 0;
     for (auto i = style->fontFamily.getFamilyNames().begin();
          i != style->fontFamily.getFamilyNames().end();
-         ++i) {
-            if (fontInfo = chooseFontInfo(*i))
-                break;
+         ++i)
+    {
+        if (fontInfo = chooseFontInfo(*i))
+            break;
     }
-    if (fontInfo == 0)
+    if (!fontInfo)
         fontInfo = chooseFontInfo(style->fontFamily.getGeneric());
 
     return fontInfo->chooseFontFileInfo(style->fontStyle.getStyle(), style->fontWeight.getWeight());
+}
+
+FontFileInfo* FontFileInfo::chooseAltFont(const CSSStyleDeclarationImp* style, FontTexture* current, char32_t u)
+{
+    assert(current);
+    FontInfo* fontInfo = 0;
+    bool skipped = false;
+    for (auto i = style->fontFamily.getFamilyNames().begin();
+         i != style->fontFamily.getFamilyNames().end();
+         ++i)
+    {
+        if (fontInfo = chooseFontInfo(*i)) {
+            // TODO: Deal with filesnames registered more than once.
+            FontFileInfo* fontFileInfo = fontInfo->chooseFontFileInfo(style->fontStyle.getStyle(), style->fontWeight.getWeight());
+            if (fontFileInfo->filename == current->getFace()->getFilename()) {
+                skipped = true;
+                continue;
+            }
+            if (skipped)
+                break;
+        }
+    }
+    if (fontInfo)
+        return fontInfo->chooseFontFileInfo(style->fontStyle.getStyle(), style->fontWeight.getWeight());
+
+    // Now we can choose any font that has the glyph for unicode 'u'.
+    // TODO: Make this faster.
+    FontManager* manager = current->getFace()->getManager();
+    for (fontInfo = fontDatabase; fontInfo < &fontDatabase[fontDatabaseSize]; ++fontInfo)
+    {
+        FontFileInfo* fontFileInfo = fontInfo->chooseFontFileInfo(style->fontStyle.getStyle(), style->fontWeight.getWeight());
+        if (fontFileInfo->filename == current->getFace()->getFilename())
+            continue;
+        FontFace* face = manager->getFontFace(fontFileInfo->filename);
+        if (!face)
+            continue;
+        if (face->hasGlyph(u))
+            return fontFileInfo;
+    }
+    return 0;
 }
 
 }}}}  // org::w3c::dom::bootstrap

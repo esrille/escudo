@@ -59,20 +59,20 @@ const bool USE_HINTING = false;
 
 FontManager::~FontManager()
 {
-    for (std::map<std::string, FontFace*>::iterator it = faces.begin(); it != faces.end(); ++it)
+    for (auto it = faces.begin(); it != faces.end(); ++it)
         delete it->second;
     FT_Done_FreeType(library);
 }
 
-FontFace* FontManager::getFontFace(const std::string fontFilename) throw ()
+FontFace* FontManager::getFontFace(const char* fontFilename) throw ()
 {
-    std::map<std::string, FontFace*>::iterator it = faces.find(fontFilename);
+    auto it = faces.find(fontFilename);
     if (it != faces.end())
         return it->second;
     FontFace* face = 0;
     try {
         face = new FontFace(this, fontFilename);
-        faces.insert(std::pair<std::string, FontFace*>(fontFilename, face));
+        faces.insert(std::pair<const char*, FontFace*>(fontFilename, face));
     } catch (...) {
         delete face;
         return 0;
@@ -84,11 +84,12 @@ FontFace* FontManager::getFontFace(const std::string fontFilename) throw ()
 // FontFace
 //
 
-FontFace::FontFace(FontManager* manager, const std::string fontFilename, long index) try :
+FontFace::FontFace(FontManager* manager, const char* filename, long index) try :
     manager(manager),
+    filename(filename),
     charmap(0)
 {
-    FT_Error error = FT_New_Face(manager->library, fontFilename.c_str(), index, &face);
+    FT_Error error = FT_New_Face(manager->library, filename, index, &face);
     if (error) {
         face = 0;
         throw std::runtime_error(__func__);
@@ -105,6 +106,13 @@ FontFace::~FontFace()
     for (std::map<unsigned int, FontTexture*>::iterator it = textures.begin(); it != textures.end(); ++it)
         delete it->second;
     FT_Done_Face(face);
+}
+
+bool FontFace::hasGlyph(char32_t ucode) const
+{
+    std::vector<int32_t>::const_iterator result;
+    result = std::lower_bound(charmap.begin(), charmap.end(), ucode);
+    return *result == ucode;
 }
 
 FontTexture* FontFace::getFontTexture(unsigned int point)
@@ -198,7 +206,7 @@ FontTexture::~FontTexture()
 
 FontGlyph* FontTexture::getGlyph(int32_t ucode)
 {
-    std::vector<int32_t>::iterator result;
+    std::vector<int32_t>::const_iterator result;
     result = std::lower_bound(face->charmap.begin(), face->charmap.end(), ucode);
     if (*result != ucode)
         return glyphs;
@@ -366,7 +374,7 @@ float FontTexture::measureText(const char16_t* text, size_t length, float point,
             }
             glyph = getGlyph(u);
             width += glyph->advance * getScale(point);
-            transformed += u;
+            append(transformed, u);
         }
         if (u == ' ' || u == u'\u00A0')  // SP or NBSP
             width += wordSpacing;

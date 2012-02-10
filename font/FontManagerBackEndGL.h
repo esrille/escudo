@@ -182,20 +182,7 @@ public:
             n = utf16to32(p, &u);
             if (u != '\n' && u != u'\u200B') {
                 FontGlyph* glyph = fontTexture->getGlyph(u);
-                uint8_t* image = fontTexture->getImage(glyph);
-                bindImage(image);
-                unsigned y = glyph->y % FontTexture::Height;
-                glTranslatef(glyph->left / 64.0f, -(glyph->top - fontTexture->getBearingGap()) / 64.0f, 0.0f);
-                glBegin(GL_QUADS);
-                        glTexCoord2i(glyph->x, y);
-                        glVertex2i(0, 0);
-                        glTexCoord2i(glyph->x + glyph->width, y);
-                        glVertex2i(glyph->width, 0);
-                        glTexCoord2i(glyph->x + glyph->width, y + glyph->height);
-                        glVertex2i(glyph->width, glyph->height);
-                        glTexCoord2i(glyph->x, y + glyph->height);
-                        glVertex2i(0, glyph->height);
-                glEnd();
+                renderGlyph(fontTexture, glyph);
                 float spacing = 0.0f;
                 if (u == ' ' || u == u'\u00A0')  // SP or NBSP
                     spacing += wordSpacing;
@@ -203,6 +190,34 @@ public:
                 glTranslatef((-glyph->left + glyph->advance) / 64.0f + spacing, (glyph->top - fontTexture->getBearingGap()) / 64.0f, 0.0f);
             }
         }
+    }
+
+
+    void beginRender()
+    {
+        setMatrixMode();
+    }
+
+    void renderGlyph(FontTexture* fontTexture, FontGlyph* glyph)
+    {
+        uint8_t* image = fontTexture->getImage(glyph);
+        bindImage(image);
+        unsigned y = glyph->y % FontTexture::Height;
+        glTranslatef(glyph->left / 64.0f, -(glyph->top - fontTexture->getBearingGap()) / 64.0f, 0.0f);
+        glBegin(GL_QUADS);
+                glTexCoord2i(glyph->x, y);
+                glVertex2i(0, 0);
+                glTexCoord2i(glyph->x + glyph->width, y);
+                glVertex2i(glyph->width, 0);
+                glTexCoord2i(glyph->x + glyph->width, y + glyph->height);
+                glVertex2i(glyph->width, glyph->height);
+                glTexCoord2i(glyph->x, y + glyph->height);
+                glVertex2i(0, glyph->height);
+        glEnd();
+    }
+
+    void endRender()
+    {
     }
 };
 

@@ -444,6 +444,7 @@ public:
     FontTexture* getFontTexture() const {
         return fontTexture;
     }
+    FontTexture* getAltFontTexture(ViewCSSImp* view, FontTexture* current, char32_t u);
 
     static int getPropertyID(const std::u16string& ident);
     static const char16_t* getPropertyName(int propertyID);

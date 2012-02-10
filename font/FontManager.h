@@ -37,13 +37,16 @@ class FontManagerBackEnd
 {
 public:
     virtual ~FontManagerBackEnd()
-    {
-    }
+    {}
 
     virtual void addImage(uint8_t* image) = 0;
     virtual void deleteImage(uint8_t* image) = 0;
     virtual void updateImage(uint8_t* image, FontGlyph* glyph) = 0;
     virtual void renderText(FontTexture* font, const char16_t* text, size_t length, float letterSpacing, float wordSpacing) = 0;
+
+    virtual void beginRender() = 0;
+    virtual void renderGlyph(FontTexture* fontTexture, FontGlyph* glyph) = 0;
+    virtual void endRender() = 0;
 };
 
 class FontManager
@@ -53,7 +56,7 @@ class FontManager
     FontManagerBackEnd* backend;
     FT_Library library;
     // a map from font filename to FontFace
-    std::map<std::string, FontFace*> faces;
+    std::map<const char*, FontFace*> faces;
 
 public:
     FontManager(FontManagerBackEnd* backend = 0) :
@@ -70,7 +73,7 @@ public:
      * @param fontFilename font filename
      * @return the font face object, or zero upon failure
      */
-    FontFace* getFontFace(const std::string fontFilename) throw ();
+    FontFace* getFontFace(const char* fontFilename) throw ();
 
     FontManagerBackEnd* getBackEnd() const
     {
@@ -84,6 +87,7 @@ class FontFace
 
     FontManager* manager;
 
+    const char* filename;
     std::vector<int32_t> charmap;
     int32_t glyphCount;
     FT_Face face;
@@ -105,8 +109,20 @@ class FontFace
     }
 
 public:
-    FontFace(FontManager* manager, const std::string fontFilename, long index = 0);
+    FontFace(FontManager* manager, const char* filename, long index = 0);
     ~FontFace();
+
+    const char* getFilename() const {
+        return filename;
+    }
+    FontManager* getManager() const {
+        return manager;
+    }
+    FontManagerBackEnd* getBackEnd() const {
+        return manager->getBackEnd();
+    }
+
+    bool hasGlyph(char32_t u) const;
 
     /** Gets the font texture object of the specified font size.
      * @param point nominal font size in pixels
@@ -142,7 +158,7 @@ class FontTexture
         // Way small font glyphs are rendered as gray boxes.
         memset(getMipmapImage(image, Sizes), 0x20, Width * (Height + Height / 3 + 1) - ((getMipmapImage(image, Sizes) - image)));
         images.push_back(image);
-        FontManagerBackEnd* backend = face->manager->getBackEnd();
+        FontManagerBackEnd* backend = face->getBackEnd();
         backend->addImage(image);
         return image;
     }
@@ -150,7 +166,7 @@ class FontTexture
     // Releases the texture plane
     void deleteImage(uint8_t* image)
     {
-        FontManagerBackEnd* backend = face->manager->getBackEnd();
+        FontManagerBackEnd* backend = face->getBackEnd();
         backend->deleteImage(image);
         delete[] image;
     }
@@ -158,7 +174,7 @@ class FontTexture
     // Updates texture sub image
     void updateImage(uint8_t* image, FontGlyph* glyph)
     {
-        FontManagerBackEnd* backend = face->manager->getBackEnd();
+        FontManagerBackEnd* backend = face->getBackEnd();
         backend->updateImage(image, glyph);
     }
 
@@ -176,6 +192,9 @@ public:
      */
     FontGlyph* getGlyph(int32_t ucode);
     uint8_t* getImage(FontGlyph* glyph);
+    bool isMissingGlyph(const FontGlyph* glyph) const {
+        return glyph == glyphs;
+    }
 
     unsigned getPoint() const {
         return point;
@@ -196,7 +215,17 @@ public:
                       FontGlyph*& glyph, std::u16string& transformed);
 
     void renderText(const char16_t* text, size_t length, float letterSpacing = 0.0f, float wordSpacing = 0.0f) {
-        face->manager->getBackEnd()->renderText(this, text, length, letterSpacing, wordSpacing);
+        face->getBackEnd()->renderText(this, text, length, letterSpacing, wordSpacing);
+    }
+
+    void beginRender() {
+        face->getBackEnd()->beginRender();
+    }
+    void renderGlyph(FontGlyph* glyph) {
+        face->getBackEnd()->renderGlyph(this, glyph);
+    }
+    void endRender() {
+        face->getBackEnd()->endRender();
     }
 
     float getSize(float point) const {

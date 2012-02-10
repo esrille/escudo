@@ -590,9 +590,7 @@ void InlineLevelBox::render(ViewCSSImp* view, StackingContext* stackingContext)
                 unsigned color = getStyle()->color.getARGB();
                 glColor4ub(color >> 16, color >> 8, color, color >> 24);
                 glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-                font->renderText(data.c_str(), data.length(),
-                                 getStyle()->letterSpacing.getPx() * font->getPoint() / point,
-                                 getStyle()->wordSpacing.getPx() * font->getPoint() / point);
+                renderText(view, data, point);
                 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
             glPopMatrix();
             if (lineDecoration & CSSTextDecorationValueImp::LineThrough) {
@@ -609,5 +607,42 @@ void InlineLevelBox::render(ViewCSSImp* view, StackingContext* stackingContext)
         glPopMatrix();
     }
 }
+
+void InlineLevelBox::renderText(ViewCSSImp* view, const std::u16string& data, float point)
+{
+    CSSStyleDeclarationImp* activeStyle = getStyle();
+    FontTexture* font = activeStyle->getFontTexture();
+    float letterSpacing = activeStyle->letterSpacing.getPx() * font->getPoint() / point;
+    float wordSpacing = activeStyle->wordSpacing.getPx() * font->getPoint() / point;
+    font->beginRender();
+    const char16_t* p = data.c_str();
+    const char16_t* end = p + data.length();
+    char32_t u;
+    while (p < end && (p = utf16to32(p, &u)) && u) {
+        if (u == '\n' || u == u'\u200B')
+            continue;
+        FontTexture* currentFont = font;
+        FontGlyph* glyph = font->getGlyph(u);
+        if (font->isMissingGlyph(glyph)) {
+            FontTexture* altFont = currentFont;
+            while (altFont = activeStyle->getAltFontTexture(view, altFont, u)) {
+                FontGlyph* altGlyph = altFont->getGlyph(u);
+                if (!altFont->isMissingGlyph(altGlyph)) {
+                    glyph = altGlyph;
+                    currentFont = altFont;
+                    break;
+                }
+            }
+        }
+        currentFont->renderGlyph(glyph);
+        float spacing = 0.0f;
+        if (u == ' ' || u == u'\u00A0')  // SP or NBSP
+            spacing += wordSpacing;
+        spacing += letterSpacing;
+        glTranslatef((-glyph->left + glyph->advance) / 64.0f + spacing, (glyph->top - currentFont->getBearingGap()) / 64.0f, 0.0f);
+    }
+    font->endRender();
+}
+
 
 }}}}  // org::w3c::dom::bootstrap

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,15 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 FontTexture* ViewCSSImp::selectFont(CSSStyleDeclarationImp* style)
 {
     FontFileInfo* info = FontFileInfo::chooseFont(style);
+    backend.getFontFace(info->filename);
+    return backend.getFontTexture(Point);
+}
+
+FontTexture* ViewCSSImp::selectAltFont(CSSStyleDeclarationImp* style, FontTexture* current, char32_t u)
+{
+    FontFileInfo* info = FontFileInfo::chooseAltFont(style, current, u);
+    if (!info)
+        return 0;
     backend.getFontFace(info->filename);
     return backend.getFontTexture(Point);
 }

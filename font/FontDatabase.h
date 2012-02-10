@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 #ifndef ES_FONT_DATABASE_H
 #define ES_FONT_DATABASE_H
 
+class FontTexture;
+
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class CSSStyleDeclarationImp;
@@ -28,6 +30,7 @@ struct FontFileInfo
     unsigned style;
 
     static FontFileInfo* chooseFont(const CSSStyleDeclarationImp* style);
+    static FontFileInfo* chooseAltFont(const CSSStyleDeclarationImp* style, FontTexture* current, char32_t u);
 };
 
 }}}}  // org::w3c::dom::bootstrap

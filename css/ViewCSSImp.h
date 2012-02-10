@@ -265,6 +265,7 @@ public:
 
     // TODO OpenGL specific part...
     FontTexture* selectFont(CSSStyleDeclarationImp* style);
+    FontTexture* selectAltFont(CSSStyleDeclarationImp* style, FontTexture* current, char32_t u);
 
     // ViewCSS
     virtual css::CSSStyleDeclaration getComputedStyle(Element elt, Nullable<std::u16string> pseudoElt);

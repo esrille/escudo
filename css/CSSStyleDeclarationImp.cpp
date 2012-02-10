@@ -1547,6 +1547,11 @@ size_t CSSStyleDeclarationImp::processLineHeadWhiteSpace(const std::u16string& d
     return position;
 }
 
+FontTexture* CSSStyleDeclarationImp::getAltFontTexture(ViewCSSImp* view, FontTexture* current, char32_t u)
+{
+    return view->selectAltFont(this, current, u);
+}
+
 bool CSSStyleDeclarationImp::isFlowRoot() const
 {
     return float_.getValue() != CSSFloatValueImp::None ||

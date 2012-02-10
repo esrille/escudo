@@ -566,6 +566,7 @@ am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
 HAVE_AHEM
+HAVE_AEGEAN
 HAVE_IPA_PMINCHO
 HAVE_IPA_PGOTHIC
 HAVE_IPA_MINCHO
@@ -4376,6 +4377,28 @@ fi
 $as_echo "$ac_cv_file__usr_share_fonts_truetype_takao_TakaoPMincho_ttf" >&6; }
 if test "x$ac_cv_file__usr_share_fonts_truetype_takao_TakaoPMincho_ttf" = xyes; then :
   HAVE_IPA_PMINCHO=/usr/share/fonts/truetype/takao/TakaoPMincho.ttf
+
+fi
+
+
+# check for Aegean font
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/share/fonts/gdouros-aegean/Aegean.otf" >&5
+$as_echo_n "checking for /usr/share/fonts/gdouros-aegean/Aegean.otf... " >&6; }
+if ${ac_cv_file__usr_share_fonts_gdouros_aegean_Aegean_otf+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "/usr/share/fonts/gdouros-aegean/Aegean.otf"; then
+  ac_cv_file__usr_share_fonts_gdouros_aegean_Aegean_otf=yes
+else
+  ac_cv_file__usr_share_fonts_gdouros_aegean_Aegean_otf=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_share_fonts_gdouros_aegean_Aegean_otf" >&5
+$as_echo "$ac_cv_file__usr_share_fonts_gdouros_aegean_Aegean_otf" >&6; }
+if test "x$ac_cv_file__usr_share_fonts_gdouros_aegean_Aegean_otf" = xyes; then :
+  HAVE_AEGEAN=/usr/share/fonts/gdouros-aegean/Aegean.otf
 
 fi
 

@@ -53,6 +53,9 @@ AC_CHECK_FILE(/usr/share/fonts/truetype/takao/TakaoMincho.ttf,[AC_SUBST(HAVE_IPA
 AC_CHECK_FILE(/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,[AC_SUBST(HAVE_IPA_PGOTHIC,/usr/share/fonts/truetype/takao/TakaoPGothic.ttf)])
 AC_CHECK_FILE(/usr/share/fonts/truetype/takao/TakaoPMincho.ttf,[AC_SUBST(HAVE_IPA_PMINCHO,/usr/share/fonts/truetype/takao/TakaoPMincho.ttf)])
 
+# check for Aegean font
+AC_CHECK_FILE(/usr/share/fonts/gdouros-aegean/Aegean.otf,[AC_SUBST(HAVE_AEGEAN,/usr/share/fonts/gdouros-aegean/Aegean.otf)])
+
 # check for the Ahem font (http://www.w3.org/Style/CSS/Test/Fonts/Ahem/)
 AC_CHECK_FILE(/usr/share/fonts/ahem/AHEM____.TTF,[AC_SUBST(HAVE_AHEM,/usr/share/fonts/ahem/AHEM____.TTF)])
 

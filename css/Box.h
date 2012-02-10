@@ -17,8 +17,6 @@
 #ifndef ES_CSSBOX_H
 #define ES_CSSBOX_H
 
-// cf. http://www.w3.org/TR/css3-box/
-
 #include <Object.h>
 #include <org/w3c/dom/Text.h>
 #include <org/w3c/dom/html/HTMLImageElement.h>
@@ -32,6 +30,7 @@
 #include "http/HTTPRequest.h"
 #include "css/CSSStyleDeclarationImp.h"
 
+class FontGlyph;
 class FontTexture;
 
 namespace org { namespace w3c { namespace dom {
@@ -588,6 +587,9 @@ class BlockLevelBox : public Box
                   CSSStyleDeclarationPtr& firstLetterStyle, CSSStyleDeclarationPtr& firstLineStyle,
                   CSSStyleDeclarationImp* style, bool linefeed, FontTexture*& font, float& point);
     size_t layOutFloatingFirstLetter(ViewCSSImp* view, FormattingContext* context, const std::u16string& data, CSSStyleDeclarationImp* firstLetterStyle);
+    float measureText(ViewCSSImp* view, CSSStyleDeclarationImp* activeStyle,
+                      const char16_t* text, size_t length, float point, bool isFirstCharacter,
+                      FontGlyph*& glyph, std::u16string& transformed);
     bool layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
                     std::u16string data, Element element, CSSStyleDeclarationImp* style);
     void layOutInlineLevelBox(ViewCSSImp* view, Node node, FormattingContext* context,
@@ -795,6 +797,8 @@ class InlineLevelBox : public Box
 
     size_t wrap;
     float wrapWidth;
+
+    void renderText(ViewCSSImp* view, const std::u16string& data, float point);
 
 public:
     InlineLevelBox(Node node, CSSStyleDeclarationImp* style) :

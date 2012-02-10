@@ -174,6 +174,59 @@ size_t BlockLevelBox::layOutFloatingFirstLetter(ViewCSSImp* view, FormattingCont
     return length;
 }
 
+float BlockLevelBox::measureText(ViewCSSImp* view, CSSStyleDeclarationImp* activeStyle,
+                                 const char16_t* text, size_t length, float point, bool isFirstCharacter,
+                                 FontGlyph*& glyph, std::u16string& transformed)
+{
+    FontTexture* font = activeStyle->getFontTexture();
+    unsigned transform = activeStyle->textTransform.getValue();
+    float width = 0.0f;
+    const char16_t* p = text;
+    const char16_t* end = text + length;
+    char32_t u;
+    while (p < end && (p = utf16to32(p, &u)) && u) {
+        if (u == '\n' || u == u'\u200B')
+            continue;
+        switch (transform) {
+        case 1:  // capitalize
+            if (u == u'\u00A0')  // NBSP
+                isFirstCharacter = true;
+            else if (isFirstCharacter && !u_ispunct(u)) {
+                u = u_totitle(u);
+                isFirstCharacter = false;
+            }
+            break;
+        case 2:  // uppercase
+            u = u_toupper(u);
+            break;
+        case 3:  // lowercase
+            u = u_tolower(u);
+            break;
+        default:  // none
+            break;
+        }
+        FontTexture* currentFont = font;
+        glyph = font->getGlyph(u);
+        if (font->isMissingGlyph(glyph)) {
+            FontTexture* altFont = currentFont;
+            while (altFont = activeStyle->getAltFontTexture(view, altFont, u)) {
+                FontGlyph* altGlyph = altFont->getGlyph(u);
+                if (!altFont->isMissingGlyph(altGlyph)) {
+                    glyph = altGlyph;
+                    currentFont = altFont;
+                    break;
+                }
+            }
+        }
+        width += glyph->advance * currentFont->getScale(point);
+        append(transformed, u);
+        if (u == ' ' || u == u'\u00A0')  // SP or NBSP
+            width += activeStyle->wordSpacing.getPx();
+        width += activeStyle->letterSpacing.getPx();
+    }
+    return width;
+}
+
 bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
                                std::u16string data, Element element, CSSStyleDeclarationImp* style)
 {
@@ -296,9 +349,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                 next = position + context->getNextTextBoundary();
                 FontGlyph* glyph;
                 std::u16string transformed;
-                float w = font->measureText(p, next - wrap, point, transform, isFirstCharacter,
-                                            activeStyle->letterSpacing.getPx(), activeStyle->wordSpacing.getPx(),
-                                            glyph, transformed);
+                float w = measureText(view, activeStyle, p, next - wrap, point, isFirstCharacter, glyph, transformed);
                 p += next - wrap;
                 isFirstCharacter = true;
                 if (firstLetterStyle || data.length() <= next && isAtRightEdge(element, text))
@@ -342,10 +393,8 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                                     FontGlyph* glyph;
                                     std::u16string transformed;
                                     // TODO: measureText using the original text data
-                                    box->width = font->measureText(box->getData().c_str(), box->getData().length(), point,
-                                                                   wrapStyle->textTransform.getValue(), isFirstCharacter,
-                                                                   wrapStyle->letterSpacing.getPx(), wrapStyle->wordSpacing.getPx(),
-                                                                   glyph, transformed);
+                                    box->width = measureText(view, wrapStyle, box->getData().c_str(), box->getData().length(), point,
+                                                             isFirstCharacter, glyph, transformed);
                                     box->data.clear();
                                     box->setData(font, point, transformed, 0, 0.0f);
                                     isFirstCharacter = false;
