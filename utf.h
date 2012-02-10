@@ -239,4 +239,21 @@ inline char32_t nextChar(const std::u16string& s, size_t& pos)
     return 0;
 }
 
+inline void append(std::u16string& s, char32_t u)
+{
+    if (!u)
+        return;
+    if (u < 0x10000)
+        s += static_cast<char16_t>(u);
+    else if (u <= 0x10FFFF) {
+        char16_t w1 = 0xD800;
+        char16_t w2 = 0xDC00;
+        u -= 0x10000;
+        w1 |= (u >> 10u);
+        w2 |= (u & 0x3ffu);
+        s += w1;
+        s += w2;
+    }
+}
+
 #endif  // #ifndef ES_UTF_H_INCLUDED
