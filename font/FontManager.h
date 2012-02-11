@@ -217,6 +217,10 @@ public:
         return point / this->point / 64.0f;
     }
 
+    float getSmallCapsScale() const {
+        return static_cast<float>(xHeight) / (ascender - lineGap);
+    }
+
     float measureText(const char16_t* text, float point);
     float measureText(const char16_t* text, size_t length, float point,
                       unsigned transform, bool isFirstCharacter,

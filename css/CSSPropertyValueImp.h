@@ -1556,7 +1556,7 @@ public:
     void specify(const CSSFontVariantValueImp& specified) {
         value = specified.value;
     }
-    unsigned getStyle() const {
+    unsigned getValue() const {
         return value;
     }
     bool isNormal() const {

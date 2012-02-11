@@ -614,6 +614,7 @@ void InlineLevelBox::renderText(ViewCSSImp* view, const std::u16string& data, fl
     FontTexture* font = activeStyle->getFontTexture();
     float letterSpacing = activeStyle->letterSpacing.getPx() * font->getPoint() / point;
     float wordSpacing = activeStyle->wordSpacing.getPx() * font->getPoint() / point;
+    unsigned variant = activeStyle->fontVariant.getValue();
     font->beginRender();
     const char16_t* p = data.c_str();
     const char16_t* end = p + data.length();
@@ -621,12 +622,15 @@ void InlineLevelBox::renderText(ViewCSSImp* view, const std::u16string& data, fl
     while (p < end && (p = utf16to32(p, &u)) && u) {
         if (u == '\n' || u == u'\u200B')
             continue;
+        char32_t caps = u;
+        if (variant == CSSFontVariantValueImp::SmallCaps)
+            caps = u_toupper(u);
         FontTexture* currentFont = font;
-        FontGlyph* glyph = font->getGlyph(u);
+        FontGlyph* glyph = font->getGlyph(caps);
         if (font->isMissingGlyph(glyph)) {
             FontTexture* altFont = currentFont;
-            while (altFont = activeStyle->getAltFontTexture(view, altFont, u)) {
-                FontGlyph* altGlyph = altFont->getGlyph(u);
+            while (altFont = activeStyle->getAltFontTexture(view, altFont, caps)) {
+                FontGlyph* altGlyph = altFont->getGlyph(caps);
                 if (!altFont->isMissingGlyph(altGlyph)) {
                     glyph = altGlyph;
                     currentFont = altFont;
@@ -634,12 +638,22 @@ void InlineLevelBox::renderText(ViewCSSImp* view, const std::u16string& data, fl
                 }
             }
         }
-        currentFont->renderGlyph(glyph);
+        if (caps == u) {
+            currentFont->renderGlyph(glyph);
+            glTranslatef((-glyph->left + glyph->advance) / 64.0f, (glyph->top - currentFont->getBearingGap()) / 64.0f, 0.0f);
+        } else {
+            glPushMatrix();
+            glScalef(currentFont->getSmallCapsScale(), currentFont->getSmallCapsScale(), 1.0);
+            currentFont->renderGlyph(glyph);
+            glPopMatrix();
+            glTranslatef(glyph->advance / 64.0f * currentFont->getSmallCapsScale(), 0.0f, 0.0f);
+        }
         float spacing = 0.0f;
         if (u == ' ' || u == u'\u00A0')  // SP or NBSP
             spacing += wordSpacing;
         spacing += letterSpacing;
-        glTranslatef((-glyph->left + glyph->advance) / 64.0f + spacing, (glyph->top - currentFont->getBearingGap()) / 64.0f, 0.0f);
+        if (spacing != 0.0f)
+            glTranslatef(spacing, 0.0f, 0.0f);
     }
     font->endRender();
 }

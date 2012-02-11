@@ -180,6 +180,7 @@ float BlockLevelBox::measureText(ViewCSSImp* view, CSSStyleDeclarationImp* activ
 {
     FontTexture* font = activeStyle->getFontTexture();
     unsigned transform = activeStyle->textTransform.getValue();
+    unsigned variant = activeStyle->fontVariant.getValue();
     float width = 0.0f;
     const char16_t* p = text;
     const char16_t* end = text + length;
@@ -205,12 +206,15 @@ float BlockLevelBox::measureText(ViewCSSImp* view, CSSStyleDeclarationImp* activ
         default:  // none
             break;
         }
+        char32_t caps = u;
+        if (variant == CSSFontVariantValueImp::SmallCaps)
+            caps = u_toupper(u);
         FontTexture* currentFont = font;
-        glyph = font->getGlyph(u);
+        glyph = font->getGlyph(caps);
         if (font->isMissingGlyph(glyph)) {
             FontTexture* altFont = currentFont;
-            while (altFont = activeStyle->getAltFontTexture(view, altFont, u)) {
-                FontGlyph* altGlyph = altFont->getGlyph(u);
+            while (altFont = activeStyle->getAltFontTexture(view, altFont, caps)) {
+                FontGlyph* altGlyph = altFont->getGlyph(caps);
                 if (!altFont->isMissingGlyph(altGlyph)) {
                     glyph = altGlyph;
                     currentFont = altFont;
@@ -218,7 +222,10 @@ float BlockLevelBox::measureText(ViewCSSImp* view, CSSStyleDeclarationImp* activ
                 }
             }
         }
-        width += glyph->advance * currentFont->getScale(point);
+        if (caps == u)
+            width += glyph->advance * currentFont->getScale(point);
+        else
+            width += glyph->advance * currentFont->getScale(point) * currentFont->getSmallCapsScale();
         append(transformed, u);
         if (u == ' ' || u == u'\u00A0')  // SP or NBSP
             width += activeStyle->wordSpacing.getPx();
