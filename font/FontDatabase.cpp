@@ -209,6 +209,8 @@ FontFileInfo* FontFileInfo::chooseFont(const CSSStyleDeclarationImp* style)
 FontFileInfo* FontFileInfo::chooseAltFont(const CSSStyleDeclarationImp* style, FontTexture* current, char32_t u)
 {
     assert(current);
+    FontManager* manager = current->getFace()->getManager();
+
     FontInfo* fontInfo = 0;
     bool skipped = false;
     for (auto i = style->fontFamily.getFamilyNames().begin();
@@ -226,22 +228,35 @@ FontFileInfo* FontFileInfo::chooseAltFont(const CSSStyleDeclarationImp* style, F
                 break;
         }
     }
-    if (fontInfo)
-        return fontInfo->chooseFontFileInfo(style->fontStyle.getStyle(), style->fontWeight.getWeight());
+    if (fontInfo) {
+        FontFileInfo* fontFileInfo = fontInfo->chooseFontFileInfo(style->fontStyle.getStyle(), style->fontWeight.getWeight());
+        FontFace* face = manager->getFontFace(fontFileInfo->filename);
+        if (face && face->hasGlyph(u))
+            return fontFileInfo;
+    }
 
     // Now we can choose any font that has the glyph for unicode 'u'.
     // TODO: Make this faster.
-    FontManager* manager = current->getFace()->getManager();
-    for (fontInfo = fontDatabase; fontInfo < &fontDatabase[fontDatabaseSize]; ++fontInfo)
-    {
-        FontFileInfo* fontFileInfo = fontInfo->chooseFontFileInfo(style->fontStyle.getStyle(), style->fontWeight.getWeight());
-        if (fontFileInfo->filename == current->getFace()->getFilename())
-            continue;
-        FontFace* face = manager->getFontFace(fontFileInfo->filename);
-        if (!face)
-            continue;
-        if (face->hasGlyph(u))
-            return fontFileInfo;
+    unsigned generic = style->fontFamily.getGeneric();
+    for (;;) {
+        for (fontInfo = fontDatabase; fontInfo < &fontDatabase[fontDatabaseSize]; ++fontInfo) {
+            FontFileInfo* fontFileInfo = fontInfo->chooseFontFileInfo(style->fontStyle.getStyle(), style->fontWeight.getWeight());
+            if (fontFileInfo->filename == current->getFace()->getFilename())
+                continue;
+            if (generic) {
+                if (fontInfo->generic != generic)
+                    continue;
+            } else if (fontInfo->generic == style->fontFamily.getGeneric())
+                continue;
+            FontFace* face = manager->getFontFace(fontFileInfo->filename);
+            if (!face)
+                continue;
+            if (face->hasGlyph(u))
+                return fontFileInfo;
+        }
+        if (!generic)
+            break;
+        generic = CSSFontFamilyValueImp::None;
     }
     return 0;
 }
