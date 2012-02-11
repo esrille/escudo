@@ -1255,6 +1255,8 @@ void CSSDisplayValueImp::compute(CSSStyleDeclarationImp* decl, Element element)
 
 std::deque<CSSParserTerm*>::iterator CSSFontFamilyValueImp::setValue(std::deque<CSSParserTerm*>& stack, std::deque<CSSParserTerm*>::iterator i)
 {
+    bool hasGeneric = false;
+    generic = None;
     std::u16string family;
     for (; i != stack.end(); ++i) {
         CSSParserTerm* term = *i;
@@ -1272,7 +1274,10 @@ std::deque<CSSParserTerm*>::iterator CSSFontFamilyValueImp::setValue(std::deque<
         }
         switch (term->unit) {
         case CSSParserTerm::CSS_TERM_INDEX:
-            generic = term->getIndex();
+            if (!hasGeneric) {
+                generic = term->getIndex();
+                hasGeneric = true;
+            }
             break;
         case CSSPrimitiveValue::CSS_STRING:
             familyNames.push_back(term->text);
