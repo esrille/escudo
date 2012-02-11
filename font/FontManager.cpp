@@ -21,6 +21,7 @@
 
 #include <freetype/tttables.h>
 #include <freetype/ftsizes.h>
+#include <freetype/ftoutln.h>
 #include <unicode/utypes.h>
 
 #include "utf.h"
@@ -103,7 +104,7 @@ FontFace::FontFace(FontManager* manager, const char* filename, long index) try :
 
 FontFace::~FontFace()
 {
-    for (std::map<unsigned int, FontTexture*>::iterator it = textures.begin(); it != textures.end(); ++it)
+    for (auto it = textures.begin(); it != textures.end(); ++it)
         delete it->second;
     FT_Done_Face(face);
 }
@@ -115,14 +116,16 @@ bool FontFace::hasGlyph(char32_t ucode) const
     return *result == ucode;
 }
 
-FontTexture* FontFace::getFontTexture(unsigned int point)
+FontTexture* FontFace::getFontTexture(unsigned int point, bool bold, bool oblique)
 {
-    std::map<unsigned int, FontTexture*>::iterator it = textures.find(point);
-    if (it != textures.end())
-        return it->second;
+    for (auto it = textures.find(point); it != textures.end(); ++it) {
+        FontTexture* font = it->second;
+        if (font->getPoint() == point && font->getBold() == bold && font->getOblique() == oblique)
+            return font;
+    }
     FontTexture* texture = 0;
     try {
-        texture = new FontTexture(this, point);
+        texture = new FontTexture(this, point, bold, oblique);
         textures.insert(std::pair<unsigned int, FontTexture*>(point, texture));
     } catch (...) {
         delete texture;
@@ -135,10 +138,12 @@ FontTexture* FontFace::getFontTexture(unsigned int point)
 // FontTexture
 //
 
-FontTexture::FontTexture(FontFace* face, unsigned int point) try :
+FontTexture::FontTexture(FontFace* face, unsigned int point, bool bold, bool oblique) try :
     face(face),
     glyphs(0),
     point(point),
+    bold(bold),
+    oblique(oblique),
     bearingGap(0.0f)
 {
     addImage();
@@ -230,10 +235,18 @@ uint8_t* FontTexture::getImage(FontGlyph* glyph)
 
 bool FontTexture::storeGlyph(FontGlyph* glyph, FT_UInt glyphIndex)
 {
+    static const FT_Matrix matrix { 0x10000, 0x05000,     // 1.0, 0.3125
+                                    0,       0x10000 };   // 0.0, 1.0
+
     // load glyph image into the slot (erase previous one)
     FT_Error error = FT_Load_Glyph(face->face, glyphIndex, USE_HINTING ? FT_LOAD_DEFAULT : FT_LOAD_NO_HINTING);
     if (error)
         return false;
+
+    if (oblique)
+        FT_Outline_Transform(&face->face->glyph->outline, &matrix);
+    if (bold)
+        FT_Outline_Embolden(&face->face->glyph->outline, (700 - 400) / 8);
 
     // convert to an anti-aliased bitmap
     error = FT_Render_Glyph(face->face->glyph, FT_RENDER_MODE_NORMAL);
@@ -257,6 +270,12 @@ bool FontTexture::storeGlyph(FontGlyph* glyph, FT_UInt glyphIndex)
         FT_Error error = FT_Load_Glyph(face->face, glyphIndex, USE_HINTING ? FT_LOAD_DEFAULT : FT_LOAD_NO_HINTING);
         if (error)
             return false;
+
+        if (oblique)
+            FT_Outline_Transform(&face->face->glyph->outline, &matrix);
+        if (bold)
+            FT_Outline_Embolden(&face->face->glyph->outline, (700 - 400) / 8);
+
         // convert to an anti-aliased bitmap
         error = FT_Render_Glyph(face->face->glyph, FT_RENDER_MODE_NORMAL);
         if (error)

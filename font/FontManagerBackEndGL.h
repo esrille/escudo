@@ -136,11 +136,11 @@ public:
         return face;
     }
 
-    FontTexture* getFontTexture(unsigned int px)
+    FontTexture* getFontTexture(unsigned int px, bool bold = false, bool oblique = false)
     {
         if (!face)
             return 0;
-        fontTexture = face->getFontTexture(px);
+        fontTexture = face->getFontTexture(px, bold, oblique);
         return fontTexture;
     }
 

@@ -42,20 +42,40 @@ const int Point = 33;
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
+namespace {
+
+FontTexture* getFontTexture(FontFileInfo* info, CSSStyleDeclarationImp* style)
+{
+    if (!info)
+        return 0;
+
+    backend.getFontFace(info->filename);
+
+    bool bold = false;
+    if (700 <= style->fontWeight.getWeight() && info->weight <= 400)
+        bold = true;
+
+    bool oblique = false;
+    if ((style->fontStyle.getStyle() == CSSFontStyleValueImp::Italic ||
+         style->fontStyle.getStyle() == CSSFontStyleValueImp::Oblique) &&
+        !(info->style & CSSFontStyleValueImp::Italic || info->style & CSSFontStyleValueImp::Oblique))
+        oblique = true;
+
+    return backend.getFontTexture(Point, bold, oblique);
+}
+
+}
+
 FontTexture* ViewCSSImp::selectFont(CSSStyleDeclarationImp* style)
 {
     FontFileInfo* info = FontFileInfo::chooseFont(style);
-    backend.getFontFace(info->filename);
-    return backend.getFontTexture(Point);
+    return getFontTexture(info, style);
 }
 
 FontTexture* ViewCSSImp::selectAltFont(CSSStyleDeclarationImp* style, FontTexture* current, char32_t u)
 {
     FontFileInfo* info = FontFileInfo::chooseAltFont(style, current, u);
-    if (!info)
-        return 0;
-    backend.getFontFace(info->filename);
-    return backend.getFontTexture(Point);
+    return getFontTexture(info, style);
 }
 
 void ViewCSSImp::render()

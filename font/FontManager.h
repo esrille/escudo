@@ -92,7 +92,7 @@ class FontFace
     int32_t glyphCount;
     FT_Face face;
     // a map from nominal font size in pixels to FontTexture
-    std::map<unsigned int, FontTexture*> textures;
+    std::multimap<unsigned int, FontTexture*> textures;
 
     void initCharmap() throw ()
     {
@@ -128,7 +128,7 @@ public:
      * @param point nominal font size in pixels
      * @return the font texture object, or zero upon failure
      */
-    FontTexture* getFontTexture(unsigned int point);
+    FontTexture* getFontTexture(unsigned int point, bool bold, bool oblique);
 };
 
 class FontTexture
@@ -145,6 +145,9 @@ class FontTexture
     short xHeight;
     short lineThroughPosition;
     short lineThroughSize;
+
+    bool bold;
+    bool oblique;
 
     std::vector<uint8_t*> images;
     FT_Vector pen;
@@ -183,7 +186,7 @@ class FontTexture
     void drawBitmap(FontGlyph* glyph, FT_GlyphSlot slot, int level);
 
 public:
-    FontTexture(FontFace* face, unsigned int point);
+    FontTexture(FontFace* face, unsigned int point, bool bold = false, bool oblique = false);
     ~FontTexture();
 
     /** Gets the font glyph object of the specified Unicode character.
@@ -198,6 +201,12 @@ public:
 
     unsigned getPoint() const {
         return point;
+    }
+    bool getBold() const {
+        return bold;
+    }
+    bool getOblique() const {
+        return oblique;
     }
 
     FontFace* getFace() const {
