@@ -31,6 +31,8 @@ struct FontFileInfo
 
     static FontFileInfo* chooseFont(const CSSStyleDeclarationImp* style);
     static FontFileInfo* chooseAltFont(const CSSStyleDeclarationImp* style, FontTexture* current, char32_t u);
+    static void enableTestFonts();
+    static void disableTestFonts();
 };
 
 }}}}  // org::w3c::dom::bootstrap

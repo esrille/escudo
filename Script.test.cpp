@@ -23,6 +23,7 @@
 
 #include "DOMImplementationImp.h"
 #include "WindowImp.h"
+#include "font/FontDatabase.h"
 
 #include "Test.util.h"
 
@@ -30,6 +31,23 @@ using namespace org::w3c::dom::bootstrap;
 using namespace org::w3c::dom;
 
 html::Window window(0);
+
+namespace {
+
+void initTestFonts(int* argc, char* argv[])
+{
+    for (int i = 1; i < *argc; ++i) {
+        if (strcmp(argv[i], "-testfonts") == 0) {
+            FontFileInfo::enableTestFonts();
+            for (; i < *argc; ++i)
+                argv[i] = argv[i + 1];
+            --*argc;
+            break;
+        }
+    }
+}
+
+}
 
 int main(int argc, char* argv[])
 {
@@ -40,6 +58,7 @@ int main(int argc, char* argv[])
 
     init(&argc, argv);
     initLogLevel(&argc, argv);
+    initTestFonts(&argc, argv);
 
     // Load the default CSS file
     std::ifstream styleStream(argv[1]);

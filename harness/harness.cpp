@@ -55,7 +55,7 @@ int processOutput(std::istream& stream, std::string& result)
     return 0;
 }
 
-int runTest(int argc, char* argv[], std::string userStyle, std::string url, std::string& result)
+int runTest(int argc, char* argv[], std::string userStyle, std::string testFonts, std::string url, std::string& result)
 {
     int pipefd[2];
     pipe(pipefd);
@@ -72,7 +72,10 @@ int runTest(int argc, char* argv[], std::string userStyle, std::string url, std:
         int argi = argc - 1;
         if (!userStyle.empty())
             argv[argi++] = strdup(userStyle.c_str());
+        if (testFonts == "on")
+            argv[argi++] ="-testfonts";
         url = "http://localhost:8000/" + url;
+        // url = "http://test.csswg.org/suites/css2.1/20110323/" + url;
         argv[argi++] = strdup(url.c_str());
         argv[argi] = 0;
         execvp(argv[0], argv);
@@ -171,15 +174,16 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
-    char* args[argc - argi + 2];
+    char* args[argc - argi + 3];
     for (int i = 2; i < argc; ++i)
         args[i - 2] = argv[i + argi - 1];
-    args[argc - argi] = args[argc - argi + 1] = 0;
+    args[argc - argi] = args[argc - argi + 1] = args[argc - argi + 2] = 0;
 
     std::string result;
     std::string url;
     std::string undo;
     std::string userStyle;
+    std::string testFonts;
     bool redo = false;
     while (data) {
         if (result == "undo") {
@@ -202,6 +206,12 @@ int main(int argc, char* argv[])
                         s >> userStyle;
                     } else
                         userStyle.clear();
+                } else if (line.compare(1, 9, "testfonts") == 0) {
+                    if (10 < line.length()) {
+                        std::stringstream s(line.substr(10), std::stringstream::in);
+                        s >> testFonts;
+                    } else
+                        testFonts.clear();
                 }
                 report << line << '\n';
                 continue;
@@ -233,7 +243,7 @@ int main(int argc, char* argv[])
                 break;
             // FALL THROUGH
         default:
-            pid = runTest(argc - argi, args, userStyle, url, output);
+            pid = runTest(argc - argi, args, userStyle, testFonts, url, output);
             break;
         }
 

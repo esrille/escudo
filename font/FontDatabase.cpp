@@ -155,9 +155,161 @@ FontInfo fontDatabase[] = {
         }
     },
 #endif
+    // Test fonts for CSS 2.1 test suite
+    {
+        u"Ahem!",
+        CSSFontFamilyValueImp::Monospace,
+        {
+            { TEST_FONTS "/AhemExtra/AHEM_Ahem!.TTF", 400 }
+        }
+    },
+    {
+        u"MissingNormal",
+        CSSFontFamilyValueImp::Monospace,
+        {
+            { TEST_FONTS "/AhemExtra/AHEM_MissingNormal.TTF", 400 },
+        }
+    },
+    {
+        u"SmallCaps",
+        CSSFontFamilyValueImp::Monospace,
+        {
+            { TEST_FONTS "/AhemExtra/AHEM_SmallCaps.TTF", 400 },
+        }
+    },
+    {
+        u"MissingItalicOblique",
+        CSSFontFamilyValueImp::Monospace,
+        {
+            { TEST_FONTS "/AhemExtra/AHEM_MissingItalicOblique.TTF", 400 },
+        }
+    },
+    {
+        u"White Space",
+        CSSFontFamilyValueImp::Monospace,
+        {
+            { TEST_FONTS "/AhemExtra/AHEM_WhiteSpace.TTF", 400 },
+        }
+    },
+    {
+        u"cursive",
+        CSSFontFamilyValueImp::Monospace,
+        {
+            { TEST_FONTS "/AhemExtra/AHEM_cursive.TTF", 400 }
+        }
+    },
+    {
+        u"default",
+        CSSFontFamilyValueImp::Monospace,
+        {
+            { TEST_FONTS "/AhemExtra/AHEM_default.TTF", 400 }
+        }
+    },
+    {
+        u"fantasy",
+        CSSFontFamilyValueImp::Monospace,
+        {
+            { TEST_FONTS "/AhemExtra/AHEM_fantasy.TTF", 400 }
+        }
+    },
+    {
+        u"inherit",
+        CSSFontFamilyValueImp::Monospace,
+        {
+            { TEST_FONTS "/AhemExtra/AHEM_inherit.TTF", 400 }
+        }
+    },
+    {
+        u"initial",
+        CSSFontFamilyValueImp::Monospace,
+        {
+            { TEST_FONTS "/AhemExtra/AHEM_initial.TTF", 400 }
+        }
+    },
+    {
+        u"monospace",
+        CSSFontFamilyValueImp::Monospace,
+        {
+            { TEST_FONTS "/AhemExtra/AHEM_monospace.TTF", 400 }
+        }
+    },
+    {
+        u"serif",
+        CSSFontFamilyValueImp::Monospace,
+        {
+            { TEST_FONTS "/AhemExtra/AHEM_serif.TTF", 400 }
+        }
+    },
+    {
+        u"sans-serif",
+        CSSFontFamilyValueImp::Monospace,
+        {
+            { TEST_FONTS "/AhemExtra/AHEM_sans-serif.TTF", 400 }
+        }
+    },
+    {
+        u"CSSTest ASCII",
+        CSSFontFamilyValueImp::Serif,
+        {
+            { TEST_FONTS "/CSSTest/csstest-ascii.ttf", 400 },
+        }
+    },
+    {
+        u"CSSTest Basic",
+        CSSFontFamilyValueImp::Serif,
+        {
+            { TEST_FONTS "/CSSTest/csstest-basic-bold.ttf", 700 },
+            { TEST_FONTS "/CSSTest/csstest-basic-bolditalic.ttf", 700, CSSFontStyleValueImp::Italic },
+            { TEST_FONTS "/CSSTest/csstest-basic-italic.ttf", 400, CSSFontStyleValueImp::Italic },
+            { TEST_FONTS "/CSSTest/csstest-basic-regular.ttf", 400 },
+        }
+    },
+    {
+        u"CSSTest Fallback",
+        CSSFontFamilyValueImp::Serif,
+        {
+            { TEST_FONTS "/CSSTest/csstest-fallback.ttf", 400 },
+        }
+    },
+    {
+        u"small-caps 1in CSSTest FamilyName Funky",
+        CSSFontFamilyValueImp::Serif,
+        {
+            { TEST_FONTS "/CSSTest/csstest-familyname-funkyA.ttf", 400 },
+        }
+    },
+    {
+        u"x-large CSSTest FamilyName Funky",
+        CSSFontFamilyValueImp::Serif,
+        {
+            { TEST_FONTS "/CSSTest/csstest-familyname-funkyB.ttf", 400 },
+        }
+    },
+    {
+        u"12px CSSTest FamilyName Funky",
+        CSSFontFamilyValueImp::Serif,
+        {
+            { TEST_FONTS "/CSSTest/csstest-familyname-funkyC.ttf", 400 },
+        }
+    },
+    {
+        u"CSSTest FamilyName",
+        CSSFontFamilyValueImp::Serif,
+        {
+            { TEST_FONTS "/CSSTest/csstest-familyname.ttf", 400 },
+            { TEST_FONTS "/CSSTest/csstest-familyname-bold.ttf", 700 },
+        }
+    },
+    {
+        u"CSSTest Verify",
+        CSSFontFamilyValueImp::Serif,
+        {
+            { TEST_FONTS "/CSSTest/csstest-verify.ttf", 400 },
+        }
+    },
 };
 
-const int fontDatabaseSize = sizeof fontDatabase / sizeof fontDatabase[0];
+int fontDatabaseSize = 0;
 
 FontInfo* chooseFontInfo(const std::u16string& family)
 {
@@ -190,8 +342,23 @@ FontInfo* chooseFontInfo(unsigned generic)
 
 }  // namespace
 
+void FontFileInfo::disableTestFonts()
+{
+    enableTestFonts();
+    FontInfo* info = chooseFontInfo(u"Ahem!");
+    fontDatabaseSize = info - fontDatabase;
+}
+
+void FontFileInfo::enableTestFonts()
+{
+    fontDatabaseSize = sizeof fontDatabase / sizeof fontDatabase[0];
+}
+
 FontFileInfo* FontFileInfo::chooseFont(const CSSStyleDeclarationImp* style)
 {
+    if (fontDatabaseSize == 0)
+        disableTestFonts();
+
     FontInfo* fontInfo = 0;
     for (auto i = style->fontFamily.getFamilyNames().begin();
          i != style->fontFamily.getFamilyNames().end();
@@ -208,6 +375,9 @@ FontFileInfo* FontFileInfo::chooseFont(const CSSStyleDeclarationImp* style)
 
 FontFileInfo* FontFileInfo::chooseAltFont(const CSSStyleDeclarationImp* style, FontTexture* current, char32_t u)
 {
+    if (fontDatabaseSize == 0)
+        disableTestFonts();
+
     assert(current);
     FontManager* manager = current->getFace()->getManager();
 
