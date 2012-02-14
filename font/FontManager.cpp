@@ -380,12 +380,14 @@ FontTexture::FontTexture(FontFace* face, unsigned int point, bool bold, bool obl
 
     lineGap = 0;
     xHeight = ascender / 2;
+    sCapHeight = ascender;
     lineThroughPosition = xHeight / 2;
     lineThroughSize = face->face->units_per_EM / 20;
     if (FT_IS_SFNT(face->face)) {
         if (TT_OS2* os2 = static_cast<TT_OS2*>(FT_Get_Sfnt_Table(face->face, ft_sfnt_os2))) {
             lineGap = os2->usWinAscent + os2->usWinDescent - face->face->units_per_EM;
             xHeight = os2->sxHeight;
+            sCapHeight = os2->sCapHeight;
             lineThroughPosition = os2->yStrikeoutPosition;
             lineThroughSize = os2->yStrikeoutSize;
             float b = (point * 96.0f) / 72.0f * 64.0f;

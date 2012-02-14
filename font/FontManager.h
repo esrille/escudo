@@ -154,6 +154,7 @@ class FontTexture
     short descender;
     short lineGap;
     short xHeight;
+    short sCapHeight;
     short lineThroughPosition;
     short lineThroughSize;
 
@@ -229,7 +230,7 @@ public:
     }
 
     float getSmallCapsScale() const {
-        return static_cast<float>(xHeight) / (ascender - lineGap);
+        return static_cast<float>(xHeight) / sCapHeight;
     }
 
     float measureText(const char16_t* text, float point);
