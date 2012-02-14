@@ -1383,7 +1383,7 @@ void CSSFontWeightValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* pa
         case Bolder:
             if (inherited < 400.0f)
                 w = 400.0f;
-            else if (inherited < 700.0f)
+            else if (inherited < 600.0f)
                 w = 700.0f;
             else
                 w = 900.0f;

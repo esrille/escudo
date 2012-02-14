@@ -256,38 +256,7 @@ FontFace::FontFace(FontManager* manager, const char* filename, long index) try :
                 }
                 break;
             }
-            switch (os2->panose[2]) {   // bWeight
-            case 2:  // Very Light
-                weight = 100;
-                break;
-            case 3:  // Light
-                weight = 200;
-                break;
-            case 4:  // Thin
-                weight = 300;
-                break;
-            case 5:  // Book
-                weight = 400;
-                break;
-            case 6:  // Medium
-                weight = 500;
-                break;
-            case 7:  // Demi
-                weight = 600;
-                break;
-            case 8:  // Bold
-                weight = 700;
-                break;
-            case 9:  // Heavy
-                weight = 800;
-                break;
-            case 10:  // Black
-            case 11:  // Extra Black
-                weight = 900;
-                break;
-            default:
-                break;
-            }
+            weight = os2->usWeightClass;
         }
     }
     for (auto i = familyNames.begin(); i != familyNames.end(); ++i)
@@ -315,17 +284,17 @@ unsigned FontFace::getScore(unsigned style, unsigned weight) const
         score += 100;
     if (getWeight() == weight)
         score += 10;
-    else if (weight <= 400) {
+    else if (weight <= 500) {
         if (weight == 400 && getWeight() == 500)
+            score += 9;
+        else if (weight == 500 && getWeight() == 400)
             score += 9;
         else if (getWeight() < weight)
             score += 9 - (weight - getWeight()) / 100;
         else
             score += (1000 - getWeight()) / 100;
-    } else if (500 <= weight) {
-        if (weight == 500 && getWeight() == 400)
-            score += 9;
-        else if (weight < getWeight())
+    } else if (500 < weight) {
+        if (weight < getWeight())
             score += 9 - (getWeight() - weight) / 100;
         else
             score += getWeight() / 100;
@@ -361,7 +330,7 @@ FontTexture* FontFace::getFontTexture(unsigned int point, bool bold, bool obliqu
 FontTexture* FontFace::getFontTexture(unsigned int point, unsigned style, unsigned weight)
 {
     bool bold = false;
-    if (700 <= weight && getWeight() <= 400)
+    if (600 <= weight && (getWeight() == 400 || getWeight() == 500))
         bold = true;
 
     bool oblique = false;
