@@ -1269,7 +1269,9 @@ std::deque<CSSParserTerm*>::iterator CSSFontFamilyValueImp::setValue(std::deque<
             continue;
         }
         if (!family.empty()) {
-            familyNames.push_back(family);
+            // The keywords 'initial' and 'default' are reserved for future use.
+            if (compareIgnoreCase(family, u"initial") && compareIgnoreCase(family, u"default"))
+                familyNames.push_back(family);
             family.clear();
         }
         switch (term->unit) {
@@ -1286,8 +1288,11 @@ std::deque<CSSParserTerm*>::iterator CSSFontFamilyValueImp::setValue(std::deque<
             break;
         }
     }
-    if (!family.empty())
-        familyNames.push_back(family);
+    if (!family.empty()) {
+        // The keywords 'initial' and 'default' are reserved for future use.
+        if (compareIgnoreCase(family, u"initial") && compareIgnoreCase(family, u"default"))
+            familyNames.push_back(family);
+    }
     return --i;
 }
 
