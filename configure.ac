@@ -37,9 +37,12 @@ AC_SUBST([FREETYPE_LIBS])
 # check for SpiderMonkey 1.8.5
 AC_SEARCH_LIBS(JS_NewCompartmentAndGlobalObject, js mozjs185)
 
-# check for liberation font
+# check for liberation fonts
 AC_CHECK_FILE(/usr/share/fonts/liberation/LiberationSerif-Regular.ttf,[AC_SUBST(LIBERATON_TTF,/usr/share/fonts/liberation)])
 AC_CHECK_FILE(/usr/share/fonts/truetype/ttf-liberation/LiberationSerif-Regular.ttf,[AC_SUBST(LIBERATON_TTF,/usr/share/fonts/truetype/ttf-liberation)])
+
+# check for DejaVu fonts
+AC_CHECK_FILE(/usr/share/fonts/dejavu/DejaVuSerif.ttf,[AC_SUBST(DEJAVU_TTF,/usr/share/fonts/dejavu)])
 
 # check for IPA fonts on Fedora
 AC_CHECK_FILE(/usr/share/fonts/ipa-gothic/ipag.ttf,[AC_SUBST(HAVE_IPA_GOTHIC,/usr/share/fonts/ipa-gothic/ipag.ttf)])

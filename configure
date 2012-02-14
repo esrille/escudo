@@ -571,6 +571,7 @@ HAVE_IPA_PMINCHO
 HAVE_IPA_PGOTHIC
 HAVE_IPA_MINCHO
 HAVE_IPA_GOTHIC
+DEJAVU_TTF
 LIBERATON_TTF
 FREETYPE_LIBS
 FREETYPE_CPPFLAGS
@@ -4175,7 +4176,7 @@ if test "$ac_res" != no; then :
 fi
 
 
-# check for liberation font
+# check for liberation fonts
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/share/fonts/liberation/LiberationSerif-Regular.ttf" >&5
 $as_echo_n "checking for /usr/share/fonts/liberation/LiberationSerif-Regular.ttf... " >&6; }
 if ${ac_cv_file__usr_share_fonts_liberation_LiberationSerif_Regular_ttf+:} false; then :
@@ -4213,6 +4214,28 @@ fi
 $as_echo "$ac_cv_file__usr_share_fonts_truetype_ttf_liberation_LiberationSerif_Regular_ttf" >&6; }
 if test "x$ac_cv_file__usr_share_fonts_truetype_ttf_liberation_LiberationSerif_Regular_ttf" = xyes; then :
   LIBERATON_TTF=/usr/share/fonts/truetype/ttf-liberation
+
+fi
+
+
+# check for DejaVu fonts
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/share/fonts/dejavu/DejaVuSerif.ttf" >&5
+$as_echo_n "checking for /usr/share/fonts/dejavu/DejaVuSerif.ttf... " >&6; }
+if ${ac_cv_file__usr_share_fonts_dejavu_DejaVuSerif_ttf+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "/usr/share/fonts/dejavu/DejaVuSerif.ttf"; then
+  ac_cv_file__usr_share_fonts_dejavu_DejaVuSerif_ttf=yes
+else
+  ac_cv_file__usr_share_fonts_dejavu_DejaVuSerif_ttf=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_share_fonts_dejavu_DejaVuSerif_ttf" >&5
+$as_echo "$ac_cv_file__usr_share_fonts_dejavu_DejaVuSerif_ttf" >&6; }
+if test "x$ac_cv_file__usr_share_fonts_dejavu_DejaVuSerif_ttf" = xyes; then :
+  DEJAVU_TTF=/usr/share/fonts/dejavu
 
 fi
 

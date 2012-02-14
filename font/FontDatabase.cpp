@@ -52,6 +52,21 @@ const char* fontList[] =
     // IPAMincho
     HAVE_IPA_MINCHO,
 #endif
+#ifdef DEJAVU_TTF
+    DEJAVU_TTF "/DejaVuSans-Bold.ttf",
+    DEJAVU_TTF "/DejaVuSans-BoldOblique.ttf",
+    DEJAVU_TTF "/DejaVuSans-ExtraLight.ttf",
+    DEJAVU_TTF "/DejaVuSans-Oblique.ttf",
+    DEJAVU_TTF "/DejaVuSans.ttf",
+    DEJAVU_TTF "/DejaVuSansMono-Bold.ttf",
+    DEJAVU_TTF "/DejaVuSansMono-BoldOblique.ttf",
+    DEJAVU_TTF "/DejaVuSansMono-Oblique.ttf",
+    DEJAVU_TTF "/DejaVuSansMono.ttf",
+    DEJAVU_TTF "/DejaVuSerif-Bold.ttf",
+    DEJAVU_TTF "/DejaVuSerif-BoldItalic.ttf",
+    DEJAVU_TTF "/DejaVuSerif-Italic.ttf",
+    DEJAVU_TTF "/DejaVuSerif.ttf",
+#endif
 #ifdef HAVE_AEGEAN
     // Aegean
     HAVE_AEGEAN,
