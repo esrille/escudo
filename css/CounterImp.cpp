@@ -71,9 +71,92 @@ AdditiveGlyph lowerRoman[] =
     0, 0
 };
 
-std::u16string convertToRoman(int n, AdditiveGlyph* glyphList)
+// 1 9999
+AdditiveGlyph armenian[] =
 {
-    if (n < 0 || 5000 <= n)
+    9000, u"\u0554",
+    8000, u"\u0553",
+    7000, u"\u0552",
+    6000, u"\u0551",
+    5000, u"\u0550",
+    4000, u"\u054F",
+    3000, u"\u054E",
+    2000, u"\u054D",
+    1000, u"\u054C",
+    900, u"\u054B",
+    800, u"\u054A",
+    700, u"\u0549",
+    600, u"\u0548",
+    500, u"\u0547",
+    400, u"\u0546",
+    300, u"\u0545",
+    200, u"\u0544",
+    100, u"\u0543",
+    90, u"\u0542",
+    80, u"\u0541",
+    70, u"\u0540",
+    60, u"\u053F",
+    50, u"\u053E",
+    40, u"\u053D",
+    30, u"\u053C",
+    20, u"\u053B",
+    10, u"\u053A",
+    9, u"\u0539",
+    8, u"\u0538",
+    7, u"\u0537",
+    6, u"\u0536",
+    5, u"\u0535",
+    4, u"\u0534",
+    3, u"\u0533",
+    2, u"\u0532",
+    1, u"\u0531"
+};
+
+// 1 19999
+AdditiveGlyph georgian[] =
+{
+    10000, u"\u10F5",
+    9000, u"\u10F0",
+    8000, u"\u10EF",
+    7000, u"\u10F4",
+    6000, u"\u10EE",
+    5000, u"\u10ED",
+    4000, u"\u10EC",
+    3000, u"\u10EB",
+    2000, u"\u10EA",
+    1000, u"\u10E9",
+    900, u"\u10E8",
+    800, u"\u10E7",
+    700, u"\u10E6",
+    600, u"\u10E5",
+    500, u"\u10E4",
+    400, u"\u10F3",
+    300, u"\u10E2",
+    200, u"\u10E1",
+    100, u"\u10E0",
+    90, u"\u10DF",
+    80, u"\u10DE",
+    70, u"\u10DD",
+    60, u"\u10F2",
+    50, u"\u10DC",
+    40, u"\u10DB",
+    30, u"\u10DA",
+    20, u"\u10D9",
+    10, u"\u10D8",
+    9, u"\u10D7",
+    8, u"\u10F1",
+    7, u"\u10D6",
+    6, u"\u10D5",
+    5, u"\u10D4",
+    4, u"\u10D3",
+    3, u"\u10D2",
+    2, u"\u10D1",
+    1, u"\u10D0"
+};
+
+std::u16string convertToRoman(int n, AdditiveGlyph* glyphList, int min = 1, int max = 4999)
+{
+    if (n < min || max < n)
         return toString(n);
     std::u16string value;
     for (AdditiveGlyph* i = glyphList; i->glyph; ++i) {
@@ -133,7 +216,11 @@ std::u16string emit(int i, unsigned type)
         value = convertToRoman(i, upperRoman);
         break;
     case CSSListStyleTypeValueImp::Armenian:
+        value = convertToRoman(i, armenian, 1, 9999);
+        break;
     case CSSListStyleTypeValueImp::Georgian:
+        value = convertToRoman(i, georgian, 1, 19999);
+        break;
     default:
         value = toString(i);
         break;
