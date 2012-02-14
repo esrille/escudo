@@ -35,9 +35,9 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 bin_PROGRAMS = harness$(EXEEXT) Any.test$(EXEEXT) \
-	FontManager.test$(EXEEXT) FontDatabase.test$(EXEEXT) \
-	URL.test$(EXEEXT) HTTPHeader.test$(EXEEXT) \
-	HTTPRequest.test$(EXEEXT) HTMLInputStream.test$(EXEEXT) \
+	FontManager.test$(EXEEXT) URL.test$(EXEEXT) \
+	HTTPHeader.test$(EXEEXT) HTTPRequest.test$(EXEEXT) \
+	HTMLInputStream.test$(EXEEXT) \
 	HTMLInputStream.test.getChar$(EXEEXT) \
 	HTMLTokenizer.test$(EXEEXT) HTMLParser.test$(EXEEXT) \
 	CSSTokenizer.test$(EXEEXT) CSSParser.test$(EXEEXT) \
@@ -365,10 +365,6 @@ am_CSSTokenizer_test_OBJECTS = CSSTokenizer.test.$(OBJEXT)
 CSSTokenizer_test_OBJECTS = $(am_CSSTokenizer_test_OBJECTS)
 CSSTokenizer_test_LDADD = $(LDADD)
 CSSTokenizer_test_DEPENDENCIES = libeshtml5.a libesfontmanager.a
-am_FontDatabase_test_OBJECTS = FontDatabase.test.$(OBJEXT)
-FontDatabase_test_OBJECTS = $(am_FontDatabase_test_OBJECTS)
-FontDatabase_test_LDADD = $(LDADD)
-FontDatabase_test_DEPENDENCIES = libeshtml5.a libesfontmanager.a
 am_FontManager_test_OBJECTS = FontManager.test.$(OBJEXT)
 FontManager_test_OBJECTS = $(am_FontManager_test_OBJECTS)
 FontManager_test_LDADD = $(LDADD)
@@ -435,8 +431,7 @@ SOURCES = $(libesfontmanager_a_SOURCES) $(libeshtml5_a_SOURCES) \
 	$(nodist_libeshtml5_a_SOURCES) $(Any_test_SOURCES) \
 	$(Box_test_SOURCES) $(CSSParser_test_SOURCES) \
 	$(CSSStyle_test_SOURCES) $(CSSTokenizer_test_SOURCES) \
-	$(FontDatabase_test_SOURCES) $(FontManager_test_SOURCES) \
-	$(HTMLInputStream_test_SOURCES) \
+	$(FontManager_test_SOURCES) $(HTMLInputStream_test_SOURCES) \
 	$(HTMLInputStream_test_getChar_SOURCES) \
 	$(HTMLParser_test_SOURCES) $(HTMLTokenizer_test_SOURCES) \
 	$(HTTPHeader_test_SOURCES) $(HTTPRequest_test_SOURCES) \
@@ -445,8 +440,8 @@ SOURCES = $(libesfontmanager_a_SOURCES) $(libeshtml5_a_SOURCES) \
 DIST_SOURCES = $(libesfontmanager_a_SOURCES) $(libeshtml5_a_SOURCES) \
 	$(Any_test_SOURCES) $(Box_test_SOURCES) \
 	$(CSSParser_test_SOURCES) $(CSSStyle_test_SOURCES) \
-	$(CSSTokenizer_test_SOURCES) $(FontDatabase_test_SOURCES) \
-	$(FontManager_test_SOURCES) $(HTMLInputStream_test_SOURCES) \
+	$(CSSTokenizer_test_SOURCES) $(FontManager_test_SOURCES) \
+	$(HTMLInputStream_test_SOURCES) \
 	$(HTMLInputStream_test_getChar_SOURCES) \
 	$(HTMLParser_test_SOURCES) $(HTMLTokenizer_test_SOURCES) \
 	$(HTTPHeader_test_SOURCES) $(HTTPRequest_test_SOURCES) \
@@ -1379,9 +1374,6 @@ Box_test_SOURCES = \
 FontManager_test_SOURCES = \
 	FontManager.test.cpp
 
-FontDatabase_test_SOURCES = \
-	FontDatabase.test.cpp
-
 Layout_test_SOURCES = \
 	Layout.test.cpp
 
@@ -1595,9 +1587,6 @@ CSSStyle.test$(EXEEXT): $(CSSStyle_test_OBJECTS) $(CSSStyle_test_DEPENDENCIES)
 CSSTokenizer.test$(EXEEXT): $(CSSTokenizer_test_OBJECTS) $(CSSTokenizer_test_DEPENDENCIES) 
 	@rm -f CSSTokenizer.test$(EXEEXT)
 	$(CXXLINK) $(CSSTokenizer_test_OBJECTS) $(CSSTokenizer_test_LDADD) $(LIBS)
-FontDatabase.test$(EXEEXT): $(FontDatabase_test_OBJECTS) $(FontDatabase_test_DEPENDENCIES) 
-	@rm -f FontDatabase.test$(EXEEXT)
-	$(CXXLINK) $(FontDatabase_test_OBJECTS) $(FontDatabase_test_LDADD) $(LIBS)
 FontManager.test$(EXEEXT): $(FontManager_test_OBJECTS) $(FontManager_test_DEPENDENCIES) 
 	@rm -f FontManager.test$(EXEEXT)
 	$(CXXLINK) $(FontManager_test_OBJECTS) $(FontManager_test_LDADD) $(LIBS)
@@ -1821,7 +1810,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Float64ArrayImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FocusEvent.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FocusEventImp.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FontDatabase.test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FontManager.test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FormData.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/FormDataImp.Po@am__quote@

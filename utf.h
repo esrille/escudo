@@ -206,6 +206,13 @@ inline int compareIgnoreCase(const std::u16string& a, const std::u16string& b)
     return 0;
 }
 
+struct CompareIgnoreCase
+{
+    bool operator() (const std::u16string& lhs, const std::u16string& rhs) const {
+        return compareIgnoreCase(lhs, rhs) < 0;
+    }
+};
+
 inline std::u16string toString(unsigned int value)
 {
     static const size_t MaxDigits = 10;
@@ -254,6 +261,25 @@ inline void append(std::u16string& s, char32_t u)
         s += w1;
         s += w2;
     }
+}
+
+inline std::u16string toString(const char* string)
+{
+    std::u16string s;
+    char32_t u;
+    while ((string = utf8to32(string, &u)) && u)
+        append(s, u);
+    return s;
+}
+
+inline std::u16string toString(const char* string, size_t length)
+{
+    std::u16string s;
+    char32_t u;
+    const char* end = string + length;
+    while ((string = utf8to32(string, &u)) && string < end && u)
+        append(s, u);
+    return s;
 }
 
 #endif  // #ifndef ES_UTF_H_INCLUDED

@@ -16,16 +16,23 @@
 
 #include "FontManager.h"
 
+#include <strings.h>
+
 #include <algorithm>
 #include <iostream>
+#include <set>
 
-#include <freetype/tttables.h>
-#include <freetype/ftsizes.h>
-#include <freetype/ftoutln.h>
 #include <unicode/utypes.h>
+
+#include <freetype/ftoutln.h>
+#include <freetype/ftsizes.h>
+#include <freetype/ftsnames.h>
+#include <freetype/tttables.h>
 
 #include "utf.h"
 #include "TextIterator.h"
+
+#include "css/CSSStyleDeclarationImp.h"
 
 using namespace org::w3c::dom::bootstrap;
 
@@ -58,27 +65,112 @@ const bool USE_HINTING = false;
 // FontManager
 //
 
+FontManager::FontManager(FontManagerBackEnd* backend) :
+    backend(backend)
+{
+    FT_Error error = FT_Init_FreeType(&library);
+    if (error)
+        throw std::runtime_error(__func__);
+}
+
 FontManager::~FontManager()
 {
-    for (auto it = faces.begin(); it != faces.end(); ++it)
-        delete it->second;
+    for (int i = 0; i < 6; ++i) {
+        while (!genericLists[i].empty()) {
+            FontFace* face = genericLists[i].front();
+            genericLists[i].pop_front();
+            delete face;
+        }
+    }
     FT_Done_FreeType(library);
 }
 
-FontFace* FontManager::getFontFace(const char* fontFilename) throw ()
+FontFace* FontManager::loadFont(const char* fontFilename)
 {
-    auto it = faces.find(fontFilename);
-    if (it != faces.end())
-        return it->second;
-    FontFace* face = 0;
-    try {
-        face = new FontFace(this, fontFilename);
-        faces.insert(std::pair<const char*, FontFace*>(fontFilename, face));
-    } catch (...) {
-        delete face;
-        return 0;
-    }
+    FontFace* face = new(std::nothrow) FontFace(this, fontFilename);
+    if (face)
+        genericLists[face->getGeneric()].push_back(face);
     return face;
+}
+
+void FontManager::registerFont(const std::u16string& familyName, FontFace* face)
+{
+    faces.insert(std::pair<const std::u16string, FontFace*>(familyName, face));
+}
+
+FontFace* FontManager::getFontFace(unsigned generic, unsigned style, unsigned weight, int mask)
+{
+    FontFace* chosen = 0;
+    unsigned score = 0;
+    while (mask) {
+        mask &= ~(1 << generic);
+        for (auto it = genericLists[generic].begin(); it != genericLists[generic].end(); ++it) {
+            FontFace* face = *it;
+            if (chosen && strcmp(chosen->getFamilyName(), face->getFamilyName()))
+                break;
+            unsigned newScore = face->getScore(style, weight);
+            if (!chosen || score < newScore) {
+                chosen = face;
+                score = newScore;
+            }
+        }
+        if (chosen)
+            return chosen;
+        generic = ffs(mask) - 1;
+    }
+    return 0;
+}
+
+FontFace* FontManager::getAltFontFace(unsigned generic, unsigned style, unsigned weight,
+                                      FontTexture* current, char32_t u)
+{
+    assert(current);
+    FontFace* currentFace = current->getFace();
+    FontFace* chosen = 0;
+    unsigned score = 0;
+    auto it = std::find(genericLists[currentFace->getGeneric()].begin(),
+                        genericLists[currentFace->getGeneric()].end(),
+                        currentFace);
+    assert(it != genericLists[currentFace->getGeneric()].end());
+    while (++it != genericLists[currentFace->getGeneric()].end()) {
+        FontFace* face = *it;
+        if (strcmp(face->getFamilyName(), currentFace->getFamilyName()) == 0)
+            continue;
+        if (chosen && strcmp(chosen->getFamilyName(), face->getFamilyName()))
+            break;
+        if (!face->hasGlyph(u))
+            continue;
+        unsigned newScore = face->getScore(style, weight);
+        if (!chosen || score < newScore) {
+            chosen = face;
+            score = newScore;
+        }
+    }
+    if (chosen)
+        return chosen;
+
+    int mask = 0x3f & ~(1 << generic);
+    if (generic != currentFace->getGeneric())
+        mask &= ~((1 << (currentFace->getGeneric() + 1)) - 1);
+    generic = ffs(mask) - 1;
+    return getFontFace(generic, style, weight, mask);
+}
+
+FontFace* FontManager::getFontFace(const std::u16string& familyName, unsigned style, unsigned weight)
+{
+    FontFace* chosen = 0;
+    unsigned score = 0;
+    for (auto it = faces.find(familyName); it != faces.end(); ++it) {
+        if (compareIgnoreCase(it->first, familyName))
+            break;
+        FontFace* face = it->second;
+        unsigned newScore = face->getScore(style, weight);
+        if (!chosen || score < newScore) {
+            chosen = face;
+            score = newScore;
+        }
+    }
+    return chosen;
 }
 
 //
@@ -88,14 +180,119 @@ FontFace* FontManager::getFontFace(const char* fontFilename) throw ()
 FontFace::FontFace(FontManager* manager, const char* filename, long index) try :
     manager(manager),
     filename(filename),
-    charmap(0)
+    charmap(0),
+    generic(CSSFontFamilyValueImp::None),
+    style(CSSFontStyleValueImp::Normal),
+    weight(400) // normal
 {
     FT_Error error = FT_New_Face(manager->library, filename, index, &face);
     if (error) {
         face = 0;
         throw std::runtime_error(__func__);
     }
+
     initCharmap();
+
+    std::set<std::u16string> familyNames;
+    familyNames.insert(toString(face->family_name));
+    if (FT_IS_SFNT(face)) {
+        // cf. http://www.microsoft.com/typography/otspec/name.htm
+        unsigned count = FT_Get_Sfnt_Name_Count(face);
+        for (unsigned i = 0; i < count; ++i) {
+            FT_SfntName sfntName;
+            FT_Get_Sfnt_Name(face, i, &sfntName);
+            if (sfntName.name_id == 1) {  // Font Family name
+                if (sfntName.platform_id == 3) {
+                    if (sfntName.encoding_id == 1) {
+                        // Windows && Unicode BMP (UCS-2)
+                        std::u16string name;
+                        for (unsigned j = 0; j < sfntName.string_len; j+= 2)
+                            name += (sfntName.string[j] << 8) | sfntName.string[j + 1];
+                        familyNames.insert(name);
+                    }
+                }
+            }
+        }
+
+        // cf. http://www.microsoft.com/typography/otspec/os2.htm
+        if (TT_OS2* os2 = static_cast<TT_OS2*>(FT_Get_Sfnt_Table(face, ft_sfnt_os2))) {
+            if (os2->fsSelection & 0x001)
+                style = CSSFontStyleValueImp::Italic;
+            else if (os2->fsSelection & 0x200)
+                style = CSSFontStyleValueImp::Oblique;
+            if (os2->fsSelection & 0x020)
+                weight = 700;
+            switch (os2->panose[3]) {    // bProportion
+            case 9: // Monospaced
+                generic = CSSFontFamilyValueImp::Monospace;
+                break;
+            default:
+                switch (os2->panose[0]) {   // bFamilyType
+                case 2: // Latin Text
+                    switch (os2->panose[1]) {   // bSerifStyle
+                    case 2:  // Cove
+                    case 3:  // Obtuse Cove
+                    case 4:  // Square Cove
+                    case 5:  // Obtuse Square Cove
+                        generic = CSSFontFamilyValueImp::Serif;
+                        break;
+                    case 11: // Normal Sans
+                    case 12: // Obtuse Sans
+                    case 13: // Perpendicular Sans
+                        generic = CSSFontFamilyValueImp::SansSerif;
+                        break;
+                    default:
+                        break;
+                    }
+                    break;
+                case 3: // Latin Hand Written
+                    generic = CSSFontFamilyValueImp::Cursive;
+                    break;
+                case 4: // Latin Decorative
+                    generic = CSSFontFamilyValueImp::Fantasy;
+                    break;
+                default:
+                    break;
+                }
+                break;
+            }
+            switch (os2->panose[2]) {   // bWeight
+            case 2:  // Very Light
+                weight = 100;
+                break;
+            case 3:  // Light
+                weight = 200;
+                break;
+            case 4:  // Thin
+                weight = 300;
+                break;
+            case 5:  // Book
+                weight = 400;
+                break;
+            case 6:  // Medium
+                weight = 500;
+                break;
+            case 7:  // Demi
+                weight = 600;
+                break;
+            case 8:  // Bold
+                weight = 700;
+                break;
+            case 9:  // Heavy
+                weight = 800;
+                break;
+            case 10:  // Black
+            case 11:  // Extra Black
+                weight = 900;
+                break;
+            default:
+                break;
+            }
+        }
+    }
+    for (auto i = familyNames.begin(); i != familyNames.end(); ++i)
+        manager->registerFont(*i, this);
+
 } catch (...) {
     if (face)
         FT_Done_Face(face);
@@ -107,6 +304,33 @@ FontFace::~FontFace()
     for (auto it = textures.begin(); it != textures.end(); ++it)
         delete it->second;
     FT_Done_Face(face);
+}
+
+unsigned FontFace::getScore(unsigned style, unsigned weight) const
+{
+    unsigned score = 0;
+    if (getStyle() == style)
+        score += 200;
+    else if (style == CSSFontStyleValueImp::Italic && getStyle() == CSSFontStyleValueImp::Oblique)
+        score += 100;
+    if (getWeight() == weight)
+        score += 10;
+    else if (weight <= 400) {
+        if (weight == 400 && getWeight() == 500)
+            score += 9;
+        else if (getWeight() < weight)
+            score += 9 - (weight - getWeight()) / 100;
+        else
+            score += (1000 - getWeight()) / 100;
+    } else if (500 <= weight) {
+        if (weight == 500 && getWeight() == 400)
+            score += 9;
+        else if (weight < getWeight())
+            score += 9 - (getWeight() - weight) / 100;
+        else
+            score += getWeight() / 100;
+    }
+    return score;
 }
 
 bool FontFace::hasGlyph(char32_t ucode) const
@@ -132,6 +356,20 @@ FontTexture* FontFace::getFontTexture(unsigned int point, bool bold, bool obliqu
         return 0;
     }
     return texture;
+}
+
+FontTexture* FontFace::getFontTexture(unsigned int point, unsigned style, unsigned weight)
+{
+    bool bold = false;
+    if (700 <= weight && getWeight() <= 400)
+        bold = true;
+
+    bool oblique = false;
+    if ((style  == CSSFontStyleValueImp::Italic || style == CSSFontStyleValueImp::Oblique) &&
+        !(getStyle() & CSSFontStyleValueImp::Italic || getStyle() & CSSFontStyleValueImp::Oblique))
+        oblique = true;
+
+    return getFontTexture(point, bold, oblique);
 }
 
 //
@@ -176,7 +414,7 @@ FontTexture::FontTexture(FontFace* face, unsigned int point, bool bold, bool obl
     lineThroughPosition = xHeight / 2;
     lineThroughSize = face->face->units_per_EM / 20;
     if (FT_IS_SFNT(face->face)) {
-        if (TT_OS2_* os2 = static_cast<TT_OS2_*>(FT_Get_Sfnt_Table(face->face, ft_sfnt_os2))) {
+        if (TT_OS2* os2 = static_cast<TT_OS2*>(FT_Get_Sfnt_Table(face->face, ft_sfnt_os2))) {
             lineGap = os2->usWinAscent + os2->usWinDescent - face->face->units_per_EM;
             xHeight = os2->sxHeight;
             lineThroughPosition = os2->yStrikeoutPosition;

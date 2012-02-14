@@ -62,4 +62,9 @@ void mouse(int button, int state, int x, int y);
 void timer(int value);
 void init(int* argc, char* argv[]);
 
+//
+// ViewCSSImpGL.cpp
+//
+void initFonts(int* argc, char* argv[]);
+
 #endif  // TEST_UTIL_H

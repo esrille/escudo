@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 #include "font/FontManager.h"
 #include "font/FontManagerBackEndGL.h"
+#include "font/FontDatabase.h"
 
 FontManagerBackEndGL backend;
 
@@ -129,22 +130,22 @@ void display()
     glColor3f(0.0, 0.0, 0.0);
 
     double y = 64.0f;
-    backend.getFontFace("/usr/share/fonts/liberation/LiberationSans-Regular.ttf");
+    backend.getFontFace(u"Liberation Sans");
     FontTexture* sans = backend.getFontTexture(point);
 
-    backend.getFontFace("/usr/share/fonts/liberation/LiberationSerif-Regular.ttf");
+    backend.getFontFace(u"Liberation Serif");
     FontTexture* serif = backend.getFontTexture(point);
 
-    backend.getFontFace("/usr/share/fonts/liberation/LiberationMono-Regular.ttf");
+    backend.getFontFace(u"Liberation Mono");
     FontTexture* mono = backend.getFontTexture(point);
 
     y = renderStrings(sans, y);
     y = renderStrings(serif, y);
     y = renderStrings(mono, y);
 
-    backend.getFontFace("/usr/share/fonts/ipa-pgothic/ipagp.ttf");
+    backend.getFontFace(u"IPAMincho");
     y = renderCJKStrings(backend.getFontTexture(point), y);
-    backend.getFontFace("/usr/share/fonts/ipa-pmincho/ipamp.ttf");
+    backend.getFontFace(u"IPAGothic");
     y = renderCJKStrings(backend.getFontTexture(point), y);
 
 #if 0
@@ -187,7 +188,8 @@ int main(int argc, char* argv[])
             point = 32;
     }
 
-    backend.getFontManager();
+    FontManager* manager = backend.getFontManager();
+    FontDatabase::loadBaseFonts(manager);
 
     glutMainLoop();
 }

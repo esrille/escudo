@@ -42,40 +42,46 @@ const int Point = 33;
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
-namespace {
-
-FontTexture* getFontTexture(FontFileInfo* info, CSSStyleDeclarationImp* style)
-{
-    if (!info)
-        return 0;
-
-    backend.getFontFace(info->filename);
-
-    bool bold = false;
-    if (700 <= style->fontWeight.getWeight() && info->weight <= 400)
-        bold = true;
-
-    bool oblique = false;
-    if ((style->fontStyle.getStyle() == CSSFontStyleValueImp::Italic ||
-         style->fontStyle.getStyle() == CSSFontStyleValueImp::Oblique) &&
-        !(info->style & CSSFontStyleValueImp::Italic || info->style & CSSFontStyleValueImp::Oblique))
-        oblique = true;
-
-    return backend.getFontTexture(Point, bold, oblique);
-}
-
-}
-
 FontTexture* ViewCSSImp::selectFont(CSSStyleDeclarationImp* style)
 {
-    FontFileInfo* info = FontFileInfo::chooseFont(style);
-    return getFontTexture(info, style);
+    FontManager* manager = backend.getFontManager();
+    unsigned s = style->fontStyle.getStyle();
+    unsigned w = style->fontWeight.getWeight();
+    for (auto i = style->fontFamily.getFamilyNames().begin(); i != style->fontFamily.getFamilyNames().end(); ++i) {
+        if (FontFace* face = manager->getFontFace(*i, s, w))
+            return face->getFontTexture(Point, s, w);
+    }
+    unsigned g = style->fontFamily.getGeneric();
+    if (!g)
+        g = CSSFontFamilyValueImp::SansSerif;
+    if (FontFace* face = manager->getFontFace(g, s, w))
+        return face->getFontTexture(Point, s, w);
+    return 0;
 }
 
 FontTexture* ViewCSSImp::selectAltFont(CSSStyleDeclarationImp* style, FontTexture* current, char32_t u)
 {
-    FontFileInfo* info = FontFileInfo::chooseAltFont(style, current, u);
-    return getFontTexture(info, style);
+    assert(current);
+    FontManager* manager = backend.getFontManager();
+    unsigned s = style->fontStyle.getStyle();
+    unsigned w = style->fontWeight.getWeight();
+    bool skipped = false;
+    for (auto i = style->fontFamily.getFamilyNames().begin(); i != style->fontFamily.getFamilyNames().end(); ++i) {
+        FontFace* face = manager->getFontFace(*i, s, w);
+        if (face->getFamilyName() == current->getFace()->getFamilyName()) {
+            // TODO: Deal with filesnames registered more than once.
+            skipped = true;
+            continue;
+        }
+        if (skipped && face->hasGlyph(u))
+            return face->getFontTexture(Point, s, w);
+    }
+    unsigned g = style->fontFamily.getGeneric();
+    if (!g)
+        g = CSSFontFamilyValueImp::SansSerif;
+    if (FontFace* face = manager->getAltFontFace(g, s, w, current, u))
+        return face->getFontTexture(Point, s, w);
+    return 0;
 }
 
 void ViewCSSImp::render()
@@ -94,3 +100,18 @@ void ViewCSSImp::render()
 }
 
 }}}}  // org::w3c::dom::bootstrap
+
+void initFonts(int* argc, char* argv[])
+{
+    FontManager* manager = backend.getFontManager();
+    FontDatabase::loadBaseFonts(manager);
+    for (int i = 1; i < *argc; ++i) {
+        if (strcmp(argv[i], "-testfonts") == 0) {
+            FontDatabase::loadTestFonts(manager);
+            for (; i < *argc; ++i)
+                argv[i] = argv[i + 1];
+            --*argc;
+            break;
+        }
+    }
+}

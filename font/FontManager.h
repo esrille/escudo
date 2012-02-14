@@ -20,6 +20,7 @@
 #include <assert.h>
 #include <stdint.h>
 
+#include <list>
 #include <map>
 #include <stdexcept>
 #include <string>
@@ -29,6 +30,8 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
+#include "utf.h"
+
 class FontFace;
 class FontTexture;
 struct FontGlyph;
@@ -36,8 +39,7 @@ struct FontGlyph;
 class FontManagerBackEnd
 {
 public:
-    virtual ~FontManagerBackEnd()
-    {}
+    virtual ~FontManagerBackEnd() {}
 
     virtual void addImage(uint8_t* image) = 0;
     virtual void deleteImage(uint8_t* image) = 0;
@@ -55,28 +57,21 @@ class FontManager
 
     FontManagerBackEnd* backend;
     FT_Library library;
-    // a map from font filename to FontFace
-    std::map<const char*, FontFace*> faces;
-
+    // a map from font family name to FontFace
+    std::multimap<std::u16string, FontFace*, CompareIgnoreCase> faces;
+    std::list<FontFace*> genericLists[6];
 public:
-    FontManager(FontManagerBackEnd* backend = 0) :
-        backend(backend)
-    {
-        FT_Error error = FT_Init_FreeType(&library);
-        if (error)
-            throw std::runtime_error(__func__);
-    }
-
+    FontManager(FontManagerBackEnd* backend = 0);
     ~FontManager();
 
-    /** Gets the font face object for the specified font file.
-     * @param fontFilename font filename
-     * @return the font face object, or zero upon failure
-     */
-    FontFace* getFontFace(const char* fontFilename) throw ();
+    FontFace* loadFont(const char* fontFilename);
+    void registerFont(const std::u16string& familyName, FontFace* face);
 
-    FontManagerBackEnd* getBackEnd() const
-    {
+    FontFace* getFontFace(unsigned generic, unsigned style, unsigned weight, int mask = 0x3f);
+    FontFace* getAltFontFace(unsigned generic, unsigned style, unsigned weight, FontTexture* current, char32_t u);
+    FontFace* getFontFace(const std::u16string& familyName, unsigned style = 0, unsigned weight = 400);
+
+    FontManagerBackEnd* getBackEnd() const {
         return backend;
     }
 };
@@ -93,6 +88,10 @@ class FontFace
     FT_Face face;
     // a map from nominal font size in pixels to FontTexture
     std::multimap<unsigned int, FontTexture*> textures;
+
+    unsigned generic;
+    unsigned style;
+    unsigned weight;
 
     void initCharmap() throw ()
     {
@@ -122,13 +121,25 @@ public:
         return manager->getBackEnd();
     }
 
+    const char* getFamilyName() const {
+        return face->family_name;
+    }
+    unsigned getGeneric() const {
+        return generic;
+    }
+    unsigned getStyle() const {
+        return style;
+    }
+    unsigned getWeight() const {
+        return weight;
+    }
+
+    unsigned getScore(unsigned style, unsigned weight) const;
+
     bool hasGlyph(char32_t u) const;
 
-    /** Gets the font texture object of the specified font size.
-     * @param point nominal font size in pixels
-     * @return the font texture object, or zero upon failure
-     */
     FontTexture* getFontTexture(unsigned int point, bool bold, bool oblique);
+    FontTexture* getFontTexture(unsigned int point, unsigned style, unsigned weight);
 };
 
 class FontTexture

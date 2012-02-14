@@ -17,24 +17,12 @@
 #ifndef ES_FONT_DATABASE_H
 #define ES_FONT_DATABASE_H
 
-class FontTexture;
+class FontManager;
 
-namespace org { namespace w3c { namespace dom { namespace bootstrap {
-
-class CSSStyleDeclarationImp;
-
-struct FontFileInfo
+struct FontDatabase
 {
-    const char* filename;
-    unsigned weight;
-    unsigned style;
-
-    static FontFileInfo* chooseFont(const CSSStyleDeclarationImp* style);
-    static FontFileInfo* chooseAltFont(const CSSStyleDeclarationImp* style, FontTexture* current, char32_t u);
-    static void enableTestFonts();
-    static void disableTestFonts();
+    static void loadBaseFonts(FontManager* manager);
+    static void loadTestFonts(FontManager* manager);
 };
-
-}}}}  // org::w3c::dom::bootstrap
 
 #endif  // ES_FONT_DATABASE_H

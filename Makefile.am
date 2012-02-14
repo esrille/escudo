@@ -1075,7 +1075,6 @@ bin_PROGRAMS = \
 	harness \
 	Any.test \
 	FontManager.test \
-	FontDatabase.test \
 	URL.test \
 	HTTPHeader.test \
 	HTTPRequest.test \
@@ -1124,9 +1123,6 @@ Box_test_SOURCES = \
 
 FontManager_test_SOURCES = \
 	FontManager.test.cpp
-
-FontDatabase_test_SOURCES = \
-	FontDatabase.test.cpp
 
 Layout_test_SOURCES = \
 	Layout.test.cpp

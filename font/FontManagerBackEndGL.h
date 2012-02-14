@@ -130,9 +130,9 @@ public:
         }
     }
 
-    FontFace* getFontFace(const char* fontFilename) throw ()
+    FontFace* getFontFace(const std::u16string& familyName) throw ()
     {
-        face = getFontManager()->getFontFace(fontFilename);
+        face = getFontManager()->getFontFace(familyName);
         return face;
     }
 
