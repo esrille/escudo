@@ -68,6 +68,8 @@ FontTexture* ViewCSSImp::selectAltFont(CSSStyleDeclarationImp* style, FontTextur
     bool skipped = false;
     for (auto i = style->fontFamily.getFamilyNames().begin(); i != style->fontFamily.getFamilyNames().end(); ++i) {
         FontFace* face = manager->getFontFace(*i, s, w);
+        if (!face)
+            continue;
         if (face->getFamilyName() == current->getFace()->getFamilyName()) {
             // TODO: Deal with filesnames registered more than once.
             skipped = true;
