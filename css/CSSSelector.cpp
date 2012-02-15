@@ -35,20 +35,6 @@ inline bool find(const std::u16string& s, const std::u16string& t)
     return s.find(t) != std::u16string::npos;
 }
 
-// s is a whitespace-separated list of words
-inline bool contains(const std::u16string& s, const std::u16string& t)
-{
-    size_t pos = 0;
-    for (;;) {
-        pos = s.find(t, pos);
-        if (pos == std::u16string::npos)
-            return false;
-        if ((pos == 0 || isSpace(s[pos - 1])) && (pos + t.length() == s.length() || isSpace(s[pos + t.length()])))
-            return true;
-        ++pos;
-    }
-}
-
 inline bool startsWith(const std::u16string& s, const std::u16string& t)
 {
     return !s.compare(0, t.length(), t);
@@ -185,7 +171,7 @@ bool CSSIDSelector::match(Element e, ViewCSSImp* view)
     Nullable<std::u16string> id = e.getAttribute(u"id");
     if (!id.hasValue())
         return false;
-    return id.value() == name;  // TODO: ignore case
+    return id.value() == name;
 }
 
 bool CSSClassSelector::match(Element e, ViewCSSImp* view)
@@ -193,7 +179,7 @@ bool CSSClassSelector::match(Element e, ViewCSSImp* view)
     Nullable<std::u16string> classes = e.getAttribute(u"class");
     if (!classes.hasValue())
         return false;
-    return contains(classes.value(), name);  // TODO: ignore case
+    return contains(classes.value(), name);
 }
 
 bool CSSAttributeSelector::match(Element e, ViewCSSImp* view)

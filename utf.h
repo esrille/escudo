@@ -282,4 +282,18 @@ inline std::u16string toString(const char* string, size_t length)
     return s;
 }
 
+// s is a whitespace-separated list of words
+inline bool contains(const std::u16string& s, const std::u16string& t)
+{
+    size_t pos = 0;
+    for (;;) {
+        pos = s.find(t, pos);
+        if (pos == std::u16string::npos)
+            return false;
+        if ((pos == 0 || isSpace(s[pos - 1])) && (pos + t.length() == s.length() || isSpace(s[pos + t.length()])))
+            return true;
+        ++pos;
+    }
+}
+
 #endif  // #ifndef ES_UTF_H_INCLUDED
