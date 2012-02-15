@@ -528,6 +528,9 @@ public:
     CSSBackgroundAttachmentValueImp& setValue(CSSParserTerm* term) {
         return setValue(term->getIndex());
     }
+    bool isFixed() const {
+        return value == Fixed;
+    }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
         return Options[value];
     }

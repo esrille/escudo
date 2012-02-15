@@ -324,7 +324,13 @@ void Box::renderBorder(ViewCSSImp* view, float left, float top)
         if (getParentBox()) {
             // TODO: check padding
             glTranslatef(lr, tb, 0.0f);
-            backgroundImage->render(view, 0, 0, rl - lr, bt - tb, backgroundLeft, backgroundTop);
+            if (!style->backgroundAttachment.isFixed())
+                backgroundImage->render(view, 0, 0, rl - lr, bt - tb, backgroundLeft, backgroundTop);
+            else {
+                float fixedX = left + lr - view->getWindow()->getScrollX();
+                float fixedY = top + tb - view->getWindow()->getScrollY();
+                backgroundImage->render(view, 0, 0, rl - lr, bt - tb, backgroundLeft - fixedX, backgroundTop - fixedY);
+            }
         } else {
             const ContainingBlock* containingBlock = getContainingBlock(view);
             glTranslatef(ll, tt, 0.0f);
