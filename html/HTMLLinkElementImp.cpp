@@ -55,10 +55,10 @@ void HTMLLinkElementImp::eval()
     if (href.empty())
         return;
     HTMLElementImp::eval();
-    if (compareIgnoreCase(getRel(), u"stylesheet") == 0) {  // CI
+    std::u16string rel = getRel();
+    if (contains(rel, u"stylesheet")) {
         // TODO: check type
-        if (!getAttribute(u"title").hasValue()) {
-            // non-alternate style sheet
+        if (!contains(rel, u"alternate")) {
             DocumentImp* document = getOwnerDocumentImp();
             request = new(std::nothrow) HttpRequest(document->getDocumentURI());
             if (request) {
@@ -125,7 +125,10 @@ void HTMLLinkElementImp::setHref(std::u16string href)
 
 std::u16string HTMLLinkElementImp::getRel()
 {
-    return getAttribute(u"rel");
+    // cf. http://www.whatwg.org/specs/web-apps/current-work/multipage/links.html#linkTypes
+    std::u16string rel = getAttribute(u"rel");
+    toLower(rel);
+    return rel;
 }
 
 void HTMLLinkElementImp::setRel(std::u16string rel)
