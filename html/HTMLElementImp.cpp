@@ -128,9 +128,18 @@ views::ClientRect HTMLElementImp::getBoundingClientRect()
     return static_cast<Object*>(0);
 }
 
+// cf. http://www.w3.org/TR/cssom-view/#scroll-an-element-into-view
 void HTMLElementImp::scrollIntoView(bool top)
 {
-    // TODO: implement me!
+    if (html::Window window = getOwnerDocument().getDefaultView()) {
+        if (Box* box = getBox()) {
+            int x = box->getX() + box->getMarginLeft();
+            int y = box->getY() + box->getMarginTop();
+            if (!top)
+                y += box->getBorderHeight();
+            window.scroll(x, y);
+        }
+    }
 }
 
 int HTMLElementImp::getScrollTop()

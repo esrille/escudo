@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
 
 #include <assert.h>
 #include <string>
+#include <cstring>
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -102,6 +103,7 @@ public:
         return url.substr(searchStart, searchEnd - searchStart);
     }
     void setSearch(std::u16string search) {
+        // TODO: update fields
         if (search[0] != u'?')
             search = u"?" + search;
         if (searchStart < searchEnd)
@@ -115,6 +117,7 @@ public:
         return url.substr(hashStart, hashEnd - hashStart);
     }
     void setHash(std::u16string hash) {
+        // TODO: update fields
         if (hash[0] != u'#')
             hash = u"#" + hash;
         if (hashStart < hashEnd)
@@ -123,8 +126,14 @@ public:
             url += hash;
     }
 
-    bool hasSearch() const {
+    bool hasFragment() const {
         return hashStart < hashEnd;
+    }
+
+    bool isSameExceptFragments(const URL& target) const {
+        size_t a = hasFragment() ? hashStart : url.length();
+        size_t b = target.hasFragment() ? target.hashStart : target.url.length();
+        return (a == b) && !std::memcmp(url.data(), target.url.data(), a);
     }
 
     std::u16string resolveURL(std::u16string url);

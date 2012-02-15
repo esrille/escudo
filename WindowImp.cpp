@@ -423,6 +423,23 @@ html::Window WindowImp::getParent()
 
 html::Window WindowImp::open(std::u16string url, std::u16string target, std::u16string features, bool replace)
 {
+    if (window) {
+        if (DocumentImp* document = dynamic_cast<DocumentImp*>(window->getDocument().self())) {
+            URL base(document->getDocumentURI());
+            URL link(base, url);
+            if (base.isSameExceptFragments(link)) {
+                // cf. http://www.whatwg.org/specs/web-apps/current-work/multipage/history.html#scroll-to-fragid
+                // TODO: update history, etc.
+                std::u16string hash = link.getHash();
+                if (hash[0] == '#')
+                    hash.erase(0, 1);
+                if (Element element = document->getElementById(hash))
+                    element.scrollIntoView(true);
+                return this;
+            }
+        }
+    }
+
     // TODO: add more details
     window = new(std::nothrow) DocumentWindow;
 
