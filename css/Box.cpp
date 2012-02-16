@@ -905,14 +905,14 @@ void BlockLevelBox::collapseMarginBottom(FormattingContext* context)
             // The following algorithm is deduced from the following tests:
             //   http://test.csswg.org/suites/css2.1/20110323/html4/margin-collapse-157.htm
             //   http://test.csswg.org/suites/css2.1/20110323/html4/margin-collapse-clear-015.htm
+            //   http://hixie.ch/tests/evil/acid/002-no-data/#top (clearance < 0.0f)
             float original = style->marginTop.isAuto() ? 0 : style->marginTop.getPx();
-            float d = first->marginTop - clearance;
-            if (original < d)
-                marginTop = d;
-            else {
-                // TODO: The expected behavior is not very clear.
+            if (clearance <= 0.0f)
+                marginTop = std::max(original, first->marginTop);
+            else if (original < first->marginTop - clearance)
+                marginTop = first->marginTop - clearance;
+            else
                 marginTop = original;
-            }
             first->marginTop = 0.0f;
         } else {
             // Note even if first->marginTop is zero, first->topBorderEdge
