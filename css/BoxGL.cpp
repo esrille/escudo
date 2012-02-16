@@ -300,10 +300,10 @@ void Box::renderBorder(ViewCSSImp* view, float left, float top)
         glColor4ub(backgroundColor >> 16, backgroundColor >> 8, backgroundColor, backgroundColor >> 24);
         glBegin(GL_QUADS);
             if (getParentBox()) {
-                glVertex2f(lr, tb);
-                glVertex2f(rl, tb);
-                glVertex2f(rl, bt);
-                glVertex2f(lr, bt);
+                glVertex2f(ll, tt);
+                glVertex2f(rr, tt);
+                glVertex2f(rr, bb);
+                glVertex2f(ll, bb);
             } else {
                 const ContainingBlock* containingBlock = getContainingBlock(view);
                 glVertex2f(-left, -top);
