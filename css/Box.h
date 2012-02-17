@@ -698,9 +698,10 @@ public:
     virtual void render(ViewCSSImp* view, StackingContext* stackingContext);
     virtual void dump(std::string indent = "");
 
-    unsigned renderBegin(ViewCSSImp* view);
-    void renderEnd(ViewCSSImp* view, unsigned overflow);
-    void renderContent(ViewCSSImp* view, StackingContext* stackingContext);
+    unsigned renderBegin(ViewCSSImp* view, bool noBorder = false);
+    void renderEnd(ViewCSSImp* view, unsigned overflow, bool scrollBar = true);
+    void renderNonInline(ViewCSSImp* view, StackingContext* stackingContext);
+    void renderInline(ViewCSSImp* view, StackingContext* stackingContext);
 
     bool isTableBox() const;
 };

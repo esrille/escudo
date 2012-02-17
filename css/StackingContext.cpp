@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -192,15 +192,17 @@ void StackingContext::render(ViewCSSImp* view)
         StackingContext* childContext = getFirstChild();
         for (; childContext && childContext->zIndex < 0; childContext = childContext->getNextSibling())
             childContext->render(view);
-        if (!block)
-            base->render(view, this);
+        if (block)
+            block->renderNonInline(view, this);
         else
-            block->renderContent(view, this);
+            base->render(view, this);
         for (currentFloat = firstFloat; currentFloat; currentFloat = currentFloat->nextBase) {
             clip(view, currentFloat, scrollX, scrollY);
             currentFloat->render(view, this);
             unclip(view, currentFloat);
         }
+        if (block)
+            block->renderInline(view, this);
         for (; childContext; childContext = childContext->getNextSibling())
             childContext->render(view);
         if (block)

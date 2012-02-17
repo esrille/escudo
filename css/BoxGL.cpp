@@ -24,6 +24,7 @@
 #include "StackingContext.h"
 #include "CSSStyleDeclarationImp.h"
 #include "ViewCSSImp.h"
+#include "Table.h"
 
 #include "font/FontManager.h"
 #include "font/FontManagerBackEndGL.h"
@@ -446,7 +447,7 @@ void Box::renderHorizontalScrollBar(float w, float h, float pos, float total)
     }
 }
 
-unsigned BlockLevelBox::renderBegin(ViewCSSImp* view)
+unsigned BlockLevelBox::renderBegin(ViewCSSImp* view, bool noBorder)
 {
     unsigned overflow = CSSOverflowValueImp::Visible;
     glPushMatrix();
@@ -458,7 +459,8 @@ unsigned BlockLevelBox::renderBegin(ViewCSSImp* view)
             scrollY = view->getWindow()->getScrollY();
             glTranslatef(scrollX, scrollY, 0.0f);
         }
-        renderBorder(view, x, y);
+        if (!noBorder)
+            renderBorder(view, x, y);
         if (style->parentStyle) {
             overflow = style->overflow.getValue();
             if (overflow != CSSOverflowValueImp::Visible) {
@@ -478,12 +480,13 @@ unsigned BlockLevelBox::renderBegin(ViewCSSImp* view)
                 glTranslatef(-element.getScrollLeft(), -element.getScrollTop(), 0.0f);
             }
         }
-        renderTableBorders(view);
+        if (!noBorder)
+            renderTableBorders(view);
     }
     return overflow;
 }
 
-void BlockLevelBox::renderEnd(ViewCSSImp* view, unsigned overflow)
+void BlockLevelBox::renderEnd(ViewCSSImp* view, unsigned overflow, bool scrollBar)
 {
     if (!isAnonymous() && style->parentStyle) {
         if (overflow != CSSOverflowValueImp::Visible) {
@@ -498,7 +501,7 @@ void BlockLevelBox::renderEnd(ViewCSSImp* view, unsigned overflow)
             glOrtho(0, w, h, 0, -1000.0, 1.0);
             glMatrixMode(GL_MODELVIEW);
 
-            if (overflow != CSSOverflowValueImp::Hidden) {
+            if (scrollBar && overflow != CSSOverflowValueImp::Hidden) {
                 glPushMatrix();
                     glTranslatef(x + marginLeft + borderLeft, y + marginTop + borderTop, 0.0f);
                     float w = getPaddingWidth();
@@ -519,39 +522,68 @@ void BlockLevelBox::renderEnd(ViewCSSImp* view, unsigned overflow)
     glPopMatrix();
 }
 
-void BlockLevelBox::renderContent(ViewCSSImp* view, StackingContext* stackingContext)
+void BlockLevelBox::renderNonInline(ViewCSSImp* view, StackingContext* stackingContext)
+{
+    if (shadow)
+        return;
+    for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
+        if (child->style && child->style->isPositioned() && !child->isAnonymous())
+            continue;
+        if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(child)) {
+            unsigned overflow = block->renderBegin(view);
+            block->renderNonInline(view, stackingContext);
+            block->renderEnd(view, overflow, false);
+        } else if (LineBox* lineBox = dynamic_cast<LineBox*>(child)) {
+            for (auto box = lineBox->getFirstChild(); box; box = box->getNextSibling()) {
+                if (box->style && box->style->isFloat())
+                    stackingContext->addFloat(box);
+                else if (CellBox* cellBox = dynamic_cast<CellBox*>(box)) {
+                    unsigned overflow = cellBox->renderBegin(view);
+                    cellBox->renderNonInline(view, stackingContext);
+                    cellBox->renderEnd(view, overflow, false);
+                }
+            }
+        }
+    }
+}
+
+void BlockLevelBox::renderInline(ViewCSSImp* view, StackingContext* stackingContext)
 {
     if (shadow) {
         shadow->render();
         return;
     }
-
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
         if (child->style && child->style->isPositioned() && !child->isAnonymous())
             continue;
-        child->render(view, stackingContext);
+        if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(child)) {
+            unsigned overflow = block->renderBegin(view, true);
+            block->renderInline(view, stackingContext);
+            block->renderEnd(view, overflow);
+        } else
+            child->render(view, stackingContext);
     }
 }
 
 void BlockLevelBox::render(ViewCSSImp* view, StackingContext* stackingContext)
 {
     unsigned overflow = renderBegin(view);
-    renderContent(view, stackingContext);
+    renderNonInline(view, stackingContext);
+    renderInline(view, stackingContext);
     renderEnd(view, overflow);
 }
 
 void LineBox::render(ViewCSSImp* view, StackingContext* stackingContext)
 {
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
-        if (child->style) {
-            if (child->style->isPositioned() && !child->isAnonymous())
-                continue;
-            if (child->style->isFloat()) {
-                stackingContext->addFloat(child);
-                continue;
-            }
-        }
-        child->render(view, stackingContext);
+        if (child->style && ((child->style->isFloat() || child->style->isPositioned() && !child->isAnonymous())))
+            continue;
+        if (CellBox* cellBox = dynamic_cast<CellBox*>(child)) {
+            unsigned overflow = cellBox->renderBegin(view, true);
+            cellBox->renderInline(view, stackingContext);
+            cellBox->renderEnd(view, overflow);
+        } else
+            child->render(view, stackingContext);
     }
 }
 
