@@ -170,6 +170,15 @@ Box* Box::getNextSibling() const
     return nextSibling;
 }
 
+float Box::getEffectiveTotalWidth() const
+{
+    // cf. http://test.csswg.org/suites/css2.1/20110323/html4/clear-float-002.htm
+    float h = getTotalHeight() + getClearance();
+    if (LineBox* lineBox = dynamic_cast<LineBox*>(parentBox))
+        h += lineBox->getClearance();
+    return (h <= 0.0f) ? 0.0f : getTotalWidth();
+}
+
 void Box::updatePadding()
 {
     paddingTop = style->paddingTop.getPx();
@@ -588,7 +597,10 @@ void BlockLevelBox::layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floa
             return;   // TODO error
     }
     float w = floatBox->getEffectiveTotalWidth();
-    if (context->getLeftoverForFloat(floatBox->style->float_.getValue()) < w &&
+    float l = context->getLeftoverForFloat(floatBox->style->float_.getValue());
+    // If both w and l are zero, move this floating box to the next line;
+    // cf. http://test.csswg.org/suites/css2.1/20110323/html4/stack-floats-003.htm
+    if ((l < w || l == 0.0f && w == 0.0f) &&
         (context->lineBox->hasChildBoxes() || context->hasLeft() || context->hasRight())) {
         // Process this float box later in the other line box.
         context->floatNodes.push_back(node);

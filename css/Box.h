@@ -396,9 +396,7 @@ public:
         return paddingTop + height + paddingBottom;
     }
 
-    float getEffectiveTotalWidth() const {
-        return (0.0f <= marginTop && 0.0f <= marginBottom && getTotalHeight() == 0.0f) ? 0.0f : getTotalWidth();
-    }
+    float getEffectiveTotalWidth() const;
 
     // for block level box
     float getBlockWidth() const {
