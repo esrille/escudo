@@ -323,7 +323,6 @@ void Box::renderBorder(ViewCSSImp* view, float left, float top)
         glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border);
         glPushMatrix();
         if (getParentBox()) {
-            // TODO: check padding
             glTranslatef(lr, tb, 0.0f);
             if (!style->backgroundAttachment.isFixed())
                 backgroundImage->render(view, 0, 0, rl - lr, bt - tb, backgroundLeft, backgroundTop);
@@ -334,8 +333,19 @@ void Box::renderBorder(ViewCSSImp* view, float left, float top)
             }
         } else {
             const ContainingBlock* containingBlock = getContainingBlock(view);
-            glTranslatef(ll, tt, 0.0f);
-            backgroundImage->render(view, -ll, -tt, containingBlock->width, containingBlock->height, backgroundLeft, backgroundTop);
+            glTranslatef(lr, tb, 0.0f);
+            if (!style->backgroundAttachment.isFixed())
+                backgroundImage->render(view, -lr, -tb, containingBlock->width, containingBlock->height, backgroundLeft, backgroundTop);
+            else {
+                float fixedX = left + lr - view->getWindow()->getScrollX();
+                float fixedY = top + tb - view->getWindow()->getScrollY();
+                backgroundImage->render(view,
+                                        -lr + view->getWindow()->getScrollX(),
+                                        -tb + view->getWindow()->getScrollY(),
+                                        containingBlock->width + view->getWindow()->getScrollX(),
+                                        containingBlock->height + view->getWindow()->getScrollY(),
+                                        backgroundLeft - fixedX, backgroundTop - fixedY);
+            }
         }
         glPopMatrix();
     }
