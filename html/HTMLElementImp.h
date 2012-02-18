@@ -42,9 +42,13 @@ class HTMLElementImp : public ObjectMixin<HTMLElementImp, ElementImp>
     css::CSSStyleDeclaration style;
     int scrollTop;
     int scrollLeft;
+    int moveX;
+    int moveY;
     Retained<EventListenerImp> clickListener;
+    Retained<EventListenerImp> mouseMoveListener;
 
     void handleClick(events::Event event);
+    void handleMouseMove(events::Event event);
 
 public:
     HTMLElementImp(DocumentImp* ownerDocument, const std::u16string& localName);

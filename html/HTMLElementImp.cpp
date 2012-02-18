@@ -35,9 +35,11 @@ HTMLElementImp::HTMLElementImp(DocumentImp* ownerDocument, const std::u16string&
     style(0),
     scrollTop(0),
     scrollLeft(0),
-    clickListener(boost::bind(&HTMLElementImp::handleClick, this, _1))
+    clickListener(boost::bind(&HTMLElementImp::handleClick, this, _1)),
+    mouseMoveListener(boost::bind(&HTMLElementImp::handleMouseMove, this, _1))
 {
     addEventListener(u"click", &clickListener);
+    addEventListener(u"mousemove", &mouseMoveListener);
 }
 
 HTMLElementImp::HTMLElementImp(HTMLElementImp* org, bool deep) :
@@ -45,9 +47,11 @@ HTMLElementImp::HTMLElementImp(HTMLElementImp* org, bool deep) :
     style(org->style),  // TODO: clone
     scrollTop(0),
     scrollLeft(0),
-    clickListener(boost::bind(&HTMLElementImp::handleClick, this, _1))
+    clickListener(boost::bind(&HTMLElementImp::handleClick, this, _1)),
+    mouseMoveListener(boost::bind(&HTMLElementImp::handleMouseMove, this, _1))
 {
     addEventListener(u"click", &clickListener);
+    addEventListener(u"mousemove", &mouseMoveListener);
 }
 
 HTMLElementImp::~HTMLElementImp()
@@ -60,21 +64,27 @@ void HTMLElementImp::handleClick(events::Event event)
         return;
     events::MouseEvent mouse = interface_cast<events::MouseEvent>(event);
     switch (mouse.getButton()) {
-    case 3:
-        setScrollTop(getScrollTop() - 16);
-        break;
-    case 4:
-        setScrollTop(getScrollTop() + 16);
-        break;
-    case 5:
-        setScrollLeft(getScrollLeft() - 16);
-        break;
-    case 6:
-        setScrollLeft(getScrollLeft() + 16);
+    case 0:
+        moveX = mouse.getScreenX();
+        moveY = mouse.getScreenY();
         break;
     default:
         break;
     }
+}
+
+void HTMLElementImp::handleMouseMove(events::Event event)
+{
+    if (event.getDefaultPrevented())
+        return;
+    events::MouseEvent mouse = interface_cast<events::MouseEvent>(event);
+    unsigned short buttons = mouse.getButtons();
+    if (buttons & 1) {
+        setScrollTop(getScrollTop() + moveY - mouse.getScreenY());
+        setScrollLeft(getScrollLeft() + moveX - mouse.getScreenX());
+    }
+    moveX = mouse.getScreenX();
+    moveY = mouse.getScreenY();
 }
 
 void HTMLElementImp::eval()
