@@ -1129,10 +1129,6 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
             height += child->getTotalHeight();
             totalClearance += child->getClearance();
         }
-        if (Box* last = getLastChild()) {
-            if (last->marginBottom < 0.0f)
-                height -= last->marginBottom;
-        }
         // If height is zero and this block-box contains only line-boxes,
         // clearances are used just to layout floating boxes, and thus
         // totalClearance should not be added to height.
@@ -1426,10 +1422,6 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
         for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
             height += child->getTotalHeight();
             totalClearance += child->getClearance();
-        }
-        if (Box* last = getLastChild()) {
-            if (last->marginBottom < 0.0f)
-                height -= last->marginBottom;
         }
         // Note if height is zero, clearances are used only to layout floating boxes,
         // and thus totalClearance should not be added to height.
