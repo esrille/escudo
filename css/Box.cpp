@@ -173,9 +173,12 @@ Box* Box::getNextSibling() const
 float Box::getEffectiveTotalWidth() const
 {
     // cf. http://test.csswg.org/suites/css2.1/20110323/html4/clear-float-002.htm
-    float h = getTotalHeight() + getClearance();
+    float c = getClearance();
+    float h = getTotalHeight();
     if (LineBox* lineBox = dynamic_cast<LineBox*>(parentBox))
-        h += lineBox->getClearance();
+        c += lineBox->getClearance();
+    if (0.0f < c)
+        h += c;
     return (h <= 0.0f) ? 0.0f : getTotalWidth();
 }
 
@@ -1481,6 +1484,12 @@ void BlockLevelBox::resolveOffset(ViewCSSImp* view)
 
 void BlockLevelBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip)
 {
+    if (!isAnonymous() && style && style->float_.getValue() == CSSFloatValueImp::Right) {
+        // cf. http://www.webstandards.org/action/acid2/guide/#row-10-11
+        if (getEffectiveTotalWidth() == 0.0f)
+            left -= getTotalWidth();
+    }
+
     left += offsetH;
     top += offsetV + getClearance();
     x = left;

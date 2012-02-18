@@ -504,11 +504,39 @@ bool LineBox::layOut(ViewCSSImp* view, FormattingContext* context)
 float LineBox::shrinkTo()
 {
     float w = Box::shrinkTo();
+
+    float wl = 0.0f;
+    float l = 0.0f;
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
-        if (child->isFloat())
-            w += child->getEffectiveTotalWidth();
+        if (child->isAnonymous() || !child->style)
+            break;
+        if (child->style->float_.getValue() == CSSFloatValueImp::Left) {
+            float e = child->getEffectiveTotalWidth();
+            wl += e;
+            l += e;
+            if (e == 0.0f)
+                l = std::max(wl + child->getTotalWidth(), l);
+        } else
+            break;
     }
-    return w;
+
+    float wr = 0.0f;
+    float r = 0.0f;
+    for (auto child = getLastChild(); child; child = child->getPreviousSibling()) {
+        if (child->isAnonymous() || !child->style)
+            break;
+        if (child->style->float_.getValue() == CSSFloatValueImp::Right) {
+            float e = child->getEffectiveTotalWidth();
+            wr += e;
+            r += e;
+            if (e == 0.0f)
+                r = std::max(wr + child->getTotalWidth(), r);
+        } else
+            break;
+    }
+
+    w += wl + wr;
+    return std::max(w, std::max(l, r));
 }
 
 void LineBox::fit(float w)
@@ -555,11 +583,11 @@ void LineBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* 
                 floatingBox = dynamic_cast<BlockLevelBox*>(child);
                 assert(floatingBox);
                 if (floatingBox == rightBox)
-                    left += rightGap;
+                    break;
                 next = left + floatingBox->getEffectiveTotalWidth();
             }
         }
-        if (!usedLeftGap && (!floatingBox || floatingBox == rightBox)) {
+        if (!usedLeftGap && !floatingBox) {
             left += leftGap;
             next += leftGap;
             usedLeftGap = true;
@@ -567,8 +595,17 @@ void LineBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* 
         child->resolveXY(view, left, top, clip);
         left = next;
     }
-
-    view->updateScrollWidth(x + getTotalWidth() + getBlankRight());
+    if (rightBox) {
+        float right = x + getParentBox()->width;
+        for (auto child = getLastChild(); child; child = child->getPreviousSibling()) {
+            BlockLevelBox* floatingBox = dynamic_cast<BlockLevelBox*>(child);
+            right -= floatingBox->getEffectiveTotalWidth();
+            child->resolveXY(view, right, top, clip);
+            if (floatingBox == rightBox)
+                break;
+        }
+    }
+    view->updateScrollWidth(x + getTotalWidth());
 }
 
 void LineBox::dump(std::string indent)
