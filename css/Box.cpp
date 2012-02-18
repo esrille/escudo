@@ -1364,7 +1364,7 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
 
     style->resolve(view, containingBlock);
 
-    backgroundColor = style->backgroundColor.getARGB();
+    resolveBackground(view);
     updatePadding();
     updateBorderWidth();
 
@@ -1445,6 +1445,12 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
     for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
         child->resolveOffset(view);
         child->fit(width);
+    }
+
+    if (backgroundImage && backgroundImage->getState() == BoxImage::CompletelyAvailable) {
+        style->backgroundPosition.resolve(view, backgroundImage, style.get(), getPaddingWidth(), getPaddingHeight());
+        backgroundLeft = style->backgroundPosition.getLeftPx();
+        backgroundTop = style->backgroundPosition.getTopPx();
     }
 
     restoreFormattingContext(context);
