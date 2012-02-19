@@ -1094,10 +1094,6 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
 
     FormattingContext* parentContext = context;
     context = updateFormattingContext(context);
-    if (isCollapsableOutside()) {
-        if (context != parentContext)
-            context->inheritMarginContext(parentContext);
-    }
 
     if (isReplacedElement(element))
         layOutReplacedElement(view, this, element, style.get());
@@ -1157,6 +1153,7 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     restoreFormattingContext(context);
     if (parentContext && parentContext != context) {
         if (isCollapsableOutside()) {
+            // TODO: Review this logic; what's going to happen when collapse through, etc.
             parentContext->inheritMarginContext(context);
             if (0.0f < height)
                 parentContext->updateRemainingHeight(height);
