@@ -329,6 +329,10 @@ void Box::renderBorder(ViewCSSImp* view, float left, float top)
             else {
                 float fixedX = left + lr - view->getWindow()->getScrollX();
                 float fixedY = top + tb - view->getWindow()->getScrollY();
+                for (Element element = interface_cast<Element>(getNode()); element; element = element.getParentElement()) {
+                    fixedX -= element.getScrollLeft();
+                    fixedY -= element.getScrollTop();
+                }
                 backgroundImage->render(view, -borderLeft, -borderTop, rr - ll, bb - tt, backgroundLeft - fixedX, backgroundTop - fixedY);
             }
         } else {
