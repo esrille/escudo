@@ -228,22 +228,25 @@ void ElementImp::setAttributeNS(std::u16string namespaceURI, std::u16string qual
 
 void ElementImp::removeAttribute(std::u16string name)
 {
-    // TODO: Ask Anne if we don't have to call toLower()
     // TODO: If the context node is in the HTML namespace and its ownerDocument is an HTML document
         toLower(name);
-    for (auto i = attributes.begin(); i != attributes.end(); ++i) {
+    for (auto i = attributes.begin(); i != attributes.end();) {
         Attr attr = *i;
         if (attr.getName() == name)
-            attributes.erase(i);
+            i = attributes.erase(i);
+        else
+            ++i;
     }
 }
 
 void ElementImp::removeAttributeNS(std::u16string namespaceURI, std::u16string localName)
 {
-    for (auto i = attributes.begin(); i != attributes.end(); ++i) {
+    for (auto i = attributes.begin(); i != attributes.end();) {
         Attr attr = *i;
         if (attr.getNamespaceURI().hasValue() && attr.getNamespaceURI().value() == namespaceURI && attr.getLocalName() == localName)
-            attributes.erase(i);
+            i = attributes.erase(i);
+        else
+            ++i;
     }
 }
 
