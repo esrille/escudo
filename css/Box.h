@@ -673,8 +673,7 @@ public:
     // Gets the last, anonymous child box. Creates one if there's none even
     // if there's no children; if so, the existing texts are moved to the
     // new anonymous box.
-    bool hasAnonymousBox()
-    {
+    bool hasAnonymousBox() const {
         return lastChild && lastChild->isAnonymous();
     }
     BlockLevelBox* getAnonymousBox();
