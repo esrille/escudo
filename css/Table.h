@@ -139,9 +139,9 @@ class TableWrapperBox : public BlockLevelBox
     unsigned appendColumn();
 
     void formTable(ViewCSSImp* view);
-    void processColGruop(ViewCSSImp* view, Element colgroup);
+    void processColGroup(ViewCSSImp* view, Element colgroup);
     unsigned processRow(ViewCSSImp* view, Element row, unsigned yCurrent, CSSAutoNumberingValueImp::CounterContext* counterContext);
-    unsigned processRowGruop(ViewCSSImp* view, Element section, unsigned yCurrent, CSSAutoNumberingValueImp::CounterContext* counterContext);
+    unsigned processRowGroup(ViewCSSImp* view, Element section, unsigned yCurrent, CSSAutoNumberingValueImp::CounterContext* counterContext);
     unsigned endRowGroup(int yCurrent);
     void growDownwardGrowingCells();
 

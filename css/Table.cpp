@@ -160,7 +160,7 @@ void TableWrapperBox::formTable(ViewCSSImp* view)
         }
         if (display == CSSDisplayValueImp::TableColumnGroup) {
             yCurrent = endRowGroup(yCurrent);
-            processColGruop(view, current);
+            processColGroup(view, current);
             continue;
         }
         if (display == CSSDisplayValueImp::TableColumn)  // TODO HTML doesn't need this though
@@ -178,11 +178,11 @@ void TableWrapperBox::formTable(ViewCSSImp* view)
             continue;
         }
         assert(display == CSSDisplayValueImp::TableHeaderGroup || display == CSSDisplayValueImp::TableRowGroup);
-        yCurrent = processRowGruop(view, current, yCurrent, &cc);
+        yCurrent = processRowGroup(view, current, yCurrent, &cc);
     }
     while (!pendingTfootElements.empty()) {
         Element tfoot = pendingTfootElements.front();
-        yCurrent = processRowGruop(view, tfoot, yCurrent, &cc);
+        yCurrent = processRowGroup(view, tfoot, yCurrent, &cc);
         pendingTfootElements.pop_front();
     }
 }
@@ -235,7 +235,7 @@ unsigned TableWrapperBox::processRow(ViewCSSImp* view, Element row, unsigned yCu
     return ++yCurrent;
 }
 
-unsigned TableWrapperBox::processRowGruop(ViewCSSImp* view, Element section, unsigned yCurrent, CSSAutoNumberingValueImp::CounterContext* counterContext)
+unsigned TableWrapperBox::processRowGroup(ViewCSSImp* view, Element section, unsigned yCurrent, CSSAutoNumberingValueImp::CounterContext* counterContext)
 {
     unsigned yStart = yHeight;
     for (Element child = section.getFirstElementChild(); child; child = child.getNextElementSibling()) {
@@ -261,7 +261,7 @@ unsigned TableWrapperBox::endRowGroup(int yCurrent)
     return yCurrent;
 }
 
-void TableWrapperBox::processColGruop(ViewCSSImp* view, Element colgroup)
+void TableWrapperBox::processColGroup(ViewCSSImp* view, Element colgroup)
 {
     bool hasCol = false;
     int xStart = xWidth;
