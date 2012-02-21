@@ -56,11 +56,13 @@ ViewCSSImp::ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyle
 {
     setMediumFontSize(16);
     getDocument().addEventListener(u"DOMAttrModified", &mutationListener);
+    getDocument().addEventListener(u"DOMNodeRemoved", &mutationListener);
 }
 
 ViewCSSImp::~ViewCSSImp()
 {
     getDocument().removeEventListener(u"DOMAttrModified", &mutationListener);
+    getDocument().removeEventListener(u"DOMNodeRemoved", &mutationListener);
 }
 
 Box* ViewCSSImp::boxFromPoint(int x, int y)
