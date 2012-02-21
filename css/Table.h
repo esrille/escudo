@@ -132,6 +132,7 @@ class TableWrapperBox : public BlockLevelBox
     unsigned xCurrent;
     unsigned yCurrent;
     CellBox* anonymousCell;
+    Element pendingTheadElement;
     std::list<Element> pendingTfootElements;
     CSSAutoNumberingValueImp::CounterContext* counterContext;
 
@@ -146,6 +147,7 @@ class TableWrapperBox : public BlockLevelBox
     void endRow();
     void processRowGroup(Element section, CSSAutoNumberingValueImp::CounterContext* counterContext);
     void endRowGroup();
+    void processHeader();
     void processFooter();
     void growDownwardGrowingCells();
 

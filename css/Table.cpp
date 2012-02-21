@@ -103,7 +103,8 @@ TableWrapperBox::TableWrapperBox(ViewCSSImp* view, Element element, CSSStyleDecl
     inRow(false),
     xCurrent(0),
     yCurrent(0),
-    anonymousCell(0)
+    anonymousCell(0),
+    pendingTheadElement(0)
 {
     counterContext = new(std::nothrow) CSSAutoNumberingValueImp::CounterContext(view);
 
@@ -137,6 +138,7 @@ TableWrapperBox::~TableWrapperBox()
 void TableWrapperBox::layOutBlockBoxes()
 {
     processFooter();
+    processHeader();
 
     if (counterContext) {
         delete counterContext;
@@ -296,6 +298,12 @@ void TableWrapperBox::processTableChild(Node node, CSSStyleDeclarationImp* style
         pendingTfootElements.push_back(child);
         break;
     case CSSDisplayValueImp::TableHeaderGroup:
+        if (!pendingTheadElement) {
+            endRow();
+            pendingTheadElement = child;
+            break;
+        }
+        // FALL THROUGH
     case CSSDisplayValueImp::TableRowGroup:
         endRow();
         processRowGroup(child, counterContext);
@@ -385,6 +393,12 @@ void TableWrapperBox::formTable()
             pendingTfootElements.push_back(current);
             continue;
         }
+        if (display == CSSDisplayValueImp::TableHeaderGroup) {
+            if (!pendingTheadElement) {
+                pendingTheadElement = current;
+                continue;
+            }
+        }
         assert(display == CSSDisplayValueImp::TableHeaderGroup || display == CSSDisplayValueImp::TableRowGroup);
         processRowGroup(current, counterContext);
     }
@@ -469,7 +483,6 @@ void TableWrapperBox::endRow()
 
 void TableWrapperBox::processRowGroup(Element section, CSSAutoNumberingValueImp::CounterContext* counterContext)
 {
-    unsigned yStart = yHeight;
     for (Element child = section.getFirstElementChild(); child; child = child.getNextElementSibling()) {
         CSSStyleDeclarationImp* childStyle = view->getStyle(child);
         assert(childStyle);
@@ -517,6 +530,36 @@ void TableWrapperBox::processColGroup(Element colgroup)
             columnGroups[xWidth - 1] = view->getStyle(colgroup);
         }
         // TODO 3.
+    }
+}
+
+void TableWrapperBox::processHeader()
+{
+    unsigned yStart = yHeight;
+    if (pendingTheadElement)
+        processRowGroup(pendingTheadElement, counterContext);
+    unsigned headerCount = yHeight - yStart;
+    if (headerCount == 0)
+        return;
+
+    std::rotate(grid.begin(), grid.begin() + yStart, grid.end());
+    std::rotate(rows.begin(), rows.begin() + yStart, rows.end());
+    std::rotate(rowGroups.begin(), rowGroups.begin() + yStart, rowGroups.end());
+    for (unsigned y = 0; y < headerCount; ++y) {
+        for (unsigned x = 0; x < xWidth; ++x) {
+            CellBox* cellBox = grid[y][x].get();
+            if (!cellBox || cellBox->isSpanned(x, y + yStart))
+                continue;
+            cellBox->row -= yStart;
+        }
+    }
+    for (unsigned y = headerCount; y < yHeight; ++y) {
+        for (unsigned x = 0; x < xWidth; ++x) {
+            CellBox* cellBox = grid[y][x].get();
+            if (!cellBox || cellBox->isSpanned(x, y - headerCount))
+                continue;
+            cellBox->row += headerCount;
+        }
     }
 }
 
@@ -719,8 +762,8 @@ void TableWrapperBox::computeTableBorders()
     float l = 0.0f;
     float r = 0.0f;
     if (0 < xWidth && 0 < yHeight) {
-        float l = getColumnBorderValue(0, 0)->getWidth() / 2.0f;
-        float r = getColumnBorderValue(xWidth, 0)->getWidth() / 2.0f;
+        l = getColumnBorderValue(0, 0)->getWidth() / 2.0f;
+        r = getColumnBorderValue(xWidth, 0)->getWidth() / 2.0f;
     }
     tableBox->expandMargins(t, r, b, l);
     for (unsigned y = 0; y < yHeight; ++y) {
