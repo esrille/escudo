@@ -1103,13 +1103,14 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     }
     layOutChildren(view, context);
 
-    if ((style->width.isAuto() || style->marginLeft.isAuto() || style->marginRight.isAuto()) &&
-        (style->isInlineBlock() || style->isFloat() || style->display == CSSDisplayValueImp::TableCell) &&
-        !intrinsic)
-        shrinkToFit();
-
-    if (!isAnonymous())
+    if (!isAnonymous()) {
+        if ((style->width.isAuto() || style->marginLeft.isAuto() || style->marginRight.isAuto()) &&
+            (style->isInlineBlock() || style->isFloat() || style->display == CSSDisplayValueImp::TableCell) &&
+            !intrinsic)
+            shrinkToFit();
         applyMinMaxWidth(getTotalWidth());
+    } else if (dynamic_cast<CellBox*>(this))
+        shrinkToFit();
 
     // Collapse margins with the first and the last children before calculating the auto height.
     collapseMarginBottom(context);

@@ -266,6 +266,11 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Text text, BlockLevelBox* parentBox,
         parentBox->insertInline(text);
         return 0;
     }
+    if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(parentBox->getLastChild())) {
+        if (table && table->isAnonymousTableObject())
+            table->processTableChild(text, style);
+        return 0;
+    }
     if (!style->display.isInline() && !parentBox->hasAnonymousBox()) {
         // cf. http://www.w3.org/TR/CSS2/visuren.html#anonymous
         // White space content that would subsequently be collapsed
@@ -351,16 +356,29 @@ Element ViewCSSImp::expandBinding(Element element, CSSStyleDeclarationImp* style
     return element;
 }
 
-BlockLevelBox* ViewCSSImp::createBlockLevelBox(Element element, CSSStyleDeclarationImp* style, bool newContext)
+BlockLevelBox* ViewCSSImp::createBlockLevelBox(Element element, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, bool newContext, bool asBlock)
 {
     assert(style);
     BlockLevelBox* block;
     if (style->display == CSSDisplayValueImp::Table || style->display == CSSDisplayValueImp::InlineTable) {
-        // TODO
         block = new(std::nothrow) TableWrapperBox(this, element, style);
         newContext = true;
-    } else if (style->display.getValue() == CSSDisplayValueImp::TableCell) {
-        block = new(std::nothrow) CellBox(element, style);
+    } else if (style->display.isTableParts()) {
+        if (asBlock) {
+            if (style->display == CSSDisplayValueImp::TableCell)
+                block = new(std::nothrow) CellBox(element, style);
+            else
+                block =  new(std::nothrow) BlockLevelBox(element, style);
+        } else {
+            if (parentBox) {
+                TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(parentBox->getLastChild());
+                if (table && table->isAnonymousTableObject()) {
+                    table->processTableChild(element, style);
+                    return 0;
+                }
+            }
+            block = new(std::nothrow) TableWrapperBox(this, element, style);
+        }
         newContext = true;
     } else
         block =  new(std::nothrow) BlockLevelBox(element, style);
@@ -395,7 +413,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
     BlockLevelBox* currentBox = parentBox;
     if (style->isFloat() || style->isAbsolutelyPositioned() || !parentBox) {
         element = expandBinding(element, style);
-        currentBox = createBlockLevelBox(element, style, true);
+        currentBox = createBlockLevelBox(element, parentBox, style, true, asBlock);
         if (!currentBox)
             return 0;  // TODO: error
         // Do not insert currentBox into parentBox. currentBox will be
@@ -408,7 +426,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
                 return 0;
             assert(!parentBox->hasInline());
         }
-        currentBox = createBlockLevelBox(element, style, style->isFlowRoot());
+        currentBox = createBlockLevelBox(element, parentBox, style, style->isFlowRoot(), asBlock);
         if (!currentBox)
             return 0;
         parentBox->appendChild(currentBox);
@@ -475,10 +493,17 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
             }
         }
 
+        TableWrapperBox* tableWrapperBox = 0;
         for (Node child = element.getFirstChild(); child; child = child.getNextSibling()) {
-            if (BlockLevelBox* box = layOutBlockBoxes(child, currentBox, style, ccPseudo.hasCounter() ? &ccPseudo : &cc))
+            if (BlockLevelBox* box = layOutBlockBoxes(child, currentBox, style, ccPseudo.hasCounter() ? &ccPseudo : &cc)) {
                 childBox = box;
+                if (tableWrapperBox && tableWrapperBox->isAnonymousTableObject())
+                    tableWrapperBox->layOutBlockBoxes();
+                tableWrapperBox = dynamic_cast<TableWrapperBox*>(box);
+            }
         }
+        if (tableWrapperBox && tableWrapperBox->isAnonymousTableObject())
+            tableWrapperBox->layOutBlockBoxes();
 
         CSSStyleDeclarationImp* afterStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::After);
         if (afterStyle) {

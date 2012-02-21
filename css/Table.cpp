@@ -24,6 +24,7 @@
 #include <org/w3c/dom/html/HTMLTableSectionElement.h>
 
 #include "ViewCSSImp.h"
+#include "CSSPropertyValueImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -69,24 +70,85 @@ void CellBox::collapseBorder(TableWrapperBox* wrapper)
     marginLeft = wrapper->getColumnBorderValue(col, row)->getWidth() / 2.0f;
 }
 
+float CellBox::shrinkTo()
+{
+    if (fixedLayout)
+        return getBlockWidth();
+    if (isAnonymous()) {
+        float min = 0.0f;
+        for (Box* child = getFirstChild(); child; child = child->getNextSibling())
+            min = std::max(min, child->shrinkTo());
+        return min + borderLeft + paddingLeft + paddingRight + borderRight;
+    }
+    return BlockLevelBox::shrinkTo();
+}
+void CellBox::resolveWidth(float w)
+{
+    if (fixedLayout) {
+        w -= borderLeft + paddingLeft + paddingRight + borderRight;
+        width = w;
+        return;
+    }
+    BlockLevelBox::resolveWidth(w);
+}
+
 TableWrapperBox::TableWrapperBox(ViewCSSImp* view, Element element, CSSStyleDeclarationImp* style) :
     BlockLevelBox(element, style),
     view(view),
     xWidth(0),
     yHeight(0),
     table(element),
-    tableBox(0)
+    tableBox(0),
+    anonymousTable(style->display != CSSDisplayValueImp::Table && style->display != CSSDisplayValueImp::InlineTable),
+    inRow(false),
+    xCurrent(0),
+    yCurrent(0),
+    anonymousCell(0)
 {
-    // TODO: Support cases where display is not table or inline-table.
-    assert(style->display == CSSDisplayValueImp::Table || style->display == CSSDisplayValueImp::InlineTable);
-    formTable(view);
+    counterContext = new(std::nothrow) CSSAutoNumberingValueImp::CounterContext(view);
+
+    if (html::HTMLTableElement::hasInstance(element)) {
+        assert(!isAnonymousTableObject());
+        // HTML tables are rendered using the HTML table model:
+        // cf. http://www.whatwg.org/specs/web-apps/current-work/multipage/tabular-data.html#forming-a-table
+        isHtmlTable = true;
+        formTable();
+    } else {
+        // Otherwise, tables are rendered using the CSS table model:
+        // cf. http://www.w3.org/TR/CSS2/tables.html#table-display
+        isHtmlTable = false;
+        if (isAnonymousTableObject()) {
+            processTableChild(element, style);
+            return;
+        }
+        for (Node node = element.getFirstChild(); node; node = node.getNextSibling())
+            processTableChild(node, style);
+    }
+
+    layOutBlockBoxes();
+}
+
+TableWrapperBox::~TableWrapperBox()
+{
+    if (counterContext)
+        delete counterContext;
+}
+
+void TableWrapperBox::layOutBlockBoxes()
+{
+    processFooter();
+
+    if (counterContext) {
+        delete counterContext;
+        counterContext = 0;
+    }
 
     // Top caption boxes
     for (auto i = topCaptions.begin(); i != topCaptions.end(); ++i)
         appendChild(i->get());
 
     // Table box
-    tableBox = new(std::nothrow) BlockLevelBox();
+    tableBox = new(std::nothrow) BlockLevelBox(getNode(), getStyle());
     if (tableBox) {
         for (unsigned y = 0; y < yHeight; ++y) {
             LineBox* lineBox = new(std::nothrow) LineBox(0);
@@ -108,6 +170,156 @@ TableWrapperBox::TableWrapperBox(ViewCSSImp* view, Element element, CSSStyleDecl
         appendChild(i->get());
 }
 
+//
+// CSS table model
+//
+
+CellBox* TableWrapperBox::processCell(Element current, BlockLevelBox* parentBox, CSSStyleDeclarationImp* currentStyle, CSSAutoNumberingValueImp::CounterContext* counterContext, Element row)
+{
+    if (yHeight == yCurrent) {
+        appendRow();
+        xCurrent = 0;
+    }
+    rows[yCurrent] = view->getStyle(row);
+    while (xCurrent < xWidth && grid[yCurrent][xCurrent])
+        ++xCurrent;
+    if (xCurrent == xWidth)
+        appendColumn();
+    unsigned colspan = 1;
+    unsigned rowspan = 1;
+    if (html::HTMLTableCellElement::hasInstance(current)) {
+        html::HTMLTableCellElement cell(interface_cast<html::HTMLTableCellElement>(current));
+        colspan = cell.getColSpan();
+        rowspan = cell.getRowSpan();
+    }
+    // TODO: 10 ?
+    bool cellGrowsDownward = false;
+    while (xWidth < xCurrent + colspan)
+        appendColumn();
+    while (yHeight < yCurrent + rowspan)
+        appendRow();
+    CellBox* cellBox = 0;
+    if (current)
+        cellBox = static_cast<CellBox*>(view->layOutBlockBoxes(current, 0, currentStyle, counterContext, true));
+    else
+        cellBox = new(std::nothrow) CellBox;
+    if (cellBox) {
+        cellBox->setPosition(xCurrent, yCurrent);
+        cellBox->setColSpan(colspan);
+        cellBox->setRowSpan(rowspan);
+        for (unsigned x = xCurrent; x < xCurrent + colspan; ++x) {
+            for (unsigned y = yCurrent; y < yCurrent + rowspan; ++y)
+                grid[y][x] = cellBox;
+        }
+        // TODO: 13
+        if (cellGrowsDownward)
+            ;  // TODO: 14
+        xCurrent += colspan;
+    }
+    return cellBox;
+}
+
+void TableWrapperBox::processCol(Element col, CSSStyleDeclarationImp* colStyle, Element colgroup)
+{
+    unsigned span = 1;
+    if (html::HTMLTableColElement::hasInstance(col)) {
+        html::HTMLTableColElement c(interface_cast<html::HTMLTableColElement>(col));
+        span = c.getSpan();
+    }
+    while (0 < span--) {
+        appendColumn();
+        columns[xWidth - 1] = colStyle;
+        columnGroups[xWidth - 1] = view->getStyle(colgroup);
+    }
+    // TODO 5.
+}
+
+void TableWrapperBox::processTableChild(Node node, CSSStyleDeclarationImp* style)
+{
+    unsigned display = CSSDisplayValueImp::None;
+    Element child = 0;
+    CSSStyleDeclarationImp* childStyle = 0;
+    switch (node.getNodeType()) {
+    case Node::TEXT_NODE:
+        if (anonymousCell) {
+            childStyle = style;
+            display = CSSDisplayValueImp::Inline;
+        } else {
+            std::u16string data = interface_cast<Text>(node).getData();
+            for (size_t i = 0; i < data.length(); ++i) {
+                if (!isSpace(data[i])) {
+                    childStyle = style;
+                    display = CSSDisplayValueImp::Inline;
+                    break;
+                }
+            }
+        }
+        break;
+    case Node::ELEMENT_NODE:
+        child = interface_cast<Element>(node);
+        childStyle = view->getStyle(child);
+        if (childStyle)
+            display = childStyle->display.getValue();
+        break;
+    default:
+        return;
+    }
+    switch (display) {
+    case CSSDisplayValueImp::None:
+        return;
+    case CSSDisplayValueImp::TableCaption:
+        // 'table-caption' doesn't seem to end the current row:
+        // cf. table-caption-003.
+        if (BlockLevelBox* caption = view->layOutBlockBoxes(child, 0, childStyle, counterContext, true)) {
+            if (childStyle->captionSide.getValue() == CSSCaptionSideValueImp::Top)
+                topCaptions.push_back(caption);
+            else
+                bottomCaptions.push_back(caption);
+        }
+        break;
+    case CSSDisplayValueImp::TableColumnGroup:
+        endRow();
+        endRowGroup();
+        processColGroup(child);
+        break;
+    case CSSDisplayValueImp::TableColumn:
+        endRow();
+        processCol(child, childStyle, 0);
+        break;
+    case CSSDisplayValueImp::TableRow:
+        endRow();
+        // TODO
+        processRow(child, counterContext);
+        break;
+    case CSSDisplayValueImp::TableFooterGroup:
+        endRow();
+        pendingTfootElements.push_back(child);
+        break;
+    case CSSDisplayValueImp::TableHeaderGroup:
+    case CSSDisplayValueImp::TableRowGroup:
+        endRow();
+        processRowGroup(child, counterContext);
+        break;
+    case CSSDisplayValueImp::TableCell:
+        inRow = true;
+        processCell(child, 0, childStyle, counterContext, 0);
+        break;
+    default:
+        inRow = true;
+        if (!anonymousCell)
+            anonymousCell = processCell(0, 0, 0, counterContext, 0);
+        if (anonymousCell)
+            view->layOutBlockBoxes(node, anonymousCell, childStyle, counterContext);
+        return;
+    }
+
+    anonymousCell = 0;
+}
+
+//
+// HTML table model
+//
+
 unsigned TableWrapperBox::appendRow()
 {
     ++yHeight;
@@ -128,28 +340,24 @@ unsigned TableWrapperBox::appendColumn()
     return xWidth;
 }
 
-void TableWrapperBox::formTable(ViewCSSImp* view)
+void TableWrapperBox::formTable()
 {
     if (table.getChildElementCount() == 0)
         return;
 
-    CSSAutoNumberingValueImp::CounterContext cc(view);
-
     // 10.
-    unsigned yCurrent = 0;
     // 11.
-    std::list<Element> pendingTfootElements;
     // std::list<> downwardGrowingCells;
     for (Element current = table.getFirstElementChild(); current; current = current.getNextElementSibling()) {
         CSSStyleDeclarationImp* currentStyle = view->getStyle(current);
         assert(currentStyle);
         if (!currentStyle->display.isProperTableChild()) {
-            yCurrent = endRowGroup(yCurrent);
+            endRowGroup();
             continue;
         }
         unsigned display = currentStyle->display.getValue();
         if (display == CSSDisplayValueImp::TableCaption) {
-            BlockLevelBox* caption = view->layOutBlockBoxes(current, 0, currentStyle, &cc, false);
+            BlockLevelBox* caption = view->layOutBlockBoxes(current, 0, currentStyle, counterContext, false);
             if (!caption)
                 continue;
             if (currentStyle->captionSide.getValue() == CSSCaptionSideValueImp::Top)
@@ -159,8 +367,8 @@ void TableWrapperBox::formTable(ViewCSSImp* view)
             continue;
         }
         if (display == CSSDisplayValueImp::TableColumnGroup) {
-            yCurrent = endRowGroup(yCurrent);
-            processColGroup(view, current);
+            endRowGroup();
+            processColGroup(current);
             continue;
         }
         if (display == CSSDisplayValueImp::TableColumn)  // TODO HTML doesn't need this though
@@ -170,7 +378,7 @@ void TableWrapperBox::formTable(ViewCSSImp* view)
         // 13.
         if (display == CSSDisplayValueImp::TableRow) {
             // TODO
-            yCurrent = processRow(view, current, yCurrent, &cc);
+            processRow(current, counterContext);
             continue;
         }
         if (display == CSSDisplayValueImp::TableFooterGroup) {
@@ -178,64 +386,88 @@ void TableWrapperBox::formTable(ViewCSSImp* view)
             continue;
         }
         assert(display == CSSDisplayValueImp::TableHeaderGroup || display == CSSDisplayValueImp::TableRowGroup);
-        yCurrent = processRowGroup(view, current, yCurrent, &cc);
-    }
-    while (!pendingTfootElements.empty()) {
-        Element tfoot = pendingTfootElements.front();
-        yCurrent = processRowGroup(view, tfoot, yCurrent, &cc);
-        pendingTfootElements.pop_front();
+        processRowGroup(current, counterContext);
     }
 }
 
-unsigned TableWrapperBox::processRow(ViewCSSImp* view, Element row, unsigned yCurrent, CSSAutoNumberingValueImp::CounterContext* counterContext)
+void TableWrapperBox::processRow(Element row, CSSAutoNumberingValueImp::CounterContext* counterContext)
 {
+    CSSStyleDeclarationImp* style = view->getStyle(row);
     if (yHeight == yCurrent)
         appendRow();
-    rows[yCurrent] = view->getStyle(row);
-
-    unsigned xCurrent = 0;
+    rows[yCurrent] = style;
+    inRow = true;
+    xCurrent = 0;
     growDownwardGrowingCells();
-    for (Element child = row.getFirstElementChild(); child; child = child.getNextElementSibling()) {
-        CSSStyleDeclarationImp* childStyle = view->getStyle(child);
-        assert(childStyle);
-        if (childStyle->display.getValue() != CSSDisplayValueImp::TableCell)
-            continue;
-        while (xCurrent < xWidth && grid[yCurrent][xCurrent])
-            ++xCurrent;
-        if (xCurrent == xWidth)
-            appendColumn();
-        unsigned colspan = 1;
-        unsigned rowspan = 1;
-        if (html::HTMLTableCellElement::hasInstance(child)) {
-            html::HTMLTableCellElement cell(interface_cast<html::HTMLTableCellElement>(child));
-            colspan = cell.getColSpan();
-            rowspan = cell.getRowSpan();
-        }
-        // TODO: 10 ?
-        bool cellGrowsDownward = false;
-        while (xWidth < xCurrent + colspan)
-            appendColumn();
-        while (yHeight < yCurrent + rowspan)
-            appendRow();
-        CellBox* cellBox = static_cast<CellBox*>(view->layOutBlockBoxes(child, 0, childStyle, counterContext, true));
-        if (cellBox) {
-            cellBox->setPosition(xCurrent, yCurrent);
-            cellBox->setColSpan(colspan);
-            cellBox->setRowSpan(rowspan);
-            for (unsigned x = xCurrent; x < xCurrent + colspan; ++x) {
-                for (unsigned y = yCurrent; y < yCurrent + rowspan; ++y)
-                    grid[y][x] = cellBox;
-            }
-        }
-        // TODO: 13
-        if (cellGrowsDownward)
-            ;  // TODO: 14
-        xCurrent += colspan;
-    }
-    return ++yCurrent;
+    for (Node node = row.getFirstChild(); node; node = node.getNextSibling())
+        processRowChild(node, style, row);
+    endRow();
 }
 
-unsigned TableWrapperBox::processRowGroup(ViewCSSImp* view, Element section, unsigned yCurrent, CSSAutoNumberingValueImp::CounterContext* counterContext)
+void TableWrapperBox::processRowChild(Node node, CSSStyleDeclarationImp* style, Element row)
+{
+    unsigned display = CSSDisplayValueImp::None;
+    Element child = 0;
+    CSSStyleDeclarationImp* childStyle = 0;
+    switch (node.getNodeType()) {
+    case Node::TEXT_NODE:
+        if (anonymousCell) {
+            childStyle = style;
+            display = CSSDisplayValueImp::Inline;
+        } else {
+            std::u16string data = interface_cast<Text>(node).getData();
+            for (size_t i = 0; i < data.length(); ++i) {
+                if (!isSpace(data[i])) {
+                    childStyle = style;
+                    display = CSSDisplayValueImp::Inline;
+                    break;
+                }
+            }
+        }
+        break;
+    case Node::ELEMENT_NODE:
+        child = interface_cast<Element>(node);
+        childStyle = view->getStyle(child);
+        if (childStyle)
+            display = childStyle->display.getValue();
+        break;
+    default:
+        return;
+    }
+
+#if 0
+    // HTML table model
+    if (display != CSSDisplayValueImp::TableCell)
+        continue;
+#endif
+
+    switch (display) {
+    case CSSDisplayValueImp::None:
+        return;
+    case CSSDisplayValueImp::TableCell:
+        processCell(child, 0, childStyle, counterContext, row);
+        break;
+    default:
+        if (!anonymousCell)
+            anonymousCell = processCell(0, 0, 0, counterContext, row);
+        if (anonymousCell)
+            view->layOutBlockBoxes(node, anonymousCell, childStyle, counterContext);
+        return;
+    }
+
+    anonymousCell = 0;
+}
+
+void TableWrapperBox::endRow()
+{
+    if (inRow) {
+        inRow = false;
+        ++yCurrent;
+        anonymousCell = 0;
+    }
+}
+
+void TableWrapperBox::processRowGroup(Element section, CSSAutoNumberingValueImp::CounterContext* counterContext)
 {
     unsigned yStart = yHeight;
     for (Element child = section.getFirstElementChild(); child; child = child.getNextElementSibling()) {
@@ -243,25 +475,24 @@ unsigned TableWrapperBox::processRowGroup(ViewCSSImp* view, Element section, uns
         assert(childStyle);
         if (childStyle->display.getValue() != CSSDisplayValueImp::TableRow)
             continue;
-        unsigned next = processRow(view, child, yCurrent, counterContext);
-        rowGroups[yCurrent] = view->getStyle(section);
-        yCurrent = next;
+        unsigned y = yCurrent;
+        processRow(child, counterContext);
+        rowGroups[y] = view->getStyle(section);
     }
     // TODO 3.
-    return endRowGroup(yCurrent);
+    endRowGroup();
 }
 
-unsigned TableWrapperBox::endRowGroup(int yCurrent)
+void TableWrapperBox::endRowGroup()
 {
     while (yCurrent < yHeight) {
         growDownwardGrowingCells();
         ++yCurrent;
     }
     // downwardGrowingCells.clear();
-    return yCurrent;
 }
 
-void TableWrapperBox::processColGroup(ViewCSSImp* view, Element colgroup)
+void TableWrapperBox::processColGroup(Element colgroup)
 {
     bool hasCol = false;
     int xStart = xWidth;
@@ -271,17 +502,7 @@ void TableWrapperBox::processColGroup(ViewCSSImp* view, Element colgroup)
         if (childStyle->display.getValue() != CSSDisplayValueImp::TableColumn)
             continue;
         hasCol = true;
-        unsigned int span = 1;
-        if (html::HTMLTableColElement::hasInstance(child)) {
-            html::HTMLTableColElement col(interface_cast<html::HTMLTableColElement>(child));
-            span = col.getSpan();
-        }
-        while (0 < span--) {
-            appendColumn();
-            columns[xWidth - 1] = childStyle;
-            columnGroups[xWidth - 1] = view->getStyle(colgroup);
-        }
-        // TODO 5.
+        processCol(child, childStyle, colgroup);
     }
     if (hasCol) {
         // TODO. 7.
@@ -299,9 +520,22 @@ void TableWrapperBox::processColGroup(ViewCSSImp* view, Element colgroup)
     }
 }
 
+void TableWrapperBox::processFooter()
+{
+    while (!pendingTfootElements.empty()) {
+        Element tfoot = pendingTfootElements.front();
+        processRowGroup(tfoot, counterContext);
+        pendingTfootElements.pop_front();
+    }
+}
+
 void TableWrapperBox::growDownwardGrowingCells()
 {
 }
+
+//
+// Common part
+//
 
 void TableWrapperBox::fit(float w)
 {
@@ -482,8 +716,12 @@ void TableWrapperBox::computeTableBorders()
         t = std::max(t, getRowBorderValue(x, 0)->getWidth() / 2.0f);
         b = std::max(b, getRowBorderValue(x, yHeight)->getWidth() / 2.0f);
     }
-    float l = getColumnBorderValue(0, 0)->getWidth() / 2.0f;
-    float r = getColumnBorderValue(xWidth, 0)->getWidth() / 2.0f;
+    float l = 0.0f;
+    float r = 0.0f;
+    if (0 < xWidth && 0 < yHeight) {
+        float l = getColumnBorderValue(0, 0)->getWidth() / 2.0f;
+        float r = getColumnBorderValue(xWidth, 0)->getWidth() / 2.0f;
+    }
     tableBox->expandMargins(t, r, b, l);
     for (unsigned y = 0; y < yHeight; ++y) {
         marginLeft = std::max(marginLeft, getColumnBorderValue(0, y)->getWidth() / 2.0f - l);

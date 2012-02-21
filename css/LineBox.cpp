@@ -166,7 +166,7 @@ size_t BlockLevelBox::layOutFloatingFirstLetter(ViewCSSImp* view, FormattingCont
     html::HTMLDivElement div = interface_cast<html::HTMLDivElement>(document.createElement(u"div"));
     Text text = document.createTextNode(data.substr(0, length));
     div.appendChild(text);
-    BlockLevelBox* floatingBox = view->createBlockLevelBox(div, firstLetterStyle, true);
+    BlockLevelBox* floatingBox = view->createBlockLevelBox(div, this, firstLetterStyle, true, false);
     floatingBox->insertInline(text);
     view->addFloatBox(div, floatingBox, firstLetterStyle);
     inlines.push_front(div);

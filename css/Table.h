@@ -72,19 +72,8 @@ public:
     void separateBorders(CSSStyleDeclarationPtr style, unsigned xWidth, unsigned yHeight);
     void collapseBorder(TableWrapperBox* wrapper);
 
-    virtual float shrinkTo() {
-        if (fixedLayout)
-            return getBlockWidth();
-        return BlockLevelBox::shrinkTo();
-    }
-    virtual void resolveWidth(float w) {
-        if (fixedLayout) {
-            w -= borderLeft + paddingLeft + paddingRight + borderRight;
-            width = w;
-            return;
-        }
-        BlockLevelBox::resolveWidth(w);
-    }
+    virtual float shrinkTo();
+    virtual void resolveWidth(float w);
 };
 
 typedef boost::intrusive_ptr<CellBox> CellBoxPtr;
@@ -135,14 +124,29 @@ class TableWrapperBox : public BlockLevelBox
     std::vector<float> widths;
     std::vector<float> heights;
 
+    bool anonymousTable;
+    bool isHtmlTable;
+
+    // CSS table model
+    bool inRow;
+    unsigned xCurrent;
+    unsigned yCurrent;
+    CellBox* anonymousCell;
+    std::list<Element> pendingTfootElements;
+    CSSAutoNumberingValueImp::CounterContext* counterContext;
+
     unsigned appendRow();
     unsigned appendColumn();
 
-    void formTable(ViewCSSImp* view);
-    void processColGroup(ViewCSSImp* view, Element colgroup);
-    unsigned processRow(ViewCSSImp* view, Element row, unsigned yCurrent, CSSAutoNumberingValueImp::CounterContext* counterContext);
-    unsigned processRowGroup(ViewCSSImp* view, Element section, unsigned yCurrent, CSSAutoNumberingValueImp::CounterContext* counterContext);
-    unsigned endRowGroup(int yCurrent);
+    void formTable();
+    void processCol(Element col, CSSStyleDeclarationImp* colStyle, Element colgroup);
+    void processColGroup(Element colgroup);
+    void processRow(Element row, CSSAutoNumberingValueImp::CounterContext* counterContext);
+    void processRowChild(Node node, CSSStyleDeclarationImp* style, Element row);
+    void endRow();
+    void processRowGroup(Element section, CSSAutoNumberingValueImp::CounterContext* counterContext);
+    void endRowGroup();
+    void processFooter();
     void growDownwardGrowingCells();
 
     void resolveHorizontalBorderConflict(unsigned x, unsigned y, BorderValue* b, CellBox* top, CellBox* bottom);
@@ -150,10 +154,16 @@ class TableWrapperBox : public BlockLevelBox
     bool resolveBorderConflict();
     void computeTableBorders();
 
+    void formCSSTable();
+    CellBox* processCell(Element current, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSAutoNumberingValueImp::CounterContext* counterContext, Element row);
+
     void layOutFixed(ViewCSSImp* view, const ContainingBlock* containingBlock, bool collapsingModel);
 
 public:
     TableWrapperBox(ViewCSSImp* view, Element element, CSSStyleDeclarationImp* style);
+    ~TableWrapperBox();
+
+    void layOutBlockBoxes();
 
     BorderValue* getRowBorderValue(unsigned x, unsigned y) {
         assert(x < xWidth);
@@ -167,6 +177,11 @@ public:
     bool isTableBox(const BlockLevelBox* box) const {
         return tableBox && box == tableBox;
     }
+
+    bool isAnonymousTableObject() const {
+        return anonymousTable;
+    }
+    void processTableChild(Node node, CSSStyleDeclarationImp* style);
 
     virtual void fit(float w);
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context);

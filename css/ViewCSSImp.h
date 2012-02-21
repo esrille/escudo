@@ -95,7 +95,7 @@ public:
             window->preload(base, url);
     }
 
-    BlockLevelBox* createBlockLevelBox(Element element, CSSStyleDeclarationImp* style, bool newContext);
+    BlockLevelBox* createBlockLevelBox(Element element,  BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, bool newContext, bool asBlock);
     BlockLevelBox* layOutBlockBoxes(Node node, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSAutoNumberingValueImp::CounterContext* counterContext);
     BlockLevelBox* layOutBlockBoxes(Text text, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSAutoNumberingValueImp::CounterContext* counterContext);
     BlockLevelBox* layOutBlockBoxes(Element element, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSAutoNumberingValueImp::CounterContext* counterContext, bool asBlock = false);

@@ -1296,18 +1296,7 @@ public:
         }
     }
     bool isProperTableChild() const {
-        switch (value) {
-        case TableRowGroup:
-        case TableHeaderGroup:
-        case TableFooterGroup:
-        case TableRow:
-        case TableColumnGroup:
-        case TableColumn:
-        case TableCaption:
-            return true;
-        default:
-            return false;
-        }
+        return isProperTableChild(value);
     }
     bool isProperTableRowParent() const {
         switch (value) {
@@ -1376,6 +1365,20 @@ public:
         case TableCell:
         case TableCaption:
         // <template>:
+            return true;
+        default:
+            return false;
+        }
+    }
+    static bool isProperTableChild(unsigned value) {
+        switch (value) {
+        case TableRowGroup:
+        case TableHeaderGroup:
+        case TableFooterGroup:
+        case TableRow:
+        case TableColumnGroup:
+        case TableColumn:
+        case TableCaption:
             return true;
         default:
             return false;
