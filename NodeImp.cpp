@@ -237,12 +237,12 @@ Node NodeImp::removeChild(Node oldChild)
             throw DOMException(DOMException::NOT_FOUND_ERR);
         removeChild(child);
         child->release_();
-
-        events::MutationEvent event = new(std::nothrow) MutationEventImp;
-        event.initMutationEvent(u"DOMNodeRemoved",
-                                true, false, this, u"", u"", u"", 0);
-        this->dispatchEvent(event);
-
+        if (0 < count_()) {  // Prevent dispatching an event from the destructor.
+            events::MutationEvent event = new(std::nothrow) MutationEventImp;
+            event.initMutationEvent(u"DOMNodeRemoved",
+                                    true, false, this, u"", u"", u"", 0);
+            this->dispatchEvent(event);
+        }
     }
     return oldChild;
 }
