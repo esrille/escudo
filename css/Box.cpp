@@ -623,6 +623,89 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view, Node node, BlockLevelBox* a
     context->lineBox->appendChild(absBox);
 }
 
+void BlockLevelBox::layOutAnonymousInlineTable(ViewCSSImp* view, FormattingContext* context, std::list<Node>::iterator& i)
+{
+    if (!context->lineBox) {
+        if (!context->addLineBox(view, this))
+            return;  // TODO error
+    }
+    InlineLevelBox* inlineLevelBox = new(std::nothrow) InlineLevelBox(node, 0);
+    if (!inlineLevelBox)
+        return;  // TODO error
+
+    inlineLevelBox->parentBox = context->lineBox;  // for getContainingBlock
+    context->prevChar = 0;
+
+    Element element = interface_cast<Element>(*i);
+    assert(element);
+    CSSStyleDeclarationImp* style = view->getStyle(element);
+    assert(style);
+    TableWrapperBox* table = new(std::nothrow) TableWrapperBox(view, element, style);
+    if (!table)
+        return;
+    bool done = false;
+    bool ws = false;
+    while (!done && ++i != inlines.end()) {
+        Node node = *i;
+        switch (node.getNodeType()) {
+        case Node::TEXT_NODE: {
+            std::u16string data = interface_cast<Text>(node).getData();
+            for (size_t j = 0; j < data.length(); ++j) {
+                if (!isSpace(data[j])) {
+                    done = true;
+                    if (ws)
+                        --i;
+                    break;
+                }
+            }
+            ws = true;
+            break;
+        }
+        case Node::ELEMENT_NODE:
+            element = interface_cast<Element>(node);
+            if (CSSStyleDeclarationImp* elementStyle = view->getStyle(element)) {
+                if (!elementStyle->display.isTableParts()) {
+                    done = true;
+                    if (ws)
+                        --i;
+                    break;
+                }
+            }
+            ws = false;
+            table->processTableChild(node, style);
+            break;
+        default:
+            done = true;
+            break;
+        }
+    }
+    --i;
+
+    inlineLevelBox->appendChild(table);
+    table->layOutBlockBoxes();
+    table->layOut(view, context);
+    inlineLevelBox->width = table->getTotalWidth();
+    inlineLevelBox->height = table->getTotalHeight();
+    inlineLevelBox->baseline = table->getBaseline();
+
+    while (context->leftover < inlineLevelBox->getTotalWidth()) {
+        if (context->lineBox->hasChildBoxes() || context->hasNewFloats()) {
+            context->nextLine(view, this, false);
+            if (!context->addLineBox(view, this))
+                return;  // TODO error
+            continue;
+        }
+        if (!context->shiftDownLineBox(view))
+            break;
+    }
+
+    context->x += inlineLevelBox->getTotalWidth();
+    context->leftover -= inlineLevelBox->getTotalWidth();
+    context->appendInlineBox(inlineLevelBox, style);
+
+    context->prevChar = 0;
+}
+
 // Generate line boxes
 bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, float originalMargin)
 {
@@ -665,6 +748,10 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
                 assert(!element.hasChildNodes());
                 if (layOutText(view, node, context, u"", element, style))
                     collapsed = false;
+            } else if (style->display.isTableParts()) {
+                // TODO: Construct an anonymous inline table.
+                layOutAnonymousInlineTable(view, context, i);
+                collapsed = false;
             } else {
                 // At this point, node should be an inline block element.
                 layOutInlineLevelBox(view, node, context, element, style);

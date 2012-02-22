@@ -1270,8 +1270,6 @@ public:
     }
     bool isTableParts() const {
         switch (value) {
-        case Table:
-        case InlineTable:
         case TableRowGroup:
         case TableHeaderGroup:
         case TableFooterGroup:

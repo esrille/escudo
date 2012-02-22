@@ -184,7 +184,10 @@ public:
     bool isAnonymousTableObject() const {
         return anonymousTable;
     }
+
     void processTableChild(Node node, CSSStyleDeclarationImp* style);
+
+    float getBaseline() const;
 
     virtual void fit(float w);
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context);

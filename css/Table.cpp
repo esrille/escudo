@@ -1025,7 +1025,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
         if (style->height.isAuto())
             tableBox->height = h;
         else if (h < tableBox->height) {
-            h = (tableBox->height- h) / yHeight;
+            h = (tableBox->height - h) / yHeight;
             for (unsigned y = 0; y < yHeight; ++y)
                 heights[y] += h;
         }
@@ -1111,6 +1111,26 @@ float TableWrapperBox::shrinkTo()
         }
     }
     return min;
+}
+
+// TODO: Rewrite this when supporting the vertical alignment of cells.
+float TableWrapperBox::getBaseline() const
+{
+    float baseline = 0.0;
+    for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
+        baseline += child->getTotalHeight() + child->getClearance();
+        if (child == tableBox) {
+            if (0 < xWidth && 0 < yHeight) {
+                CellBox* cellBox = grid[yHeight - 1][xWidth - 1].get();
+                if (cellBox && !cellBox->isSpanned(xWidth - 1, yHeight - 1)) {
+                    if (LineBox* lineBox = dynamic_cast<LineBox*>(cellBox->getLastChild()))
+                        baseline += -heights[yHeight - 1] + lineBox->getBlankTop() + lineBox->getBaseline();
+                }
+            }
+            break;
+        }
+    }
+    return baseline;
 }
 
 void TableWrapperBox::dump(std::string indent)

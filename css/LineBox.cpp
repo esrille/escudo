@@ -739,8 +739,10 @@ void InlineLevelBox::dump(std::string indent)
         "m:" << marginTop << ':' << marginRight << ':' << marginBottom << ':' << marginLeft << ' ' <<
         "p:" << paddingTop << ':' <<  paddingRight << ':'<< paddingBottom<< ':' << paddingLeft << ' ' <<
         "b:" << borderTop << ':' <<  borderRight << ':' << borderBottom<< ':' << borderLeft << ' ' <<
-        '"' << data << "\" " <<
-        std::hex << CSSSerializeRGB(getStyle()->color.getARGB()) << std::dec << '\n';
+        '"' << data << "\" ";
+    if (getStyle())
+        std::cout << std::hex << CSSSerializeRGB(getStyle()->color.getARGB()) << std::dec;
+    std::cout << '\n';
     indent += "  ";
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
         child->dump(indent);

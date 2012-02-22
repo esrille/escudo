@@ -594,6 +594,7 @@ class BlockLevelBox : public Box
                               Element element, CSSStyleDeclarationImp* style);
     void layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floatBox, FormattingContext* context);
     void layOutAbsolute(ViewCSSImp* view, Node node, BlockLevelBox* absBox, FormattingContext* context);  // 1st pass
+    void layOutAnonymousInlineTable(ViewCSSImp* view, FormattingContext* context, std::list<Node>::iterator& i);
     bool layOutInline(ViewCSSImp* view, FormattingContext* context, float originalMargin = 0.0f);
     void layOutChildren(ViewCSSImp* view, FormattingContext* context);
 

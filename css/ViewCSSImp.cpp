@@ -398,12 +398,13 @@ BlockLevelBox* ViewCSSImp::createBlockLevelBox(Element element, BlockLevelBox* p
     return block;
 }
 
-BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSAutoNumberingValueImp::CounterContext* counterContext, bool asBlock)
+BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* parentBox, CSSStyleDeclarationImp* parentStyle, CSSAutoNumberingValueImp::CounterContext* counterContext, bool asBlock)
 {
-    style = map[element].get();
+    CSSStyleDeclarationImp* style = map[element].get();
     if (!style || style->display.isNone())
         return 0;
     bool runIn = style->display.isRunIn() && parentBox;
+    bool anonInlineTable = style->display.isTableParts() && parentStyle && parentStyle->display.isInlineLevel();
 
     CSSAutoNumberingValueImp::CounterContext cc(this);
     if (!counterContext)    // TODO: This is only to workaround the fatal errors.
@@ -420,7 +421,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
             return 0;  // TODO: error
         // Do not insert currentBox into parentBox. currentBox will be
         // inserted in a lineBox of parentBox later
-    } else if (style->isBlockLevel() || runIn || asBlock) {
+    } else if ((style->isBlockLevel() && !anonInlineTable) || runIn || asBlock) {
         // Create a temporary block-level box for the run-in box, too.
         element = expandBinding(element, style);
         if (parentBox->hasInline()) {
@@ -432,7 +433,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
         if (!currentBox)
             return 0;
         parentBox->appendChild(currentBox);
-    } else if (style->isInlineBlock() || isReplacedElement(element)) {
+    } else if (anonInlineTable || style->isInlineBlock() || isReplacedElement(element)) {
         assert(currentBox);
         if (!currentBox->hasChildBoxes())
             currentBox->insertInline(element);
