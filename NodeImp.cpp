@@ -194,6 +194,11 @@ Node NodeImp::insertBefore(Node newChild, Node refChild)
                     child->release_();
                 }
                 insertBefore(child, ref);
+
+                events::MutationEvent event = new(std::nothrow) MutationEventImp;
+                event.initMutationEvent(u"DOMNodeInserted",
+                                        true, false, this, u"", u"", u"", 0);
+                child->dispatchEvent(event);
             }
         }
     }
@@ -235,14 +240,14 @@ Node NodeImp::removeChild(Node oldChild)
     if (NodeImp* child = dynamic_cast<NodeImp*>(oldChild.self())) {
         if (child->parentNode != this)
             throw DOMException(DOMException::NOT_FOUND_ERR);
-        removeChild(child);
-        child->release_();
         if (0 < count_()) {  // Prevent dispatching an event from the destructor.
             events::MutationEvent event = new(std::nothrow) MutationEventImp;
             event.initMutationEvent(u"DOMNodeRemoved",
                                     true, false, this, u"", u"", u"", 0);
-            this->dispatchEvent(event);
+            child->dispatchEvent(event);
         }
+        removeChild(child);
+        child->release_();
     }
     return oldChild;
 }

@@ -55,12 +55,14 @@ ViewCSSImp::ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyle
     mutationListener(boost::bind(&ViewCSSImp::handleMutation, this, _1))
 {
     setMediumFontSize(16);
+    getDocument().addEventListener(u"DOMNodeInserted", &mutationListener);
     getDocument().addEventListener(u"DOMAttrModified", &mutationListener);
     getDocument().addEventListener(u"DOMNodeRemoved", &mutationListener);
 }
 
 ViewCSSImp::~ViewCSSImp()
 {
+    getDocument().removeEventListener(u"DOMNodeInserted", &mutationListener);
     getDocument().removeEventListener(u"DOMAttrModified", &mutationListener);
     getDocument().removeEventListener(u"DOMNodeRemoved", &mutationListener);
 }
