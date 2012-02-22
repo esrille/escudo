@@ -119,6 +119,7 @@ TableWrapperBox::TableWrapperBox(ViewCSSImp* view, Element element, CSSStyleDecl
         // cf. http://www.w3.org/TR/CSS2/tables.html#table-display
         isHtmlTable = false;
         if (isAnonymousTableObject()) {
+            style = 0;
             processTableChild(element, style);
             return;
         }
@@ -248,11 +249,20 @@ void TableWrapperBox::processTableChild(Node node, CSSStyleDeclarationImp* style
             display = CSSDisplayValueImp::Inline;
         } else {
             std::u16string data = interface_cast<Text>(node).getData();
-            for (size_t i = 0; i < data.length(); ++i) {
-                if (!isSpace(data[i])) {
+            if (style) {
+                char16_t c = ' ';
+                size_t len = style->processWhiteSpace(data, c);
+                if (0 < len) {
                     childStyle = style;
                     display = CSSDisplayValueImp::Inline;
-                    break;
+                }
+            } else {
+                for (size_t i = 0; i < data.length(); ++i) {
+                    if (!isSpace(data[i])) {
+                        childStyle = style;
+                        display = CSSDisplayValueImp::Inline;
+                        break;
+                    }
                 }
             }
         }
@@ -431,11 +441,20 @@ void TableWrapperBox::processRowChild(Node node, CSSStyleDeclarationImp* rowStyl
             display = CSSDisplayValueImp::Inline;
         } else {
             std::u16string data = interface_cast<Text>(node).getData();
-            for (size_t i = 0; i < data.length(); ++i) {
-                if (!isSpace(data[i])) {
+            if (rowStyle) {
+                char16_t c = ' ';
+                size_t len = rowStyle->processWhiteSpace(data, c);
+                if (0 < len) {
                     childStyle = rowStyle;
                     display = CSSDisplayValueImp::Inline;
-                    break;
+                }
+            } else {
+                for (size_t i = 0; i < data.length(); ++i) {
+                    if (!isSpace(data[i])) {
+                        childStyle = rowStyle;
+                        display = CSSDisplayValueImp::Inline;
+                        break;
+                    }
                 }
             }
         }
@@ -503,11 +522,20 @@ void TableWrapperBox::processRowGroupChild(Node node, CSSStyleDeclarationImp* se
             display = CSSDisplayValueImp::Inline;
         } else {
             std::u16string data = interface_cast<Text>(node).getData();
-            for (size_t i = 0; i < data.length(); ++i) {
-                if (!isSpace(data[i])) {
+            if (sectionStyle) {
+                char16_t c = ' ';
+                size_t len = sectionStyle->processWhiteSpace(data, c);
+                if (0 < len) {
                     childStyle = sectionStyle;
                     display = CSSDisplayValueImp::Inline;
-                    break;
+                }
+            } else {
+                for (size_t i = 0; i < data.length(); ++i) {
+                    if (!isSpace(data[i])) {
+                        childStyle = sectionStyle;
+                        display = CSSDisplayValueImp::Inline;
+                        break;
+                    }
                 }
             }
         }
