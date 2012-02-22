@@ -143,9 +143,10 @@ class TableWrapperBox : public BlockLevelBox
     void processCol(Element col, CSSStyleDeclarationImp* colStyle, Element colgroup);
     void processColGroup(Element colgroup);
     void processRow(Element row, CSSAutoNumberingValueImp::CounterContext* counterContext);
-    void processRowChild(Node node, CSSStyleDeclarationImp* style, Element row);
+    void processRowChild(Node node, CSSStyleDeclarationImp* rowStyle);
     void endRow();
     void processRowGroup(Element section, CSSAutoNumberingValueImp::CounterContext* counterContext);
+    void processRowGroupChild(Node node, CSSStyleDeclarationImp* sectionStyle);
     void endRowGroup();
     void processHeader();
     void processFooter();
@@ -157,7 +158,7 @@ class TableWrapperBox : public BlockLevelBox
     void computeTableBorders();
 
     void formCSSTable();
-    CellBox* processCell(Element current, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSAutoNumberingValueImp::CounterContext* counterContext, Element row);
+    CellBox* processCell(Element current, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSAutoNumberingValueImp::CounterContext* counterContext, CSSStyleDeclarationImp* rowStyle);
 
     void layOutFixed(ViewCSSImp* view, const ContainingBlock* containingBlock, bool collapsingModel);
 
