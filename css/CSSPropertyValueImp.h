@@ -1269,19 +1269,7 @@ public:
         return value == ListItem;
     }
     bool isTableParts() const {
-        switch (value) {
-        case TableRowGroup:
-        case TableHeaderGroup:
-        case TableFooterGroup:
-        case TableRow:
-        case TableColumnGroup:
-        case TableColumn:
-        case TableCell:
-        case TableCaption:
-            return true;
-        default:
-            return false;
-        }
+        return isTableParts(value);
     }
     bool isRowGoupBox() const {
         switch (value) {
@@ -1363,6 +1351,21 @@ public:
         case TableCell:
         case TableCaption:
         // <template>:
+            return true;
+        default:
+            return false;
+        }
+    }
+    static bool isTableParts(unsigned value) {
+        switch (value) {
+        case TableRowGroup:
+        case TableHeaderGroup:
+        case TableFooterGroup:
+        case TableRow:
+        case TableColumnGroup:
+        case TableColumn:
+        case TableCell:
+        case TableCaption:
             return true;
         default:
             return false;

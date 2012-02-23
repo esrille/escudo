@@ -124,7 +124,7 @@ class TableWrapperBox : public BlockLevelBox
     std::vector<float> widths;
     std::vector<float> heights;
 
-    bool anonymousTable;
+    bool isAnonymousTable;
     bool isHtmlTable;
 
     // CSS table model
@@ -132,6 +132,7 @@ class TableWrapperBox : public BlockLevelBox
     unsigned xCurrent;
     unsigned yCurrent;
     CellBox* anonymousCell;
+    TableWrapperBox* anonymousTable;
     Element pendingTheadElement;
     std::list<Element> pendingTfootElements;
     CSSAutoNumberingValueImp::CounterContext* counterContext;
@@ -182,7 +183,7 @@ public:
     }
 
     bool isAnonymousTableObject() const {
-        return anonymousTable;
+        return isAnonymousTable;
     }
 
     void processTableChild(Node node, CSSStyleDeclarationImp* style);

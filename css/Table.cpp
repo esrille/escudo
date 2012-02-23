@@ -99,17 +99,18 @@ TableWrapperBox::TableWrapperBox(ViewCSSImp* view, Element element, CSSStyleDecl
     yHeight(0),
     table(element),
     tableBox(0),
-    anonymousTable(style->display != CSSDisplayValueImp::Table && style->display != CSSDisplayValueImp::InlineTable),
+    isAnonymousTable(style->display != CSSDisplayValueImp::Table && style->display != CSSDisplayValueImp::InlineTable),
     inRow(false),
     xCurrent(0),
     yCurrent(0),
     anonymousCell(0),
+    anonymousTable(0),
     pendingTheadElement(0)
 {
     counterContext = new(std::nothrow) CSSAutoNumberingValueImp::CounterContext(view);
 
     if (html::HTMLTableElement::hasInstance(element)) {
-        assert(!isAnonymousTableObject());
+        assert(!isAnonymousTable);
         // HTML tables are rendered using the HTML table model:
         // cf. http://www.whatwg.org/specs/web-apps/current-work/multipage/tabular-data.html#forming-a-table
         isHtmlTable = true;
@@ -118,7 +119,7 @@ TableWrapperBox::TableWrapperBox(ViewCSSImp* view, Element element, CSSStyleDecl
         // Otherwise, tables are rendered using the CSS table model:
         // cf. http://www.w3.org/TR/CSS2/tables.html#table-display
         isHtmlTable = false;
-        if (isAnonymousTableObject()) {
+        if (isAnonymousTable) {
             style = 0;
             processTableChild(element, style);
             return;
@@ -482,13 +483,27 @@ void TableWrapperBox::processRowChild(Node node, CSSStyleDeclarationImp* rowStyl
         processCell(child, 0, childStyle, counterContext, rowStyle);
         break;
     default:
+        if (anonymousTable) {
+            if (CSSDisplayValueImp::isTableParts(display)) {
+                anonymousTable->processTableChild(node, childStyle);
+                return;
+            }
+            anonymousTable->layOutBlockBoxes();
+            anonymousTable = 0;
+        }
         if (!anonymousCell)
             anonymousCell = processCell(0, 0, 0, counterContext, rowStyle);
-        if (anonymousCell)
-            view->layOutBlockBoxes(node, anonymousCell, childStyle, counterContext);
+        if (anonymousCell) {
+            anonymousTable = dynamic_cast<TableWrapperBox*>(view->layOutBlockBoxes(node, anonymousCell, childStyle, counterContext));
+            if (display == CSSDisplayValueImp::Table || display == CSSDisplayValueImp::InlineTable)
+                anonymousTable = 0;
+        }
         return;
     }
-
+    if (anonymousTable) {
+        anonymousTable->layOutBlockBoxes();
+        anonymousTable = 0;
+    }
     anonymousCell = 0;
 }
 
@@ -497,6 +512,10 @@ void TableWrapperBox::endRow()
     if (inRow) {
         inRow = false;
         ++yCurrent;
+        if (anonymousTable) {
+            anonymousTable->layOutBlockBoxes();
+            anonymousTable = 0;
+        }
         anonymousCell = 0;
     }
 }
@@ -553,7 +572,7 @@ void TableWrapperBox::processRowGroupChild(Node node, CSSStyleDeclarationImp* se
 #if 0  // HTML talble model
     if (display != CSSDisplayValueImp::TableRow)
         return;
-#else
+#endif
 
     unsigned yStart = yCurrent;
     switch (display) {
@@ -565,24 +584,39 @@ void TableWrapperBox::processRowGroupChild(Node node, CSSStyleDeclarationImp* se
         processRow(child, counterContext);
         break;
     case CSSDisplayValueImp::TableCell:
+        if (anonymousTable) {
+            anonymousTable->layOutBlockBoxes();
+            anonymousTable = 0;
+        }
         processCell(child, 0, childStyle, counterContext, 0);
         break;
     default:
+        if (anonymousTable) {
+            if (CSSDisplayValueImp::isTableParts(display)) {
+                anonymousTable->processTableChild(node, childStyle);
+                return;
+            }
+            anonymousTable->layOutBlockBoxes();
+            anonymousTable = 0;
+        }
         if (!anonymousCell)
             anonymousCell = processCell(0, 0, 0, counterContext, 0);
-        if (anonymousCell)
-            view->layOutBlockBoxes(node, anonymousCell, childStyle, counterContext);
+        if (anonymousCell) {
+            anonymousTable = dynamic_cast<TableWrapperBox*>(view->layOutBlockBoxes(node, anonymousCell, childStyle, counterContext));
+            if (display == CSSDisplayValueImp::Table || display == CSSDisplayValueImp::InlineTable)
+                anonymousTable = 0;
+        }
         break;
     }
     while (yStart < yHeight) {
         rowGroups[yStart] = sectionStyle;
         ++yStart;
     }
-#endif
 }
 
 void TableWrapperBox::endRowGroup()
 {
+    // TODO: endRow(); ???
     while (yCurrent < yHeight) {
         growDownwardGrowingCells();
         ++yCurrent;
