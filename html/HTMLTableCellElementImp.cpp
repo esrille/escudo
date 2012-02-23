@@ -16,6 +16,7 @@
 
 #include "HTMLTableCellElementImp.h"
 
+#include "HTMLTableElementImp.h"
 #include "css/CSSTokenizer.h"
 
 #include "utf.h"
@@ -37,6 +38,16 @@ void HTMLTableCellElementImp::eval()
     HTMLElementImp::evalHeight(this);
     HTMLElementImp::evalWidth(this);
     HTMLElementImp::evalNoWrap(this);
+
+    for (Element e = getParentElement(); e; e = e.getParentElement()) {
+        if (html::HTMLTableElement::hasInstance(e)) {
+            if (e.hasAttribute(u"border")) {
+                css::CSSStyleDeclaration style = getStyle();
+                style.setProperty(u"border-width", u"1px", u"non-css");
+                style.setProperty(u"border-style", u"inset", u"non-css");
+            }
+        }
+    }
 }
 
 unsigned int HTMLTableCellElementImp::getColSpan()

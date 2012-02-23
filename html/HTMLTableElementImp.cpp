@@ -34,6 +34,19 @@ void HTMLTableElementImp::eval()
     HTMLElementImp::evalBgcolor(this);
     HTMLElementImp::evalWidth(this);
 
+    std::u16string px = u"1px";
+    Nullable<std::u16string> value = getAttribute(u"border");
+    if (value.hasValue()) {
+        px = value.value();
+        if (!toPx(px))
+            px = u"1px";
+    }
+    if (value.hasValue() || hasAttribute(u"border")) {
+        css::CSSStyleDeclaration style = getStyle();
+        style.setProperty(u"border-width", px, u"non-css");
+        style.setProperty(u"border-style", u"outset", u"non-css");
+    }
+
     Nullable<std::u16string> attr = getAttribute(u"cellspacing");
     if (attr.hasValue()) {
         std::u16string value = attr.value();
