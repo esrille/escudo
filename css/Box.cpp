@@ -533,6 +533,7 @@ void BlockLevelBox::layOutInlineLevelBox(ViewCSSImp* view, Node node, Formatting
         if (!context->addLineBox(view, this))
             return;  // TODO error
     }
+
     InlineLevelBox* inlineLevelBox = new(std::nothrow) InlineLevelBox(node, style);
     if (!inlineLevelBox)
         return;  // TODO error
@@ -541,25 +542,21 @@ void BlockLevelBox::layOutInlineLevelBox(ViewCSSImp* view, Node node, Formatting
     inlineLevelBox->parentBox = context->lineBox;  // for getContainingBlock
     context->prevChar = 0;
 
-    if (layOutReplacedElement(view, inlineLevelBox, element, style)) {
-        inlineLevelBox->resolveWidth();
-        inlineLevelBox->baseline = inlineLevelBox->getTotalHeight();
-    } else {
-        BlockLevelBox* inlineBlock = view->layOutBlockBoxes(element, 0, 0, 0, true);
-        if (!inlineBlock)
-            return;  // TODO error
-        inlineLevelBox->appendChild(inlineBlock);
-        inlineBlock->layOut(view, context);
-        inlineLevelBox->width = inlineBlock->getTotalWidth();
-        inlineLevelBox->height = inlineBlock->getTotalHeight();
-        if (inlineLevelBox->height == 0.0f)
-            inlineLevelBox->width = 0.0f;
-        inlineLevelBox->baseline = inlineLevelBox->height;
-        if (!style->overflow.isClipped()) {
-            if (LineBox* lineBox = dynamic_cast<LineBox*>(inlineBlock->getLastChild()))
-                inlineLevelBox->baseline = inlineLevelBox->height - inlineBlock->getBlankBottom() -
-                                           lineBox->getTotalHeight() + lineBox->getBlankTop() + lineBox->getBaseline();
-        }
+    BlockLevelBox* inlineBlock = view->layOutBlockBoxes(element, 0, 0, 0, true);
+    if (!inlineBlock)
+        return;  // TODO error
+
+    inlineLevelBox->appendChild(inlineBlock);
+    inlineBlock->layOut(view, context);
+    inlineLevelBox->width = inlineBlock->getTotalWidth();
+    inlineLevelBox->height = inlineBlock->getTotalHeight();
+    if (inlineLevelBox->height == 0.0f)
+        inlineLevelBox->width = 0.0f;
+    inlineLevelBox->baseline = inlineLevelBox->height;
+    if (!style->overflow.isClipped()) {
+        if (LineBox* lineBox = dynamic_cast<LineBox*>(inlineBlock->getLastChild()))
+            inlineLevelBox->baseline = inlineLevelBox->height - inlineBlock->getBlankBottom() -
+                                        lineBox->getTotalHeight() + lineBox->getBlankTop() + lineBox->getBaseline();
     }
 
     while (context->leftover < inlineLevelBox->getTotalWidth()) {
@@ -1177,15 +1174,25 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     FormattingContext* parentContext = context;
     context = updateFormattingContext(context);
 
-    if (!layOutReplacedElement(view, this, element, style.get()) && hasInline()) {
-        if (!layOutInline(view, context, before))
-            return false;
+    if (!layOutReplacedElement(view, this, element, style.get())) {
+        if (!intrinsic && style->display.isInline() && isReplacedElement(element)) {
+            // An object fallback has occurred for an inline, replaced element.
+            // It is now treated as an inline element, and hence 'width' and 'height'
+            // are not applicable.
+            // cf. http://www.webstandards.org/action/acid2/guide/#row-4-5
+            style->width.setValue();
+            style->height.setValue();
+        }
+        if (hasInline()) {
+            if (!layOutInline(view, context, before))
+                return false;
+        }
     }
     layOutChildren(view, context);
 
     if (!isAnonymous()) {
         if ((style->width.isAuto() || style->marginLeft.isAuto() || style->marginRight.isAuto()) &&
-            (style->isInlineBlock() || style->isFloat() || style->display == CSSDisplayValueImp::TableCell) &&
+            (style->isInlineBlock() || style->isFloat() || style->display == CSSDisplayValueImp::TableCell || isReplacedElement(element)) &&
             !intrinsic)
             shrinkToFit();
         applyMinMaxWidth(getTotalWidth());
