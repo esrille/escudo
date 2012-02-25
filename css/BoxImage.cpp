@@ -201,15 +201,19 @@ void BoxImage::open(const std::u16string& url)
     state = Sent;
     if (request.getReadyState() != HttpRequest::DONE)
         return;
-    if (request.getErrorFlag()) {
-        state = Broken;
-        return;
+    if (!request.getErrorFlag()) {
+        if (FILE* file = request.openFile()) {
+            open(file);
+            fclose(file);
+            return;
+        }
     }
-    FILE* file = request.openFile();
-    if (!file) {
-        state = Broken;
-        return;
-    }
+    state = Broken;
+}
+
+void BoxImage::open(FILE* file)
+{
+    assert(file);
     pixels = readAsPng(file, naturalWidth, naturalHeight, format);
     if (!pixels) {
         rewind(file);
@@ -219,13 +223,12 @@ void BoxImage::open(const std::u16string& url)
         state = CompletelyAvailable;
     else
         state = Broken;
-    fclose(file);
 }
 
 void BoxImage::notify()
 {
     if (state == Sent) {
-        if (request.getStatus() == 200)
+        if (request.getStatus() == 200 && box)
             box->setFlags(1);   // for updating render tree.
         else
             state = Unavailable;

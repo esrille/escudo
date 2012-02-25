@@ -208,6 +208,8 @@ public:
     BoxImage(Box* box, const std::u16string& base, html::HTMLImageElement& img);
     ~BoxImage();
 
+    void open(FILE* file);
+
     int getState() const {
         return state;
     }
