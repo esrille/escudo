@@ -107,9 +107,10 @@ void Box::applyReplacedMinMax(float w, float h)
     }
 }
 
-void BlockLevelBox::
+bool BlockLevelBox::
 layOutReplacedElement(ViewCSSImp* view, Box* replaced, Element element, CSSStyleDeclarationImp* style)
 {
+    bool result = true;
     float intrinsicWidth = 0.0f;
     float intrinsicHeight = 0.0f;
 
@@ -134,9 +135,13 @@ layOutReplacedElement(ViewCSSImp* view, Box* replaced, Element element, CSSStyle
             if (!src.empty() && !imp->getDocument())
                 iframe.setSrc(src);
         }
-    }
+    } else
+        result = false;
 
-    replaced->resolveReplacedWidth(intrinsicWidth, intrinsicHeight);
+    if (result)
+        replaced->resolveReplacedWidth(intrinsicWidth, intrinsicHeight);
+
+    return result;
 }
 
 }}}}  // org::w3c::dom::bootstrap

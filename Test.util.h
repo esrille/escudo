@@ -44,7 +44,7 @@ double recordTime(const char* msg);
 inline bool isReplacedElement(org::w3c::dom::Element& element)
 {
     std::u16string tag = element.getLocalName();  // TODO: Check HTML namespace
-    if (tag == u"img" || tag == u"iframe" || tag == u"video")  // TODO: more tags to come...
+    if (tag == u"img" || tag == u"iframe" || tag == u"object")  // TODO: more tags to come...
         return true;
     return false;
 }

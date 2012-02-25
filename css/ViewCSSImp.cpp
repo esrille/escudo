@@ -447,7 +447,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
     }
 
     if (!dynamic_cast<TableWrapperBox*>(currentBox)) {
-        bool emptyInline = style->display.isInline() && !element.hasChildNodes();
+        bool emptyInline = style->display.isInline() && !element.hasChildNodes() && !isReplacedElement(element);
         BlockLevelBox* childBox = 0;
 
         CSSAutoNumberingValueImp::CounterContext ccPseudo(this);

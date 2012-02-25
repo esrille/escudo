@@ -598,7 +598,7 @@ class BlockLevelBox : public Box
     bool layOutInline(ViewCSSImp* view, FormattingContext* context, float originalMargin = 0.0f);
     void layOutChildren(ViewCSSImp* view, FormattingContext* context);
 
-    void layOutReplacedElement(ViewCSSImp* view, Box* replaced, Element element, CSSStyleDeclarationImp* style);
+    bool layOutReplacedElement(ViewCSSImp* view, Box* replaced, Element element, CSSStyleDeclarationImp* style);
 
     void applyMinMaxHeight(FormattingContext* context);
 

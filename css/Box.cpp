@@ -541,12 +541,10 @@ void BlockLevelBox::layOutInlineLevelBox(ViewCSSImp* view, Node node, Formatting
     inlineLevelBox->parentBox = context->lineBox;  // for getContainingBlock
     context->prevChar = 0;
 
-    if (isReplacedElement(element)) {
+    if (layOutReplacedElement(view, inlineLevelBox, element, style)) {
         inlineLevelBox->resolveWidth();
-        layOutReplacedElement(view, inlineLevelBox, element, style);
         inlineLevelBox->baseline = inlineLevelBox->getTotalHeight();
     } else {
-        assert(style->isInlineBlock());
         BlockLevelBox* inlineBlock = view->layOutBlockBoxes(element, 0, 0, 0, true);
         if (!inlineBlock)
             return;  // TODO error
@@ -554,7 +552,8 @@ void BlockLevelBox::layOutInlineLevelBox(ViewCSSImp* view, Node node, Formatting
         inlineBlock->layOut(view, context);
         inlineLevelBox->width = inlineBlock->getTotalWidth();
         inlineLevelBox->height = inlineBlock->getTotalHeight();
-
+        if (inlineLevelBox->height == 0.0f)
+            inlineLevelBox->width = 0.0f;
         inlineLevelBox->baseline = inlineLevelBox->height;
         if (!style->overflow.isClipped()) {
             if (LineBox* lineBox = dynamic_cast<LineBox*>(inlineBlock->getLastChild()))
@@ -736,24 +735,20 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
             if (!style)
                 continue;
             style->resolve(view, this);
-            if (isReplacedElement(element)) {
-                layOutInlineLevelBox(view, node, context, element, style);
-                collapsed = false;
-            } else if (node.getNodeType() == Node::TEXT_NODE) {
+            if (node.getNodeType() == Node::TEXT_NODE) {
                 Text text = interface_cast<Text>(node);
                 if (layOutText(view, node, context, text.getData(), element, style))
                     collapsed = false;
-            } else if (style->display.isInline()) {
+            } else if (style->display.isTableParts()) {
+                layOutAnonymousInlineTable(view, context, i);
+                collapsed = false;
+            } else if (!isReplacedElement(element) && style->display.isInline()) {
                 // empty inline element
                 assert(!element.hasChildNodes());
                 if (layOutText(view, node, context, u"", element, style))
                     collapsed = false;
-            } else if (style->display.isTableParts()) {
-                // TODO: Construct an anonymous inline table.
-                layOutAnonymousInlineTable(view, context, i);
-                collapsed = false;
             } else {
-                // At this point, node should be an inline block element.
+                // At this point, node is an inline block element or a replaced element.
                 layOutInlineLevelBox(view, node, context, element, style);
                 collapsed = false;
             }
@@ -1182,9 +1177,7 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     FormattingContext* parentContext = context;
     context = updateFormattingContext(context);
 
-    if (isReplacedElement(element))
-        layOutReplacedElement(view, this, element, style.get());
-    else if (hasInline()) {
+    if (!layOutReplacedElement(view, this, element, style.get()) && hasInline()) {
         if (!layOutInline(view, context, before))
             return false;
     }
@@ -1476,8 +1469,7 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
     FormattingContext* context = updateFormattingContext(context);
     assert(context);
 
-    if (isReplacedElement(element)) {
-        layOutReplacedElement(view, this, element, style.get());
+    if (layOutReplacedElement(view, this, element, style.get())) {
         maskH &= ~Width;
         maskV &= ~Height;
         // TODO: more conditions...
