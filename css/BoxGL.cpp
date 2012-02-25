@@ -26,6 +26,8 @@
 #include "ViewCSSImp.h"
 #include "Table.h"
 
+#include "html/HTMLObjectElementImp.h"  // TODO
+
 #include "font/FontManager.h"
 #include "font/FontManagerBackEndGL.h"
 
@@ -567,6 +569,17 @@ void BlockLevelBox::renderInline(ViewCSSImp* view, StackingContext* stackingCont
         shadow->render();
         return;
     }
+
+    if (HTMLObjectElementImp* object = dynamic_cast<HTMLObjectElementImp*>(getNode().self())) {
+        if (BoxImage* image = object->getImage()) {
+            glPushMatrix();
+            glTranslatef(x + getBlankLeft(), y + getBlankTop(), 0.0f);
+            image->render(view, 0, 0, width, height, 0, 0);
+            glPopMatrix();
+            return;
+        }
+    }
+
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
         if (child->style && child->style->isPositioned() && !child->isAnonymous())
             continue;

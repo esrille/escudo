@@ -30,6 +30,8 @@
 #include <org/w3c/dom/html/ValidityState.h>
 #include <org/w3c/dom/html/Window.h>
 
+#include "http/HTTPRequest.h"
+
 namespace org
 {
 namespace w3c
@@ -38,17 +40,28 @@ namespace dom
 {
 namespace bootstrap
 {
+
+class BoxImage;
+
 class HTMLObjectElementImp : public ObjectMixin<HTMLObjectElementImp, HTMLElementImp>
 {
+    HttpRequest* request;
+    bool active;
+    BoxImage* image;
+
 public:
-    HTMLObjectElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"object") {
-    }
-    HTMLObjectElementImp(HTMLObjectElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
-    }
+    HTMLObjectElementImp(DocumentImp* ownerDocument);
+    HTMLObjectElementImp(HTMLObjectElementImp* org, bool deep);
+    ~HTMLObjectElementImp();
 
     void eval();
+    void notify();
+
+    // TODO: Refine this interface as this is only for CSS
+    bool getIntrinsicSize(float& w, float& h);
+    BoxImage* getImage() const {
+        return image;
+    }
 
     // HTMLObjectElement
     std::u16string getData();

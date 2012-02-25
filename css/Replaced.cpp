@@ -22,6 +22,8 @@
 #include "ViewCSSImp.h"
 #include "WindowImp.h"
 
+#include "html/HTMLObjectElementImp.h"
+
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 void Box::resolveReplacedWidth(float intrinsicWidth, float intrinsicHeight)
@@ -107,13 +109,10 @@ void Box::applyReplacedMinMax(float w, float h)
     }
 }
 
-bool BlockLevelBox::
-layOutReplacedElement(ViewCSSImp* view, Box* replaced, Element element, CSSStyleDeclarationImp* style)
+bool BlockLevelBox::layOutReplacedElement(ViewCSSImp* view, Box* replaced, Element element, CSSStyleDeclarationImp* style)
 {
-    bool result = true;
     float intrinsicWidth = 0.0f;
     float intrinsicHeight = 0.0f;
-
     std::u16string tag = element.getLocalName();
     if (tag == u"img") {
         html::HTMLImageElement img = interface_cast<html::HTMLImageElement>(element);
@@ -135,13 +134,17 @@ layOutReplacedElement(ViewCSSImp* view, Box* replaced, Element element, CSSStyle
             if (!src.empty() && !imp->getDocument())
                 iframe.setSrc(src);
         }
+    } else if (tag == u"object") {
+        HTMLObjectElementImp* object = dynamic_cast<HTMLObjectElementImp*>(element.self());
+        if (!object)
+            return false;
+        if (!object->getIntrinsicSize(intrinsicWidth, intrinsicHeight))
+            return false;
     } else
-        result = false;
+        return false;
 
-    if (result)
-        replaced->resolveReplacedWidth(intrinsicWidth, intrinsicHeight);
-
-    return result;
+    replaced->resolveReplacedWidth(intrinsicWidth, intrinsicHeight);
+    return true;
 }
 
 }}}}  // org::w3c::dom::bootstrap

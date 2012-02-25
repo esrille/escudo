@@ -16,6 +16,11 @@
 
 #include "HTMLObjectElementImp.h"
 
+#include <boost/bind.hpp>
+
+#include "DocumentImp.h"
+#include "css/Box.h"
+
 namespace org
 {
 namespace w3c
@@ -25,6 +30,28 @@ namespace dom
 namespace bootstrap
 {
 
+HTMLObjectElementImp::HTMLObjectElementImp(DocumentImp* ownerDocument) :
+    ObjectMixin(ownerDocument, u"object"),
+    request(0),
+    active(true),
+    image(0)
+{
+}
+
+HTMLObjectElementImp::HTMLObjectElementImp(HTMLObjectElementImp* org, bool deep) :
+    ObjectMixin(org, deep),
+    request(0), // TODO
+    active(org->active),
+    image(0)    // TODO
+{
+}
+
+HTMLObjectElementImp::~HTMLObjectElementImp()
+{
+    delete request;
+    delete image;
+}
+
 void HTMLObjectElementImp::eval()
 {
     HTMLElementImp::eval();
@@ -33,6 +60,68 @@ void HTMLObjectElementImp::eval()
     HTMLElementImp::evalWidth(this);
     HTMLElementImp::evalHspace(this);
     HTMLElementImp::evalVspace(this);
+
+    std::u16string classid = getAttribute(u"classid");
+    if (!classid.empty()) {
+        active = false;
+        return;
+    }
+    std::u16string data = getAttribute(u"data");
+    if (data.empty()) {
+        active = false;
+        return;
+    }
+    std::u16string type = getAttribute(u"type");
+    // TODO: Check type is a supported one.
+
+    DocumentImp* document = getOwnerDocumentImp();
+    request = new(std::nothrow) HttpRequest(document->getDocumentURI());
+    if (request) {
+        request->open(u"GET", data);
+        request->setHanndler(boost::bind(&HTMLObjectElementImp::notify, this));
+        document->incrementLoadEventDelayCount();
+        request->send();
+    } else
+        active = false;
+}
+
+void HTMLObjectElementImp::notify()
+{
+    if (request->getStatus() != 200)
+        active = false;
+    else {
+        // TODO: Check type
+        image = new(std::nothrow) BoxImage();
+        if (!image)
+            active = false;
+        else {
+            if (FILE* file = request->openFile()) {
+                image->open(file);
+                fclose(file);
+            }
+            if (image->getState() != BoxImage::CompletelyAvailable) {
+                active = false;
+                delete image;
+                image = 0;
+            }
+        }
+    }
+    // TODO: fire 'load' or 'error' event
+    DocumentImp* document = getOwnerDocumentImp();
+    document->decrementLoadEventDelayCount();
+}
+
+bool HTMLObjectElementImp::getIntrinsicSize(float& w, float& h)
+{
+    if (!active)
+        return false;
+    if (!image)
+        w = h = 0.0f;
+    else {
+        w = image->getNaturalWidth();
+        h = image->getNaturalHeight();
+    }
+    return true;
 }
 
 std::u16string HTMLObjectElementImp::getData()
