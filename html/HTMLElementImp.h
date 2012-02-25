@@ -262,33 +262,29 @@ public:
     static bool toPx(std::u16string& value);  // for cellspacing, cellpadding, etc.
     static bool toPxOrPercentage(std::u16string& value);  // for width, heigth, etc.
 
-    static void evalBackground(HTMLElementImp* element);
-    static void evalColor(HTMLElementImp* element, const std::u16string& attr, const std::u16string& prop);
-    static void evalBgcolor(HTMLElementImp* element) {
-        evalColor(element, u"bgcolor", u"background-color");
+    static bool evalBackground(HTMLElementImp* element);
+    static bool evalColor(HTMLElementImp* element, const std::u16string& attr, const std::u16string& prop);
+    static bool evalBgcolor(HTMLElementImp* element) {
+        return evalColor(element, u"bgcolor", u"background-color");
     }
-    static void evalBorder(HTMLElementImp* element);
-    static void evalPx(HTMLElementImp* element, const std::u16string& attr, const std::u16string& prop);
-    static void evalPxOrPercentage(HTMLElementImp* element, const std::u16string& attr, const std::u16string& prop);
-    static void evalHeight(HTMLElementImp* element) {
-        evalPxOrPercentage(element, u"height", u"height");
+    static bool evalBorder(HTMLElementImp* element);
+    static bool evalPx(HTMLElementImp* element, const std::u16string& attr, const std::u16string& prop);
+    static bool evalPxOrPercentage(HTMLElementImp* element, const std::u16string& attr, const std::u16string& prop);
+    static bool evalHeight(HTMLElementImp* element) {
+        return evalPxOrPercentage(element, u"height", u"height");
     }
-    static void evalWidth(HTMLElementImp* element) {
-        evalPxOrPercentage(element, u"width", u"width");
+    static bool evalWidth(HTMLElementImp* element) {
+        return evalPxOrPercentage(element, u"width", u"width");
     }
-    static void evalHspace(HTMLElementImp* element, const std::u16string& prop = u"hspace");
-    static void evalVspace(HTMLElementImp* element, const std::u16string& prop = u"vspace");
-    static void evalMarginHeight(HTMLElementImp* element) {
-        evalVspace(element, u"marginheight");
+    static bool evalHspace(HTMLElementImp* element, const std::u16string& prop = u"hspace");
+    static bool evalVspace(HTMLElementImp* element, const std::u16string& prop = u"vspace");
+    static bool evalMarginHeight(HTMLElementImp* element) {
+        return evalVspace(element, u"marginheight");
     }
-    static void evalMarginWidth(HTMLElementImp* element) {
-        evalHspace(element, u"marginwidth");
+    static bool evalMarginWidth(HTMLElementImp* element) {
+        return evalHspace(element, u"marginwidth");
     }
-    static void evalNoWrap(HTMLElementImp* element) {
-        Nullable<std::u16string> value = element->getAttribute(u"nowrap");
-        if (value.hasValue())
-            element->getStyle().setProperty(u"white-space", u"nowrap", u"non-css");
-    }
+    static bool evalNoWrap(HTMLElementImp* element);
 };
 
 }}}}  // org::w3c::dom::bootstrap

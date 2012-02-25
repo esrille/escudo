@@ -1225,25 +1225,29 @@ bool HTMLElementImp::toPxOrPercentage(std::u16string& value)
     return false;
 }
 
-void HTMLElementImp::evalBackground(HTMLElementImp* element)
+bool HTMLElementImp::evalBackground(HTMLElementImp* element)
 {
     Nullable<std::u16string> attr = element->getAttribute(u"background");
     if (attr.hasValue()) {
         css::CSSStyleDeclaration style = element->getStyle();
         style.setProperty(u"background-image", u"url(" + attr.value() + u")", u"non-css");
+        return true;
     }
+    return false;
 }
 
-void HTMLElementImp::evalColor(HTMLElementImp* element, const std::u16string& attr, const std::u16string& prop)
+bool HTMLElementImp::evalColor(HTMLElementImp* element, const std::u16string& attr, const std::u16string& prop)
 {
     Nullable<std::u16string> value = element->getAttribute(attr);
     if (value.hasValue()) {
         css::CSSStyleDeclaration style = element->getStyle();
         style.setProperty(prop, value.value(), u"non-css");
+        return true;
     }
+    return false;
 }
 
-void HTMLElementImp::evalPx(HTMLElementImp* element, const std::u16string& attr, const std::u16string& prop)
+bool HTMLElementImp::evalPx(HTMLElementImp* element, const std::u16string& attr, const std::u16string& prop)
 {
     Nullable<std::u16string> value = element->getAttribute(attr);
     if (value.hasValue()) {
@@ -1251,11 +1255,13 @@ void HTMLElementImp::evalPx(HTMLElementImp* element, const std::u16string& attr,
         if (toPx(length)) {
             css::CSSStyleDeclaration style = element->getStyle();
             style.setProperty(prop, length, u"non-css");
+            return true;
         }
     }
+    return false;
 }
 
-void HTMLElementImp::evalPxOrPercentage(HTMLElementImp* element, const std::u16string& attr, const std::u16string& prop)
+bool HTMLElementImp::evalPxOrPercentage(HTMLElementImp* element, const std::u16string& attr, const std::u16string& prop)
 {
     Nullable<std::u16string> value = element->getAttribute(attr);
     if (value.hasValue()) {
@@ -1263,11 +1269,13 @@ void HTMLElementImp::evalPxOrPercentage(HTMLElementImp* element, const std::u16s
         if (toPxOrPercentage(length)) {
             css::CSSStyleDeclaration style = element->getStyle();
             style.setProperty(prop, length, u"non-css");
+            return true;
         }
     }
+    return false;
 }
 
-void HTMLElementImp::evalBorder(HTMLElementImp* element)
+bool HTMLElementImp::evalBorder(HTMLElementImp* element)
 {
     Nullable<std::u16string> value = element->getAttribute(u"border");
     if (value.hasValue()) {
@@ -1276,11 +1284,13 @@ void HTMLElementImp::evalBorder(HTMLElementImp* element)
             css::CSSStyleDeclaration style = element->getStyle();
             style.setProperty(u"border-width", px, u"non-css");
             style.setProperty(u"border-style", u"solid", u"non-css");
+            return true;
         }
     }
+    return false;
 }
 
-void HTMLElementImp::evalHspace(HTMLElementImp* element, const std::u16string& prop)
+bool HTMLElementImp::evalHspace(HTMLElementImp* element, const std::u16string& prop)
 {
     Nullable<std::u16string> value = element->getAttribute(prop);
     if (value.hasValue()) {
@@ -1289,11 +1299,13 @@ void HTMLElementImp::evalHspace(HTMLElementImp* element, const std::u16string& p
             css::CSSStyleDeclaration style = element->getStyle();
             style.setProperty(u"margin-left", px, u"non-css");
             style.setProperty(u"margin-right", px, u"non-css");
+            return true;
         }
     }
+    return false;
 }
 
-void HTMLElementImp::evalVspace(HTMLElementImp* element, const std::u16string& prop)
+bool HTMLElementImp::evalVspace(HTMLElementImp* element, const std::u16string& prop)
 {
     Nullable<std::u16string> value = element->getAttribute(prop);
     if (value.hasValue()) {
@@ -1302,8 +1314,20 @@ void HTMLElementImp::evalVspace(HTMLElementImp* element, const std::u16string& p
             css::CSSStyleDeclaration style = element->getStyle();
             style.setProperty(u"margin-top", px, u"non-css");
             style.setProperty(u"margin-bottom", px, u"non-css");
+            return true;
         }
     }
+    return false;
+}
+
+bool HTMLElementImp::evalNoWrap(HTMLElementImp* element)
+{
+    Nullable<std::u16string> value = element->getAttribute(u"nowrap");
+    if (value.hasValue()) {
+        element->getStyle().setProperty(u"white-space", u"nowrap", u"non-css");
+        return true;
+    }
+    return false;
 }
 
 }}}}  // org::w3c::dom::bootstrap
