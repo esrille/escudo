@@ -114,7 +114,7 @@ HttpCache* HttpCache::send(HttpRequest* request)
 
 void HttpCache::abort(HttpRequest* request)
 {
-    if (current != request) 
+    if (current != request)
         requests.remove(request);
     else {
         HttpConnectionManager& manager = HttpConnectionManager::getInstance();

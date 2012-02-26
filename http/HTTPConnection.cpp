@@ -455,6 +455,7 @@ void HttpConnection::abort(HttpRequest* request)
 {
     if (current != request) {
         requests.remove(request);
+        request->notify(true);
         return;
     }
     close();
