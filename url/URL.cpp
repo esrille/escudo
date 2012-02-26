@@ -164,7 +164,7 @@ bool URL::parseUnreservedChar(size_t& pos)
         ++pos;
         return true;
     }
-    
+
     return parseUCSChar(pos);
 }
 
@@ -527,7 +527,7 @@ bool URL::parseHTTPRelative(const URL& base)
     protocolEnd = base.protocolEnd;
     ptrdiff_t offset = 0;
     if (hostStart == hostEnd) {
-        targetURL += base.getHost();
+        targetURL += base.url.substr(base.hostStart, base.hostEnd - base.hostStart);
         hostStart = base.hostStart;
         hostEnd = base.hostEnd;
         hostnameStart = base.hostnameStart;
@@ -535,7 +535,7 @@ bool URL::parseHTTPRelative(const URL& base)
         portStart = base.portStart;
         portEnd = base.portEnd;
     } else {
-        targetURL += getHost();
+        targetURL += url.substr(hostStart, hostEnd - hostStart);
         ptrdiff_t d = base.hostStart - hostStart;
         hostStart += d;
         hostEnd += d;

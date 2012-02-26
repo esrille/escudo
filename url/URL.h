@@ -136,8 +136,6 @@ public:
         return (a == b) && !std::memcmp(url.data(), target.url.data(), a);
     }
 
-    std::u16string resolveURL(std::u16string url);
-
     URL() {}
     URL(const std::u16string& url);
     URL(const URL& base, const std::u16string& relative);
