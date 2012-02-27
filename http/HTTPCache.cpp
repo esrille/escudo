@@ -42,12 +42,10 @@ void HttpCache::notify(HttpRequest* request, bool error)
             fdContent = dup(fd);
     }
 
-    while (!requests.empty()) {
+    while (!isBusy() && !requests.empty()) {
         request = requests.front();
         requests.pop_front();
-        request->send();
-        if (isBusy())
-            break;
+        request->constructResponseFromCache();
     }
 }
 
