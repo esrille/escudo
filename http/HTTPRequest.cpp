@@ -62,10 +62,8 @@ void HttpRequest::notify(bool error)
 {
     readyState = DONE;
     errorFlag = error;
-    if (!cache)
-        return;
-    cache->notify(this, error);
-
+    if (cache)
+        cache->notify(this, error);
     if (handler)
         handler();
 }
@@ -100,9 +98,12 @@ void HttpRequest::constructResponseFromCache()
 void HttpRequest::send()
 {
     if (request.getURL().isEmpty()) {
-        abort();
+        readyState = DONE;
+        if (handler)
+            handler();
         return;
     }
+
     cache = HttpCacheManager::getInstance().send(this);
     if (!cache || cache->isBusy())
         return;
@@ -111,6 +112,9 @@ void HttpRequest::send()
 
 void HttpRequest::abort()
 {
+    if (readyState == UNSENT)
+        return;
+
     // TODO: implement more details.
     clearHanndler();
     if (cache)
