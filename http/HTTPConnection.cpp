@@ -65,17 +65,20 @@ void HttpConnection::close()
     state = Closed;
     line.clear();
     retryCount = 0;
-    response.consume(response.size());
     socket.close();
+    request.consume(request.size());
+    response.consume(response.size());
 }
 
 void HttpConnection::retry()
 {
     close();
     ++retryCount;
-    if (retryCount < MaxRetryCount)
-        send(current);
-    else
+    if (retryCount < MaxRetryCount) {
+        HttpRequest* request = current;
+        current = 0;
+        send(request);
+    } else
         done(true);
 }
 
@@ -432,7 +435,8 @@ void HttpConnection::readTrailer(const boost::system::error_code& err)
 
 void HttpConnection::send(HttpRequest* request)
 {
-    if (current && current != request) {
+    if (current) {
+        assert(current != request);
         requests.push_back(request);
         return;
     }
