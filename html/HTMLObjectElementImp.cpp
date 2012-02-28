@@ -61,6 +61,9 @@ void HTMLObjectElementImp::eval()
     HTMLElementImp::evalHspace(this);
     HTMLElementImp::evalVspace(this);
 
+    if (!active)
+        return;
+
     std::u16string classid = getAttribute(u"classid");
     if (!classid.empty()) {
         active = false;
@@ -107,6 +110,8 @@ void HTMLObjectElementImp::notify()
         }
     }
     // TODO: fire 'load' or 'error' event
+    if (Box* box = getBox())
+        box->setFlags(1);
     DocumentImp* document = getOwnerDocumentImp();
     document->decrementLoadEventDelayCount();
 }
