@@ -157,6 +157,8 @@ class FontTexture
     short sCapHeight;
     short lineThroughPosition;
     short lineThroughSize;
+    short sub;
+    short super;
 
     bool bold;
     bool oblique;
@@ -294,6 +296,13 @@ public:
 
     float getBearingGap() const {
         return bearingGap;
+    }
+
+    float getSub(float point) const {
+        return (getSize(point) * sub) / (ascender - descender);
+    }
+    float getSuper(float point) const {
+        return (getSize(point) * super) / (ascender - descender);
     }
 
     static uint8_t* getMipmapImage(uint8_t* image, unsigned int level) {

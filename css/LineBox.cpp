@@ -685,6 +685,20 @@ float InlineLevelBox::atEndOfLine()
     return 0.0f;
 }
 
+float InlineLevelBox::getSub() const
+{
+    if (!font)
+        return 0.0f;
+    return font->getSub(point);
+}
+
+float InlineLevelBox::getSuper() const
+{
+    if (!font)
+        return 0.0f;
+    return font->getSuper(point);
+}
+
 void InlineLevelBox::resolveWidth()
 {
     // The ‘width’ and ‘height’ properties do not apply.

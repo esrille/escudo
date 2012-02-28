@@ -864,6 +864,9 @@ public:
     float getBaseline() const {
         return baseline;
     }
+    float getSub() const;
+    float getSuper() const;
+
     void resolveWidth();
     virtual void resolveOffset(ViewCSSImp* view);
     void setData(FontTexture* font, float point, std::u16string data, size_t wrap, float wrapWidth);

@@ -1727,11 +1727,13 @@ float CSSVerticalAlignValueImp::getOffset(LineBox* line, InlineLevelBox* text) c
     case Bottom:
         return line->getHeight() - text->getHeight();
     case Sub:
+        return line->getBaseline() - (leading + text->getBaseline()) + text->getSub();
     case Super:
+        return line->getBaseline() - (leading + text->getBaseline()) - text->getSuper();
     case TextTop:
+        return 0.0f;
     case TextBottom:
-        // TODO: implement me!
-        return line->getBaseline() - (leading + text->getBaseline());
+        return line->getHeight() - text->getHeight();
     default:
         assert(value.unit == css::CSSPrimitiveValue::CSS_PX);
         return line->getBaseline() - (leading + text->getBaseline()) - value.getPx();
