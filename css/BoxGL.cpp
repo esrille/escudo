@@ -284,20 +284,13 @@ void Box::renderBorderEdge(ViewCSSImp* view, int edge, unsigned borderStyle, uns
     glEnd();
 }
 
-void Box::renderBorder(ViewCSSImp* view, float left, float top)
+void Box::renderBorder(ViewCSSImp* view, float left, float top,
+                       float ll, float lr, float rl, float rr, float tt, float tb, float bt, float bb,
+                       Box* leftEdge, Box* rightEdge)
 {
     glPushMatrix();
     glTranslatef(left, top, 0.0f);
     glDisable(GL_TEXTURE_2D);
-
-    float ll = marginLeft;
-    float lr = ll + borderLeft;
-    float rl = lr + getPaddingWidth();
-    float rr = rl + borderRight;
-    float tt = marginTop;
-    float tb = tt + borderTop;
-    float bt = tb + getPaddingHeight();
-    float bb = bt + borderBottom;
 
     if (backgroundColor) {
         glColor4ub(backgroundColor >> 16, backgroundColor >> 8, backgroundColor, backgroundColor >> 24);
@@ -361,24 +354,37 @@ void Box::renderBorder(ViewCSSImp* view, float left, float top)
                          style->borderTopStyle.getValue(),
                          style->borderTopColor.getARGB(),
                          ll, tt, rr, tt, rl, tb, lr, tb);
-    if (borderRight)
+    if (rightEdge && rightEdge->borderRight)
         renderBorderEdge(view, RIGHT,
-                         style->borderRightStyle.getValue(),
-                         style->borderRightColor.getARGB(),
+                         rightEdge->style->borderRightStyle.getValue(),
+                         rightEdge->style->borderRightColor.getARGB(),
                          rl, bt, rl, tb, rr, tt, rr, bb);
     if (borderBottom)
         renderBorderEdge(view, BOTTOM,
                          style->borderBottomStyle.getValue(),
                          style->borderBottomColor.getARGB(),
                          lr, bt, rl, bt, rr, bb, ll, bb);
-    if (borderLeft)
+    if (leftEdge && leftEdge->borderLeft)
         renderBorderEdge(view, LEFT,
-                         style->borderLeftStyle.getValue(),
-                         style->borderLeftColor.getARGB(),
+                         leftEdge->style->borderLeftStyle.getValue(),
+                         leftEdge->style->borderLeftColor.getARGB(),
                          ll, bb, ll, tt, lr, tb, lr, bt);
 
     glEnable(GL_TEXTURE_2D);
     glPopMatrix();
+}
+
+void Box::renderBorder(ViewCSSImp* view, float left, float top)
+{
+    float ll = marginLeft;
+    float lr = ll + borderLeft;
+    float rl = lr + getPaddingWidth();
+    float rr = rl + borderRight;
+    float tt = marginTop;
+    float tb = tt + borderTop;
+    float bt = tb + getPaddingHeight();
+    float bb = bt + borderBottom;
+    renderBorder(view, left, top, ll, lr, rl, rr, tt, tb, bt, bb, this, this);
 }
 
 void Box::renderVerticalScrollBar(float w, float h, float pos, float total)
@@ -614,75 +620,77 @@ void LineBox::render(ViewCSSImp* view, StackingContext* stackingContext)
     }
 }
 
-void InlineLevelBox::renderParentBorder(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle)
+void InlineLevelBox::renderMultipleBackground(ViewCSSImp* view)
 {
-    unsigned backgroundColor = parentStyle->backgroundColor.getARGB();
-    if (!backgroundColor)
-        return;
+    Box* box;
+    InlineLevelBox* head;
+    InlineLevelBox* tail = this;
+    InlineLevelBox* lastBox = dynamic_cast<InlineLevelBox*>(style->getLastBox());
+    assert(lastBox);
+    for (box = this; box && box != lastBox; box = box->getNextSibling()) {
+        if (InlineLevelBox* i = dynamic_cast<InlineLevelBox*>(box))
+            tail = i;
+    }
 
-    InlineLevelBox* text = dynamic_cast<InlineLevelBox*>(parentStyle->getBox());
-    if (!text)  // TODO: Deal with empty inline boxes.
-        return;
+    float ll = marginLeft;
+    float lr = ll + borderLeft;
+    float rl;
+    float rr;
+    float tt = marginTop;
+    float tb = tt + borderTop;
+    float bt = tb + getPaddingHeight();
+    float bb = bt + borderBottom;
 
-    LineBox* lineBox = dynamic_cast<LineBox*>(getParentBox());
-    assert(lineBox);
-
-    glDisable(GL_TEXTURE_2D);
-
-    float top = lineBox->getY() + parentStyle->verticalAlign.getOffset(lineBox, text);
-    top -= text->paddingTop + text->borderTop;
-    float bottom = top + text->getBorderHeight();
-    glColor4ub(backgroundColor >> 16, backgroundColor >> 8, backgroundColor, backgroundColor >> 24);
-    glBegin(GL_QUADS);
-        glVertex2f(x, top);
-        glVertex2f(x + getTotalWidth(), top);
-        glVertex2f(x + getTotalWidth(), bottom);
-        glVertex2f(x, bottom);
-    glEnd();
-
-    // TODO: background-image
-
-    if (text->borderTop)
-        renderBorderEdge(view, TOP,
-                         parentStyle->borderTopStyle.getValue(),
-                         parentStyle->borderTopColor.getARGB(),
-                         x, top,
-                         x + getTotalWidth(), top,
-                         x + getTotalWidth(), top + text->borderTop,
-                         x, top + text->borderTop);
-    if (text->borderBottom)
-        renderBorderEdge(view, BOTTOM,
-                         parentStyle->borderBottomStyle.getValue(),
-                         parentStyle->borderBottomColor.getARGB(),
-                         x, bottom - text->borderBottom,
-                         x + getTotalWidth(), bottom - text->borderBottom,
-                         x + getTotalWidth(), bottom,
-                         x, bottom);
-
-    // TODO: left and right edge cases
-
-    glEnable(GL_TEXTURE_2D);
+    if (box) {
+        rr = (lastBox->x + lastBox->getTotalWidth() - lastBox->marginRight) - x;
+        rl = rr - lastBox->borderRight;
+        renderBorder(view, x, y - getBlankTop(), ll, lr, rl, rr, tt, tb, bt, bb, this, lastBox);
+    } else {
+        rr = rl = (tail->getX() + tail->getTotalWidth()) - x;
+        renderBorder(view, x, y - getBlankTop(), ll, lr, rl, rr, tt, tb, bt, bb, this, 0);
+        LineBox* lineBox = dynamic_cast<LineBox*>(getParentBox());
+        assert(lineBox);
+        float baseline = lineBox->getY() + lineBox->getBaseline();
+        for (;;) {
+            lineBox = dynamic_cast<LineBox*>(lineBox->getNextSibling());
+            assert(lineBox);
+            head = tail = 0;
+            for (box = lineBox->getFirstChild(); box; box = box->getNextSibling()) {
+                if (InlineLevelBox* i = dynamic_cast<InlineLevelBox*>(box)) {
+                    if (!head)
+                        head = i;
+                    tail = i;
+                    if (i == lastBox)
+                        break;
+                }
+            }
+            if (box) {
+                ll = head->marginLeft;
+                lr = ll + head->borderLeft;
+                rr = (lastBox->x + lastBox->getTotalWidth() - lastBox->marginRight) - head->x;
+                rl = rr - lastBox->borderRight;
+                renderBorder(view, head->x, lastBox->y - lastBox->getBlankTop(), ll, lr, rl, rr, tt, tb, bt, bb, 0, lastBox);
+                break;
+            }
+            if (head) {
+                ll = lr = 0;
+                rr = rl = (tail->getX() + tail->getTotalWidth()) - head->x;
+                // TODO: Calculate 'top' accurately.
+                renderBorder(view, head->x, y - getBlankTop() + (lineBox->getY() + lineBox->getBaseline() - baseline), ll, lr, rl, rr, tt, tb, bt, bb, 0, 0);
+            }
+        }
+    }
 }
 
 void InlineLevelBox::render(ViewCSSImp* view, StackingContext* stackingContext)
 {
-    if (!isAnonymous()) {
-        std::list<CSSStyleDeclarationImp*> parentStyleList;
-        for (CSSStyleDeclarationImp* parentStyle = getStyle()->getParentStyle();
-            parentStyle && parentStyle->display.isInline();
-            parentStyle = parentStyle->getParentStyle())
-        {
-            parentStyleList.push_front(parentStyle);
-        }
-        for (auto i = parentStyleList.begin(); i != parentStyleList.end(); ++i)
-            renderParentBorder(view, *i);
-    }
-
     assert(stackingContext);
-    if (font)
-        renderBorder(view, x, y - getBlankTop());
-    else
+    if (!font)
         renderBorder(view, x, y);
+    else if (!style->hasMultipleBoxes())
+        renderBorder(view, x, y - getBlankTop());
+    else if (style->getBox() == this)
+        renderMultipleBackground(view);
     if (shadow)
         shadow->render();
     else if (getFirstChild())  // for inline-block

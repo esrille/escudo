@@ -439,6 +439,12 @@ public:
     Box* getBox() const {
         return box;
     }
+    Box* getLastBox() const {
+        return lastBox;
+    }
+    bool hasMultipleBoxes() const {
+        return box && box != lastBox;
+    }
     void addBox(Box* box);
 
     StackingContext* getStackingContext() const {

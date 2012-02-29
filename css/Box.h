@@ -488,6 +488,9 @@ public:
     }
 
     virtual void render(ViewCSSImp* view, StackingContext* stackingContext) = 0;
+    void renderBorder(ViewCSSImp* view, float left, float top,
+                      float ll, float lr, float rl, float rr, float tt, float tb, float bt, float bb,
+                      Box* leftEdge, Box* rightEdge);
     void renderBorder(ViewCSSImp* view, float left, float top);
 
     virtual void renderTableBorders(ViewCSSImp* view) {}
@@ -800,7 +803,7 @@ class InlineLevelBox : public Box
     float wrapWidth;
 
     void renderText(ViewCSSImp* view, const std::u16string& data, float point);
-    void renderParentBorder(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle);
+    void renderMultipleBackground(ViewCSSImp* view);
 
 public:
     InlineLevelBox(Node node, CSSStyleDeclarationImp* style) :

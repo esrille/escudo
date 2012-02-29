@@ -1,0 +1,27 @@
+<html>
+    <head>
+        <title>CSS Test: background of an inline element that breaks into multiple boxes</title>
+        <style type="text/css">
+            div
+            {
+                font: 20px/1em Ahem;
+            }
+            #span1
+            {
+                background: blue;
+                color: blue;
+                white-space: pre;
+            }
+            #span2
+            {
+                color: orange;
+            }
+        </style>
+    </head>
+    <body>
+        <p>There should be the word "HI" in blue on orange below.</p>
+        <div>
+            <span id="span1">X<span id="span2">X X <br>   X <br> X X</span>X</span>
+        </div>
+    </body>
+</html>
