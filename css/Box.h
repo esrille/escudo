@@ -800,6 +800,7 @@ class InlineLevelBox : public Box
     float wrapWidth;
 
     void renderText(ViewCSSImp* view, const std::u16string& data, float point);
+    void renderParentBorder(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle);
 
 public:
     InlineLevelBox(Node node, CSSStyleDeclarationImp* style) :
@@ -825,7 +826,7 @@ public:
     }
 
     virtual bool isAnonymous() const {
-        return !style || !style->display.isInlineLevel();
+        return !style || (font && !style->display.isInline()) || !style->display.isInlineLevel();
     }
     bool isInline() const {
         return style && style->display.isInline();

@@ -432,6 +432,10 @@ public:
         return position.getValue() != CSSPositionValueImp::Static;
     }
 
+    CSSStyleDeclarationImp* getParentStyle() const {
+        return parentStyle;
+    }
+
     Box* getBox() const {
         return box;
     }

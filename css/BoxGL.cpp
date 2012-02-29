@@ -299,7 +299,7 @@ void Box::renderBorder(ViewCSSImp* view, float left, float top)
     float bt = tb + getPaddingHeight();
     float bb = bt + borderBottom;
 
-    if (backgroundColor != 0x00000000) {
+    if (backgroundColor) {
         glColor4ub(backgroundColor >> 16, backgroundColor >> 8, backgroundColor, backgroundColor >> 24);
         glBegin(GL_QUADS);
             if (getParentBox()) {
@@ -614,8 +614,70 @@ void LineBox::render(ViewCSSImp* view, StackingContext* stackingContext)
     }
 }
 
+void InlineLevelBox::renderParentBorder(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle)
+{
+    unsigned backgroundColor = parentStyle->backgroundColor.getARGB();
+    if (!backgroundColor)
+        return;
+
+    InlineLevelBox* text = dynamic_cast<InlineLevelBox*>(parentStyle->getBox());
+    if (!text)  // TODO: Deal with empty inline boxes.
+        return;
+
+    LineBox* lineBox = dynamic_cast<LineBox*>(getParentBox());
+    assert(lineBox);
+
+    glDisable(GL_TEXTURE_2D);
+
+    float top = lineBox->getY() + parentStyle->verticalAlign.getOffset(lineBox, text);
+    top -= text->paddingTop + text->borderTop;
+    float bottom = top + text->getBorderHeight();
+    glColor4ub(backgroundColor >> 16, backgroundColor >> 8, backgroundColor, backgroundColor >> 24);
+    glBegin(GL_QUADS);
+        glVertex2f(x, top);
+        glVertex2f(x + getTotalWidth(), top);
+        glVertex2f(x + getTotalWidth(), bottom);
+        glVertex2f(x, bottom);
+    glEnd();
+
+    // TODO: background-image
+
+    if (text->borderTop)
+        renderBorderEdge(view, TOP,
+                         parentStyle->borderTopStyle.getValue(),
+                         parentStyle->borderTopColor.getARGB(),
+                         x, top,
+                         x + getTotalWidth(), top,
+                         x + getTotalWidth(), top + text->borderTop,
+                         x, top + text->borderTop);
+    if (text->borderBottom)
+        renderBorderEdge(view, BOTTOM,
+                         parentStyle->borderBottomStyle.getValue(),
+                         parentStyle->borderBottomColor.getARGB(),
+                         x, bottom - text->borderBottom,
+                         x + getTotalWidth(), bottom - text->borderBottom,
+                         x + getTotalWidth(), bottom,
+                         x, bottom);
+
+    // TODO: left and right edge cases
+
+    glEnable(GL_TEXTURE_2D);
+}
+
 void InlineLevelBox::render(ViewCSSImp* view, StackingContext* stackingContext)
 {
+    if (!isAnonymous()) {
+        std::list<CSSStyleDeclarationImp*> parentStyleList;
+        for (CSSStyleDeclarationImp* parentStyle = getStyle()->getParentStyle();
+            parentStyle && parentStyle->display.isInline();
+            parentStyle = parentStyle->getParentStyle())
+        {
+            parentStyleList.push_front(parentStyle);
+        }
+        for (auto i = parentStyleList.begin(); i != parentStyleList.end(); ++i)
+            renderParentBorder(view, *i);
+    }
+
     assert(stackingContext);
     if (font)
         renderBorder(view, x, y - getBlankTop());
