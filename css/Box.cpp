@@ -431,7 +431,7 @@ void BlockLevelBox::resolveNormalWidth(float w, float r)
     int autoCount = 3;
     unsigned autoMask = Left | Width | Right;
     if (style) {
-        if (style->isFloat() || style->isInlineBlock())
+        if (style->isFloat() || style->display.isInlineLevel())
             return resolveFloatWidth(w, r);
         if (intrinsic) {
             --autoCount;
