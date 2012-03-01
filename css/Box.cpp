@@ -545,7 +545,7 @@ void BlockLevelBox::layOutInlineLevelBox(ViewCSSImp* view, Node node, Formatting
     BlockLevelBox* inlineBlock = view->layOutBlockBoxes(element, 0, 0, 0, true);
     if (!inlineBlock)
         return;  // TODO error
-
+    inlineBlock->establishFormattingContext();
     inlineLevelBox->appendChild(inlineBlock);
     inlineBlock->layOut(view, context);
     inlineLevelBox->width = inlineBlock->getTotalWidth();
@@ -849,7 +849,7 @@ bool BlockLevelBox::isCollapsableOutside() const
     if (!isInFlow())
         return false;
     if (!isAnonymous() && style) {
-        if (style->isInlineBlock() || style->display.getValue() == CSSDisplayValueImp::TableCell)
+        if (style->display.isInlineLevel() || style->display.getValue() == CSSDisplayValueImp::TableCell)
             return false;
     }
     return true;
