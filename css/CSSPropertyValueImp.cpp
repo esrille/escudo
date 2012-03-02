@@ -1713,6 +1713,33 @@ void CSSVerticalAlignValueImp::resolve(ViewCSSImp* view, CSSStyleDeclarationImp*
     value.resolve(view, style, style->lineHeight.getPx());
 }
 
+float CSSVerticalAlignValueImp::getOffset(LineBox* line, FontTexture* font, float point, float leading) const
+{
+    leading /= 2.0f;
+    // TODO: Check if there is a parent inline element firstly.
+    switch (value.getIndex()) {
+    case Top:
+        return 0.0f;
+    case Baseline:
+        return line->getBaseline() - (leading + font->getAscender(point));
+    case Middle:
+        return line->getBaseline() - (font->getLineHeight(point) / 2.0f);
+    case Bottom:
+        return line->getHeight() - font->getLineHeight(point);
+    case Sub:
+        return line->getBaseline() - (leading + font->getAscender(point)) + font->getSub(point);
+    case Super:
+        return line->getBaseline() - (leading + font->getAscender(point)) - font->getSuper(point);
+    case TextTop:
+        return 0.0f;
+    case TextBottom:
+        return line->getHeight() - font->getLineHeight(point);
+    default:
+        assert(value.unit == css::CSSPrimitiveValue::CSS_PX);
+        return line->getBaseline() - (leading + font->getAscender(point)) - value.getPx();
+    }
+}
+
 float CSSVerticalAlignValueImp::getOffset(LineBox* line, InlineLevelBox* text) const
 {
     float leading = text->getLeading() / 2.0f;

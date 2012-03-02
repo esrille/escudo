@@ -32,6 +32,8 @@
 #include "CSSValueParser.h"
 #include "CSSSerialize.h"
 
+class FontTexture;
+
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class ContainingBlock;
@@ -2115,6 +2117,7 @@ public:
     }
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style);
+    float getOffset(LineBox* line, FontTexture* font, float point, float leading) const;
     float getOffset(LineBox* line, InlineLevelBox* text) const;
     CSSVerticalAlignValueImp() :
         value(Baseline) {
