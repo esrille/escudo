@@ -741,7 +741,6 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
                 collapsed = false;
             } else if (!isReplacedElement(element) && style->display.isInline()) {
                 // empty inline element
-                assert(!element.hasChildNodes());
                 if (layOutText(view, node, context, u"", element, style))
                     collapsed = false;
             } else {

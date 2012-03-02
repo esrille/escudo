@@ -244,11 +244,17 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
     // the inline box to be generated must not be collapsed away by returning false.
     // cf. 10.8 Line height calculations: the ’line-height’ and ’vertical-align’ properties
     bool discardable = !data.empty();
+    if (discardable && style->display.isInline()) {
+        if (element.getFirstChild() == text && (style->marginLeft.getPx() || style->borderLeftWidth.getPx() || style->paddingLeft.getPx()) ||
+            element.getLastChild() == text && (style->marginRight.getPx() || style->borderRightWidth.getPx() || style->paddingRight.getPx()))
+            discardable = false;
+    }
 
-    if (style->processWhiteSpace(data, context->prevChar) == 0 && discardable) {
+    if (style->processWhiteSpace(data, context->prevChar) == 0) {
         if (!context->atLineHead && style->whiteSpace.isBreakingLines())
             context->breakable = true;
-        return !isAnonymous();
+        if (discardable)
+            return !isAnonymous();
     }
 
     bool psuedoChecked = isAnonymous() && getParentBox()->getFirstChild() != this;
@@ -263,9 +269,9 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
     InlineLevelBox* inlineBox = 0;
     InlineLevelBox* wrapBox = 0;    // characters moved to the next line
     for (;;) {
-        if (context->atLineHead && discardable && !wrapBox) {
+        if (context->atLineHead && !wrapBox) {
             size_t next = style->processLineHeadWhiteSpace(data, position);
-            if (position != next && data.length() <= next)
+            if (position != next && data.length() <= next && discardable)
                 return !isAnonymous();
             position = next;
         }
@@ -442,13 +448,13 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
             inlineBox->setData(font, point, inlineData, wrap - position, wrapWidth);
             inlineBox->width += advanced;
             position = next;
-        }
 
-        if (firstLetterStyle || data.length() <= position && isAtRightEdge(element, text))
-            inlineBox->width -= blankRight;
-        else {
-            inlineBox->clearBlankRight();
-            blankRight = 0;
+            if (firstLetterStyle || data.length() <= position && isAtRightEdge(element, text))
+                inlineBox->width -= blankRight;
+            else {
+                inlineBox->clearBlankRight();
+                blankRight = 0;
+            }
         }
 
         while (wrapBox) {
@@ -620,7 +626,7 @@ void LineBox::dump(std::string indent)
         child->dump(indent);
 }
 
-void InlineLevelBox::setData(FontTexture* font, float point, std::u16string data, size_t wrap, float wrapWidth)
+void InlineLevelBox::setData(FontTexture* font, float point, const std::u16string& data, size_t wrap, float wrapWidth)
 {
     assert(data[0] != 0 || data.empty());
     this->font = font;

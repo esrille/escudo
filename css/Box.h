@@ -875,7 +875,7 @@ public:
 
     void resolveWidth();
     virtual void resolveOffset(ViewCSSImp* view);
-    void setData(FontTexture* font, float point, std::u16string data, size_t wrap, float wrapWidth);
+    void setData(FontTexture* font, float point, const std::u16string& data, size_t wrap, float wrapWidth);
     const std::u16string& getData() const {
         return data;
     }

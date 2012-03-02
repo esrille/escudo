@@ -259,10 +259,19 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Node node, BlockLevelBox* parentBox,
 
 BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Text text, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSAutoNumberingValueImp::CounterContext* counterContext)
 {
+    bool discardable = true;
+    if (style->display.isInline()) {
+        Element element = interface_cast<Element>(text.getParentNode());
+        assert(element);
+        if (element.getFirstChild() == text && (style->marginLeft.getPx() || style->borderLeftWidth.getPx() || style->paddingLeft.getPx()) ||
+            element.getLastChild() == text && (style->marginRight.getPx() || style->borderRightWidth.getPx() || style->paddingRight.getPx()))
+            discardable = false;
+    }
+
     if (!parentBox || !style)
         return 0;
     if (!parentBox->hasChildBoxes()) {
-        if (!parentBox->hasInline() && style->whiteSpace.isCollapsingSpace()) {
+        if (discardable && !parentBox->hasInline() && style->whiteSpace.isCollapsingSpace()) {
             std::u16string data = text.getData();
             if (data.length() <= style->processLineHeadWhiteSpace(data, 0))
                 return 0;
@@ -275,7 +284,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Text text, BlockLevelBox* parentBox,
             table->processTableChild(text, style);
         return 0;
     }
-    if (!style->display.isInline() && !parentBox->hasAnonymousBox()) {
+    if (discardable && !style->display.isInline() && !parentBox->hasAnonymousBox()) {
         // cf. http://www.w3.org/TR/CSS2/visuren.html#anonymous
         // White space content that would subsequently be collapsed
         // away according to the 'white-space' property does not
@@ -447,7 +456,25 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
     }
 
     if (!dynamic_cast<TableWrapperBox*>(currentBox)) {
-        bool emptyInline = style->display.isInline() && !element.hasChildNodes() && !isReplacedElement(element);
+        bool emptyInlineAtFirst = false;
+        bool emptyInlineAtLast = false;
+        if (style->display.isInline() && !isReplacedElement(element)) {
+            // Empty inline elements still have margins, padding, borders and a line height. cf. 10.8
+            if (!element.hasChildNodes())
+                emptyInlineAtFirst = true;
+            else {
+                if (style->marginLeft.getPx() || style->borderLeftWidth.getPx() || style->paddingLeft.getPx()) {
+                    Node child = element.getFirstChild();
+                    if (child.getNodeType() != Node::TEXT_NODE)
+                        emptyInlineAtFirst = true;
+                }
+                if (style->marginRight.getPx() || style->borderRightWidth.getPx() || style->paddingRight.getPx()) {
+                    Node child = element.getLastChild();
+                    if (child.getNodeType() != Node::TEXT_NODE)
+                        emptyInlineAtLast = true;
+                }
+            }
+        }
         BlockLevelBox* childBox = 0;
 
         CSSAutoNumberingValueImp::CounterContext ccPseudo(this);
@@ -476,7 +503,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
                     counter->increment(1);
                 ccPseudo.update(markerStyle);
                 if (Element marker = markerStyle->content.eval(this, element, &cc)) {
-                    emptyInline = false;
+                    emptyInlineAtFirst = false;
                     map[marker] = markerStyle;
                     if (BlockLevelBox* box = layOutBlockBoxes(marker, currentBox, style, &cc))
                         childBox = box;
@@ -490,12 +517,19 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
             if (!beforeStyle->content.isNone()) {
                 ccPseudo.update(beforeStyle);
                 if (Element before = beforeStyle->content.eval(this, element, &cc)) {
-                    emptyInline = false;
+                    emptyInlineAtFirst = false;
                     map[before] = beforeStyle;
                     if (BlockLevelBox* box = layOutBlockBoxes(before, currentBox, style, &cc))
                         childBox = box;
                 }
             }
+        }
+
+        if (emptyInlineAtFirst) {
+            if (!currentBox->hasChildBoxes())
+                currentBox->insertInline(element);
+            else if (BlockLevelBox* anonymousBox = currentBox->getAnonymousBox())
+                anonymousBox->insertInline(element);
         }
 
         TableWrapperBox* tableWrapperBox = 0;
@@ -510,23 +544,24 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
         if (tableWrapperBox && tableWrapperBox->isAnonymousTableObject())
             tableWrapperBox->layOutBlockBoxes();
 
+        if (emptyInlineAtLast) {
+            if (!currentBox->hasChildBoxes())
+                currentBox->insertInline(element);
+            else if (BlockLevelBox* anonymousBox = currentBox->getAnonymousBox())
+                anonymousBox->insertInline(element);
+        }
+
         CSSStyleDeclarationImp* afterStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::After);
         if (afterStyle) {
             afterStyle->compute(this, style, element);
             if (!afterStyle->content.isNone()) {
                 ccPseudo.update(afterStyle);
                 if (Element after = afterStyle->content.eval(this, element, &cc)) {
-                    emptyInline = false;
                     map[after] = afterStyle;
                     if (BlockLevelBox* box = layOutBlockBoxes(after, currentBox, style, &cc))
                         childBox = box;
                 }
             }
-        }
-
-        if (emptyInline) {
-            // Empty inline elements still have margins, padding, borders and a line height. cf. 10.8
-            layOutBlockBoxes(Text(element.self()), currentBox, style, &cc);
         }
     }
 
