@@ -43,16 +43,26 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 namespace {
 
-// TODO: there might not be such a text node that 'element.getFirstChild() == node'.
-bool isAtLeftEdge(Element& element, Node& node)
+bool isAtLeftEdge(Element& element, Node& node, CSSStyleDeclarationImp* style)
 {
-    return element == node || element.getFirstChild() == node;
+    if (element != node)
+        return element.getFirstChild() == node;
+    if (!element.hasChildNodes())
+        return true;
+    return !style->getBox();
 }
 
-// TODO: there might not be such a text node that 'element.getLastNode() == node'.
-bool isAtRightEdge(Element& element, Node& node)
+bool isAtRightEdge(Element& element, Node& node, CSSStyleDeclarationImp* style)
 {
-    return element == node || element.getLastChild() == node;
+    if (element != node)
+        return element.getLastChild() == node;
+    if (!element.hasChildNodes())
+        return true;
+    if (style->getBox())
+        return true;
+    if (style->marginLeft.getPx() || style->borderLeftWidth.getPx() || style->paddingLeft.getPx())
+        return false;
+    return true;
 }
 
 CSSStyleDeclarationImp* setActiveStyle(ViewCSSImp* view, CSSStyleDeclarationImp* style, FontTexture*& font, float& point)
@@ -313,9 +323,8 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
             inlineBox = new(std::nothrow) InlineLevelBox(text, activeStyle);
             if (!inlineBox)
                 return false;  // TODO error
-            style->addBox(inlineBox);  // activeStyle? maybe not...
             inlineBox->resolveWidth();
-            if (0 < position || !isAtLeftEdge(element, text))
+            if (0 < position || !isAtLeftEdge(element, text, style))
                 inlineBox->clearBlankLeft();
         } else {
             inlineBox->setStyle(activeStyle);
@@ -333,7 +342,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
 
         if (data.empty()) {
             inlineBox->setData(font, point, data, 0, 0);
-            if (!isAtRightEdge(element, text)) {
+            if (!isAtRightEdge(element, text, style)) {
                 inlineBox->clearBlankRight();
                 blankRight = 0;
             }
@@ -369,7 +378,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                 float w = measureText(view, activeStyle, p, next - wrap, point, isFirstCharacter, glyph, transformed);
                 p += next - wrap;
                 isFirstCharacter = true;
-                if (firstLetterStyle || data.length() <= next && isAtRightEdge(element, text))
+                if (firstLetterStyle || data.length() <= next && isAtRightEdge(element, text, style))
                     w += blankRight;
                 while (context->leftover < w && (context->breakable || activeStyle->whiteSpace.isBreakingLines())) {
                     if (activeStyle->whiteSpace.isCollapsingSpace() && 0 < transformed.length() && transformed[transformed.length() - 1] == u' ') {
@@ -453,7 +462,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
             inlineBox->width += advanced;
             position = next;
 
-            if (firstLetterStyle || data.length() <= position && isAtRightEdge(element, text))
+            if (firstLetterStyle || data.length() <= position && isAtRightEdge(element, text, style))
                 inlineBox->width -= blankRight;
             else {
                 inlineBox->clearBlankRight();
@@ -480,6 +489,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
         // Switch height from 'line-height' to the content height.
         if (inlineBox->hasHeight())
             inlineBox->height = font->getLineHeight(point);
+        style->addBox(inlineBox);  // activeStyle? maybe not...
         if (data.length() <= position) {  // layout done?
             if (linefeed)
                 context->nextLine(view, this, linefeed);
