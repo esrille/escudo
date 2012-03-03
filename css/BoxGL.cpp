@@ -654,7 +654,8 @@ void InlineLevelBox::renderMultipleBackground(ViewCSSImp* view)
         float baseline = lineBox->getY() + lineBox->getBaseline();
         for (;;) {
             lineBox = dynamic_cast<LineBox*>(lineBox->getNextSibling());
-            assert(lineBox);
+            if (!lineBox)   // TODO: Check how this condition becomes true; cf. block-in-inline-001.
+                break;
             head = tail = 0;
             for (box = lineBox->getFirstChild(); box; box = box->getNextSibling()) {
                 if (InlineLevelBox* i = dynamic_cast<InlineLevelBox*>(box)) {
@@ -697,6 +698,7 @@ void InlineLevelBox::renderEmptyBox(ViewCSSImp* view, CSSStyleDeclarationImp* pa
         leading = std::max(lineBox->getStyle()->lineHeight.getPx(), parentStyle->lineHeight.getPx()) - font->getLineHeight(point);
         top += parentStyle->verticalAlign.getOffset(lineBox, font, point, leading);
     }
+    top -= parentStyle->marginTop.getPx() + parentStyle->paddingTop.getPx() + parentStyle->borderTopWidth.getPx();
 
     Box* box;
     InlineLevelBox* head;
