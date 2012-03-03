@@ -475,8 +475,15 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
                 }
             }
         }
-        BlockLevelBox* childBox = 0;
 
+        if (emptyInlineAtFirst) {
+            if (!currentBox->hasChildBoxes())
+                currentBox->insertInline(element);
+            else if (BlockLevelBox* anonymousBox = currentBox->getAnonymousBox())
+                anonymousBox->insertInline(element);
+        }
+
+        BlockLevelBox* childBox = 0;
         CSSAutoNumberingValueImp::CounterContext ccPseudo(this);
 
         CSSStyleDeclarationImp* markerStyle = 0;
@@ -503,7 +510,6 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
                     counter->increment(1);
                 ccPseudo.update(markerStyle);
                 if (Element marker = markerStyle->content.eval(this, element, &cc)) {
-                    emptyInlineAtFirst = false;
                     map[marker] = markerStyle;
                     if (BlockLevelBox* box = layOutBlockBoxes(marker, currentBox, style, &cc))
                         childBox = box;
@@ -517,19 +523,11 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
             if (!beforeStyle->content.isNone()) {
                 ccPseudo.update(beforeStyle);
                 if (Element before = beforeStyle->content.eval(this, element, &cc)) {
-                    emptyInlineAtFirst = false;
                     map[before] = beforeStyle;
                     if (BlockLevelBox* box = layOutBlockBoxes(before, currentBox, style, &cc))
                         childBox = box;
                 }
             }
-        }
-
-        if (emptyInlineAtFirst) {
-            if (!currentBox->hasChildBoxes())
-                currentBox->insertInline(element);
-            else if (BlockLevelBox* anonymousBox = currentBox->getAnonymousBox())
-                anonymousBox->insertInline(element);
         }
 
         TableWrapperBox* tableWrapperBox = 0;
@@ -544,13 +542,6 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
         if (tableWrapperBox && tableWrapperBox->isAnonymousTableObject())
             tableWrapperBox->layOutBlockBoxes();
 
-        if (emptyInlineAtLast) {
-            if (!currentBox->hasChildBoxes())
-                currentBox->insertInline(element);
-            else if (BlockLevelBox* anonymousBox = currentBox->getAnonymousBox())
-                anonymousBox->insertInline(element);
-        }
-
         CSSStyleDeclarationImp* afterStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::After);
         if (afterStyle) {
             afterStyle->compute(this, style, element);
@@ -562,6 +553,13 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
                         childBox = box;
                 }
             }
+        }
+
+        if (emptyInlineAtLast) {
+            if (!currentBox->hasChildBoxes())
+                currentBox->insertInline(element);
+            else if (BlockLevelBox* anonymousBox = currentBox->getAnonymousBox())
+                anonymousBox->insertInline(element);
         }
     }
 
