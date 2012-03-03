@@ -331,9 +331,13 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
         bool linefeed = false;
         float advanced = 0.0f;
 
-        if (data.empty())
+        if (data.empty()) {
             inlineBox->setData(font, point, data, 0, 0);
-        else if (data[position] == '\n') {
+            if (!isAtRightEdge(element, text)) {
+                inlineBox->clearBlankRight();
+                blankRight = 0;
+            }
+        } else if (data[position] == '\n') {
             ++position;
             linefeed = true;
         } else {
