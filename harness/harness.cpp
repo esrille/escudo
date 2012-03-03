@@ -292,10 +292,8 @@ int main(int argc, char* argv[])
                 result = "uncertain";
             else
                 result = evaluation;
-            std::cout << url << '\t' << result << '\n';
         } else if (mode == REPORT) {
             result = evaluation;
-            std::cout << url << '\t' << result << '\n';
         } else if (mode == UPDATE) {
             result = evaluation;
             if (result[0] != '?') {
@@ -303,7 +301,6 @@ int main(int argc, char* argv[])
                     std::cerr << "error: failed to open the report file\n";
                     return EXIT_FAILURE;
                 }
-                std::cout << url << '\t' << result << '\n';
             }
         }
 
@@ -312,6 +309,8 @@ int main(int argc, char* argv[])
 
         if (result != "undo")
             report << url << '\t' << result << '\n';
+        if (mode != INTERACTIVE && result[0] != '?')
+            std::cout << url << '\t' << result << '\n';
     }
     report.close();
 }
