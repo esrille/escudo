@@ -411,6 +411,10 @@ BlockLevelBox* ViewCSSImp::createBlockLevelBox(Element element, BlockLevelBox* p
 
 BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* parentBox, CSSStyleDeclarationImp* parentStyle, CSSAutoNumberingValueImp::CounterContext* counterContext, bool asBlock)
 {
+#ifndef NDEBUG
+    std::u16string tag = interface_cast<html::HTMLElement>(element).getTagName();
+#endif
+
     CSSStyleDeclarationImp* style = map[element].get();
     if (!style || style->display.isNone())
         return 0;
@@ -436,7 +440,8 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
         // Create a temporary block-level box for the run-in box, too.
         element = expandBinding(element, style);
         if (parentBox->hasInline()) {
-            if (!parentBox->getAnonymousBox())
+            BlockLevelBox* anon = parentBox->getAnonymousBox();
+            if (!anon)
                 return 0;
             assert(!parentBox->hasInline());
         }
@@ -456,36 +461,6 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
     }
 
     if (!dynamic_cast<TableWrapperBox*>(currentBox)) {
-        bool emptyInlineAtFirst = false;
-        bool emptyInlineAtLast = false;
-        if (style->display.isInline() && !isReplacedElement(element)) {
-            // Empty inline elements still have margins, padding, borders and a line height. cf. 10.8
-            if (!element.hasChildNodes())
-                emptyInlineAtFirst = true;
-            else {
-                if (style->marginLeft.getPx() || style->borderLeftWidth.getPx() || style->paddingLeft.getPx()) {
-                    Node child = element.getFirstChild();
-                    if (child.getNodeType() != Node::TEXT_NODE)
-                        emptyInlineAtFirst = true;
-                }
-                if (style->marginRight.getPx() || style->borderRightWidth.getPx() || style->paddingRight.getPx()) {
-                    Node child = element.getLastChild();
-                    if (child.getNodeType() != Node::TEXT_NODE)
-                        emptyInlineAtLast = true;
-                }
-            }
-        }
-
-        if (emptyInlineAtFirst) {
-            if (!currentBox->hasChildBoxes())
-                currentBox->insertInline(element);
-            else if (BlockLevelBox* anonymousBox = currentBox->getAnonymousBox())
-                anonymousBox->insertInline(element);
-        }
-
-        BlockLevelBox* childBox = 0;
-        CSSAutoNumberingValueImp::CounterContext ccPseudo(this);
-
         CSSStyleDeclarationImp* markerStyle = 0;
         if (style->display.isListItem()) {
             markerStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::Marker);
@@ -503,30 +478,75 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
         }
         if (markerStyle) {
             markerStyle->compute(this, style, element);
-            if (!markerStyle->content.isNone()) {
-                // Execute implicit 'counter-increment: list-item;'
-                CounterImpPtr counter = getCounter(u"list-item");
-                if (counter)
-                    counter->increment(1);
-                ccPseudo.update(markerStyle);
-                if (Element marker = markerStyle->content.eval(this, element, &cc)) {
-                    map[marker] = markerStyle;
-                    if (BlockLevelBox* box = layOutBlockBoxes(marker, currentBox, style, &cc))
-                        childBox = box;
+            if (markerStyle->content.isNone())
+                markerStyle = 0;
+        }
+        CSSStyleDeclarationImp* beforeStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::Before);
+        if (beforeStyle) {
+            beforeStyle->compute(this, style, element);
+            if (beforeStyle->content.isNone())
+                beforeStyle = 0;
+        }
+        CSSStyleDeclarationImp* afterStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::After);
+        if (afterStyle) {
+            afterStyle->compute(this, style, element);
+            if (afterStyle->content.isNone())
+                afterStyle = 0;
+        }
+
+        bool emptyInlineAtFirst = false;
+        bool emptyInlineAtLast = false;
+        if (style->display.isInline() && !isReplacedElement(element)) {
+            // Empty inline elements still have margins, padding, borders and a line height. cf. 10.8
+            if (!element.hasChildNodes() && !markerStyle && !beforeStyle && !afterStyle)
+                emptyInlineAtFirst = true;
+            else {
+                if (markerStyle || beforeStyle)
+                    emptyInlineAtFirst = true;
+                else if (style->marginLeft.getPx() || style->borderLeftWidth.getPx() || style->paddingLeft.getPx()) {
+                    Node child = element.getFirstChild();
+                    if (child.getNodeType() != Node::TEXT_NODE)
+                        emptyInlineAtFirst = true;
+                }
+                if (afterStyle)
+                    emptyInlineAtLast = true;
+                else if (style->marginRight.getPx() || style->borderRightWidth.getPx() || style->paddingRight.getPx()) {
+                    Node child = element.getLastChild();
+                    if (child.getNodeType() != Node::TEXT_NODE)
+                        emptyInlineAtLast = true;
                 }
             }
         }
 
-        CSSStyleDeclarationImp* beforeStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::Before);
+        if (emptyInlineAtFirst) {
+            if (!currentBox->hasChildBoxes())
+                currentBox->insertInline(element);
+            else if (BlockLevelBox* anonymousBox = currentBox->getAnonymousBox())
+                anonymousBox->insertInline(element);
+        }
+
+        BlockLevelBox* childBox = 0;
+        CSSAutoNumberingValueImp::CounterContext ccPseudo(this);
+
+        if (markerStyle) {
+            // Execute implicit 'counter-increment: list-item;'
+            CounterImpPtr counter = getCounter(u"list-item");
+            if (counter)
+                counter->increment(1);
+            ccPseudo.update(markerStyle);
+            if (Element marker = markerStyle->content.eval(this, element, &cc)) {
+                map[marker] = markerStyle;
+                if (BlockLevelBox* box = layOutBlockBoxes(marker, currentBox, style, &cc))
+                    childBox = box;
+            }
+        }
+
         if (beforeStyle) {
-            beforeStyle->compute(this, style, element);
-            if (!beforeStyle->content.isNone()) {
-                ccPseudo.update(beforeStyle);
-                if (Element before = beforeStyle->content.eval(this, element, &cc)) {
-                    map[before] = beforeStyle;
-                    if (BlockLevelBox* box = layOutBlockBoxes(before, currentBox, style, &cc))
-                        childBox = box;
-                }
+            ccPseudo.update(beforeStyle);
+            if (Element before = beforeStyle->content.eval(this, element, &cc)) {
+                map[before] = beforeStyle;
+                if (BlockLevelBox* box = layOutBlockBoxes(before, currentBox, style, &cc))
+                    childBox = box;
             }
         }
 
@@ -542,16 +562,12 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
         if (tableWrapperBox && tableWrapperBox->isAnonymousTableObject())
             tableWrapperBox->layOutBlockBoxes();
 
-        CSSStyleDeclarationImp* afterStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::After);
         if (afterStyle) {
-            afterStyle->compute(this, style, element);
-            if (!afterStyle->content.isNone()) {
-                ccPseudo.update(afterStyle);
-                if (Element after = afterStyle->content.eval(this, element, &cc)) {
-                    map[after] = afterStyle;
-                    if (BlockLevelBox* box = layOutBlockBoxes(after, currentBox, style, &cc))
-                        childBox = box;
-                }
+            ccPseudo.update(afterStyle);
+            if (Element after = afterStyle->content.eval(this, element, &cc)) {
+                map[after] = afterStyle;
+                if (BlockLevelBox* box = layOutBlockBoxes(after, currentBox, style, &cc))
+                    childBox = box;
             }
         }
 
