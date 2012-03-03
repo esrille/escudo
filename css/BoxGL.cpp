@@ -653,9 +653,22 @@ void InlineLevelBox::renderMultipleBackground(ViewCSSImp* view)
         assert(lineBox);
         float baseline = lineBox->getY() + lineBox->getBaseline();
         for (;;) {
-            lineBox = dynamic_cast<LineBox*>(lineBox->getNextSibling());
-            if (!lineBox)   // TODO: Check how this condition becomes true; cf. block-in-inline-001.
-                break;
+            LineBox* nextLine = dynamic_cast<LineBox*>(lineBox->getNextSibling());
+            if (!nextLine) {
+                // This is a line box in an anonymous block. The last box should be in
+                // one of the following anonymous block(s).
+                BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(lineBox->getParentBox());
+                assert(block);
+                while (block = dynamic_cast<BlockLevelBox*>(block->getNextSibling())) {
+                    if (block->isAnonymous()) {
+                        nextLine = dynamic_cast<LineBox*>(block->getFirstChild());
+                        if (nextLine)
+                            break;
+                    }
+                }
+            }
+            lineBox = nextLine;
+            assert(lineBox);
             head = tail = 0;
             for (box = lineBox->getFirstChild(); box; box = box->getNextSibling()) {
                 if (InlineLevelBox* i = dynamic_cast<InlineLevelBox*>(box)) {
@@ -732,8 +745,21 @@ void InlineLevelBox::renderEmptyBox(ViewCSSImp* view, CSSStyleDeclarationImp* pa
                      ll, lr, rl, rr, tt, tb, bt, bb, this, 0);
         float baseline = lineBox->getY() + lineBox->getBaseline();
         for (;;) {
-            lineBox = dynamic_cast<LineBox*>(lineBox->getNextSibling());
-            assert(lineBox);
+            LineBox* nextLine = dynamic_cast<LineBox*>(lineBox->getNextSibling());
+            if (!nextLine) {
+                // This is a line box in an anonymous block. The last box should be in
+                // one of the following anonymous block(s).
+                BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(lineBox->getParentBox());
+                assert(block);
+                while (block = dynamic_cast<BlockLevelBox*>(block->getNextSibling())) {
+                    if (block->isAnonymous()) {
+                        nextLine = dynamic_cast<LineBox*>(block->getFirstChild());
+                        if (nextLine)
+                            break;
+                    }
+                }
+            }
+            lineBox = nextLine;
             head = tail = 0;
             for (box = lineBox->getFirstChild(); box; box = box->getNextSibling()) {
                 if (InlineLevelBox* i = dynamic_cast<InlineLevelBox*>(box)) {
