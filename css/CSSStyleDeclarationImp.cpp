@@ -3037,6 +3037,7 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp(int pseudoElementSelectorType) :
     fontTexture(0),
     propertyID(Unknown),
     expression(0),
+    emptyInline(0),
     pseudoElementSelectorType(pseudoElementSelectorType),
     backgroundColor(CSSColorValueImp::Transparent),
     counterIncrement(1),

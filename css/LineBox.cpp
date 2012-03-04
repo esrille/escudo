@@ -43,28 +43,6 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 namespace {
 
-bool isAtLeftEdge(Element& element, Node& node, CSSStyleDeclarationImp* style)
-{
-    if (element != node)
-        return element.getFirstChild() == node;
-    if (!element.hasChildNodes())
-        return true;
-    return !style->getBox();
-}
-
-bool isAtRightEdge(Element& element, Node& node, CSSStyleDeclarationImp* style)
-{
-    if (element != node)
-        return element.getLastChild() == node;
-    if (!element.hasChildNodes())
-        return true;
-    if (style->getBox())
-        return true;
-    if (style->marginLeft.getPx() || style->borderLeftWidth.getPx() || style->paddingLeft.getPx())
-        return false;
-    return true;
-}
-
 CSSStyleDeclarationImp* setActiveStyle(ViewCSSImp* view, CSSStyleDeclarationImp* style, FontTexture*& font, float& point)
 {
     font = style->getFontTexture();
@@ -324,7 +302,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
             if (!inlineBox)
                 return false;  // TODO error
             inlineBox->resolveWidth();
-            if (0 < position || !isAtLeftEdge(element, text, style))
+            if (0 < position || !inlineBox->isEmptyInlineAtFirst(style, element, text))
                 inlineBox->clearBlankLeft();
         } else {
             inlineBox->setStyle(activeStyle);
@@ -342,7 +320,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
 
         if (data.empty()) {
             inlineBox->setData(font, point, data, 0, 0);
-            if (!isAtRightEdge(element, text, style)) {
+            if (!inlineBox->isEmptyInlineAtLast(style, element, text)) {
                 inlineBox->clearBlankRight();
                 blankRight = 0;
             }
@@ -378,7 +356,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                 float w = measureText(view, activeStyle, p, next - wrap, point, isFirstCharacter, glyph, transformed);
                 p += next - wrap;
                 isFirstCharacter = true;
-                if (firstLetterStyle || data.length() <= next && isAtRightEdge(element, text, style))
+                if (firstLetterStyle || data.length() <= next && inlineBox->isEmptyInlineAtLast(style, element, text))
                     w += blankRight;
                 while (context->leftover < w && (context->breakable || activeStyle->whiteSpace.isBreakingLines())) {
                     if (activeStyle->whiteSpace.isCollapsingSpace() && 0 < transformed.length() && transformed[transformed.length() - 1] == u' ') {
@@ -462,7 +440,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
             inlineBox->width += advanced;
             position = next;
 
-            if (firstLetterStyle || data.length() <= position && isAtRightEdge(element, text, style))
+            if (firstLetterStyle || data.length() <= position && inlineBox->isEmptyInlineAtLast(style, element, text))
                 inlineBox->width -= blankRight;
             else {
                 inlineBox->clearBlankRight();
@@ -638,6 +616,37 @@ void LineBox::dump(std::string indent)
     indent += "  ";
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
         child->dump(indent);
+}
+
+InlineLevelBox::InlineLevelBox(Node node, CSSStyleDeclarationImp* style) :
+    Box(node),
+    font(0),
+    point(0.0f),
+    baseline(0.0f),
+    leading(0.0f),
+    wrap(0),
+    wrapWidth(0.0f),
+    emptyInline(0)
+{
+    setStyle(style);
+}
+
+bool InlineLevelBox::isEmptyInlineAtFirst(CSSStyleDeclarationImp* style, Element& element, Node& node)
+{
+    if (element != node)
+        return element.getFirstChild() == node;
+    if (!emptyInline)
+        emptyInline = style->checkEmptyInline();
+    return (emptyInline & 1) || emptyInline == 4;
+}
+
+bool InlineLevelBox::isEmptyInlineAtLast(CSSStyleDeclarationImp* style, Element& element, Node& node)
+{
+    if (element != node)
+        return element.getLastChild() == node;
+    if (!emptyInline)
+        emptyInline = style->checkEmptyInline();
+    return !(emptyInline & 1) && ((emptyInline & 2) || emptyInline == 4);
 }
 
 void InlineLevelBox::setData(FontTexture* font, float point, const std::u16string& data, size_t wrap, float wrapWidth)

@@ -244,6 +244,8 @@ private:
     int pseudoElementSelectorType;
     CSSStyleDeclarationPtr pseudoElements[CSSPseudoElementSelector::MaxPseudoElements];
 
+    int emptyInline;    // 0: none, 1: first, 2: last, 3: both, 4: empty
+
     void specify(const CSSStyleDeclarationImp* decl, unsigned id);
     void specify(const CSSStyleDeclarationImp* decl, const std::bitset<PropertyCount>& set);
 
@@ -455,6 +457,12 @@ public:
         return fontTexture;
     }
     FontTexture* getAltFontTexture(ViewCSSImp* view, FontTexture* current, char32_t u);
+
+    int checkEmptyInline() {
+        int code = emptyInline;
+        emptyInline &= ~1;
+        return code;
+    }
 
     static int getPropertyID(const std::u16string& ident);
     static const char16_t* getPropertyName(int propertyID);

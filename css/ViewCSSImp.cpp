@@ -494,31 +494,30 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
                 afterStyle = 0;
         }
 
-        bool emptyInlineAtFirst = false;
-        bool emptyInlineAtLast = false;
+        style->emptyInline = 0;
         if (style->display.isInline() && !isReplacedElement(element)) {
             // Empty inline elements still have margins, padding, borders and a line height. cf. 10.8
             if (!element.hasChildNodes() && !markerStyle && !beforeStyle && !afterStyle)
-                emptyInlineAtFirst = true;
+                style->emptyInline = 4;
             else {
                 if (markerStyle || beforeStyle)
-                    emptyInlineAtFirst = true;
+                    style->emptyInline = 1;
                 else if (style->marginLeft.getPx() || style->borderLeftWidth.getPx() || style->paddingLeft.getPx()) {
                     Node child = element.getFirstChild();
                     if (child.getNodeType() != Node::TEXT_NODE)
-                        emptyInlineAtFirst = true;
+                        style->emptyInline = 1;
                 }
                 if (afterStyle)
-                    emptyInlineAtLast = true;
+                    style->emptyInline |= 2;
                 else if (style->marginRight.getPx() || style->borderRightWidth.getPx() || style->paddingRight.getPx()) {
                     Node child = element.getLastChild();
                     if (child.getNodeType() != Node::TEXT_NODE)
-                        emptyInlineAtLast = true;
+                        style->emptyInline |= 2;
                 }
             }
         }
 
-        if (emptyInlineAtFirst) {
+        if ((style->emptyInline & 1) || style->emptyInline == 4) {
             if (!currentBox->hasChildBoxes())
                 currentBox->insertInline(element);
             else if (BlockLevelBox* anonymousBox = currentBox->getAnonymousBox())
@@ -571,7 +570,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
             }
         }
 
-        if (emptyInlineAtLast) {
+        if (style->emptyInline & 2) {
             if (!currentBox->hasChildBoxes())
                 currentBox->insertInline(element);
             else if (BlockLevelBox* anonymousBox = currentBox->getAnonymousBox())

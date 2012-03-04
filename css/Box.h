@@ -803,22 +803,14 @@ class InlineLevelBox : public Box
     size_t wrap;
     float wrapWidth;
 
+    int emptyInline;    // 0: none, 1: first, 2: last, 3: both, 4: empty
+
     void renderText(ViewCSSImp* view, const std::u16string& data, float point);
     void renderMultipleBackground(ViewCSSImp* view);
     void renderEmptyBox(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle);
 
 public:
-    InlineLevelBox(Node node, CSSStyleDeclarationImp* style) :
-        Box(node),
-        font(0),
-        point(0.0f),
-        baseline(0.0f),
-        leading(0.0f),
-        wrap(0),
-        wrapWidth(0.0f)
-    {
-        setStyle(style);
-    }
+    InlineLevelBox(Node node, CSSStyleDeclarationImp* style);
 
     virtual unsigned getBoxType() const {
         return INLINE_LEVEL_BOX;
@@ -836,6 +828,9 @@ public:
     bool isInline() const {
         return style && style->display.isInline();
     }
+
+    bool isEmptyInlineAtFirst(CSSStyleDeclarationImp* style, Element& element, Node& node);
+    bool isEmptyInlineAtLast(CSSStyleDeclarationImp* style, Element& element, Node& node);
 
     void clearBlankLeft() {
         marginLeft = paddingLeft = borderLeft = 0.0f;
