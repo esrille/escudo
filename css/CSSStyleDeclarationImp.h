@@ -458,6 +458,10 @@ public:
     }
     FontTexture* getAltFontTexture(ViewCSSImp* view, FontTexture* current, char32_t u);
 
+    int getEmptyInline() const {
+        return emptyInline;
+    }
+
     int checkEmptyInline() {
         int code = emptyInline;
         emptyInline &= ~1;

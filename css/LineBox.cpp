@@ -634,7 +634,7 @@ InlineLevelBox::InlineLevelBox(Node node, CSSStyleDeclarationImp* style) :
 bool InlineLevelBox::isEmptyInlineAtFirst(CSSStyleDeclarationImp* style, Element& element, Node& node)
 {
     if (element != node)
-        return element.getFirstChild() == node;
+        return (element.getFirstChild() == node) && !(style->getEmptyInline() & 1);
     if (!emptyInline)
         emptyInline = style->checkEmptyInline();
     return (emptyInline & 1) || emptyInline == 4;
@@ -643,7 +643,7 @@ bool InlineLevelBox::isEmptyInlineAtFirst(CSSStyleDeclarationImp* style, Element
 bool InlineLevelBox::isEmptyInlineAtLast(CSSStyleDeclarationImp* style, Element& element, Node& node)
 {
     if (element != node)
-        return element.getLastChild() == node;
+        return (element.getLastChild() == node) && !(style->getEmptyInline() & 2);
     if (!emptyInline)
         emptyInline = style->checkEmptyInline();
     return !(emptyInline & 1) && ((emptyInline & 2) || emptyInline == 4);
