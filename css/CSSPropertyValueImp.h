@@ -2117,8 +2117,8 @@ public:
     }
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style);
-    float getOffset(LineBox* line, FontTexture* font, float point, float leading) const;
-    float getOffset(LineBox* line, InlineLevelBox* text) const;
+    float getOffset(ViewCSSImp* view, CSSStyleDeclarationImp* self, LineBox* line, FontTexture* font, float point, float leading) const;
+    float getOffset(ViewCSSImp* view, CSSStyleDeclarationImp* self, LineBox* line, InlineLevelBox* text) const;
     CSSVerticalAlignValueImp() :
         value(Baseline) {
     }

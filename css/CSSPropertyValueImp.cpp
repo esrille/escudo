@@ -1713,7 +1713,7 @@ void CSSVerticalAlignValueImp::resolve(ViewCSSImp* view, CSSStyleDeclarationImp*
     value.resolve(view, style, style->lineHeight.getPx());
 }
 
-float CSSVerticalAlignValueImp::getOffset(LineBox* line, FontTexture* font, float point, float leading) const
+float CSSVerticalAlignValueImp::getOffset(ViewCSSImp* view, CSSStyleDeclarationImp* self, LineBox* line, FontTexture* font, float point, float leading) const
 {
     leading /= 2.0f;
     // TODO: Check if there is a parent inline element firstly.
@@ -1722,8 +1722,17 @@ float CSSVerticalAlignValueImp::getOffset(LineBox* line, FontTexture* font, floa
         return 0.0f;
     case Baseline:
         return line->getBaseline() - (leading + font->getAscender(point));
-    case Middle:
-        return line->getBaseline() - (font->getLineHeight(point) / 2.0f);
+    case Middle: {
+        float offset = line->getBaseline() - (font->getLineHeight(point) / 2.0f);
+        if (CSSStyleDeclarationImp* parent = self->getParentStyle()) {
+            FontTexture* font = parent->getFontTexture();
+            if (!font)
+                font = view->selectFont(parent);
+            if (font)
+                offset -= font->getXHeight(view->getPointFromPx(parent->fontSize.getPx())) / 2.0f;
+        }
+        return offset;
+    }
     case Bottom:
         return line->getHeight() - font->getLineHeight(point);
     case Sub:
@@ -1740,7 +1749,7 @@ float CSSVerticalAlignValueImp::getOffset(LineBox* line, FontTexture* font, floa
     }
 }
 
-float CSSVerticalAlignValueImp::getOffset(LineBox* line, InlineLevelBox* text) const
+float CSSVerticalAlignValueImp::getOffset(ViewCSSImp* view, CSSStyleDeclarationImp* self, LineBox* line, InlineLevelBox* text) const
 {
     float leading = text->getLeading() / 2.0f;
     // TODO: Check if there is a parent inline element firstly.
@@ -1749,8 +1758,17 @@ float CSSVerticalAlignValueImp::getOffset(LineBox* line, InlineLevelBox* text) c
         return 0.0f;
     case Baseline:
         return line->getBaseline() - (leading + text->getBaseline());
-    case Middle:
-        return line->getBaseline() - (text->getHeight() / 2.0f);
+    case Middle: {
+        float offset = line->getBaseline() - (text->getHeight() / 2.0f);
+        if (CSSStyleDeclarationImp* parent = self->getParentStyle()) {
+            FontTexture* font = parent->getFontTexture();
+            if (!font)
+                font = view->selectFont(parent);
+            if (font)
+                offset -= font->getXHeight(view->getPointFromPx(parent->fontSize.getPx())) / 2.0f;
+        }
+        return offset;
+    }
     case Bottom:
         return line->getHeight() - text->getHeight();
     case Sub:

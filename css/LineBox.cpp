@@ -505,7 +505,7 @@ bool LineBox::layOut(ViewCSSImp* view, FormattingContext* context)
         if (InlineLevelBox* inlineBox = dynamic_cast<InlineLevelBox*>(box)) {
             CSSStyleDeclarationImp* style = box->getStyle();
             if (style && style->display.isInlineLevel())
-                inlineBox->offsetV += style->verticalAlign.getOffset(this, inlineBox);
+                inlineBox->offsetV += style->verticalAlign.getOffset(view, style, this, inlineBox);
             else {
                 float leading = inlineBox->getLeading() / 2.0f;
                 inlineBox->offsetV += getBaseline() - (leading + inlineBox->getBaseline());

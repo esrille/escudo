@@ -298,7 +298,7 @@ void FormattingContext::appendInlineBox(ViewCSSImp* view, InlineLevelBox* inline
     assert(activeStyle);
     float offset;
     if (activeStyle->display.isInlineLevel())
-        offset = activeStyle->verticalAlign.getOffset(lineBox, inlineBox);
+        offset = activeStyle->verticalAlign.getOffset(view, activeStyle, lineBox, inlineBox);
     else {
         float leading = inlineBox->getLeading() / 2.0f;
         offset = lineBox->baseline - (leading + inlineBox->getBaseline());

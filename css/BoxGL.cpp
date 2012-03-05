@@ -709,7 +709,7 @@ void InlineLevelBox::renderEmptyBox(ViewCSSImp* view, CSSStyleDeclarationImp* pa
         float point = view->getPointFromPx(parentStyle->fontSize.getPx());
         paddingHeight += font->getLineHeight(point);
         leading = std::max(lineBox->getStyle()->lineHeight.getPx(), parentStyle->lineHeight.getPx()) - font->getLineHeight(point);
-        top += parentStyle->verticalAlign.getOffset(lineBox, font, point, leading);
+        top += parentStyle->verticalAlign.getOffset(view, parentStyle, lineBox, font, point, leading);
     }
     top -= parentStyle->marginTop.getPx() + parentStyle->paddingTop.getPx() + parentStyle->borderTopWidth.getPx();
 
