@@ -341,7 +341,9 @@ BlockLevelBox::BlockLevelBox(Node node, CSSStyleDeclarationImp* style) :
     consumed(0.0f),
     inserted(false),
     edge(0.0f),
-    remainingHeight(0.0f)
+    remainingHeight(0.0f),
+    baseline(0.0f),
+    lineHeight(0.0f)
 {
     setStyle(style);
 }
@@ -572,7 +574,7 @@ void BlockLevelBox::layOutInlineLevelBox(ViewCSSImp* view, Node node, Formatting
 
     context->x += inlineLevelBox->getTotalWidth();
     context->leftover -= inlineLevelBox->getTotalWidth();
-    context->appendInlineBox(inlineLevelBox, style);
+    context->appendInlineBox(view, inlineLevelBox, style);
 }
 
 void BlockLevelBox::layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floatBox, FormattingContext* context)
@@ -697,7 +699,7 @@ void BlockLevelBox::layOutAnonymousInlineTable(ViewCSSImp* view, FormattingConte
 
     context->x += inlineLevelBox->getTotalWidth();
     context->leftover -= inlineLevelBox->getTotalWidth();
-    context->appendInlineBox(inlineLevelBox, style);
+    context->appendInlineBox(view, inlineLevelBox, style);
 
     context->prevChar = 0;
 }

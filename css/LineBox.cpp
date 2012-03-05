@@ -450,7 +450,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
 
         while (wrapBox) {
             InlineLevelBox* next = dynamic_cast<InlineLevelBox*>(wrapBox->getNextSibling());
-            context->appendInlineBox(wrapBox, wrapBox->getStyle()); // TODO: leading, etc.
+            context->appendInlineBox(view, wrapBox, wrapBox->getStyle()); // TODO: leading, etc.
             wrapBox = next;
         }
 
@@ -463,7 +463,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
             lineBox->lineThroughThickness = std::max(lineBox->lineThroughThickness, font->getLineThroughThickness(point));
         }
         context->x += advanced + blankRight;
-        context->appendInlineBox(inlineBox, activeStyle);
+        context->appendInlineBox(view, inlineBox, activeStyle);
         // Switch height from 'line-height' to the content height.
         if (inlineBox->hasHeight())
             inlineBox->height = font->getLineHeight(point);
@@ -478,6 +478,22 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
         nextLine(view, context, activeStyle, firstLetterStyle, firstLineStyle, style, linefeed, font, point);
     }
     return true;
+}
+
+LineBox::LineBox(CSSStyleDeclarationImp* style) :
+    Box(0),
+    baseline(0.0f),
+    underlinePosition(0.0f),
+    underlineThickness(1.0f),
+    lineThroughPosition(0.0f),
+    lineThroughThickness(1.0f),
+    leftGap(0.0f),
+    rightGap(0.0f),
+    rightBox(0)
+{
+    setStyle(style);
+    // Keep 'height' 0.0f here since float and positioned elements are
+    // also placed in line boxes in this implementation.
 }
 
 bool LineBox::layOut(ViewCSSImp* view, FormattingContext* context)

@@ -122,7 +122,7 @@ public:
     float shiftDown(float width);
     bool shiftDownLineBox(ViewCSSImp* view);
     bool hasNewFloats() const;
-    void appendInlineBox(InlineLevelBox* inlineBox, CSSStyleDeclarationImp* activeStyle);
+    void appendInlineBox(ViewCSSImp* view, InlineLevelBox* inlineBox, CSSStyleDeclarationImp* activeStyle);
     void dontWrap();
     void nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, bool linefeed);
     void tryAddFloat(ViewCSSImp* view);
@@ -585,6 +585,10 @@ class BlockLevelBox : public Box
     // A block-level box may contain either line boxes or block-level boxes, but not both.
     std::list<Node> inlines;
 
+    // The default baseline and line-height for the line boxes.
+    float baseline;
+    float lineHeight;
+
     void getPsuedoStyles(ViewCSSImp* view, FormattingContext* context, CSSStyleDeclarationImp* style,
                          CSSStyleDeclarationPtr& firstLetterStyle, CSSStyleDeclarationPtr& firstLineStyle);
     void nextLine(ViewCSSImp* view, FormattingContext* context, CSSStyleDeclarationImp*& activeStyle,
@@ -717,7 +721,7 @@ typedef boost::intrusive_ptr<BlockLevelBox> BlockLevelBoxPtr;
 class LineBox : public Box
 {
     friend class BlockLevelBox;
-    friend void FormattingContext::appendInlineBox(InlineLevelBox* inlineBox, CSSStyleDeclarationImp* activeStyle);
+    friend void FormattingContext::appendInlineBox(ViewCSSImp* view, InlineLevelBox* inlineBox, CSSStyleDeclarationImp* activeStyle);
     friend void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, bool linefeed);
 
     float baseline;
@@ -731,21 +735,7 @@ class LineBox : public Box
     BlockLevelBox* rightBox;  // the 1st right floating box
 
 public:
-    LineBox(CSSStyleDeclarationImp* style) :
-        Box(0),
-        baseline(0.0f),
-        underlinePosition(0.0f),
-        underlineThickness(1.0f),
-        lineThroughPosition(0.0f),
-        lineThroughThickness(1.0f),
-        leftGap(0.0f),
-        rightGap(0.0f),
-        rightBox(0)
-    {
-        setStyle(style);
-        // Keep 'height' 0.0f here since float and positioned elements are
-        // also placed in line boxes in this implementation.
-    }
+    LineBox(CSSStyleDeclarationImp* style);
 
     virtual unsigned getBoxType() const {
         return LINE_BOX;

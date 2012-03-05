@@ -272,11 +272,28 @@ bool FormattingContext::hasNewFloats() const
     return false;
 }
 
-void FormattingContext::appendInlineBox(InlineLevelBox* inlineBox, CSSStyleDeclarationImp* activeStyle)
+void FormattingContext::appendInlineBox(ViewCSSImp* view, InlineLevelBox* inlineBox, CSSStyleDeclarationImp* activeStyle)
 {
     assert(lineBox);
     baseline = lineBox->baseline;
     lineHeight = lineBox->height;
+
+    if (lineBox->baseline == 0.0f && lineBox->height == 0.0f) {
+        BlockLevelBox* parentBox = dynamic_cast<BlockLevelBox*>(lineBox->getParentBox());
+        assert(parentBox);
+        if (parentBox->baseline == 0.0f && parentBox->lineHeight == 0.0f) {
+            CSSStyleDeclarationImp* parentStyle = parentBox->getStyle();
+            assert(parentStyle);
+            FontTexture* font = view->selectFont(parentStyle);
+            assert(font);
+            float point = view->getPointFromPx(parentStyle->fontSize.getPx());
+            parentBox->lineHeight = parentStyle->lineHeight.getPx();
+            float leading = parentBox->lineHeight - font->getLineHeight(point);
+            parentBox->baseline = (leading / 2.0f) + font->getAscender(point);
+        }
+        lineBox->height = parentBox->lineHeight;
+        lineBox->baseline = parentBox->baseline;
+    }
 
     assert(activeStyle);
     float offset;
@@ -284,15 +301,16 @@ void FormattingContext::appendInlineBox(InlineLevelBox* inlineBox, CSSStyleDecla
         offset = activeStyle->verticalAlign.getOffset(lineBox, inlineBox);
     else {
         float leading = inlineBox->getLeading() / 2.0f;
-        offset = baseline - (leading + inlineBox->getBaseline());
+        offset = lineBox->baseline - (leading + inlineBox->getBaseline());
     }
+    float descender = lineBox->height - lineBox->baseline;
     if (offset < 0.0f) {
         lineBox->baseline -= offset;
         offset = 0.0f;
     }
 
     if (0.0f < inlineBox->height)
-        lineBox->height = std::max(lineBox->height, offset + inlineBox->height);
+        lineBox->height = std::max(lineBox->baseline + descender, offset + inlineBox->height);
     lineBox->height = std::max(lineBox->height, activeStyle->lineHeight.getPx());
     lineBox->height = std::max(lineBox->height, lineBox->getStyle()->lineHeight.getPx());
 
