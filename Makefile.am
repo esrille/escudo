@@ -991,6 +991,7 @@ libeshtml5_a_SOURCES += \
 	html/HTMLPropertiesCollectionImp.h \
 	html/HTMLQuoteElementImp.cpp \
 	html/HTMLQuoteElementImp.h \
+	html/HTMLReplacedElementImp.h \
 	html/HTMLScriptElementImp.cpp \
 	html/HTMLScriptElementImp.h \
 	html/HTMLSelectElementImp.cpp \

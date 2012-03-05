@@ -26,7 +26,7 @@
 #include "ViewCSSImp.h"
 #include "Table.h"
 
-#include "html/HTMLObjectElementImp.h"  // TODO
+#include "html/HTMLReplacedElementImp.h"
 
 #include "font/FontManager.h"
 #include "font/FontManagerBackEndGL.h"
@@ -577,8 +577,8 @@ void BlockLevelBox::renderInline(ViewCSSImp* view, StackingContext* stackingCont
         return;
     }
 
-    if (HTMLObjectElementImp* object = dynamic_cast<HTMLObjectElementImp*>(getNode().self())) {
-        if (BoxImage* image = object->getImage()) {
+    if (HTMLReplacedElementImp* replaced = dynamic_cast<HTMLReplacedElementImp*>(getNode().self())) {
+        if (BoxImage* image = replaced->getImage()) {
             glPushMatrix();
             glTranslatef(x + getBlankLeft(), y + getBlankTop(), 0.0f);
             image->render(view, 0, 0, width, height, 0, 0);

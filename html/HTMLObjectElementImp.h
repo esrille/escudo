@@ -22,7 +22,7 @@
 #endif
 
 #include <org/w3c/dom/html/HTMLObjectElement.h>
-#include "HTMLElementImp.h"
+#include "HTMLReplacedElementImp.h"
 
 #include <org/w3c/dom/html/HTMLElement.h>
 #include <org/w3c/dom/Document.h>
@@ -43,25 +43,17 @@ namespace bootstrap
 
 class BoxImage;
 
-class HTMLObjectElementImp : public ObjectMixin<HTMLObjectElementImp, HTMLElementImp>
+class HTMLObjectElementImp : public ObjectMixin<HTMLObjectElementImp, HTMLReplacedElementImp>
 {
-    HttpRequest* request;
-    bool active;
-    BoxImage* image;
-
 public:
     HTMLObjectElementImp(DocumentImp* ownerDocument);
     HTMLObjectElementImp(HTMLObjectElementImp* org, bool deep);
-    ~HTMLObjectElementImp();
 
     void eval();
     void notify();
 
     // TODO: Refine this interface as this is only for CSS
     bool getIntrinsicSize(float& w, float& h);
-    BoxImage* getImage() const {
-        return image;
-    }
 
     // HTMLObjectElement
     std::u16string getData();

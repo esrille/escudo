@@ -1297,12 +1297,12 @@ libeshtml5_a_SOURCES = Object.h ObjectArrayImp.h Any.cpp Any.h \
 	html/HTMLPropertiesCollectionImp.cpp \
 	html/HTMLPropertiesCollectionImp.h \
 	html/HTMLQuoteElementImp.cpp html/HTMLQuoteElementImp.h \
-	html/HTMLScriptElementImp.cpp html/HTMLScriptElementImp.h \
-	html/HTMLSelectElementImp.cpp html/HTMLSelectElementImp.h \
-	html/HTMLSourceElementImp.cpp html/HTMLSourceElementImp.h \
-	html/HTMLSpanElementImp.cpp html/HTMLSpanElementImp.h \
-	html/HTMLStyleElementImp.cpp html/HTMLStyleElementImp.h \
-	html/HTMLTableCaptionElementImp.cpp \
+	html/HTMLReplacedElementImp.h html/HTMLScriptElementImp.cpp \
+	html/HTMLScriptElementImp.h html/HTMLSelectElementImp.cpp \
+	html/HTMLSelectElementImp.h html/HTMLSourceElementImp.cpp \
+	html/HTMLSourceElementImp.h html/HTMLSpanElementImp.cpp \
+	html/HTMLSpanElementImp.h html/HTMLStyleElementImp.cpp \
+	html/HTMLStyleElementImp.h html/HTMLTableCaptionElementImp.cpp \
 	html/HTMLTableCaptionElementImp.h \
 	html/HTMLTableCellElementImp.cpp \
 	html/HTMLTableCellElementImp.h html/HTMLTableColElementImp.cpp \

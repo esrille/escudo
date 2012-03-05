@@ -31,25 +31,13 @@ namespace bootstrap
 {
 
 HTMLObjectElementImp::HTMLObjectElementImp(DocumentImp* ownerDocument) :
-    ObjectMixin(ownerDocument, u"object"),
-    request(0),
-    active(true),
-    image(0)
+    ObjectMixin(ownerDocument, u"object")
 {
 }
 
 HTMLObjectElementImp::HTMLObjectElementImp(HTMLObjectElementImp* org, bool deep) :
-    ObjectMixin(org, deep),
-    request(0), // TODO
-    active(org->active),
-    image(0)    // TODO
+    ObjectMixin(org, deep)
 {
-}
-
-HTMLObjectElementImp::~HTMLObjectElementImp()
-{
-    delete request;
-    delete image;
 }
 
 void HTMLObjectElementImp::eval()
@@ -114,19 +102,6 @@ void HTMLObjectElementImp::notify()
         box->setFlags(1);
     DocumentImp* document = getOwnerDocumentImp();
     document->decrementLoadEventDelayCount();
-}
-
-bool HTMLObjectElementImp::getIntrinsicSize(float& w, float& h)
-{
-    if (!active)
-        return false;
-    if (!image)
-        w = h = 0.0f;
-    else {
-        w = image->getNaturalWidth();
-        h = image->getNaturalHeight();
-    }
-    return true;
 }
 
 std::u16string HTMLObjectElementImp::getData()

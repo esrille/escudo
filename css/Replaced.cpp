@@ -22,7 +22,7 @@
 #include "ViewCSSImp.h"
 #include "WindowImp.h"
 
-#include "html/HTMLObjectElementImp.h"
+#include "html/HTMLReplacedElementImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -114,14 +114,7 @@ bool BlockLevelBox::layOutReplacedElement(ViewCSSImp* view, Box* replaced, Eleme
     float intrinsicWidth = 0.0f;
     float intrinsicHeight = 0.0f;
     std::u16string tag = element.getLocalName();
-    if (tag == u"img") {
-        html::HTMLImageElement img = interface_cast<html::HTMLImageElement>(element);
-        if (BoxImage* backgroundImage = new(std::nothrow) BoxImage(replaced, view->getDocument().getDocumentURI(), img)) {
-            replaced->backgroundImage = backgroundImage;
-            intrinsicWidth = backgroundImage->getWidth();
-            intrinsicHeight = backgroundImage->getHeight();
-        }
-    } else if (tag == u"iframe") {
+    if (tag == u"iframe") {
         html::HTMLIFrameElement iframe = interface_cast<html::HTMLIFrameElement>(element);
         // TODO: Use width and height given by CSS.
         replaced->width = CSSTokenizer::parseInt(iframe.getWidth().c_str(), iframe.getWidth().size());
@@ -134,11 +127,11 @@ bool BlockLevelBox::layOutReplacedElement(ViewCSSImp* view, Box* replaced, Eleme
             if (!src.empty() && !imp->getDocument())
                 iframe.setSrc(src);
         }
-    } else if (tag == u"object") {
-        HTMLObjectElementImp* object = dynamic_cast<HTMLObjectElementImp*>(element.self());
-        if (!object)
+    } else if (tag == u"img" || tag == u"object") {
+        HTMLReplacedElementImp* replaced = dynamic_cast<HTMLReplacedElementImp*>(element.self());
+        if (!replaced)
             return false;
-        if (!object->getIntrinsicSize(intrinsicWidth, intrinsicHeight))
+        if (!replaced->getIntrinsicSize(intrinsicWidth, intrinsicHeight))
             return false;
     } else
         return false;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,29 +22,28 @@
 #endif
 
 #include <org/w3c/dom/html/HTMLImageElement.h>
-#include "HTMLElementImp.h"
+#include "HTMLReplacedElementImp.h"
 
 #include "http/HTTPRequest.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
-class HTMLImageElementImp : public ObjectMixin<HTMLImageElementImp, HTMLElementImp>
-{
-    HttpRequest* request;
+class BoxImage;
 
+class HTMLImageElementImp : public ObjectMixin<HTMLImageElementImp, HTMLReplacedElementImp>
+{
 public:
-    HTMLImageElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"img"),
-        request(0) {
-    }
-    HTMLImageElementImp(HTMLImageElementImp* org, bool deep) :
-        ObjectMixin(org, deep),
-        request(0) {  // TODO: XXX
-    }
-    ~HTMLImageElementImp();
+    HTMLImageElementImp(DocumentImp* ownerDocument);
+    HTMLImageElementImp(HTMLImageElementImp* org, bool deep);
 
     virtual void eval();
     void notify();
+
+    // TODO: Refine this interface as this is only for CSS
+    bool getIntrinsicSize(float& w, float& h);
+    BoxImage* getImage() const {
+        return image;
+    }
 
     // Node
     virtual Node cloneNode(bool deep);

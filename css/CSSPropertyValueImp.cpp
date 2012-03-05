@@ -18,6 +18,8 @@
 
 #include <org/w3c/dom/Element.h>
 
+#include <org/w3c/dom/html/HTMLImageElement.h>
+
 #include "CounterImp.h"
 #include "CSSStyleDeclarationImp.h"
 #include "ViewCSSImp.h"
@@ -553,8 +555,8 @@ void CSSBackgroundPositionValueImp::compute(ViewCSSImp* view, CSSStyleDeclaratio
 void CSSBackgroundPositionValueImp::resolve(ViewCSSImp* view, BoxImage* image, CSSStyleDeclarationImp* style, float width, float height)
 {
     assert(image);
-    horizontal.resolve(view, style, width - image->getWidth());  // TODO: negative width case
-    vertical.resolve(view, style, height - image->getHeight());  // TODO: negative height case
+    horizontal.resolve(view, style, width - image->getNaturalWidth());  // TODO: negative width case
+    vertical.resolve(view, style, height - image->getNaturalHeight());  // TODO: negative height case
 }
 
 bool CSSBackgroundShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)

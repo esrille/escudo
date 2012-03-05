@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -153,15 +153,14 @@ unsigned char* readAsJpeg(FILE* file, unsigned& width, unsigned& height, unsigne
 
 }  // namespace
 
-BoxImage::BoxImage(Box* box) :
+BoxImage::BoxImage(Box* box, unsigned repeat) :
     box(box),
     state(Unavailable),
     pixels(0),
     naturalWidth(0),
     naturalHeight(0),
-    repeat(0),
-    format(GL_RGBA),
-    img(static_cast<html::HTMLImageElement*>(0) /* nullptr */)
+    repeat(repeat),
+    format(GL_RGBA)
 {
 }
 
@@ -173,24 +172,9 @@ BoxImage::BoxImage(Box* box, const std::u16string& base, const std::u16string& u
     naturalHeight(0),
     repeat(repeat),
     format(GL_RGBA),
-    img(static_cast<html::HTMLImageElement*>(0) /* nullptr */),
     request(base)
 {
     open(url);
-}
-
-BoxImage::BoxImage(Box* box, const std::u16string& base, html::HTMLImageElement& img) :
-    box(box),
-    state(Unavailable),
-    pixels(0),
-    naturalWidth(0),
-    naturalHeight(0),
-    repeat(Clamp),
-    format(GL_RGBA),
-    img(img),
-    request(base)
-{
-    open(img.getSrc());
 }
 
 void BoxImage::open(const std::u16string& url)

@@ -19,12 +19,18 @@
 #include <boost/bind.hpp>
 
 #include "DocumentImp.h"
+#include "css/Box.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
-HTMLImageElementImp::~HTMLImageElementImp()
+HTMLImageElementImp::HTMLImageElementImp(DocumentImp* ownerDocument) :
+    ObjectMixin(ownerDocument, u"img")
 {
-    delete request;
+}
+
+HTMLImageElementImp::HTMLImageElementImp(HTMLImageElementImp* org, bool deep) :
+    ObjectMixin(org, deep)
+{
 }
 
 void HTMLImageElementImp::eval()
@@ -43,11 +49,33 @@ void HTMLImageElementImp::eval()
         request->setHanndler(boost::bind(&HTMLImageElementImp::notify, this));
         document->incrementLoadEventDelayCount();
         request->send();
-    }
+    } else
+        active = false;
 }
 
 void HTMLImageElementImp::notify()
 {
+    if (request->getStatus() != 200)
+        active = false;
+    else {
+        // TODO: Check type
+        image = new(std::nothrow) BoxImage();
+        if (!image)
+            active = false;
+        else {
+            if (FILE* file = request->openFile()) {
+                image->open(file);
+                fclose(file);
+            }
+            if (image->getState() != BoxImage::CompletelyAvailable) {
+                active = false;
+                delete image;
+                image = 0;
+            }
+        }
+    }
+    if (Box* box = getBox())
+        box->setFlags(1);
     DocumentImp* document = getOwnerDocumentImp();
     document->decrementLoadEventDelayCount();
 }

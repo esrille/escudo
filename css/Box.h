@@ -19,7 +19,6 @@
 
 #include <Object.h>
 #include <org/w3c/dom/Text.h>
-#include <org/w3c/dom/html/HTMLImageElement.h>
 
 #include <list>
 #include <string>
@@ -196,34 +195,20 @@ private:
     unsigned naturalHeight;
     unsigned repeat;
     unsigned format;
-    mutable html::HTMLImageElement img;
     HttpRequest request;
 
     void open(const std::u16string& url);
     void notify();
 
 public:
-    BoxImage(Box* box = 0);
+    BoxImage(Box* box = 0, unsigned repeat = Clamp);
     BoxImage(Box* box, const std::u16string& base, const std::u16string& url, unsigned repeat = 0);
-    BoxImage(Box* box, const std::u16string& base, html::HTMLImageElement& img);
     ~BoxImage();
 
     void open(FILE* file);
 
     int getState() const {
         return state;
-    }
-    unsigned getWidth() const {
-        unsigned w = 0;
-        if (img)
-            w = img.getWidth();
-        return w ? w : naturalWidth;    // TODO: make it proportional
-    }
-    unsigned getHeight() const {
-        unsigned h = 0;
-        if (img)
-            h = img.getHeight();
-        return h ? h : naturalHeight;   // TODO: make it proportional
     }
     unsigned getNaturalWidth() const {
         return naturalWidth;
