@@ -1741,10 +1741,28 @@ float CSSVerticalAlignValueImp::getOffset(ViewCSSImp* view, CSSStyleDeclarationI
         return line->getBaseline() - (leading + font->getAscender(point)) + font->getSub(point);
     case Super:
         return line->getBaseline() - (leading + font->getAscender(point)) - font->getSuper(point);
-    case TextTop:
-        return 0.0f;
-    case TextBottom:
-        return line->getHeight() - font->getLineHeight(point);
+    case TextTop: {
+        float offset = 0.0f;
+        if (CSSStyleDeclarationImp* parent = self->getParentStyle()) {
+            FontTexture* font = parent->getFontTexture();
+            if (!font)
+                font = view->selectFont(parent);
+            if (font)
+                offset = line->getBaseline() - font->getAscender(point);
+        }
+        return offset;
+    }
+    case TextBottom: {
+        float offset = line->getHeight();
+        if (CSSStyleDeclarationImp* parent = self->getParentStyle()) {
+            FontTexture* font = parent->getFontTexture();
+            if (!font)
+                font = view->selectFont(parent);
+            if (font)
+                offset = line->getBaseline() - font->getDescender(point);
+        }
+        return offset - font->getLineHeight(point);
+    }
     default:
         assert(value.unit == css::CSSPrimitiveValue::CSS_PX);
         return line->getBaseline() - (leading + font->getAscender(point)) - value.getPx();
@@ -1777,10 +1795,29 @@ float CSSVerticalAlignValueImp::getOffset(ViewCSSImp* view, CSSStyleDeclarationI
         return line->getBaseline() - (leading + text->getBaseline()) + text->getSub();
     case Super:
         return line->getBaseline() - (leading + text->getBaseline()) - text->getSuper();
-    case TextTop:
-        return 0.0f;
-    case TextBottom:
-        return line->getHeight() - text->getHeight();
+    case TextTop: {
+        float offset = 0.0f;
+        if (CSSStyleDeclarationImp* parent = self->getParentStyle()) {
+            FontTexture* font = parent->getFontTexture();
+            if (!font)
+                font = view->selectFont(parent);
+            if (font)
+                offset = line->getBaseline() - font->getAscender(view->getPointFromPx(self->fontSize.getPx()));
+        }
+        return offset;
+    }
+    case TextBottom: {
+        float offset = line->getHeight();
+        if (CSSStyleDeclarationImp* parent = self->getParentStyle()) {
+            FontTexture* font = parent->getFontTexture();
+            if (!font)
+                font = view->selectFont(parent);
+            if (font)
+                offset = line->getBaseline() - font->getDescender(view->getPointFromPx(self->fontSize.getPx()));
+        }
+        offset -= text->getTotalHeight();
+        return offset;
+    }
     default:
         assert(value.unit == css::CSSPrimitiveValue::CSS_PX);
         return line->getBaseline() - (leading + text->getBaseline()) - value.getPx();
