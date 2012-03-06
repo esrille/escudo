@@ -539,7 +539,6 @@ void BlockLevelBox::layOutInlineLevelBox(ViewCSSImp* view, Node node, Formatting
     InlineLevelBox* inlineLevelBox = new(std::nothrow) InlineLevelBox(node, style);
     if (!inlineLevelBox)
         return;  // TODO error
-    style->addBox(inlineLevelBox);
 
     inlineLevelBox->parentBox = context->lineBox;  // for getContainingBlock
     context->prevChar = 0;
@@ -575,6 +574,8 @@ void BlockLevelBox::layOutInlineLevelBox(ViewCSSImp* view, Node node, Formatting
     context->x += inlineLevelBox->getTotalWidth();
     context->leftover -= inlineLevelBox->getTotalWidth();
     context->appendInlineBox(view, inlineLevelBox, style);
+
+    style->addBox(inlineLevelBox);
 }
 
 void BlockLevelBox::layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floatBox, FormattingContext* context)

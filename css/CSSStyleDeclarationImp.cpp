@@ -1563,14 +1563,21 @@ bool CSSStyleDeclarationImp::isFlowRoot() const
 
 void CSSStyleDeclarationImp::addBox(Box* box)
 {
-    if (!this->box)
-        this->box = lastBox = box;
-    else
-        lastBox = box;
-    // TODO: check the 3rd condition. maybe 'display'?
-    if (isBlockLevel() || !parentStyle || parentStyle->isBlockLevel() || box->getBoxType() != Box::INLINE_LEVEL_BOX)
-        return;
-    parentStyle->addBox(box);
+    if (dynamic_cast<BlockLevelBox*>(box)) {
+        if (isBlockLevel())
+            this->box = lastBox = box;
+    } else if (InlineLevelBox* inlineBox = dynamic_cast<InlineLevelBox*>(box)) {
+        if (isBlockLevel())
+            return;
+        if (isInlineBlock() && inlineBox->getFont())
+            return;
+        if (!this->box)
+            this->box = lastBox = box;
+        else
+            lastBox = box;
+        if (parentStyle)
+            parentStyle->addBox(box);
+    }
 }
 
 CSSStyleDeclarationImp* CSSStyleDeclarationImp::getPseudoElementStyle(int id)

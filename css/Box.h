@@ -837,6 +837,10 @@ public:
 
     float atEndOfLine();
 
+    FontTexture* getFont() const {
+        return font;
+    }
+
     float getBaseline() const {
         return baseline;
     }

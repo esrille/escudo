@@ -669,8 +669,6 @@ void InlineLevelBox::renderMultipleBackground(ViewCSSImp* view)
                 }
             }
             lineBox = nextLine;
-            if (!lineBox)   // TODO: Check this; cf. vertical-align-baseline-006.
-                break;
             assert(lineBox);
             head = tail = 0;
             for (box = lineBox->getFirstChild(); box; box = box->getNextSibling()) {
