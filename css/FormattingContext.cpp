@@ -308,7 +308,7 @@ void FormattingContext::appendInlineBox(ViewCSSImp* view, InlineLevelBox* inline
         lineBox->baseline -= offset;
         offset = 0.0f;
     }
-    if (descender < offset + inlineBox->getTotalHeight() - lineBox->baseline)
+    if (0.0f < descender && descender < offset + inlineBox->getTotalHeight() - lineBox->baseline)
         descender = 0.0f;
 
     if (0.0f < inlineBox->height)
