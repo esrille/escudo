@@ -583,6 +583,7 @@ void BlockLevelBox::renderInline(ViewCSSImp* view, StackingContext* stackingCont
             glTranslatef(x + getBlankLeft(), y + getBlankTop(), 0.0f);
             image->render(view, 0, 0, width, height, 0, 0);
             glPopMatrix();
+            glEnable(GL_TEXTURE_2D);
             return;
         }
     }
