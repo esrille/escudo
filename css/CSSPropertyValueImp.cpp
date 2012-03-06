@@ -1758,8 +1758,10 @@ float CSSVerticalAlignValueImp::getOffset(ViewCSSImp* view, CSSStyleDeclarationI
             FontTexture* font = parent->getFontTexture();
             if (!font)
                 font = view->selectFont(parent);
-            if (font)
-                offset = line->getBaseline() - font->getDescender(view->getPointFromPx(parent->fontSize.getPx()));
+            if (font) {
+                float point = view->getPointFromPx(parent->fontSize.getPx());
+                offset = line->getBaseline() - font->getAscender(point) + font->getLineHeight(point);
+            }
         }
         return offset - font->getLineHeight(point);
     }
@@ -1812,8 +1814,10 @@ float CSSVerticalAlignValueImp::getOffset(ViewCSSImp* view, CSSStyleDeclarationI
             FontTexture* font = parent->getFontTexture();
             if (!font)
                 font = view->selectFont(parent);
-            if (font)
-                offset = line->getBaseline() - font->getDescender(view->getPointFromPx(parent->fontSize.getPx()));
+            if (font) {
+                float point = view->getPointFromPx(parent->fontSize.getPx());
+                offset = line->getBaseline() - font->getAscender(point) + font->getLineHeight(point);
+            }
         }
         offset -= text->getTotalHeight();
         return offset;
