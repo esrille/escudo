@@ -109,24 +109,14 @@ TableWrapperBox::TableWrapperBox(ViewCSSImp* view, Element element, CSSStyleDecl
 {
     counterContext = new(std::nothrow) CSSAutoNumberingValueImp::CounterContext(view);
 
-    if (html::HTMLTableElement::hasInstance(element)) {
-        assert(!isAnonymousTable);
-        // HTML tables are rendered using the HTML table model:
-        // cf. http://www.whatwg.org/specs/web-apps/current-work/multipage/tabular-data.html#forming-a-table
-        isHtmlTable = true;
-        formTable();
-    } else {
-        // Otherwise, tables are rendered using the CSS table model:
-        // cf. http://www.w3.org/TR/CSS2/tables.html#table-display
-        isHtmlTable = false;
-        if (isAnonymousTable) {
-            style = 0;
-            processTableChild(element, style);
-            return;
-        }
-        for (Node node = element.getFirstChild(); node; node = node.getNextSibling())
-            processTableChild(node, style);
+    isHtmlTable = html::HTMLTableElement::hasInstance(element);
+    if (isAnonymousTable) {
+        style = 0;
+        processTableChild(element, style);
+        return;
     }
+    for (Node node = element.getFirstChild(); node; node = node.getNextSibling())
+        processTableChild(node, style);
 
     layOutBlockBoxes();
 }
@@ -358,62 +348,6 @@ unsigned TableWrapperBox::appendColumn()
     columns.resize(xWidth);
     columnGroups.resize(xWidth);
     return xWidth;
-}
-
-void TableWrapperBox::formTable()
-{
-    if (table.getChildElementCount() == 0)
-        return;
-
-    // 10.
-    // 11.
-    // std::list<> downwardGrowingCells;
-    for (Element current = table.getFirstElementChild(); current; current = current.getNextElementSibling()) {
-        CSSStyleDeclarationImp* currentStyle = view->getStyle(current);
-        assert(currentStyle);
-        if (!currentStyle->display.isProperTableChild()) {
-            endRowGroup();
-            continue;
-        }
-        unsigned display = currentStyle->display.getValue();
-        if (display == CSSDisplayValueImp::TableCaption) {
-            BlockLevelBox* caption = view->layOutBlockBoxes(current, 0, currentStyle, counterContext, false);
-            if (!caption)
-                continue;
-            if (currentStyle->captionSide.getValue() == CSSCaptionSideValueImp::Top)
-                topCaptions.push_back(caption);
-            else
-                bottomCaptions.push_back(caption);
-            continue;
-        }
-        if (display == CSSDisplayValueImp::TableColumnGroup) {
-            endRowGroup();
-            processColGroup(current);
-            continue;
-        }
-        if (display == CSSDisplayValueImp::TableColumn)  // TODO HTML doesn't need this though
-            continue;
-        // 12.
-        // TODO: ?
-        // 13.
-        if (display == CSSDisplayValueImp::TableRow) {
-            // TODO
-            processRow(current, counterContext);
-            continue;
-        }
-        if (display == CSSDisplayValueImp::TableFooterGroup) {
-            pendingTfootElements.push_back(current);
-            continue;
-        }
-        if (display == CSSDisplayValueImp::TableHeaderGroup) {
-            if (!pendingTheadElement) {
-                pendingTheadElement = current;
-                continue;
-            }
-        }
-        assert(display == CSSDisplayValueImp::TableHeaderGroup || display == CSSDisplayValueImp::TableRowGroup);
-        processRowGroup(current, counterContext);
-    }
 }
 
 void TableWrapperBox::processRow(Element row, CSSAutoNumberingValueImp::CounterContext* counterContext)

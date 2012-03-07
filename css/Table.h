@@ -140,7 +140,6 @@ class TableWrapperBox : public BlockLevelBox
     unsigned appendRow();
     unsigned appendColumn();
 
-    void formTable();
     void processCol(Element col, CSSStyleDeclarationImp* colStyle, Element colgroup);
     void processColGroup(Element colgroup);
     void processRow(Element row, CSSAutoNumberingValueImp::CounterContext* counterContext);
