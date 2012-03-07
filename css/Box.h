@@ -595,7 +595,7 @@ class BlockLevelBox : public Box
 
     bool layOutReplacedElement(ViewCSSImp* view, Box* replaced, Element element, CSSStyleDeclarationImp* style);
 
-    void applyMinMaxHeight(FormattingContext* context, float min = NAN);
+    void applyMinMaxHeight(FormattingContext* context);
 
 protected:
     // resolveAbsoluteWidth's return values

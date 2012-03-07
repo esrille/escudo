@@ -943,6 +943,9 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
             layOutFixed(view, containingBlock, collapsingModel);
         float tableWidth = width;
         for (unsigned y = 0; y < yHeight; ++y) {
+            float minHeight = 0.0f;
+            if (rows[y] && !rows[y]->height.isAuto())
+                minHeight = rows[y]->height.getPx();
             for (unsigned x = 0; x < xWidth; ++x) {
                 CellBox* cellBox = grid[y][x].get();
                 if (!cellBox || cellBox->isSpanned(x, y))
@@ -965,6 +968,22 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
                     cellBox->separateBorders(style, xWidth, yHeight);
                 if (!fixedLayout && cellBox->getColSpan() == 1)
                     widths[x] = std::max(widths[x], cellBox->getTotalWidth());
+                if (cellBox->getRowSpan() == 1)
+                    heights[y] = std::max(heights[y], cellBox->getTotalHeight());
+            }
+            // Process 'height' as the minimum height.
+            for (unsigned x = 0; x < xWidth; ++x) {
+                CellBox* cellBox = grid[y][x].get();
+                if (!cellBox || cellBox->isSpanned(x, y))
+                    continue;
+                if (CSSStyleDeclarationImp* cellStyle = cellBox->getStyle()) {
+                    float m = minHeight;
+                    if (!cellStyle->height.isAuto())
+                        m = std::max(m, cellStyle->height.getPx());
+                    float d = m - cellBox->height;
+                    if (0.0f < d)
+                        cellBox->height += d;
+                }
                 if (cellBox->getRowSpan() == 1)
                     heights[y] = std::max(heights[y], cellBox->getTotalHeight());
             }
