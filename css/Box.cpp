@@ -1118,7 +1118,7 @@ void BlockLevelBox::layOutChildren(ViewCSSImp* view, FormattingContext* context)
     }
 }
 
-void BlockLevelBox::applyMinMaxHeight(FormattingContext* context)
+void BlockLevelBox::applyMinMaxHeight(FormattingContext* context, float min)
 {
     assert(!isAnonymous());
     if (!style->maxHeight.isNone()) {
@@ -1128,10 +1128,12 @@ void BlockLevelBox::applyMinMaxHeight(FormattingContext* context)
     }
     if (!hasChildBoxes() && 0.0f < height)
         context->updateRemainingHeight(height);
-    float d = style->minHeight.getPx() - height;
+    if (isnanf(min))
+        min = style->minHeight.getPx();
+    float d = min - height;
     if (0.0f < d) {
         context->updateRemainingHeight(d);
-        height = style->minHeight.getPx();
+        height = min;
     }
 }
 
@@ -1208,7 +1210,9 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
             last->marginBottom += context->clear(3);
     }
 
-    if ((style->height.isAuto() && !intrinsic) || isAnonymous()) {
+    CellBox* cell = dynamic_cast<CellBox*>(this);
+
+    if ((style->height.isAuto() && !intrinsic) || isAnonymous() || cell) {
         float totalClearance = 0.0f;
         height = 0.0f;
         for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
@@ -1223,7 +1227,10 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
             height += totalClearance;
     }
     if (!isAnonymous()) {
-        applyMinMaxHeight(context);
+        if (!cell || style->height.isAuto())
+            applyMinMaxHeight(context);
+        else
+            applyMinMaxHeight(context, style->height.getPx());
         // TODO: If min-height was applied, we might need to undo collapseMarginBottom().
     } else if (!hasChildBoxes() && 0.0f < height)
         context->updateRemainingHeight(height);
