@@ -1018,9 +1018,8 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
         float h = 0.0f;
         for (unsigned y = 0; y < yHeight; ++y)
             h += heights[y];
-        if (style->height.isAuto())
-            tableBox->height = h;
-        else if (h < tableBox->height) {
+        tableBox->height = std::max(tableBox->height, h);
+        if (h < tableBox->height) {
             h = (tableBox->height - h) / yHeight;
             for (unsigned y = 0; y < yHeight; ++y)
                 heights[y] += h;
