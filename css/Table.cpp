@@ -1031,7 +1031,8 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
                 if (cellBox->getRowSpan() == 1) {
                     heights[y] = std::max(heights[y], cellBox->getTotalHeight());
                     baselines[y] = std::max(baselines[y], cellBox->getBaseline());
-                }
+                } else if (cellBox->getVerticalAlign() == CSSVerticalAlignValueImp::Baseline)
+                    baselines[y] = std::max(baselines[y], cellBox->getBaseline());
             }
             // Process baseline
             for (unsigned x = 0; x < xWidth; ++x) {
