@@ -1026,11 +1026,12 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
                 else
                     cellBox->separateBorders(style, xWidth, yHeight);
                 cellBox->intrinsicHeight = cellBox->getTotalHeight();
-                baselines[y] = std::max(baselines[y], cellBox->getBaseline());
                 if (!fixedLayout && cellBox->getColSpan() == 1)
                     widths[x] = std::max(widths[x], cellBox->getTotalWidth());
-                if (cellBox->getRowSpan() == 1)
+                if (cellBox->getRowSpan() == 1) {
                     heights[y] = std::max(heights[y], cellBox->getTotalHeight());
+                    baselines[y] = std::max(baselines[y], cellBox->getBaseline());
+                }
             }
             // Process baseline
             for (unsigned x = 0; x < xWidth; ++x) {
