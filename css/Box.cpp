@@ -553,16 +553,14 @@ void BlockLevelBox::layOutInlineLevelBox(ViewCSSImp* view, Node node, Formatting
     inlineLevelBox->height = inlineBlock->getTotalHeight();
     if (inlineLevelBox->height == 0.0f)
         inlineLevelBox->width = 0.0f;
-    if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(inlineBlock))
-        inlineLevelBox->baseline = table->getBaseline();
-    else
-        inlineLevelBox->baseline = inlineLevelBox->height;
+    inlineLevelBox->baseline = inlineLevelBox->height;
     if (!style->overflow.isClipped()) {
-        if (LineBox* lineBox = dynamic_cast<LineBox*>(inlineBlock->getLastChild()))
+        if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(inlineBlock))
+            inlineLevelBox->baseline = table->getBaseline();
+        else if (LineBox* lineBox = dynamic_cast<LineBox*>(inlineBlock->getLastChild()))
             inlineLevelBox->baseline = inlineLevelBox->height - inlineBlock->getBlankBottom() -
-                                        lineBox->getTotalHeight() + lineBox->getBlankTop() + lineBox->getBaseline();
+                                       lineBox->getTotalHeight() + lineBox->getBlankTop() + lineBox->getBaseline();
     }
-
     while (context->leftover < inlineLevelBox->getTotalWidth()) {
         if (context->lineBox->hasChildBoxes() || context->hasNewFloats()) {
             context->nextLine(view, this, false);
