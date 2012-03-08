@@ -35,16 +35,11 @@ class CellBox : public BlockLevelBox
     unsigned row;
     unsigned colSpan;
     unsigned rowSpan;
+    unsigned verticalAlign;
+    float intrinsicHeight;
+
 public:
-    CellBox(Element element = 0, CSSStyleDeclarationImp* style = 0) :
-        BlockLevelBox(element, style),
-        fixedLayout(false),
-        col(0),
-        row(0),
-        colSpan(1),
-        rowSpan(1)
-    {
-    }
+    CellBox(Element element = 0, CSSStyleDeclarationImp* style = 0);
 
     virtual void fit(float w);
 
@@ -71,6 +66,11 @@ public:
 
     void separateBorders(CSSStyleDeclarationPtr style, unsigned xWidth, unsigned yHeight);
     void collapseBorder(TableWrapperBox* wrapper);
+
+    unsigned getVerticalAlign() const {
+        return verticalAlign;
+    }
+    float getBaseline() const;
 
     virtual float shrinkTo();
     virtual void resolveWidth(float w);
@@ -123,6 +123,7 @@ class TableWrapperBox : public BlockLevelBox
 
     std::vector<float> widths;
     std::vector<float> heights;
+    std::vector<float> baselines;
 
     bool isAnonymousTable;
     bool isHtmlTable;

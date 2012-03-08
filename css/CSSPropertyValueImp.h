@@ -2119,6 +2119,18 @@ public:
     void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     float getOffset(ViewCSSImp* view, CSSStyleDeclarationImp* self, LineBox* line, FontTexture* font, float point, float leading) const;
     float getOffset(ViewCSSImp* view, CSSStyleDeclarationImp* self, LineBox* line, InlineLevelBox* text) const;
+    unsigned getValueForCell() const {
+        unsigned index = value.getIndex();
+        switch (index) {
+        case Baseline:
+        case Top:
+        case Bottom:
+        case Middle:
+            return index;
+        default:
+            return Baseline;
+        }
+    }
     CSSVerticalAlignValueImp() :
         value(Baseline) {
     }
