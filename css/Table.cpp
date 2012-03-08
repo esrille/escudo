@@ -83,6 +83,24 @@ void CellBox::collapseBorder(TableWrapperBox* wrapper)
     marginLeft = wrapper->getColumnBorderValue(col, row)->getWidth() / 2.0f;
 }
 
+float CellBox::getBaseline(const Box* box) const
+{
+    float baseline = 0.0f;
+    for (Box* i = box->getFirstChild(); i; i = i->getNextSibling()) {
+        if (LineBox* lineBox = dynamic_cast<LineBox*>(i))
+            return baseline + lineBox->getBaseline();
+        if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(i))
+            return baseline + table->getBaseline();
+        if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(i)) {
+            float x = getBaseline(block);
+            if (!isnanf(x))
+                return baseline + block->getBlankTop() + x;
+        }
+        baseline += i->getTotalHeight();
+    }
+    return NAN;
+}
+
 float CellBox::getBaseline() const
 {
     switch (verticalAlign) {
@@ -95,11 +113,8 @@ float CellBox::getBaseline() const
     default:
         break;
     }
-    if (LineBox* lineBox = dynamic_cast<LineBox*>(getFirstChild()))
-        return getBlankTop() + lineBox->getBaseline();
-    if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(getFirstChild()))
-        return getBlankTop() + table->getBaseline();
-    return getBlankTop() + height;
+    float x = getBaseline(this);
+    return getBlankTop() + (!isnanf(x) ? x : height);
 }
 
 float CellBox::shrinkTo()

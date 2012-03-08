@@ -38,6 +38,8 @@ class CellBox : public BlockLevelBox
     unsigned verticalAlign;
     float intrinsicHeight;
 
+    float getBaseline(const Box* box) const;
+
 public:
     CellBox(Element element = 0, CSSStyleDeclarationImp* style = 0);
 

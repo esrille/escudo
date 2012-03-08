@@ -1717,6 +1717,7 @@ void CSSVerticalAlignValueImp::resolve(ViewCSSImp* view, CSSStyleDeclarationImp*
 
 float CSSVerticalAlignValueImp::getOffset(ViewCSSImp* view, CSSStyleDeclarationImp* self, LineBox* line, FontTexture* font, float point, float leading) const
 {
+    assert(self->display.isInlineLevel());
     leading /= 2.0f;
     // TODO: Check if there is a parent inline element firstly.
     switch (value.getIndex()) {
@@ -1773,6 +1774,7 @@ float CSSVerticalAlignValueImp::getOffset(ViewCSSImp* view, CSSStyleDeclarationI
 
 float CSSVerticalAlignValueImp::getOffset(ViewCSSImp* view, CSSStyleDeclarationImp* self, LineBox* line, InlineLevelBox* text) const
 {
+    assert(self->display.isInlineLevel());
     float leading = text->getLeading() / 2.0f;
     // TODO: Check if there is a parent inline element firstly.
     switch (value.getIndex()) {
