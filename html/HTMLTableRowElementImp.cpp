@@ -30,6 +30,7 @@ void HTMLTableRowElementImp::eval()
     HTMLElementImp::eval();
     HTMLElementImp::evalBackground(this);
     HTMLElementImp::evalBgcolor(this);
+    HTMLElementImp::evalValign(this);
 }
 
 int HTMLTableRowElementImp::getRowIndex()

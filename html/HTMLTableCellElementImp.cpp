@@ -38,6 +38,7 @@ void HTMLTableCellElementImp::eval()
     HTMLElementImp::evalHeight(this);
     HTMLElementImp::evalWidth(this);
     HTMLElementImp::evalNoWrap(this);
+    HTMLElementImp::evalValign(this);
 
     for (Element e = getParentElement(); e; e = e.getParentElement()) {
         if (html::HTMLTableElement::hasInstance(e)) {

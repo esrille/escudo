@@ -1330,4 +1330,14 @@ bool HTMLElementImp::evalNoWrap(HTMLElementImp* element)
     return false;
 }
 
+bool HTMLElementImp::evalValign(HTMLElementImp* element)
+{
+    Nullable<std::u16string> value = element->getAttribute(u"valign");
+    if (value.hasValue()) {
+        element->getStyle().setProperty(u"vertical-align", value.value(), u"non-css");
+        return true;
+    }
+    return false;
+}
+
 }}}}  // org::w3c::dom::bootstrap

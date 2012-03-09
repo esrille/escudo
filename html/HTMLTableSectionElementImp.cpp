@@ -29,6 +29,7 @@ void HTMLTableSectionElementImp::eval()
 {
     HTMLElementImp::eval();
     HTMLElementImp::evalBackground(this);
+    HTMLElementImp::evalValign(this);
 }
 
 html::HTMLCollection HTMLTableSectionElementImp::getRows()

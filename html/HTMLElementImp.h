@@ -285,6 +285,7 @@ public:
         return evalHspace(element, u"marginwidth");
     }
     static bool evalNoWrap(HTMLElementImp* element);
+    static bool evalValign(HTMLElementImp* element);
 };
 
 }}}}  // org::w3c::dom::bootstrap

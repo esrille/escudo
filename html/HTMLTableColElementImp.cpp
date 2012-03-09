@@ -33,6 +33,7 @@ void HTMLTableColElementImp::eval()
 {
     HTMLElementImp::eval();
     HTMLElementImp::evalWidth(this);
+    HTMLElementImp::evalValign(this);
 }
 
 unsigned int HTMLTableColElementImp::getSpan()
