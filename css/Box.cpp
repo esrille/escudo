@@ -853,7 +853,7 @@ float BlockLevelBox::getBaseline(const Box* box) const
         if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(i)) {
             float x = getBaseline(block);
             if (!isnanf(x))
-                return baseline - block->getBlankBottom() - block->height + x;
+                return baseline - block->getTotalHeight() + x;
         }
         // TODO: Check clearance
         baseline -= i->getTotalHeight();
