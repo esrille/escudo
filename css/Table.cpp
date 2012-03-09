@@ -1214,7 +1214,7 @@ float TableWrapperBox::getBaseline() const
             if (0 < xWidth && 0 < yHeight) {
                 CellBox* cellBox = grid[yHeight - 1][xWidth - 1].get();
                 if (cellBox && !cellBox->isSpanned(xWidth - 1, yHeight - 1))
-                    baseline += cellBox->getBaseline();
+                    baseline += tableBox->getBlankTop() + cellBox->getBaseline();
             }
             break;
         }
