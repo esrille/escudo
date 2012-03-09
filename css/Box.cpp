@@ -1169,8 +1169,15 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     Element element = 0;
     if (!isAnonymous())
         element = getContainingElement(node);
-    else if (const Box* box = dynamic_cast<const Box*>(containingBlock))
-        element = getContainingElement(box->node);
+    else if (const Box* box = dynamic_cast<const Box*>(containingBlock)) {
+        do {
+            if (box->node) {
+                element = getContainingElement(box->node);
+                if (element)
+                    break;
+            }
+        } while (box = box->getParentBox());
+    }
     if (!element)
         return false;  // TODO error
 
