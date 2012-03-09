@@ -1206,7 +1206,6 @@ float TableWrapperBox::shrinkTo()
     return min;
 }
 
-// TODO: Rewrite this when supporting the vertical alignment of cells.
 float TableWrapperBox::getBaseline() const
 {
     float baseline = getBlankTop();

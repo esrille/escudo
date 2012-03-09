@@ -558,9 +558,8 @@ void BlockLevelBox::layOutInlineLevelBox(ViewCSSImp* view, Node node, Formatting
     if (!style->overflow.isClipped()) {
         if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(inlineBlock))
             inlineLevelBox->baseline = table->getBaseline();
-        else if (LineBox* lineBox = dynamic_cast<LineBox*>(inlineBlock->getLastChild()))
-            inlineLevelBox->baseline = inlineLevelBox->height - inlineBlock->getBlankBottom() -
-                                       lineBox->getTotalHeight() + lineBox->getBlankTop() + lineBox->getBaseline();
+        else
+            inlineLevelBox->baseline = inlineBlock->getBaseline();
     }
     while (context->leftover < inlineLevelBox->getTotalWidth()) {
         if (context->lineBox->hasChildBoxes() || context->hasNewFloats()) {
@@ -841,6 +840,31 @@ void BlockLevelBox::fit(float w)
         return;
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
         child->fit(width);
+}
+
+float BlockLevelBox::getBaseline(const Box* box) const
+{
+    float baseline = box->getBlankTop() + box->height;
+    for (Box* i = box->getLastChild(); i; i = i->getPreviousSibling()) {
+        if (LineBox* lineBox = dynamic_cast<LineBox*>(i))
+            return baseline - lineBox->getBlankBottom() - lineBox->height + lineBox->getBaseline();
+        if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(i))
+            return baseline - table->getTotalHeight() + table->getBaseline();
+        if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(i)) {
+            float x = getBaseline(block);
+            if (!isnanf(x))
+                return baseline - block->getBlankBottom() - block->height + x;
+        }
+        // TODO: Check clearance
+        baseline -= i->getTotalHeight();
+    }
+    return NAN;
+}
+
+float BlockLevelBox::getBaseline() const
+{
+    float x = getBaseline(this);
+    return isnanf(x) ? getTotalHeight() : x;
 }
 
 bool BlockLevelBox::isCollapsableInside() const

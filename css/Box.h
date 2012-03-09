@@ -603,6 +603,8 @@ class BlockLevelBox : public Box
 
     void applyMinMaxHeight(FormattingContext* context);
 
+    float getBaseline(const Box* box) const;
+
 protected:
     // resolveAbsoluteWidth's return values
     enum {
@@ -640,6 +642,8 @@ public:
         }
         return this;
     }
+
+    float getBaseline() const;
 
     unsigned getTextAlign() const {
         return textAlign;
