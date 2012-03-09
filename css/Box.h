@@ -266,6 +266,8 @@ protected:
     float x;  // in screen coord
     float y;  // in screen coord
 
+    unsigned visibility;
+
     BlockLevelBox* clipBox;
 
     // background
@@ -470,6 +472,10 @@ public:
     virtual void resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip) = 0;
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context) {
         return true;
+    }
+
+    bool isVisible() const {
+        return visibility == CSSVisibilityValueImp::Visible;
     }
 
     virtual void render(ViewCSSImp* view, StackingContext* stackingContext) = 0;

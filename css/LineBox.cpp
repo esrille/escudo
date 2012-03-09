@@ -645,6 +645,8 @@ InlineLevelBox::InlineLevelBox(Node node, CSSStyleDeclarationImp* style) :
     emptyInline(0)
 {
     setStyle(style);
+    if (style)
+        visibility = style->visibility.getValue();
 }
 
 bool InlineLevelBox::isEmptyInlineAtFirst(CSSStyleDeclarationImp* style, Element& element, Node& node)
@@ -698,6 +700,7 @@ InlineLevelBox* InlineLevelBox::split()
     wrapBox->borderTop = borderTop;
     wrapBox->borderRight = borderRight;
     wrapBox->borderBottom = borderBottom;
+    wrapBox->visibility = visibility;
     wrapBox->setData(font, point, data.substr(wrap), data.length() - wrap, 0.0f);
     wrapBox->width = width - wrapWidth;
     wrapBox->wrap = 0;

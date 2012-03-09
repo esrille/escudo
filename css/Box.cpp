@@ -69,6 +69,7 @@ Box::Box(Node node) :
     intrinsic(false),
     x(0.0f),
     y(0.0f),
+    visibility(CSSVisibilityValueImp::Visible),
     clipBox(0),
     backgroundColor(0x00000000),
     backgroundImage(0),
@@ -1169,6 +1170,7 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         stackingContext = style->getStackingContext();
     }
 
+    visibility = style->visibility.getValue();
     textAlign = style->textAlign.getValue();
 
     float before = collapseMarginTop(context);
@@ -1450,6 +1452,8 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
     const ContainingBlock* containingBlock = &absoluteBlock;
 
     style->resolve(view, containingBlock);
+
+    visibility = style->visibility.getValue();
 
     resolveBackground(view);
     updatePadding();

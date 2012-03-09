@@ -2156,6 +2156,9 @@ public:
     unsigned getValue() const {
         return value;
     }
+    bool isVisible() const {
+        return value == Visible;
+    }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
         return Options[value];
     }

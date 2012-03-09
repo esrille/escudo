@@ -482,7 +482,7 @@ unsigned BlockLevelBox::renderBegin(ViewCSSImp* view, bool noBorder)
             scrollY = view->getWindow()->getScrollY();
             glTranslatef(scrollX, scrollY, 0.0f);
         }
-        if (!noBorder)
+        if (!noBorder && isVisible())
             renderBorder(view, x, y);
         if (style->parentStyle) {
             overflow = style->overflow.getValue();
@@ -503,7 +503,7 @@ unsigned BlockLevelBox::renderBegin(ViewCSSImp* view, bool noBorder)
                 glTranslatef(-element.getScrollLeft(), -element.getScrollTop(), 0.0f);
             }
         }
-        if (!noBorder)
+        if (!noBorder && isVisible())
             renderTableBorders(view);
     }
     return overflow;
@@ -536,8 +536,10 @@ void BlockLevelBox::renderEnd(ViewCSSImp* view, unsigned overflow, bool scrollBa
                         th += child->getTotalHeight() + child->getClearance();
                         tw = std::max(tw, child->getTotalWidth());
                     }
-                    renderVerticalScrollBar(w, h, element.getScrollTop(), th);
-                    renderHorizontalScrollBar(w, h, element.getScrollLeft(), tw);
+                    if (isVisible()) {
+                        renderVerticalScrollBar(w, h, element.getScrollTop(), th);
+                        renderHorizontalScrollBar(w, h, element.getScrollLeft(), tw);
+                    }
                 glPopMatrix();
             }
         }
@@ -579,11 +581,13 @@ void BlockLevelBox::renderInline(ViewCSSImp* view, StackingContext* stackingCont
 
     if (HTMLReplacedElementImp* replaced = dynamic_cast<HTMLReplacedElementImp*>(getNode().self())) {
         if (BoxImage* image = replaced->getImage()) {
-            glPushMatrix();
-            glTranslatef(x + getBlankLeft(), y + getBlankTop(), 0.0f);
-            image->render(view, 0, 0, width, height, 0, 0);
-            glPopMatrix();
-            glEnable(GL_TEXTURE_2D);
+            if (isVisible()) {
+                glPushMatrix();
+                glTranslatef(x + getBlankLeft(), y + getBlankTop(), 0.0f);
+                image->render(view, 0, 0, width, height, 0, 0);
+                glPopMatrix();
+                glEnable(GL_TEXTURE_2D);
+            }
             return;
         }
     }
@@ -803,23 +807,26 @@ void InlineLevelBox::render(ViewCSSImp* view, StackingContext* stackingContext)
              parentStyle && parentStyle->display.isInline() && parentStyle->getBox() == this;
              parentStyle = parentStyle->getParentStyle())
         {
-            parentStyleList.push_front(parentStyle);
+            if (parentStyle->visibility.isVisible())
+                parentStyleList.push_front(parentStyle);
         }
         for (auto i = parentStyleList.begin(); i != parentStyleList.end(); ++i)
             renderEmptyBox(view, *i);
     }
 
-    if (!font)
-        renderBorder(view, x, y);
-    else if (!style->hasMultipleBoxes())
-        renderBorder(view, x, y - getBlankTop());
-    else if (style->getBox() == this)
-        renderMultipleBackground(view);
+    if (isVisible()) {
+        if (!font)
+            renderBorder(view, x, y);
+        else if (!style->hasMultipleBoxes())
+            renderBorder(view, x, y - getBlankTop());
+        else if (style->getBox() == this)
+            renderMultipleBackground(view);
+    }
     if (shadow)
         shadow->render();
     else if (getFirstChild())  // for inline-block
         getFirstChild()->render(view, stackingContext);
-    else if (font) {
+    else if (font && isVisible()) {
         glPushMatrix();
             glTranslatef(x + getBlankLeft(), y + font->getAscender(point), 0.0f);
             LineBox* lineBox = dynamic_cast<LineBox*>(getParentBox());
