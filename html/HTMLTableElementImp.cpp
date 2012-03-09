@@ -32,6 +32,7 @@ void HTMLTableElementImp::eval()
     HTMLElementImp::eval();
     HTMLElementImp::evalBackground(this);
     HTMLElementImp::evalBgcolor(this);
+    HTMLElementImp::evalHeight(this);
     HTMLElementImp::evalWidth(this);
 
     std::u16string px = u"1px";
