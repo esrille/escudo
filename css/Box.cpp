@@ -1009,7 +1009,9 @@ void BlockLevelBox::collapseMarginBottom(FormattingContext* context)
                 marginBottom = context->collapseMargins(marginBottom);
             } else {
                 last->marginBottom = lm;
-                context->fixMargin();
+                // TODO: Keep the used margin as consumed for now; still needs to be investigated.
+                // cf. margin-collapse-145, margin-collapse-147.
+                consumed = context->fixMargin();
                 if (!last->hasClearance())
                     last->moveUpCollapsedThroughMargins(context);
             }
@@ -1245,7 +1247,8 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     collapseMarginBottom(context);
     if (isFlowRoot()) {
         if (Box* last = getLastChild())
-            last->marginBottom += context->clear(3);
+            last->marginBottom += std::max(context->clear(3), consumed);
+        consumed = 0.0f;
     }
 
     CellBox* cell = dynamic_cast<CellBox*>(this);

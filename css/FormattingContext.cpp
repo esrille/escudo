@@ -482,7 +482,9 @@ float FormattingContext::undoCollapseMargins()
 
 float FormattingContext::fixMargin()
 {
+    float consumed = usedMargin;
     updateRemainingHeight(0.0f);
+    return consumed;
 }
 
 // TODO: Remove this function.
