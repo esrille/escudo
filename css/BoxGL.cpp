@@ -673,6 +673,8 @@ void InlineLevelBox::renderMultipleBackground(ViewCSSImp* view)
                 }
             }
             lineBox = nextLine;
+            if (!lineBox)   // TODO: Check when this happens.
+                break;
             assert(lineBox);
             head = tail = 0;
             for (box = lineBox->getFirstChild(); box; box = box->getNextSibling()) {
@@ -765,6 +767,9 @@ void InlineLevelBox::renderEmptyBox(ViewCSSImp* view, CSSStyleDeclarationImp* pa
                 }
             }
             lineBox = nextLine;
+            if (!lineBox)   // TODO: Check when this happens.
+                break;
+            assert(lineBox);
             head = tail = 0;
             for (box = lineBox->getFirstChild(); box; box = box->getNextSibling()) {
                 if (InlineLevelBox* i = dynamic_cast<InlineLevelBox*>(box)) {
