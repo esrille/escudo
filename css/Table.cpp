@@ -87,11 +87,12 @@ float CellBox::getBaseline(const Box* box) const
 {
     float baseline = 0.0f;
     for (Box* i = box->getFirstChild(); i; i = i->getNextSibling()) {
-        if (LineBox* lineBox = dynamic_cast<LineBox*>(i))
-            return baseline + lineBox->getBaseline();
-        if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(i))
+        if (LineBox* lineBox = dynamic_cast<LineBox*>(i)) {
+            if (lineBox->hasInlineBox())
+                return baseline + lineBox->getBaseline();
+        } else if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(i))
             return baseline + table->getBaseline();
-        if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(i)) {
+        else if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(i)) {
             float x = getBaseline(block);
             if (!isnanf(x))
                 return baseline + block->getBlankTop() + x;
@@ -243,8 +244,11 @@ CellBox* TableWrapperBox::processCell(Element current, BlockLevelBox* parentBox,
     CellBox* cellBox = 0;
     if (current)
         cellBox = static_cast<CellBox*>(view->layOutBlockBoxes(current, 0, currentStyle, counterContext, true));
-    else
+    else {
         cellBox = new(std::nothrow) CellBox;
+        if (cellBox)
+            cellBox->establishFormattingContext();
+    }
     if (cellBox) {
         cellBox->setPosition(xCurrent, yCurrent);
         cellBox->setColSpan(colspan);

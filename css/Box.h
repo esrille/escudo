@@ -763,6 +763,11 @@ public:
         return lineThroughThickness;
     }
 
+    // Returns true if this box contains other than floating boxes or absolutely positioned boxes.
+    bool hasInlineBox() const {
+        return height != 0.0f;  // TODO: Check whether this is correct.
+    }
+
     virtual void resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip);
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context);
     virtual void render(ViewCSSImp* view, StackingContext* stackingContext);

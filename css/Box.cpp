@@ -846,11 +846,12 @@ float BlockLevelBox::getBaseline(const Box* box) const
 {
     float baseline = box->getBlankTop() + box->height;
     for (Box* i = box->getLastChild(); i; i = i->getPreviousSibling()) {
-        if (LineBox* lineBox = dynamic_cast<LineBox*>(i))
-            return baseline - lineBox->getBlankBottom() - lineBox->height + lineBox->getBaseline();
-        if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(i))
+        if (LineBox* lineBox = dynamic_cast<LineBox*>(i)) {
+            if (lineBox->hasInlineBox())
+                return baseline - lineBox->getBlankBottom() - lineBox->height + lineBox->getBaseline();
+        } else if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(i))
             return baseline - table->getTotalHeight() + table->getBaseline();
-        if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(i)) {
+        else if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(i)) {
             float x = getBaseline(block);
             if (!isnanf(x))
                 return baseline - block->getTotalHeight() + x;
@@ -1180,6 +1181,10 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     }
     if (!element)
         return false;  // TODO error
+
+#ifndef NDEBUG
+    std::u16string tag = interface_cast<html::HTMLElement>(element).getTagName();
+#endif
 
     style = view->getStyle(element);
     if (!style)
