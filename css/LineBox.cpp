@@ -260,7 +260,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
         if (context->atLineHead && !wrapBox) {
             size_t next = style->processLineHeadWhiteSpace(data, position);
             if (position != next && data.length() <= next && discardable)
-                return !isAnonymous();
+                return (position == 0) ? !isAnonymous() : true;
             position = next;
         }
         if (!context->lineBox) {
