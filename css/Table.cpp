@@ -1016,6 +1016,11 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
                     cellBox->fixedLayout = true;
                 }
                 cellBox->layOut(view, context);
+                if (collapsingModel)
+                    cellBox->collapseBorder(this);
+                else
+                    cellBox->separateBorders(style, xWidth, yHeight);
+                cellBox->intrinsicHeight = cellBox->getTotalHeight();
                 // Process 'height' as the minimum height.
                 float d = minHeight;
                 if (CSSStyleDeclarationImp* cellStyle = cellBox->getStyle()) {
@@ -1025,11 +1030,6 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
                 d -= cellBox->height;
                 if (0.0f < d)
                     cellBox->height += d;
-                if (collapsingModel)
-                    cellBox->collapseBorder(this);
-                else
-                    cellBox->separateBorders(style, xWidth, yHeight);
-                cellBox->intrinsicHeight = cellBox->getTotalHeight();
                 if (!fixedLayout && cellBox->getColSpan() == 1)
                     widths[x] = std::max(widths[x], cellBox->getTotalWidth());
                 if (cellBox->getRowSpan() == 1) {

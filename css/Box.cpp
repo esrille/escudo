@@ -1293,6 +1293,7 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     if (parentContext && parentContext != context) {
         if (isCollapsableOutside()) {
             // TODO: Review this logic; what's going to happen when collapse through, etc.
+            // Note TableWrapperBox::layOut() has the same code and it must be updated, too.
             parentContext->inheritMarginContext(context);
             if (0.0f < height)
                 parentContext->updateRemainingHeight(height);
