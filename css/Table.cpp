@@ -1186,10 +1186,12 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
 
     restoreFormattingContext(context);
     if (parentContext && parentContext != context) {
-        if (isCollapsableOutside())
+        if (isCollapsableOutside()) {
             parentContext->inheritMarginContext(context);
+            if (0.0f < height)
+                context->updateRemainingHeight(height);
+        }
         context = parentContext;
-        context->updateRemainingHeight(height);
     }
     return true;
 }
