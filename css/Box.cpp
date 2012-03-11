@@ -709,10 +709,8 @@ void BlockLevelBox::layOutAnonymousInlineTable(ViewCSSImp* view, FormattingConte
 // Generate line boxes
 bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, float originalMargin)
 {
-    // Use the positive margin stored in context to consume the remaining height of floating boxes.
     bool keepConsumed = false;
-    consumed = context->useMargin();
-
+    marginUsed = false;
     context->atLineHead = true;
 
     assert(!hasChildBoxes());
@@ -720,6 +718,7 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
     for (auto i = inlines.begin(); i != inlines.end(); ++i) {
         Node node = *i;
         if (BlockLevelBox* box = view->getFloatBox(node)) {
+            context->useMargin(this);
             if (box->isFloat()) {
                 if (box->style->clear.getValue())
                     keepConsumed = true;
@@ -741,6 +740,7 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
                 if (layOutText(view, node, context, text.getData(), element, style))
                     collapsed = false;
             } else if (style->display.isTableParts()) {
+                context->useMargin(this);
                 layOutAnonymousInlineTable(view, context, i);
                 collapsed = false;
             } else if (!isReplacedElement(element) && style->display.isInline()) {
@@ -748,6 +748,7 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
                 if (layOutText(view, node, context, u"", element, style))
                     collapsed = false;
             } else {
+                context->useMargin(this);
                 // At this point, node is an inline block element or a replaced element.
                 layOutInlineLevelBox(view, node, context, element, style);
                 collapsed = false;
@@ -996,6 +997,8 @@ float BlockLevelBox::collapseMarginTop(FormattingContext* context)
 
 void BlockLevelBox::collapseMarginBottom(FormattingContext* context)
 {
+    float used = 0.0f;
+
     BlockLevelBox* last = dynamic_cast<BlockLevelBox*>(getLastChild());
     if (last && last->isCollapsableOutside()) {
         float lm = context->collapseMargins(last->marginBottom);
@@ -1009,9 +1012,9 @@ void BlockLevelBox::collapseMarginBottom(FormattingContext* context)
                 marginBottom = context->collapseMargins(marginBottom);
             } else {
                 last->marginBottom = lm;
-                // TODO: Keep the used margin as consumed for now; still needs to be investigated.
-                // cf. margin-collapse-145, margin-collapse-147.
-                consumed = context->fixMargin();
+                // Save the consumed margin which is to be used as the bottom clearance
+                // of a flow root parent box; cf. margin-collapse-145.
+                used = context->fixMargin();
                 if (!last->hasClearance())
                     last->moveUpCollapsedThroughMargins(context);
             }
@@ -1054,6 +1057,12 @@ void BlockLevelBox::collapseMarginBottom(FormattingContext* context)
                 first = next;
             }
         }
+    }
+
+    if (isFlowRoot() && getLastChild()) {
+        // Keep the consumed height by the last collapsed through box in marginBottom.
+        // cf. margin-collapse-145.
+        getLastChild()->marginBottom += std::max(used, context->clear(3));
     }
 }
 
@@ -1245,11 +1254,6 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
 
     // Collapse margins with the first and the last children before calculating the auto height.
     collapseMarginBottom(context);
-    if (isFlowRoot()) {
-        if (Box* last = getLastChild())
-            last->marginBottom += std::max(context->clear(3), consumed);
-        consumed = 0.0f;
-    }
 
     CellBox* cell = dynamic_cast<CellBox*>(this);
 
@@ -1544,9 +1548,6 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
     maskH = applyAbsoluteMinMaxWidth(containingBlock, left, right, maskH);
 
     collapseMarginBottom(context);
-    // An absolutely positioned box is a flow root.
-    if (Box* last = getLastChild())
-        last->marginBottom += context->clear(3);
 
     if (maskV == (Top | Height) || maskV == (Height | Bottom)) {
         float before = height;

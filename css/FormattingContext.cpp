@@ -167,22 +167,25 @@ float FormattingContext::adjustRemainingHeight(float h)
     return consumed;
 }
 
-float FormattingContext::useMargin()
+void FormattingContext::useMargin(BlockLevelBox* block)
 {
-    float consumed = 0.0f;
+    if (block->marginUsed)
+        return;
+    block->marginUsed = true;
+
+    block->consumed = 0.0f;
     float m = getMargin();
     if (usedMargin < m) {
-        consumed = adjustRemainingHeight(m - usedMargin);
+        block->consumed = adjustRemainingHeight(m - usedMargin);
         usedMargin = m;
     }
-    return consumed;
 }
 
-void FormattingContext::updateRemainingHeight(float h)
+float FormattingContext::updateRemainingHeight(float h)
 {
     h += getMargin() - usedMargin;
     clearMargin();
-    adjustRemainingHeight(h);
+    return adjustRemainingHeight(h);
 }
 
 float FormattingContext::shiftDown(float width)
@@ -482,9 +485,7 @@ float FormattingContext::undoCollapseMargins()
 
 float FormattingContext::fixMargin()
 {
-    float consumed = usedMargin;
-    updateRemainingHeight(0.0f);
-    return consumed;
+    return updateRemainingHeight(0.0f);
 }
 
 // TODO: Remove this function.

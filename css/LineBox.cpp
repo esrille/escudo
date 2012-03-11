@@ -263,6 +263,9 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                 return (position == 0) ? !isAnonymous() : true;
             position = next;
         }
+
+        context->useMargin(this);
+
         if (!context->lineBox) {
             if (!context->addLineBox(view, this))
                 return false;  // TODO error

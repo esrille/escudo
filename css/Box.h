@@ -126,8 +126,11 @@ public:
     void nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, bool linefeed);
     void tryAddFloat(ViewCSSImp* view);
     float adjustRemainingHeight(float height);
-    float useMargin();
-    void updateRemainingHeight(float height);
+
+    // Use the positive margin stored in context to consume the remaining height of floating boxes.
+    void useMargin(BlockLevelBox* block);
+
+    float updateRemainingHeight(float height);
     float clear(unsigned value);
 
     float collapseMargins(float margin);
@@ -562,6 +565,7 @@ class BlockLevelBox : public Box
     unsigned textAlign;
 
     // for a collapsed-through box
+    bool marginUsed;
     float topBorderEdge;
     float consumed;
 
