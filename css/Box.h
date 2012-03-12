@@ -257,6 +257,7 @@ protected:
     float borderRight;
     float borderBottom;
     float borderLeft;
+    float outlineWidth;
 
     float offsetH;
     float offsetV;
@@ -386,6 +387,9 @@ public:
     }
     float getPaddingHeight() const {
         return paddingTop + height + paddingBottom;
+    }
+    float getOutlineWidth() const {
+        return outlineWidth;
     }
 
     float getEffectiveTotalWidth() const;

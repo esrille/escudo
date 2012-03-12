@@ -390,8 +390,7 @@ void Box::renderBorder(ViewCSSImp* view, float left, float top)
 
 void Box::renderOutline(ViewCSSImp* view, float left, float top)
 {
-    float width = style->outlineWidth.getPx();
-    if (width <= 0.0f)
+    if (outlineWidth <= 0.0f)
         return;
 
     glPushMatrix();
@@ -400,14 +399,14 @@ void Box::renderOutline(ViewCSSImp* view, float left, float top)
 
     float ll = marginLeft;
     float lr = ll + borderLeft;
-    ll = lr - width;
+    ll = lr - outlineWidth;
     float rl = lr + getPaddingWidth();
-    float rr = rl + width;
+    float rr = rl + outlineWidth;
     float tt = marginTop;
     float tb = tt + borderTop;
-    tt = tb - width;
+    tt = tb - outlineWidth;
     float bt = tb + getPaddingHeight();
-    float bb = bt + width;
+    float bb = bt + outlineWidth;
 
     unsigned outline = style->outlineStyle.getValue();
     unsigned color = style->outlineColor.getARGB();
@@ -582,8 +581,6 @@ void BlockLevelBox::renderEnd(ViewCSSImp* view, unsigned overflow, bool scrollBa
                 glPopMatrix();
             }
         }
-        if (scrollBar && isVisible())
-            renderOutline(view, x, y + topBorderEdge);
     }
     glPopMatrix();
 }
@@ -633,6 +630,7 @@ void BlockLevelBox::renderInline(ViewCSSImp* view, StackingContext* stackingCont
         }
     }
 
+    bool hasOutline = false;
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
         if (child->style && child->style->isPositioned() && !child->isAnonymous())
             continue;
@@ -640,8 +638,23 @@ void BlockLevelBox::renderInline(ViewCSSImp* view, StackingContext* stackingCont
             unsigned overflow = block->renderBegin(view, true);
             block->renderInline(view, stackingContext);
             block->renderEnd(view, overflow);
+            hasOutline |= (0.0f < block->getOutlineWidth());
         } else
             child->render(view, stackingContext);
+    }
+
+    if (!hasOutline)
+        return;
+    for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
+        if (child->style && child->style->isPositioned() && !child->isAnonymous())
+            continue;
+        if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(child)) {
+            if (0.0f < block->getOutlineWidth()) {
+                unsigned overflow = block->renderBegin(view, true);
+                block->renderOutline(view, block->x, block->y + block->topBorderEdge);
+                block->renderEnd(view, overflow, false);
+            }
+        }
     }
 }
 
