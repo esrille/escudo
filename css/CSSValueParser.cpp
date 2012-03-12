@@ -462,7 +462,16 @@ void CSSValueParser::initializeRules()
         = color
         | CSSValueRule(u"invert", CSSOutlineColorValueImp::Invert);
     outlineStyle
-        = border_style;
+        = (CSSValueRule(u"none", CSSBorderStyleValueImp::None)
+        |  CSSValueRule(u"dotted", CSSBorderStyleValueImp::Dotted)
+        |  CSSValueRule(u"dashed", CSSBorderStyleValueImp::Dashed)
+        |  CSSValueRule(u"solid", CSSBorderStyleValueImp::Solid)
+        |  CSSValueRule(u"double", CSSBorderStyleValueImp::Double)
+        |  CSSValueRule(u"groove", CSSBorderStyleValueImp::Groove)
+        |  CSSValueRule(u"ridge", CSSBorderStyleValueImp::Ridge)
+        |  CSSValueRule(u"inset", CSSBorderStyleValueImp::Inset)
+        |  CSSValueRule(u"outset", CSSBorderStyleValueImp::Outset))
+            [CSSStyleDeclarationImp::BorderStyle];
     outlineWidth
         = border_width;
     outline
