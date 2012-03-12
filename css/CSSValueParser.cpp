@@ -460,7 +460,7 @@ void CSSValueParser::initializeRules()
 
     outlineColor
         = color
-        | u"invert";
+        | CSSValueRule(u"invert", CSSOutlineColorValueImp::Invert);
     outlineStyle
         = border_style;
     outlineWidth
@@ -1075,6 +1075,18 @@ CSSValueParser::CSSValueParser(int propertyID) :
     case CSSStyleDeclarationImp::MinHeight:
     case CSSStyleDeclarationImp::MinWidth:
         rule = &percent_non_negative_length;
+        break;
+    case CSSStyleDeclarationImp::Outline:
+        rule = &outline;
+        break;
+    case CSSStyleDeclarationImp::OutlineColor:
+        rule = &outlineColor;
+        break;
+    case CSSStyleDeclarationImp::OutlineStyle:
+        rule = &outlineStyle;
+        break;
+    case CSSStyleDeclarationImp::OutlineWidth:
+        rule = &outlineWidth;
         break;
     case CSSStyleDeclarationImp::Overflow:
         rule = &overflow;

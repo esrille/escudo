@@ -1649,6 +1649,46 @@ void CSSMarginShorthandImp::specify(CSSStyleDeclarationImp* self, const CSSStyle
     self->marginLeft.specify(decl->marginLeft);
 }
 
+bool CSSOutlineShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
+{
+    bool style = false;
+    bool width = false;
+    bool color = false;
+    std::deque<CSSParserTerm*>& stack = parser->getStack();
+    for (auto i = stack.begin(); i != stack.end(); ++i) {
+        CSSParserTerm* term = *i;
+        if (term->propertyID == CSSStyleDeclarationImp::BorderStyle) {
+            style = true;
+            decl->outlineStyle.setValue(term);
+        } else if (term->propertyID == CSSStyleDeclarationImp::BorderWidth) {
+            width = true;
+            decl->outlineWidth.setValue(term);
+        } else {
+            color = true;
+            decl->outlineColor.setValue(term);
+        }
+    }
+    if (!style)
+        decl->outlineStyle.setValue();
+    if (!width)
+        decl->outlineWidth.setValue();
+    if (!color)
+        decl->outlineColor.setValue();
+    return true;
+}
+
+std::u16string CSSOutlineShorthandImp::getCssText(CSSStyleDeclarationImp* decl)
+{
+    return decl->outlineWidth.getCssText(decl) + u' ' + decl->outlineStyle.getCssText(decl) + u' ' + decl->outlineColor.getCssText(decl);
+}
+
+void CSSOutlineShorthandImp::specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl)
+{
+    self->outlineColor.specify(decl->outlineColor);
+    self->outlineStyle.specify(decl->outlineStyle);
+    self->outlineWidth.specify(decl->outlineWidth);
+}
+
 bool CSSPaddingShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
 {
     std::deque<CSSParserTerm*>& stack = parser->getStack();

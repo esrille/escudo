@@ -323,6 +323,10 @@ public:
     CSSNonNegativeValueImp minHeight;
     CSSNonNegativeValueImp minWidth;
 
+    CSSOutlineColorValueImp outlineColor;
+    CSSBorderStyleValueImp outlineStyle;
+    CSSBorderWidthValueImp outlineWidth;
+    CSSOutlineShorthandImp outline;
     CSSOverflowValueImp overflow;
     CSSNonNegativeValueImp paddingTop;
     CSSNonNegativeValueImp paddingRight;

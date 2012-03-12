@@ -1855,6 +1855,62 @@ public:
     void specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl);
 };
 
+class CSSOutlineColorValueImp : public CSSPropertyValueImp
+{
+    int invert;
+    unsigned color;
+public:
+    enum {
+        Color = 0,
+        Invert = 1,
+    };
+    CSSOutlineColorValueImp& setValue(int index = 1, unsigned argb = 0xff000000) {
+        invert = index;
+        color = argb;
+        return *this;
+    }
+    CSSOutlineColorValueImp& setValue(CSSParserTerm* term) {
+        if (0 <= term->getIndex())
+            return setValue(term->getIndex());
+        else {
+            assert(term->unit == css::CSSPrimitiveValue::CSS_RGBCOLOR);
+            return setValue(0, term->rgb);
+        }
+    }
+    virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
+        return invert ? u"invert" : CSSSerializeRGB(color);
+    }
+    bool operator==(const CSSOutlineColorValueImp& value) const {
+        return (invert == value.invert) && (invert == Invert || color == value.color);
+    }
+    bool operator!=(const CSSOutlineColorValueImp& value) const {
+        return (invert != value.invert) || (invert == Color && color != value.color);
+    }
+    void specify(const CSSOutlineColorValueImp& specified) {
+        invert = specified.invert;
+        color = specified.color;
+    }
+    bool isInvert() const {
+        return invert == Invert;
+    }
+    unsigned getARGB() {
+        return color;
+    }
+    CSSOutlineColorValueImp() :
+        invert(Invert),
+        color(0xff000000)
+    {
+    }
+};
+
+class CSSOutlineShorthandImp : public CSSPropertyValueImp
+{
+public:
+    virtual bool setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
+    virtual std::u16string getCssText(CSSStyleDeclarationImp* decl);
+    void specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl);
+};
+
 class CSSPaddingShorthandImp : public CSSPropertyValueImp
 {
 public:

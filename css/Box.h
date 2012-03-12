@@ -487,6 +487,7 @@ public:
                       float ll, float lr, float rl, float rr, float tt, float tb, float bt, float bb,
                       Box* leftEdge, Box* rightEdge);
     void renderBorder(ViewCSSImp* view, float left, float top);
+    void renderOutline(ViewCSSImp* view, float left, float top);
 
     virtual void renderTableBorders(ViewCSSImp* view) {}
 

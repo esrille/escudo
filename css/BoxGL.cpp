@@ -180,12 +180,12 @@ void Box::renderBorderEdge(ViewCSSImp* view, int edge, unsigned borderStyle, uns
         case RIGHT:
             glLineWidth(fabsf(g - a));
             glLineStipple(fabsf(g - a), (borderStyle == CSSBorderStyleValueImp::Dotted) ? 0xaaaa : 0xcccc);
-            break;;
+            break;
         case TOP:
         case BOTTOM:
             glLineWidth(fabsf(h - b));
             glLineStipple(fabsf(h - b), (borderStyle == CSSBorderStyleValueImp::Dotted) ? 0xaaaa : 0xcccc);
-            break;;
+            break;
         }
         glColor4ub(red, green, blue, alpha);
         glBegin(GL_LINES);
@@ -245,11 +245,11 @@ void Box::renderBorderEdge(ViewCSSImp* view, int edge, unsigned borderStyle, uns
             case TOP:
             case LEFT:
                 dark = true;
-                break;;
+                break;
             case RIGHT:
             case BOTTOM:
                 bright = true;
-                break;;
+                break;
             }
         }
         if (borderStyle == CSSBorderStyleValueImp::Outset) {
@@ -257,11 +257,11 @@ void Box::renderBorderEdge(ViewCSSImp* view, int edge, unsigned borderStyle, uns
             case TOP:
             case LEFT:
                 bright = true;
-                break;;
+                break;
             case RIGHT:
             case BOTTOM:
                 dark = true;
-                break;;
+                break;
             }
         }
         if (dark) {
@@ -388,6 +388,45 @@ void Box::renderBorder(ViewCSSImp* view, float left, float top)
     renderBorder(view, left, top, backgroundColor, backgroundImage, ll, lr, rl, rr, tt, tb, bt, bb, this, this);
 }
 
+void Box::renderOutline(ViewCSSImp* view, float left, float top)
+{
+    float width = style->outlineWidth.getPx();
+    if (width <= 0.0f)
+        return;
+
+    glPushMatrix();
+    glTranslatef(left, top, 0.0f);
+    glDisable(GL_TEXTURE_2D);
+
+    float ll = marginLeft;
+    float lr = ll + borderLeft;
+    ll = lr - width;
+    float rl = lr + getPaddingWidth();
+    float rr = rl + width;
+    float tt = marginTop;
+    float tb = tt + borderTop;
+    tt = tb - width;
+    float bt = tb + getPaddingHeight();
+    float bb = bt + width;
+
+    unsigned outline = style->outlineStyle.getValue();
+    unsigned color = style->outlineColor.getARGB();
+
+    // TODO: Support 'invert'.
+
+    renderBorderEdge(view, TOP, outline, color,
+                     ll, tt, rr, tt, rl, tb, lr, tb);
+    renderBorderEdge(view, RIGHT, outline, color,
+                     rl, bt, rl, tb, rr, tt, rr, bb);
+    renderBorderEdge(view, BOTTOM, outline, color,
+                     lr, bt, rl, bt, rr, bb, ll, bb);
+    renderBorderEdge(view, LEFT, outline, color,
+                     ll, bb, ll, tt, lr, tb, lr, bt);
+
+    glEnable(GL_TEXTURE_2D);
+    glPopMatrix();
+}
+
 void Box::renderVerticalScrollBar(float w, float h, float pos, float total)
 {
     float overflow = total - h;
@@ -511,8 +550,8 @@ unsigned BlockLevelBox::renderBegin(ViewCSSImp* view, bool noBorder)
 
 void BlockLevelBox::renderEnd(ViewCSSImp* view, unsigned overflow, bool scrollBar)
 {
-    if (!isAnonymous() && style->parentStyle) {
-        if (overflow != CSSOverflowValueImp::Visible) {
+    if (!isAnonymous()) {
+        if (style->parentStyle && overflow != CSSOverflowValueImp::Visible) {
             glPopMatrix();
 
             // TODO: Support the cumulative intersection.
@@ -543,6 +582,8 @@ void BlockLevelBox::renderEnd(ViewCSSImp* view, unsigned overflow, bool scrollBa
                 glPopMatrix();
             }
         }
+        if (scrollBar && isVisible())
+            renderOutline(view, x, y);
     }
     glPopMatrix();
 }

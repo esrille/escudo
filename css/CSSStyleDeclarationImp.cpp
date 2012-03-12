@@ -289,6 +289,14 @@ CSSPropertyValueImp* CSSStyleDeclarationImp::getProperty(unsigned id)
         return &minHeight;
     case MinWidth:
         return &minWidth;
+    case OutlineColor:
+        return &outlineColor;
+    case OutlineStyle:
+        return &outlineStyle;
+    case OutlineWidth:
+        return &outlineWidth;
+    case Outline:
+        return &outline;
     case Overflow:
         return &overflow;
     case PaddingTop:
@@ -413,6 +421,11 @@ void CSSStyleDeclarationImp::setInherit(unsigned id)
         setInherit(MarginBottom);
         setInherit(MarginLeft);
         break;
+    case Outline:
+        setInherit(OutlineColor);
+        setInherit(OutlineStyle);
+        setInherit(OutlineWidth);
+        break;
     case Padding:
         setInherit(PaddingTop);
         setInherit(PaddingRight);
@@ -496,6 +509,11 @@ void CSSStyleDeclarationImp::resetInherit(unsigned id)
         resetInherit(MarginRight);
         resetInherit(MarginBottom);
         resetInherit(MarginLeft);
+        break;
+    case Outline:
+        resetInherit(OutlineColor);
+        resetInherit(OutlineStyle);
+        resetInherit(OutlineWidth);
         break;
     case Padding:
         resetInherit(PaddingTop);
@@ -788,6 +806,18 @@ void CSSStyleDeclarationImp::specify(const CSSStyleDeclarationImp* decl, unsigne
         break;
     case MinWidth:
         minWidth.specify(decl->minWidth);
+        break;
+    case OutlineColor:
+        outlineColor.specify(decl->outlineColor);
+        break;
+    case OutlineStyle:
+        outlineStyle.specify(decl->outlineStyle);
+        break;
+    case OutlineWidth:
+        outlineWidth.specify(decl->outlineWidth);
+        break;
+    case Outline:
+        outline.specify(this, decl);
         break;
     case Overflow:
         overflow.specify(decl->overflow);
@@ -1127,6 +1157,20 @@ void CSSStyleDeclarationImp::reset(unsigned id)
     case MinWidth:
         minWidth.setValue(0.0f, css::CSSPrimitiveValue::CSS_PX);
         break;
+    case OutlineColor:
+        outlineColor.setValue();
+        break;
+    case OutlineStyle:
+        outlineStyle.setValue();
+        break;
+    case OutlineWidth:
+        outlineWidth.setValue();
+        break;
+    case Outline:
+        outlineColor.setValue();
+        outlineStyle.setValue();
+        outlineWidth.setValue();
+        break;
     case Overflow:
         overflow.setValue();
         break;
@@ -1221,6 +1265,7 @@ void CSSStyleDeclarationImp::resetInheritedProperties()
         case Font:  // TODO
         case ListStyle:
         case Margin:
+        case Outline:
         case Padding:
             // ignore shorthand
             break;
@@ -1249,6 +1294,7 @@ void CSSStyleDeclarationImp::copy(const CSSStyleDeclarationImp* parentStyle, uns
     case Font:  // TODO
     case ListStyle:
     case Margin:
+    case Outline:
     case Padding:
         // ignore shorthand
         break;
@@ -1299,6 +1345,7 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     borderRightWidth.compute(view, borderRightStyle, this);
     borderBottomWidth.compute(view, borderBottomStyle, this);
     borderLeftWidth.compute(view, borderLeftStyle, this);
+    outlineWidth.compute(view, outlineStyle, this);
 
     paddingTop.compute(view, this);
     paddingRight.compute(view, this);
@@ -2505,8 +2552,7 @@ void CSSStyleDeclarationImp::setOrphans(Nullable<std::u16string> orphans)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getOutline()
 {
-    // TODO: implement me!
-    return Nullable<std::u16string>();
+    return outline.getCssText(this);
 }
 
 void CSSStyleDeclarationImp::setOutline(Nullable<std::u16string> outline)
@@ -2516,8 +2562,7 @@ void CSSStyleDeclarationImp::setOutline(Nullable<std::u16string> outline)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getOutlineColor()
 {
-    // TODO: implement me!
-    return Nullable<std::u16string>();
+    return outlineColor.getCssText(this);
 }
 
 void CSSStyleDeclarationImp::setOutlineColor(Nullable<std::u16string> outlineColor)
@@ -2527,8 +2572,7 @@ void CSSStyleDeclarationImp::setOutlineColor(Nullable<std::u16string> outlineCol
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getOutlineStyle()
 {
-    // TODO: implement me!
-    return Nullable<std::u16string>();
+    return outlineStyle.getCssText(this);
 }
 
 void CSSStyleDeclarationImp::setOutlineStyle(Nullable<std::u16string> outlineStyle)
@@ -2538,8 +2582,7 @@ void CSSStyleDeclarationImp::setOutlineStyle(Nullable<std::u16string> outlineSty
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getOutlineWidth()
 {
-    // TODO: implement me!
-    return Nullable<std::u16string>();
+    return outlineWidth.getCssText(this);
 }
 
 void CSSStyleDeclarationImp::setOutlineWidth(Nullable<std::u16string> outlineWidth)
