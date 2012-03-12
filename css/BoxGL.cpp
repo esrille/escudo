@@ -583,7 +583,7 @@ void BlockLevelBox::renderEnd(ViewCSSImp* view, unsigned overflow, bool scrollBa
             }
         }
         if (scrollBar && isVisible())
-            renderOutline(view, x, y);
+            renderOutline(view, x, y + topBorderEdge);
     }
     glPopMatrix();
 }
