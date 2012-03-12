@@ -1045,7 +1045,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
                     continue;
                 float d = baselines[y] - cellBox->getBaseline();
                 if (0.0f < d && cellBox->getRowSpan() == 1)
-                    heights[y] = std::max(heights[y], d + cellBox->getTotalHeight());
+                    heights[y] = std::max(heights[y], d + cellBox->intrinsicHeight);
             }
         }
         if (fixedLayout)
@@ -1077,8 +1077,8 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
                         baseline += baselines[y + r];
                     }
                     float d = baseline - cellBox->getBaseline();
-                    if (sum < d + cellBox->getTotalHeight()) {
-                        float diff = (d + cellBox->getTotalHeight() - sum) / span;
+                    if (sum < d + cellBox->intrinsicHeight) {
+                        float diff = (d + cellBox->intrinsicHeight - sum) / span;
                         for (unsigned r = 0; r < span; ++r)
                             heights[y + r] += diff;
                     }
