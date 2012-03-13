@@ -478,19 +478,19 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
         }
         if (markerStyle) {
             markerStyle->compute(this, style, element);
-            if (markerStyle->content.isNone())
+            if (markerStyle->display.isNone() || markerStyle->content.isNone())
                 markerStyle = 0;
         }
         CSSStyleDeclarationImp* beforeStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::Before);
         if (beforeStyle) {
             beforeStyle->compute(this, style, element);
-            if (beforeStyle->content.isNone())
+            if (beforeStyle->display.isNone() || beforeStyle->content.isNone())
                 beforeStyle = 0;
         }
         CSSStyleDeclarationImp* afterStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::After);
         if (afterStyle) {
             afterStyle->compute(this, style, element);
-            if (afterStyle->content.isNone())
+            if (afterStyle->display.isNone() || afterStyle->content.isNone())
                 afterStyle = 0;
         }
 
