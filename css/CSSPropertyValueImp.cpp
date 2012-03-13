@@ -460,7 +460,7 @@ std::u16string CSSAutoNumberingValueImp::getCssText(CSSStyleDeclarationImp* decl
     return cssText;
 }
 
-void CSSAutoNumberingValueImp::incrementCounter(ViewCSSImp* view, CSSAutoNumberingValueImp::CounterContext* context)
+void CSSAutoNumberingValueImp::incrementCounter(ViewCSSImp* view, CounterContext* context)
 {
     for (auto i = contents.begin(); i != contents.end(); ++i) {
         if (CounterImpPtr counter = view->getCounter((*i)->name)) {
@@ -1181,7 +1181,7 @@ void CSSContentValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style
     }
 }
 
-std::u16string CSSContentValueImp::CounterContent::eval(ViewCSSImp* view, CSSAutoNumberingValueImp::CounterContext* context)
+std::u16string CSSContentValueImp::CounterContent::eval(ViewCSSImp* view, Element element, CounterContext* context)
 {
     if (CounterImpPtr counter = view->getCounter(identifier)) {
         if (nested)
@@ -1192,7 +1192,12 @@ std::u16string CSSContentValueImp::CounterContent::eval(ViewCSSImp* view, CSSAut
     return u"";
 }
 
-Element CSSContentValueImp::eval(ViewCSSImp* view, Element element, CSSAutoNumberingValueImp::CounterContext* context)
+std::u16string CSSContentValueImp::AttrContent::eval(ViewCSSImp* view, Element element, CounterContext* context)
+{
+    return element.getAttribute(identifier);
+}
+
+Element CSSContentValueImp::eval(ViewCSSImp* view, Element element, CounterContext* context)
 {
     if (contents.empty())
         return 0;
@@ -1213,7 +1218,7 @@ Element CSSContentValueImp::eval(ViewCSSImp* view, Element element, CSSAutoNumbe
         return 0;
     std::u16string data;
     for (auto i = contents.begin(); i != contents.end(); ++i)
-        data += (*i)->eval(view, context);
+        data += (*i)->eval(view, element, context);
     if (org::w3c::dom::Text text = view->getDocument().createTextNode(data))
         span.appendChild(text);
 

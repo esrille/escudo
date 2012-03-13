@@ -507,7 +507,7 @@ public:
     bool hasCounter() const {
         return !contents.empty();
     }
-    void incrementCounter(ViewCSSImp* view, CSSAutoNumberingValueImp::CounterContext* context);
+    void incrementCounter(ViewCSSImp* view, CounterContext* context);
     void resetCounter(ViewCSSImp* view, CounterContext* context);
 
     CSSAutoNumberingValueImp(int defaultNumber) :
@@ -1024,6 +1024,8 @@ public:
 
 class CSSContentValueImp : public CSSPropertyValueImp
 {
+    typedef CSSAutoNumberingValueImp::CounterContext CounterContext;
+
 public:
     enum {
         Normal,
@@ -1040,7 +1042,7 @@ public:
     struct Content {
         virtual ~Content() {}
         virtual std::u16string getCssText() = 0;
-        virtual std::u16string eval(ViewCSSImp* view, CSSAutoNumberingValueImp::CounterContext* context) {
+        virtual std::u16string eval(ViewCSSImp* view, Element element, CounterContext* context) {
             return u"";
         }
     };
@@ -1052,7 +1054,7 @@ public:
         virtual std::u16string getCssText() {
             return CSSSerializeString(value);
         }
-        virtual std::u16string eval(ViewCSSImp* view, CSSAutoNumberingValueImp::CounterContext* context) {
+        virtual std::u16string eval(ViewCSSImp* view, Element element, CounterContext* context) {
             return value;
         }
     };
@@ -1086,7 +1088,7 @@ public:
                 return u"counters(" +  CSSSerializeIdentifier(identifier) + u", " + CSSSerializeString(string) + u", " + listStyleType.getCssText() + u')';
             return u"counter(" +  CSSSerializeIdentifier(identifier) + u", " + listStyleType.getCssText() + u')';
         }
-        virtual std::u16string eval(ViewCSSImp* view, CSSAutoNumberingValueImp::CounterContext* context);
+        virtual std::u16string eval(ViewCSSImp* view, Element element, CounterContext* context);
     };
     struct AttrContent : public Content {
         std::u16string identifier;
@@ -1096,6 +1098,7 @@ public:
         virtual std::u16string getCssText() {
             return u"attr(" + CSSSerializeIdentifier(identifier) + u')';
         }
+        virtual std::u16string eval(ViewCSSImp* view, Element element, CounterContext* context);
     };
     struct QuoteContent : public Content {
         unsigned value;
@@ -1143,7 +1146,7 @@ public:
     }
 
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
-    Element eval(ViewCSSImp* view, Element element, CSSAutoNumberingValueImp::CounterContext* context);
+    Element eval(ViewCSSImp* view, Element element, CounterContext* context);
 
     CSSContentValueImp(unsigned initial = Normal) :
         value(initial) {
