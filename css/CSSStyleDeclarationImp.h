@@ -338,6 +338,7 @@ public:
     CSSPageBreakValueImp pageBreakInside;
 
     CSSPositionValueImp position;
+    CSSQuotesValueImp quotes;
 
     CSSAutoLengthValueImp right;
 

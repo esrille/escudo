@@ -48,6 +48,7 @@ ViewCSSImp::ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyle
     userStyleSheet(userStyleSheet),
     stackingContexts(0),
     overflow(CSSOverflowValueImp::Auto),
+    quotingDepth(0),
     scrollWidth(0.0f),
     zoom(1.0f),
     hovered(0),
@@ -633,6 +634,7 @@ BlockLevelBox* ViewCSSImp::layOut()
     if (stackingContexts)
         stackingContexts->clearBase();
 
+    quotingDepth = 0;
     scrollWidth = 0.0f;
 
     layOutBlockBoxes();

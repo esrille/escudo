@@ -106,6 +106,7 @@ CSSValueRule CSSValueParser::padding;
 CSSValueRule CSSValueParser::pageBreak; // = pageBereakAfter, pageBreakBefore
 CSSValueRule CSSValueParser::pageBreakInside;
 CSSValueRule CSSValueParser::position;
+CSSValueRule CSSValueParser::quotes;
 CSSValueRule CSSValueParser::tableLayout;
 CSSValueRule CSSValueParser::textAlign;
 CSSValueRule CSSValueParser::textDecoration;
@@ -500,6 +501,9 @@ void CSSValueParser::initializeRules()
         | CSSValueRule(u"relative", CSSPositionValueImp::Relative)
         | CSSValueRule(u"absolute", CSSPositionValueImp::Absolute)
         | CSSValueRule(u"fixed", CSSPositionValueImp::Fixed);
+    quotes
+        = CSSValueRule(1, CSSValueRule::Inf, string + string)
+        | CSSValueRule(u"none", CSSQuotesValueImp::None);
 
     tableLayout
         = CSSValueRule(u"auto", CSSTableLayoutValueImp::Auto)
@@ -1118,6 +1122,9 @@ CSSValueParser::CSSValueParser(int propertyID) :
         break;
     case CSSStyleDeclarationImp::Position:
         rule = &position;
+        break;
+    case CSSStyleDeclarationImp::Quotes:
+        rule = &quotes;
         break;
     case CSSStyleDeclarationImp::TableLayout:
         rule = &tableLayout;

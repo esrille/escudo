@@ -57,6 +57,7 @@ class ViewCSSImp
 
     std::list<CSSStyleSheetImp*> styleSheets;
     std::list<CounterImpPtr> counterList;
+    int quotingDepth;
 
     float scrollWidth;
     float zoom;
@@ -259,6 +260,13 @@ public:
     CounterImpPtr getCounter(const std::u16string identifier);
     void clearCounters() {
         counterList.clear();
+    }
+
+    int incrementQuotingDepth() {
+        return quotingDepth++;
+    }
+    int decrementQuotingDepth() {
+        return --quotingDepth;
     }
 
     CSSStyleDeclarationImp* getStyle(Element elt, Nullable<std::u16string> pseudoElt = Nullable<std::u16string>());

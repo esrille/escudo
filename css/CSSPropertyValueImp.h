@@ -1108,6 +1108,7 @@ public:
         virtual std::u16string getCssText() {
             return CSSContentValueImp::Options[value];
         }
+        virtual std::u16string eval(ViewCSSImp* view, Element element, CounterContext* context);
     };
 
     void clearContents() {
@@ -1970,6 +1971,33 @@ public:
         return value == Fixed;
     }
     static const char16_t* Options[];
+};
+
+class CSSQuotesValueImp : public CSSPropertyValueImp
+{
+    std::deque<std::pair<std::u16string, std::u16string>> quotes;
+public:
+    enum {
+        None = 0,
+    };
+    void reset();
+    virtual bool setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
+    virtual std::u16string getCssText(CSSStyleDeclarationImp* decl);
+    void specify(const CSSQuotesValueImp& specified);
+    std::u16string getOpenQuote(int depth) const {
+        if (depth < 0 || quotes.size() == 0)
+            return u"";
+        if (quotes.size() <= depth)
+            depth = quotes.size() - 1;
+        return quotes[depth].first;
+    }
+    std::u16string getCloseQuote(int depth) const {
+        if (depth < 0 || quotes.size() == 0)
+            return u"";
+        if (quotes.size() <= depth)
+            depth = quotes.size() - 1;
+        return quotes[depth].second;
+    }
 };
 
 class CSSTableLayoutValueImp : public CSSPropertyValueImp

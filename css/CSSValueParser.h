@@ -269,6 +269,7 @@ class CSSValueParser
     static CSSValueRule pageBreak;  // = pageBreakAfter, pageBreakBefore
     static CSSValueRule pageBreakInside;
     static CSSValueRule position;
+    static CSSValueRule quotes;
     static CSSValueRule tableLayout;
     static CSSValueRule textAlign;
     static CSSValueRule textDecoration;

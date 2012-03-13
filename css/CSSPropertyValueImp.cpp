@@ -1197,6 +1197,36 @@ std::u16string CSSContentValueImp::AttrContent::eval(ViewCSSImp* view, Element e
     return element.getAttribute(identifier);
 }
 
+std::u16string CSSContentValueImp::QuoteContent::eval(ViewCSSImp* view, Element element, CounterContext* context)
+{
+    int depth;
+    switch (value) {
+    case OpenQuote:
+        depth = view->incrementQuotingDepth();
+        if (0 <= depth) {
+            if (CSSStyleDeclarationImp* style = view->getStyle(element))
+                return style->quotes.getOpenQuote(depth);
+        }
+        break;
+    case CloseQuote:
+        depth = view->decrementQuotingDepth();
+        if (0 <= depth) {
+            if (CSSStyleDeclarationImp* style = view->getStyle(element))
+                return style->quotes.getCloseQuote(depth);
+        }
+        break;
+    case NoOpenQuote:
+        view->incrementQuotingDepth();
+        break;
+    case NoCloseQuote:
+        view->decrementQuotingDepth();
+        break;
+    default:
+        break;
+    }
+    return u"";
+}
+
 Element CSSContentValueImp::eval(ViewCSSImp* view, Element element, CounterContext* context)
 {
     if (contents.empty())
@@ -1747,6 +1777,48 @@ void CSSPaddingShorthandImp::specify(CSSStyleDeclarationImp* self, const CSSStyl
     self->paddingRight.specify(decl->paddingRight);
     self->paddingBottom.specify(decl->paddingBottom);
     self->paddingLeft.specify(decl->paddingLeft);
+}
+
+void CSSQuotesValueImp::reset()
+{
+    quotes.clear();
+}
+
+bool CSSQuotesValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
+{
+    reset();
+    std::deque<CSSParserTerm*>& stack = parser->getStack();
+    if (stack.size() % 2)
+        return true;
+    for (auto i = stack.begin(); i != stack.end(); ++i) {
+        CSSParserTerm* term = *i;
+        assert(term->unit == CSSPrimitiveValue::CSS_STRING);
+        std::u16string open = term->getString();
+        ++i;
+        assert(i != stack.end());
+        term = *i;
+        std::u16string close = term->getString();
+        quotes.push_back(std::make_pair(open, close));
+    }
+    return true;
+}
+
+std::u16string CSSQuotesValueImp::getCssText(CSSStyleDeclarationImp* decl)
+{
+    if (quotes.empty())
+        return u"none";
+    std::u16string cssText;
+    for (auto i = quotes.begin(); i != quotes.end(); ++i) {
+        if (i != quotes.begin())
+            cssText += u' ';
+        cssText += CSSSerializeString(i->first) + u' ' + CSSSerializeString(i->second);
+    }
+    return cssText;
+}
+
+void CSSQuotesValueImp::specify(const CSSQuotesValueImp& specified)
+{
+    quotes = specified.quotes;
 }
 
 void CSSVerticalAlignValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style)
