@@ -745,7 +745,7 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
                 context->useMargin(this);
                 layOutAnonymousInlineTable(view, context, i);
                 collapsed = false;
-            } else if (!isReplacedElement(element) && style->display.isInline()) {
+            } else if ((!isReplacedElement(element) && style->display.isInline()) || style->display.isListItem()) {
                 // empty inline element
                 if (layOutText(view, node, context, u"", element, style))
                     collapsed = false;

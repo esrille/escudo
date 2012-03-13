@@ -538,6 +538,13 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
                 if (BlockLevelBox* box = layOutBlockBoxes(marker, currentBox, style, &cc))
                     childBox = box;
             }
+            // Deal with an empty list item; cf. list-alignment-001
+            if (!element.hasChildNodes() && !beforeStyle && !afterStyle) {
+                if (!currentBox->hasChildBoxes())
+                    currentBox->insertInline(element);
+                else if (BlockLevelBox* anonymousBox = currentBox->getAnonymousBox())
+                    anonymousBox->insertInline(element);
+            }
         }
 
         if (beforeStyle) {
