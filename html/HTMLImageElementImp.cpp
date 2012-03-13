@@ -59,6 +59,7 @@ void HTMLImageElementImp::notify()
         active = false;
     else {
         // TODO: Check type
+        delete image;
         image = new(std::nothrow) BoxImage();
         if (!image)
             active = false;
@@ -107,6 +108,17 @@ std::u16string HTMLImageElementImp::getSrc()
 void HTMLImageElementImp::setSrc(std::u16string src)
 {
     setAttribute(u"src", src);
+    DocumentImp* document = getOwnerDocumentImp();
+    if (request)
+        request->abort();
+    else
+        request = new(std::nothrow) HttpRequest(document->getDocumentURI());
+    if (request) {
+        request->open(u"GET", getSrc());
+        request->setHanndler(boost::bind(&HTMLImageElementImp::notify, this));
+        document->incrementLoadEventDelayCount();
+        request->send();
+    }
 }
 
 std::u16string HTMLImageElementImp::getCrossOrigin()
