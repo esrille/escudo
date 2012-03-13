@@ -140,7 +140,9 @@ TableWrapperBox::TableWrapperBox(ViewCSSImp* view, Element element, CSSStyleDecl
     yCurrent(0),
     anonymousCell(0),
     anonymousTable(0),
-    pendingTheadElement(0)
+    pendingTheadElement(0),
+    yTheadBegin(0),
+    yTheadEnd(0)
 {
     counterContext = new(std::nothrow) CounterContext(view);
 
@@ -292,9 +294,11 @@ void TableWrapperBox::processTableChild(Node node, CSSStyleDeclarationImp* style
         break;
     case CSSDisplayValueImp::TableHeaderGroup:
         if (!pendingTheadElement) {
-            // TODO: Fix me; this would break the order of counters.
-            endRow();
             pendingTheadElement = child;
+            endRow();
+            yTheadBegin = yHeight;
+            processRowGroup(child, counterContext);
+            yTheadEnd = yHeight;
             break;
         }
         // FALL THROUGH
@@ -635,25 +639,24 @@ void TableWrapperBox::processCol(Element col, CSSStyleDeclarationImp* colStyle, 
 
 void TableWrapperBox::processHeader()
 {
-    unsigned yStart = yHeight;
-    if (pendingTheadElement)
-        processRowGroup(pendingTheadElement, counterContext);
-    unsigned headerCount = yHeight - yStart;
+    if (yTheadBegin == 0)
+        return;
+    unsigned headerCount = yTheadEnd - yTheadBegin;
     if (headerCount == 0)
         return;
 
-    std::rotate(grid.begin(), grid.begin() + yStart, grid.end());
-    std::rotate(rows.begin(), rows.begin() + yStart, rows.end());
-    std::rotate(rowGroups.begin(), rowGroups.begin() + yStart, rowGroups.end());
+    std::rotate(grid.begin(), grid.begin() + yTheadBegin, grid.begin() + yTheadEnd);
+    std::rotate(rows.begin(), rows.begin() + yTheadBegin, rows.begin() + yTheadEnd);
+    std::rotate(rowGroups.begin(), rowGroups.begin() + yTheadBegin, rowGroups.begin() + yTheadEnd);
     for (unsigned y = 0; y < headerCount; ++y) {
         for (unsigned x = 0; x < xWidth; ++x) {
             CellBox* cellBox = grid[y][x].get();
-            if (!cellBox || cellBox->isSpanned(x, y + yStart))
+            if (!cellBox || cellBox->isSpanned(x, y + yTheadBegin))
                 continue;
-            cellBox->row -= yStart;
+            cellBox->row -= yTheadBegin;
         }
     }
-    for (unsigned y = headerCount; y < yHeight; ++y) {
+    for (unsigned y = headerCount; y < yTheadEnd; ++y) {
         for (unsigned x = 0; x < xWidth; ++x) {
             CellBox* cellBox = grid[y][x].get();
             if (!cellBox || cellBox->isSpanned(x, y - headerCount))

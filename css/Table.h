@@ -138,6 +138,8 @@ class TableWrapperBox : public BlockLevelBox
     CellBox* anonymousCell;
     TableWrapperBox* anonymousTable;
     Element pendingTheadElement;
+    unsigned yTheadBegin;
+    unsigned yTheadEnd;
     std::list<Element> pendingTfootElements;
     CounterContext* counterContext;
 
