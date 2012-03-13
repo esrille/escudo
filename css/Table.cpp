@@ -142,7 +142,7 @@ TableWrapperBox::TableWrapperBox(ViewCSSImp* view, Element element, CSSStyleDecl
     anonymousTable(0),
     pendingTheadElement(0)
 {
-    counterContext = new(std::nothrow) CSSAutoNumberingValueImp::CounterContext(view);
+    counterContext = new(std::nothrow) CounterContext(view);
 
     isHtmlTable = html::HTMLTableElement::hasInstance(element);
     if (isAnonymousTable) {
@@ -279,7 +279,7 @@ void TableWrapperBox::processTableChild(Node node, CSSStyleDeclarationImp* style
         break;
     case CSSDisplayValueImp::TableColumn:
         endRow();
-        processCol(child, childStyle, 0);
+        processCol(child, childStyle, counterContext, 0);
         break;
     case CSSDisplayValueImp::TableRow:
         endRow();
@@ -292,6 +292,7 @@ void TableWrapperBox::processTableChild(Node node, CSSStyleDeclarationImp* style
         break;
     case CSSDisplayValueImp::TableHeaderGroup:
         if (!pendingTheadElement) {
+            // TODO: Fix me; this would break the order of counters.
             endRow();
             pendingTheadElement = child;
             break;
@@ -317,16 +318,19 @@ void TableWrapperBox::processTableChild(Node node, CSSStyleDeclarationImp* style
     anonymousCell = 0;
 }
 
-void TableWrapperBox::processRowGroup(Element section, CSSAutoNumberingValueImp::CounterContext* counterContext)
+void TableWrapperBox::processRowGroup(Element section, CounterContext* counterContext)
 {
     CSSStyleDeclarationImp* sectionStyle = view->getStyle(section);
+    CounterContext cc(view);
+    counterContext->update(sectionStyle);
+
     for (Node node = section.getFirstChild(); node; node = node.getNextSibling())
-        processRowGroupChild(node, sectionStyle);
+        processRowGroupChild(node, sectionStyle, &cc);
     // TODO 3.
     endRowGroup();
 }
 
-void TableWrapperBox::processRowGroupChild(Node node, CSSStyleDeclarationImp* sectionStyle)
+void TableWrapperBox::processRowGroupChild(Node node, CSSStyleDeclarationImp* sectionStyle, CounterContext* counterContext)
 {
     unsigned display = CSSDisplayValueImp::None;
     Element child = 0;
@@ -421,9 +425,12 @@ void TableWrapperBox::endRowGroup()
     // downwardGrowingCells.clear();
 }
 
-void TableWrapperBox::processRow(Element row, CSSAutoNumberingValueImp::CounterContext* counterContext)
+void TableWrapperBox::processRow(Element row, CounterContext* counterContext)
 {
     CSSStyleDeclarationImp* rowStyle = view->getStyle(row);
+    CounterContext cc(view);
+    counterContext->update(rowStyle);
+
     if (yHeight == yCurrent)
         appendRow();
     rows[yCurrent] = rowStyle;
@@ -431,7 +438,7 @@ void TableWrapperBox::processRow(Element row, CSSAutoNumberingValueImp::CounterC
     xCurrent = 0;
     growDownwardGrowingCells();
     for (Node node = row.getFirstChild(); node; node = node.getNextSibling())
-        processRowChild(node, rowStyle);
+        processRowChild(node, rowStyle, &cc);
     endRow();
 }
 
@@ -439,7 +446,7 @@ void TableWrapperBox::growDownwardGrowingCells()
 {
 }
 
-void TableWrapperBox::processRowChild(Node node, CSSStyleDeclarationImp* rowStyle)
+void TableWrapperBox::processRowChild(Node node, CSSStyleDeclarationImp* rowStyle, CounterContext* counterContext)
 {
     unsigned display = CSSDisplayValueImp::None;
     Element child = 0;
@@ -529,7 +536,7 @@ void TableWrapperBox::endRow()
     }
 }
 
-CellBox* TableWrapperBox::processCell(Element current, BlockLevelBox* parentBox, CSSStyleDeclarationImp* currentStyle, CSSAutoNumberingValueImp::CounterContext* counterContext, CSSStyleDeclarationImp* rowStyle)
+CellBox* TableWrapperBox::processCell(Element current, BlockLevelBox* parentBox, CSSStyleDeclarationImp* currentStyle, CounterContext* counterContext, CSSStyleDeclarationImp* rowStyle)
 {
     if (yHeight == yCurrent) {
         appendRow();
@@ -579,6 +586,10 @@ CellBox* TableWrapperBox::processCell(Element current, BlockLevelBox* parentBox,
 
 void TableWrapperBox::processColGroup(Element colgroup)
 {
+    CSSStyleDeclarationImp* colgroupStyle = view->getStyle(colgroup);
+    CounterContext cc(view);
+    counterContext->update(colgroupStyle);
+
     bool hasCol = false;
     int xStart = xWidth;
     for (Element child = colgroup.getFirstElementChild(); child; child = child.getNextElementSibling()) {
@@ -587,7 +598,7 @@ void TableWrapperBox::processColGroup(Element colgroup)
         if (childStyle->display.getValue() != CSSDisplayValueImp::TableColumn)
             continue;
         hasCol = true;
-        processCol(child, childStyle, colgroup);
+        processCol(child, childStyle, &cc, colgroup);
     }
     if (hasCol) {
         // TODO. 7.
@@ -605,8 +616,10 @@ void TableWrapperBox::processColGroup(Element colgroup)
     }
 }
 
-void TableWrapperBox::processCol(Element col, CSSStyleDeclarationImp* colStyle, Element colgroup)
+void TableWrapperBox::processCol(Element col, CSSStyleDeclarationImp* colStyle, CounterContext* counterContext, Element colgroup)
 {
+    counterContext->update(colStyle);
+
     unsigned span = 1;
     if (html::HTMLTableColElement::hasInstance(col)) {
         html::HTMLTableColElement c(interface_cast<html::HTMLTableColElement>(col));

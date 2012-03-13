@@ -83,6 +83,7 @@ typedef boost::intrusive_ptr<CellBox> CellBoxPtr;
 class TableWrapperBox : public BlockLevelBox
 {
     typedef BlockLevelBoxPtr Caption;
+    typedef CSSAutoNumberingValueImp::CounterContext CounterContext;
 
     typedef std::deque<CellBoxPtr> Row;
     typedef std::deque<Row> Grid;
@@ -138,18 +139,18 @@ class TableWrapperBox : public BlockLevelBox
     TableWrapperBox* anonymousTable;
     Element pendingTheadElement;
     std::list<Element> pendingTfootElements;
-    CSSAutoNumberingValueImp::CounterContext* counterContext;
+    CounterContext* counterContext;
 
     unsigned appendRow();
     unsigned appendColumn();
 
-    void processCol(Element col, CSSStyleDeclarationImp* colStyle, Element colgroup);
+    void processCol(Element col, CSSStyleDeclarationImp* colStyle, CounterContext* counterContext, Element colgroup);
     void processColGroup(Element colgroup);
-    void processRow(Element row, CSSAutoNumberingValueImp::CounterContext* counterContext);
-    void processRowChild(Node node, CSSStyleDeclarationImp* rowStyle);
+    void processRow(Element row, CounterContext* counterContext);
+    void processRowChild(Node node, CSSStyleDeclarationImp* rowStyle, CounterContext* counterContext);
     void endRow();
-    void processRowGroup(Element section, CSSAutoNumberingValueImp::CounterContext* counterContext);
-    void processRowGroupChild(Node node, CSSStyleDeclarationImp* sectionStyle);
+    void processRowGroup(Element section, CounterContext* counterContext);
+    void processRowGroupChild(Node node, CSSStyleDeclarationImp* sectionStyle, CounterContext* counterContext);
     void endRowGroup();
     void processHeader();
     void processFooter();
@@ -161,7 +162,7 @@ class TableWrapperBox : public BlockLevelBox
     void computeTableBorders();
 
     void formCSSTable();
-    CellBox* processCell(Element current, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSAutoNumberingValueImp::CounterContext* counterContext, CSSStyleDeclarationImp* rowStyle);
+    CellBox* processCell(Element current, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CounterContext* counterContext, CSSStyleDeclarationImp* rowStyle);
 
     void layOutFixed(ViewCSSImp* view, const ContainingBlock* containingBlock, bool collapsingModel);
 
