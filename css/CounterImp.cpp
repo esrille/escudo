@@ -170,6 +170,19 @@ std::u16string convertToRoman(int n, AdditiveGlyph* glyphList, int min = 1, int 
     return value;
 }
 
+std::u16string convertAlphabetic(int n, char16_t* alphabet, size_t glyphCount)
+{
+    if (n < 0)
+        return toString(n);
+    std::u16string value;
+    while (n) {
+        --n;
+        value.insert(0, 1, alphabet[n % glyphCount]);
+        n /= glyphCount;
+    }
+    return value;
+}
+
 std::u16string emit(int i, unsigned type)
 {
     std::u16string value;
@@ -198,16 +211,16 @@ std::u16string emit(int i, unsigned type)
         break;
     case CSSListStyleTypeValueImp::LowerAlpha:
     case CSSListStyleTypeValueImp::LowerLatin:
-        value = std::u16string(1, u'a' + static_cast<unsigned>(i) % 26 - 1);
+        value = convertAlphabetic(i, u"abcdefghijklmnopqrstuvwxyz", 26);
         break;
     case CSSListStyleTypeValueImp::UpperAlpha:
     case CSSListStyleTypeValueImp::UpperLatin:
-        value = std::u16string(1, u'A' + static_cast<unsigned>(i) % 26 - 1);
+        value = convertAlphabetic(i, u"ABCDEFGHIJKLMNOPQRSTUVWXYZ", 26);
         break;
     case CSSListStyleTypeValueImp::LowerGreek:
         // This style is only defined because CSS2.1 has it.
         // It doesn't appear to actually be used in Greek texts.
-        value = std::u16string(1, u"αβγδεζηθικλμνξοπρστυφχψω"[static_cast<unsigned>(i - 1) % 24]);
+        value = convertAlphabetic(i, u"αβγδεζηθικλμνξοπρστυφχψω", 24);
         break;
     case CSSListStyleTypeValueImp::LowerRoman:
         value = convertToRoman(i, lowerRoman);
