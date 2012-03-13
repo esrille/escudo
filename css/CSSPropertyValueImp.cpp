@@ -427,6 +427,7 @@ CSSAutoNumberingValueImp::CounterContext::~CounterContext()
 
 bool CSSAutoNumberingValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
 {
+    reset();
     std::deque<CSSParserTerm*>& stack = parser->getStack();
     for (auto i = stack.begin(); i != stack.end(); ++i) {
         CSSParserTerm* term = *i;
@@ -1041,6 +1042,7 @@ void CSSBorderShorthandImp::specify(CSSStyleDeclarationImp* self, const CSSStyle
 
 bool CSSContentValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
 {
+    reset();
     std::deque<CSSParserTerm*>& stack = parser->getStack();
     for (auto i = stack.begin(); i != stack.end(); ++i) {
         CSSParserTerm* term = *i;
@@ -1257,6 +1259,7 @@ void CSSDisplayValueImp::compute(CSSStyleDeclarationImp* decl, Element element)
 
 std::deque<CSSParserTerm*>::iterator CSSFontFamilyValueImp::setValue(std::deque<CSSParserTerm*>& stack, std::deque<CSSParserTerm*>::iterator i)
 {
+    reset();
     bool hasGeneric = false;
     generic = None;
     std::u16string family;
