@@ -1287,7 +1287,10 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     }
 
     if (backgroundImage && backgroundImage->getState() == BoxImage::CompletelyAvailable) {
-        style->backgroundPosition.resolve(view, backgroundImage, style.get(), getPaddingWidth(), getPaddingHeight());
+        if (getParentBox() || !style->backgroundAttachment.isFixed())
+            style->backgroundPosition.resolve(view, backgroundImage, style.get(), getPaddingWidth(), getPaddingHeight());
+        else
+            style->backgroundPosition.resolve(view, backgroundImage, style.get(), containingBlock->width, containingBlock->height);
         backgroundLeft = style->backgroundPosition.getLeftPx();
         backgroundTop = style->backgroundPosition.getTopPx();
     }
