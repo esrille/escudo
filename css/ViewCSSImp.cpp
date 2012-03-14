@@ -281,9 +281,10 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Text text, BlockLevelBox* parentBox,
         return 0;
     }
     if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(parentBox->getLastChild())) {
-        if (table && table->isAnonymousTableObject())
+        if (table && table->isAnonymousTableObject()) {
             table->processTableChild(text, style);
-        return 0;
+            return 0;
+        }
     }
     if (discardable && !style->display.isInline() && !parentBox->hasAnonymousBox()) {
         // cf. http://www.w3.org/TR/CSS2/visuren.html#anonymous
@@ -527,6 +528,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
 
         BlockLevelBox* childBox = 0;
         CSSAutoNumberingValueImp::CounterContext ccPseudo(this);
+        TableWrapperBox* tableWrapperBox = 0;
 
         if (markerStyle) {
             // Execute implicit 'counter-increment: list-item;'
@@ -536,8 +538,15 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
             ccPseudo.update(markerStyle);
             if (Element marker = markerStyle->content.eval(this, element, &cc)) {
                 map[marker] = markerStyle;
-                if (BlockLevelBox* box = layOutBlockBoxes(marker, currentBox, style, &cc))
+                if (BlockLevelBox* box = layOutBlockBoxes(marker, currentBox, style, &cc)) {
                     childBox = box;
+                    if (tableWrapperBox = dynamic_cast<TableWrapperBox*>(box)) {
+                        if (tableWrapperBox->isAnonymousTableObject()) {
+                            tableWrapperBox->layOutBlockBoxes();
+                            tableWrapperBox = 0;
+                        }
+                    }
+                }
             }
             // Deal with an empty list item; cf. list-alignment-001
             if (!element.hasChildNodes() && !beforeStyle && !afterStyle) {
@@ -552,12 +561,18 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
             ccPseudo.update(beforeStyle);
             if (Element before = beforeStyle->content.eval(this, element, &cc)) {
                 map[before] = beforeStyle;
-                if (BlockLevelBox* box = layOutBlockBoxes(before, currentBox, style, &cc))
+                if (BlockLevelBox* box = layOutBlockBoxes(before, currentBox, style, &cc)) {
                     childBox = box;
+                    if (tableWrapperBox = dynamic_cast<TableWrapperBox*>(box)) {
+                        if (tableWrapperBox->isAnonymousTableObject()) {
+                            tableWrapperBox->layOutBlockBoxes();
+                            tableWrapperBox = 0;
+                        }
+                    }
+                }
             }
         }
 
-        TableWrapperBox* tableWrapperBox = 0;
         for (Node child = element.getFirstChild(); child; child = child.getNextSibling()) {
             if (BlockLevelBox* box = layOutBlockBoxes(child, currentBox, style, ccPseudo.hasCounter() ? &ccPseudo : &cc)) {
                 childBox = box;
@@ -573,8 +588,16 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
             ccPseudo.update(afterStyle);
             if (Element after = afterStyle->content.eval(this, element, &cc)) {
                 map[after] = afterStyle;
-                if (BlockLevelBox* box = layOutBlockBoxes(after, currentBox, style, &cc))
+                if (BlockLevelBox* box = layOutBlockBoxes(after, currentBox, style, &cc)) {
                     childBox = box;
+                    if (tableWrapperBox = dynamic_cast<TableWrapperBox*>(box)) {
+                        if (tableWrapperBox->isAnonymousTableObject()) {
+                            tableWrapperBox->layOutBlockBoxes();
+                            tableWrapperBox = 0;
+                        }
+                    }
+                }
+
             }
         }
 

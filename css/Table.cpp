@@ -249,6 +249,8 @@ void TableWrapperBox::layOutBlockBoxes()
     // Bottom caption boxes
     for (auto i = bottomCaptions.begin(); i != bottomCaptions.end(); ++i)
         appendChild(i->get());
+
+    isAnonymousTable = false;
 }
 
 void TableWrapperBox::processTableChild(Node node, CSSStyleDeclarationImp* style)
