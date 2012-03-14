@@ -295,6 +295,7 @@ public:
     CSSAutoNumberingValueImp counterIncrement;
     CSSAutoNumberingValueImp counterReset;
 
+    CSSCursorValueImp cursor;
     CSSDirectionValueImp direction;
     CSSDisplayValueImp display;
 

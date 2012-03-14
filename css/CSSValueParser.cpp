@@ -83,6 +83,7 @@ CSSValueRule CSSValueParser::clear;
 CSSValueRule CSSValueParser::clip;
 CSSValueRule CSSValueParser::color;
 CSSValueRule CSSValueParser::content;
+CSSValueRule CSSValueParser::cursor;
 CSSValueRule CSSValueParser::direction;
 CSSValueRule CSSValueParser::display;
 CSSValueRule CSSValueParser::float_;
@@ -380,7 +381,26 @@ void CSSValueParser::initializeRules()
                        CSSValueRule(u"close-quote", CSSContentValueImp::CloseQuote) |
                        CSSValueRule(u"no-open-quote", CSSContentValueImp::NoOpenQuote) |
                        CSSValueRule(u"no-close-quote", CSSContentValueImp::NoCloseQuote));
-
+    cursor
+        = CSSValueRule(0, CSSValueRule::Inf, uri + comma) + (
+          CSSValueRule(u"auto", CSSCursorValueImp::Auto) |
+          CSSValueRule(u"crosshair", CSSCursorValueImp::Crosshair) |
+          CSSValueRule(u"default", CSSCursorValueImp::Default) |
+          CSSValueRule(u"pointer", CSSCursorValueImp::Pointer) |
+          CSSValueRule(u"move", CSSCursorValueImp::Move) |
+          CSSValueRule(u"e-resize", CSSCursorValueImp::EResize) |
+          CSSValueRule(u"ne-resize", CSSCursorValueImp::NEResize) |
+          CSSValueRule(u"nw-resize", CSSCursorValueImp::NWResize) |
+          CSSValueRule(u"n-resize", CSSCursorValueImp::NResize) |
+          CSSValueRule(u"se-resize", CSSCursorValueImp::SEResize) |
+          CSSValueRule(u"sw-resize", CSSCursorValueImp::SWResize) |
+          CSSValueRule(u"s-resize", CSSCursorValueImp::SResize) |
+          CSSValueRule(u"w-resize", CSSCursorValueImp::WResize) |
+          CSSValueRule(u"text", CSSCursorValueImp::Text) |
+          CSSValueRule(u"wait", CSSCursorValueImp::Wait) |
+          CSSValueRule(u"help", CSSCursorValueImp::Help) |
+          CSSValueRule(u"progress", CSSCursorValueImp::Progress)
+        );
     direction
         = CSSValueRule(u"ltr", CSSDirectionValueImp::Ltr)
         | CSSValueRule(u"rtl", CSSDirectionValueImp::Rtl);
@@ -1026,6 +1046,9 @@ CSSValueParser::CSSValueParser(int propertyID) :
         break;
     case CSSStyleDeclarationImp::CounterReset:
         rule = &auto_numbering;
+        break;
+    case CSSStyleDeclarationImp::Cursor:
+        rule = &cursor;
         break;
     case CSSStyleDeclarationImp::Direction:
         rule = &direction;

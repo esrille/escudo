@@ -241,6 +241,8 @@ CSSPropertyValueImp* CSSStyleDeclarationImp::getProperty(unsigned id)
         return &counterIncrement;
     case CounterReset:
         return &counterReset;
+    case Cursor:
+        return &cursor;
     case Direction:
         return &direction;
     case Display:
@@ -737,6 +739,9 @@ void CSSStyleDeclarationImp::specify(const CSSStyleDeclarationImp* decl, unsigne
     case CounterReset:
         counterReset.specify(decl->counterReset);
         break;
+    case Cursor:
+        cursor.specify(decl->cursor);
+        break;
     case Direction:
         direction.specify(decl->direction);
         break;
@@ -1084,6 +1089,9 @@ void CSSStyleDeclarationImp::reset(unsigned id)
         break;
     case CounterReset:
         counterReset.reset();
+        break;
+    case Cursor:
+        cursor.reset();
         break;
     case Direction:
         direction.setValue();
@@ -2212,8 +2220,7 @@ void CSSStyleDeclarationImp::setCueBefore(Nullable<std::u16string> cueBefore)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getCursor()
 {
-    // TODO: implement me!
-    return Nullable<std::u16string>();
+    return cursor.getCssText(this);
 }
 
 void CSSStyleDeclarationImp::setCursor(Nullable<std::u16string> cursor)

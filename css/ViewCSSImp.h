@@ -232,13 +232,8 @@ public:
     Node getHovered() const {
         return hovered;
     }
-    void setHovered(Node node) {
-        if (hovered != node) {
-            if (boxTree)
-                boxTree->setFlags(1);
-        }
-        hovered = node;
-    }
+    // Set hovered to node.
+    void setHovered(Node node);
     bool isHovered(Node node);
 
     bool canScroll() const {

@@ -101,6 +101,42 @@ void ViewCSSImp::render()
     }
 }
 
+namespace {
+
+const int cursorMap[CSSCursorValueImp::CursorsMax] = {
+    GLUT_CURSOR_INHERIT,            // Auto
+    GLUT_CURSOR_CROSSHAIR,          // Crosshair
+    GLUT_CURSOR_LEFT_ARROW,         // Default
+    GLUT_CURSOR_INFO,               // Pointer
+    GLUT_CURSOR_DESTROY,            // Move
+    GLUT_CURSOR_RIGHT_SIDE,         // EResize
+    GLUT_CURSOR_TOP_RIGHT_CORNER,   // NEResize
+    GLUT_CURSOR_TOP_LEFT_CORNER,    // NWResize
+    GLUT_CURSOR_TOP_SIDE,           // NResize
+    GLUT_CURSOR_BOTTOM_RIGHT_CORNER,// SEResize
+    GLUT_CURSOR_BOTTOM_LEFT_CORNER, // SWResize
+    GLUT_CURSOR_BOTTOM_SIDE,        // SResize
+    GLUT_CURSOR_LEFT_SIDE,          // WResize
+    GLUT_CURSOR_TEXT,               // Text
+    GLUT_CURSOR_WAIT,               // Wait
+    GLUT_CURSOR_HELP,               // Help
+    GLUT_CURSOR_WAIT,               // Progress
+};
+
+}
+
+void ViewCSSImp::setHovered(Node node)
+{
+    if (hovered != node) {
+        if (boxTree) {
+            boxTree->setFlags(1);
+            if (CSSStyleDeclarationImp* style = getStyle(Box::getContainingElement(node)))
+                glutSetCursor(cursorMap[style->cursor.getValue()]);
+        }
+    }
+    hovered = node;
+}
+
 }}}}  // org::w3c::dom::bootstrap
 
 void initFonts(int* argc, char* argv[])

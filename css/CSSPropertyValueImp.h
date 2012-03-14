@@ -1150,7 +1150,54 @@ public:
     Element eval(ViewCSSImp* view, Element element, CounterContext* context);
 
     CSSContentValueImp(unsigned initial = Normal) :
-        value(initial) {
+        value(initial)
+    {
+    }
+    static const char16_t* Options[];
+};
+
+class CSSCursorValueImp : public CSSPropertyValueImp
+{
+    std::list<std::u16string> uriList;
+    unsigned value;
+public:
+    enum {
+        Auto,
+        Crosshair,
+        Default,
+        Pointer,
+        Move,
+        EResize,
+        NEResize,
+        NWResize,
+        NResize,
+        SEResize,
+        SWResize,
+        SResize,
+        WResize,
+        Text,
+        Wait,
+        Help,
+        Progress,
+
+        CursorsMax
+    };
+    unsigned getValue() const {
+        return value;
+    }
+    void reset() {
+        uriList.clear();
+        value = Auto;
+    }
+    virtual bool setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
+    virtual std::u16string getCssText(CSSStyleDeclarationImp* decl);
+    void specify(const CSSCursorValueImp& specified) {
+        uriList = specified.uriList;
+        value = specified.value;
+    }
+    CSSCursorValueImp() :
+        value(Auto)
+    {
     }
     static const char16_t* Options[];
 };

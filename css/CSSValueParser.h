@@ -246,6 +246,7 @@ class CSSValueParser
     static CSSValueRule clip;
     static CSSValueRule color;
     static CSSValueRule content;
+    static CSSValueRule cursor;
     static CSSValueRule direction;
     static CSSValueRule display;
     static CSSValueRule float_;

@@ -106,6 +106,26 @@ const char16_t* CSSContentValueImp::Options[] = {
     u"attr",
 };
 
+const char16_t* CSSCursorValueImp::Options[] = {
+    u"auto",
+    u"crosshair",
+    u"default",
+    u"pointer",
+    u"move",
+    u"e-resize",
+    u"ne-resize",
+    u"nw-resize",
+    u"n-resize",
+    u"se-resize",
+    u"sw-resize",
+    u"s-resize",
+    u"w-resize",
+    u"text",
+    u"wait",
+    u"help",
+    u"progress"
+};
+
 const char16_t* CSSDirectionValueImp::Options[] = {
     u"ltr",
     u"rtl"
@@ -1260,6 +1280,33 @@ Element CSSContentValueImp::eval(ViewCSSImp* view, Element element, CounterConte
         imp->setParentNode(static_cast<NodeImp*>(element.self()));
 
     return span;
+}
+
+bool CSSCursorValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
+{
+    reset();
+    std::deque<CSSParserTerm*>& stack = parser->getStack();
+    for (auto i = stack.begin(); i != stack.end(); ++i) {
+        CSSParserTerm* term = *i;
+        if (term->unit == CSSPrimitiveValue::CSS_URI)
+            uriList.push_back(term->getString());
+        else if (0 <= term->getIndex())
+            value = term->getIndex();
+    }
+    return true;
+}
+
+std::u16string CSSCursorValueImp::getCssText(CSSStyleDeclarationImp* decl)
+{
+    std::u16string cssText;
+    for (auto i = uriList.begin(); i != uriList.end(); ++i) {
+        if (i != uriList.begin())
+            cssText += u", ";
+        cssText += u"url(" + CSSSerializeString(*i) + u')';
+    }
+    if (!uriList.empty())
+        cssText += u", ";
+    return cssText + Options[value];
 }
 
 void CSSDisplayValueImp::compute(CSSStyleDeclarationImp* decl, Element element)
