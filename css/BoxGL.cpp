@@ -285,7 +285,7 @@ void Box::renderBorderEdge(ViewCSSImp* view, int edge, unsigned borderStyle, uns
 }
 
 void Box::renderBorder(ViewCSSImp* view, float left, float top,
-                       unsigned backgroundColor, BoxImage* backgroundImage,
+                       CSSStyleDeclarationImp* style, unsigned backgroundColor, BoxImage* backgroundImage,
                        float ll, float lr, float rl, float rr, float tt, float tb, float bt, float bb,
                        Box* leftEdge, Box* rightEdge)
 {
@@ -385,7 +385,7 @@ void Box::renderBorder(ViewCSSImp* view, float left, float top)
     float tb = tt + borderTop;
     float bt = tb + getPaddingHeight();
     float bb = bt + borderBottom;
-    renderBorder(view, left, top, backgroundColor, backgroundImage, ll, lr, rl, rr, tt, tb, bt, bb, this, this);
+    renderBorder(view, left, top, getStyle(), backgroundColor, backgroundImage, ll, lr, rl, rr, tt, tb, bt, bb, this, this);
 }
 
 void Box::renderOutline(ViewCSSImp* view, float left, float top)
@@ -704,10 +704,10 @@ void InlineLevelBox::renderMultipleBackground(ViewCSSImp* view)
     if (box) {
         rr = (lastBox->x + lastBox->getTotalWidth() - lastBox->marginRight) - x;
         rl = rr - lastBox->borderRight;
-        renderBorder(view, x, y - getBlankTop(), backgroundColor, backgroundImage, ll, lr, rl, rr, tt, tb, bt, bb, this, lastBox);
+        renderBorder(view, x, y - getBlankTop(), getStyle(), backgroundColor, backgroundImage, ll, lr, rl, rr, tt, tb, bt, bb, this, lastBox);
     } else {
         rr = rl = (tail->getX() + tail->getTotalWidth()) - x;
-        renderBorder(view, x, y - getBlankTop(), backgroundColor, backgroundImage, ll, lr, rl, rr, tt, tb, bt, bb, this, 0);
+        renderBorder(view, x, y - getBlankTop(), getStyle(), backgroundColor, backgroundImage, ll, lr, rl, rr, tt, tb, bt, bb, this, 0);
         LineBox* lineBox = dynamic_cast<LineBox*>(getParentBox());
         assert(lineBox);
         float baseline = lineBox->getY() + lineBox->getBaseline();
@@ -745,14 +745,14 @@ void InlineLevelBox::renderMultipleBackground(ViewCSSImp* view)
                 lr = ll + head->borderLeft;
                 rr = (lastBox->x + lastBox->getTotalWidth() - lastBox->marginRight) - head->x;
                 rl = rr - lastBox->borderRight;
-                renderBorder(view, head->x, lastBox->y - lastBox->getBlankTop(), backgroundColor, backgroundImage, ll, lr, rl, rr, tt, tb, bt, bb, 0, lastBox);
+                renderBorder(view, head->x, lastBox->y - lastBox->getBlankTop(), getStyle(), backgroundColor, backgroundImage, ll, lr, rl, rr, tt, tb, bt, bb, 0, lastBox);
                 break;
             }
             if (head) {
                 ll = lr = 0;
                 rr = rl = (tail->getX() + tail->getTotalWidth()) - head->x;
                 // TODO: Calculate 'top' accurately.
-                renderBorder(view, head->x, y - getBlankTop() + (lineBox->getY() + lineBox->getBaseline() - baseline), backgroundColor, backgroundImage, ll, lr, rl, rr, tt, tb, bt, bb, 0, 0);
+                renderBorder(view, head->x, y - getBlankTop() + (lineBox->getY() + lineBox->getBaseline() - baseline), getStyle(), backgroundColor, backgroundImage, ll, lr, rl, rr, tt, tb, bt, bb, 0, 0);
             }
         }
     }
@@ -797,12 +797,12 @@ void InlineLevelBox::renderEmptyBox(ViewCSSImp* view, CSSStyleDeclarationImp* pa
         rr = (lastBox->x + lastBox->getTotalWidth() - lastBox->marginRight) - x;
         rl = rr - lastBox->borderRight;
         renderBorder(view, x, top,
-                     parentStyle->backgroundColor.getARGB(), 0,
+                     parentStyle, parentStyle->backgroundColor.getARGB(), 0,
                      ll, lr, rl, rr, tt, tb, bt, bb, this, lastBox);
     } else {
         rr = rl = (tail->getX() + tail->getTotalWidth()) - x;
         renderBorder(view, x, top,
-                     parentStyle->backgroundColor.getARGB(), 0,
+                     parentStyle, parentStyle->backgroundColor.getARGB(), 0,
                      ll, lr, rl, rr, tt, tb, bt, bb, this, 0);
         float baseline = lineBox->getY() + lineBox->getBaseline();
         for (;;) {
@@ -840,7 +840,7 @@ void InlineLevelBox::renderEmptyBox(ViewCSSImp* view, CSSStyleDeclarationImp* pa
                 rr = (lastBox->x + lastBox->getTotalWidth() - lastBox->marginRight) - head->x;
                 rl = rr - lastBox->borderRight;
                 renderBorder(view, head->x, lastBox->y - lastBox->getBlankTop(),
-                             parentStyle->backgroundColor.getARGB(), 0,
+                             parentStyle, parentStyle->backgroundColor.getARGB(), 0,
                              ll, lr, rl, rr, tt, tb, bt, bb, 0, lastBox);
                 break;
             }
@@ -849,7 +849,7 @@ void InlineLevelBox::renderEmptyBox(ViewCSSImp* view, CSSStyleDeclarationImp* pa
                 rr = rl = (tail->getX() + tail->getTotalWidth()) - head->x;
                 // TODO: Calculate 'top' accurately.
                 renderBorder(view, head->x, top + (lineBox->getY() + lineBox->getBaseline() - baseline),
-                             parentStyle->backgroundColor.getARGB(), 0,
+                             parentStyle, parentStyle->backgroundColor.getARGB(), 0,
                              ll, lr, rl, rr, tt, tb, bt, bb, 0, 0);
             }
         }

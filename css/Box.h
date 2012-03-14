@@ -487,7 +487,7 @@ public:
 
     virtual void render(ViewCSSImp* view, StackingContext* stackingContext) = 0;
     void renderBorder(ViewCSSImp* view, float left, float top,
-                      unsigned backgroundColor, BoxImage* backgroundImage,
+                      CSSStyleDeclarationImp* style, unsigned backgroundColor, BoxImage* backgroundImage,
                       float ll, float lr, float rl, float rr, float tt, float tb, float bt, float bb,
                       Box* leftEdge, Box* rightEdge);
     void renderBorder(ViewCSSImp* view, float left, float top);
