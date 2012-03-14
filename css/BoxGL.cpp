@@ -600,11 +600,8 @@ void BlockLevelBox::renderNonInline(ViewCSSImp* view, StackingContext* stackingC
             for (auto box = lineBox->getFirstChild(); box; box = box->getNextSibling()) {
                 if (box->style && box->style->isFloat())
                     stackingContext->addFloat(box);
-                else if (CellBox* cellBox = dynamic_cast<CellBox*>(box)) {
-                    unsigned overflow = cellBox->renderBegin(view);
+                else if (CellBox* cellBox = dynamic_cast<CellBox*>(box))
                     cellBox->renderNonInline(view, stackingContext);
-                    cellBox->renderEnd(view, overflow, false);
-                }
             }
         }
     }
@@ -671,12 +668,7 @@ void LineBox::render(ViewCSSImp* view, StackingContext* stackingContext)
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
         if (child->style && ((child->style->isFloat() || child->style->isPositioned() && !child->isAnonymous())))
             continue;
-        if (CellBox* cellBox = dynamic_cast<CellBox*>(child)) {
-            unsigned overflow = cellBox->renderBegin(view, true);
-            cellBox->renderInline(view, stackingContext);
-            cellBox->renderEnd(view, overflow);
-        } else
-            child->render(view, stackingContext);
+        child->render(view, stackingContext);
     }
 }
 

@@ -127,6 +127,33 @@ void CellBox::resolveWidth(float w)
     BlockLevelBox::resolveWidth(w);
 }
 
+bool CellBox::isEmptyCell() const
+{
+    if (hasChildBoxes() || !style)
+        return false;
+    if (style->emptyCells.getValue() == CSSEmptyCellsValueImp::Show)
+        return false;
+    return style->borderCollapse.getValue();
+}
+
+void CellBox::render(ViewCSSImp* view, StackingContext* stackingContext)
+{
+    if (isEmptyCell())
+        return;
+    unsigned overflow = renderBegin(view, true);
+    renderInline(view, stackingContext);
+    renderEnd(view, overflow);
+}
+
+void CellBox::renderNonInline(ViewCSSImp* view, StackingContext* stackingContext)
+{
+    if (isEmptyCell())
+        return;
+    unsigned overflow = renderBegin(view);
+    BlockLevelBox::renderNonInline(view, stackingContext);
+    renderEnd(view, overflow, false);
+}
+
 TableWrapperBox::TableWrapperBox(ViewCSSImp* view, Element element, CSSStyleDeclarationImp* style) :
     BlockLevelBox(element, style),
     view(view),

@@ -86,6 +86,7 @@ CSSValueRule CSSValueParser::content;
 CSSValueRule CSSValueParser::cursor;
 CSSValueRule CSSValueParser::direction;
 CSSValueRule CSSValueParser::display;
+CSSValueRule CSSValueParser::emptyCells;
 CSSValueRule CSSValueParser::float_;
 CSSValueRule CSSValueParser::fontFamily;
 CSSValueRule CSSValueParser::fontSize;
@@ -421,7 +422,9 @@ void CSSValueParser::initializeRules()
         | CSSValueRule(u"table-cell", CSSDisplayValueImp::TableCell)
         | CSSValueRule(u"table-caption", CSSDisplayValueImp::TableCaption)
         | CSSValueRule(u"none", CSSDisplayValueImp::None);
-
+    emptyCells
+        = CSSValueRule(u"hide", CSSEmptyCellsValueImp::Hide)
+        | CSSValueRule(u"show", CSSEmptyCellsValueImp::Show);
     float_
         = CSSValueRule(u"none", CSSFloatValueImp::None)
         | CSSValueRule(u"left", CSSFloatValueImp::Left)
@@ -1055,6 +1058,9 @@ CSSValueParser::CSSValueParser(int propertyID) :
         break;
     case CSSStyleDeclarationImp::Display:
         rule = &display;
+        break;
+    case CSSStyleDeclarationImp::EmptyCells:
+        rule = &emptyCells;
         break;
     case CSSStyleDeclarationImp::Float:
         rule = &float_;

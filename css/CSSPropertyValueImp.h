@@ -1440,6 +1440,36 @@ public:
     }
 };
 
+class CSSEmptyCellsValueImp : public CSSPropertyValueImp
+{
+    unsigned value;
+public:
+    enum {
+        Hide,
+        Show
+    };
+    CSSEmptyCellsValueImp& setValue(unsigned value = Show) {
+        this->value = value;
+        return *this;
+    }
+    CSSEmptyCellsValueImp& setValue(CSSParserTerm* term) {
+        return setValue(term->getIndex());
+    }
+    unsigned getValue() const {
+        return value;
+    }
+    virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
+        return Options[value];
+    }
+    void specify(const CSSEmptyCellsValueImp& specified) {
+        value = specified.value;
+    }
+    CSSEmptyCellsValueImp(unsigned initial = Show) :
+        value(initial) {
+    }
+    static const char16_t* Options[];
+};
+
 class CSSFloatValueImp : public CSSPropertyValueImp
 {
     unsigned value;

@@ -299,6 +299,7 @@ public:
     CSSDirectionValueImp direction;
     CSSDisplayValueImp display;
 
+    CSSEmptyCellsValueImp emptyCells;
     CSSFloatValueImp float_;
     CSSFontFamilyValueImp fontFamily;
     CSSFontSizeValueImp fontSize;

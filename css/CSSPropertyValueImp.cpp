@@ -150,6 +150,11 @@ const char16_t* CSSDisplayValueImp::Options[] = {
     u"none"
 };
 
+const char16_t* CSSEmptyCellsValueImp::Options[] = {
+    u"hide",
+    u"show",
+};
+
 const char16_t* CSSFloatValueImp::Options[] = {
     u"none",
     u"left",

@@ -74,8 +74,12 @@ public:
     }
     float getBaseline() const;
 
+    bool isEmptyCell() const;
+
     virtual float shrinkTo();
     virtual void resolveWidth(float w);
+    virtual void render(ViewCSSImp* view, StackingContext* stackingContext);
+    void renderNonInline(ViewCSSImp* view, StackingContext* stackingContext);
 };
 
 typedef boost::intrusive_ptr<CellBox> CellBoxPtr;

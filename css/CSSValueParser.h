@@ -249,6 +249,7 @@ class CSSValueParser
     static CSSValueRule cursor;
     static CSSValueRule direction;
     static CSSValueRule display;
+    static CSSValueRule emptyCells;
     static CSSValueRule float_;
     static CSSValueRule fontFamily;
     static CSSValueRule fontSize;

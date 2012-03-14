@@ -247,6 +247,8 @@ CSSPropertyValueImp* CSSStyleDeclarationImp::getProperty(unsigned id)
         return &direction;
     case Display:
         return &display;
+    case EmptyCells:
+        return &emptyCells;
     case Float:
         return &float_;
     case FontFamily:
@@ -748,6 +750,9 @@ void CSSStyleDeclarationImp::specify(const CSSStyleDeclarationImp* decl, unsigne
     case Display:
         display.specify(decl->display);
         break;
+    case EmptyCells:
+        emptyCells.specify(decl->emptyCells);
+        break;
     case Float:
         float_.specify(decl->float_);
         break;
@@ -1098,6 +1103,9 @@ void CSSStyleDeclarationImp::reset(unsigned id)
         break;
     case Display:
         display.setValue();
+        break;
+    case EmptyCells:
+        emptyCells.setValue();
         break;
     case Float:
         float_.setValue();
@@ -2261,8 +2269,7 @@ void CSSStyleDeclarationImp::setElevation(Nullable<std::u16string> elevation)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getEmptyCells()
 {
-    // TODO: implement me!
-    return Nullable<std::u16string>();
+    return emptyCells.getCssText(this);
 }
 
 void CSSStyleDeclarationImp::setEmptyCells(Nullable<std::u16string> emptyCells)
