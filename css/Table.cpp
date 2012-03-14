@@ -169,7 +169,10 @@ TableWrapperBox::TableWrapperBox(ViewCSSImp* view, Element element, CSSStyleDecl
     anonymousTable(0),
     pendingTheadElement(0),
     yTheadBegin(0),
-    yTheadEnd(0)
+    yTheadEnd(0),
+    pendingTfootElement(0),
+    yTfootBegin(0),
+    yTfootEnd(0)
 {
     counterContext = new(std::nothrow) CounterContext(view);
 
@@ -213,8 +216,8 @@ unsigned TableWrapperBox::appendColumn()
 
 void TableWrapperBox::layOutBlockBoxes()
 {
-    processFooter();
     processHeader();
+    processFooter();
 
     if (counterContext) {
         delete counterContext;
@@ -317,18 +320,26 @@ void TableWrapperBox::processTableChild(Node node, CSSStyleDeclarationImp* style
         break;
     case CSSDisplayValueImp::TableFooterGroup:
         endRow();
-        pendingTfootElements.push_back(child);
+        if (pendingTfootElement)
+            processRowGroup(child, counterContext);
+        else {
+            pendingTfootElement = child;
+            yTfootBegin = yHeight;
+            processRowGroup(child, counterContext);
+            yTfootEnd = yHeight;
+        }
         break;
     case CSSDisplayValueImp::TableHeaderGroup:
-        if (!pendingTheadElement) {
+        endRow();
+        if (pendingTheadElement)
+            processRowGroup(child, counterContext);
+        else {
             pendingTheadElement = child;
-            endRow();
             yTheadBegin = yHeight;
             processRowGroup(child, counterContext);
             yTheadEnd = yHeight;
-            break;
         }
-        // FALL THROUGH
+        break;
     case CSSDisplayValueImp::TableRowGroup:
         endRow();
         processRowGroup(child, counterContext);
@@ -691,15 +702,41 @@ void TableWrapperBox::processHeader()
             cellBox->row += headerCount;
         }
     }
+
+    if (yTfootEnd <= yTheadBegin) {
+        yTfootBegin += headerCount;
+        yTfootEnd += headerCount;
+    }
 }
 
 void TableWrapperBox::processFooter()
 {
-    while (!pendingTfootElements.empty()) {
-        Element tfoot = pendingTfootElements.front();
-        processRowGroup(tfoot, counterContext);
-        pendingTfootElements.pop_front();
+    if (yTfootEnd == yHeight)
+        return;
+    unsigned headerCount = yTfootEnd - yTfootBegin;
+    if (headerCount == 0)
+        return;
+
+    unsigned offset = yHeight - yTfootEnd;
+    for (unsigned y = yTfootBegin; y < yTfootEnd; ++y) {
+        for (unsigned x = 0; x < xWidth; ++x) {
+            CellBox* cellBox = grid[y][x].get();
+            if (!cellBox || cellBox->isSpanned(x, y))
+                continue;
+            cellBox->row += offset;
+        }
     }
+    for (unsigned y = yTfootEnd; y < yHeight; ++y) {
+        for (unsigned x = 0; x < xWidth; ++x) {
+            CellBox* cellBox = grid[y][x].get();
+            if (!cellBox || cellBox->isSpanned(x, y))
+                continue;
+            cellBox->row -= headerCount;
+        }
+    }
+    std::rotate(grid.begin() + yTfootBegin, grid.begin() + yTfootEnd, grid.end());
+    std::rotate(rows.begin() + yTfootBegin, rows.begin() + yTfootEnd, rows.end());
+    std::rotate(rowGroups.begin() + yTfootBegin, rowGroups.begin() + yTfootEnd, rowGroups.end());
 }
 
 //

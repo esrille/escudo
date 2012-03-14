@@ -144,7 +144,9 @@ class TableWrapperBox : public BlockLevelBox
     Element pendingTheadElement;
     unsigned yTheadBegin;
     unsigned yTheadEnd;
-    std::list<Element> pendingTfootElements;
+    Element pendingTfootElement;
+    unsigned yTfootBegin;
+    unsigned yTfootEnd;
     CounterContext* counterContext;
 
     unsigned appendRow();
