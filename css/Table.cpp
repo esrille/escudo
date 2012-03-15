@@ -938,10 +938,11 @@ void TableWrapperBox::computeTableBorders()
         l = getColumnBorderValue(0, 0)->getWidth() / 2.0f;
         r = getColumnBorderValue(xWidth, 0)->getWidth() / 2.0f;
     }
-    tableBox->expandMargins(t, r, b, l);
+    tableBox->expandBorders(t, r, b, l);
     for (unsigned y = 0; y < yHeight; ++y) {
-        marginLeft = std::max(marginLeft, getColumnBorderValue(0, y)->getWidth() / 2.0f - l);
-        marginRight = std::max(marginRight, getColumnBorderValue(xWidth, y)->getWidth() / 2.0f - r);
+        // TODO: Check if the following margins can be collapsed with the margins of the wrapper.
+        marginLeft = std::max(borderLeft, getColumnBorderValue(0, y)->getWidth() / 2.0f - l) - borderLeft;
+        marginRight = std::max(borderRight, getColumnBorderValue(xWidth, y)->getWidth() / 2.0f - r) - borderRight;
     }
 }
 
