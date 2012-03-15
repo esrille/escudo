@@ -1054,14 +1054,11 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
             delete *i;
         rowImages.resize(yHeight);
         for (unsigned y = 0; y < yHeight; ++y) {
+            rowImages[y] = 0;
             CSSStyleDeclarationImp* rowStyle = rows[y].get();
-            if (!style) {
-                rowImages[y] = 0;
-                continue;
-            }
-            if (!rowStyle->backgroundImage.isNone()) {
+            if (rowStyle && !rowStyle->backgroundImage.isNone()) {
                 view->preload(view->getDocument().getDocumentURI(), rowStyle->backgroundImage.getValue());
-                rowImages[y] = new(std::nothrow) BoxImage(this, view->getDocument().getDocumentURI(), rowStyle->backgroundImage.getValue(), style->backgroundRepeat.getValue());
+                rowImages[y] = new(std::nothrow) BoxImage(this, view->getDocument().getDocumentURI(), rowStyle->backgroundImage.getValue(), rowStyle->backgroundRepeat.getValue());
             }
         }
         for (unsigned x = 0; x < xWidth; ++x)
