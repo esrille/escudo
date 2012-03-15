@@ -347,6 +347,19 @@ public:
         return marginLeft;
     }
 
+    float getBorderTop() const {
+        return borderTop;
+    }
+    float getBorderRight() const {
+        return borderRight;
+    }
+    float getBorderBottom() const {
+        return borderBottom;
+    }
+    float getBorderLeft() const {
+        return borderLeft;
+    }
+
     bool hasMargins() const {  // have non-zero margins?
         return marginTop != 0.0f || marginRight != 0.0f || marginBottom != 0.0f || marginLeft != 0.0f;
     }
@@ -411,6 +424,13 @@ public:
         marginRight += r;
         marginBottom += b;
         marginLeft += l;
+    }
+
+    void expandBorders(float t, float r, float b, float l) {
+        borderTop += t;
+        borderRight += r;
+        borderBottom += b;
+        borderLeft += l;
     }
 
     virtual float shrinkTo();
@@ -696,6 +716,7 @@ public:
 
     void resolveWidth(ViewCSSImp* view, const ContainingBlock* containingBlock, float available = 0);
     void resolveBackground(ViewCSSImp* view);
+    void resolveBackgroundPosition(ViewCSSImp* view, const ContainingBlock* containingBlock);
     void resolveMargin(ViewCSSImp* view, const ContainingBlock* containingBlock, float available);
     virtual void resolveWidth(float w);
     void applyMinMaxWidth(float w);

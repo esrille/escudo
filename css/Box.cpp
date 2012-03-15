@@ -401,6 +401,19 @@ void BlockLevelBox::resolveBackground(ViewCSSImp* view)
     }
 }
 
+void BlockLevelBox::resolveBackgroundPosition(ViewCSSImp* view, const ContainingBlock* containingBlock)
+{
+    assert(style);
+    if (!backgroundImage || backgroundImage->getState() != BoxImage::CompletelyAvailable)
+        return;
+    if (getParentBox() || !style->backgroundAttachment.isFixed())
+        style->backgroundPosition.resolve(view, backgroundImage, style.get(), getPaddingWidth(), getPaddingHeight());
+    else
+        style->backgroundPosition.resolve(view, backgroundImage, style.get(), containingBlock->width, containingBlock->height);
+    backgroundLeft = style->backgroundPosition.getLeftPx();
+    backgroundTop = style->backgroundPosition.getTopPx();
+}
+
 void BlockLevelBox::resolveWidth(float w)
 {
     resolveNormalWidth(w);
@@ -1286,14 +1299,7 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         child->resolveOffset(view);
     }
 
-    if (backgroundImage && backgroundImage->getState() == BoxImage::CompletelyAvailable) {
-        if (getParentBox() || !style->backgroundAttachment.isFixed())
-            style->backgroundPosition.resolve(view, backgroundImage, style.get(), getPaddingWidth(), getPaddingHeight());
-        else
-            style->backgroundPosition.resolve(view, backgroundImage, style.get(), containingBlock->width, containingBlock->height);
-        backgroundLeft = style->backgroundPosition.getLeftPx();
-        backgroundTop = style->backgroundPosition.getTopPx();
-    }
+    resolveBackgroundPosition(view, containingBlock);
 
     restoreFormattingContext(context);
     if (parentContext && parentContext != context) {
@@ -1580,11 +1586,7 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
         child->fit(width);
     }
 
-    if (backgroundImage && backgroundImage->getState() == BoxImage::CompletelyAvailable) {
-        style->backgroundPosition.resolve(view, backgroundImage, style.get(), getPaddingWidth(), getPaddingHeight());
-        backgroundLeft = style->backgroundPosition.getLeftPx();
-        backgroundTop = style->backgroundPosition.getTopPx();
-    }
+    resolveBackgroundPosition(view, containingBlock);
 
     restoreFormattingContext(context);
     adjustCollapsedThroughMargins(context);

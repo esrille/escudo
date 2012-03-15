@@ -1292,6 +1292,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
         if (collapsingModel)
             computeTableBorders();
         width = tableBox->getBlockWidth();
+        tableBox->resolveBackgroundPosition(view, containingBlock);
     }
 
     for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
