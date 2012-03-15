@@ -194,6 +194,10 @@ TableWrapperBox::~TableWrapperBox()
         delete *i;
     for (auto i = rowGroupImages.begin(); i != rowGroupImages.end(); ++i)
         delete *i;
+    for (auto i = columnImages.begin(); i != columnImages.end(); ++i)
+        delete *i;
+    for (auto i = columnGroupImages.begin(); i != columnGroupImages.end(); ++i)
+        delete *i;
     if (counterContext)
         delete counterContext;
 }
@@ -1052,6 +1056,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
         widths.resize(xWidth);
         heights.resize(yHeight);
         baselines.resize(yHeight);
+
         for (auto i = rowImages.begin(); i != rowImages.end(); ++i)
             delete *i;
         rowImages.resize(yHeight);
@@ -1079,6 +1084,35 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
                 --y;
             }
         }
+
+        for (auto i = columnImages.begin(); i != columnImages.end(); ++i)
+            delete *i;
+        columnImages.resize(xWidth);
+        for (unsigned x = 0; x < xWidth; ++x) {
+            columnImages[x] = 0;
+            CSSStyleDeclarationImp* columnStyle = columns[x].get();
+            if (columnStyle && !columnStyle->backgroundImage.isNone()) {
+                view->preload(view->getDocument().getDocumentURI(), columnStyle->backgroundImage.getValue());
+                columnImages[x] = new(std::nothrow) BoxImage(this, view->getDocument().getDocumentURI(), columnStyle->backgroundImage.getValue(), columnStyle->backgroundRepeat.getValue());
+            }
+        }
+        for (auto i = columnGroupImages.begin(); i != columnGroupImages.end(); ++i)
+            delete *i;
+        columnGroupImages.resize(xWidth);
+        for (unsigned x = 0; x < xWidth; ++x) {
+            columnGroupImages[x] = 0;
+            CSSStyleDeclarationImp* columnGroupStyle = columnGroups[x].get();
+            if (columnGroupStyle) {
+                if (!columnGroupStyle->backgroundImage.isNone()) {
+                    view->preload(view->getDocument().getDocumentURI(), columnGroupStyle->backgroundImage.getValue());
+                    columnGroupImages[x] = new(std::nothrow) BoxImage(this, view->getDocument().getDocumentURI(), columnGroupStyle->backgroundImage.getValue(), columnGroupStyle->backgroundRepeat.getValue());
+                }
+                while (columnGroupStyle == columnGroups[++x].get())
+                    ;
+                --x;
+            }
+        }
+
         for (unsigned x = 0; x < xWidth; ++x)
             widths[x] = fixedLayout ? NAN : 0.0f;
         for (unsigned y = 0; y < yHeight; ++y)
