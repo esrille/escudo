@@ -65,6 +65,18 @@ public:
     bool isSpanned(unsigned x, unsigned y) const {
         return col != x || row != y;
     }
+    bool isLeftSpanned(unsigned x) const {
+        return col != x;
+    }
+    bool isTopSpanned(unsigned y) const {
+        return row != y;
+    }
+    bool isRightSpanned(unsigned x) const {
+        return col + colSpan != x;
+    }
+    bool isBottomSpanned(unsigned y) const {
+        return row + rowSpan != y;
+    }
 
     void separateBorders(CSSStyleDeclarationPtr style, unsigned xWidth, unsigned yHeight);
     void collapseBorder(TableWrapperBox* wrapper);
@@ -131,6 +143,7 @@ class TableWrapperBox : public BlockLevelBox
     std::vector<float> widths;
     std::vector<float> heights;
     std::vector<float> baselines;
+    std::vector<BoxImage*> rowImages;
 
     bool isAnonymousTable;
     bool isHtmlTable;
@@ -173,6 +186,9 @@ class TableWrapperBox : public BlockLevelBox
     CellBox* processCell(Element current, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CounterContext* counterContext, CSSStyleDeclarationImp* rowStyle);
 
     void layOutFixed(ViewCSSImp* view, const ContainingBlock* containingBlock, bool collapsingModel);
+
+    void renderBackground(ViewCSSImp* view, CSSStyleDeclarationImp* style, float x, float y, float left, float top, float right, float bottom, float width, float height, unsigned backgroundColor, BoxImage* backgroundImage);
+    void renderLayers(ViewCSSImp* view);
 
 public:
     TableWrapperBox(ViewCSSImp* view, Element element, CSSStyleDeclarationImp* style);

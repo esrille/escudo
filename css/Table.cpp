@@ -190,6 +190,8 @@ TableWrapperBox::TableWrapperBox(ViewCSSImp* view, Element element, CSSStyleDecl
 
 TableWrapperBox::~TableWrapperBox()
 {
+    for (auto i = rowImages.begin(); i != rowImages.end(); ++i)
+        delete *i;
     if (counterContext)
         delete counterContext;
 }
@@ -1048,6 +1050,20 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
         widths.resize(xWidth);
         heights.resize(yHeight);
         baselines.resize(yHeight);
+        for (auto i = rowImages.begin(); i != rowImages.end(); ++i)
+            delete *i;
+        rowImages.resize(yHeight);
+        for (unsigned y = 0; y < yHeight; ++y) {
+            CSSStyleDeclarationImp* rowStyle = rows[y].get();
+            if (!style) {
+                rowImages[y] = 0;
+                continue;
+            }
+            if (!rowStyle->backgroundImage.isNone()) {
+                view->preload(view->getDocument().getDocumentURI(), rowStyle->backgroundImage.getValue());
+                rowImages[y] = new(std::nothrow) BoxImage(this, view->getDocument().getDocumentURI(), rowStyle->backgroundImage.getValue(), style->backgroundRepeat.getValue());
+            }
+        }
         for (unsigned x = 0; x < xWidth; ++x)
             widths[x] = fixedLayout ? NAN : 0.0f;
         for (unsigned y = 0; y < yHeight; ++y)
