@@ -144,6 +144,7 @@ class TableWrapperBox : public BlockLevelBox
     std::vector<float> heights;
     std::vector<float> baselines;
     std::vector<BoxImage*> rowImages;
+    std::vector<BoxImage*> rowGroupImages;
 
     bool isAnonymousTable;
     bool isHtmlTable;

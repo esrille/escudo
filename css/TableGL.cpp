@@ -70,15 +70,80 @@ void TableWrapperBox::renderBackground(ViewCSSImp* view, CSSStyleDeclarationImp*
 
 void TableWrapperBox::renderLayers(ViewCSSImp* view)
 {
+    float h;
+    float w;
     float left;
     float top;
     float right;
     float bottom;
 
-    float h = tableBox->getY() + tableBox->getMarginTop();
+    // row groups
+    h = tableBox->getY() + tableBox->getMarginTop();
+    for (unsigned y = 0; y < yHeight;) {
+        CSSStyleDeclarationImp* rowGroupStyle = rowGroups[y].get();
+        if (rowGroupStyle && (rowGroupImages[y] || rowGroupStyle->backgroundColor.getARGB())) {
+            BoxImage* image = rowGroupImages[y];
+            w = tableBox->getX() + tableBox->getMarginLeft();
+            float w0 = w;
+            float h0 = h;
+            float wN = w0 + tableBox->width;
+            float hN = h0 + heights[y];
+            size_t elements = 1;
+            while (rowGroupStyle == rowGroups[y + elements].get()) {
+                hN += heights[y + elements];
+                ++elements;
+            }
+            if (CellBox* cellBox = grid[y][0].get()) {
+                w0 = cellBox->x + cellBox->getMarginLeft();
+                if (!cellBox->isTopSpanned(y)) // TODO: else look up for a single row spanning cell.
+                    h0 = cellBox->y + cellBox->getMarginTop();
+            }
+            if (CellBox* cellBox = grid[y + elements - 1][xWidth - 1].get()) {
+                wN = cellBox->x + cellBox->getTotalWidth() - cellBox->getMarginRight();
+                if (!cellBox->isBottomSpanned(y + elements)) // TODO: else look up for a single row spanning cell.
+                    hN = cellBox->y + cellBox->getTotalHeight() - cellBox->getMarginBottom();
+            }
+            if (style->borderCollapse.getValue() == style->borderCollapse.Collapse) {
+                renderBackground(view, rowGroupStyle, w0, h0, w0, h0, wN, hN, wN - w0, hN - h0, rowGroupStyle->backgroundColor.getARGB(), image);
+                for (unsigned end = y + elements; y < end; h += heights[y], ++y)
+                    ;
+            } else {
+                for (unsigned end = y + elements; y < end; h += heights[y], ++y) {
+                    for (unsigned x = 0; x < xWidth; w += widths[x], ++x) {
+                        CellBox* cellBox = grid[y][x].get();
+                        if (!cellBox || cellBox->isEmptyCell())
+                            continue;
+                        if (!cellBox->isSpanned(x, y)) {
+                            left = cellBox->x;
+                            top = cellBox->y;
+                            right = left + cellBox->getTotalWidth();
+                            bottom = top + cellBox->getTotalHeight();
+                            left += cellBox->getMarginLeft();
+                            right -= cellBox->getMarginRight();
+                            top += cellBox->getMarginTop();
+                            bottom -= cellBox->getMarginBottom();
+                        } else {
+                            left = cellBox->isLeftSpanned(x) ? w : (cellBox->x + cellBox->getMarginLeft());
+                            top = cellBox->isTopSpanned(y) ? h : (cellBox->y + cellBox->getMarginTop());
+                            right = cellBox->isRightSpanned(x + 1) ? w + widths[x] : (cellBox->x + cellBox->getTotalWidth() - cellBox->getMarginRight());
+                            bottom = cellBox->isBottomSpanned(y + 1) ? h + heights[y] : (cellBox->y + cellBox->getTotalHeight() - cellBox->getMarginBottom());
+                        }
+                        renderBackground(view, rowGroupStyle, w0, h0, left, top, right, bottom, wN - w0, hN - h0, rowGroupStyle->backgroundColor.getARGB(), image);
+                    }
+                }
+            }
+        } else {
+            h += heights[y];
+            ++y;
+        }
+    }
+
+    // rows
+    h = tableBox->getY() + tableBox->getMarginTop();
     for (unsigned y = 0; y < yHeight; h += heights[y], ++y) {
-        float w = tableBox->getX() + tableBox->getMarginLeft();
-        if (CSSStyleDeclarationImp* rowStyle = rows[y].get()) {
+        CSSStyleDeclarationImp* rowStyle = rows[y].get();
+        if (rowStyle && (rowImages[y] || rowStyle->backgroundColor.getARGB())) {
+            w = tableBox->getX() + tableBox->getMarginLeft();
             float w0 = w;
             float h0 = h;
             float wN = w0 + tableBox->width;

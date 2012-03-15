@@ -192,6 +192,8 @@ TableWrapperBox::~TableWrapperBox()
 {
     for (auto i = rowImages.begin(); i != rowImages.end(); ++i)
         delete *i;
+    for (auto i = rowGroupImages.begin(); i != rowGroupImages.end(); ++i)
+        delete *i;
     if (counterContext)
         delete counterContext;
 }
@@ -1059,6 +1061,22 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
             if (rowStyle && !rowStyle->backgroundImage.isNone()) {
                 view->preload(view->getDocument().getDocumentURI(), rowStyle->backgroundImage.getValue());
                 rowImages[y] = new(std::nothrow) BoxImage(this, view->getDocument().getDocumentURI(), rowStyle->backgroundImage.getValue(), rowStyle->backgroundRepeat.getValue());
+            }
+        }
+        for (auto i = rowGroupImages.begin(); i != rowGroupImages.end(); ++i)
+            delete *i;
+        rowGroupImages.resize(yHeight);
+        for (unsigned y = 0; y < yHeight; ++y) {
+            rowGroupImages[y] = 0;
+            CSSStyleDeclarationImp* rowGroupStyle = rowGroups[y].get();
+            if (rowGroupStyle) {
+                if (!rowGroupStyle->backgroundImage.isNone()) {
+                    view->preload(view->getDocument().getDocumentURI(), rowGroupStyle->backgroundImage.getValue());
+                    rowGroupImages[y] = new(std::nothrow) BoxImage(this, view->getDocument().getDocumentURI(), rowGroupStyle->backgroundImage.getValue(), rowGroupStyle->backgroundRepeat.getValue());
+                }
+                while (rowGroupStyle == rowGroups[++y].get())
+                    ;
+                --y;
             }
         }
         for (unsigned x = 0; x < xWidth; ++x)
