@@ -224,7 +224,7 @@ public:
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context);
     virtual float shrinkTo();
 
-    virtual void renderTableBorders(ViewCSSImp* view);
+    void renderTableBorders(ViewCSSImp* view);
 
     virtual void dump(std::string indent = "");
 };

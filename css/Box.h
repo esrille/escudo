@@ -493,8 +493,6 @@ public:
     void renderBorder(ViewCSSImp* view, float left, float top);
     void renderOutline(ViewCSSImp* view, float left, float top);
 
-    virtual void renderTableBorders(ViewCSSImp* view) {}
-
     virtual void dump(std::string indent = "") = 0;
 
     void setFlags(unsigned f) {

@@ -298,7 +298,8 @@ void TableWrapperBox::renderLayers(ViewCSSImp* view)
 
 void TableWrapperBox::renderTableBorders(ViewCSSImp* view)
 {
-    renderLayers(view);
+    if (0 < xWidth && 0 < yHeight)
+        renderLayers(view);
 
     if (borderRows.empty() || borderColumns.empty())
         return;

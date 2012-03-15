@@ -541,8 +541,8 @@ unsigned BlockLevelBox::renderBegin(ViewCSSImp* view, bool noBorder)
                 glTranslatef(-element.getScrollLeft(), -element.getScrollTop(), 0.0f);
             }
         }
-        if (!noBorder && isVisible())
-            renderTableBorders(view);
+        if (!noBorder && isVisible() && isTableBox())
+            dynamic_cast<TableWrapperBox*>(getParentBox())->renderTableBorders(view);
     }
     return overflow;
 }
