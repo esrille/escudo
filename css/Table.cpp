@@ -1416,11 +1416,18 @@ float TableWrapperBox::getBaseline() const
 void TableWrapperBox::dump(std::string indent)
 {
     std::cout << indent << "* table wrapper box";
-    std::cout << " [" << node.getNodeName() << ']';
-    std::cout << " (" << x << ", " << y << "), (" << getTotalWidth() << ", " << getTotalHeight() << ") " <<
-                 "[" << xWidth << ", " << yHeight << "]\n";
-
-    indent += "    ";
+    if (!node)
+        std::cout << " [anonymous]";
+    else
+        std::cout << " [" << node.getNodeName() << ']';
+    std::cout << " (" << x << ", " << y << ") " <<
+        "w:" << width << " h:" << height << ' ' <<
+        "[" << xWidth << ", " << yHeight << "] " <<
+        "(" << offsetH << ", " << offsetV <<") ";
+    if (hasClearance())
+        std::cout << "c:" << clearance << ' ';
+    std::cout << "m:" << marginTop << ':' << marginRight << ':' << marginBottom << ':' << marginLeft << '\n';
+    indent += "  ";
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
         child->dump(indent);
 }
