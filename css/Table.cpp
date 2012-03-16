@@ -837,7 +837,7 @@ void TableWrapperBox::resolveHorizontalBorderConflict(unsigned x, unsigned y, Bo
             b->resolveBorderConflict(rows[y], 0x1);
         if (0 < y) {
             if (CSSStyleDeclarationPtr rowStyle = rowGroups[y - 1]) {
-                if (y + 1 == yHeight || rowStyle != rowGroups[y]);
+                if (y + 1 == yHeight || rowStyle != rowGroups[y])
                     b->resolveBorderConflict(rowStyle , 0x4);
             }
         }
@@ -879,7 +879,7 @@ void TableWrapperBox::resolveVerticalBorderConflict(unsigned x, unsigned y, Bord
             b->resolveBorderConflict(columns[x], 0x8);
         if (0 < x) {
             if (CSSStyleDeclarationPtr colStyle = columnGroups[x - 1]) {
-                if (x + 1 == xWidth || colStyle != columnGroups[x]);
+                if (x + 1 == xWidth || colStyle != columnGroups[x])
                     b->resolveBorderConflict(colStyle, 0x2);
             }
         }
