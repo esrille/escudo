@@ -638,9 +638,9 @@ CellBox* TableWrapperBox::processCell(Element current, BlockLevelBox* parentBox,
 
 void TableWrapperBox::processColGroup(Element colgroup)
 {
-    CSSStyleDeclarationImp* colgroupStyle = view->getStyle(colgroup);
+    CSSStyleDeclarationImp* columnGroupStyle = view->getStyle(colgroup);
     CounterContext cc(view);
-    counterContext->update(colgroupStyle);
+    counterContext->update(columnGroupStyle);
 
     bool hasCol = false;
     int xStart = xWidth;
@@ -1018,7 +1018,7 @@ void TableWrapperBox::layOutFixed(ViewCSSImp* view, const ContainingBlock* conta
     widths[xWidth - 1] += hs / 2.0f;
 }
 
-void TableWrapperBox::layOutAuto(ViewCSSImp* view, const ContainingBlock* containingBlock, bool collapsingModel)
+void TableWrapperBox::layOutAuto(ViewCSSImp* view, const ContainingBlock* containingBlock)
 {
     if (xWidth == 0 || yHeight == 0)
         return;
@@ -1033,6 +1033,37 @@ void TableWrapperBox::layOutAuto(ViewCSSImp* view, const ContainingBlock* contai
                             colStyle->borderRightWidth.getPx();
             }
         }
+    }
+}
+
+void TableWrapperBox::layOutAutoColgroup(ViewCSSImp* view, const ContainingBlock* containingBlock)
+{
+    if (xWidth == 0 || yHeight == 0)
+        return;
+    for (unsigned x = 0; x < xWidth; ++x) {
+        CSSStyleDeclarationPtr columnGroupStyle = columnGroups[x];
+        if (!columnGroupStyle)
+            continue;
+        size_t elements = 1;
+        float sum = widths[x];
+        while (columnGroupStyle == columnGroups[x + elements]) {
+            ++elements;
+            sum += widths[x + elements];
+        }
+        if (!columnGroupStyle->width.isAuto()) {
+            columnGroupStyle->resolve(view, containingBlock);
+            float w = columnGroupStyle->borderLeftWidth.getPx() +
+                      columnGroupStyle->paddingLeft.getPx() +
+                      columnGroupStyle->width.getPx() +
+                      columnGroupStyle->paddingRight.getPx() +
+                      columnGroupStyle->borderRightWidth.getPx();
+            if (sum < w) {
+                float diff = (w - sum) / elements;
+                for (unsigned c = 0; c < elements; ++c)
+                    widths[x + c] += diff;
+            }
+        }
+        x += elements - 1;
     }
 }
 
@@ -1142,7 +1173,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
         if (fixedLayout)
             layOutFixed(view, containingBlock, collapsingModel);
         else
-            layOutAuto(view, containingBlock, collapsingModel);
+            layOutAuto(view, containingBlock);
         float tableWidth = width;
         for (unsigned y = 0; y < yHeight; ++y) {
             float minHeight = 0.0f;
@@ -1236,6 +1267,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
         }
 
         if (!fixedLayout) {
+            layOutAutoColgroup(view, containingBlock);
             float w = 0.0f;
             for (unsigned x = 0; x < xWidth; ++x)
                 w += widths[x];

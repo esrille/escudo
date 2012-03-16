@@ -189,7 +189,8 @@ class TableWrapperBox : public BlockLevelBox
     CellBox* processCell(Element current, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CounterContext* counterContext, CSSStyleDeclarationImp* rowStyle);
 
     void layOutFixed(ViewCSSImp* view, const ContainingBlock* containingBlock, bool collapsingModel);
-    void layOutAuto(ViewCSSImp* view, const ContainingBlock* containingBlock, bool collapsingModel);
+    void layOutAuto(ViewCSSImp* view, const ContainingBlock* containingBlock);
+    void layOutAutoColgroup(ViewCSSImp* view, const ContainingBlock* containingBlock);
 
     void renderBackground(ViewCSSImp* view, CSSStyleDeclarationImp* style, float x, float y, float left, float top, float right, float bottom, float width, float height, unsigned backgroundColor, BoxImage* backgroundImage);
     void renderLayers(ViewCSSImp* view);
