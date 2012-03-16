@@ -940,9 +940,12 @@ void TableWrapperBox::computeTableBorders()
     }
     tableBox->expandBorders(t, r, b, l);
     for (unsigned y = 0; y < yHeight; ++y) {
-        // TODO: Check if the following margins can be collapsed with the margins of the wrapper.
-        marginLeft = std::max(borderLeft, getColumnBorderValue(0, y)->getWidth() / 2.0f - l) - borderLeft;
-        marginRight = std::max(borderRight, getColumnBorderValue(xWidth, y)->getWidth() / 2.0f - r) - borderRight;
+        // cf. any excess spills into the margin area of the table. - 17.6.2
+        float excess;
+        excess = std::max(borderLeft, getColumnBorderValue(0, y)->getWidth() / 2.0f - l) - borderLeft;
+        marginLeft = std::max(marginLeft, excess);
+        excess = std::max(borderRight, getColumnBorderValue(xWidth, y)->getWidth() / 2.0f - r) - borderRight;
+        marginRight =  std::max(marginRight, excess);
     }
 }
 
