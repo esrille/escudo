@@ -296,6 +296,7 @@ void TableWrapperBox::renderLayers(ViewCSSImp* view)
     }
 }
 
+// TODO: Refine this; cf. border-bottom-width-applies-to-004, etc.
 void TableWrapperBox::renderTableBorders(ViewCSSImp* view)
 {
     if (0 < xWidth && 0 < yHeight)

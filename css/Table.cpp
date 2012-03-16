@@ -1018,6 +1018,24 @@ void TableWrapperBox::layOutFixed(ViewCSSImp* view, const ContainingBlock* conta
     widths[xWidth - 1] += hs / 2.0f;
 }
 
+void TableWrapperBox::layOutAuto(ViewCSSImp* view, const ContainingBlock* containingBlock, bool collapsingModel)
+{
+    if (xWidth == 0 || yHeight == 0)
+        return;
+    for (unsigned x = 0; x < xWidth; ++x) {
+        if (CSSStyleDeclarationPtr colStyle = columns[x]) {
+            if (!colStyle->width.isAuto()) {
+                colStyle->resolve(view, containingBlock);
+                widths[x] = colStyle->borderLeftWidth.getPx() +
+                            colStyle->paddingLeft.getPx() +
+                            colStyle->width.getPx() +
+                            colStyle->paddingRight.getPx() +
+                            colStyle->borderRightWidth.getPx();
+            }
+        }
+    }
+}
+
 bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
 {
     const ContainingBlock* containingBlock = getContainingBlock(view);
@@ -1123,6 +1141,8 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
             heights[y] = 0.0f;
         if (fixedLayout)
             layOutFixed(view, containingBlock, collapsingModel);
+        else
+            layOutAuto(view, containingBlock, collapsingModel);
         float tableWidth = width;
         for (unsigned y = 0; y < yHeight; ++y) {
             float minHeight = 0.0f;
