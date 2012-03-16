@@ -119,6 +119,20 @@ class TableWrapperBox : public BlockLevelBox
         float getWidth() const {
             return width.getPx();
         }
+        unsigned getStyle() const {
+            unsigned value = style.getValue();
+            switch (value) {
+            case CSSBorderStyleValueImp::Inset:
+                value = CSSBorderStyleValueImp::Ridge;
+                break;
+            case CSSBorderStyleValueImp::Outset:
+                value = CSSBorderStyleValueImp::Groove;
+                break;
+            default:
+                break;
+            }
+            return value;
+        }
     };
 
     ViewCSSImp* view;

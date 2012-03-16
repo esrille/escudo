@@ -319,7 +319,7 @@ void TableWrapperBox::renderTableBorders(ViewCSSImp* view)
                     float t = h - m;
                     float b = h + m;
                     renderBorderEdge(view, TOP,
-                                     br->style.getValue(),
+                                     br->getStyle(),
                                      br->color.getARGB(),
                                      l, t, r, t, r, b, l, b);
                 }
@@ -333,7 +333,7 @@ void TableWrapperBox::renderTableBorders(ViewCSSImp* view)
                     float t = h - m;
                     float b = h + heights[y] + m;
                     renderBorderEdge(view, LEFT,
-                                     bc->style.getValue(),
+                                     bc->getStyle(),
                                      bc->color.getARGB(),
                                      l, b, l, t, r, t, r, b);
                 }
