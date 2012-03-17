@@ -296,7 +296,6 @@ void TableWrapperBox::renderLayers(ViewCSSImp* view)
     }
 }
 
-// TODO: Refine this; cf. border-bottom-width-applies-to-004, etc.
 void TableWrapperBox::renderTableBorders(ViewCSSImp* view)
 {
     if (0 < xWidth && 0 < yHeight)
@@ -314,14 +313,25 @@ void TableWrapperBox::renderTableBorders(ViewCSSImp* view)
                 BorderValue* br = getRowBorderValue(x, y);
                 if (0.0f < br->getWidth()) {
                     float m = br->getWidth() / 2.0f;
-                    float l = w - m;
-                    float r = w + widths[x] + m;
+                    float l = w;
+                    float r = w + widths[x];
                     float t = h - m;
                     float b = h + m;
-                    renderBorderEdge(view, TOP,
-                                     br->getStyle(),
-                                     br->color.getARGB(),
-                                     l, t, r, t, r, b, l, b);
+                    float ll = 0.0f;
+                    float rr = 0.0f;
+                    if (y == 0) {
+                        if (x == 0)
+                            ll = getColumnBorderValue(x, y)->getWidth() / 2.0f;
+                        if (x == xWidth - 1)
+                            rr = getColumnBorderValue(xWidth, y)->getWidth() / 2.0f;
+                    } else if (y == yHeight) {
+                        if (x == 0)
+                            ll = -getColumnBorderValue(x, yHeight - 1)->getWidth() / 2.0f;
+                        if (x == xWidth - 1)
+                            rr = -getColumnBorderValue(xWidth, yHeight - 1)->getWidth() / 2.0f;
+                    }
+                    renderBorderEdge(view, TOP, br->getStyle(), br->color.getARGB(),
+                                     l - ll, t, r + rr, t, r - rr, b, l + ll, b);
                 }
             }
             if (y < yHeight) {
@@ -330,12 +340,23 @@ void TableWrapperBox::renderTableBorders(ViewCSSImp* view)
                     float m = bc->getWidth() / 2.0f;
                     float l = w - m;
                     float r = w + m;
-                    float t = h - m;
-                    float b = h + heights[y] + m;
-                    renderBorderEdge(view, LEFT,
-                                     bc->getStyle(),
-                                     bc->color.getARGB(),
-                                     l, b, l, t, r, t, r, b);
+                    float t = h;
+                    float b = h + heights[y];
+                    float tt = 0.0f;
+                    float bb = 0.0f;
+                    if (x == 0) {
+                        if (y == 0)
+                            tt = getRowBorderValue(x, y)->getWidth() / 2.0f;
+                        if (y == yHeight - 1)
+                            bb = getRowBorderValue(x, yHeight)->getWidth() / 2.0f;
+                    } else if (x == xWidth) {
+                        if (y == 0)
+                            tt = -getRowBorderValue(xWidth - 1, y)->getWidth() / 2.0f;
+                        if (y == yHeight - 1)
+                            bb = -getRowBorderValue(xWidth - 1, yHeight)->getWidth() / 2.0f;
+                    }
+                    renderBorderEdge(view, LEFT, bc->getStyle(), bc->color.getARGB(),
+                                     l, b + bb, l, t - tt, r, t + tt, r, b - bb);
                 }
             }
         }
