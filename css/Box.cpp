@@ -1595,13 +1595,22 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
     offsetV += top;
 
     if (style->getPseudoElementSelectorType() == CSSPseudoElementSelector::Marker) {
-        // The horizontal static position of the marker is such that the
-        // marker's "end" edge is placed against the "start" edge of the
-        // list item's parent.
         Box* list = getParentBox()->getParentBox();
-        if (list->getParentBox() && list->getParentBox()->style->counterReset.hasCounter())
+        if (list->isAnonymous())
             list = list->getParentBox();
-        offsetH = (list->x + list->getBlankLeft()) - x - getTotalWidth() + getMarginRight();
+        if (list->getParentBox() && list->getParentBox()->style->counterReset.hasCounter()) {
+            // cf. http://www.w3.org/TR/css3-lists/#list-style-position-property
+            //   The horizontal static position of the marker is such that the
+            //   marker's "end" edge is placed against the "start" edge of the
+            //   list item's parent.
+            list = list->getParentBox();
+            offsetH = (list->x + list->getBlankLeft()) - x - getTotalWidth() + getBlankRight();
+        } else {
+            // While CSS 2.1 does not specify the precise location of the marker box,
+            // the marker box appears to be placed at the left side (ltr) of the border edge.
+            // cf. border-left-width-applies-to-010 and padding-left-applies-to-010.
+            offsetH = (list->x + list->getMarginLeft()) - x - getTotalWidth();
+        }
     }
 }
 
