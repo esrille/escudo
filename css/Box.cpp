@@ -313,9 +313,8 @@ bool Box::isFlowOf(const Box* flowRoot) const
 // TODO: rtl
 void Box::resolveOffset(CSSStyleDeclarationImp* style)
 {
-    if (style->position.isStatic())
+    if (!style->position.isRelative())
         return;
-    assert(style->position.isRelative());
 
     float h = 0.0f;
     if (!style->left.isAuto())
