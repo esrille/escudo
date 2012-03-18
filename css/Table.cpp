@@ -1105,6 +1105,11 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
             hs = style->borderSpacing.getHorizontalSpacing();
         }
         tableBox->width = width;
+        if (style->width.isAuto()) {
+            tableBox->width -= tableBox->getBlankLeft() + tableBox->getBlankRight();
+            if (tableBox->width < 0.0f)
+                tableBox->width = 0.0f;
+        }
         tableBox->height = height;
         widths.resize(xWidth);
         heights.resize(yHeight);
