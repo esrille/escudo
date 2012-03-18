@@ -111,6 +111,7 @@ Box* Box::removeChild(Box* item)
 
 Box* Box::insertBefore(Box* item, Box* after)
 {
+    assert(item != parentBox);
     if (!after)
         return appendChild(item);
     item->previousSibling = after->previousSibling;
@@ -128,6 +129,7 @@ Box* Box::insertBefore(Box* item, Box* after)
 
 Box* Box::appendChild(Box* item)
 {
+    assert(item != parentBox);
     Box* prev = lastChild;
     if (!prev)
         firstChild = item;
@@ -732,14 +734,15 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
     bool collapsed = true;
     for (auto i = inlines.begin(); i != inlines.end(); ++i) {
         Node node = *i;
-        if (BlockLevelBox* box = view->getFloatBox(node)) {
+        BlockLevelBox* block = view->getFloatBox(node);
+        if (block && block != this) {  // Check an empty absolutely positioned box; cf. bottom-applies-to-010.
             context->useMargin(this);
-            if (box->isFloat()) {
-                if (box->style->clear.getValue())
+            if (block->isFloat()) {
+                if (block->style->clear.getValue())
                     keepConsumed = true;
-                layOutFloat(view, node, box, context);
-            } else if (box->isAbsolutelyPositioned())
-                layOutAbsolute(view, node, box, context);
+                layOutFloat(view, node, block, context);
+            } else if (block->isAbsolutelyPositioned())
+                layOutAbsolute(view, node, block, context);
             collapsed = false;
         } else {
             CSSStyleDeclarationImp* style = 0;
