@@ -56,15 +56,17 @@ ViewCSSImp::ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyle
     mutationListener(boost::bind(&ViewCSSImp::handleMutation, this, _1))
 {
     setMediumFontSize(16);
-    getDocument().addEventListener(u"DOMNodeInserted", &mutationListener);
     getDocument().addEventListener(u"DOMAttrModified", &mutationListener);
+    getDocument().addEventListener(u"DOMCharacterDataModified", &mutationListener);
+    getDocument().addEventListener(u"DOMNodeInserted", &mutationListener);
     getDocument().addEventListener(u"DOMNodeRemoved", &mutationListener);
 }
 
 ViewCSSImp::~ViewCSSImp()
 {
-    getDocument().removeEventListener(u"DOMNodeInserted", &mutationListener);
     getDocument().removeEventListener(u"DOMAttrModified", &mutationListener);
+    getDocument().removeEventListener(u"DOMCharacterDataModified", &mutationListener);
+    getDocument().removeEventListener(u"DOMNodeInserted", &mutationListener);
     getDocument().removeEventListener(u"DOMNodeRemoved", &mutationListener);
 }
 
@@ -282,8 +284,8 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Text text, BlockLevelBox* parentBox,
     }
     if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(parentBox->getLastChild())) {
         if (table && table->isAnonymousTableObject()) {
-            table->processTableChild(text, style);
-            return 0;
+            if (table->processTableChild(text, style))
+                return 0;
         }
     }
     if (discardable && !style->display.isInline() && !parentBox->hasAnonymousBox()) {

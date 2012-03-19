@@ -261,7 +261,7 @@ void TableWrapperBox::layOutBlockBoxes()
     isAnonymousTable = false;
 }
 
-void TableWrapperBox::processTableChild(Node node, CSSStyleDeclarationImp* style)
+bool TableWrapperBox::processTableChild(Node node, CSSStyleDeclarationImp* style)
 {
     unsigned display = CSSDisplayValueImp::None;
     Element child = 0;
@@ -289,6 +289,8 @@ void TableWrapperBox::processTableChild(Node node, CSSStyleDeclarationImp* style
                     }
                 }
             }
+            if (display == CSSDisplayValueImp::Inline && isAnonymousTableObject())
+                return false;
         }
         break;
     case Node::ELEMENT_NODE:
@@ -298,12 +300,12 @@ void TableWrapperBox::processTableChild(Node node, CSSStyleDeclarationImp* style
             display = childStyle->display.getValue();
         break;
     default:
-        return;
+        return false;
     }
 
     switch (display) {
     case CSSDisplayValueImp::None:
-        return;
+        return true;
     case CSSDisplayValueImp::TableCaption:
         // 'table-caption' doesn't seem to end the current row:
         // cf. table-caption-003.
@@ -364,7 +366,7 @@ void TableWrapperBox::processTableChild(Node node, CSSStyleDeclarationImp* style
             anonymousCell = processCell(0, 0, 0, counterContext, 0);
         if (anonymousCell)
             view->layOutBlockBoxes(node, anonymousCell, childStyle, counterContext);
-        return;
+        return true;
     }
 
     anonymousCell = 0;

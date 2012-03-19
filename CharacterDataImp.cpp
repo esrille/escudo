@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 
 #include "CharacterDataImp.h"
+#include "MutationEventImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -38,7 +39,13 @@ std::u16string CharacterDataImp::getData()
 
 void CharacterDataImp::setData(std::u16string data)
 {
+    std::u16string prev = this->data;
     this->data = data;
+
+    events::MutationEvent event = new(std::nothrow) MutationEventImp;
+    event.initMutationEvent(u"DOMCharacterDataModified",
+                            true, false, getParentNode(), prev, data, u"", 0);
+    dispatchEvent(event);
 }
 
 unsigned int CharacterDataImp::getLength()

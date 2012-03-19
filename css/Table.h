@@ -232,7 +232,7 @@ public:
         return isAnonymousTable;
     }
 
-    void processTableChild(Node node, CSSStyleDeclarationImp* style);
+    bool processTableChild(Node node, CSSStyleDeclarationImp* style);
 
     float getBaseline() const;
 
