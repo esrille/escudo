@@ -1104,9 +1104,9 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
     if (tableBox) {
         tableBox->setStyle(style.get());
         tableBox->resolveBackground(view);
-        tableBox->updatePadding();
         float hs = 0.0f;
         if (!collapsingModel) {
+            tableBox->updatePadding();
             tableBox->updateBorderWidth();
             hs = style->borderSpacing.getHorizontalSpacing();
         }
