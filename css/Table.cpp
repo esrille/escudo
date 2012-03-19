@@ -356,6 +356,7 @@ bool TableWrapperBox::processTableChild(Node node, CSSStyleDeclarationImp* style
         endRow();
         processRowGroup(child, counterContext);
         break;
+
     case CSSDisplayValueImp::TableCell:
         inRow = true;
         processCell(child, 0, childStyle, counterContext, 0);
@@ -438,11 +439,13 @@ void TableWrapperBox::processRowGroupChild(Node node, CSSStyleDeclarationImp* se
         yStart = yCurrent;
         processRow(child, counterContext);
         break;
+
     case CSSDisplayValueImp::TableCell:
         if (anonymousTable) {
             anonymousTable->layOutBlockBoxes();
             anonymousTable = 0;
         }
+        inRow = true;
         processCell(child, 0, childStyle, counterContext, 0);
         break;
     default:
@@ -454,6 +457,7 @@ void TableWrapperBox::processRowGroupChild(Node node, CSSStyleDeclarationImp* se
             anonymousTable->layOutBlockBoxes();
             anonymousTable = 0;
         }
+        inRow = true;
         if (!anonymousCell)
             anonymousCell = processCell(0, 0, 0, counterContext, 0);
         if (anonymousCell) {
@@ -471,7 +475,7 @@ void TableWrapperBox::processRowGroupChild(Node node, CSSStyleDeclarationImp* se
 
 void TableWrapperBox::endRowGroup()
 {
-    // TODO: endRow(); ???
+    endRow();
     while (yCurrent < yHeight) {
         growDownwardGrowingCells();
         ++yCurrent;
