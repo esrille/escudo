@@ -1218,7 +1218,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
                     if (!cellStyle->height.isAuto())
                         d = std::max(minHeight, cellStyle->height.getPx());
                 }
-                d -= cellBox->height;
+                d -= cellBox->intrinsicHeight;
                 if (0.0f < d)
                     cellBox->height += d;
                 if (!fixedLayout && cellBox->getColSpan() == 1)
