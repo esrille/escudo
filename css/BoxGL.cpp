@@ -515,7 +515,7 @@ unsigned BlockLevelBox::renderBegin(ViewCSSImp* view, bool noBorder)
     if (!isAnonymous() || isTableBox()) {
         float scrollX = 0.0f;
         float scrollY = 0.0f;
-        if (style->position.isFixed() && style->parentStyle) {
+        if (isFixed() && style->parentStyle) {
             scrollX = view->getWindow()->getScrollX();
             scrollY = view->getWindow()->getScrollY();
             glTranslatef(scrollX, scrollY, 0.0f);
@@ -590,7 +590,7 @@ void BlockLevelBox::renderNonInline(ViewCSSImp* view, StackingContext* stackingC
     if (shadow)
         return;
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
-        if (child->style && child->style->isPositioned() && !child->isAnonymous())
+        if (!child->isAnonymous() && child->isPositioned())
             continue;
         if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(child)) {
             unsigned overflow = block->renderBegin(view);
@@ -629,7 +629,7 @@ void BlockLevelBox::renderInline(ViewCSSImp* view, StackingContext* stackingCont
 
     bool hasOutline = false;
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
-        if (child->style && child->style->isPositioned() && !child->isAnonymous())
+        if (!child->isAnonymous() && child->isPositioned())
             continue;
         if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(child)) {
             unsigned overflow = block->renderBegin(view, true);
@@ -643,7 +643,7 @@ void BlockLevelBox::renderInline(ViewCSSImp* view, StackingContext* stackingCont
     if (!hasOutline)
         return;
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
-        if (child->style && child->style->isPositioned() && !child->isAnonymous())
+        if (!child->isAnonymous() && child->isPositioned())
             continue;
         if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(child)) {
             if (0.0f < block->getOutlineWidth()) {
@@ -666,7 +666,7 @@ void BlockLevelBox::render(ViewCSSImp* view, StackingContext* stackingContext)
 void LineBox::render(ViewCSSImp* view, StackingContext* stackingContext)
 {
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
-        if (child->style && ((child->style->isFloat() || child->style->isPositioned() && !child->isAnonymous())))
+        if (child->style && (child->style->isFloat() || !child->isAnonymous() && child->isPositioned()))
             continue;
         child->render(view, stackingContext);
     }

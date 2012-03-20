@@ -259,6 +259,7 @@ protected:
     float borderLeft;
     float outlineWidth;
 
+    unsigned position;
     float offsetH;
     float offsetV;
 
@@ -456,10 +457,25 @@ public:
     CSSStyleDeclarationImp* getStyle() const {
         return style.get();
     }
-    void setStyle(CSSStyleDeclarationImp* style) {
-        this->style = style;
-        if (style)
-            stackingContext = style->getStackingContext();
+    void setStyle(CSSStyleDeclarationImp* style);
+
+    bool isStatic() const {
+        return position == CSSPositionValueImp::Static;
+    }
+    bool isRelative() const {
+        return position == CSSPositionValueImp::Relative;
+    }
+    bool isAbsolute() const {
+        return position == CSSPositionValueImp::Absolute;
+    }
+    bool isFixed() const {
+        return position == CSSPositionValueImp::Fixed;
+    }
+    bool isPositioned() const {
+        return !isStatic();
+    }
+    void setPosition(unsigned value) {
+        position = value;
     }
 
     virtual const ContainingBlock* getContainingBlock(ViewCSSImp* view) const;

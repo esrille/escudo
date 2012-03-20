@@ -1107,6 +1107,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
     }
     if (tableBox) {
         tableBox->setStyle(style.get());
+        tableBox->setPosition(CSSPositionValueImp::Static);
         tableBox->resolveBackground(view);
         float hs = 0.0f;
         if (!collapsingModel) {

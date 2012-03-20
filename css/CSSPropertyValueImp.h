@@ -2035,18 +2035,6 @@ public:
     CSSPositionValueImp(unsigned initial = Static) :
         value(initial) {
     }
-    bool isStatic() const {
-        return value == Static;
-    }
-    bool isRelative() const {
-        return value == Relative;
-    }
-    bool isAbsolute() const {
-        return value == Absolute;
-    }
-    bool isFixed() const {
-        return value == Fixed;
-    }
     static const char16_t* Options[];
 };
 

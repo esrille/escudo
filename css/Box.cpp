@@ -63,6 +63,7 @@ Box::Box(Node node) :
     borderLeft(0.0f),
     borderRight(0.0f),
     outlineWidth(0.0f),
+    position(CSSPositionValueImp::Static),
     offsetH(0.0f),
     offsetV(0.0f),
     stackingContext(0),
@@ -174,6 +175,15 @@ Box* Box::getNextSibling() const
     return nextSibling;
 }
 
+void Box::setStyle(CSSStyleDeclarationImp* style)
+{
+    this->style = style;
+    if (style) {
+        stackingContext = style->getStackingContext();
+        position = style->position.getValue();
+    }
+}
+
 float Box::getEffectiveTotalWidth() const
 {
     // cf. http://test.csswg.org/suites/css2.1/20110323/html4/clear-float-002.htm
@@ -234,7 +244,7 @@ void BlockLevelBox::setContainingBlock(ViewCSSImp* view)
             CSSStyleDeclarationImp* style = view->getStyle(ancestor);
             if (!style)
                 break;
-            if (style->isPositioned()) {
+            if (style->position.getValue() != CSSPositionValueImp::Static) {
                 // Now we need to find the corresponding box for this ancestor.
                 Box* box = style->box;
                 assert(box);    // TODO: check NULL case
@@ -313,7 +323,7 @@ bool Box::isFlowOf(const Box* flowRoot) const
 // TODO: rtl
 void Box::resolveOffset(CSSStyleDeclarationImp* style)
 {
-    if (!style->position.isRelative())
+    if (style->position.getValue() != CSSPositionValueImp::Relative)
         return;
 
     float h = 0.0f;
@@ -333,7 +343,7 @@ void Box::resolveOffset(CSSStyleDeclarationImp* style)
 
 void Box::resolveOffset(ViewCSSImp* view)
 {
-    if (isAnonymous())
+    if (isAnonymous() || !isRelative())
         return;
     resolveOffset(getStyle());
 }
