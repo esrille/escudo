@@ -945,14 +945,18 @@ void TableWrapperBox::computeTableBorders()
         r = getColumnBorderValue(xWidth, 0)->getWidth() / 2.0f;
     }
     tableBox->expandBorders(t, r, b, l);
-    for (unsigned y = 0; y < yHeight; ++y) {
-        // cf. any excess spills into the margin area of the table. - 17.6.2
-        float excess;
-        excess = std::max(borderLeft, getColumnBorderValue(0, y)->getWidth() / 2.0f - l) - borderLeft;
-        marginLeft = std::max(marginLeft, excess);
-        excess = std::max(borderRight, getColumnBorderValue(xWidth, y)->getWidth() / 2.0f - r) - borderRight;
-        marginRight =  std::max(marginRight, excess);
-    }
+    // Note in 17.6.2, the spec says 'any excess spills into the margin
+    // area of the table'. However, it can actually overflow that table's
+    // container. Therefore, the code like below is not necessary:
+    // cf. collapsing-border-model-005.
+    //
+    // for (unsigned y = 0; y < yHeight; ++y) {
+    //     float excess;
+    //     excess = std::max(borderLeft, getColumnBorderValue(0, y)->getWidth() / 2.0f - l) - borderLeft;
+    //     marginLeft = std::max(marginLeft, excess);
+    //     excess = std::max(borderRight, getColumnBorderValue(xWidth, y)->getWidth() / 2.0f - r) - borderRight;
+    //     marginRight =  std::max(marginRight, excess);
+    // }
 }
 
 void TableWrapperBox::layOutFixed(ViewCSSImp* view, const ContainingBlock* containingBlock, bool collapsingModel)
