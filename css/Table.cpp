@@ -1416,11 +1416,8 @@ float TableWrapperBox::getBaseline() const
     float baseline = getBlankTop();
     for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
         if (child == tableBox) {
-            if (0 < xWidth && 0 < yHeight) {
-                CellBox* cellBox = grid[0][0].get();
-                if (cellBox && !cellBox->isSpanned(0, 0)) {
-                    baseline += tableBox->getBlankTop() + cellBox->getBaseline();
-                }
+            if (0 < yHeight) {
+                baseline += tableBox->getBlankTop() + baselines[0];
                 break;
             }
         }
