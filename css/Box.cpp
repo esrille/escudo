@@ -356,8 +356,8 @@ BlockLevelBox::BlockLevelBox(Node node, CSSStyleDeclarationImp* style) :
     inserted(false),
     edge(0.0f),
     remainingHeight(0.0f),
-    baseline(0.0f),
-    lineHeight(0.0f)
+    defaultBaseline(0.0f),
+    defaultLineHeight(0.0f)
 {
     setStyle(style);
 }

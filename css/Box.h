@@ -620,8 +620,8 @@ class BlockLevelBox : public Box
     std::list<Node> inlines;
 
     // The default baseline and line-height for the line boxes.
-    float baseline;
-    float lineHeight;
+    float defaultBaseline;
+    float defaultLineHeight;
 
     void getPsuedoStyles(ViewCSSImp* view, FormattingContext* context, CSSStyleDeclarationImp* style,
                          CSSStyleDeclarationPtr& firstLetterStyle, CSSStyleDeclarationPtr& firstLineStyle);

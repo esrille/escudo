@@ -284,18 +284,18 @@ void FormattingContext::appendInlineBox(ViewCSSImp* view, InlineLevelBox* inline
     if (lineBox->baseline == 0.0f && lineBox->height == 0.0f) {
         BlockLevelBox* parentBox = dynamic_cast<BlockLevelBox*>(lineBox->getParentBox());
         assert(parentBox);
-        if (parentBox->baseline == 0.0f && parentBox->lineHeight == 0.0f) {
+        if (parentBox->defaultBaseline == 0.0f && parentBox->defaultLineHeight == 0.0f) {
             CSSStyleDeclarationImp* parentStyle = parentBox->getStyle();
             assert(parentStyle);
             FontTexture* font = view->selectFont(parentStyle);
             assert(font);
             float point = view->getPointFromPx(parentStyle->fontSize.getPx());
-            parentBox->lineHeight = parentStyle->lineHeight.getPx();
-            float leading = parentBox->lineHeight - font->getLineHeight(point);
-            parentBox->baseline = (leading / 2.0f) + font->getAscender(point);
+            parentBox->defaultLineHeight = parentStyle->lineHeight.getPx();
+            float leading = parentBox->defaultLineHeight - font->getLineHeight(point);
+            parentBox->defaultBaseline = (leading / 2.0f) + font->getAscender(point);
         }
-        lineBox->height = parentBox->lineHeight;
-        lineBox->baseline = parentBox->baseline;
+        lineBox->height = parentBox->defaultLineHeight;
+        lineBox->baseline = parentBox->defaultBaseline;
     }
 
     assert(activeStyle);
