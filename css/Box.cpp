@@ -872,24 +872,27 @@ void BlockLevelBox::fit(float w)
 
 float BlockLevelBox::getBaseline(const Box* box) const
 {
-    float baseline = box->getBlankTop() + box->height;
-    for (Box* i = box->getLastChild(); i; i = i->getPreviousSibling()) {
-        if (LineBox* lineBox = dynamic_cast<LineBox*>(i)) {
-            if (lineBox->hasInlineBox())
-                return baseline - lineBox->getBlankBottom() - lineBox->height + lineBox->getBaseline();
-        } else if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(i))
-            return baseline - table->getTotalHeight() + table->getBaseline();
+    float baseline = NAN;
+    float h = box->getBlankTop();
+    for (Box* i = box->getFirstChild(); i; i = i->getNextSibling()) {
+        if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(i))
+            baseline = h + table->getBaseline();
         else if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(i)) {
             float x = getBaseline(block);
             if (!isnanf(x))
-                return baseline - block->getTotalHeight() + x;
+                baseline = h + x;
+        } else if (LineBox* lineBox = dynamic_cast<LineBox*>(i)) {
+            if (lineBox->hasInlineBox())
+                baseline = h + lineBox->getBaseline();
         }
-        // TODO: Check clearance
-        baseline -= i->getTotalHeight();
+        h += i->getTotalHeight();
+        if (box->height != 0.0f || !dynamic_cast<LineBox*>(box->getFirstChild()))
+            h += i->getClearance();
     }
-    return NAN;
+    return baseline;
 }
 
+// TODO: We should calculate the baseline once and just return it.
 float BlockLevelBox::getBaseline() const
 {
     float x = getBaseline(this);
