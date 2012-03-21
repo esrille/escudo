@@ -1100,20 +1100,23 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
     if (tableBox) {
         tableBox->setStyle(style.get());
         tableBox->setPosition(CSSPositionValueImp::Static);
-        tableBox->resolveBackground(view);
+        bool anon = style->display != CSSDisplayValueImp::Table && style->display != CSSDisplayValueImp::InlineTable;
         float hs = 0.0f;
-        if (!collapsingModel) {
-            tableBox->updatePadding();
-            tableBox->updateBorderWidth();
-            hs = style->borderSpacing.getHorizontalSpacing();
+        if (!anon) {
+            tableBox->resolveBackground(view);
+            if (!collapsingModel) {
+                tableBox->updatePadding();
+                tableBox->updateBorderWidth();
+                hs = style->borderSpacing.getHorizontalSpacing();
+            }
         }
         tableBox->width = width;
-        if (style->width.isAuto()) {
+        if (anon || style->width.isAuto()) {
             tableBox->width -= tableBox->getBlankLeft() + tableBox->getBlankRight();
             if (tableBox->width < 0.0f)
                 tableBox->width = 0.0f;
         }
-        tableBox->height = height;
+        tableBox->height = anon ? 0.0f : height;
         widths.resize(xWidth);
         heights.resize(yHeight);
         baselines.resize(yHeight);
@@ -1296,7 +1299,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
             float w = 0.0f;
             for (unsigned x = 0; x < xWidth; ++x)
                 w += widths[x];
-            if (style->width.isAuto())
+            if (anon || style->width.isAuto())
                 tableBox->width = w;
             else if (w < tableBox->width) {
                 w = (tableBox->width - w) / xWidth;
