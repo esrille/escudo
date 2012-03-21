@@ -923,6 +923,9 @@ void InlineLevelBox::render(ViewCSSImp* view, StackingContext* stackingContext)
             }
         glPopMatrix();
     }
+
+    if (isVisible())
+        renderOutline(view);
 }
 
 void InlineLevelBox::renderText(ViewCSSImp* view, const std::u16string& data, float point)
@@ -973,6 +976,20 @@ void InlineLevelBox::renderText(ViewCSSImp* view, const std::u16string& data, fl
             glTranslatef(spacing, 0.0f, 0.0f);
     }
     font->endRender();
+}
+
+void InlineLevelBox::renderOutline(ViewCSSImp* view)
+{
+    if (outlineWidth <= 0.0f)
+        return;
+    if (!font)
+        Box::renderOutline(view, x, y);
+    else if (!style->hasMultipleBoxes())
+        Box::renderOutline(view, x, y - getBlankTop());
+    else if (style->getBox() == this) {
+        // TODO: Render the outline across several lines.
+
+    }
 }
 
 

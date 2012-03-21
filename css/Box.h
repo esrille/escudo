@@ -914,6 +914,8 @@ public:
     }
     virtual void resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip);
     virtual void render(ViewCSSImp* view, StackingContext* stackingContext);
+    void renderOutline(ViewCSSImp* view);
+
     virtual void dump(std::string indent);
 };
 
