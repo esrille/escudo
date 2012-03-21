@@ -71,37 +71,29 @@ void CellBox::collapseBorder(TableWrapperBox* wrapper)
 
 float CellBox::getBaseline(const Box* box) const
 {
-    float baseline = 0.0f;
+    float baseline = box->getBlankTop();
     for (Box* i = box->getFirstChild(); i; i = i->getNextSibling()) {
-        if (LineBox* lineBox = dynamic_cast<LineBox*>(i)) {
-            if (lineBox->hasInlineBox())
-                return baseline + lineBox->getBaseline();
-        } else if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(i))
+        if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(i))
             return baseline + table->getBaseline();
         else if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(i)) {
             float x = getBaseline(block);
             if (!isnanf(x))
-                return baseline + block->getBlankTop() + x;
+                return baseline + x;
+        } else if (LineBox* lineBox = dynamic_cast<LineBox*>(i)) {
+            if (lineBox->hasInlineBox())
+                return baseline + lineBox->getBaseline();
         }
         baseline += i->getTotalHeight();
+        if (box->height != 0.0f || !dynamic_cast<LineBox*>(box->getFirstChild()))
+            baseline += i->getClearance();
     }
     return NAN;
 }
 
 float CellBox::getBaseline() const
 {
-    switch (verticalAlign) {
-    case CSSVerticalAlignValueImp::Top:
-        return 0.0f;
-    case CSSVerticalAlignValueImp::Bottom:
-        return getTotalHeight();
-    case CSSVerticalAlignValueImp::Middle:
-        return getTotalHeight() / 2.0f;
-    default:
-        break;
-    }
     float x = getBaseline(this);
-    return getBlankTop() + (!isnanf(x) ? x : height);
+    return !isnanf(x) ? x : (getBlankTop() + height);
 }
 
 float CellBox::shrinkTo()
@@ -1196,6 +1188,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
             if (rows[y] && !rows[y]->height.isAuto())
                 minHeight = rows[y]->height.getPx();
             baselines[y] = 0.0f;
+            bool noBaseline = true;
             for (unsigned x = 0; x < xWidth; ++x) {
                 CellBox* cellBox = grid[y][x].get();
                 if (!cellBox || cellBox->isSpanned(x, y))
@@ -1228,20 +1221,37 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
                     cellBox->height += d;
                 if (!fixedLayout && cellBox->getColSpan() == 1)
                     widths[x] = std::max(widths[x], cellBox->getTotalWidth());
-                if (cellBox->getRowSpan() == 1) {
+                if (cellBox->getRowSpan() == 1)
                     heights[y] = std::max(heights[y], cellBox->getTotalHeight());
+                if (cellBox->getVerticalAlign() == CSSVerticalAlignValueImp::Baseline) {
                     baselines[y] = std::max(baselines[y], cellBox->getBaseline());
-                } else if (cellBox->getVerticalAlign() == CSSVerticalAlignValueImp::Baseline)
-                    baselines[y] = std::max(baselines[y], cellBox->getBaseline());
+                    noBaseline = false;
+                }
             }
             // Process baseline
             for (unsigned x = 0; x < xWidth; ++x) {
                 CellBox* cellBox = grid[y][x].get();
-                if (!cellBox || cellBox->isSpanned(x, y))
+                if (!cellBox || cellBox->isSpanned(x, y) || cellBox->getRowSpan() != 1)
                     continue;
-                float d = baselines[y] - cellBox->getBaseline();
-                if (0.0f < d && cellBox->getRowSpan() == 1)
-                    heights[y] = std::max(heights[y], d + cellBox->intrinsicHeight);
+                if (cellBox->getVerticalAlign() == CSSVerticalAlignValueImp::Baseline) {
+                    float d = baselines[y] - cellBox->getBaseline();
+                    if (0.0f < d)
+                        heights[y] = std::max(heights[y], d + cellBox->intrinsicHeight);
+                } else if (noBaseline) {
+                    switch (cellBox->getVerticalAlign()) {
+                    case CSSVerticalAlignValueImp::Top:
+                        baselines[y] = std::max(baselines[y], cellBox->intrinsicHeight - cellBox->getBlankBottom());
+                        break;
+                    case CSSVerticalAlignValueImp::Bottom:
+                        baselines[y] = std::max(baselines[y], heights[y] - cellBox->getBlankBottom());
+                        break;
+                    case CSSVerticalAlignValueImp::Middle:
+                        baselines[y] = std::max(baselines[y], (heights[y] + cellBox->intrinsicHeight) / 2.0f - cellBox->getBlankBottom());
+                        break;
+                    default:
+                        break;
+                    }
+                }
             }
         }
         if (fixedLayout)
@@ -1267,12 +1277,11 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
                 unsigned span = cellBox->getRowSpan();
                 if (1 < span) {
                     float sum = 0.0f;
-                    float baseline = 0.0f;
-                    for (unsigned r = 0; r < span; ++r) {
+                    for (unsigned r = 0; r < span; ++r)
                         sum += heights[y + r];
-                        baseline += baselines[y + r];
-                    }
-                    float d = baseline - cellBox->getBaseline();
+                    float d = 0.0f;
+                    if (cellBox->getVerticalAlign() == CSSVerticalAlignValueImp::Baseline)
+                        d = baselines[y] - cellBox->getBaseline();
                     if (sum < d + cellBox->intrinsicHeight) {
                         float diff = (d + cellBox->intrinsicHeight - sum) / span;
                         for (unsigned r = 0; r < span; ++r)
