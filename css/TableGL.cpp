@@ -103,33 +103,32 @@ void TableWrapperBox::renderLayers(ViewCSSImp* view)
                 if (!cellBox->isRightSpanned(x + elements)) // TODO: else look up for a single column spanning cell.
                     wN = cellBox->x + cellBox->getTotalWidth() - cellBox->getMarginRight();
             }
-            if (style->borderCollapse.getValue() == style->borderCollapse.Collapse) {
-                renderBackground(view, columnGroupStyle, w0, h0, w0, h0, wN, hN, wN - w0, hN - h0, columnGroupStyle->backgroundColor.getARGB(), image);
-                for (unsigned end = x + elements; x < end; w += widths[x], ++x)
-                    ;
-            } else {
-                for (unsigned end = x + elements; x < end; w += widths[x], ++x) {
-                    for (unsigned y = 0; y < yHeight; h += heights[y], ++y) {
-                        CellBox* cellBox = grid[y][x].get();
-                        if (!cellBox || cellBox->isEmptyCell())
-                            continue;
-                        if (!cellBox->isSpanned(x, y)) {
-                            left = cellBox->x;
-                            top = cellBox->y;
-                            right = left + cellBox->getTotalWidth();
-                            bottom = top + cellBox->getTotalHeight();
+            unsigned x0 = x;
+            for (unsigned end = x + elements; x < end; w += widths[x], ++x) {
+                for (unsigned y = 0; y < yHeight; h += heights[y], ++y) {
+                    CellBox* cellBox = grid[y][x].get();
+                    if (!cellBox || cellBox->isEmptyCell() || cellBox->isSpanned(x, y))
+                        continue;
+                    left = cellBox->x;
+                    top = cellBox->y;
+                    right = left + cellBox->getTotalWidth();
+                    bottom = top + cellBox->getTotalHeight();
+                    if (style->borderCollapse.getValue() == CSSBorderCollapseValueImp::Separate) {
+                        left += cellBox->getMarginLeft();
+                        right -= cellBox->getMarginRight();
+                        top += cellBox->getMarginTop();
+                        bottom -= cellBox->getMarginBottom();
+                    } else {
+                        if (x == x0)
                             left += cellBox->getMarginLeft();
+                        if (x + 1 == end)
                             right -= cellBox->getMarginRight();
+                        if (y == 0)
                             top += cellBox->getMarginTop();
+                        if (y + 1 == yHeight)
                             bottom -= cellBox->getMarginBottom();
-                        } else {
-                            left = cellBox->isLeftSpanned(x) ? w : (cellBox->x + cellBox->getMarginLeft());
-                            top = cellBox->isTopSpanned(y) ? h : (cellBox->y + cellBox->getMarginTop());
-                            right = cellBox->isRightSpanned(x + 1) ? w + widths[x] : (cellBox->x + cellBox->getTotalWidth() - cellBox->getMarginRight());
-                            bottom = cellBox->isBottomSpanned(y + 1) ? h + heights[y] : (cellBox->y + cellBox->getTotalHeight() - cellBox->getMarginBottom());
-                        }
-                        renderBackground(view, columnGroupStyle, w0, h0, left, top, right, bottom, wN - w0, hN - h0, columnGroupStyle->backgroundColor.getARGB(), image);
                     }
+                    renderBackground(view, columnGroupStyle, w0, h0, left, top, right, bottom, wN - w0, hN - h0, columnGroupStyle->backgroundColor.getARGB(), image);
                 }
             }
         } else {
@@ -158,30 +157,28 @@ void TableWrapperBox::renderLayers(ViewCSSImp* view)
                 if (!cellBox->isRightSpanned(x + 1)) // TODO: else look up for a single column spanning cell.
                     wN = cellBox->x + cellBox->getTotalWidth() - cellBox->getMarginRight();
             }
-            if (style->borderCollapse.getValue() == style->borderCollapse.Collapse)
-                renderBackground(view, columnStyle, w0, h0, w0, h0, wN, hN, wN - w0, hN - h0, columnStyle->backgroundColor.getARGB(), columnImages[x]);
-            else {
-                for (unsigned y = 0; y < yHeight; h += heights[y], ++y) {
-                    CellBox* cellBox = grid[y][x].get();
-                    if (!cellBox || cellBox->isEmptyCell())
-                        continue;
-                    if (!cellBox->isSpanned(x, y)) {
-                        left = cellBox->x;
-                        top = cellBox->y;
-                        right = left + cellBox->getTotalWidth();
-                        bottom = top + cellBox->getTotalHeight();
-                        left += cellBox->getMarginLeft();
-                        right -= cellBox->getMarginRight();
+            for (unsigned y = 0; y < yHeight; h += heights[y], ++y) {
+                CellBox* cellBox = grid[y][x].get();
+                if (!cellBox || cellBox->isEmptyCell() || cellBox->isSpanned(x, y))
+                    continue;
+                left = cellBox->x;
+                top = cellBox->y;
+                right = left + cellBox->getTotalWidth();
+                bottom = top + cellBox->getTotalHeight();
+                if (style->borderCollapse.getValue() == CSSBorderCollapseValueImp::Separate) {
+                    left += cellBox->getMarginLeft();
+                    right -= cellBox->getMarginRight();
+                    top += cellBox->getMarginTop();
+                    bottom -= cellBox->getMarginBottom();
+                } else {
+                    left += cellBox->getMarginLeft();
+                    right -= cellBox->getMarginRight();
+                    if (y == 0)
                         top += cellBox->getMarginTop();
+                    if (y + 1 == yHeight)
                         bottom -= cellBox->getMarginBottom();
-                    } else {
-                        left = cellBox->isLeftSpanned(x) ? w : (cellBox->x + cellBox->getMarginLeft());
-                        top = cellBox->isTopSpanned(y) ? h : (cellBox->y + cellBox->getMarginTop());
-                        right = cellBox->isRightSpanned(x + 1) ? w + widths[x] : (cellBox->x + cellBox->getTotalWidth() - cellBox->getMarginRight());
-                        bottom = cellBox->isBottomSpanned(y + 1) ? h + heights[y] : (cellBox->y + cellBox->getTotalHeight() - cellBox->getMarginBottom());
-                    }
-                    renderBackground(view, columnStyle, w0, h0, left, top, right, bottom, wN - w0, hN - h0, columnStyle->backgroundColor.getARGB(), columnImages[x]);
                 }
+                renderBackground(view, columnStyle, w0, h0, left, top, right, bottom, wN - w0, hN - h0, columnStyle->backgroundColor.getARGB(), columnImages[x]);
             }
         }
     }
@@ -212,33 +209,32 @@ void TableWrapperBox::renderLayers(ViewCSSImp* view)
                 if (!cellBox->isBottomSpanned(y + elements)) // TODO: else look up for a single row spanning cell.
                     hN = cellBox->y + cellBox->getTotalHeight() - cellBox->getMarginBottom();
             }
-            if (style->borderCollapse.getValue() == style->borderCollapse.Collapse) {
-                renderBackground(view, rowGroupStyle, w0, h0, w0, h0, wN, hN, wN - w0, hN - h0, rowGroupStyle->backgroundColor.getARGB(), image);
-                for (unsigned end = y + elements; y < end; h += heights[y], ++y)
-                    ;
-            } else {
-                for (unsigned end = y + elements; y < end; h += heights[y], ++y) {
-                    for (unsigned x = 0; x < xWidth; w += widths[x], ++x) {
-                        CellBox* cellBox = grid[y][x].get();
-                        if (!cellBox || cellBox->isEmptyCell())
-                            continue;
-                        if (!cellBox->isSpanned(x, y)) {
-                            left = cellBox->x;
-                            top = cellBox->y;
-                            right = left + cellBox->getTotalWidth();
-                            bottom = top + cellBox->getTotalHeight();
+            unsigned y0 = y;
+            for (unsigned end = y + elements; y < end; h += heights[y], ++y) {
+                for (unsigned x = 0; x < xWidth; w += widths[x], ++x) {
+                    CellBox* cellBox = grid[y][x].get();
+                    if (!cellBox || cellBox->isEmptyCell() || cellBox->isSpanned(x, y))
+                        continue;
+                    left = cellBox->x;
+                    top = cellBox->y;
+                    right = left + cellBox->getTotalWidth();
+                    bottom = top + cellBox->getTotalHeight();
+                    if (style->borderCollapse.getValue() == CSSBorderCollapseValueImp::Separate) {
+                        left += cellBox->getMarginLeft();
+                        right -= cellBox->getMarginRight();
+                        top += cellBox->getMarginTop();
+                        bottom -= cellBox->getMarginBottom();
+                    } else {
+                        if (x == 0)
                             left += cellBox->getMarginLeft();
+                        if (x + 1 == xWidth)
                             right -= cellBox->getMarginRight();
+                        if (y == y0)
                             top += cellBox->getMarginTop();
+                        if (y + 1 == end)
                             bottom -= cellBox->getMarginBottom();
-                        } else {
-                            left = cellBox->isLeftSpanned(x) ? w : (cellBox->x + cellBox->getMarginLeft());
-                            top = cellBox->isTopSpanned(y) ? h : (cellBox->y + cellBox->getMarginTop());
-                            right = cellBox->isRightSpanned(x + 1) ? w + widths[x] : (cellBox->x + cellBox->getTotalWidth() - cellBox->getMarginRight());
-                            bottom = cellBox->isBottomSpanned(y + 1) ? h + heights[y] : (cellBox->y + cellBox->getTotalHeight() - cellBox->getMarginBottom());
-                        }
-                        renderBackground(view, rowGroupStyle, w0, h0, left, top, right, bottom, wN - w0, hN - h0, rowGroupStyle->backgroundColor.getARGB(), image);
                     }
+                    renderBackground(view, rowGroupStyle, w0, h0, left, top, right, bottom, wN - w0, hN - h0, rowGroupStyle->backgroundColor.getARGB(), image);
                 }
             }
         } else {
@@ -267,30 +263,28 @@ void TableWrapperBox::renderLayers(ViewCSSImp* view)
                 if (!cellBox->isBottomSpanned(y + 1)) // TODO: else look up for a single row spanning cell.
                     hN = cellBox->y + cellBox->getTotalHeight() - cellBox->getMarginBottom();
             }
-            if (style->borderCollapse.getValue() == style->borderCollapse.Collapse)
-                renderBackground(view, rowStyle, w0, h0, w0, h0, wN, hN, wN - w0, hN - h0, rowStyle->backgroundColor.getARGB(), rowImages[y]);
-            else {
-                for (unsigned x = 0; x < xWidth; w += widths[x], ++x) {
-                    CellBox* cellBox = grid[y][x].get();
-                    if (!cellBox || cellBox->isEmptyCell())
-                        continue;
-                    if (!cellBox->isSpanned(x, y)) {
-                        left = cellBox->x;
-                        top = cellBox->y;
-                        right = left + cellBox->getTotalWidth();
-                        bottom = top + cellBox->getTotalHeight();
+            for (unsigned x = 0; x < xWidth; w += widths[x], ++x) {
+                CellBox* cellBox = grid[y][x].get();
+                if (!cellBox || cellBox->isEmptyCell() || cellBox->isSpanned(x, y))
+                    continue;
+                left = cellBox->x;
+                top = cellBox->y;
+                right = left + cellBox->getTotalWidth();
+                bottom = top + cellBox->getTotalHeight();
+                if (style->borderCollapse.getValue() == CSSBorderCollapseValueImp::Separate) {
+                    left += cellBox->getMarginLeft();
+                    right -= cellBox->getMarginRight();
+                    top += cellBox->getMarginTop();
+                    bottom -= cellBox->getMarginBottom();
+                } else {
+                    if (x == 0)
                         left += cellBox->getMarginLeft();
+                    if (x + 1 == xWidth)
                         right -= cellBox->getMarginRight();
-                        top += cellBox->getMarginTop();
-                        bottom -= cellBox->getMarginBottom();
-                    } else {
-                        left = cellBox->isLeftSpanned(x) ? w : (cellBox->x + cellBox->getMarginLeft());
-                        top = cellBox->isTopSpanned(y) ? h : (cellBox->y + cellBox->getMarginTop());
-                        right = cellBox->isRightSpanned(x + 1) ? w + widths[x] : (cellBox->x + cellBox->getTotalWidth() - cellBox->getMarginRight());
-                        bottom = cellBox->isBottomSpanned(y + 1) ? h + heights[y] : (cellBox->y + cellBox->getTotalHeight() - cellBox->getMarginBottom());
-                    }
-                    renderBackground(view, rowStyle, w0, h0, left, top, right, bottom, wN - w0, hN - h0, rowStyle->backgroundColor.getARGB(), rowImages[y]);
+                    top += cellBox->getMarginTop();
+                    bottom -= cellBox->getMarginBottom();
                 }
+                renderBackground(view, rowStyle, w0, h0, left, top, right, bottom, wN - w0, hN - h0, rowStyle->backgroundColor.getARGB(), rowImages[y]);
             }
         }
     }
