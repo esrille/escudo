@@ -60,6 +60,7 @@ class ViewCSSImp
     int quotingDepth;
 
     float scrollWidth;
+    float scrollHeight;
     float zoom;
 
     Node hovered;
@@ -227,6 +228,13 @@ public:
     float updateScrollWidth(float w) {
         scrollWidth = std::max(scrollWidth, w);
         return scrollWidth;
+    }
+    float getScrollHeight() const {
+        return scrollHeight;
+    }
+    float updateScrollHeight(float h) {
+        scrollHeight = std::max(scrollHeight, h);
+        return scrollHeight;
     }
 
     Node getHovered() const {

@@ -415,6 +415,12 @@ public:
             w += marginRight;
         return w;
     }
+    float getBlockHeight() const {
+        float h = marginTop + getBorderHeight();
+        if (0.0f < marginBottom)
+            h += marginBottom;
+        return h;
+    }
 
     float getVerticalOffset() const {
         return offsetV;

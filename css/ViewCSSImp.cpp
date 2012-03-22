@@ -50,6 +50,7 @@ ViewCSSImp::ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyle
     overflow(CSSOverflowValueImp::Auto),
     quotingDepth(0),
     scrollWidth(0.0f),
+    scrollHeight(0.0f),
     zoom(1.0f),
     hovered(0),
     dpi(96),

@@ -1676,6 +1676,7 @@ void BlockLevelBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLeve
     }
 
     view->updateScrollWidth(x + getBlockWidth());
+    view->updateScrollHeight(y + getBlockHeight());
 }
 
 void BlockLevelBox::dump(std::string indent)
