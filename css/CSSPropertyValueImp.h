@@ -261,8 +261,7 @@ public:
         value.specify(specified.value);
     }
     float getPx() const {
-        float px = value.getPx();
-        return (px < 0.0f) ? 0.0f : px;
+        return value.getPx();
     }
     CSSNonNegativeValueImp(float number = 0.0f, unsigned short unit = css::CSSPrimitiveValue::CSS_NUMBER) :
         CSSNumericValueImp(number, unit) {
@@ -364,8 +363,7 @@ public:
     }
     void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize);
     float getPx() const {
-        float px = length.getPx();
-        return (px < 0.0f) ? 0.0f : px;
+        return length.getPx();
     }
     CSSNoneLengthValueImp() :
         length(0) {
@@ -740,14 +738,10 @@ public:
     }
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     float getHorizontalSpacing() const {
-        // Note in HTML, the default value is 2.
-        float v = horizontal.getPx();
-        return (0.0f <= v) ? v : 2.0f;
+        return horizontal.getPx();
     }
     float getVerticalSpacing() const {
-        // Note in HTML, the default value is 2.
-        float v = vertical.getPx();
-        return (0.0f <= v) ? v : 2.0f;
+        return vertical.getPx();
     }
     CSSBorderSpacingValueImp() :
         horizontal(0, css::CSSPrimitiveValue::CSS_PX),
@@ -886,8 +880,7 @@ public:
     }
     void compute(ViewCSSImp* view, const CSSBorderStyleValueImp& borderStyle, CSSStyleDeclarationImp* style);
     float getPx() const {
-        float px = width.getPx();
-        return (px < 0.0f) ? 3.0f : px;  // returns the default 'medium' width in px if negative.
+        return width.getPx();
     }
     CSSBorderWidthValueImp() :
         width(Medium) {
