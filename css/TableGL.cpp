@@ -374,7 +374,7 @@ void TableWrapperBox::renderTableOutlines(ViewCSSImp* view)
                 h += heights[y];
             if (0.0f < rowGroupStyle->outlineWidth.getPx())
                 renderOutline(view, tableBox->getX(), h0, tableBox->getX() + tableBox->width, h,
-                            rowGroupStyle->outlineWidth.getPx(), rowGroupStyle->outlineStyle.getValue(), rowGroupStyle->outlineColor.getARGB());
+                              rowGroupStyle->outlineWidth.getPx(), rowGroupStyle->outlineStyle.getValue(), rowGroupStyle->outlineColor.getARGB());
         } else {
             h += heights[y];
             ++y;
@@ -388,6 +388,16 @@ void TableWrapperBox::renderTableOutlines(ViewCSSImp* view)
         if (rowStyle && 0.0f < rowStyle->outlineWidth.getPx())
             renderOutline(view, tableBox->getX(), h, tableBox->getX() + tableBox->width, h + heights[y],
                           rowStyle->outlineWidth.getPx(), rowStyle->outlineStyle.getValue(), rowStyle->outlineColor.getARGB());
+    }
+
+    // cells
+    for (unsigned y = 0; y < yHeight; ++y) {
+        for (unsigned x = 0; x < xWidth; ++x) {
+            CellBox* cellBox = grid[y][x].get();
+            if (!cellBox || cellBox->isEmptyCell() || cellBox->isSpanned(x, y))
+                continue;
+            cellBox->renderOutline(view, cellBox->x, cellBox->y);
+        }
     }
 }
 
