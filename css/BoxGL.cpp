@@ -388,28 +388,18 @@ void Box::renderBorder(ViewCSSImp* view, float left, float top)
     renderBorder(view, left, top, getStyle(), backgroundColor, backgroundImage, ll, lr, rl, rr, tt, tb, bt, bb, this, this);
 }
 
-void Box::renderOutline(ViewCSSImp* view, float left, float top)
+void Box::renderOutline(ViewCSSImp* view, float left, float top, float right, float bottom, float outlineWidth, unsigned outline, unsigned color)
 {
-    if (outlineWidth <= 0.0f)
-        return;
-
-    glPushMatrix();
-    glTranslatef(left, top, 0.0f);
     glDisable(GL_TEXTURE_2D);
 
-    float ll = marginLeft;
-    float lr = ll + borderLeft;
-    ll = lr - outlineWidth;
-    float rl = lr + getPaddingWidth();
-    float rr = rl + outlineWidth;
-    float tt = marginTop;
-    float tb = tt + borderTop;
-    tt = tb - outlineWidth;
-    float bt = tb + getPaddingHeight();
-    float bb = bt + outlineWidth;
-
-    unsigned outline = style->outlineStyle.getValue();
-    unsigned color = style->outlineColor.getARGB();
+    float ll = left - outlineWidth;
+    float lr = left;
+    float rl = right;
+    float rr = right + outlineWidth;
+    float tt = top - outlineWidth;
+    float tb = top;
+    float bt = bottom;
+    float bb = bottom + outlineWidth;
 
     // TODO: Support 'invert'.
 
@@ -423,7 +413,17 @@ void Box::renderOutline(ViewCSSImp* view, float left, float top)
                      ll, bb, ll, tt, lr, tb, lr, bt);
 
     glEnable(GL_TEXTURE_2D);
-    glPopMatrix();
+}
+
+void Box::renderOutline(ViewCSSImp* view, float left, float top)
+{
+    if (outlineWidth <= 0.0f)
+        return;
+    left += marginLeft + borderLeft;
+    top += marginTop + borderTop;
+    float right = left + getPaddingWidth();
+    float bottom = top + getPaddingHeight();
+    renderOutline(view, left, top, right, bottom, outlineWidth, style->outlineStyle.getValue(), style->outlineColor.getARGB());
 }
 
 void Box::renderVerticalScrollBar(float w, float h, float pos, float total)
@@ -640,19 +640,22 @@ void BlockLevelBox::renderInline(ViewCSSImp* view, StackingContext* stackingCont
             child->render(view, stackingContext);
     }
 
-    if (!hasOutline)
-        return;
-    for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
-        if (!child->isAnonymous() && child->isPositioned())
-            continue;
-        if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(child)) {
-            if (0.0f < block->getOutlineWidth()) {
-                unsigned overflow = block->renderBegin(view, true);
-                block->renderOutline(view, block->x, block->y + block->getTopBorderEdge());
-                block->renderEnd(view, overflow, false);
+    if (hasOutline) {
+        for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
+            if (!child->isAnonymous() && child->isPositioned())
+                continue;
+            if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(child)) {
+                if (0.0f < block->getOutlineWidth()) {
+                    unsigned overflow = block->renderBegin(view, true);
+                    block->renderOutline(view, block->x, block->y + block->getTopBorderEdge());
+                    block->renderEnd(view, overflow, false);
+                }
             }
         }
     }
+
+    if (isTableBox())
+        dynamic_cast<TableWrapperBox*>(getParentBox())->renderTableOutlines(view);
 }
 
 void BlockLevelBox::render(ViewCSSImp* view, StackingContext* stackingContext)
@@ -996,6 +999,5 @@ void InlineLevelBox::renderOutline(ViewCSSImp* view)
 
     }
 }
-
 
 }}}}  // org::w3c::dom::bootstrap

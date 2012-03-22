@@ -527,6 +527,7 @@ public:
                       float ll, float lr, float rl, float rr, float tt, float tb, float bt, float bb,
                       Box* leftEdge, Box* rightEdge);
     void renderBorder(ViewCSSImp* view, float left, float top);
+    void renderOutline(ViewCSSImp* view, float left, float top, float right, float bottom, float outlineWidth, unsigned outline, unsigned color);
     void renderOutline(ViewCSSImp* view, float left, float top);
 
     virtual void dump(std::string indent = "") = 0;

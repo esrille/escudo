@@ -241,6 +241,7 @@ public:
     virtual float shrinkTo();
 
     void renderTableBorders(ViewCSSImp* view);
+    void renderTableOutlines(ViewCSSImp* view);
 
     virtual void dump(std::string indent = "");
 };

@@ -358,4 +358,37 @@ void TableWrapperBox::renderTableBorders(ViewCSSImp* view)
     glEnable(GL_TEXTURE_2D);
 }
 
+void TableWrapperBox::renderTableOutlines(ViewCSSImp* view)
+{
+    // Note the 'outline' property does not apply to elements with a display
+    // of table-column or table-column-group.
+
+    // row groups
+    float h = tableBox->getY() + tableBox->getMarginTop();
+    for (unsigned y = 0; y < yHeight;) {
+        CSSStyleDeclarationImp* rowGroupStyle = rowGroups[y].get();
+        if (rowGroupStyle) {
+            float h0 = h;
+            h += heights[y];
+            for (++y; rowGroupStyle == rowGroups[y].get(); ++y)
+                h += heights[y];
+            if (0.0f < rowGroupStyle->outlineWidth.getPx())
+                renderOutline(view, tableBox->getX(), h0, tableBox->getX() + tableBox->width, h,
+                            rowGroupStyle->outlineWidth.getPx(), rowGroupStyle->outlineStyle.getValue(), rowGroupStyle->outlineColor.getARGB());
+        } else {
+            h += heights[y];
+            ++y;
+        }
+    }
+
+    // rows
+    h = tableBox->getY() + tableBox->getMarginTop();
+    for (unsigned y = 0; y < yHeight; h += heights[y], ++y) {
+        CSSStyleDeclarationImp* rowStyle = rows[y].get();
+        if (rowStyle && 0.0f < rowStyle->outlineWidth.getPx())
+            renderOutline(view, tableBox->getX(), h, tableBox->getX() + tableBox->width, h + heights[y],
+                          rowStyle->outlineWidth.getPx(), rowStyle->outlineStyle.getValue(), rowStyle->outlineColor.getARGB());
+    }
+}
+
 }}}}  // org::w3c::dom::bootstrap
