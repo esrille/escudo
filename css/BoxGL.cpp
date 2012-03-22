@@ -987,16 +987,87 @@ void InlineLevelBox::renderOutline(ViewCSSImp* view)
         getFirstChild()->renderOutline(view, x,  y);
         return;
     }
-
-    if (outlineWidth <= 0.0f)
+    if (outlineWidth <= 0.0f || !font)
         return;
-    if (!font)
-        Box::renderOutline(view, x, y);
-    else if (!style->hasMultipleBoxes())
+    if (!style->hasMultipleBoxes()) {
         Box::renderOutline(view, x, y - getBlankTop());
-    else if (style->getBox() == this) {
-        // TODO: Render the outline across several lines.
+        return;
+    }
+    if (style->getBox() != this)
+        return;
 
+    // TODO: Render the outline across several lines.
+    Box* box;
+    InlineLevelBox* head;
+    InlineLevelBox* tail = this;
+    InlineLevelBox* lastBox = dynamic_cast<InlineLevelBox*>(style->getLastBox());
+    assert(lastBox);
+    for (box = this; box && box != lastBox; box = box->getNextSibling()) {
+        if (InlineLevelBox* i = dynamic_cast<InlineLevelBox*>(box))
+            tail = i;
+    }
+
+    float left = x + marginLeft + borderLeft;
+    float top = y - paddingTop;
+    if (box)
+        Box::renderOutline(view, left, top, left + getPaddingWidth(), top + getPaddingHeight(),
+                           outlineWidth, style->outlineStyle.getValue(), style->outlineColor.getARGB());
+    else {
+        float right = tail->getX() + tail->getBlankLeft() + tail->width + tail->paddingRight;
+        float bottom = top + getPaddingHeight() - outlineWidth;
+        Box::renderOutline(view, left, top, right, bottom,
+                           outlineWidth, style->outlineStyle.getValue(), style->outlineColor.getARGB());
+        LineBox* lineBox = dynamic_cast<LineBox*>(getParentBox());
+        assert(lineBox);
+        float baseline = lineBox->getY() + lineBox->getBaseline();
+        for (;;) {
+            LineBox* nextLine = dynamic_cast<LineBox*>(lineBox->getNextSibling());
+            if (!nextLine) {
+                // This is a line box in an anonymous block. The last box should be in
+                // one of the following anonymous block(s).
+                BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(lineBox->getParentBox());
+                assert(block);
+                while (block = dynamic_cast<BlockLevelBox*>(block->getNextSibling())) {
+                    if (block->isAnonymous()) {
+                        nextLine = dynamic_cast<LineBox*>(block->getFirstChild());
+                        if (nextLine)
+                            break;
+                    }
+                }
+            }
+            lineBox = nextLine;
+            if (!lineBox)   // TODO: Check when this happens.
+                break;
+            assert(lineBox);
+            head = tail = 0;
+            for (box = lineBox->getFirstChild(); box; box = box->getNextSibling()) {
+                if (InlineLevelBox* i = dynamic_cast<InlineLevelBox*>(box)) {
+                    if (!head)
+                        head = i;
+                    tail = i;
+                    if (i == lastBox)
+                        break;
+                }
+            }
+            if (box) {
+                left = head->x + head->marginLeft + head->borderLeft;
+                top = lastBox->y - lastBox->paddingTop;
+                right = lastBox->x + lastBox->getBlankLeft() + lastBox->width + lastBox->paddingRight;
+                bottom = top + lastBox->getPaddingHeight() - outlineWidth;
+                Box::renderOutline(view, left, top, right, bottom,
+                                   outlineWidth, style->outlineStyle.getValue(), style->outlineColor.getARGB());
+                break;
+            }
+            if (head) {
+                left = lineBox->getX();
+                // TODO: Calculate 'top' accurately.
+                top = y - paddingTop + (lineBox->getY() + lineBox->getBaseline() - baseline);
+                right = tail->x + tail->getBlankLeft() + tail->width + tail->paddingRight;
+                bottom = top + getPaddingHeight() - outlineWidth;
+                Box::renderOutline(view, left, top, right, bottom,
+                                   outlineWidth, style->outlineStyle.getValue(), style->outlineColor.getARGB());
+            }
+        }
     }
 }
 
