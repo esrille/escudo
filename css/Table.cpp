@@ -1082,7 +1082,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
 
     // The computed values of properties 'position', 'float', 'margin-*', 'top', 'right', 'bottom',
     // and 'left' on the table element are used on the table wrapper box and not the table box;
-    backgroundColor = 0x00000000;
+    backgroundColor = getParentBox() ? 0x00000000 : style->backgroundColor.getARGB();
     paddingTop = paddingRight = paddingBottom = paddingLeft = 0.0f;
     borderTop = borderRight = borderBottom = borderLeft = 0.0f;
     resolveMargin(view, containingBlock, 0.0f);
