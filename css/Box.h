@@ -687,6 +687,9 @@ public:
     }
 
     float getBaseline() const;
+    float getTopBorderEdge() const {
+        return topBorderEdge;
+    }
 
     unsigned getTextAlign() const {
         return textAlign;

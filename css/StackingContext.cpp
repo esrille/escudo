@@ -205,8 +205,11 @@ void StackingContext::render(ViewCSSImp* view)
             block->renderInline(view, this);
         for (; childContext; childContext = childContext->getNextSibling())
             childContext->render(view);
-        if (block)
+        if (block) {
+            if (0.0f < block->getOutlineWidth())
+                block->renderOutline(view, block->x, block->y + block->getTopBorderEdge());
             block->renderEnd(view, overflow);
+        }
 
         unclip(view, base);
         glPopMatrix();

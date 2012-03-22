@@ -648,7 +648,7 @@ void BlockLevelBox::renderInline(ViewCSSImp* view, StackingContext* stackingCont
         if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(child)) {
             if (0.0f < block->getOutlineWidth()) {
                 unsigned overflow = block->renderBegin(view, true);
-                block->renderOutline(view, block->x, block->y + block->topBorderEdge);
+                block->renderOutline(view, block->x, block->y + block->getTopBorderEdge());
                 block->renderEnd(view, overflow, false);
             }
         }
