@@ -303,10 +303,12 @@ void Box::renderBorder(ViewCSSImp* view, float left, float top,
                 glVertex2f(ll, bb);
             } else {
                 const ContainingBlock* containingBlock = getContainingBlock(view);
+                float r = -left + view->getScrollWidth();
+                float b = -top + view->getScrollHeight() + containingBlock->height;
                 glVertex2f(-left, -top);
-                glVertex2f(-left + view->getScrollWidth(), -top);
-                glVertex2f(-left + view->getScrollWidth(), -top + containingBlock->height);
-                glVertex2f(-left, -top + containingBlock->height);
+                glVertex2f(r, -top);
+                glVertex2f(r, b);
+                glVertex2f(-left, b);
             }
         glEnd();
     }
@@ -334,17 +336,16 @@ void Box::renderBorder(ViewCSSImp* view, float left, float top,
         } else {
             const ContainingBlock* containingBlock = getContainingBlock(view);
             glTranslatef(lr, tb, 0.0f);
+            float l = -lr + view->getWindow()->getScrollX();
+            float t = -tb + view->getWindow()->getScrollY();
+            float r = containingBlock->width + view->getWindow()->getScrollX();
+            float b = containingBlock->height + view->getWindow()->getScrollY();
             if (!style->backgroundAttachment.isFixed())
-                backgroundImage->render(view, -lr, -tb, containingBlock->width, containingBlock->height, backgroundLeft, backgroundTop);
+                backgroundImage->render(view, l, t, r, b, backgroundLeft, backgroundTop);
             else {
-                float fixedX = left + lr - view->getWindow()->getScrollX();
-                float fixedY = top + tb - view->getWindow()->getScrollY();
-                backgroundImage->render(view,
-                                        -lr + view->getWindow()->getScrollX(),
-                                        -tb + view->getWindow()->getScrollY(),
-                                        containingBlock->width + view->getWindow()->getScrollX(),
-                                        containingBlock->height + view->getWindow()->getScrollY(),
-                                        backgroundLeft - fixedX, backgroundTop - fixedY);
+                float fixedX = left - l;
+                float fixedY = top - t;
+                backgroundImage->render(view, l, t, r, b, backgroundLeft - fixedX, backgroundTop - fixedY);
             }
         }
         glPopMatrix();
