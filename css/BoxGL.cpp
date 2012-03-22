@@ -980,6 +980,11 @@ void InlineLevelBox::renderText(ViewCSSImp* view, const std::u16string& data, fl
 
 void InlineLevelBox::renderOutline(ViewCSSImp* view)
 {
+    if (getFirstChild()) {  // for inline-block
+        getFirstChild()->renderOutline(view, x,  y);
+        return;
+    }
+
     if (outlineWidth <= 0.0f)
         return;
     if (!font)
