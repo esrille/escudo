@@ -78,6 +78,7 @@ int runTest(int argc, char* argv[], std::string userStyle, std::string testFonts
         // url = "http://test.csswg.org/suites/css2.1/20110323/" + url;
         argv[argi++] = strdup(url.c_str());
         argv[argi] = 0;
+        alarm(10);  // Terminate the process if it does not complete in 10 seconds.
         execvp(argv[0], argv);
         exit(EXIT_FAILURE);
     }
