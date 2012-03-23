@@ -1171,6 +1171,9 @@ void CSSContentValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style
             } else {
                 switch (style->listStyleType.getValue()) {
                 case CSSListStyleTypeValueImp::None:
+                    if (CounterContent* content = new CounterContent(u"list-item", style->listStyleType.getValue()))
+                        contents.push_back(content);
+                    break;
                 case CSSListStyleTypeValueImp::Disc:
                 case CSSListStyleTypeValueImp::Circle:
                 case CSSListStyleTypeValueImp::Square:
