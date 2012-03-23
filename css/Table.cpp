@@ -35,7 +35,7 @@ CellBox::CellBox(Element element, CSSStyleDeclarationImp* style):
     row(0),
     colSpan(1),
     rowSpan(1),
-    verticalAlign(0)    // Baseline
+    verticalAlign(CSSVerticalAlignValueImp::Middle)
 {
     if (style)
         verticalAlign = style->verticalAlign.getValueForCell();
@@ -356,7 +356,7 @@ bool TableWrapperBox::processTableChild(Node node, CSSStyleDeclarationImp* style
     default:
         inRow = true;
         if (!anonymousCell)
-            anonymousCell = processCell(0, 0, 0, counterContext, 0);
+            anonymousCell = processCell(0, 0, childStyle, counterContext, 0);
         if (anonymousCell)
             view->layOutBlockBoxes(node, anonymousCell, childStyle, counterContext);
         return true;
@@ -451,7 +451,7 @@ void TableWrapperBox::processRowGroupChild(Node node, CSSStyleDeclarationImp* se
         }
         inRow = true;
         if (!anonymousCell)
-            anonymousCell = processCell(0, 0, 0, counterContext, 0);
+            anonymousCell = processCell(0, 0, childStyle, counterContext, 0);
         if (anonymousCell) {
             anonymousTable = dynamic_cast<TableWrapperBox*>(view->layOutBlockBoxes(node, anonymousCell, childStyle, counterContext));
             if (display == CSSDisplayValueImp::Table || display == CSSDisplayValueImp::InlineTable)
@@ -558,7 +558,7 @@ void TableWrapperBox::processRowChild(Node node, CSSStyleDeclarationImp* rowStyl
             anonymousTable = 0;
         }
         if (!anonymousCell)
-            anonymousCell = processCell(0, 0, 0, counterContext, rowStyle);
+            anonymousCell = processCell(0, 0, childStyle, counterContext, rowStyle);
         if (anonymousCell) {
             anonymousTable = dynamic_cast<TableWrapperBox*>(view->layOutBlockBoxes(node, anonymousCell, childStyle, counterContext));
             if (display == CSSDisplayValueImp::Table || display == CSSDisplayValueImp::InlineTable)
@@ -614,7 +614,7 @@ CellBox* TableWrapperBox::processCell(Element current, BlockLevelBox* parentBox,
     if (current)
         cellBox = static_cast<CellBox*>(view->layOutBlockBoxes(current, 0, currentStyle, counterContext, true));
     else {
-        cellBox = new(std::nothrow) CellBox;
+        cellBox = new(std::nothrow) CellBox(0, currentStyle);
         if (cellBox)
             cellBox->establishFormattingContext();
     }
