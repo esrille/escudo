@@ -551,8 +551,9 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
                     }
                 }
             }
-            // Deal with an empty list item; cf. list-alignment-001
-            if (!element.hasChildNodes() && !beforeStyle && !afterStyle) {
+            // Deal with an empty list item; cf. list-alignment-001, acid2.
+            // TODO: Find out where the exact behavior is defined in the specifications.
+            if (style->height.isAuto() && !element.hasChildNodes() && !beforeStyle && !afterStyle) {
                 if (!currentBox->hasChildBoxes())
                     currentBox->insertInline(element);
                 else if (BlockLevelBox* anonymousBox = currentBox->getAnonymousBox())
