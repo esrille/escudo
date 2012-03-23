@@ -55,7 +55,7 @@ int processOutput(std::istream& stream, std::string& result)
     return 0;
 }
 
-int runTest(int argc, char* argv[], std::string userStyle, std::string testFonts, std::string url, std::string& result)
+int runTest(int argc, char* argv[], std::string userStyle, std::string testFonts, std::string url, std::string& result, unsigned timeout)
 {
     int pipefd[2];
     pipe(pipefd);
@@ -78,7 +78,8 @@ int runTest(int argc, char* argv[], std::string userStyle, std::string testFonts
         // url = "http://test.csswg.org/suites/css2.1/20110323/" + url;
         argv[argi++] = strdup(url.c_str());
         argv[argi] = 0;
-        alarm(10);  // Terminate the process if it does not complete in 10 seconds.
+        if (timeout)
+            alarm(timeout); // Terminate the process if it does not complete in 'timeout' seconds.
         execvp(argv[0], argv);
         exit(EXIT_FAILURE);
     }
@@ -139,12 +140,14 @@ bool saveLog(const std::string& path, const std::string& url, const std::string&
 int main(int argc, char* argv[])
 {
     int mode = HEADLESS;
+    unsigned timeout = 10;
 
     int argi = 1;
     while (*argv[argi] == '-') {
         switch (argv[argi][1]) {
         case 'i':
             mode = INTERACTIVE;
+            timeout = 0;
             break;
         case 'r':
             mode = REPORT;
@@ -244,7 +247,7 @@ int main(int argc, char* argv[])
                 break;
             // FALL THROUGH
         default:
-            pid = runTest(argc - argi, args, userStyle, testFonts, url, output);
+            pid = runTest(argc - argi, args, userStyle, testFonts, url, output, timeout);
             break;
         }
 
