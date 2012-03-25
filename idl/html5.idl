@@ -38,21 +38,21 @@ typedef Window WindowProxy;
 
 interface HTMLCollection {
   readonly attribute unsigned long length;
-  caller getter Element? item(in unsigned long index);
-  caller getter object? namedItem(in DOMString name); // only returns Element
+  legacycaller getter Element? item(in unsigned long index);
+  legacycaller getter object? namedItem(in DOMString name); // only returns Element
 };
 
 #endif
 
 interface HTMLAllCollection : HTMLCollection {
   // inherits length and item()
-  caller getter object? namedItem(in DOMString name); // overrides inherited namedItem()
+  legacycaller getter object? namedItem(in DOMString name); // overrides inherited namedItem()
   HTMLAllCollection tags(in DOMString tagName);
 };
 
 interface HTMLFormControlsCollection : HTMLCollection {
   // inherits length and item()
-  caller getter object? namedItem(in DOMString name); // overrides inherited namedItem()
+  legacycaller getter object? namedItem(in DOMString name); // overrides inherited namedItem()
 };
 
 interface RadioNodeList : NodeList {
@@ -62,7 +62,7 @@ interface RadioNodeList : NodeList {
 interface HTMLOptionsCollection : HTMLCollection {
   // inherits item()
            attribute unsigned long length; // overrides inherited length
-  caller getter object? namedItem(in DOMString name); // overrides inherited namedItem()
+  legacycaller getter object? namedItem(in DOMString name); // overrides inherited namedItem()
   void add(in HTMLElement element, in optional HTMLElement? before);
   void add(in HTMLElement element, in long before);
   void remove(in long index);
@@ -71,7 +71,7 @@ interface HTMLOptionsCollection : HTMLCollection {
 
 interface HTMLPropertiesCollection : HTMLCollection {
   // inherits length and item()
-  caller getter PropertyNodeList? namedItem(in DOMString name); // overrides inherited namedItem()
+  legacycaller getter PropertyNodeList? namedItem(in DOMString name); // overrides inherited namedItem()
   readonly attribute DOMStringList names;
 };
 
@@ -493,7 +493,7 @@ interface HTMLAnchorElement : HTMLElement {
 interface HTMLTimeElement : HTMLElement {
            attribute DOMString dateTime;
            attribute boolean pubDate;
-  readonly attribute Date? valueAsDate;
+  readonly attribute Date valueAsDate;
 };
 
 interface HTMLSpanElement : HTMLElement {};
@@ -1022,8 +1022,8 @@ interface HTMLFormElement : HTMLElement {
 
   readonly attribute HTMLFormControlsCollection elements;
   readonly attribute long length;
-  caller getter any (in unsigned long index);
-  caller getter any (in DOMString name);
+  legacycaller getter any (in unsigned long index);
+  legacycaller getter any (in DOMString name);
 
   void submit();
   void reset();

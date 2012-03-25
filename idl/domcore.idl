@@ -278,8 +278,8 @@ module html {
 
 interface HTMLCollection {
   readonly attribute unsigned long length;
-  caller getter Element? item(in unsigned long index);
-  caller getter object? namedItem(in DOMString name); // only returns Element
+  legacycaller getter Element? item(in unsigned long index);
+  legacycaller getter object? namedItem(in DOMString name); // only returns Element
 };
 
 };

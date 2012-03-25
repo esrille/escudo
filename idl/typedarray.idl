@@ -50,7 +50,7 @@ interface Int8Array : ArrayBufferView {
 [
     Constructor(unsigned long length),
     Constructor(ArrayBufferView array),
-    Constructor(unsigned byte[] array),
+    Constructor(octet[] array),
     Constructor(ArrayBuffer buffer,
                 optional unsigned long byteOffset, optional unsigned long length)
 ]
@@ -59,10 +59,10 @@ interface Uint8Array : ArrayBufferView {
 
     readonly attribute unsigned long length;
 
-    omittable getter unsigned byte get(unsigned long index);
-    omittable setter void set(unsigned long index, unsigned byte value);
+    omittable getter octet get(unsigned long index);
+    omittable setter void set(unsigned long index, octet value);
     void set(Uint8Array array, optional unsigned long offset);
-    void set(unsigned byte[] array, optional unsigned long offset);
+    void set(octet[] array, optional unsigned long offset);
     Uint8Array subarray(long start, long end);
 };
 
@@ -204,7 +204,7 @@ interface DataView : ArrayBufferView {
     // These methods raise an INDEX_SIZE_ERR exception if they would read
     // beyond the end of the view.
     byte getInt8(unsigned long byteOffset);
-    unsigned byte getUint8(unsigned long byteOffset);
+    octet getUint8(unsigned long byteOffset);
     short getInt16(unsigned long byteOffset,
                    optional boolean littleEndian);
     unsigned short getUint16(unsigned long byteOffset,
@@ -232,7 +232,7 @@ interface DataView : ArrayBufferView {
     void setInt8(unsigned long byteOffset,
                  byte value);
     void setUint8(unsigned long byteOffset,
-                  unsigned byte value);
+                  octet value);
     void setInt16(unsigned long byteOffset,
                   short value,
                   optional boolean littleEndian);
