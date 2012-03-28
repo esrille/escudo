@@ -181,12 +181,12 @@ Node NodeImp::insertBefore(Node newChild, Node refChild)
     if (newChild != refChild) {
         Document ownerOfChild = newChild.getOwnerDocument();
         if (ownerOfChild != getOwnerDocument() && ownerOfChild != *this)
-            throw DOMException(DOMException::WRONG_DOCUMENT_ERR);
+            throw DOMException{DOMException::WRONG_DOCUMENT_ERR};
         if (refChild.getParentNode() != *this)
-            throw DOMException(DOMException::NOT_FOUND_ERR);
+            throw DOMException{DOMException::NOT_FOUND_ERR};
         if (NodeImp* child = dynamic_cast<NodeImp*>(newChild.self())) {
             if (child == this || child->isAncestorOf(this))
-                throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
+                throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
             if (NodeImp* ref = dynamic_cast<NodeImp*>(refChild.self())) {
                 child->retain_();
                 if (child->parentNode) {
@@ -210,14 +210,14 @@ Node NodeImp::replaceChild(Node newChild, Node oldChild)
     if (!newChild)
         return oldChild;
     if (!oldChild || oldChild.getParentNode() != *this)
-        throw DOMException(DOMException::NOT_FOUND_ERR);
+        throw DOMException{DOMException::NOT_FOUND_ERR};
     if (newChild != oldChild) {
         Document ownerOfChild = newChild.getOwnerDocument();
         if (ownerOfChild != getOwnerDocument() && ownerOfChild != *this)
-            throw DOMException(DOMException::WRONG_DOCUMENT_ERR);
+            throw DOMException{DOMException::WRONG_DOCUMENT_ERR};
         if (NodeImp* child = dynamic_cast<NodeImp*>(newChild.self())) {
             if (child == this || child->isAncestorOf(this))
-                throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
+                throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
             if (NodeImp* ref = dynamic_cast<NodeImp*>(oldChild.self())) {
                 child->retain_();
                 if (child->parentNode) {
@@ -236,10 +236,10 @@ Node NodeImp::replaceChild(Node newChild, Node oldChild)
 Node NodeImp::removeChild(Node oldChild)
 {
     if (!oldChild)
-        throw DOMException(DOMException::NOT_FOUND_ERR);
+        throw DOMException{DOMException::NOT_FOUND_ERR};
     if (NodeImp* child = dynamic_cast<NodeImp*>(oldChild.self())) {
         if (child->parentNode != this)
-            throw DOMException(DOMException::NOT_FOUND_ERR);
+            throw DOMException{DOMException::NOT_FOUND_ERR};
         if (0 < count_()) {  // Prevent dispatching an event from the destructor.
             events::MutationEvent event = new(std::nothrow) MutationEventImp;
             event.initMutationEvent(u"DOMNodeRemoved",
@@ -258,10 +258,10 @@ Node NodeImp::appendChild(Node newChild)
         return newChild;
     Document ownerOfChild = newChild.getOwnerDocument();
     if (ownerOfChild != getOwnerDocument() && ownerOfChild != *this)
-        throw DOMException(DOMException::WRONG_DOCUMENT_ERR);
+        throw DOMException{DOMException::WRONG_DOCUMENT_ERR};
     if (NodeImp* child = dynamic_cast<NodeImp*>(newChild.self())) {
         if (child == this || child->isAncestorOf(this))
-            throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
+            throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
         // TODO: case newChild is a DocumentFragment
         child->retain_();
         if (child->parentNode) {

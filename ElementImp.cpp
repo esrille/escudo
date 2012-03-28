@@ -205,13 +205,13 @@ void ElementImp::setAttributeNS(std::u16string namespaceURI, std::u16string qual
         localName = qualifiedName;
     if (prefix.hasValue()) {
         if (namespaceURI.length() == 0)
-            throw DOMException(DOMException::NAMESPACE_ERR);
+            throw DOMException{DOMException::NAMESPACE_ERR};
         if (prefix.value() == u"xml" && namespaceURI != u"http://www.w3.org/XML/1998/namespace")
-            throw DOMException(DOMException::NAMESPACE_ERR);
+            throw DOMException{DOMException::NAMESPACE_ERR};
     }
     if ((qualifiedName == u"xmlns" || prefix.hasValue() && prefix.value() == u"xmlns") &&
         namespaceURI != u"http://www.w3.org/2000/xmlns") {
-        throw DOMException(DOMException::NAMESPACE_ERR);
+        throw DOMException{DOMException::NAMESPACE_ERR};
     }
     for (auto i = attributes.begin(); i != attributes.end(); ++i) {
         Attr attr = *i;

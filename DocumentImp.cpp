@@ -1588,7 +1588,7 @@ Node DocumentImp::appendChild(Node newChild) throw(DOMException)
 {
     if (DocumentTypeImp* newDoctype = dynamic_cast<DocumentTypeImp*>(newChild.self())) {
         if (getDoctype())
-            throw DOMException(DOMException::HIERARCHY_REQUEST_ERR);
+            throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
         if (!newChild.getOwnerDocument())
             newDoctype->setOwnerDocument(this);
         NodeImp::appendChild(newChild);
