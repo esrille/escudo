@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,23 +40,28 @@ public:
     }
     virtual unsigned int release_() {
         if (object && object != this) {
-            if (object->release_() == 0)
-                object = 0;
+            unsigned count = object->release_();
+            if (0 < count)
+                return count;
+            object = 0;
         }
         return 0;
     }
 
 public:
     Object() :
-        object(0) {
+        object(0)
+    {
     }
     Object(Object* other) :
-        object(other) {
+        object(other)
+    {
         if (other)
             other->retain_();
     }
     Object(const Object& other) :
-        object(other.self()) {
+        object(other.object)
+    {
         const_cast<Object*>(&other)->retain_();
     }
     virtual ~Object() {
