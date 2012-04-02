@@ -101,7 +101,7 @@ public:
     void setDocumentWindow(const DocumentWindowPtr& window);
     void refreshView();
 
-    bool activate();
+    DocumentWindowPtr activate();
 
     // mouse()
     //   button:

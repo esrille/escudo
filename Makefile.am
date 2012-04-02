@@ -523,7 +523,7 @@ $(generated_headers) : org/w3c/dom/Node.h
 org/w3c/dom/Node.h : $(idl_files)
 	esidl -messenger -string std::u16string -object Object -fno-multipleinheritance $^
 
-lib_LIBRARIES = libeshtml5.a libesfontmanager.a
+lib_LIBRARIES = libeshtml5.a libesfontmanager.a libesjsapi.a libesv8api.a
 
 LDADD = libeshtml5.a libesfontmanager.a
 
@@ -560,6 +560,16 @@ libesfontmanager_a_SOURCES = \
 	font/FontDatabase.h \
 	font/FontDatabase.cpp
 
+libesjsapi_a_SOURCES = \
+	js/esjsapi.h \
+	js/bridge.cpp \
+	js/Script.cpp
+
+libesv8api_a_SOURCES = \
+	v8/esv8api.h \
+	v8/bridgeV8.cpp \
+	v8/ScriptV8.cpp
+
 org/w3c/dom/Node.cpp : $(idl_files)
 	esidl -messenger-src -string std::u16string -object Object -fno-multipleinheritance $^
 
@@ -574,6 +584,7 @@ libeshtml5_a_SOURCES = \
 	Any.h \
 	nullable.h \
 	sequence.h \
+	ECMAScript.h \
 	utf.h \
 	utf.cpp \
 	TextIterator.h \
@@ -581,9 +592,6 @@ libeshtml5_a_SOURCES = \
 	U16InputStream.h \
 	DocumentWindow.cpp \
 	DocumentWindow.h \
-	js/esjsapi.h \
-	js/bridge.cpp \
-	js/Script.cpp \
 	url/URI.h \
 	url/URI.cpp \
 	url/URL.h \
@@ -1089,57 +1097,64 @@ bin_PROGRAMS = \
 	CSSStyle.test \
 	Box.test \
 	Layout.test \
-	Script.test
+	Script.test \
+	ScriptV8.test
 
 bin_PROGRAMS : $(LDADD)
 
-harness_SOURCES = \
-	harness/harness.cpp
+js_LDADD = libeshtml5.a libesjsapi.a libeshtml5.a libesjsapi.a libesfontmanager.a
+v8_LDADD = libeshtml5.a libesv8api.a libeshtml5.a libesv8api.a libesfontmanager.a -lv8
 
-Any_test_SOURCES = \
-	Any.test.cpp
+harness_SOURCES = harness/harness.cpp
+harness_LDADD = $(js_LDADD)
 
-HTMLInputStream_test_SOURCES = \
-	HTMLInputStream.test.cpp
+Any_test_SOURCES = Any.test.cpp
+Any_test_LDADD = $(js_LDADD)
 
-HTMLInputStream_test_getChar_SOURCES = \
-	HTMLInputStream.test.getChar.cpp
+HTMLInputStream_test_SOURCES = HTMLInputStream.test.cpp
+HTMLInputStream_test_LDADD = $(js_LDADD)
 
-HTMLTokenizer_test_SOURCES = \
-	HTMLTokenizer.test.cpp
+HTMLInputStream_test_getChar_SOURCES = HTMLInputStream.test.getChar.cpp
+HTMLInputStream_test_getChar_LDADD = $(js_LDADD)
 
-HTMLParser_test_SOURCES = \
-	HTMLParser.test.cpp
+HTMLTokenizer_test_SOURCES = HTMLTokenizer.test.cpp
+HTMLTokenizer_test_LDADD = $(js_LDADD)
 
-CSSTokenizer_test_SOURCES = \
-	CSSTokenizer.test.cpp
+HTMLParser_test_SOURCES = HTMLParser.test.cpp
+HTMLParser_test_LDADD = $(js_LDADD)
 
-CSSParser_test_SOURCES = \
-	CSSParser.test.cpp
+CSSTokenizer_test_SOURCES = CSSTokenizer.test.cpp
+CSSTokenizer_test_LDADD = $(js_LDADD)
 
-CSSStyle_test_SOURCES = \
-	CSSStyle.test.cpp
+CSSParser_test_SOURCES = CSSParser.test.cpp
+CSSParser_test_LDADD = $(js_LDADD)
 
-Box_test_SOURCES = \
-	Box.test.cpp
+CSSStyle_test_SOURCES = CSSStyle.test.cpp
+CSSStyle_test_LDADD = $(js_LDADD)
 
-FontManager_test_SOURCES = \
-	FontManager.test.cpp
+Box_test_SOURCES = Box.test.cpp
+Box_test_LDADD = $(js_LDADD)
 
-Layout_test_SOURCES = \
-	Layout.test.cpp
+FontManager_test_SOURCES = FontManager.test.cpp
+FontManager_test_LDADD = $(js_LDADD)
 
-URL_test_SOURCES = \
-	URL.test.cpp
+Layout_test_SOURCES = Layout.test.cpp
+Layout_test_LDADD = $(js_LDADD)
 
-HTTPHeader_test_SOURCES = \
-	HTTPHeader.test.cpp
+URL_test_SOURCES = URL.test.cpp
+URL_test_LDADD = $(js_LDADD)
 
-HTTPRequest_test_SOURCES = \
-	HTTPRequest.test.cpp
+HTTPHeader_test_SOURCES = HTTPHeader.test.cpp
+HTTPHeader_test_LDADD = $(js_LDADD)
 
-Script_test_SOURCES = \
-	Script.test.cpp
+HTTPRequest_test_SOURCES = HTTPRequest.test.cpp
+HTTPRequest_test_LDADD = $(js_LDADD)
+
+Script_test_SOURCES = Script.test.cpp
+Script_test_LDADD = $(js_LDADD)
+
+ScriptV8_test_SOURCES = ScriptV8.test.cpp
+ScriptV8_test_LDADD = $(v8_LDADD)
 
 clean-local:
 	rm -rf org css html $(generated_sources) $(generated_headers) $(generated_scanners) *.output

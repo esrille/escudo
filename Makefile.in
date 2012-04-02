@@ -42,7 +42,7 @@ bin_PROGRAMS = harness$(EXEEXT) Any.test$(EXEEXT) \
 	HTMLTokenizer.test$(EXEEXT) HTMLParser.test$(EXEEXT) \
 	CSSTokenizer.test$(EXEEXT) CSSParser.test$(EXEEXT) \
 	CSSStyle.test$(EXEEXT) Box.test$(EXEEXT) Layout.test$(EXEEXT) \
-	Script.test$(EXEEXT)
+	Script.test$(EXEEXT) ScriptV8.test$(EXEEXT)
 subdir = .
 DIST_COMMON = $(am__configure_deps) $(srcdir)/../depcomp \
 	$(srcdir)/../install-sh $(srcdir)/../missing \
@@ -95,14 +95,13 @@ libeshtml5_a_AR = $(AR) $(ARFLAGS)
 libeshtml5_a_LIBADD =
 am_libeshtml5_a_OBJECTS = Any.$(OBJEXT) utf.$(OBJEXT) \
 	U16InputStream.$(OBJEXT) DocumentWindow.$(OBJEXT) \
-	bridge.$(OBJEXT) Script.$(OBJEXT) URI.$(OBJEXT) URL.$(OBJEXT) \
-	HTTPUtil.$(OBJEXT) HTTPHeader.$(OBJEXT) \
-	HTTPRequestMessage.$(OBJEXT) HTTPResponseMessage.$(OBJEXT) \
-	HTTPHeader.$(OBJEXT) HTTPRequest.$(OBJEXT) \
-	HTTPConnection.$(OBJEXT) HTTPCache.$(OBJEXT) \
-	HTMLInputStream.$(OBJEXT) HTMLParser.$(OBJEXT) \
-	HTMLTokenizer.$(OBJEXT) Box.$(OBJEXT) BoxGL.$(OBJEXT) \
-	BoxImage.$(OBJEXT) FormattingContext.$(OBJEXT) \
+	URI.$(OBJEXT) URL.$(OBJEXT) HTTPUtil.$(OBJEXT) \
+	HTTPHeader.$(OBJEXT) HTTPRequestMessage.$(OBJEXT) \
+	HTTPResponseMessage.$(OBJEXT) HTTPHeader.$(OBJEXT) \
+	HTTPRequest.$(OBJEXT) HTTPConnection.$(OBJEXT) \
+	HTTPCache.$(OBJEXT) HTMLInputStream.$(OBJEXT) \
+	HTMLParser.$(OBJEXT) HTMLTokenizer.$(OBJEXT) Box.$(OBJEXT) \
+	BoxGL.$(OBJEXT) BoxImage.$(OBJEXT) FormattingContext.$(OBJEXT) \
 	LineBox.$(OBJEXT) StackingContext.$(OBJEXT) \
 	CSSPropertyValueImp.$(OBJEXT) CSSSerialize.$(OBJEXT) \
 	CSSGrammar.$(OBJEXT) CSSSelector.$(OBJEXT) CSSParser.$(OBJEXT) \
@@ -344,74 +343,70 @@ nodist_libeshtml5_a_OBJECTS = $(am__objects_1) $(am__objects_2) \
 	$(am__objects_3)
 libeshtml5_a_OBJECTS = $(am_libeshtml5_a_OBJECTS) \
 	$(nodist_libeshtml5_a_OBJECTS)
+libesjsapi_a_AR = $(AR) $(ARFLAGS)
+libesjsapi_a_LIBADD =
+am_libesjsapi_a_OBJECTS = bridge.$(OBJEXT) Script.$(OBJEXT)
+libesjsapi_a_OBJECTS = $(am_libesjsapi_a_OBJECTS)
+libesv8api_a_AR = $(AR) $(ARFLAGS)
+libesv8api_a_LIBADD =
+am_libesv8api_a_OBJECTS = bridgeV8.$(OBJEXT) ScriptV8.$(OBJEXT)
+libesv8api_a_OBJECTS = $(am_libesv8api_a_OBJECTS)
 PROGRAMS = $(bin_PROGRAMS)
 am_Any_test_OBJECTS = Any.test.$(OBJEXT)
 Any_test_OBJECTS = $(am_Any_test_OBJECTS)
-Any_test_LDADD = $(LDADD)
-Any_test_DEPENDENCIES = libeshtml5.a libesfontmanager.a
+Any_test_DEPENDENCIES = $(js_LDADD)
 am_Box_test_OBJECTS = Box.test.$(OBJEXT)
 Box_test_OBJECTS = $(am_Box_test_OBJECTS)
-Box_test_LDADD = $(LDADD)
-Box_test_DEPENDENCIES = libeshtml5.a libesfontmanager.a
+Box_test_DEPENDENCIES = $(js_LDADD)
 am_CSSParser_test_OBJECTS = CSSParser.test.$(OBJEXT)
 CSSParser_test_OBJECTS = $(am_CSSParser_test_OBJECTS)
-CSSParser_test_LDADD = $(LDADD)
-CSSParser_test_DEPENDENCIES = libeshtml5.a libesfontmanager.a
+CSSParser_test_DEPENDENCIES = $(js_LDADD)
 am_CSSStyle_test_OBJECTS = CSSStyle.test.$(OBJEXT)
 CSSStyle_test_OBJECTS = $(am_CSSStyle_test_OBJECTS)
-CSSStyle_test_LDADD = $(LDADD)
-CSSStyle_test_DEPENDENCIES = libeshtml5.a libesfontmanager.a
+CSSStyle_test_DEPENDENCIES = $(js_LDADD)
 am_CSSTokenizer_test_OBJECTS = CSSTokenizer.test.$(OBJEXT)
 CSSTokenizer_test_OBJECTS = $(am_CSSTokenizer_test_OBJECTS)
-CSSTokenizer_test_LDADD = $(LDADD)
-CSSTokenizer_test_DEPENDENCIES = libeshtml5.a libesfontmanager.a
+CSSTokenizer_test_DEPENDENCIES = $(js_LDADD)
 am_FontManager_test_OBJECTS = FontManager.test.$(OBJEXT)
 FontManager_test_OBJECTS = $(am_FontManager_test_OBJECTS)
-FontManager_test_LDADD = $(LDADD)
-FontManager_test_DEPENDENCIES = libeshtml5.a libesfontmanager.a
+FontManager_test_DEPENDENCIES = $(js_LDADD)
 am_HTMLInputStream_test_OBJECTS = HTMLInputStream.test.$(OBJEXT)
 HTMLInputStream_test_OBJECTS = $(am_HTMLInputStream_test_OBJECTS)
-HTMLInputStream_test_LDADD = $(LDADD)
-HTMLInputStream_test_DEPENDENCIES = libeshtml5.a libesfontmanager.a
+HTMLInputStream_test_DEPENDENCIES = $(js_LDADD)
 am_HTMLInputStream_test_getChar_OBJECTS =  \
 	HTMLInputStream.test.getChar.$(OBJEXT)
 HTMLInputStream_test_getChar_OBJECTS =  \
 	$(am_HTMLInputStream_test_getChar_OBJECTS)
-HTMLInputStream_test_getChar_LDADD = $(LDADD)
-HTMLInputStream_test_getChar_DEPENDENCIES = libeshtml5.a \
-	libesfontmanager.a
+HTMLInputStream_test_getChar_DEPENDENCIES = $(js_LDADD)
 am_HTMLParser_test_OBJECTS = HTMLParser.test.$(OBJEXT)
 HTMLParser_test_OBJECTS = $(am_HTMLParser_test_OBJECTS)
-HTMLParser_test_LDADD = $(LDADD)
-HTMLParser_test_DEPENDENCIES = libeshtml5.a libesfontmanager.a
+HTMLParser_test_DEPENDENCIES = $(js_LDADD)
 am_HTMLTokenizer_test_OBJECTS = HTMLTokenizer.test.$(OBJEXT)
 HTMLTokenizer_test_OBJECTS = $(am_HTMLTokenizer_test_OBJECTS)
-HTMLTokenizer_test_LDADD = $(LDADD)
-HTMLTokenizer_test_DEPENDENCIES = libeshtml5.a libesfontmanager.a
+HTMLTokenizer_test_DEPENDENCIES = $(js_LDADD)
 am_HTTPHeader_test_OBJECTS = HTTPHeader.test.$(OBJEXT)
 HTTPHeader_test_OBJECTS = $(am_HTTPHeader_test_OBJECTS)
-HTTPHeader_test_LDADD = $(LDADD)
-HTTPHeader_test_DEPENDENCIES = libeshtml5.a libesfontmanager.a
+HTTPHeader_test_DEPENDENCIES = $(js_LDADD)
 am_HTTPRequest_test_OBJECTS = HTTPRequest.test.$(OBJEXT)
 HTTPRequest_test_OBJECTS = $(am_HTTPRequest_test_OBJECTS)
-HTTPRequest_test_LDADD = $(LDADD)
-HTTPRequest_test_DEPENDENCIES = libeshtml5.a libesfontmanager.a
+HTTPRequest_test_DEPENDENCIES = $(js_LDADD)
 am_Layout_test_OBJECTS = Layout.test.$(OBJEXT)
 Layout_test_OBJECTS = $(am_Layout_test_OBJECTS)
-Layout_test_LDADD = $(LDADD)
-Layout_test_DEPENDENCIES = libeshtml5.a libesfontmanager.a
+Layout_test_DEPENDENCIES = $(js_LDADD)
 am_Script_test_OBJECTS = Script.test.$(OBJEXT)
 Script_test_OBJECTS = $(am_Script_test_OBJECTS)
-Script_test_LDADD = $(LDADD)
-Script_test_DEPENDENCIES = libeshtml5.a libesfontmanager.a
+Script_test_DEPENDENCIES = $(js_LDADD)
+am_ScriptV8_test_OBJECTS = ScriptV8.test.$(OBJEXT)
+ScriptV8_test_OBJECTS = $(am_ScriptV8_test_OBJECTS)
+am__DEPENDENCIES_1 = libeshtml5.a libesv8api.a libeshtml5.a \
+	libesv8api.a libesfontmanager.a
+ScriptV8_test_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am_URL_test_OBJECTS = URL.test.$(OBJEXT)
 URL_test_OBJECTS = $(am_URL_test_OBJECTS)
-URL_test_LDADD = $(LDADD)
-URL_test_DEPENDENCIES = libeshtml5.a libesfontmanager.a
+URL_test_DEPENDENCIES = $(js_LDADD)
 am_harness_OBJECTS = harness.$(OBJEXT)
 harness_OBJECTS = $(am_harness_OBJECTS)
-harness_LDADD = $(LDADD)
-harness_DEPENDENCIES = libeshtml5.a libesfontmanager.a
+harness_DEPENDENCIES = $(js_LDADD)
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
@@ -428,7 +423,8 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(libesfontmanager_a_SOURCES) $(libeshtml5_a_SOURCES) \
-	$(nodist_libeshtml5_a_SOURCES) $(Any_test_SOURCES) \
+	$(nodist_libeshtml5_a_SOURCES) $(libesjsapi_a_SOURCES) \
+	$(libesv8api_a_SOURCES) $(Any_test_SOURCES) \
 	$(Box_test_SOURCES) $(CSSParser_test_SOURCES) \
 	$(CSSStyle_test_SOURCES) $(CSSTokenizer_test_SOURCES) \
 	$(FontManager_test_SOURCES) $(HTMLInputStream_test_SOURCES) \
@@ -436,8 +432,10 @@ SOURCES = $(libesfontmanager_a_SOURCES) $(libeshtml5_a_SOURCES) \
 	$(HTMLParser_test_SOURCES) $(HTMLTokenizer_test_SOURCES) \
 	$(HTTPHeader_test_SOURCES) $(HTTPRequest_test_SOURCES) \
 	$(Layout_test_SOURCES) $(Script_test_SOURCES) \
-	$(URL_test_SOURCES) $(harness_SOURCES)
+	$(ScriptV8_test_SOURCES) $(URL_test_SOURCES) \
+	$(harness_SOURCES)
 DIST_SOURCES = $(libesfontmanager_a_SOURCES) $(libeshtml5_a_SOURCES) \
+	$(libesjsapi_a_SOURCES) $(libesv8api_a_SOURCES) \
 	$(Any_test_SOURCES) $(Box_test_SOURCES) \
 	$(CSSParser_test_SOURCES) $(CSSStyle_test_SOURCES) \
 	$(CSSTokenizer_test_SOURCES) $(FontManager_test_SOURCES) \
@@ -446,7 +444,8 @@ DIST_SOURCES = $(libesfontmanager_a_SOURCES) $(libeshtml5_a_SOURCES) \
 	$(HTMLParser_test_SOURCES) $(HTMLTokenizer_test_SOURCES) \
 	$(HTTPHeader_test_SOURCES) $(HTTPRequest_test_SOURCES) \
 	$(Layout_test_SOURCES) $(Script_test_SOURCES) \
-	$(URL_test_SOURCES) $(harness_SOURCES)
+	$(ScriptV8_test_SOURCES) $(URL_test_SOURCES) \
+	$(harness_SOURCES)
 HEADERS = $(nobase_nodist_include_HEADERS)
 ETAGS = etags
 CTAGS = ctags
@@ -1079,7 +1078,7 @@ generated_scanners = \
 
 BUILT_SOURCES = $(generated_headers) $(generated_scanners) $(generated_sources)
 nobase_nodist_include_HEADERS = $(generated_headers)
-lib_LIBRARIES = libeshtml5.a libesfontmanager.a
+lib_LIBRARIES = libeshtml5.a libesfontmanager.a libesjsapi.a libesv8api.a
 LDADD = libeshtml5.a libesfontmanager.a
 AM_CPPFLAGS = \
 	-std=gnu++0x \
@@ -1112,15 +1111,25 @@ libesfontmanager_a_SOURCES = \
 	font/FontDatabase.h \
 	font/FontDatabase.cpp
 
+libesjsapi_a_SOURCES = \
+	js/esjsapi.h \
+	js/bridge.cpp \
+	js/Script.cpp
+
+libesv8api_a_SOURCES = \
+	v8/esv8api.h \
+	v8/bridgeV8.cpp \
+	v8/ScriptV8.cpp
+
 nodist_libeshtml5_a_SOURCES = $(generated_sources) $(generated_headers) $(generated_scanners)
 
 # implementation files originally generated by esidl
 libeshtml5_a_SOURCES = Object.h ObjectArrayImp.h Any.cpp Any.h \
-	nullable.h sequence.h utf.h utf.cpp TextIterator.h \
-	U16InputStream.cpp U16InputStream.h DocumentWindow.cpp \
-	DocumentWindow.h js/esjsapi.h js/bridge.cpp js/Script.cpp \
-	url/URI.h url/URI.cpp url/URL.h url/URL.cpp http/HTTPUtil.h \
-	http/HTTPUtil.cpp http/HTTPHeader.h http/HTTPHeader.cpp \
+	nullable.h sequence.h ECMAScript.h utf.h utf.cpp \
+	TextIterator.h U16InputStream.cpp U16InputStream.h \
+	DocumentWindow.cpp DocumentWindow.h url/URI.h url/URI.cpp \
+	url/URL.h url/URL.cpp http/HTTPUtil.h http/HTTPUtil.cpp \
+	http/HTTPHeader.h http/HTTPHeader.cpp \
 	http/HTTPRequestMessage.h http/HTTPRequestMessage.cpp \
 	http/HTTPResponseMessage.h http/HTTPResponseMessage.cpp \
 	http/HTTPHeader.cpp http/HTTPRequest.h http/HTTPRequest.cpp \
@@ -1343,54 +1352,42 @@ libeshtml5_a_SOURCES = Object.h ObjectArrayImp.h Any.cpp Any.h \
 	xhr/XMLHttpRequestEventTargetImp.h xhr/XMLHttpRequestImp.cpp \
 	xhr/XMLHttpRequestImp.h xhr/XMLHttpRequestUploadImp.cpp \
 	xhr/XMLHttpRequestUploadImp.h
-harness_SOURCES = \
-	harness/harness.cpp
-
-Any_test_SOURCES = \
-	Any.test.cpp
-
-HTMLInputStream_test_SOURCES = \
-	HTMLInputStream.test.cpp
-
-HTMLInputStream_test_getChar_SOURCES = \
-	HTMLInputStream.test.getChar.cpp
-
-HTMLTokenizer_test_SOURCES = \
-	HTMLTokenizer.test.cpp
-
-HTMLParser_test_SOURCES = \
-	HTMLParser.test.cpp
-
-CSSTokenizer_test_SOURCES = \
-	CSSTokenizer.test.cpp
-
-CSSParser_test_SOURCES = \
-	CSSParser.test.cpp
-
-CSSStyle_test_SOURCES = \
-	CSSStyle.test.cpp
-
-Box_test_SOURCES = \
-	Box.test.cpp
-
-FontManager_test_SOURCES = \
-	FontManager.test.cpp
-
-Layout_test_SOURCES = \
-	Layout.test.cpp
-
-URL_test_SOURCES = \
-	URL.test.cpp
-
-HTTPHeader_test_SOURCES = \
-	HTTPHeader.test.cpp
-
-HTTPRequest_test_SOURCES = \
-	HTTPRequest.test.cpp
-
-Script_test_SOURCES = \
-	Script.test.cpp
-
+js_LDADD = libeshtml5.a libesjsapi.a libeshtml5.a libesjsapi.a libesfontmanager.a
+v8_LDADD = libeshtml5.a libesv8api.a libeshtml5.a libesv8api.a libesfontmanager.a -lv8
+harness_SOURCES = harness/harness.cpp
+harness_LDADD = $(js_LDADD)
+Any_test_SOURCES = Any.test.cpp
+Any_test_LDADD = $(js_LDADD)
+HTMLInputStream_test_SOURCES = HTMLInputStream.test.cpp
+HTMLInputStream_test_LDADD = $(js_LDADD)
+HTMLInputStream_test_getChar_SOURCES = HTMLInputStream.test.getChar.cpp
+HTMLInputStream_test_getChar_LDADD = $(js_LDADD)
+HTMLTokenizer_test_SOURCES = HTMLTokenizer.test.cpp
+HTMLTokenizer_test_LDADD = $(js_LDADD)
+HTMLParser_test_SOURCES = HTMLParser.test.cpp
+HTMLParser_test_LDADD = $(js_LDADD)
+CSSTokenizer_test_SOURCES = CSSTokenizer.test.cpp
+CSSTokenizer_test_LDADD = $(js_LDADD)
+CSSParser_test_SOURCES = CSSParser.test.cpp
+CSSParser_test_LDADD = $(js_LDADD)
+CSSStyle_test_SOURCES = CSSStyle.test.cpp
+CSSStyle_test_LDADD = $(js_LDADD)
+Box_test_SOURCES = Box.test.cpp
+Box_test_LDADD = $(js_LDADD)
+FontManager_test_SOURCES = FontManager.test.cpp
+FontManager_test_LDADD = $(js_LDADD)
+Layout_test_SOURCES = Layout.test.cpp
+Layout_test_LDADD = $(js_LDADD)
+URL_test_SOURCES = URL.test.cpp
+URL_test_LDADD = $(js_LDADD)
+HTTPHeader_test_SOURCES = HTTPHeader.test.cpp
+HTTPHeader_test_LDADD = $(js_LDADD)
+HTTPRequest_test_SOURCES = HTTPRequest.test.cpp
+HTTPRequest_test_LDADD = $(js_LDADD)
+Script_test_SOURCES = Script.test.cpp
+Script_test_LDADD = $(js_LDADD)
+ScriptV8_test_SOURCES = ScriptV8.test.cpp
+ScriptV8_test_LDADD = $(v8_LDADD)
 EXTRA_DIST = \
 	config.h \
 	idl/COPYRIGHT.html \
@@ -1537,6 +1534,14 @@ libeshtml5.a: $(libeshtml5_a_OBJECTS) $(libeshtml5_a_DEPENDENCIES)
 	-rm -f libeshtml5.a
 	$(libeshtml5_a_AR) libeshtml5.a $(libeshtml5_a_OBJECTS) $(libeshtml5_a_LIBADD)
 	$(RANLIB) libeshtml5.a
+libesjsapi.a: $(libesjsapi_a_OBJECTS) $(libesjsapi_a_DEPENDENCIES) 
+	-rm -f libesjsapi.a
+	$(libesjsapi_a_AR) libesjsapi.a $(libesjsapi_a_OBJECTS) $(libesjsapi_a_LIBADD)
+	$(RANLIB) libesjsapi.a
+libesv8api.a: $(libesv8api_a_OBJECTS) $(libesv8api_a_DEPENDENCIES) 
+	-rm -f libesv8api.a
+	$(libesv8api_a_AR) libesv8api.a $(libesv8api_a_OBJECTS) $(libesv8api_a_LIBADD)
+	$(RANLIB) libesv8api.a
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
 	test -z "$(bindir)" || $(MKDIR_P) "$(DESTDIR)$(bindir)"
@@ -1616,6 +1621,9 @@ Layout.test$(EXEEXT): $(Layout_test_OBJECTS) $(Layout_test_DEPENDENCIES)
 Script.test$(EXEEXT): $(Script_test_OBJECTS) $(Script_test_DEPENDENCIES) 
 	@rm -f Script.test$(EXEEXT)
 	$(CXXLINK) $(Script_test_OBJECTS) $(Script_test_LDADD) $(LIBS)
+ScriptV8.test$(EXEEXT): $(ScriptV8_test_OBJECTS) $(ScriptV8_test_DEPENDENCIES) 
+	@rm -f ScriptV8.test$(EXEEXT)
+	$(CXXLINK) $(ScriptV8_test_OBJECTS) $(ScriptV8_test_LDADD) $(LIBS)
 URL.test$(EXEEXT): $(URL_test_OBJECTS) $(URL_test_DEPENDENCIES) 
 	@rm -f URL.test$(EXEEXT)
 	$(CXXLINK) $(URL_test_OBJECTS) $(URL_test_LDADD) $(LIBS)
@@ -2060,6 +2068,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ScreenImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Script.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Script.test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ScriptV8.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ScriptV8.test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StackingContext.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StyleSheet.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StyleSheetImp.Po@am__quote@
@@ -2109,6 +2119,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XMLHttpRequestUpload.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XMLHttpRequestUploadImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bridge.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bridgeV8.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/harness.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libesfontmanager_a-FontDatabase.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libesfontmanager_a-FontManager.Po@am__quote@
@@ -2155,34 +2166,6 @@ libesfontmanager_a-FontDatabase.obj: font/FontDatabase.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='font/FontDatabase.cpp' object='libesfontmanager_a-FontDatabase.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libesfontmanager_a_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libesfontmanager_a-FontDatabase.obj `if test -f 'font/FontDatabase.cpp'; then $(CYGPATH_W) 'font/FontDatabase.cpp'; else $(CYGPATH_W) '$(srcdir)/font/FontDatabase.cpp'; fi`
-
-bridge.o: js/bridge.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bridge.o -MD -MP -MF $(DEPDIR)/bridge.Tpo -c -o bridge.o `test -f 'js/bridge.cpp' || echo '$(srcdir)/'`js/bridge.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bridge.Tpo $(DEPDIR)/bridge.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='js/bridge.cpp' object='bridge.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bridge.o `test -f 'js/bridge.cpp' || echo '$(srcdir)/'`js/bridge.cpp
-
-bridge.obj: js/bridge.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bridge.obj -MD -MP -MF $(DEPDIR)/bridge.Tpo -c -o bridge.obj `if test -f 'js/bridge.cpp'; then $(CYGPATH_W) 'js/bridge.cpp'; else $(CYGPATH_W) '$(srcdir)/js/bridge.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bridge.Tpo $(DEPDIR)/bridge.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='js/bridge.cpp' object='bridge.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bridge.obj `if test -f 'js/bridge.cpp'; then $(CYGPATH_W) 'js/bridge.cpp'; else $(CYGPATH_W) '$(srcdir)/js/bridge.cpp'; fi`
-
-Script.o: js/Script.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Script.o -MD -MP -MF $(DEPDIR)/Script.Tpo -c -o Script.o `test -f 'js/Script.cpp' || echo '$(srcdir)/'`js/Script.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/Script.Tpo $(DEPDIR)/Script.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='js/Script.cpp' object='Script.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Script.o `test -f 'js/Script.cpp' || echo '$(srcdir)/'`js/Script.cpp
-
-Script.obj: js/Script.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Script.obj -MD -MP -MF $(DEPDIR)/Script.Tpo -c -o Script.obj `if test -f 'js/Script.cpp'; then $(CYGPATH_W) 'js/Script.cpp'; else $(CYGPATH_W) '$(srcdir)/js/Script.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/Script.Tpo $(DEPDIR)/Script.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='js/Script.cpp' object='Script.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Script.obj `if test -f 'js/Script.cpp'; then $(CYGPATH_W) 'js/Script.cpp'; else $(CYGPATH_W) '$(srcdir)/js/Script.cpp'; fi`
 
 URI.o: url/URI.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT URI.o -MD -MP -MF $(DEPDIR)/URI.Tpo -c -o URI.o `test -f 'url/URI.cpp' || echo '$(srcdir)/'`url/URI.cpp
@@ -7629,6 +7612,62 @@ CSSColor.obj: css/CSSColor.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='css/CSSColor.cpp' object='CSSColor.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o CSSColor.obj `if test -f 'css/CSSColor.cpp'; then $(CYGPATH_W) 'css/CSSColor.cpp'; else $(CYGPATH_W) '$(srcdir)/css/CSSColor.cpp'; fi`
+
+bridge.o: js/bridge.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bridge.o -MD -MP -MF $(DEPDIR)/bridge.Tpo -c -o bridge.o `test -f 'js/bridge.cpp' || echo '$(srcdir)/'`js/bridge.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bridge.Tpo $(DEPDIR)/bridge.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='js/bridge.cpp' object='bridge.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bridge.o `test -f 'js/bridge.cpp' || echo '$(srcdir)/'`js/bridge.cpp
+
+bridge.obj: js/bridge.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bridge.obj -MD -MP -MF $(DEPDIR)/bridge.Tpo -c -o bridge.obj `if test -f 'js/bridge.cpp'; then $(CYGPATH_W) 'js/bridge.cpp'; else $(CYGPATH_W) '$(srcdir)/js/bridge.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bridge.Tpo $(DEPDIR)/bridge.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='js/bridge.cpp' object='bridge.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bridge.obj `if test -f 'js/bridge.cpp'; then $(CYGPATH_W) 'js/bridge.cpp'; else $(CYGPATH_W) '$(srcdir)/js/bridge.cpp'; fi`
+
+Script.o: js/Script.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Script.o -MD -MP -MF $(DEPDIR)/Script.Tpo -c -o Script.o `test -f 'js/Script.cpp' || echo '$(srcdir)/'`js/Script.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/Script.Tpo $(DEPDIR)/Script.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='js/Script.cpp' object='Script.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Script.o `test -f 'js/Script.cpp' || echo '$(srcdir)/'`js/Script.cpp
+
+Script.obj: js/Script.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Script.obj -MD -MP -MF $(DEPDIR)/Script.Tpo -c -o Script.obj `if test -f 'js/Script.cpp'; then $(CYGPATH_W) 'js/Script.cpp'; else $(CYGPATH_W) '$(srcdir)/js/Script.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/Script.Tpo $(DEPDIR)/Script.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='js/Script.cpp' object='Script.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Script.obj `if test -f 'js/Script.cpp'; then $(CYGPATH_W) 'js/Script.cpp'; else $(CYGPATH_W) '$(srcdir)/js/Script.cpp'; fi`
+
+bridgeV8.o: v8/bridgeV8.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bridgeV8.o -MD -MP -MF $(DEPDIR)/bridgeV8.Tpo -c -o bridgeV8.o `test -f 'v8/bridgeV8.cpp' || echo '$(srcdir)/'`v8/bridgeV8.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bridgeV8.Tpo $(DEPDIR)/bridgeV8.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='v8/bridgeV8.cpp' object='bridgeV8.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bridgeV8.o `test -f 'v8/bridgeV8.cpp' || echo '$(srcdir)/'`v8/bridgeV8.cpp
+
+bridgeV8.obj: v8/bridgeV8.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bridgeV8.obj -MD -MP -MF $(DEPDIR)/bridgeV8.Tpo -c -o bridgeV8.obj `if test -f 'v8/bridgeV8.cpp'; then $(CYGPATH_W) 'v8/bridgeV8.cpp'; else $(CYGPATH_W) '$(srcdir)/v8/bridgeV8.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/bridgeV8.Tpo $(DEPDIR)/bridgeV8.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='v8/bridgeV8.cpp' object='bridgeV8.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o bridgeV8.obj `if test -f 'v8/bridgeV8.cpp'; then $(CYGPATH_W) 'v8/bridgeV8.cpp'; else $(CYGPATH_W) '$(srcdir)/v8/bridgeV8.cpp'; fi`
+
+ScriptV8.o: v8/ScriptV8.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ScriptV8.o -MD -MP -MF $(DEPDIR)/ScriptV8.Tpo -c -o ScriptV8.o `test -f 'v8/ScriptV8.cpp' || echo '$(srcdir)/'`v8/ScriptV8.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/ScriptV8.Tpo $(DEPDIR)/ScriptV8.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='v8/ScriptV8.cpp' object='ScriptV8.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ScriptV8.o `test -f 'v8/ScriptV8.cpp' || echo '$(srcdir)/'`v8/ScriptV8.cpp
+
+ScriptV8.obj: v8/ScriptV8.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ScriptV8.obj -MD -MP -MF $(DEPDIR)/ScriptV8.Tpo -c -o ScriptV8.obj `if test -f 'v8/ScriptV8.cpp'; then $(CYGPATH_W) 'v8/ScriptV8.cpp'; else $(CYGPATH_W) '$(srcdir)/v8/ScriptV8.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/ScriptV8.Tpo $(DEPDIR)/ScriptV8.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='v8/ScriptV8.cpp' object='ScriptV8.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ScriptV8.obj `if test -f 'v8/ScriptV8.cpp'; then $(CYGPATH_W) 'v8/ScriptV8.cpp'; else $(CYGPATH_W) '$(srcdir)/v8/ScriptV8.cpp'; fi`
 
 harness.o: harness/harness.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT harness.o -MD -MP -MF $(DEPDIR)/harness.Tpo -c -o harness.o `test -f 'harness/harness.cpp' || echo '$(srcdir)/'`harness/harness.cpp

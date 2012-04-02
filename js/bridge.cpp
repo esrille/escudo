@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@
 #include <assert.h>
 
 #include <iostream>
-
-JSContext* jscontext = 0;
 
 namespace {
 
@@ -63,7 +61,7 @@ Object* convert(JSContext* cx, JSObject* obj)
     if (cls && NativeClass::isNativeClass(cls))
         return static_cast<ObjectImp*>(JS_GetPrivate(cx, obj));
     // obj is a JavaScript object. Create a proxy for obj.
-    return new(std::nothrow) ProxyObject(obj);
+    return new(std::nothrow) ProxyObject(cx, obj);
 }
 
 Any convert(JSContext* cx, jsval& v)
@@ -650,34 +648,34 @@ Any ProxyObject::message_(uint32_t selector, const char* id, int argc, Any* argv
     return Any();
 }
 
-Any callFunction(Object thisObject, Object functionObject, int argc, Any* argv)
+Any callFunction(JSContext* context, Object thisObject, Object functionObject, int argc, Any* argv)
 {
     assert(0 <= argc);
     if (!thisObject || !functionObject)
         return Any();
-    JSObject* funcObj = convert(jscontext, functionObject.self());
+    JSObject* funcObj = convert(context, functionObject.self());
     jsval oval = OBJECT_TO_JSVAL(funcObj);
     jsval fval;
-    if (!JS_ConvertValue(jscontext, oval, JSTYPE_FUNCTION, &fval))
+    if (!JS_ConvertValue(context, oval, JSTYPE_FUNCTION, &fval))
         return Any();
 
-    JSObject* thisObj = convert(jscontext, thisObject.self());
+    JSObject* thisObj = convert(context, thisObject.self());
 
     jsval arguments[0 < argc ? argc : 1];
     for (int i = 0; i < argc; ++i)
-        arguments[i] = convert(jscontext, argv[i]);
+        arguments[i] = convert(context, argv[i]);
 
     jsval result;
-    if (!JS_CallFunctionValue(jscontext, thisObj, fval, argc, arguments, &result))
+    if (!JS_CallFunctionValue(context, thisObj, fval, argc, arguments, &result))
         return Any();
-    return convert(jscontext, result);
+    return convert(context, result);
 }
 
-Object* compileFunction(const std::u16string& body)
+Object* compileFunction(JSContext* context, const std::u16string& body)
 {
     static const char* argname = "event";
-    JSFunction* fun = JS_CompileUCFunction(jscontext, 0, 0, 1, &argname, reinterpret_cast<const jschar*>(body.c_str()), body.length(), 0, 0);
+    JSFunction* fun = JS_CompileUCFunction(context, 0, 0, 1, &argname, reinterpret_cast<const jschar*>(body.c_str()), body.length(), 0, 0);
     if (!fun)
         return 0;
-    return convert(jscontext, JS_GetFunctionObject(fun));
+    return convert(context, JS_GetFunctionObject(fun));
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -495,74 +495,139 @@ void registerClasses(JSContext* cx, JSObject* global)
     DataTransferItemListImp::setStaticPrivate(new NativeClass(cx, global, DataTransferItemListImp::getMetaData()));
 }
 
-JSRuntime* jsruntime = 0;
-
 }  // namespace
 
-JSRuntime* getRuntime()
+class ECMAScriptContext::Impl
 {
-    return jsruntime;
-}
+    JSObject* global;
 
-JSObject* newGlobal()
-{
-    if (!jsruntime) {
-        jsruntime = JS_NewRuntime(8L * 1024L * 1024L);
-        if (!jsruntime)
-            return 0;
-        jscontext = JS_NewContext(jsruntime, 8192);
-        if (!jscontext) {
-            JS_DestroyRuntime(jsruntime);
-            jsruntime = 0;
-            return 0;
-        }
-        JS_SetOptions(jscontext, JSOPTION_VAROBJFIX | JSOPTION_JIT | JSOPTION_METHODJIT);
-        JS_SetVersion(jscontext, JSVERSION_LATEST);
-        JS_SetErrorReporter(jscontext, reportError);
+    static JSRuntime* getRuntime() {
+        static JSRuntime* runtime = 0;
+        if (runtime)
+            return runtime;
+        runtime = JS_NewRuntime(8L * 1024L * 1024L);
+        return runtime;
     }
 
-    JSObject* global = JS_NewCompartmentAndGlobalObject(jscontext, &globalClass, NULL);
-    if (!global)
-        return 0;
-    if (!JS_InitStandardClasses(jscontext, global))
-        return 0;
+    static JSContext* getContext() {
+        static JSContext* context = 0;
+        if (context)
+            return context;
+        context = JS_NewContext(getRuntime(), 8192);
+        if (!context)
+            return 0;
+        JS_SetOptions(context, JSOPTION_VAROBJFIX | JSOPTION_JIT | JSOPTION_METHODJIT);
+        JS_SetVersion(context, JSVERSION_LATEST);
+        JS_SetErrorReporter(context, reportError);
+        return context;
+    }
 
-    registerClasses(jscontext, global);
+public:
+    Impl() :
+        global(0)
+    {
+        JSContext* context = getContext();
+        if (!context)
+            return;
+        global = JS_NewCompartmentAndGlobalObject(context, &globalClass, NULL);
+        if (!global)
+            return;
+        if (!JS_InitStandardClasses(context, global))
+            return;
 
-    Reflect::Interface globalMeta(html::Window::getMetaData());
-    std::string name = Reflect::getIdentifier(globalMeta.getName());
-    if (0 < name.length()) {
-        jsval val;
-        if (JS_GetProperty(jscontext, global, name.c_str(), &val) && JSVAL_IS_OBJECT(val)) {
-            JSObject* parent = JSVAL_TO_OBJECT(val);
-            if (JS_GetProperty(jscontext, parent, "prototype", &val) && JSVAL_IS_OBJECT(val)) {
-                JSObject* proto = JSVAL_TO_OBJECT(val);
-                JS_SetPrototype(jscontext, global, proto);
+        registerClasses(context, global);
+
+        Reflect::Interface globalMeta(html::Window::getMetaData());
+        std::string name = Reflect::getIdentifier(globalMeta.getName());
+        if (0 < name.length()) {
+            jsval val;
+            if (JS_GetProperty(context, global, name.c_str(), &val) && JSVAL_IS_OBJECT(val)) {
+                JSObject* parent = JSVAL_TO_OBJECT(val);
+                if (JS_GetProperty(context, parent, "prototype", &val) && JSVAL_IS_OBJECT(val)) {
+                    JSObject* proto = JSVAL_TO_OBJECT(val);
+                    JS_SetPrototype(context, global, proto);
+                }
             }
         }
+
+        JS_AddObjectRoot(context, &global);
     }
 
-    JS_AddObjectRoot(jscontext, &global);
+    ~Impl()
+    {
+        if (global) {
+            JS_RemoveObjectRoot(getContext(), &global);
+            global = 0;
+        }
+    }
 
-    return global;
+    void activate(ObjectImp* window)
+    {
+        JS_SetGlobalObject(getContext(), global);
+        JS_SetPrivate(getContext(), global, window);
+        window->setPrivate(global);
+    }
+
+    void evaluate(const std::u16string& script)
+    {
+        jsval rval;
+        const char* filename = "";
+        int lineno = 0;
+        JS_EvaluateUCScript(getContext(), JS_GetGlobalObject(getContext()),
+                            reinterpret_cast<const jschar*>(script.c_str()), script.length(),
+                            filename, lineno, &rval);
+    }
+
+    Object* compileFunction(const std::u16string& body)
+    {
+        return ::compileFunction(getContext(), body);
+    }
+
+    Any callFunction(Object thisObject, Object functionObject, int argc, Any* argv)
+    {
+        return ::callFunction(getContext(), thisObject, functionObject, argc, argv);
+    }
+
+    static void shutDown()
+    {
+        if (JSContext* context = getContext())
+            JS_DestroyContext(context);
+        if (JSRuntime* runtime = getRuntime())
+            JS_DestroyRuntime(runtime);
+        JS_ShutDown();
+    }
+};
+
+ECMAScriptContext::ECMAScriptContext()
+  : pimpl(new Impl())
+{
 }
 
-void putGlobal(JSObject* global)
+ECMAScriptContext::~ECMAScriptContext()
 {
-    JS_RemoveObjectRoot(jscontext, &global);
 }
 
-void callFunction(html::Function function, events::Event event)
+void ECMAScriptContext::activate(ObjectImp* window)
 {
-    Any arg(event);
-    Any result = callFunction(event.getCurrentTarget(), function, 1, &arg);
-    if (event.getType() == u"mouseover") {
-        if (result.toBoolean())
-            event.preventDefault();
-    } else if (html::BeforeUnloadEvent::hasInstance(event)) {
-        html::BeforeUnloadEvent unloadEvent = interface_cast<html::BeforeUnloadEvent>(event);
-        if (unloadEvent.getReturnValue().empty() && result.isString())
-            unloadEvent.setReturnValue(result.toString());
-    } else if (!result.toBoolean())
-        event.preventDefault();
+    pimpl->activate(window);
+}
+
+void ECMAScriptContext::evaluate(const std::u16string& script)
+{
+    pimpl->evaluate(script);
+}
+
+Object* ECMAScriptContext::compileFunction(const std::u16string& body)
+{
+    return pimpl->compileFunction(body);
+}
+
+Any ECMAScriptContext::callFunction(Object thisObject, Object functionObject, int argc, Any* argv)
+{
+    return pimpl->callFunction(thisObject, functionObject, argc, argv);
+}
+
+void ECMAScriptContext::shutDown()
+{
+    Impl::shutDown();
 }

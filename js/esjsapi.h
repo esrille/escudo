@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,10 +81,9 @@ public:
     static uint32_t getHash(JSContext* cx, jsval* vp, int n);
 };
 
-extern JSContext* jscontext;
-
 class ProxyObject : public Object
 {
+    JSContext* jscontext;
     JSObject* jsobject;
     unsigned int count;
 protected:
@@ -101,8 +100,9 @@ protected:
         return count;
     };
 public:
-    ProxyObject(JSObject* obj) :
+    ProxyObject(JSContext* jscontext, JSObject* obj) :
         Object(this),
+        jscontext(jscontext),
         jsobject(obj),
         count(0)
     {
@@ -118,7 +118,7 @@ public:
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv);
 };
 
-Any callFunction(Object thisObject, Object functionObject, int argc, Any* argv);
-Object* compileFunction(const std::u16string& body);
+Any callFunction(JSContext* context, Object thisObject, Object functionObject, int argc, Any* argv);
+Object* compileFunction(JSContext* context, const std::u16string& body);
 
 #endif  // ESJSAPI_H_INCLUDED

@@ -148,10 +148,11 @@ void DocumentImp::setFocus(ElementImp* element)
     activeElement = element;
 }
 
-void DocumentImp::activate()
+DocumentWindowPtr DocumentImp::activate()
 {
     if (defaultView)
-        defaultView->activate();
+        return defaultView->activate();
+    return 0;
 }
 
 unsigned DocumentImp::decrementLoadEventDelayCount() {

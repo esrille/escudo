@@ -56,6 +56,7 @@
 #include <deque>
 
 #include "NodeImp.h"
+#include "DocumentWindow.h"
 #include "EventListenerImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
@@ -117,7 +118,7 @@ public:
     }
     void setFocus(ElementImp* element);
 
-    void activate();
+    DocumentWindowPtr activate();
 
     unsigned incrementLoadEventDelayCount() {
         return ++loadEventDelayCount;

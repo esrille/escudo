@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,11 @@
 #include <boost/iostreams/stream.hpp>
 #include <boost/iostreams/device/file_descriptor.hpp>
 
+#include "ECMAScript.h"
+
 #include "utf.h"
 #include "DocumentImp.h"
-#include "HTMLScriptElementImp.h"
-#include "js/esjsapi.h"
+#include "DocumentWindow.h"
 #include "U16InputStream.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
@@ -108,24 +109,15 @@ void HTMLScriptElementImp::notify()
 #endif
         U16InputStream u16stream(stream, "utf-8");  // TODO detect encode
         std::u16string script = u16stream;
-        jsval rval;
-        const char* filename = "";
-        int lineno = 0;
-        document->activate();
-        JS_EvaluateUCScript(jscontext, JS_GetGlobalObject(jscontext),
-                            reinterpret_cast<const jschar*>(script.c_str()), script.length(),
-                            filename, lineno, &rval);
+        DocumentWindowPtr window = document->activate();
+        if (window)
+            window->getContext()->evaluate(script);
     }
     document->decrementLoadEventDelayCount();
 }
 
 bool HTMLScriptElementImp::execute()
 {
-    if (!jscontext)
-        return false;
-    jsval rval;
-    const char* filename = "";
-    int lineno = 0;
     Nullable<std::u16string> content = getTextContent();
     if (!content.hasValue())
         return false;
@@ -139,10 +131,9 @@ bool HTMLScriptElementImp::execute()
     }
     if (3 <= length && script.compare(length - 3, 3, u"-->") == 0)
         length -= 3;
-    getOwnerDocumentImp()->activate();
-    return JS_EvaluateUCScript(jscontext, JS_GetGlobalObject(jscontext),
-                               reinterpret_cast<const jschar*>(script.c_str() + pos), length,
-                               filename, lineno, &rval);
+    DocumentWindowPtr window = getOwnerDocumentImp()->activate();
+    window->getContext()->evaluate(script);
+    return true;
 }
 
 // Node

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@
 
 #include "EventListenerImp.h"
 #include "EventTargetImp.h"
-#include "js/Script.h"
+#include "ECMAScript.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -38,7 +38,7 @@ class HttpRequest;
 class DocumentWindow : public EventTargetImp
 {
     Document document;
-    void* global;       // JS global object for the document
+    ECMAScriptContext* global;
     std::list<HttpRequest*> cache;
     int scrollX;
     int scrollY;
@@ -63,15 +63,12 @@ public:
     void setDocument(const Document& document) {
         this->document = document;
         if (global)
-            putGlobal(static_cast<JSObject*>(global));
-        global = newGlobal();
+            delete global;
+        global = new(std::nothrow) ECMAScriptContext;
     }
 
-    void* getGlobal() {
+    ECMAScriptContext* getContext() {
         return global;
-    }
-    void setGlobal(void* g) {
-        global = g;
     }
 
     void activate();

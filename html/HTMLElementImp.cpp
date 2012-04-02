@@ -21,12 +21,10 @@
 #include <org/w3c/dom/events/MouseEvent.h>
 
 #include "DocumentImp.h"
+#include "ECMAScript.h"
 #include "css/Box.h"
 #include "css/CSSParser.h"
 #include "css/CSSStyleDeclarationImp.h"
-#include "js/esjsapi.h"
-#include "js/Script.h"
-
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -89,6 +87,7 @@ void HTMLElementImp::handleMouseMove(events::Event event)
 
 void HTMLElementImp::eval()
 {
+    DocumentWindowPtr window = getOwnerDocumentImp()->activate();
     Nullable<std::u16string> attr = getAttribute(u"style");
     if (attr.hasValue()) {
         CSSParser parser;
@@ -97,10 +96,10 @@ void HTMLElementImp::eval()
     }
     attr = getAttribute(u"onclick");
     if (attr.hasValue())
-        setOnclick(compileFunction(attr.value()));
+        setOnclick(window->getContext()->compileFunction(attr.value()));
     attr = getAttribute(u"onload");
     if (attr.hasValue())
-        setOnload(compileFunction(attr.value()));
+        setOnload(window->getContext()->compileFunction(attr.value()));
 }
 
 Box* HTMLElementImp::getBox()
@@ -621,8 +620,10 @@ html::Function HTMLElementImp::getOnclick()
 
 void HTMLElementImp::setOnclick(html::Function onclick)
 {
+    DocumentImp* document = getOwnerDocumentImp();
+    DocumentWindowPtr window = document->activate();
     addEventListener(u"click",
-                     new(std::nothrow) EventListenerImp(boost::bind(callFunction, onclick, _1)),
+                     new(std::nothrow) EventListenerImp(boost::bind(&ECMAScriptContext::callFunction, window->getContext(), onclick, _1)),
                      false);
 }
 

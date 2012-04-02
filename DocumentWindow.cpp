@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,9 @@
 #include <org/w3c/dom/events/MouseEvent.h>
 
 #include "DocumentImp.h"
+#include "ECMAScript.h"
 #include "WindowImp.h"
 #include "css/ViewCSSImp.h"
-#include "js/esjsapi.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -42,7 +42,7 @@ DocumentWindow::DocumentWindow() :
 DocumentWindow::~DocumentWindow()
 {
     if (global) {
-        putGlobal(static_cast<JSObject*>(global));
+        delete global;
         global = 0;
     }
     while (!cache.empty()) {
@@ -59,11 +59,8 @@ void DocumentWindow::activate()
 
 void DocumentWindow::activate(WindowImp* proxy)
 {
-    if (proxy && global) {
-        JS_SetGlobalObject(jscontext, static_cast<JSObject*>(global));
-        JS_SetPrivate(jscontext, static_cast<JSObject*>(global), proxy);
-        proxy->setPrivate(global);
-    }
+    if (proxy && global)
+        global->activate(proxy);
 }
 
 void DocumentWindow::preload(const std::u16string& base, const std::u16string& urlString)

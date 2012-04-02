@@ -18,7 +18,6 @@
 
 #include <GL/freeglut.h>
 
-#include "js/esjsapi.h"
 #include "js/Script.h"
 
 #include "DOMImplementationImp.h"
@@ -73,10 +72,5 @@ int main(int argc, char* argv[])
     JS_DumpHeap(jscontext, stdout, 0, 0, 0, 32, 0);
 #endif
 
-    // JSAPI bridge cleanup
-    JS_DestroyContext(jscontext);
-    JS_DestroyRuntime(getRuntime());
-    JS_ShutDown();
-
-    return 0;
+    ECMAScriptContext::shutDown();
 }

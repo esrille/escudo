@@ -88,13 +88,13 @@ void WindowImp::setFlagsToBoxTree(unsigned f)
         boxTree->setFlags(f);
 }
 
-bool WindowImp::activate()
+DocumentWindowPtr WindowImp::activate()
 {
     if (window) {
         window->activate(this);
-        return true;
+        return window;
     }
-    return false;
+    return 0;
 }
 
 void WindowImp::refreshView()
@@ -1024,7 +1024,7 @@ void WindowImp::setOnload(html::Function onload)
     if (!window)
         return;
     window->addEventListener(u"load",
-                             new(std::nothrow) EventListenerImp(boost::bind(callFunction, onload, _1)),
+                             new(std::nothrow) EventListenerImp(boost::bind(&ECMAScriptContext::callFunction, window->getContext(), onload, _1)),
                              false);
 }
 
