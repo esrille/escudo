@@ -59,6 +59,9 @@ class URL
     bool parseHTTP(size_t& pos);
     bool parseHTTPRelative(const URL& base);
 
+    bool parseFile(size_t& pos);
+    bool parseFileRelative(const URL& base);
+
     void clear();
     bool hasScheme();
     bool parse();
@@ -124,6 +127,10 @@ public:
             url.replace(hashStart, hashEnd - hashStart, hash);
         else
             url += hash;
+    }
+
+    bool testProtocol(const char16_t* protocol) const {
+        return protocolEnd && url.compare(0, protocolEnd - 1, protocol) == 0;
     }
 
     bool hasFragment() const {

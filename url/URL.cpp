@@ -522,6 +522,146 @@ bool URL::parseHTTPRelative(const URL& base)
         if (pos < url.length())
             return false;
     } while (0);
+    return true;
+}
+
+void URL::clear()
+{
+    protocolEnd = 0;
+    hostStart = hostEnd = 0;
+    hostnameStart = hostnameEnd = 0;
+    portStart = portEnd = 0;
+    pathnameStart = pathnameEnd = 0;
+    searchStart = searchEnd = 0;
+    hashStart = hashEnd = 0;
+    url.clear();
+}
+
+bool URL::hasScheme()
+{
+    // scheme = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
+    size_t pos = 0;
+    if (url.length() <= pos || !isAlpha(url[pos]))
+        return false;
+    ++pos;
+    while (pos < url.length() && isSchemeChar(url[pos]))
+        ++pos;
+
+    // ":"
+    if (url.length() <= pos || url[pos] != ':')
+        return false;
+    ++pos;
+    protocolEnd = pos;
+    for (size_t i = 0; i < protocolEnd; ++i)
+        url[i] = toLower(url[i]);
+    return true;
+}
+
+//
+// File URL - file://<host>/<path>
+//
+
+bool URL::parseFile(size_t& pos)
+{
+    // "//"
+    if (url.compare(pos, 2, u"//") != 0)
+        return false;
+    pos += 2;
+
+    // host
+    hostStart = hostnameStart = pos;
+    size_t first = pos;
+    if (!parseHost(pos))
+        return false;
+    hostEnd = hostnameEnd = pos;
+
+    // "/" path
+    if (url.length() <= pos)
+        url += u'/';
+    else if (url[pos] != '/')
+        url.insert(pos, 1, '/');
+    pathnameStart = pos;
+    parsePath(pos);
+    pathnameEnd = pos;
+
+    return url.length() <= pos;
+}
+
+bool URL::parseFileRelative(const URL& base)
+{
+    size_t pos = protocolEnd;
+    do {
+        // "//" host
+        if (url.compare(pos, 2, u"//") == 0) {
+            pos += 2;
+
+            // host
+            hostStart = hostnameStart = pos;
+            size_t first = pos;
+            if (!parseHost(pos))
+                return false;
+            hostEnd = hostnameEnd = pos;
+
+            // An empty abs_path is equivalent to an abs_path of "/"
+            if (url.length() <= pos)
+                url += u'/';
+            else if (url[pos] != '/')
+                url.insert(pos, 1, '/');
+        }
+        if (url.length() <= pos)
+            break;
+
+        if (url[pos] == '/') {
+            // [ path-absolute [ "?" iquery ]]
+            pathnameStart = pos;
+            parsePath(pos);
+            pathnameEnd = pos;
+        } else {
+            // a URI reference
+            pathnameStart = pos;
+            for (;;) {
+                while (pos < url.length() && parsePchar(pos))
+                    ;
+                if (url.length() <= pos || url[pos] != '/')
+                    break;
+                ++pos;
+            }
+            pathnameEnd = pos;
+        }
+        if (url.length() <= pos)
+            break;
+        else
+            return false;
+    } while (0);
+    return true;
+}
+
+//
+// Base
+//
+
+bool URL::parse()
+{
+    size_t pos = protocolEnd;
+    if (url.compare(0, pos - 1, u"http") == 0 || url.compare(0, pos - 1, u"https") == 0)
+        return parseHTTP(pos);
+    if (url.compare(0, pos - 1, u"file") == 0)
+        return parseFile(pos);
+    // TODO: support other schemes
+    return false;
+}
+
+bool URL::parseRelative(const URL& base)
+{
+    size_t pos = base.protocolEnd - 1;
+    bool result = false;
+    if (base.url.compare(0, pos, u"http") == 0 || base.url.compare(0, pos, u"https") == 0)
+        result = parseHTTPRelative(base);
+    else if (base.url.compare(0, pos, u"file") == 0)
+        result = parseFileRelative(base);
+    // TODO: support other schemes
+    if (!result)
+        return false;
 
     std::u16string targetURL = base.getProtocol() + u"//";
     protocolEnd = base.protocolEnd;
@@ -576,56 +716,6 @@ bool URL::parseHTTPRelative(const URL& base)
 
     url = targetURL;
     return true;
-}
-
-void URL::clear()
-{
-    protocolEnd = 0;
-    hostStart = hostEnd = 0;
-    hostnameStart = hostnameEnd = 0;
-    portStart = portEnd = 0;
-    pathnameStart = pathnameEnd = 0;
-    searchStart = searchEnd = 0;
-    hashStart = hashEnd = 0;
-    url.clear();
-}
-
-bool URL::hasScheme()
-{
-    // scheme = ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
-    size_t pos = 0;
-    if (url.length() <= pos || !isAlpha(url[pos]))
-        return false;
-    ++pos;
-    while (pos < url.length() && isSchemeChar(url[pos]))
-        ++pos;
-
-    // ":"
-    if (url.length() <= pos || url[pos] != ':')
-        return false;
-    ++pos;
-    protocolEnd = pos;
-    for (size_t i = 0; i < protocolEnd; ++i)
-        url[i] = toLower(url[i]);
-    return true;
-}
-
-bool URL::parse()
-{
-    size_t pos = protocolEnd;
-    if (url.compare(0, pos - 1, u"http") == 0 || url.compare(0, pos - 1, u"https") == 0)
-        return parseHTTP(pos);
-    // TODO: support other schemes
-    return false;
-}
-
-bool URL::parseRelative(const URL& base)
-{
-    size_t pos = base.protocolEnd - 1;
-    if (base.url.compare(0, pos, u"http") == 0 || base.url.compare(0, pos, u"https") == 0)
-        return parseHTTPRelative(base);
-    // TODO: support other schemes
-    return false;
 }
 
 URL::URL(const std::u16string& string) :

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@
 
 using namespace org::w3c::dom::bootstrap;
 
-void test(const URL& url, const std::u16string reference = u"", const std::u16string result = u"")
+void test(const URL& url, const std::u16string& reference = u"", const std::u16string& result = u"")
 {
     if (reference.length()) {
         URL r(url, reference);
@@ -155,4 +155,14 @@ int main()
     test(base, u"g#s/../x", u"http://a:80/b/c/g#s/../x");
 
     test(base, u"http:g", u"http://a:80/b/c/g");  // for backward compatibility
+
+    // cf. RFC 1738; File URL - file://<host>/<path>
+    URL f1(u"file://localhost/etc/hosts");
+    URL f2(u"file:///etc/hosts");
+    URL f3(u"file:///home/user/dir/file");
+    test(f1);
+    test(f2);
+    test(f3);
+    test(f3, u"another", u"file:///home/user/dir/another");
+    test(f3, u"../another", u"file:///home/user/another");
 }

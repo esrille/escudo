@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ std::fstream& HttpRequest::getContent()
     return content;
 }
 
-void HttpRequest::notify(bool error)
+bool HttpRequest::notify(bool error)
 {
     readyState = DONE;
     errorFlag = error;
@@ -66,6 +66,7 @@ void HttpRequest::notify(bool error)
         cache->notify(this, error);
     if (handler)
         handler();
+    return error;
 }
 
 void HttpRequest::open(const std::u16string& method, const std::u16string& urlString)
@@ -95,19 +96,27 @@ void HttpRequest::constructResponseFromCache()
         handler();
 }
 
-void HttpRequest::send()
+bool HttpRequest::send()
 {
-    if (request.getURL().isEmpty()) {
-        readyState = DONE;
-        if (handler)
-            handler();
-        return;
+    if (request.getURL().isEmpty())
+        return notify(false);
+
+    if (request.getURL().testProtocol(u"file")) {
+        if (request.getMethodCode() != HttpRequestMessage::GET)
+            return notify(true);
+        std::u16string host = request.getURL().getHostname();
+        if (!host.empty() && host != u"localhost")  // TODO: maybe allow local host IP addresses?
+            return notify(true);
+        std::u16string path = request.getURL().getPathname();
+        fdContent = ::open(utfconv(path).c_str(), O_RDONLY);
+        return notify(fdContent == -1);
     }
 
     cache = HttpCacheManager::getInstance().send(this);
     if (!cache || cache->isBusy())
-        return;
+        return false;
     constructResponseFromCache();
+    return false;
 }
 
 void HttpRequest::abort()

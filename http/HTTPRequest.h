@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,7 +74,7 @@ public:
         handler.clear();
     }
 
-    void notify(bool error);
+    bool notify(bool error);
 
     unsigned short getReadyState() const {
         return readyState;
@@ -83,7 +83,7 @@ public:
     void setRequestHeader(const std::u16string& header, const std::u16string& value);
     unsigned int getTimeout();
     void setTimeout(unsigned int timeout);
-    void send();
+    bool send();
     void abort();
     unsigned short getStatus() const;
     const std::string& getStatusText() const;
