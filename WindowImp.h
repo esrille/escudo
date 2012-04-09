@@ -121,11 +121,12 @@ public:
     //     1: shift
     //     2: ctrl
     //     4: alt
-    void mouse(int button, int state, int x, int y, int modifiers);
-    void mouseMove(int x, int y, int modifiers);
-
-    void keydown(unsigned charCode, unsigned keyCode, int modifiers);
-    void keyup(unsigned charCode, unsigned keyCode, int modifiers);
+    //
+    // return true to propagate the event to the underlying layer
+    bool mouse(int button, int state, int x, int y, int modifiers);
+    bool mouseMove(int x, int y, int modifiers);
+    bool keydown(unsigned charCode, unsigned keyCode, int modifiers);
+    bool keyup(unsigned charCode, unsigned keyCode, int modifiers);
 
     // CSSOM View support operations
     // Maybe we should keep the old DocumentView interface

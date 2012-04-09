@@ -55,11 +55,6 @@ int getLogLevel();
 //
 // Test.glut.cpp
 //
-void reshape(int w, int h);
-void display() __attribute__((weak));
-void keyboard(unsigned char key, int x, int y);
-void mouse(int button, int state, int x, int y);
-void timer(int value);
 void init(int* argc, char* argv[]);
 
 //

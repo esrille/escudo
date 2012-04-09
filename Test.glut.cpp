@@ -18,6 +18,7 @@
 
 #include "WindowImp.h"
 #include "Test.util.h"
+#include "http/HTTPConnection.h"
 
 using namespace org::w3c::dom::bootstrap;
 using namespace org::w3c::dom;
@@ -166,13 +167,14 @@ void mouseMove(int x, int y)
 
 void timer(int value)
 {
+    HttpConnectionManager::getIOService().poll();
     if (WindowImp* imp = static_cast<WindowImp*>(window.self())) {
         if (imp->poll())
             glutPostRedisplay();
     }
     glutTimerFunc(50, timer, 0);
     // TODO: do GC here or maybe in the idle proc
- }
+}
 
 void init(int* argc, char* argv[])
 {

@@ -132,7 +132,6 @@ bool WindowImp::poll()
         }
     }
 
-    HttpConnectionManager::getIOService().poll();
     switch (request.getReadyState())
     {
     case HttpRequest::UNSENT:
@@ -224,8 +223,9 @@ void WindowImp::render()
     }
 }
 
-void WindowImp::mouse(int button, int up, int x, int y, int modifiers)
+bool WindowImp::mouse(int button, int up, int x, int y, int modifiers)
 {
+    bool propagte = true;
     recordTime("mouse");
 
     int shift = button;
@@ -239,9 +239,10 @@ void WindowImp::mouse(int button, int up, int x, int y, int modifiers)
         buttons |= (1u << shift);
 
     if (!view)
-        return;
+        return propagte;
 
-    MouseEventImp* event = 0;
+    events::MouseEvent event(0);
+    MouseEventImp* imp = 0;
 
     Box* box = view->boxFromPoint(x, y);
     ViewCSSImp* shadow = box->getShadow();
@@ -249,42 +250,50 @@ void WindowImp::mouse(int button, int up, int x, int y, int modifiers)
         html::Window child = shadow->getDocument().getDefaultView();
         if (child) {
             WindowImp* childWindow = dynamic_cast<WindowImp*>(child.self());
-            childWindow->mouse(button, up, x, y, modifiers);
-            return;
+            return childWindow->mouse(button, up, x, y, modifiers);
         }
     }
 
     // mousedown, mousemove
-    if (event = new(std::nothrow) MouseEventImp) {
+    if (imp = new(std::nothrow) MouseEventImp) {
+        event = imp;
         if (!up)
             ++detail;
-        event->initMouseEvent(up ? u"mouseup" : u"mousedown",
+        imp->initMouseEvent(up ? u"mouseup" : u"mousedown",
                             true, true, this, detail, x, y, x, y,
                             modifiers & 2, modifiers & 4, modifiers & 1, false, button, 0);
-        event->setButtons(buttons);
+        imp->setButtons(buttons);
         box->getTargetNode().dispatchEvent(event);
+        if (imp->getStopPropagationFlag())
+            propagte = false;
     }
 
     if (!up || detail == 0)
-        return;
+        return propagte;
     Box* clickBox = view->boxFromPoint(x, y);
     if (box != clickBox)
-        return;
+        return propagte;
 
     // click
-    if (event = new(std::nothrow) MouseEventImp) {
-        event->initMouseEvent(u"click",
+    if (imp = new(std::nothrow) MouseEventImp) {
+        event = imp;
+        imp->initMouseEvent(u"click",
                             true, true, this, detail, x, y, x, y,
                             modifiers & 2, modifiers & 4, modifiers & 1, false, button, 0);
-        event->setButtons(buttons);
+        imp->setButtons(buttons);
         box->getTargetNode().dispatchEvent(event);
+        if (imp->getStopPropagationFlag())
+            propagte = false;
     }
+
+     return propagte;
 }
 
-void WindowImp::mouseMove(int x, int y, int modifiers)
+bool WindowImp::mouseMove(int x, int y, int modifiers)
 {
+    bool propagte = true;
     if (!view)
-        return;
+        return propagte;
 
     Box* box = view->boxFromPoint(x, y);
     ViewCSSImp* shadow = box->getShadow();
@@ -292,58 +301,75 @@ void WindowImp::mouseMove(int x, int y, int modifiers)
         html::Window child = shadow->getDocument().getDefaultView();
         if (child) {
             WindowImp* childWindow = dynamic_cast<WindowImp*>(child.self());
-            childWindow->mouseMove(x, y, modifiers);
-            return;
+            return childWindow->mouseMove(x, y, modifiers);
         }
     }
 
     view->setHovered(box->getTargetNode());
 
     // mousemove
-    MouseEventImp* event = 0;
-    if (event = new(std::nothrow) MouseEventImp) {
+    events::MouseEvent event(0);
+    MouseEventImp* imp = 0;
+    if (imp = new(std::nothrow) MouseEventImp) {
+        event = imp;
         detail = 0;
-        event->initMouseEvent(u"mousemove",
-                              true, true, this, detail, x, y, x, y,
-                              modifiers & 2, modifiers & 4, modifiers & 1, false, 0, 0);
-        event->setButtons(buttons);
+        imp->initMouseEvent(u"mousemove",
+                            true, true, this, detail, x, y, x, y,
+                            modifiers & 2, modifiers & 4, modifiers & 1, false, 0, 0);
+        imp->setButtons(buttons);
         view->getHovered().dispatchEvent(event);
+        if (imp->getStopPropagationFlag())
+            propagte = false;
     }
+
+    return propagte;
 }
 
-void WindowImp::keydown(unsigned charCode, unsigned keyCode, int modifiers)
+bool WindowImp::keydown(unsigned charCode, unsigned keyCode, int modifiers)
 {
+    bool propagte = true;
     Document document = window->getDocument();
     if (!document)
-        return;
+        return propagte;
     Element e = document.getActiveElement();
     if (!e)
-        return;
-    events::KeyboardEvent event = new(std::nothrow) KeyboardEventImp(modifiers, charCode, keyCode, 0);
+        return propagte;
+    KeyboardEventImp* imp = new(std::nothrow) KeyboardEventImp(modifiers, charCode, keyCode, 0);
+    events::KeyboardEvent event(imp);
     event.initKeyboardEvent(u"keydown", true, true, this,
                             u"", u"", 0, u"", false, u"");
     e.dispatchEvent(event);
+    if (imp->getStopPropagationFlag())
+        propagte = false;
 
     if (!charCode)
-        return;
+        return propagte;
     events::KeyboardEvent text = new(std::nothrow) KeyboardEventImp(modifiers, charCode, keyCode, 0);
     text.initKeyboardEvent(u"keypress", true, true, this,
                             u"", u"", 0, u"", false, u"");
     e.dispatchEvent(text);
+    if (imp->getStopPropagationFlag())
+        propagte = false;
+    return propagte;
 }
 
-void WindowImp::keyup(unsigned charCode, unsigned keyCode, int modifiers)
+bool WindowImp::keyup(unsigned charCode, unsigned keyCode, int modifiers)
 {
+    bool propagte = true;
     Document document = window->getDocument();
     if (!document)
-        return;
+        return propagte;
     Element e = document.getActiveElement();
     if (!e)
-        return;
-    events::KeyboardEvent event = new(std::nothrow) KeyboardEventImp(modifiers, charCode, keyCode, 0);
+        return propagte;
+    KeyboardEventImp* imp = new(std::nothrow) KeyboardEventImp(modifiers, charCode, keyCode, 0);
+    events::KeyboardEvent event(imp);
     event.initKeyboardEvent(u"keyup", true, true, this,
                             u"", u"", 0, u"", false, u"");
     e.dispatchEvent(event);
+    if (imp->getStopPropagationFlag())
+        propagte = false;
+    return propagte;
 }
 
 //
