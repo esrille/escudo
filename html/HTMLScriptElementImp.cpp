@@ -123,14 +123,10 @@ bool HTMLScriptElementImp::execute()
         return false;
     std::u16string script = content.value();
     stripLeadingAndTrailingWhitespace(script);
-    size_t pos = 0;
-    size_t length = script.length();
-    if (script.compare(0, 4, u"<!--") == 0) {
-        pos = 4;
-        length -= 4;
-    }
-    if (3 <= length && script.compare(length - 3, 3, u"-->") == 0)
-        length -= 3;
+    if (script.compare(0, 4, u"<!--") == 0)
+        script.erase(0, 4);
+    if (3 <= script.length() && script.compare(script.length() - 3, 3, u"-->") == 0)
+        script.erase(script.length() - 3);
     DocumentWindowPtr window = getOwnerDocumentImp()->activate();
     window->getContext()->evaluate(script);
     return true;
