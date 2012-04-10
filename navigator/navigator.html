@@ -33,9 +33,8 @@ body
     right: 0;
     height: 36px;
     font-family: monospace;
-    min-width: 680px;
+    min-width: 740px;
     white-space: nowrap;
-    overflow: hidden;
     z-index: 1;
 }
 #back
@@ -108,45 +107,39 @@ body
     top: 36px;
     bottom: 0;
     width: 100%;
-    z-index: 0;
-}
-#frame
-{
-    margin: 0;
-    border: none;
-    width: 100%;
     height: 100%;
+    z-index: 0;
 }
 </style>
 <script type="text/javascript">
 function back(e) {
-    document.getElementById('frame').contentWindow.history.back();
-    document.getElementById('location').value = document.getElementById('frame').contentWindow.location;
+    document.getElementById('main').contentWindow.history.back();
+    document.getElementById('location').value = document.getElementById('main').contentWindow.location;
     e.preventDefault();
 }
 function forward(e) {
-    document.getElementById('frame').contentWindow.history.forward();
-    document.getElementById('location').value = document.getElementById('frame').contentWindow.location;
+    document.getElementById('main').contentWindow.history.forward();
+    document.getElementById('location').value = document.getElementById('main').contentWindow.location;
     e.preventDefault();
 }
 function reload(e) {
     var url = document.getElementById('location').value;
-    document.getElementById('frame').src = url;
+    document.getElementById('main').src = url;
     e.preventDefault();
 }
 function stop(e) {
-    document.getElementById('frame').contentWindow.stop();
+    document.getElementById('main').contentWindow.stop();
     e.preventDefault();
 }
 function settings(e) {
-    document.getElementById('frame').src = 'about.html';
+    document.getElementById('main').src = 'about.html';
     document.getElementById('location').value = 'about.html';
     e.preventDefault();
 }
 function keypress(e) {
     if (e.keyCode == 13) {
         var url = document.getElementById('location').value;
-        document.getElementById('frame').src = url;
+        document.getElementById('main').src = url;
         e.preventDefault();
     }
 }
@@ -171,8 +164,6 @@ function init() {
   <div id='stop'></div>
   <div id='settings'></div>
 </div>
-<div id='main'>
-<iframe id='frame' src=''></iframe>
-</div>
+<iframe id='main' src=''></iframe>
 </body>
 </html>

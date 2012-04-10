@@ -111,14 +111,22 @@ void Box::applyReplacedMinMax(float w, float h)
 
 bool BlockLevelBox::layOutReplacedElement(ViewCSSImp* view, Box* replaced, Element element, CSSStyleDeclarationImp* style)
 {
-    float intrinsicWidth = 0.0f;
-    float intrinsicHeight = 0.0f;
+    float intrinsicWidth = -1.0f;
+    float intrinsicHeight = -1.0f;
     std::u16string tag = element.getLocalName();
+    if (tag == u"img" || tag == u"object") {
+        HTMLReplacedElementImp* replaced = dynamic_cast<HTMLReplacedElementImp*>(element.self());
+        if (!replaced)
+            return false;
+        if (!replaced->getIntrinsicSize(intrinsicWidth, intrinsicHeight))
+            return false;
+    } else if (tag != u"iframe")
+        return false;
+
+    replaced->resolveReplacedWidth(intrinsicWidth, intrinsicHeight);
+
     if (tag == u"iframe") {
         html::HTMLIFrameElement iframe = interface_cast<html::HTMLIFrameElement>(element);
-        // TODO: Use width and height given by CSS.
-        replaced->width = CSSTokenizer::parseInt(iframe.getWidth().c_str(), iframe.getWidth().size());
-        replaced->height = CSSTokenizer::parseInt(iframe.getHeight().c_str(), iframe.getHeight().size());
         html::Window contentWindow = iframe.getContentWindow();
         if (WindowImp* imp = dynamic_cast<WindowImp*>(contentWindow.self())) {
             imp->setSize(replaced->width, replaced->height);
@@ -127,16 +135,8 @@ bool BlockLevelBox::layOutReplacedElement(ViewCSSImp* view, Box* replaced, Eleme
             if (!src.empty() && !imp->getDocument())
                 iframe.setSrc(src);
         }
-    } else if (tag == u"img" || tag == u"object") {
-        HTMLReplacedElementImp* replaced = dynamic_cast<HTMLReplacedElementImp*>(element.self());
-        if (!replaced)
-            return false;
-        if (!replaced->getIntrinsicSize(intrinsicWidth, intrinsicHeight))
-            return false;
-    } else
-        return false;
+    }
 
-    replaced->resolveReplacedWidth(intrinsicWidth, intrinsicHeight);
     return true;
 }
 

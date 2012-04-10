@@ -129,3 +129,6 @@ time[datetime] { binding: time; }
   h4, h5, h6    { page-break-after: avoid }
   ul, ol, dl    { page-break-before: avoid }
 }
+
+/* misc. */
+iframe { overflow: auto; }
