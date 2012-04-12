@@ -47,7 +47,8 @@ body
 
 function Textbox(boundElement)
 {
-    this.boundElement = boundElement
+    this.boundElement = boundElement;
+    boundElement.tabIndex = 0;
 }
 
 Textbox.prototype = {
@@ -105,9 +106,9 @@ var textbox2;
 
 function init() {
     var e = document.getElementById('textbox1');
-    e.focus();
     textbox1 = new Textbox(e);
     textbox1.enteredDocument();
+    e.focus();
 
     e = document.getElementById('textbox2');
     textbox2 = new Textbox(e);
@@ -116,7 +117,7 @@ function init() {
 </script>
 </head>
 <body onload='init()'>
-<div id='textbox1' tabIndex='0' class='textbox'><span class='before'></span><span class='after'></span></div>
-<div id='textbox2' tabIndex='0' class='textbox'><span class='before'></span><span class='after'></span></div>
+<div id='textbox1' class='textbox'><span class='before'></span><span class='after'></span></div>
+<div id='textbox2' class='textbox'><span class='before'></span><span class='after'></span></div>
 </body>
 </html>

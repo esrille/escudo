@@ -3,6 +3,7 @@
 <implementation>
   ({
     xblEnteredDocument: function() {
+        this.boundElement.tabIndex = 0;
         var before = document.createTextNode('');
         var after = document.createTextNode(this.boundElement.value);
         this.shadowTree.firstChild.appendChild(before);
