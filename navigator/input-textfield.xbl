@@ -1,0 +1,57 @@
+<binding id="input-textfield">
+<template><span style="border-right: black solid 1px; margin-right: -1px;"></span><span></span></template>
+<implementation>
+  ({
+    xblEnteredDocument: function() {
+        var before = document.createTextNode('');
+        var after = document.createTextNode(this.boundElement.value);
+        this.shadowTree.firstChild.appendChild(before);
+        this.shadowTree.lastChild.appendChild(after);
+        this.addEventListener('keypress', function(e) {
+            var c = e.charCode;
+            if (c) {
+                before.appendData(String.fromCharCode(c));
+                this.boundElement.value = before.data + after.data;
+            }
+        }, false);
+        this.addEventListener('keydown', function(e) {
+            switch (e.keyCode) {
+            case 8:   // Backspace
+                if (0 < before.length)
+                    before.deleteData(before.length - 1, 1);
+                break;
+            case 35:  // End
+                before.appendData(after.data);
+                after.deleteData(0, after.length);
+                break;
+            case 36:  // Home
+                after.insertData(0, before.data);
+                before.deleteData(0, before.length);
+                break;
+            case 37:  // <-
+                if (0 < before.length) {
+                    var c = before.substringData(before.length - 1, 1);
+                    before.deleteData(before.length - 1, 1);
+                    after.insertData(0, c);
+                }
+                break;
+            case 39:  // ->
+                if (0 < after.length) {
+                    var c = after.substringData(0, 1);
+                    after.deleteData(0, 1);
+                    before.appendData(c);
+                }
+                break;
+            case 46:  // Del
+                if (0 < after.length)
+                    after.deleteData(0, 1);
+                break;
+            default:
+                break;
+            }
+            this.boundElement.value = before.data + after.data;
+        }, false);
+    }
+  })
+</implementation>
+</binding>
