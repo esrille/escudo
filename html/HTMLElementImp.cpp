@@ -25,6 +25,7 @@
 #include "css/Box.h"
 #include "css/CSSParser.h"
 #include "css/CSSStyleDeclarationImp.h"
+#include "HTMLBindingElementImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -122,6 +123,27 @@ Box* HTMLElementImp::getBox()
 // XBL 2.0 internal
 void HTMLElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
 {
+    if (style->binding.getValue() != CSSBindingValueImp::Uri)
+        return;
+    DocumentImp* document = getOwnerDocumentImp();
+    assert(document);
+    URL base(document->getDocumentURI());
+    URL url(base, style->binding.getURL());
+    if (!base.isSameExceptFragments(url))
+        return;   // TODO: Support external bindings later.
+    std::u16string hash = url.getHash();
+    if (hash[0] == '#')
+        hash.erase(0, 1);
+    Element element = document->getElementById(hash);
+    if (!element)
+        return;
+    auto binding = dynamic_cast<HTMLBindingElementImp*>(element.self());
+    if (!binding)
+        return;
+    if (html::HTMLTemplateElement shadowTree = binding->cloneTemplate()) {
+        setShadowTree(shadowTree);
+        // TODO: call the xblEnteredDocument() method.
+    }
 }
 
 // Node

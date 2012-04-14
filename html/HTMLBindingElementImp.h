@@ -46,6 +46,13 @@ public:
         ObjectMixin(org, deep) {
     }
 
+    html::HTMLTemplateElement cloneTemplate();
+
+    // Node
+    virtual Node cloneNode(bool deep) {
+        return new(std::nothrow) HTMLBindingElementImp(this, deep);
+    }
+
     // HTMLBindingElement
     html::HTMLTemplateElement getTemplate();
     void setImplementation(Object implementationPrototypeObject);
