@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,14 @@ public:
         ObjectMixin(ownerDocument, data) {
         nodeName = u"#text";
     }
+    TextImp(TextImp* org, bool deep) :
+        ObjectMixin(org, deep)
+    {}
 
     // Node - override
+    virtual Node cloneNode(bool deep) {
+        return new(std::nothrow) TextImp(this, deep);
+    }
     virtual unsigned short getNodeType();
 
     // Text

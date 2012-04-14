@@ -252,7 +252,7 @@ Node NodeImp::removeChild(Node oldChild)
     return oldChild;
 }
 
-Node NodeImp::appendChild(Node newChild)
+Node NodeImp::appendChild(Node newChild, bool clone)
 {
     if (!newChild)
         return newChild;
@@ -269,12 +269,12 @@ Node NodeImp::appendChild(Node newChild)
             child->release_();
         }
         appendChild(child);
-
-        events::MutationEvent event = new(std::nothrow) MutationEventImp;
-        event.initMutationEvent(u"DOMNodeInserted",
-                                true, false, this, u"", u"", u"", 0);
-        child->dispatchEvent(event);
-
+        if (!clone) {
+            events::MutationEvent event = new(std::nothrow) MutationEventImp;
+            event.initMutationEvent(u"DOMNodeInserted",
+                                    true, false, this, u"", u"", u"", 0);
+            child->dispatchEvent(event);
+        }
     }  // TODO: else ...
     return newChild;
 }
@@ -340,7 +340,7 @@ NodeImp::NodeImp(NodeImp* org, bool deep) :
         return;
     for (NodeImp* node = org->firstChild; node; node = node->nextSibling) {
         Node clone = node->cloneNode(true);
-        appendChild(clone);
+        appendChild(clone, true);
     }
 }
 

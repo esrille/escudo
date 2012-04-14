@@ -46,7 +46,7 @@ public:
     }
     HTMLTemplateElementImp(HTMLTemplateElementImp* org, bool deep) :
         ObjectMixin(org, deep),
-        host(0) // TODO: clone
+        host(0)
     {
     }
 
@@ -55,6 +55,11 @@ public:
     }
     void setHost(Element element) {
         host = element;
+    }
+
+    // Node - override
+    virtual Node cloneNode(bool deep) {
+        return new(std::nothrow) HTMLTemplateElementImp(this, deep);
     }
 
     // HTMLTemplateElement

@@ -110,7 +110,7 @@ public:
     virtual Node insertBefore(Node newChild, Node refChild);
     virtual Node replaceChild(Node newChild, Node oldChild);
     virtual Node removeChild(Node oldChild);
-    virtual Node appendChild(Node newChild);
+    virtual Node appendChild(Node newChild, bool clone = false);
     virtual Node cloneNode(bool deep);
     virtual bool isSameNode(Node node);
     virtual bool isEqualNode(Node node);

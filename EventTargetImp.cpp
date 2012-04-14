@@ -158,6 +158,7 @@ EventTargetImp::EventTargetImp() :
 EventTargetImp::EventTargetImp(EventTargetImp* org) :
     ObjectMixin()
 {
+    // TODO: Check what needs to be copied.
 }
 
 }}}}  // org::w3c::dom::bootstrap
