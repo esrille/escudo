@@ -583,6 +583,16 @@ bool URL::parseFile(size_t& pos)
     pathnameStart = pos;
     parsePath(pos);
     pathnameEnd = pos;
+    if (url.length() <= pos)
+        return true;
+
+    // [ "#" ifragment ]
+    if (url[pos] == '#') {
+        hashStart = pos;
+        ++pos;
+        parseFragment(pos);
+        hashEnd = pos;
+    }
 
     return url.length() <= pos;
 }
@@ -630,8 +640,16 @@ bool URL::parseFileRelative(const URL& base)
         }
         if (url.length() <= pos)
             break;
-        else
+        // [ "#" ifragment ]
+        if (url[pos] == '#') {
+            hashStart = pos;
+            ++pos;
+            parseFragment(pos);
+            hashEnd = pos;
+        }
+        if (pos < url.length())
             return false;
+        break;
     } while (0);
     return true;
 }
