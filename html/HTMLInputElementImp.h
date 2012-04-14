@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,7 +91,7 @@ public:
     HTMLInputElementImp(DocumentImp* ownerDocument);
     HTMLInputElementImp(HTMLInputElementImp* org, bool deep);
 
-    void eval();
+    virtual void eval();
     bool isButton() const {
         switch (type) {
         case SubmitButton:
@@ -103,6 +103,9 @@ public:
             return false;
         }
     }
+
+    // XBL 2.0 internal
+    virtual void generateShadowContent(CSSStyleDeclarationImp* style);
 
     // HTMLInputElement
     std::u16string getAccept();

@@ -34,7 +34,8 @@ HTMLElementImp::HTMLElementImp(DocumentImp* ownerDocument, const std::u16string&
     scrollTop(0),
     scrollLeft(0),
     clickListener(boost::bind(&HTMLElementImp::handleClick, this, _1)),
-    mouseMoveListener(boost::bind(&HTMLElementImp::handleMouseMove, this, _1))
+    mouseMoveListener(boost::bind(&HTMLElementImp::handleMouseMove, this, _1)),
+    shadowTree(0)
 {
     addEventListener(u"click", &clickListener);
     addEventListener(u"mousemove", &mouseMoveListener);
@@ -46,7 +47,8 @@ HTMLElementImp::HTMLElementImp(HTMLElementImp* org, bool deep) :
     scrollTop(0),
     scrollLeft(0),
     clickListener(boost::bind(&HTMLElementImp::handleClick, this, _1)),
-    mouseMoveListener(boost::bind(&HTMLElementImp::handleMouseMove, this, _1))
+    mouseMoveListener(boost::bind(&HTMLElementImp::handleMouseMove, this, _1)),
+    shadowTree(0)       // TODO: clone
 {
     addEventListener(u"click", &clickListener);
     addEventListener(u"mousemove", &mouseMoveListener);
@@ -115,6 +117,11 @@ Box* HTMLElementImp::getBox()
     if (!imp)
         return 0;
     return imp->getBox();
+}
+
+// XBL 2.0 internal
+void HTMLElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
+{
 }
 
 // Node

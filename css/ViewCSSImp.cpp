@@ -33,6 +33,8 @@
 #include "CSSStyleSheetImp.h"
 #include "DocumentImp.h"
 #include "MediaListImp.h"
+#include "html/HTMLElementImp.h"
+#include "html/HTMLTemplateElementImp.h"
 
 #include "Box.h"
 #include "Table.h"
@@ -211,6 +213,18 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle)
         }
         set.clear();
 
+        // expand binding
+        if (style->binding.getValue() != CSSBindingValueImp::None) {
+            if (HTMLElementImp* imp = dynamic_cast<HTMLElementImp*>(element.self())) {
+                imp->generateShadowContent(style);
+                if (html::HTMLTemplateElement shadowTree = imp->getShadowTree()) {
+                    if (auto imp = dynamic_cast<HTMLTemplateElementImp*>(shadowTree.self()))
+                        imp->setHost(element);
+                    node = shadowTree;
+                }
+            }
+        }
+
         style->compute(this, parentStyle, element);
     }
     for (Node child = node.getFirstChild(); child; child = child.getNextSibling())
@@ -307,73 +321,6 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Text text, BlockLevelBox* parentBox,
     return 0;
 }
 
-Element ViewCSSImp::expandBinding(Element element, CSSStyleDeclarationImp* style)
-{
-    switch (style->binding.getValue()) {
-    case CSSBindingValueImp::InputTextfield: {
-        html::HTMLInputElement input = interface_cast<html::HTMLInputElement>(element);
-        html::HTMLDivElement div = interface_cast<html::HTMLDivElement>(getDocument().createElement(u"div"));
-        Text text = getDocument().createTextNode(input.getValue());
-        if (div && text) {
-            div.appendChild(text);
-            css::CSSStyleDeclaration divStyle = div.getStyle();
-            divStyle.setCssText(u"float: left; border-style: solid; border-width: thin; height: 1.2em; text-align: left");
-            CSSStyleDeclarationImp* imp = dynamic_cast<CSSStyleDeclarationImp*>(divStyle.self());
-            if (imp) {
-                imp->specify(style);
-                imp->specifyImportant(style);
-            }
-            divStyle.setDisplay(u"block");
-            cascade(div, style);
-            return div;
-        }
-        break;
-    }
-    case CSSBindingValueImp::InputButton: {
-        html::HTMLInputElement input = interface_cast<html::HTMLInputElement>(element);
-        html::HTMLDivElement div = interface_cast<html::HTMLDivElement>(getDocument().createElement(u"div"));
-        Text text = getDocument().createTextNode(input.getValue());
-        if (div && text) {
-            div.appendChild(text);
-            css::CSSStyleDeclaration divStyle = div.getStyle();
-            divStyle.setCssText(u"float: left; border-style: outset; border-width: thin; height: 1.2em; padding: 0 0.5em; text-align: center");
-            CSSStyleDeclarationImp* imp = dynamic_cast<CSSStyleDeclarationImp*>(divStyle.self());
-            if (imp) {
-                imp->specify(style);
-                imp->specifyImportant(style);
-            }
-            divStyle.setLineHeight(utfconv(std::to_string(style->height.getPx())) + u"px");  // TODO:
-            divStyle.setDisplay(u"block");
-            cascade(div, style);
-            return div;
-        }
-        break;
-    }
-    case CSSBindingValueImp::InputRadio: {
-        html::HTMLInputElement input = interface_cast<html::HTMLInputElement>(element);
-        html::HTMLDivElement div = interface_cast<html::HTMLDivElement>(getDocument().createElement(u"div"));
-        Text text = getDocument().createTextNode(input.getChecked() ? u"\u25c9" : u"\u25cb");
-        if (div && text) {
-            div.appendChild(text);
-            css::CSSStyleDeclaration divStyle = div.getStyle();
-            divStyle.setCssText(u"float: left; border-style: none;  height: 1.2em; padding: 0.5em");
-            CSSStyleDeclarationImp* imp = dynamic_cast<CSSStyleDeclarationImp*>(divStyle.self());
-            if (imp) {
-                imp->specify(style);
-                imp->specifyImportant(style);
-            }
-            divStyle.setDisplay(u"block");
-            cascade(div, style);
-            return div;
-        }
-        break;
-    }
-    default:
-        break;
-    }
-    return element;
-}
-
 BlockLevelBox* ViewCSSImp::createBlockLevelBox(Element element, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, bool newContext, bool asBlock)
 {
     assert(style);
@@ -433,9 +380,14 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
     if (style->getPseudoElementSelectorType() == CSSPseudoElementSelector::NonPseudo)
         counterContext->update(style);
 
+    Element shadow = element;
+    if (HTMLElementImp* imp = dynamic_cast<HTMLElementImp*>(element.self())) {
+        if (imp->getShadowTree())
+            shadow = imp->getShadowTree();
+    }
+
     BlockLevelBox* currentBox = parentBox;
     if (style->isFloat() || style->isAbsolutelyPositioned() || !parentBox) {
-        element = expandBinding(element, style);
         currentBox = createBlockLevelBox(element, parentBox, style, true, asBlock);
         if (!currentBox)
             return 0;  // TODO: error
@@ -443,7 +395,6 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
         // inserted in a lineBox of parentBox later
     } else if ((style->isBlockLevel() && !anonInlineTable) || runIn || asBlock) {
         // Create a temporary block-level box for the run-in box, too.
-        element = expandBinding(element, style);
         if (parentBox->hasInline()) {
             BlockLevelBox* anon = parentBox->getAnonymousBox();
             if (!anon)
@@ -502,20 +453,20 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
         style->emptyInline = 0;
         if (style->display.isInline() && !isReplacedElement(element)) {
             // Empty inline elements still have margins, padding, borders and a line height. cf. 10.8
-            if (!element.hasChildNodes() && !markerStyle && !beforeStyle && !afterStyle)
+            if (!shadow.hasChildNodes() && !markerStyle && !beforeStyle && !afterStyle)
                 style->emptyInline = 4;
             else {
                 if (markerStyle || beforeStyle)
                     style->emptyInline = 1;
                 else if (style->marginLeft.getPx() || style->borderLeftWidth.getPx() || style->paddingLeft.getPx()) {
-                    Node child = element.getFirstChild();
+                    Node child = shadow.getFirstChild();
                     if (child.getNodeType() != Node::TEXT_NODE)
                         style->emptyInline = 1;
                 }
                 if (afterStyle)
                     style->emptyInline |= 2;
                 else if (style->marginRight.getPx() || style->borderRightWidth.getPx() || style->paddingRight.getPx()) {
-                    Node child = element.getLastChild();
+                    Node child = shadow.getLastChild();
                     if (child.getNodeType() != Node::TEXT_NODE)
                         style->emptyInline |= 2;
                 }
@@ -553,7 +504,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
             }
             // Deal with an empty list item; cf. list-alignment-001, acid2.
             // TODO: Find out where the exact behavior is defined in the specifications.
-            if (style->height.isAuto() && !element.hasChildNodes() && !beforeStyle && !afterStyle) {
+            if (style->height.isAuto() && !shadow.hasChildNodes() && !beforeStyle && !afterStyle) {
                 if (!currentBox->hasChildBoxes())
                     currentBox->insertInline(element);
                 else if (BlockLevelBox* anonymousBox = currentBox->getAnonymousBox())
@@ -577,7 +528,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
             }
         }
 
-        for (Node child = element.getFirstChild(); child; child = child.getNextSibling()) {
+        for (Node child = shadow.getFirstChild(); child; child = child.getNextSibling()) {
             if (BlockLevelBox* box = layOutBlockBoxes(child, currentBox, style, ccPseudo.hasCounter() ? &ccPseudo : &cc)) {
                 childBox = box;
                 if (tableWrapperBox && tableWrapperBox->isAnonymousTableObject())

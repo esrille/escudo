@@ -18,10 +18,14 @@
 
 #include <boost/bind.hpp>
 
+#include <org/w3c/dom/Text.h>
 #include <org/w3c/dom/events/KeyboardEvent.h>
+#include <org/w3c/dom/html/HTMLTemplateElement.h>
 
 #include "utf.h"
+#include "DocumentImp.h"
 #include "HTMLInputElementImp.h"
+#include "css/CSSStyleDeclarationImp.h"     // TODO: only for XBL; isolate this later.
 
 namespace org
 {
@@ -157,6 +161,47 @@ void HTMLInputElementImp::handleKeydown(events::Event event)
         }
         if (modified)
             setValue(value);
+    }
+}
+
+void HTMLInputElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
+{
+    DocumentImp* document = getOwnerDocumentImp();
+    assert(document);
+    switch (style->binding.getValue()) {
+    case CSSBindingValueImp::InputTextfield: {
+        html::HTMLTemplateElement element = interface_cast<html::HTMLTemplateElement>(document->createElement(u"template"));
+        if (element) {
+            dom::Text text = document->createTextNode(getValue());
+            element.appendChild(text);
+            style->setCssText(u"display: inline-block; white-space: pre; background-color: white; border: 2px inset; text-align: left; padding: 1px; min-height: 1em;");
+            setShadowTree(element);
+        }
+        break;
+    }
+    case CSSBindingValueImp::InputButton: {
+        html::HTMLTemplateElement element = interface_cast<html::HTMLTemplateElement>(document->createElement(u"template"));
+        if (element) {
+            dom::Text text = document->createTextNode(getValue());
+            element.appendChild(text);
+            style->setCssText(u"display: inline-block; border: 2px outset; padding: 1px; text-align: center; min-height: 1em;");
+            setShadowTree(element);
+        }
+        break;
+    }
+    case CSSBindingValueImp::InputRadio: {
+        html::HTMLTemplateElement element = interface_cast<html::HTMLTemplateElement>(document->createElement(u"template"));
+        if (element) {
+            dom::Text text = document->createTextNode(getChecked() ? u"\u25c9" : u"\u25cb");
+            element.appendChild(text);
+            style->setCssText(u"display: inline-block; border-style: none; padding: 2px;");
+            setShadowTree(element);
+        }
+        break;
+    }
+    default:
+        HTMLElementImp::generateShadowContent(style);
+        break;
     }
 }
 

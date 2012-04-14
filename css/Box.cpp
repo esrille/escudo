@@ -37,6 +37,8 @@
 
 #include "Table.h"
 
+#include "html/HTMLTemplateElementImp.h"    // TODO: only for XBL2
+
 #include "Test.util.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
@@ -223,6 +225,18 @@ const ContainingBlock* Box::getContainingBlock(ViewCSSImp* view) const
         box = parent;
     } while (box->getBoxType() != BLOCK_LEVEL_BOX);
     return box;
+}
+
+Element Box::getContainingElement(Node node)
+{
+    for (; node; node = node.getParentNode()) {
+        if (node.getNodeType() == Node::ELEMENT_NODE) {
+            if (auto shadowTree = dynamic_cast<HTMLTemplateElementImp*>(node.self()))
+                node = shadowTree->getHost();
+            return interface_cast<Element>(node);
+        }
+    }
+    return 0;
 }
 
 const ContainingBlock* BlockLevelBox::getContainingBlock(ViewCSSImp* view) const

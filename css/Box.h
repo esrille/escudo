@@ -591,13 +591,7 @@ public:
         w = h = 0.0f;
     }
 
-    static Element getContainingElement(Node node) {
-        for (; node; node = node.getParentNode()) {
-            if (node.getNodeType() == Node::ELEMENT_NODE)
-                return interface_cast<Element>(node);
-        }
-        return 0;
-    }
+    static Element getContainingElement(Node node);
 };
 
 typedef boost::intrusive_ptr<Box> BoxPtr;

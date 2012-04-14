@@ -37,12 +37,24 @@ namespace bootstrap
 {
 class HTMLTemplateElementImp : public ObjectMixin<HTMLTemplateElementImp, HTMLElementImp>
 {
+    Element host;
 public:
     HTMLTemplateElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"template") {
+        ObjectMixin(ownerDocument, u"template"),
+        host(0)
+    {
     }
     HTMLTemplateElementImp(HTMLTemplateElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
+        ObjectMixin(org, deep),
+        host(0) // TODO: clone
+    {
+    }
+
+    Element getHost() {
+        return host;
+    }
+    void setHost(Element element) {
+        host = element;
     }
 
     // HTMLTemplateElement

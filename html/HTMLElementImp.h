@@ -19,6 +19,7 @@
 
 #include <Object.h>
 #include <org/w3c/dom/html/HTMLElement.h>
+#include <org/w3c/dom/html/HTMLTemplateElement.h>
 
 #include <org/w3c/dom/css/CSSStyleDeclaration.h>
 #include <org/w3c/dom/Element.h>
@@ -36,6 +37,7 @@
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class Box;
+class CSSStyleDeclarationImp;
 
 class HTMLElementImp : public ObjectMixin<HTMLElementImp, ElementImp>
 {
@@ -47,6 +49,9 @@ class HTMLElementImp : public ObjectMixin<HTMLElementImp, ElementImp>
     Retained<EventListenerImp> clickListener;
     Retained<EventListenerImp> mouseMoveListener;
 
+    // XBL 2.0
+    html::HTMLTemplateElement shadowTree;
+
     void handleClick(events::Event event);
     void handleMouseMove(events::Event event);
 
@@ -57,6 +62,15 @@ public:
 
     virtual void eval();
     Box* getBox();
+
+    // XBL 2.0 internal
+    void setShadowTree(html::HTMLTemplateElement& e) {
+        shadowTree = e;
+    }
+    html::HTMLTemplateElement getShadowTree() {
+        return shadowTree;
+    }
+    virtual void generateShadowContent(CSSStyleDeclarationImp* style);
 
     // Node
     virtual Node cloneNode(bool deep);
