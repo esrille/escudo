@@ -30,6 +30,7 @@
 #include "html/HTMLAreaElementImp.h"
 #include "html/HTMLAudioElementImp.h"
 #include "html/HTMLBaseElementImp.h"
+#include "html/HTMLBindingElementImp.h"
 #include "html/HTMLBodyElementImp.h"
 #include "html/HTMLBRElementImp.h"
 #include "html/HTMLButtonElementImp.h"
@@ -83,6 +84,7 @@
 #include "html/HTMLTableHeaderCellElementImp.h"
 #include "html/HTMLTableRowElementImp.h"
 #include "html/HTMLTableSectionElementImp.h"
+#include "html/HTMLTemplateElementImp.h"
 #include "html/HTMLTextAreaElementImp.h"
 #include "html/HTMLTimeElementImp.h"
 #include "html/HTMLTitleElementImp.h"
@@ -417,6 +419,11 @@ Element DocumentImp::createElement(std::u16string localName)
         return new(std::nothrow) HTMLCommandElementImp(this);
     if (localName == u"menu")
         return new(std::nothrow) HTMLMenuElementImp(this);
+
+    if (localName == u"binding")
+        return new(std::nothrow) HTMLBindingElementImp(this);
+    if (localName == u"template")
+        return new(std::nothrow) HTMLTemplateElementImp(this);
 
     // Deprecated elements
     if (localName == u"center")   // shorthand for DIV align=center
@@ -1573,6 +1580,18 @@ traversal::NodeIterator DocumentImp::createNodeIterator(Node root, unsigned int 
 }
 
 traversal::TreeWalker DocumentImp::createTreeWalker(Node root, unsigned int whatToShow, traversal::NodeFilter filter, bool entityReferenceExpansion) throw(DOMException)
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+html::HTMLCollection DocumentImp::getBindingDocuments()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+Document DocumentImp::loadBindingDocument(std::u16string documentURI)
 {
     // TODO: implement me!
     return static_cast<Object*>(0);

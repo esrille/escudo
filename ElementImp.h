@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@
 #include <org/w3c/dom/Attr.h>
 #include <org/w3c/dom/NodeList.h>
 #include <org/w3c/dom/html/HTMLCollection.h>
+#include <org/w3c/dom/xbl2/XBLImplementationList.h>
 
 #include <deque>
 
@@ -100,6 +101,11 @@ public:
     // NodeSelector
     virtual Element querySelector(std::u16string selectors);
     virtual NodeList querySelectorAll(std::u16string selectors);
+    // ElementXBL
+    virtual xbl2::XBLImplementationList getXblImplementations();
+    virtual void addBinding(std::u16string bindingURI);
+    virtual void removeBinding(std::u16string bindingURI);
+    virtual bool hasBinding(std::u16string bindingURI);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

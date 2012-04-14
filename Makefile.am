@@ -20,6 +20,7 @@ idl_files = \
 	progress-events.idl \
 	selectors.idl \
 	typedarray.idl \
+	xbl2.idl \
 	xhr2.idl
 
 generated_headers = \
@@ -127,6 +128,7 @@ generated_headers = \
 	org/w3c/dom/html/HTMLBRElement.h \
 	org/w3c/dom/html/HTMLBaseElement.h \
 	org/w3c/dom/html/HTMLBaseFontElement.h \
+	org/w3c/dom/html/HTMLBindingElement.h \
 	org/w3c/dom/html/HTMLBodyElement.h \
 	org/w3c/dom/html/HTMLButtonElement.h \
 	org/w3c/dom/html/HTMLCanvasElement.h \
@@ -190,6 +192,7 @@ generated_headers = \
 	org/w3c/dom/html/HTMLTableHeaderCellElement.h \
 	org/w3c/dom/html/HTMLTableRowElement.h \
 	org/w3c/dom/html/HTMLTableSectionElement.h \
+	org/w3c/dom/html/HTMLTemplateElement.h \
 	org/w3c/dom/html/HTMLTextAreaElement.h \
 	org/w3c/dom/html/HTMLTimeElement.h \
 	org/w3c/dom/html/HTMLTitleElement.h \
@@ -240,7 +243,10 @@ generated_headers = \
 	org/w3c/dom/typedarray/Uint32Array.h \
 	org/w3c/dom/typedarray/Uint8Array.h \
 	org/w3c/dom/views/ClientRect.h \
-	org/w3c/dom/views/ClientRectList.h
+	org/w3c/dom/views/ClientRectList.h \
+	org/w3c/dom/xbl2/XBLContentElement.h \
+	org/w3c/dom/xbl2/XBLImplementation.h \
+	org/w3c/dom/xbl2/XBLImplementationList.h 
 
 #	org/w3c/dom/html/AudioTrack.h \
 #	org/w3c/dom/html/AudioTrackList.h \
@@ -369,6 +375,7 @@ generated_sources = \
 	org/w3c/dom/html/HTMLBRElement.cpp \
 	org/w3c/dom/html/HTMLBaseElement.cpp \
 	org/w3c/dom/html/HTMLBaseFontElement.cpp \
+	org/w3c/dom/html/HTMLBindingElement.cpp \
 	org/w3c/dom/html/HTMLBodyElement.cpp \
 	org/w3c/dom/html/HTMLButtonElement.cpp \
 	org/w3c/dom/html/HTMLCanvasElement.cpp \
@@ -432,6 +439,7 @@ generated_sources = \
 	org/w3c/dom/html/HTMLTableHeaderCellElement.cpp \
 	org/w3c/dom/html/HTMLTableRowElement.cpp \
 	org/w3c/dom/html/HTMLTableSectionElement.cpp \
+	org/w3c/dom/html/HTMLTemplateElement.cpp \
 	org/w3c/dom/html/HTMLTextAreaElement.cpp \
 	org/w3c/dom/html/HTMLTimeElement.cpp \
 	org/w3c/dom/html/HTMLTitleElement.cpp \
@@ -481,7 +489,10 @@ generated_sources = \
 	org/w3c/dom/typedarray/Uint32Array.cpp \
 	org/w3c/dom/typedarray/Uint8Array.cpp \
 	org/w3c/dom/views/ClientRect.cpp \
-	org/w3c/dom/views/ClientRectList.cpp
+	org/w3c/dom/views/ClientRectList.cpp \
+	org/w3c/dom/xbl2/XBLContentElement.cpp \
+	org/w3c/dom/xbl2/XBLImplementation.cpp \
+	org/w3c/dom/xbl2/XBLImplementationList.cpp
 
 #	org/w3c/dom/html/AudioTrack.cpp \
 #	org/w3c/dom/html/AudioTrackList.cpp \
@@ -892,6 +903,8 @@ libeshtml5_a_SOURCES += \
 	html/HTMLAreaElementImp.h \
 	html/HTMLAudioElementImp.cpp \
 	html/HTMLAudioElementImp.h \
+	html/HTMLBindingElementImp.cpp \
+	html/HTMLBindingElementImp.h \
 	html/HTMLBRElementImp.cpp \
 	html/HTMLBRElementImp.h \
 	html/HTMLBaseElementImp.cpp \
@@ -1025,6 +1038,8 @@ libeshtml5_a_SOURCES += \
 	html/HTMLTableRowElementImp.h \
 	html/HTMLTableSectionElementImp.cpp \
 	html/HTMLTableSectionElementImp.h \
+	html/HTMLTemplateElementImp.cpp \
+	html/HTMLTemplateElementImp.h \
 	html/HTMLTextAreaElementImp.cpp \
 	html/HTMLTextAreaElementImp.h \
 	html/HTMLTimeElementImp.cpp \
@@ -1069,6 +1084,12 @@ libeshtml5_a_SOURCES += \
 	typedarray/Uint32ArrayImp.h \
 	typedarray/Uint8ArrayImp.cpp \
 	typedarray/Uint8ArrayImp.h \
+	xbl/XBLContentElementImp.cpp \
+	xbl/XBLContentElementImp.h \
+	xbl/XBLImplementationImp.cpp \
+	xbl/XBLImplementationImp.h \
+	xbl/XBLImplementationListImp.cpp \
+	xbl/XBLImplementationListImp.h \
 	xhr/AnonXMLHttpRequestImp.cpp \
 	xhr/AnonXMLHttpRequestImp.h \
 	xhr/FormDataImp.cpp \
@@ -1197,4 +1218,5 @@ EXTRA_DIST = \
 	idl/websocket.idl \
 	idl/wget_webidl_dom \
 	idl/workers.idl \
+	idl/xbl2.idl \
 	idl/xhr2.idl

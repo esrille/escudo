@@ -1,0 +1,75 @@
+/*
+ * xbl2.idl
+ *
+ * XBL 2.0
+ *
+ * Original W3C Working Draft 3 September 2010:
+ *
+ *   http://dev.w3.org/2006/xbl2/Overview.html
+ */
+
+module xbl2 {
+
+typedef dom::Document Document;
+typedef dom::Element Element;
+typedef dom::NodeList NodeList;
+typedef html::HTMLCollection NamedNodeMap;
+typedef html::HTMLElement HTMLElement;
+
+interface XBLImplementation {
+  void xblBindingAttached();
+  void xblEnteredDocument();
+  void xblLeftDocument();
+};
+
+interface XBLImplementationList {
+  XBLImplementation item(unsigned long index);
+  readonly attribute unsigned long length;
+};
+
+interface DocumentXBL {
+  readonly attribute NamedNodeMap bindingDocuments;
+  Document loadBindingDocument(DOMString documentURI);
+};
+Document implements DocumentXBL;
+
+interface ElementXBL {
+  readonly attribute XBLImplementationList xblImplementations;
+  void addBinding(DOMString bindingURI);
+  void removeBinding(DOMString bindingURI);
+  boolean hasBinding(DOMString bindingURI);
+};
+Element implements ElementXBL;
+
+interface XBLContentElement : Element {
+  readonly attribute NodeList xblChildNodes;
+  void setInsertionPoint(Node child);
+};
+
+};
+
+module html {
+
+typedef dom::Element Element;
+
+interface HTMLTemplateElement : HTMLElement {
+  Element getElementById(DOMString elementId);
+};
+
+[NamedConstructor=Binding(optional DOMString selector)]
+interface HTMLBindingElement : HTMLElement {
+  HTMLTemplateElement getTemplate();
+  void setImplementation(object implementationPrototypeObject);
+  void addToDocument();
+};
+
+};
+
+module events {
+
+interface EventXBL {
+  readonly attribute boolean trusted;
+};
+Event implements EventXBL;
+
+};

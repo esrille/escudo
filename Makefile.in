@@ -173,12 +173,12 @@ am_libeshtml5_a_OBJECTS = Any.$(OBJEXT) utf.$(OBJEXT) \
 	DataTransferItemListImp.$(OBJEXT) \
 	HTMLAllCollectionImp.$(OBJEXT) HTMLAnchorElementImp.$(OBJEXT) \
 	HTMLAppletElementImp.$(OBJEXT) HTMLAreaElementImp.$(OBJEXT) \
-	HTMLAudioElementImp.$(OBJEXT) HTMLBRElementImp.$(OBJEXT) \
-	HTMLBaseElementImp.$(OBJEXT) HTMLBaseFontElementImp.$(OBJEXT) \
-	HTMLBodyElementImp.$(OBJEXT) HTMLButtonElementImp.$(OBJEXT) \
-	HTMLCanvasElementImp.$(OBJEXT) HTMLCollectionImp.$(OBJEXT) \
-	HTMLCommandElementImp.$(OBJEXT) HTMLDListElementImp.$(OBJEXT) \
-	HTMLDataListElementImp.$(OBJEXT) \
+	HTMLAudioElementImp.$(OBJEXT) HTMLBindingElementImp.$(OBJEXT) \
+	HTMLBRElementImp.$(OBJEXT) HTMLBaseElementImp.$(OBJEXT) \
+	HTMLBaseFontElementImp.$(OBJEXT) HTMLBodyElementImp.$(OBJEXT) \
+	HTMLButtonElementImp.$(OBJEXT) HTMLCanvasElementImp.$(OBJEXT) \
+	HTMLCollectionImp.$(OBJEXT) HTMLCommandElementImp.$(OBJEXT) \
+	HTMLDListElementImp.$(OBJEXT) HTMLDataListElementImp.$(OBJEXT) \
 	HTMLDetailsElementImp.$(OBJEXT) \
 	HTMLDirectoryElementImp.$(OBJEXT) HTMLDivElementImp.$(OBJEXT) \
 	HTMLDocumentImp.$(OBJEXT) HTMLElementImp.$(OBJEXT) \
@@ -216,6 +216,7 @@ am_libeshtml5_a_OBJECTS = Any.$(OBJEXT) utf.$(OBJEXT) \
 	HTMLTableHeaderCellElementImp.$(OBJEXT) \
 	HTMLTableRowElementImp.$(OBJEXT) \
 	HTMLTableSectionElementImp.$(OBJEXT) \
+	HTMLTemplateElementImp.$(OBJEXT) \
 	HTMLTextAreaElementImp.$(OBJEXT) HTMLTimeElementImp.$(OBJEXT) \
 	HTMLTitleElementImp.$(OBJEXT) HTMLUListElementImp.$(OBJEXT) \
 	HTMLUnknownElementImp.$(OBJEXT) HTMLVideoElementImp.$(OBJEXT) \
@@ -227,6 +228,8 @@ am_libeshtml5_a_OBJECTS = Any.$(OBJEXT) utf.$(OBJEXT) \
 	Int16ArrayImp.$(OBJEXT) Int32ArrayImp.$(OBJEXT) \
 	Int8ArrayImp.$(OBJEXT) Uint16ArrayImp.$(OBJEXT) \
 	Uint32ArrayImp.$(OBJEXT) Uint8ArrayImp.$(OBJEXT) \
+	XBLContentElementImp.$(OBJEXT) XBLImplementationImp.$(OBJEXT) \
+	XBLImplementationListImp.$(OBJEXT) \
 	AnonXMLHttpRequestImp.$(OBJEXT) FormDataImp.$(OBJEXT) \
 	XMLHttpRequestEventTargetImp.$(OBJEXT) \
 	XMLHttpRequestImp.$(OBJEXT) XMLHttpRequestUploadImp.$(OBJEXT)
@@ -280,30 +283,31 @@ am__objects_1 = AnonXMLHttpRequest.$(OBJEXT) Attr.$(OBJEXT) \
 	HTMLAppletElement.$(OBJEXT) HTMLAreaElement.$(OBJEXT) \
 	HTMLAudioElement.$(OBJEXT) HTMLBRElement.$(OBJEXT) \
 	HTMLBaseElement.$(OBJEXT) HTMLBaseFontElement.$(OBJEXT) \
-	HTMLBodyElement.$(OBJEXT) HTMLButtonElement.$(OBJEXT) \
-	HTMLCanvasElement.$(OBJEXT) HTMLCollection.$(OBJEXT) \
-	HTMLCommandElement.$(OBJEXT) HTMLDListElement.$(OBJEXT) \
-	HTMLDataListElement.$(OBJEXT) HTMLDetailsElement.$(OBJEXT) \
-	HTMLDirectoryElement.$(OBJEXT) HTMLDivElement.$(OBJEXT) \
-	HTMLDocument.$(OBJEXT) HTMLElement.$(OBJEXT) \
-	HTMLEmbedElement.$(OBJEXT) HTMLFieldSetElement.$(OBJEXT) \
-	HTMLFontElement.$(OBJEXT) HTMLFormControlsCollection.$(OBJEXT) \
-	HTMLFormElement.$(OBJEXT) HTMLFrameElement.$(OBJEXT) \
-	HTMLFrameSetElement.$(OBJEXT) HTMLHRElement.$(OBJEXT) \
-	HTMLHeadElement.$(OBJEXT) HTMLHeadingElement.$(OBJEXT) \
-	HTMLHtmlElement.$(OBJEXT) HTMLIFrameElement.$(OBJEXT) \
-	HTMLImageElement.$(OBJEXT) HTMLInputElement.$(OBJEXT) \
-	HTMLKeygenElement.$(OBJEXT) HTMLLIElement.$(OBJEXT) \
-	HTMLLabelElement.$(OBJEXT) HTMLLegendElement.$(OBJEXT) \
-	HTMLLinkElement.$(OBJEXT) HTMLMapElement.$(OBJEXT) \
-	HTMLMarqueeElement.$(OBJEXT) HTMLMediaElement.$(OBJEXT) \
-	HTMLMenuElement.$(OBJEXT) HTMLMetaElement.$(OBJEXT) \
-	HTMLMeterElement.$(OBJEXT) HTMLModElement.$(OBJEXT) \
-	HTMLOListElement.$(OBJEXT) HTMLObjectElement.$(OBJEXT) \
-	HTMLOptGroupElement.$(OBJEXT) HTMLOptionElement.$(OBJEXT) \
-	HTMLOptionsCollection.$(OBJEXT) HTMLOutputElement.$(OBJEXT) \
-	HTMLParagraphElement.$(OBJEXT) HTMLParamElement.$(OBJEXT) \
-	HTMLPreElement.$(OBJEXT) HTMLProgressElement.$(OBJEXT) \
+	HTMLBindingElement.$(OBJEXT) HTMLBodyElement.$(OBJEXT) \
+	HTMLButtonElement.$(OBJEXT) HTMLCanvasElement.$(OBJEXT) \
+	HTMLCollection.$(OBJEXT) HTMLCommandElement.$(OBJEXT) \
+	HTMLDListElement.$(OBJEXT) HTMLDataListElement.$(OBJEXT) \
+	HTMLDetailsElement.$(OBJEXT) HTMLDirectoryElement.$(OBJEXT) \
+	HTMLDivElement.$(OBJEXT) HTMLDocument.$(OBJEXT) \
+	HTMLElement.$(OBJEXT) HTMLEmbedElement.$(OBJEXT) \
+	HTMLFieldSetElement.$(OBJEXT) HTMLFontElement.$(OBJEXT) \
+	HTMLFormControlsCollection.$(OBJEXT) HTMLFormElement.$(OBJEXT) \
+	HTMLFrameElement.$(OBJEXT) HTMLFrameSetElement.$(OBJEXT) \
+	HTMLHRElement.$(OBJEXT) HTMLHeadElement.$(OBJEXT) \
+	HTMLHeadingElement.$(OBJEXT) HTMLHtmlElement.$(OBJEXT) \
+	HTMLIFrameElement.$(OBJEXT) HTMLImageElement.$(OBJEXT) \
+	HTMLInputElement.$(OBJEXT) HTMLKeygenElement.$(OBJEXT) \
+	HTMLLIElement.$(OBJEXT) HTMLLabelElement.$(OBJEXT) \
+	HTMLLegendElement.$(OBJEXT) HTMLLinkElement.$(OBJEXT) \
+	HTMLMapElement.$(OBJEXT) HTMLMarqueeElement.$(OBJEXT) \
+	HTMLMediaElement.$(OBJEXT) HTMLMenuElement.$(OBJEXT) \
+	HTMLMetaElement.$(OBJEXT) HTMLMeterElement.$(OBJEXT) \
+	HTMLModElement.$(OBJEXT) HTMLOListElement.$(OBJEXT) \
+	HTMLObjectElement.$(OBJEXT) HTMLOptGroupElement.$(OBJEXT) \
+	HTMLOptionElement.$(OBJEXT) HTMLOptionsCollection.$(OBJEXT) \
+	HTMLOutputElement.$(OBJEXT) HTMLParagraphElement.$(OBJEXT) \
+	HTMLParamElement.$(OBJEXT) HTMLPreElement.$(OBJEXT) \
+	HTMLProgressElement.$(OBJEXT) \
 	HTMLPropertiesCollection.$(OBJEXT) HTMLQuoteElement.$(OBJEXT) \
 	HTMLScriptElement.$(OBJEXT) HTMLSelectElement.$(OBJEXT) \
 	HTMLSourceElement.$(OBJEXT) HTMLSpanElement.$(OBJEXT) \
@@ -313,11 +317,11 @@ am__objects_1 = AnonXMLHttpRequest.$(OBJEXT) Attr.$(OBJEXT) \
 	HTMLTableHeaderCellElement.$(OBJEXT) \
 	HTMLTableRowElement.$(OBJEXT) \
 	HTMLTableSectionElement.$(OBJEXT) \
-	HTMLTextAreaElement.$(OBJEXT) HTMLTimeElement.$(OBJEXT) \
-	HTMLTitleElement.$(OBJEXT) HTMLUListElement.$(OBJEXT) \
-	HTMLUnknownElement.$(OBJEXT) HTMLVideoElement.$(OBJEXT) \
-	HashChangeEvent.$(OBJEXT) History.$(OBJEXT) \
-	ImageData.$(OBJEXT) Location.$(OBJEXT) \
+	HTMLTemplateElement.$(OBJEXT) HTMLTextAreaElement.$(OBJEXT) \
+	HTMLTimeElement.$(OBJEXT) HTMLTitleElement.$(OBJEXT) \
+	HTMLUListElement.$(OBJEXT) HTMLUnknownElement.$(OBJEXT) \
+	HTMLVideoElement.$(OBJEXT) HashChangeEvent.$(OBJEXT) \
+	History.$(OBJEXT) ImageData.$(OBJEXT) Location.$(OBJEXT) \
 	MediaQueryList.$(OBJEXT) MediaQueryListListener.$(OBJEXT) \
 	MessageChannel.$(OBJEXT) MessageEvent.$(OBJEXT) \
 	MessagePort.$(OBJEXT) Navigator.$(OBJEXT) \
@@ -335,7 +339,9 @@ am__objects_1 = AnonXMLHttpRequest.$(OBJEXT) Attr.$(OBJEXT) \
 	Float64Array.$(OBJEXT) Int16Array.$(OBJEXT) \
 	Int32Array.$(OBJEXT) Int8Array.$(OBJEXT) Uint16Array.$(OBJEXT) \
 	Uint32Array.$(OBJEXT) Uint8Array.$(OBJEXT) \
-	ClientRect.$(OBJEXT) ClientRectList.$(OBJEXT)
+	ClientRect.$(OBJEXT) ClientRectList.$(OBJEXT) \
+	XBLContentElement.$(OBJEXT) XBLImplementation.$(OBJEXT) \
+	XBLImplementationList.$(OBJEXT)
 am__objects_2 =
 am__objects_3 = CSSPropertyNames.$(OBJEXT) CSSTokenizer.$(OBJEXT) \
 	CSSColor.$(OBJEXT) CSSGrammar.$(OBJEXT)
@@ -577,6 +583,7 @@ idl_files = \
 	progress-events.idl \
 	selectors.idl \
 	typedarray.idl \
+	xbl2.idl \
 	xhr2.idl
 
 generated_headers = \
@@ -684,6 +691,7 @@ generated_headers = \
 	org/w3c/dom/html/HTMLBRElement.h \
 	org/w3c/dom/html/HTMLBaseElement.h \
 	org/w3c/dom/html/HTMLBaseFontElement.h \
+	org/w3c/dom/html/HTMLBindingElement.h \
 	org/w3c/dom/html/HTMLBodyElement.h \
 	org/w3c/dom/html/HTMLButtonElement.h \
 	org/w3c/dom/html/HTMLCanvasElement.h \
@@ -747,6 +755,7 @@ generated_headers = \
 	org/w3c/dom/html/HTMLTableHeaderCellElement.h \
 	org/w3c/dom/html/HTMLTableRowElement.h \
 	org/w3c/dom/html/HTMLTableSectionElement.h \
+	org/w3c/dom/html/HTMLTemplateElement.h \
 	org/w3c/dom/html/HTMLTextAreaElement.h \
 	org/w3c/dom/html/HTMLTimeElement.h \
 	org/w3c/dom/html/HTMLTitleElement.h \
@@ -797,7 +806,10 @@ generated_headers = \
 	org/w3c/dom/typedarray/Uint32Array.h \
 	org/w3c/dom/typedarray/Uint8Array.h \
 	org/w3c/dom/views/ClientRect.h \
-	org/w3c/dom/views/ClientRectList.h
+	org/w3c/dom/views/ClientRectList.h \
+	org/w3c/dom/xbl2/XBLContentElement.h \
+	org/w3c/dom/xbl2/XBLImplementation.h \
+	org/w3c/dom/xbl2/XBLImplementationList.h 
 
 
 #	org/w3c/dom/html/AudioTrack.h \
@@ -926,6 +938,7 @@ generated_sources = \
 	org/w3c/dom/html/HTMLBRElement.cpp \
 	org/w3c/dom/html/HTMLBaseElement.cpp \
 	org/w3c/dom/html/HTMLBaseFontElement.cpp \
+	org/w3c/dom/html/HTMLBindingElement.cpp \
 	org/w3c/dom/html/HTMLBodyElement.cpp \
 	org/w3c/dom/html/HTMLButtonElement.cpp \
 	org/w3c/dom/html/HTMLCanvasElement.cpp \
@@ -989,6 +1002,7 @@ generated_sources = \
 	org/w3c/dom/html/HTMLTableHeaderCellElement.cpp \
 	org/w3c/dom/html/HTMLTableRowElement.cpp \
 	org/w3c/dom/html/HTMLTableSectionElement.cpp \
+	org/w3c/dom/html/HTMLTemplateElement.cpp \
 	org/w3c/dom/html/HTMLTextAreaElement.cpp \
 	org/w3c/dom/html/HTMLTimeElement.cpp \
 	org/w3c/dom/html/HTMLTitleElement.cpp \
@@ -1038,7 +1052,10 @@ generated_sources = \
 	org/w3c/dom/typedarray/Uint32Array.cpp \
 	org/w3c/dom/typedarray/Uint8Array.cpp \
 	org/w3c/dom/views/ClientRect.cpp \
-	org/w3c/dom/views/ClientRectList.cpp
+	org/w3c/dom/views/ClientRectList.cpp \
+	org/w3c/dom/xbl2/XBLContentElement.cpp \
+	org/w3c/dom/xbl2/XBLImplementation.cpp \
+	org/w3c/dom/xbl2/XBLImplementationList.cpp
 
 
 #	org/w3c/dom/html/AudioTrack.cpp \
@@ -1244,7 +1261,8 @@ libeshtml5_a_SOURCES = Object.h ObjectArrayImp.h Any.cpp Any.h \
 	html/HTMLAnchorElementImp.h html/HTMLAppletElementImp.cpp \
 	html/HTMLAppletElementImp.h html/HTMLAreaElementImp.cpp \
 	html/HTMLAreaElementImp.h html/HTMLAudioElementImp.cpp \
-	html/HTMLAudioElementImp.h html/HTMLBRElementImp.cpp \
+	html/HTMLAudioElementImp.h html/HTMLBindingElementImp.cpp \
+	html/HTMLBindingElementImp.h html/HTMLBRElementImp.cpp \
 	html/HTMLBRElementImp.h html/HTMLBaseElementImp.cpp \
 	html/HTMLBaseElementImp.h html/HTMLBaseFontElementImp.cpp \
 	html/HTMLBaseFontElementImp.h html/HTMLBodyElementImp.cpp \
@@ -1319,6 +1337,7 @@ libeshtml5_a_SOURCES = Object.h ObjectArrayImp.h Any.cpp Any.h \
 	html/HTMLTableRowElementImp.cpp html/HTMLTableRowElementImp.h \
 	html/HTMLTableSectionElementImp.cpp \
 	html/HTMLTableSectionElementImp.h \
+	html/HTMLTemplateElementImp.cpp html/HTMLTemplateElementImp.h \
 	html/HTMLTextAreaElementImp.cpp html/HTMLTextAreaElementImp.h \
 	html/HTMLTimeElementImp.cpp html/HTMLTimeElementImp.h \
 	html/HTMLTitleElementImp.cpp html/HTMLTitleElementImp.h \
@@ -1341,7 +1360,10 @@ libeshtml5_a_SOURCES = Object.h ObjectArrayImp.h Any.cpp Any.h \
 	typedarray/Int8ArrayImp.h typedarray/Uint16ArrayImp.cpp \
 	typedarray/Uint16ArrayImp.h typedarray/Uint32ArrayImp.cpp \
 	typedarray/Uint32ArrayImp.h typedarray/Uint8ArrayImp.cpp \
-	typedarray/Uint8ArrayImp.h xhr/AnonXMLHttpRequestImp.cpp \
+	typedarray/Uint8ArrayImp.h xbl/XBLContentElementImp.cpp \
+	xbl/XBLContentElementImp.h xbl/XBLImplementationImp.cpp \
+	xbl/XBLImplementationImp.h xbl/XBLImplementationListImp.cpp \
+	xbl/XBLImplementationListImp.h xhr/AnonXMLHttpRequestImp.cpp \
 	xhr/AnonXMLHttpRequestImp.h xhr/FormDataImp.cpp \
 	xhr/FormDataImp.h xhr/XMLHttpRequestEventTargetImp.cpp \
 	xhr/XMLHttpRequestEventTargetImp.h xhr/XMLHttpRequestImp.cpp \
@@ -1424,6 +1446,7 @@ EXTRA_DIST = \
 	idl/websocket.idl \
 	idl/wget_webidl_dom \
 	idl/workers.idl \
+	idl/xbl2.idl \
 	idl/xhr2.idl
 
 all: $(BUILT_SOURCES) config.h
@@ -1832,6 +1855,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HTMLBaseElementImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HTMLBaseFontElement.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HTMLBaseFontElementImp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HTMLBindingElement.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HTMLBindingElementImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HTMLBodyElement.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HTMLBodyElementImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HTMLButtonElement.Po@am__quote@
@@ -1963,6 +1988,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HTMLTableRowElementImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HTMLTableSectionElement.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HTMLTableSectionElementImp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HTMLTemplateElement.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HTMLTemplateElementImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HTMLTextAreaElement.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HTMLTextAreaElementImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HTMLTimeElement.Po@am__quote@
@@ -2101,6 +2128,12 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/WheelEventImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Window.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/WindowImp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XBLContentElement.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XBLContentElementImp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XBLImplementation.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XBLImplementationImp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XBLImplementationList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XBLImplementationListImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XMLHttpRequest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XMLHttpRequestEventTarget.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XMLHttpRequestEventTargetImp.Po@am__quote@
@@ -3262,6 +3295,20 @@ HTMLAudioElementImp.obj: html/HTMLAudioElementImp.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTMLAudioElementImp.obj `if test -f 'html/HTMLAudioElementImp.cpp'; then $(CYGPATH_W) 'html/HTMLAudioElementImp.cpp'; else $(CYGPATH_W) '$(srcdir)/html/HTMLAudioElementImp.cpp'; fi`
 
+HTMLBindingElementImp.o: html/HTMLBindingElementImp.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTMLBindingElementImp.o -MD -MP -MF $(DEPDIR)/HTMLBindingElementImp.Tpo -c -o HTMLBindingElementImp.o `test -f 'html/HTMLBindingElementImp.cpp' || echo '$(srcdir)/'`html/HTMLBindingElementImp.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/HTMLBindingElementImp.Tpo $(DEPDIR)/HTMLBindingElementImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='html/HTMLBindingElementImp.cpp' object='HTMLBindingElementImp.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTMLBindingElementImp.o `test -f 'html/HTMLBindingElementImp.cpp' || echo '$(srcdir)/'`html/HTMLBindingElementImp.cpp
+
+HTMLBindingElementImp.obj: html/HTMLBindingElementImp.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTMLBindingElementImp.obj -MD -MP -MF $(DEPDIR)/HTMLBindingElementImp.Tpo -c -o HTMLBindingElementImp.obj `if test -f 'html/HTMLBindingElementImp.cpp'; then $(CYGPATH_W) 'html/HTMLBindingElementImp.cpp'; else $(CYGPATH_W) '$(srcdir)/html/HTMLBindingElementImp.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/HTMLBindingElementImp.Tpo $(DEPDIR)/HTMLBindingElementImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='html/HTMLBindingElementImp.cpp' object='HTMLBindingElementImp.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTMLBindingElementImp.obj `if test -f 'html/HTMLBindingElementImp.cpp'; then $(CYGPATH_W) 'html/HTMLBindingElementImp.cpp'; else $(CYGPATH_W) '$(srcdir)/html/HTMLBindingElementImp.cpp'; fi`
+
 HTMLBRElementImp.o: html/HTMLBRElementImp.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTMLBRElementImp.o -MD -MP -MF $(DEPDIR)/HTMLBRElementImp.Tpo -c -o HTMLBRElementImp.o `test -f 'html/HTMLBRElementImp.cpp' || echo '$(srcdir)/'`html/HTMLBRElementImp.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/HTMLBRElementImp.Tpo $(DEPDIR)/HTMLBRElementImp.Po
@@ -4186,6 +4233,20 @@ HTMLTableSectionElementImp.obj: html/HTMLTableSectionElementImp.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTMLTableSectionElementImp.obj `if test -f 'html/HTMLTableSectionElementImp.cpp'; then $(CYGPATH_W) 'html/HTMLTableSectionElementImp.cpp'; else $(CYGPATH_W) '$(srcdir)/html/HTMLTableSectionElementImp.cpp'; fi`
 
+HTMLTemplateElementImp.o: html/HTMLTemplateElementImp.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTMLTemplateElementImp.o -MD -MP -MF $(DEPDIR)/HTMLTemplateElementImp.Tpo -c -o HTMLTemplateElementImp.o `test -f 'html/HTMLTemplateElementImp.cpp' || echo '$(srcdir)/'`html/HTMLTemplateElementImp.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/HTMLTemplateElementImp.Tpo $(DEPDIR)/HTMLTemplateElementImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='html/HTMLTemplateElementImp.cpp' object='HTMLTemplateElementImp.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTMLTemplateElementImp.o `test -f 'html/HTMLTemplateElementImp.cpp' || echo '$(srcdir)/'`html/HTMLTemplateElementImp.cpp
+
+HTMLTemplateElementImp.obj: html/HTMLTemplateElementImp.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTMLTemplateElementImp.obj -MD -MP -MF $(DEPDIR)/HTMLTemplateElementImp.Tpo -c -o HTMLTemplateElementImp.obj `if test -f 'html/HTMLTemplateElementImp.cpp'; then $(CYGPATH_W) 'html/HTMLTemplateElementImp.cpp'; else $(CYGPATH_W) '$(srcdir)/html/HTMLTemplateElementImp.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/HTMLTemplateElementImp.Tpo $(DEPDIR)/HTMLTemplateElementImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='html/HTMLTemplateElementImp.cpp' object='HTMLTemplateElementImp.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTMLTemplateElementImp.obj `if test -f 'html/HTMLTemplateElementImp.cpp'; then $(CYGPATH_W) 'html/HTMLTemplateElementImp.cpp'; else $(CYGPATH_W) '$(srcdir)/html/HTMLTemplateElementImp.cpp'; fi`
+
 HTMLTextAreaElementImp.o: html/HTMLTextAreaElementImp.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTMLTextAreaElementImp.o -MD -MP -MF $(DEPDIR)/HTMLTextAreaElementImp.Tpo -c -o HTMLTextAreaElementImp.o `test -f 'html/HTMLTextAreaElementImp.cpp' || echo '$(srcdir)/'`html/HTMLTextAreaElementImp.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/HTMLTextAreaElementImp.Tpo $(DEPDIR)/HTMLTextAreaElementImp.Po
@@ -4493,6 +4554,48 @@ Uint8ArrayImp.obj: typedarray/Uint8ArrayImp.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='typedarray/Uint8ArrayImp.cpp' object='Uint8ArrayImp.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Uint8ArrayImp.obj `if test -f 'typedarray/Uint8ArrayImp.cpp'; then $(CYGPATH_W) 'typedarray/Uint8ArrayImp.cpp'; else $(CYGPATH_W) '$(srcdir)/typedarray/Uint8ArrayImp.cpp'; fi`
+
+XBLContentElementImp.o: xbl/XBLContentElementImp.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XBLContentElementImp.o -MD -MP -MF $(DEPDIR)/XBLContentElementImp.Tpo -c -o XBLContentElementImp.o `test -f 'xbl/XBLContentElementImp.cpp' || echo '$(srcdir)/'`xbl/XBLContentElementImp.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/XBLContentElementImp.Tpo $(DEPDIR)/XBLContentElementImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='xbl/XBLContentElementImp.cpp' object='XBLContentElementImp.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XBLContentElementImp.o `test -f 'xbl/XBLContentElementImp.cpp' || echo '$(srcdir)/'`xbl/XBLContentElementImp.cpp
+
+XBLContentElementImp.obj: xbl/XBLContentElementImp.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XBLContentElementImp.obj -MD -MP -MF $(DEPDIR)/XBLContentElementImp.Tpo -c -o XBLContentElementImp.obj `if test -f 'xbl/XBLContentElementImp.cpp'; then $(CYGPATH_W) 'xbl/XBLContentElementImp.cpp'; else $(CYGPATH_W) '$(srcdir)/xbl/XBLContentElementImp.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/XBLContentElementImp.Tpo $(DEPDIR)/XBLContentElementImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='xbl/XBLContentElementImp.cpp' object='XBLContentElementImp.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XBLContentElementImp.obj `if test -f 'xbl/XBLContentElementImp.cpp'; then $(CYGPATH_W) 'xbl/XBLContentElementImp.cpp'; else $(CYGPATH_W) '$(srcdir)/xbl/XBLContentElementImp.cpp'; fi`
+
+XBLImplementationImp.o: xbl/XBLImplementationImp.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XBLImplementationImp.o -MD -MP -MF $(DEPDIR)/XBLImplementationImp.Tpo -c -o XBLImplementationImp.o `test -f 'xbl/XBLImplementationImp.cpp' || echo '$(srcdir)/'`xbl/XBLImplementationImp.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/XBLImplementationImp.Tpo $(DEPDIR)/XBLImplementationImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='xbl/XBLImplementationImp.cpp' object='XBLImplementationImp.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XBLImplementationImp.o `test -f 'xbl/XBLImplementationImp.cpp' || echo '$(srcdir)/'`xbl/XBLImplementationImp.cpp
+
+XBLImplementationImp.obj: xbl/XBLImplementationImp.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XBLImplementationImp.obj -MD -MP -MF $(DEPDIR)/XBLImplementationImp.Tpo -c -o XBLImplementationImp.obj `if test -f 'xbl/XBLImplementationImp.cpp'; then $(CYGPATH_W) 'xbl/XBLImplementationImp.cpp'; else $(CYGPATH_W) '$(srcdir)/xbl/XBLImplementationImp.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/XBLImplementationImp.Tpo $(DEPDIR)/XBLImplementationImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='xbl/XBLImplementationImp.cpp' object='XBLImplementationImp.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XBLImplementationImp.obj `if test -f 'xbl/XBLImplementationImp.cpp'; then $(CYGPATH_W) 'xbl/XBLImplementationImp.cpp'; else $(CYGPATH_W) '$(srcdir)/xbl/XBLImplementationImp.cpp'; fi`
+
+XBLImplementationListImp.o: xbl/XBLImplementationListImp.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XBLImplementationListImp.o -MD -MP -MF $(DEPDIR)/XBLImplementationListImp.Tpo -c -o XBLImplementationListImp.o `test -f 'xbl/XBLImplementationListImp.cpp' || echo '$(srcdir)/'`xbl/XBLImplementationListImp.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/XBLImplementationListImp.Tpo $(DEPDIR)/XBLImplementationListImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='xbl/XBLImplementationListImp.cpp' object='XBLImplementationListImp.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XBLImplementationListImp.o `test -f 'xbl/XBLImplementationListImp.cpp' || echo '$(srcdir)/'`xbl/XBLImplementationListImp.cpp
+
+XBLImplementationListImp.obj: xbl/XBLImplementationListImp.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XBLImplementationListImp.obj -MD -MP -MF $(DEPDIR)/XBLImplementationListImp.Tpo -c -o XBLImplementationListImp.obj `if test -f 'xbl/XBLImplementationListImp.cpp'; then $(CYGPATH_W) 'xbl/XBLImplementationListImp.cpp'; else $(CYGPATH_W) '$(srcdir)/xbl/XBLImplementationListImp.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/XBLImplementationListImp.Tpo $(DEPDIR)/XBLImplementationListImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='xbl/XBLImplementationListImp.cpp' object='XBLImplementationListImp.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XBLImplementationListImp.obj `if test -f 'xbl/XBLImplementationListImp.cpp'; then $(CYGPATH_W) 'xbl/XBLImplementationListImp.cpp'; else $(CYGPATH_W) '$(srcdir)/xbl/XBLImplementationListImp.cpp'; fi`
 
 AnonXMLHttpRequestImp.o: xhr/AnonXMLHttpRequestImp.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT AnonXMLHttpRequestImp.o -MD -MP -MF $(DEPDIR)/AnonXMLHttpRequestImp.Tpo -c -o AnonXMLHttpRequestImp.o `test -f 'xhr/AnonXMLHttpRequestImp.cpp' || echo '$(srcdir)/'`xhr/AnonXMLHttpRequestImp.cpp
@@ -5978,6 +6081,20 @@ HTMLBaseFontElement.obj: org/w3c/dom/html/HTMLBaseFontElement.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTMLBaseFontElement.obj `if test -f 'org/w3c/dom/html/HTMLBaseFontElement.cpp'; then $(CYGPATH_W) 'org/w3c/dom/html/HTMLBaseFontElement.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/html/HTMLBaseFontElement.cpp'; fi`
 
+HTMLBindingElement.o: org/w3c/dom/html/HTMLBindingElement.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTMLBindingElement.o -MD -MP -MF $(DEPDIR)/HTMLBindingElement.Tpo -c -o HTMLBindingElement.o `test -f 'org/w3c/dom/html/HTMLBindingElement.cpp' || echo '$(srcdir)/'`org/w3c/dom/html/HTMLBindingElement.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/HTMLBindingElement.Tpo $(DEPDIR)/HTMLBindingElement.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/html/HTMLBindingElement.cpp' object='HTMLBindingElement.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTMLBindingElement.o `test -f 'org/w3c/dom/html/HTMLBindingElement.cpp' || echo '$(srcdir)/'`org/w3c/dom/html/HTMLBindingElement.cpp
+
+HTMLBindingElement.obj: org/w3c/dom/html/HTMLBindingElement.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTMLBindingElement.obj -MD -MP -MF $(DEPDIR)/HTMLBindingElement.Tpo -c -o HTMLBindingElement.obj `if test -f 'org/w3c/dom/html/HTMLBindingElement.cpp'; then $(CYGPATH_W) 'org/w3c/dom/html/HTMLBindingElement.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/html/HTMLBindingElement.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/HTMLBindingElement.Tpo $(DEPDIR)/HTMLBindingElement.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/html/HTMLBindingElement.cpp' object='HTMLBindingElement.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTMLBindingElement.obj `if test -f 'org/w3c/dom/html/HTMLBindingElement.cpp'; then $(CYGPATH_W) 'org/w3c/dom/html/HTMLBindingElement.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/html/HTMLBindingElement.cpp'; fi`
+
 HTMLBodyElement.o: org/w3c/dom/html/HTMLBodyElement.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTMLBodyElement.o -MD -MP -MF $(DEPDIR)/HTMLBodyElement.Tpo -c -o HTMLBodyElement.o `test -f 'org/w3c/dom/html/HTMLBodyElement.cpp' || echo '$(srcdir)/'`org/w3c/dom/html/HTMLBodyElement.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/HTMLBodyElement.Tpo $(DEPDIR)/HTMLBodyElement.Po
@@ -6860,6 +6977,20 @@ HTMLTableSectionElement.obj: org/w3c/dom/html/HTMLTableSectionElement.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTMLTableSectionElement.obj `if test -f 'org/w3c/dom/html/HTMLTableSectionElement.cpp'; then $(CYGPATH_W) 'org/w3c/dom/html/HTMLTableSectionElement.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/html/HTMLTableSectionElement.cpp'; fi`
 
+HTMLTemplateElement.o: org/w3c/dom/html/HTMLTemplateElement.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTMLTemplateElement.o -MD -MP -MF $(DEPDIR)/HTMLTemplateElement.Tpo -c -o HTMLTemplateElement.o `test -f 'org/w3c/dom/html/HTMLTemplateElement.cpp' || echo '$(srcdir)/'`org/w3c/dom/html/HTMLTemplateElement.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/HTMLTemplateElement.Tpo $(DEPDIR)/HTMLTemplateElement.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/html/HTMLTemplateElement.cpp' object='HTMLTemplateElement.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTMLTemplateElement.o `test -f 'org/w3c/dom/html/HTMLTemplateElement.cpp' || echo '$(srcdir)/'`org/w3c/dom/html/HTMLTemplateElement.cpp
+
+HTMLTemplateElement.obj: org/w3c/dom/html/HTMLTemplateElement.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTMLTemplateElement.obj -MD -MP -MF $(DEPDIR)/HTMLTemplateElement.Tpo -c -o HTMLTemplateElement.obj `if test -f 'org/w3c/dom/html/HTMLTemplateElement.cpp'; then $(CYGPATH_W) 'org/w3c/dom/html/HTMLTemplateElement.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/html/HTMLTemplateElement.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/HTMLTemplateElement.Tpo $(DEPDIR)/HTMLTemplateElement.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/html/HTMLTemplateElement.cpp' object='HTMLTemplateElement.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTMLTemplateElement.obj `if test -f 'org/w3c/dom/html/HTMLTemplateElement.cpp'; then $(CYGPATH_W) 'org/w3c/dom/html/HTMLTemplateElement.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/html/HTMLTemplateElement.cpp'; fi`
+
 HTMLTextAreaElement.o: org/w3c/dom/html/HTMLTextAreaElement.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTMLTextAreaElement.o -MD -MP -MF $(DEPDIR)/HTMLTextAreaElement.Tpo -c -o HTMLTextAreaElement.o `test -f 'org/w3c/dom/html/HTMLTextAreaElement.cpp' || echo '$(srcdir)/'`org/w3c/dom/html/HTMLTextAreaElement.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/HTMLTextAreaElement.Tpo $(DEPDIR)/HTMLTextAreaElement.Po
@@ -7559,6 +7690,48 @@ ClientRectList.obj: org/w3c/dom/views/ClientRectList.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/views/ClientRectList.cpp' object='ClientRectList.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ClientRectList.obj `if test -f 'org/w3c/dom/views/ClientRectList.cpp'; then $(CYGPATH_W) 'org/w3c/dom/views/ClientRectList.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/views/ClientRectList.cpp'; fi`
+
+XBLContentElement.o: org/w3c/dom/xbl2/XBLContentElement.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XBLContentElement.o -MD -MP -MF $(DEPDIR)/XBLContentElement.Tpo -c -o XBLContentElement.o `test -f 'org/w3c/dom/xbl2/XBLContentElement.cpp' || echo '$(srcdir)/'`org/w3c/dom/xbl2/XBLContentElement.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/XBLContentElement.Tpo $(DEPDIR)/XBLContentElement.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/xbl2/XBLContentElement.cpp' object='XBLContentElement.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XBLContentElement.o `test -f 'org/w3c/dom/xbl2/XBLContentElement.cpp' || echo '$(srcdir)/'`org/w3c/dom/xbl2/XBLContentElement.cpp
+
+XBLContentElement.obj: org/w3c/dom/xbl2/XBLContentElement.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XBLContentElement.obj -MD -MP -MF $(DEPDIR)/XBLContentElement.Tpo -c -o XBLContentElement.obj `if test -f 'org/w3c/dom/xbl2/XBLContentElement.cpp'; then $(CYGPATH_W) 'org/w3c/dom/xbl2/XBLContentElement.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/xbl2/XBLContentElement.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/XBLContentElement.Tpo $(DEPDIR)/XBLContentElement.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/xbl2/XBLContentElement.cpp' object='XBLContentElement.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XBLContentElement.obj `if test -f 'org/w3c/dom/xbl2/XBLContentElement.cpp'; then $(CYGPATH_W) 'org/w3c/dom/xbl2/XBLContentElement.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/xbl2/XBLContentElement.cpp'; fi`
+
+XBLImplementation.o: org/w3c/dom/xbl2/XBLImplementation.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XBLImplementation.o -MD -MP -MF $(DEPDIR)/XBLImplementation.Tpo -c -o XBLImplementation.o `test -f 'org/w3c/dom/xbl2/XBLImplementation.cpp' || echo '$(srcdir)/'`org/w3c/dom/xbl2/XBLImplementation.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/XBLImplementation.Tpo $(DEPDIR)/XBLImplementation.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/xbl2/XBLImplementation.cpp' object='XBLImplementation.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XBLImplementation.o `test -f 'org/w3c/dom/xbl2/XBLImplementation.cpp' || echo '$(srcdir)/'`org/w3c/dom/xbl2/XBLImplementation.cpp
+
+XBLImplementation.obj: org/w3c/dom/xbl2/XBLImplementation.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XBLImplementation.obj -MD -MP -MF $(DEPDIR)/XBLImplementation.Tpo -c -o XBLImplementation.obj `if test -f 'org/w3c/dom/xbl2/XBLImplementation.cpp'; then $(CYGPATH_W) 'org/w3c/dom/xbl2/XBLImplementation.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/xbl2/XBLImplementation.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/XBLImplementation.Tpo $(DEPDIR)/XBLImplementation.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/xbl2/XBLImplementation.cpp' object='XBLImplementation.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XBLImplementation.obj `if test -f 'org/w3c/dom/xbl2/XBLImplementation.cpp'; then $(CYGPATH_W) 'org/w3c/dom/xbl2/XBLImplementation.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/xbl2/XBLImplementation.cpp'; fi`
+
+XBLImplementationList.o: org/w3c/dom/xbl2/XBLImplementationList.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XBLImplementationList.o -MD -MP -MF $(DEPDIR)/XBLImplementationList.Tpo -c -o XBLImplementationList.o `test -f 'org/w3c/dom/xbl2/XBLImplementationList.cpp' || echo '$(srcdir)/'`org/w3c/dom/xbl2/XBLImplementationList.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/XBLImplementationList.Tpo $(DEPDIR)/XBLImplementationList.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/xbl2/XBLImplementationList.cpp' object='XBLImplementationList.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XBLImplementationList.o `test -f 'org/w3c/dom/xbl2/XBLImplementationList.cpp' || echo '$(srcdir)/'`org/w3c/dom/xbl2/XBLImplementationList.cpp
+
+XBLImplementationList.obj: org/w3c/dom/xbl2/XBLImplementationList.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XBLImplementationList.obj -MD -MP -MF $(DEPDIR)/XBLImplementationList.Tpo -c -o XBLImplementationList.obj `if test -f 'org/w3c/dom/xbl2/XBLImplementationList.cpp'; then $(CYGPATH_W) 'org/w3c/dom/xbl2/XBLImplementationList.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/xbl2/XBLImplementationList.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/XBLImplementationList.Tpo $(DEPDIR)/XBLImplementationList.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/xbl2/XBLImplementationList.cpp' object='XBLImplementationList.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XBLImplementationList.obj `if test -f 'org/w3c/dom/xbl2/XBLImplementationList.cpp'; then $(CYGPATH_W) 'org/w3c/dom/xbl2/XBLImplementationList.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/xbl2/XBLImplementationList.cpp'; fi`
 
 CSSPropertyNames.o: css/CSSPropertyNames.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT CSSPropertyNames.o -MD -MP -MF $(DEPDIR)/CSSPropertyNames.Tpo -c -o CSSPropertyNames.o `test -f 'css/CSSPropertyNames.cpp' || echo '$(srcdir)/'`css/CSSPropertyNames.cpp

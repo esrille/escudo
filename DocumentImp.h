@@ -346,6 +346,9 @@ public:
     // DocumentTraversal
     traversal::NodeIterator createNodeIterator(Node root, unsigned int whatToShow, traversal::NodeFilter filter, bool entityReferenceExpansion) throw(DOMException);
     traversal::TreeWalker createTreeWalker(Node root, unsigned int whatToShow, traversal::NodeFilter filter, bool entityReferenceExpansion) throw(DOMException);
+    // DocumentXBL
+    html::HTMLCollection getBindingDocuments();
+    Document loadBindingDocument(std::u16string documentURI);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

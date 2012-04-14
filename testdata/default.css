@@ -95,6 +95,9 @@ li::marker {
 	/* 'position' implied by list-style-position */
 }
 
+/* XBL 2.0 */
+binding, implementation, template, content, inherited { display: none; }
+
 /* Bindings */
 button { binding: button; }
 details { binding: details; }

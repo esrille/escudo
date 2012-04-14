@@ -143,6 +143,7 @@
 #include "html/HTMLBRElementImp.h"
 #include "html/HTMLBaseElementImp.h"
 #include "html/HTMLBaseFontElementImp.h"
+#include "html/HTMLBindingElementImp.h"
 #include "html/HTMLBodyElementImp.h"
 #include "html/HTMLButtonElementImp.h"
 #include "html/HTMLCanvasElementImp.h"
@@ -206,6 +207,7 @@
 #include "html/HTMLTableHeaderCellElementImp.h"
 #include "html/HTMLTableRowElementImp.h"
 #include "html/HTMLTableSectionElementImp.h"
+#include "html/HTMLTemplateElementImp.h"
 #include "html/HTMLTextAreaElementImp.h"
 #include "html/HTMLTimeElementImp.h"
 #include "html/HTMLTitleElementImp.h"
@@ -351,6 +353,7 @@ void registerClasses(v8::Handle<v8::ObjectTemplate> global)
     HTMLBRElementImp::setStaticPrivate(new NativeClass(global, HTMLBRElementImp::getMetaData()));
     HTMLBaseElementImp::setStaticPrivate(new NativeClass(global, HTMLBaseElementImp::getMetaData()));
     HTMLBaseFontElementImp::setStaticPrivate(new NativeClass(global, HTMLBaseFontElementImp::getMetaData()));
+    HTMLBindingElementImp::setStaticPrivate(new NativeClass(global, HTMLBindingElementImp::getMetaData()));
     HTMLBodyElementImp::setStaticPrivate(new NativeClass(global, HTMLBodyElementImp::getMetaData()));
     HTMLButtonElementImp::setStaticPrivate(new NativeClass(global, HTMLButtonElementImp::getMetaData()));
     HTMLCanvasElementImp::setStaticPrivate(new NativeClass(global, HTMLCanvasElementImp::getMetaData()));
@@ -408,6 +411,7 @@ void registerClasses(v8::Handle<v8::ObjectTemplate> global)
     HTMLTableHeaderCellElementImp::setStaticPrivate(new NativeClass(global, HTMLTableHeaderCellElementImp::getMetaData()));
     HTMLTableRowElementImp::setStaticPrivate(new NativeClass(global, HTMLTableRowElementImp::getMetaData()));
     HTMLTableSectionElementImp::setStaticPrivate(new NativeClass(global, HTMLTableSectionElementImp::getMetaData()));
+    HTMLTemplateElementImp::setStaticPrivate(new NativeClass(global, HTMLTemplateElementImp::getMetaData()));
     HTMLTextAreaElementImp::setStaticPrivate(new NativeClass(global, HTMLTextAreaElementImp::getMetaData()));
     HTMLTimeElementImp::setStaticPrivate(new NativeClass(global, HTMLTimeElementImp::getMetaData()));
     HTMLTitleElementImp::setStaticPrivate(new NativeClass(global, HTMLTitleElementImp::getMetaData()));

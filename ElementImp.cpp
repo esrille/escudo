@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -429,6 +429,28 @@ NodeList ElementImp::querySelectorAll(std::u16string selectors)
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
+}
+
+xbl2::XBLImplementationList ElementImp::getXblImplementations()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void ElementImp::addBinding(std::u16string bindingURI)
+{
+    // TODO: implement me!
+}
+
+void ElementImp::removeBinding(std::u16string bindingURI)
+{
+    // TODO: implement me!
+}
+
+bool ElementImp::hasBinding(std::u16string bindingURI)
+{
+    // TODO: implement me!
+    return false;
 }
 
 ElementImp::ElementImp(ElementImp* org, bool deep) :
