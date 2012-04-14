@@ -2426,6 +2426,7 @@ public:
 
 class CSSBindingValueImp : public CSSPropertyValueImp
 {
+    std::u16string uri;
     unsigned value;
 public:
     enum {
@@ -2454,21 +2455,38 @@ public:
         Textarea,
         Keygen,
         Time,  // inline?
+        Uri,
     };
     CSSBindingValueImp& setValue(unsigned value = None) {
+        assert(value != Uri);
+        uri.clear();
         this->value = value;
         return *this;
     }
+    CSSBindingValueImp& setURL(const std::u16string uri) {
+        value = Uri;
+        this->uri = uri;
+        return *this;
+    }
     CSSBindingValueImp& setValue(CSSParserTerm* term) {
-        return setValue(term->getIndex());
+        if (0 <= term->getIndex())
+            return setValue(term->getIndex());
+        else
+            return setURL(term->getString());
     }
     unsigned getValue() const {
         return value;
     }
+    const std::u16string& getURL() const {
+        return uri;
+    }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
+        if (value == Uri)
+            return u"url(" + CSSSerializeString(uri) + u')';
         return Options[value];
     }
     void specify(const CSSBindingValueImp& specified) {
+        uri = specified.uri;
         value = specified.value;
     }
     CSSBindingValueImp(unsigned initial = None) :

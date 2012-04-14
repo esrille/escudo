@@ -580,7 +580,8 @@ void CSSValueParser::initializeRules()
         | integer;
 
     binding
-        = CSSValueRule(u"none", CSSBindingValueImp::None)
+        = uri
+        | CSSValueRule(u"none", CSSBindingValueImp::None)
         | CSSValueRule(u"button", CSSBindingValueImp::Button)
         | CSSValueRule(u"details", CSSBindingValueImp::Details)
         | CSSValueRule(u"input-textfield", CSSBindingValueImp::InputTextfield)
