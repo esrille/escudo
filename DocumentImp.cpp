@@ -424,6 +424,8 @@ Element DocumentImp::createElement(std::u16string localName)
         return new(std::nothrow) HTMLBindingElementImp(this);
     if (localName == u"template")
         return new(std::nothrow) HTMLTemplateElementImp(this);
+    if (localName == u"implementation")
+        return new(std::nothrow) HTMLScriptElementImp(this, localName);
 
     // Deprecated elements
     if (localName == u"center")   // shorthand for DIV align=center

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -361,6 +361,19 @@ class HTMLParser
         virtual bool processEndTag(HTMLParser* parser, Token& token);
     };
 
+    class InBinding: public InsertionMode
+    {
+        void closeBinding(HTMLParser* parser);
+        bool anythingElse(HTMLParser* parser, Token& token);
+    public:
+        virtual bool processEOF(HTMLParser* parser, Token& token);
+        virtual bool processComment(HTMLParser* parser, Token& token);
+        virtual bool processDoctype(HTMLParser* parser, Token& token);
+        virtual bool processCharacter(HTMLParser* parser, Token& token);
+        virtual bool processStartTag(HTMLParser* parser, Token& token);
+        virtual bool processEndTag(HTMLParser* parser, Token& token);
+    };
+
     static Initial initial;
     static BeforeHtml beforeHtml;
     static BeforeHead beforeHead;
@@ -384,6 +397,8 @@ class HTMLParser
     static AfterFrameset afterFrameset;
     static AfterAfterBody afterAfterBody;
     static AfterAfterFrameset afterAfterFrameset;
+
+    static InBinding inBinding;
 
     Document document;
     HTMLTokenizer* tokenizer;
@@ -476,12 +491,14 @@ class HTMLParser
     bool framesetOkFlag;
     bool insertFromTable;
 
-    bool innerHTML;  // true if this parser was originally created as part of the HTML fragment parsing algorithm
+    bool innerHTML;   // true if this parser was originally created as part of the HTML fragment parsing algorithm
+
+    bool enableXBL;   // true if parse elements defined in XBL 2.0.
 
     bool stopParsing();
 
 public:
-    HTMLParser(Document document, HTMLTokenizer* tokenizer);
+    HTMLParser(Document document, HTMLTokenizer* tokenizer, bool enableXBL = true);
     bool mainLoop();
 };
 

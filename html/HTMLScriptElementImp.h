@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ class HTMLScriptElementImp : public ObjectMixin<HTMLScriptElementImp, HTMLElemen
     HttpRequest* request;
 
 public:
-    HTMLScriptElementImp(DocumentImp* ownerDocument);
+    HTMLScriptElementImp(DocumentImp* ownerDocument, const std::u16string& localName = u"script");
     HTMLScriptElementImp(HTMLScriptElementImp* org, bool deep);
 
     bool execute();

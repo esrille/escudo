@@ -32,8 +32,8 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
-HTMLScriptElementImp::HTMLScriptElementImp(DocumentImp* ownerDocument) :
-    ObjectMixin(ownerDocument, u"script"),
+HTMLScriptElementImp::HTMLScriptElementImp(DocumentImp* ownerDocument, const std::u16string& localName) :
+    ObjectMixin(ownerDocument, localName),
     alreadyStarted(false),
     parserInserted(false),
     wasParserInserted(false),

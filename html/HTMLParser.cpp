@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,20 +96,21 @@ inline bool isOneOf(const char16_t* t, const char16_t** const list, size_t size)
 
 const char16_t* specialElements[] = {
     u"address", u"applet", u"area", u"article", u"aside",
-    u"base", u"basefont", u"bgsound", u"blockquote", u"body", u"br", u"button",
+    u"base", u"basefont", u"bgsound", u"binding", u"blockquote", u"body", u"br", u"button",
     u"caption", u"center", u"col", u"colgroup", u"command",
     u"dd", u"details", u"dir", u"div", u"dl", u"dt",
     u"embed",
     u"fieldset", u"figcaption", u"figure", u"footer", u"form", u"frame", u"frameset",
     u"h1", u"h2", u"h3", u"h4", u"h5", u"h6", u"head", u"header", u"hgroup", u"hr", u"html",
-    u"iframe", u"img", u"input", u"isindex",
+    u"iframe", u"img", u"implementation",
+    u"input", u"isindex",
     u"li", u"link", u"listing",
     u"marquee", u"menu", u"meta",
     u"nav", u"noembed", u"noframes", u"noscript",
     u"object", u"ol",
     u"p", u"param", u"plaintext", u"pre",
     u"script", u"section", u"select", u"style", u"summary",
-    u"table", u"tbody", u"td", u"textarea", u"tfoot", u"th", u"thead", u"title", u"tr",
+    u"table", u"tbody", u"td", u"template", u"textarea", u"tfoot", u"th", u"thead", u"title", u"tr",
     u"ul",
     u"wbr",
     u"xmp",
@@ -190,6 +191,7 @@ HTMLParser::InFrameset HTMLParser::inFrameset;
 HTMLParser::AfterFrameset HTMLParser::afterFrameset;
 HTMLParser::AfterAfterBody HTMLParser::afterAfterBody;
 HTMLParser::AfterAfterFrameset HTMLParser::afterAfterFrameset;
+HTMLParser::InBinding HTMLParser::inBinding;
 
 Element HTMLParser::currentTable()
 {
@@ -379,6 +381,13 @@ void HTMLParser::resetInsertionMode()
         if (last) {
             setInsertionMode(&inBody);
             break;
+        }
+
+        if (enableXBL) {
+            if (node.getLocalName() == u"binding") {
+                setInsertionMode(&inBinding);
+                break;
+            }
         }
     }
 }
@@ -868,7 +877,7 @@ bool HTMLParser::InHead::processStartTag(HTMLParser* parser, Token& token)
         parser->setInsertionMode(&parser->inHeadNoscript);
         return true;
     }
-    if (token.getName() == u"script") {
+    if (isOneOf(token.getName(), { u"implementation", u"script" })) {
         parser->insertHtmlElement(token);
         parser->tokenizer->setState(&HTMLTokenizer::scriptDataState);
         parser->originalInsertionMode = parser->insertionMode;
@@ -880,6 +889,15 @@ bool HTMLParser::InHead::processStartTag(HTMLParser* parser, Token& token)
         parser->parseError("two-heads-are-not-better-than-one");
         return false;
     }
+
+    if (parser->enableXBL) {
+        if (token.getName() == u"binding") {
+            parser->insertHtmlElement(token);
+            parser->setInsertionMode(&parser->inBinding);
+            return true;
+        }
+    }
+
     return anythingElse(parser, token);
 }
 
@@ -937,7 +955,7 @@ bool HTMLParser::InHeadNoscript::processStartTag(HTMLParser* parser, Token& toke
 {
     if (token.getName() == u"html")
         return parser->inBody.processStartTag(parser, token);
-    if (isOneOf(token.getName(), { u"basefont", u"bgsound", u"link",  u"meta", u"noframes", u"style" }))
+    if (isOneOf(token.getName(), { u"basefont", u"bgsound", u"binding", u"link",  u"meta", u"noframes", u"style" }))
         return parser->inHead.processStartTag(parser, token);
     if (token.getName() == u"head" || token.getName() == u"noscript") {
         parser->parseError("unexpected-start-tag");
@@ -1018,7 +1036,7 @@ bool HTMLParser::AfterHead::processStartTag(HTMLParser* parser, Token& token)
         parser->setInsertionMode(&parser->inFrameset);
         return true;
     }
-    if (isOneOf(token.getName(), { u"base", u"basefont", u"bgsound", u"link",  u"meta", u"noframes", u"script", u"style", u"title" })) {
+    if (isOneOf(token.getName(), { u"base", u"basefont", u"bgsound", u"binding", u"link",  u"meta", u"noframes", u"script", u"style", u"title" })) {
         assert(parser->headElement);
         parser->parseError("unexpected-start-tag");
         parser->pushElement(parser->headElement);
@@ -1094,7 +1112,7 @@ bool HTMLParser::InBody::processStartTag(HTMLParser* parser, Token& token)
         // TODO: add the attribute
         return true;
     }
-    if (isOneOf(token.getName(), { u"base", u"basefont", u"bgsound", u"command", u"link", u"meta", u"noframes", u"script", u"style", u"title" }))
+    if (isOneOf(token.getName(), { u"base", u"basefont", u"bgsound", u"binding", u"command", u"link", u"meta", u"noframes", u"script", u"style", u"title" }))
         return parser->inHead.processStartTag(parser, token);
     if (token.getName() == u"body") {
         parser->parseError("unexpected-start-tag");
@@ -1643,7 +1661,7 @@ bool HTMLParser::InBody::processAnyOtherEndTag(HTMLParser* parser, Token& token)
 bool HTMLParser::Text::processEOF(HTMLParser* parser, Token& token)
 {
     parser->parseError();
-    if (parser->currentNode().getLocalName() == u"script") {
+    if (isOneOf(parser->currentNode().getLocalName(), { u"implementation", u"script" })) {
         // TODO: mark the script element as "already started".
     }
     parser->popElement();
@@ -1674,7 +1692,7 @@ bool HTMLParser::Text::processStartTag(HTMLParser* parser, Token& token)
 
 bool HTMLParser::Text::processEndTag(HTMLParser* parser, Token& token)
 {
-    if (token.getName() == u"script") {
+    if (isOneOf(token.getName(), { u"implementation", u"script" })) {
         Element script = parser->currentNode();
         parser->popElement();
         parser->setInsertionMode(parser->originalInsertionMode);
@@ -2359,7 +2377,7 @@ bool HTMLParser::InSelect::processStartTag(HTMLParser* parser, Token& token)
         processEndTag(parser, endTagSelect);
         return parser->processToken(token);
     }
-    if (token.getName() == u"script")
+    if (isOneOf(token.getName(), { u"script" }))
         return parser->inHead.processStartTag(parser, token);
     return anythingElse(parser, token);
 }
@@ -2768,7 +2786,63 @@ bool HTMLParser::AfterAfterFrameset::processEndTag(HTMLParser* parser, Token& to
     return anythingElse(parser, token);
 }
 
-HTMLParser::HTMLParser(Document document, HTMLTokenizer* tokenizer) :
+//
+// HTMLParser::InBinding
+//
+
+bool HTMLParser::InBinding::anythingElse(HTMLParser* parser, Token& token)
+{
+    return parser->inBody.processToken(parser, token);
+}
+
+bool HTMLParser::InBinding::processEOF(HTMLParser* parser, Token& token)
+{
+    return anythingElse(parser, token);
+}
+
+bool HTMLParser::InBinding::processComment(HTMLParser* parser, Token& token)
+{
+    return anythingElse(parser, token);
+}
+
+bool HTMLParser::InBinding::processDoctype(HTMLParser* parser, Token& token)
+{
+    return anythingElse(parser, token);
+}
+
+bool HTMLParser::InBinding::processCharacter(HTMLParser* parser, Token& token)
+{
+    return anythingElse(parser, token);
+}
+
+bool HTMLParser::InBinding::processStartTag(HTMLParser* parser, Token& token)
+{
+    return anythingElse(parser, token);
+}
+
+bool HTMLParser::InBinding::processEndTag(HTMLParser* parser, Token& token)
+{
+    static Token endTagBinding(Token::Type::EndTag, u"binding");
+
+    if (token.getName() == u"binding") {
+        if (!parser->elementInScope(token.getName())) {
+            parser->parseError();
+            return false;
+        }
+        while (parser->popElement().getLocalName() != u"binding")
+            ;
+        parser->setInsertionMode(&parser->inHead);
+        return true;
+    }
+    if (token.getName() == u"head") {
+        if (processEndTag(parser, endTagBinding))
+            return parser->processToken(token);
+        return false;
+    }
+    return anythingElse(parser, token);
+}
+
+HTMLParser::HTMLParser(Document document, HTMLTokenizer* tokenizer, bool enableXBL) :
     document(document),
     tokenizer(tokenizer),
     insertionMode(&initial),
@@ -2781,7 +2855,8 @@ HTMLParser::HTMLParser(Document document, HTMLTokenizer* tokenizer) :
     scriptingFlag(true),
     framesetOkFlag(false),
     insertFromTable(false),
-    innerHTML(false)
+    innerHTML(false),
+    enableXBL(enableXBL)
 {
 }
 
