@@ -771,13 +771,17 @@ void InlineLevelBox::resolveWidth()
     }
 }
 
-// To deal with nested inline level boxes in the document tree, resolveOffset
-// is repeatedly applied to this inline level box up to the block-level box.
+// To deal with nested inline elements in the document tree, resolveOffset
+// is repeatedly applied to this inline level box up to a non-inline element.
 void InlineLevelBox::resolveOffset(ViewCSSImp* view)
 {
+    if (!font) {
+        Box::resolveOffset(view);
+        return;
+    }
     CSSStyleDeclarationImp* s = getStyle();
     Element element = getContainingElement(node);
-    while (s && s->display.isInlineLevel()) {
+    while (s && s->display.isInline()) {
         Box::resolveOffset(s);
         element = element.getParentElement();
         if (!element)
