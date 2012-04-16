@@ -877,7 +877,7 @@ bool HTMLParser::InHead::processStartTag(HTMLParser* parser, Token& token)
         parser->setInsertionMode(&parser->inHeadNoscript);
         return true;
     }
-    if (isOneOf(token.getName(), { u"implementation", u"script" })) {
+    if (token.getName() == u"script") {
         parser->insertHtmlElement(token);
         parser->tokenizer->setState(&HTMLTokenizer::scriptDataState);
         parser->originalInsertionMode = parser->insertionMode;
@@ -2817,6 +2817,14 @@ bool HTMLParser::InBinding::processCharacter(HTMLParser* parser, Token& token)
 
 bool HTMLParser::InBinding::processStartTag(HTMLParser* parser, Token& token)
 {
+    if (token.getName() == u"implementation") {
+        parser->insertHtmlElement(token);
+        parser->tokenizer->setState(&HTMLTokenizer::scriptDataState);
+        parser->originalInsertionMode = parser->insertionMode;
+        parser->setInsertionMode(&text);
+        // TODO: misc.
+        return false;
+    }
     return anythingElse(parser, token);
 }
 
