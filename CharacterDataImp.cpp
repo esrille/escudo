@@ -19,6 +19,15 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
+void CharacterDataImp::dispatchMutationEvent(const std::u16string& prev)
+{
+    events::MutationEvent event = new(std::nothrow) MutationEventImp;
+    event.initMutationEvent(u"DOMCharacterDataModified",
+                            true, false, getParentNode(), prev, data, u"", 0);
+    dispatchEvent(event);
+}
+
+
 // Node
 Nullable<std::u16string> CharacterDataImp::getTextContent()
 {
@@ -41,11 +50,7 @@ void CharacterDataImp::setData(std::u16string data)
 {
     std::u16string prev = this->data;
     this->data = data;
-
-    events::MutationEvent event = new(std::nothrow) MutationEventImp;
-    event.initMutationEvent(u"DOMCharacterDataModified",
-                            true, false, getParentNode(), prev, data, u"", 0);
-    dispatchEvent(event);
+    dispatchMutationEvent(prev);
 }
 
 unsigned int CharacterDataImp::getLength()
@@ -60,22 +65,30 @@ std::u16string CharacterDataImp::substringData(unsigned int offset, unsigned int
 
 void CharacterDataImp::appendData(std::u16string arg)
 {
+    std::u16string prev = this->data;
     data += arg;
+    dispatchMutationEvent(prev);
 }
 
 void CharacterDataImp::insertData(unsigned int offset, std::u16string arg)
 {
+    std::u16string prev = this->data;
     data.insert(offset, arg);
+    dispatchMutationEvent(prev);
 }
 
 void CharacterDataImp::deleteData(unsigned int offset, unsigned int count)
 {
+    std::u16string prev = this->data;
     data.erase(offset, count);
+    dispatchMutationEvent(prev);
 }
 
 void CharacterDataImp::replaceData(unsigned int offset, unsigned int count, std::u16string arg)
 {
+    std::u16string prev = this->data;
     data.replace(offset, count, arg);
+    dispatchMutationEvent(prev);
 }
 
 }}}}  // org::w3c::dom::bootstrap

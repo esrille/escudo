@@ -28,6 +28,8 @@ class CharacterDataImp : public ObjectMixin<CharacterDataImp, NodeImp>
 {
     std::u16string data;
 
+    void dispatchMutationEvent(const std::u16string& prev);
+
 public:
     CharacterDataImp(DocumentImp* ownerDocument, const std::u16string& data) :
         ObjectMixin(ownerDocument),
