@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "esjsapi.h"
+#include "Script.h"
 
 #include <assert.h>
 
@@ -648,34 +648,46 @@ Any ProxyObject::message_(uint32_t selector, const char* id, int argc, Any* argv
     return Any();
 }
 
-Any callFunction(JSContext* context, Object thisObject, Object functionObject, int argc, Any* argv)
+Any ECMAScriptContext::Impl::evaluate(const std::u16string& script)
+{
+    jsval rval;
+    const char* filename = "";
+    int lineno = 0;
+    JS_EvaluateUCScript(getContext(), JS_GetGlobalObject(getContext()),
+                        reinterpret_cast<const jschar*>(script.c_str()), script.length(),
+                        filename, lineno, &rval);
+    return convert(getContext(), rval);
+}
+
+Object* ECMAScriptContext::Impl::compileFunction(const std::u16string& body)
+{
+    static const char* argname = "event";
+    JSFunction* fun = JS_CompileUCFunction(getContext(), 0, 0, 1, &argname, reinterpret_cast<const jschar*>(body.c_str()), body.length(), 0, 0);
+    if (!fun)
+        return 0;
+    return convert(getContext(), JS_GetFunctionObject(fun));
+}
+
+Any ECMAScriptContext::Impl::callFunction(Object thisObject, Object functionObject, int argc, Any* argv)
 {
     assert(0 <= argc);
     if (!thisObject || !functionObject)
         return Any();
-    JSObject* funcObj = convert(context, functionObject.self());
+    JSObject* funcObj = convert(getContext(), functionObject.self());
     jsval oval = OBJECT_TO_JSVAL(funcObj);
     jsval fval;
-    if (!JS_ConvertValue(context, oval, JSTYPE_FUNCTION, &fval))
+    if (!JS_ConvertValue(getContext(), oval, JSTYPE_FUNCTION, &fval))
         return Any();
 
-    JSObject* thisObj = convert(context, thisObject.self());
+    JSObject* thisObj = convert(getContext(), thisObject.self());
 
     jsval arguments[0 < argc ? argc : 1];
     for (int i = 0; i < argc; ++i)
-        arguments[i] = convert(context, argv[i]);
+        arguments[i] = convert(getContext(), argv[i]);
 
     jsval result;
-    if (!JS_CallFunctionValue(context, thisObj, fval, argc, arguments, &result))
+    if (!JS_CallFunctionValue(getContext(), thisObj, fval, argc, arguments, &result))
         return Any();
-    return convert(context, result);
+    return convert(getContext(), result);
 }
 
-Object* compileFunction(JSContext* context, const std::u16string& body)
-{
-    static const char* argname = "event";
-    JSFunction* fun = JS_CompileUCFunction(context, 0, 0, 1, &argname, reinterpret_cast<const jschar*>(body.c_str()), body.length(), 0, 0);
-    if (!fun)
-        return 0;
-    return convert(context, JS_GetFunctionObject(fun));
-}

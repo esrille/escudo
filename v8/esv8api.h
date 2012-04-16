@@ -79,9 +79,4 @@ public:
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv);
 };
 
-Object* compileFunction(v8::Handle<v8::Context> context, const std::u16string& body);
-
-Any callFunction(Object thisObject, Object functionObject, int argc, Any* argv);
-Any callFunction(v8::Handle<v8::Object> thisObject, v8::Handle<v8::Function> functionObject, int argc, Any* argv);
-
 #endif  // ESV8API_H_INCLUDED

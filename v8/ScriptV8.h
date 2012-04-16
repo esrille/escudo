@@ -18,5 +18,23 @@
 #define SCRIPTV8_H
 
 #include "ECMAScript.h"
+#include "esv8api.h"
+
+class ECMAScriptContext::Impl
+{
+    v8::Persistent<v8::Context> context;
+
+    static v8::Persistent<v8::ObjectTemplate> getGlobalTemplate();
+
+public:
+    Impl();
+    ~Impl();
+    void activate(ObjectImp* window);
+
+    Object* compileFunction(const std::u16string& body);
+    Object* xblCreateImplementation(Object object, Object prototype, Object boundElement, Object shadowTree);
+
+    static void shutDown();
+};
 
 #endif  // SCRIPTV8_H

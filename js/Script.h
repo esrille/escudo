@@ -19,4 +19,45 @@
 
 #include "ECMAScript.h"
 
+#include "esjsapi.h"
+
+class ECMAScriptContext::Impl
+{
+    JSObject* global;
+
+    static JSRuntime* getRuntime() {
+        static JSRuntime* runtime = 0;
+        if (runtime)
+            return runtime;
+        runtime = JS_NewRuntime(8L * 1024L * 1024L);
+        return runtime;
+    }
+
+    static JSContext* getContext();
+
+public:
+    Impl();
+    ~Impl();
+
+    void activate(ObjectImp* window)
+    {
+        JS_SetGlobalObject(getContext(), global);
+        JS_SetPrivate(getContext(), global, window);
+        window->setPrivate(global);
+    }
+
+    Any evaluate(const std::u16string& script);
+    Object* compileFunction(const std::u16string& body);
+    Any callFunction(Object thisObject, Object functionObject, int argc, Any* argv);
+
+    static void shutDown()
+    {
+        if (JSContext* context = getContext())
+            JS_DestroyContext(context);
+        if (JSRuntime* runtime = getRuntime())
+            JS_DestroyRuntime(runtime);
+        JS_ShutDown();
+    }
+};
+
 #endif  // SCRIPT_H

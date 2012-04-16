@@ -17,8 +17,9 @@
 #include "esv8api.h"
 
 #include <assert.h>
-
 #include <iostream>
+
+#include "ScriptV8.h"
 
 std::map<std::string, v8::Persistent<v8::FunctionTemplate>> NativeClass::interfaceMap;
 std::map<ObjectImp*, v8::Persistent<v8::Object>> NativeClass::wrapperMap;
@@ -332,6 +333,15 @@ void setter(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8
     imp->message_(hash, 0, Object::SETTER_, &argument);
 }
 
+Any call(v8::Handle<v8::Object> self, v8::Handle<v8::Function> func, int argc, Any* argv)
+{
+    assert(0 <= argc);
+    v8::Handle<v8::Value> arguments[0 < argc ? argc : 1];
+    for (int i = 0; i < argc; ++i)
+        arguments[i] = convert(argv[i]);
+    return convert(func->Call(self, argc, arguments));
+}
+
 }   // namespace
 
 v8::Handle<v8::Object> NativeClass::createJSObject(ObjectImp* imp)
@@ -503,7 +513,7 @@ Any ProxyObject::message_(uint32_t selector, const char* id, int argc, Any* argv
     case STRINGIFY_: {
         auto functionObject = v8::Local<v8::Function>::Cast(jsobject->Get(v8::String::New("toString")));
         if (!functionObject.IsEmpty()) {
-            Any result = callFunction(jsobject, functionObject, 0, 0);
+            Any result = call(jsobject, functionObject, 0, 0);
             return convert(result);
         }
         }
@@ -518,7 +528,7 @@ Any ProxyObject::message_(uint32_t selector, const char* id, int argc, Any* argv
         }
         auto functionObject = v8::Local<v8::Function>::Cast(jsobject->Get(v8::String::New(id)));
         if (!functionObject.IsEmpty()) {
-            Any result = callFunction(jsobject, functionObject, argc, argv);
+            Any result = call(jsobject, functionObject, argc, argv);
             return convert(result);
         }
         }
@@ -527,30 +537,44 @@ Any ProxyObject::message_(uint32_t selector, const char* id, int argc, Any* argv
     return Any();
 }
 
-Any callFunction(Object thisObject, Object functionObject, int argc, Any* argv)
+Any ECMAScriptContext::callFunction(Object thisObject, Object functionObject, int argc, Any* argv)
 {
     assert(0 <= argc);
     if (!thisObject || !functionObject)
         return Any();
     v8::Handle<v8::Object> self = convertObject(thisObject.self());
     v8::Handle<v8::Function> func = v8::Handle<v8::Function>::Cast(convertObject(functionObject.self()));
-    return callFunction(self, func, argc, argv);
+    return call(self, func, argc, argv);
 }
 
-Any callFunction(v8::Handle<v8::Object> self, v8::Handle<v8::Function> func, int argc, Any* argv)
+Any ECMAScriptContext::evaluate(const std::u16string& source)
 {
-    assert(0 <= argc);
-    v8::Handle<v8::Value> arguments[0 < argc ? argc : 1];
-    for (int i = 0; i < argc; ++i)
-        arguments[i] = convert(argv[i]);
-    return convert(func->Call(self, argc, arguments));
+    v8::HandleScope handleScope;
+
+    v8::Handle<v8::String> string = v8::String::New(reinterpret_cast<const uint16_t*>(source.c_str()), source.length());
+    v8::Handle<v8::Script> script = v8::Script::Compile(string);
+    return convert(script->Run());
 }
 
-Object* compileFunction(v8::Handle<v8::Context> context, const std::u16string& body)
+Object* ECMAScriptContext::Impl::compileFunction(const std::u16string& body)
 {
     v8::HandleScope handleScope;
 
     v8::Handle<v8::Value> source = v8::String::New(reinterpret_cast<const uint16_t*>(body.c_str()), body.length());
     v8::Handle<v8::Function> function = v8::Handle<v8::Function>::Cast(context->Global()->Get(v8::String::New("Function")));
     return convertObject(function->NewInstance(1, &source));
+}
+
+Object* ECMAScriptContext::Impl::xblCreateImplementation(Object object, Object prototype, Object boundElement, Object shadowTree)
+{
+    v8::Handle<v8::Object> imp = convertObject(object.self());
+    if (prototype) {
+        v8::Handle<v8::Object> p = convertObject(prototype.self());
+        p->SetPrototype(imp->GetPrototype());
+        imp->SetPrototype(p);
+    }
+    // TODO: Create an external object.
+    imp->Set(v8::String::New("boundElement"), convertObject(boundElement.self()));
+    imp->Set(v8::String::New("shadowTree"), convertObject(shadowTree.self()));
+    return new(std::nothrow) ProxyObject(imp);
 }

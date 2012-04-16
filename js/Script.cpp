@@ -20,8 +20,6 @@
 
 #include <iostream>
 
-#include "esjsapi.h"
-
 #include "ApplicationCacheImp.h"
 #include "AttrImp.h"
 #include "BarPropImp.h"
@@ -501,106 +499,57 @@ void registerClasses(JSContext* cx, JSObject* global)
 
 }  // namespace
 
-class ECMAScriptContext::Impl
+ECMAScriptContext::Impl::Impl() :
+    global(0)
 {
-    JSObject* global;
+    JSContext* context = getContext();
+    if (!context)
+        return;
+    global = JS_NewCompartmentAndGlobalObject(context, &globalClass, NULL);
+    if (!global)
+        return;
+    if (!JS_InitStandardClasses(context, global))
+        return;
 
-    static JSRuntime* getRuntime() {
-        static JSRuntime* runtime = 0;
-        if (runtime)
-            return runtime;
-        runtime = JS_NewRuntime(8L * 1024L * 1024L);
-        return runtime;
-    }
+    registerClasses(context, global);
 
-    static JSContext* getContext() {
-        static JSContext* context = 0;
-        if (context)
-            return context;
-        context = JS_NewContext(getRuntime(), 8192);
-        if (!context)
-            return 0;
-        JS_SetOptions(context, JSOPTION_VAROBJFIX | JSOPTION_JIT | JSOPTION_METHODJIT);
-        JS_SetVersion(context, JSVERSION_LATEST);
-        JS_SetErrorReporter(context, reportError);
-        return context;
-    }
-
-public:
-    Impl() :
-        global(0)
-    {
-        JSContext* context = getContext();
-        if (!context)
-            return;
-        global = JS_NewCompartmentAndGlobalObject(context, &globalClass, NULL);
-        if (!global)
-            return;
-        if (!JS_InitStandardClasses(context, global))
-            return;
-
-        registerClasses(context, global);
-
-        Reflect::Interface globalMeta(html::Window::getMetaData());
-        std::string name = Reflect::getIdentifier(globalMeta.getName());
-        if (0 < name.length()) {
-            jsval val;
-            if (JS_GetProperty(context, global, name.c_str(), &val) && JSVAL_IS_OBJECT(val)) {
-                JSObject* parent = JSVAL_TO_OBJECT(val);
-                if (JS_GetProperty(context, parent, "prototype", &val) && JSVAL_IS_OBJECT(val)) {
-                    JSObject* proto = JSVAL_TO_OBJECT(val);
-                    JS_SetPrototype(context, global, proto);
-                }
+    Reflect::Interface globalMeta(html::Window::getMetaData());
+    std::string name = Reflect::getIdentifier(globalMeta.getName());
+    if (0 < name.length()) {
+        jsval val;
+        if (JS_GetProperty(context, global, name.c_str(), &val) && JSVAL_IS_OBJECT(val)) {
+            JSObject* parent = JSVAL_TO_OBJECT(val);
+            if (JS_GetProperty(context, parent, "prototype", &val) && JSVAL_IS_OBJECT(val)) {
+                JSObject* proto = JSVAL_TO_OBJECT(val);
+                JS_SetPrototype(context, global, proto);
             }
         }
-
-        JS_AddObjectRoot(context, &global);
     }
 
-    ~Impl()
-    {
-        if (global) {
-            JS_RemoveObjectRoot(getContext(), &global);
-            global = 0;
-        }
-    }
+    JS_AddObjectRoot(context, &global);
+}
 
-    void activate(ObjectImp* window)
-    {
-        JS_SetGlobalObject(getContext(), global);
-        JS_SetPrivate(getContext(), global, window);
-        window->setPrivate(global);
+ECMAScriptContext::Impl::~Impl()
+{
+    if (global) {
+        JS_RemoveObjectRoot(getContext(), &global);
+        global = 0;
     }
+}
 
-    void evaluate(const std::u16string& script)
-    {
-        jsval rval;
-        const char* filename = "";
-        int lineno = 0;
-        JS_EvaluateUCScript(getContext(), JS_GetGlobalObject(getContext()),
-                            reinterpret_cast<const jschar*>(script.c_str()), script.length(),
-                            filename, lineno, &rval);
-    }
-
-    Object* compileFunction(const std::u16string& body)
-    {
-        return ::compileFunction(getContext(), body);
-    }
-
-    Any callFunction(Object thisObject, Object functionObject, int argc, Any* argv)
-    {
-        return ::callFunction(getContext(), thisObject, functionObject, argc, argv);
-    }
-
-    static void shutDown()
-    {
-        if (JSContext* context = getContext())
-            JS_DestroyContext(context);
-        if (JSRuntime* runtime = getRuntime())
-            JS_DestroyRuntime(runtime);
-        JS_ShutDown();
-    }
-};
+JSContext* ECMAScriptContext::Impl::getContext()
+{
+    static JSContext* context = 0;
+    if (context)
+        return context;
+    context = JS_NewContext(getRuntime(), 8192);
+    if (!context)
+        return 0;
+    JS_SetOptions(context, JSOPTION_VAROBJFIX | JSOPTION_JIT | JSOPTION_METHODJIT);
+    JS_SetVersion(context, JSVERSION_LATEST);
+    JS_SetErrorReporter(context, reportError);
+    return context;
+}
 
 ECMAScriptContext::ECMAScriptContext()
   : pimpl(new Impl())
@@ -616,9 +565,9 @@ void ECMAScriptContext::activate(ObjectImp* window)
     pimpl->activate(window);
 }
 
-void ECMAScriptContext::evaluate(const std::u16string& script)
+Any ECMAScriptContext::evaluate(const std::u16string& script)
 {
-    pimpl->evaluate(script);
+    return pimpl->evaluate(script);
 }
 
 Object* ECMAScriptContext::compileFunction(const std::u16string& body)
@@ -629,6 +578,11 @@ Object* ECMAScriptContext::compileFunction(const std::u16string& body)
 Any ECMAScriptContext::callFunction(Object thisObject, Object functionObject, int argc, Any* argv)
 {
     return pimpl->callFunction(thisObject, functionObject, argc, argv);
+}
+
+Object* ECMAScriptContext::xblCreateImplementation(Object object, Object prototype, Object boundElement, Object shadowTree)
+{
+    return 0;
 }
 
 void ECMAScriptContext::shutDown()

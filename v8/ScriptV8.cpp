@@ -18,8 +18,6 @@
 
 #include <iostream>
 
-#include "esv8api.h"
-
 #include "ApplicationCacheImp.h"
 #include "AttrImp.h"
 #include "BarPropImp.h"
@@ -487,77 +485,66 @@ void registerClasses(v8::Handle<v8::ObjectTemplate> global)
 
 }  // namespace
 
-class ECMAScriptContext::Impl
-{
-    v8::Persistent<v8::Context> context;
-
-    static v8::Persistent<v8::ObjectTemplate> getGlobalTemplate() {
-        static bool initilized = false;
-        static v8::Persistent<v8::ObjectTemplate> globalTemplate;
-        if (initilized)
-            return globalTemplate;
-        globalTemplate = v8::Persistent<v8::ObjectTemplate>::New(v8::ObjectTemplate::New());
-        registerClasses(globalTemplate);
-        globalTemplate->SetInternalFieldCount(1);
-        initilized = true;
+v8::Persistent<v8::ObjectTemplate> ECMAScriptContext::Impl::getGlobalTemplate() {
+    static bool initilized = false;
+    static v8::Persistent<v8::ObjectTemplate> globalTemplate;
+    if (initilized)
         return globalTemplate;
+    globalTemplate = v8::Persistent<v8::ObjectTemplate>::New(v8::ObjectTemplate::New());
+    registerClasses(globalTemplate);
+    globalTemplate->SetInternalFieldCount(1);
+    initilized = true;
+    return globalTemplate;
+}
+
+ECMAScriptContext::Impl::Impl()
+{
+    const char* extensionNames[] = {
+        "v8/gc",
+    };
+    v8::ExtensionConfiguration extensions(1, extensionNames);
+    context = v8::Context::New(&extensions, getGlobalTemplate());
+    context->Enter();
+    v8::Handle<v8::Object> globalProxy = context->Global();
+    v8::Handle<v8::Object> global = globalProxy->GetPrototype().As<v8::Object>();
+    assert(global->InternalFieldCount() == 1);
+    Reflect::Interface globalMeta(html::Window::getMetaData());
+    std::string name = Reflect::getIdentifier(globalMeta.getName());
+    if (0 < name.length()) {
+        auto window = v8::Local<v8::Function>::Cast(globalProxy->Get(v8::String::New(name.c_str(), name.length())));
+        v8::Local<v8::Value> prototype = window->Get(v8::String::New("prototype"));
+        global->SetPrototype(prototype);
     }
+}
 
-public:
-    Impl()
-    {
-        const char* extensionNames[] = {
-            "v8/gc",
-        };
-        v8::ExtensionConfiguration extensions(1, extensionNames);
-        context = v8::Context::New(&extensions, getGlobalTemplate());
-        context->Enter();
-        v8::Handle<v8::Object> globalProxy = context->Global();
-        v8::Handle<v8::Object> global = globalProxy->GetPrototype().As<v8::Object>();
-        assert(global->InternalFieldCount() == 1);
-        Reflect::Interface globalMeta(html::Window::getMetaData());
-        std::string name = Reflect::getIdentifier(globalMeta.getName());
-        if (0 < name.length()) {
-            auto window = v8::Local<v8::Function>::Cast(globalProxy->Get(v8::String::New(name.c_str(), name.length())));
-            v8::Local<v8::Value> prototype = window->Get(v8::String::New("prototype"));
-            global->SetPrototype(prototype);
-        }
-    }
+ECMAScriptContext::Impl::~Impl()
+{
+    v8::Local<v8::Context> current = v8::Context::GetCurrent();
+    if (current == context)
+        current->Exit();
+    context.Dispose();
+    context.Clear();
 
-    ~Impl()
-    {
-        v8::Local<v8::Context> current = v8::Context::GetCurrent();
-        if (current == context)
-            current->Exit();
-        context.Dispose();
-        context.Clear();
+}
 
-    }
+void ECMAScriptContext::Impl::activate(ObjectImp* window)
+{
+    v8::Local<v8::Context> current = v8::Context::GetCurrent();
+    if (current != context)
+        current->Exit();
+    context->Enter();
 
-    void activate(ObjectImp* window)
-    {
-        v8::Local<v8::Context> current = v8::Context::GetCurrent();
-        if (current != context)
-            current->Exit();
-        context->Enter();
+    v8::Handle<v8::Object> globalProxy = context->Global();
+    v8::Handle<v8::Object> global = globalProxy->GetPrototype().As<v8::Object>();
+    global->SetInternalField(0, v8::External::New(window));
+    window->setPrivate(*context->Global());
+}
 
-        v8::Handle<v8::Object> globalProxy = context->Global();
-        v8::Handle<v8::Object> global = globalProxy->GetPrototype().As<v8::Object>();
-        global->SetInternalField(0, v8::External::New(window));
-        window->setPrivate(*context->Global());
-    }
-
-    Object* compileFunction(const std::u16string& body)
-    {
-        return ::compileFunction(context, body);
-    }
-
-    static void shutDown()
-    {
-        getGlobalTemplate().Dispose();
-        getGlobalTemplate().Clear();
-    }
-};
+void ECMAScriptContext::Impl::shutDown()
+{
+    getGlobalTemplate().Dispose();
+    getGlobalTemplate().Clear();
+}
 
 ECMAScriptContext::ECMAScriptContext()
   : pimpl(new Impl())
@@ -573,23 +560,14 @@ void ECMAScriptContext::activate(ObjectImp* window)
     pimpl->activate(window);
 }
 
-void ECMAScriptContext::evaluate(const std::u16string& source)
-{
-    v8::HandleScope handleScope;
-
-    v8::Handle<v8::String> string = v8::String::New(reinterpret_cast<const uint16_t*>(source.c_str()), source.length());
-    v8::Handle<v8::Script> script = v8::Script::Compile(string);
-    v8::Handle<v8::Value> result = script->Run();
-}
-
 Object* ECMAScriptContext::compileFunction(const std::u16string& body)
 {
     return pimpl->compileFunction(body);
 }
 
-Any ECMAScriptContext::callFunction(Object thisObject, Object functionObject, int argc, Any* argv)
+Object* ECMAScriptContext::xblCreateImplementation(Object object, Object prototype, Object boundElement, Object shadowTree)
 {
-    return ::callFunction(thisObject, functionObject, argc, argv);
+    return pimpl->xblCreateImplementation(object, prototype, boundElement, shadowTree);
 }
 
 void ECMAScriptContext::shutDown()

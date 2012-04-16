@@ -40,7 +40,7 @@ public:
     ~ECMAScriptContext();
 
     void activate(ObjectImp* window);
-    void evaluate(const std::u16string& script);
+    Any evaluate(const std::u16string& script);
     Object* compileFunction(const std::u16string& body);
     Any callFunction(Object thisObject, Object functionObject, int argc, Any* argv);
 
@@ -58,6 +58,8 @@ public:
         } else if (!result.toBoolean())
             event.preventDefault();
     }
+
+    Object* xblCreateImplementation(Object object, Object prototype, Object boundElement, Object shadowTree);
 
     static void shutDown();
 };
