@@ -74,13 +74,13 @@ unsigned getCharKeyCode(int key)
 void keyboard(unsigned char key, int x, int y)
 {
     if (WindowImp* imp = static_cast<WindowImp*>(window.self()))
-        imp->keydown(key, getCharKeyCode(key), glutGetModifiers());
+        imp->keydown(isprint(key) ? key : 0, getCharKeyCode(key), glutGetModifiers());
 }
 
 void keyboardUp(unsigned char key, int x, int y)
 {
     if (WindowImp* imp = static_cast<WindowImp*>(window.self()))
-        imp->keyup(key, getCharKeyCode(key), glutGetModifiers());
+        imp->keyup(isprint(key) ? key : 0, getCharKeyCode(key), glutGetModifiers());
 }
 
 unsigned getSpecialKeyCode(int key)
