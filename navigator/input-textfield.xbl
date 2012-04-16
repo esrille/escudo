@@ -4,19 +4,26 @@
   ({
     xblEnteredDocument: function() {
         this.boundElement.tabIndex = 0;
-        var before = document.createTextNode('');
-        var after = document.createTextNode(this.boundElement.value);
+        this.boundElement.style.display = 'inline-block';
+        this.boundElement.style.whiteSpace = 'pre';
+        this.boundElement.style.backgroundColor = 'white';
+        this.boundElement.style.border = '2px inset';
+        this.boundElement.style.textAlign = 'left';
+        this.boundElement.style.padding = '1px';
+        this.boundElement.style.minHeight = '1em';
+        var before = document.createTextNode(this.boundElement.value);
+        var after = document.createTextNode('');
         this.shadowTree.firstChild.appendChild(before);
         this.shadowTree.lastChild.appendChild(after);
-        this.addEventListener('keypress', function(e) {
-            var c = e.charCode;
+        this.addEventListener('keypress', function(event) {
+            var c = event.charCode;
             if (c) {
                 before.appendData(String.fromCharCode(c));
-                this.boundElement.value = before.data + after.data;
+                event.currentTarget.value = before.data + after.data;
             }
         }, false);
-        this.addEventListener('keydown', function(e) {
-            switch (e.keyCode) {
+        this.addEventListener('keydown', function(event) {
+            switch (event.keyCode) {
             case 8:   // Backspace
                 if (0 < before.length)
                     before.deleteData(before.length - 1, 1);
@@ -48,9 +55,9 @@
                     after.deleteData(0, 1);
                 break;
             default:
-                break;
+                return;
             }
-            this.boundElement.value = before.data + after.data;
+            event.currentTarget.value = before.data + after.data;
         }, false);
     }
   })
