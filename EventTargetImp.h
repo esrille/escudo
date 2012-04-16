@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,11 +44,11 @@ class EventTargetImp : public ObjectMixin<EventTargetImp>
     };
     std::map<std::u16string, std::list<Listener>> map;
 
-    void invoke(EventImp* event);
-
 public:
     EventTargetImp();
     EventTargetImp(EventTargetImp* org);
+
+    virtual void invoke(EventImp* event);
 
     // EventTarget
     virtual void addEventListener(std::u16string type, events::EventListener listener, bool capture = false);

@@ -21,6 +21,7 @@
 #include <org/w3c/dom/events/MouseEvent.h>
 
 #include "DocumentImp.h"
+#include "EventImp.h"
 #include "ECMAScript.h"
 #include "css/Box.h"
 #include "css/CSSParser.h"
@@ -36,7 +37,9 @@ HTMLElementImp::HTMLElementImp(DocumentImp* ownerDocument, const std::u16string&
     scrollLeft(0),
     clickListener(boost::bind(&HTMLElementImp::handleClick, this, _1)),
     mouseMoveListener(boost::bind(&HTMLElementImp::handleMouseMove, this, _1)),
-    shadowTree(0)
+    shadowTree(0),
+    shadowTarget(0),
+    shadowImplementation(0)
 {
     addEventListener(u"click", &clickListener);
     addEventListener(u"mousemove", &mouseMoveListener);
@@ -49,7 +52,9 @@ HTMLElementImp::HTMLElementImp(HTMLElementImp* org, bool deep) :
     scrollLeft(0),
     clickListener(boost::bind(&HTMLElementImp::handleClick, this, _1)),
     mouseMoveListener(boost::bind(&HTMLElementImp::handleMouseMove, this, _1)),
-    shadowTree(0)       // TODO: clone
+    shadowTree(0),            // TODO: clone
+    shadowTarget(0),          // TODO: clone
+    shadowImplementation(0)   // TODO: clone
 {
     addEventListener(u"click", &clickListener);
     addEventListener(u"mousemove", &mouseMoveListener);
@@ -125,6 +130,8 @@ void HTMLElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
 {
     if (style->binding.getValue() != CSSBindingValueImp::Uri)
         return;
+    if (getShadowTree())  // already attached?
+        return;
     DocumentImp* document = getOwnerDocumentImp();
     assert(document);
     URL base(document->getDocumentURI());
@@ -142,8 +149,36 @@ void HTMLElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
         return;
     if (html::HTMLTemplateElement shadowTree = binding->cloneTemplate()) {
         setShadowTree(shadowTree);
-        // TODO: call the xblEnteredDocument() method.
+        shadowTarget = new(std::nothrow) EventTargetImp;
+        DocumentWindowPtr window = getOwnerDocumentImp()->activate();
+        ECMAScriptContext* context = window->getContext();
+        xbl2::XBLImplementation implementation = context->xblCreateImplementation(shadowTarget, binding->getImplementation(), this, shadowTree);
+        setShadowImplementation(implementation);
+        implementation.xblEnteredDocument();
     }
+}
+
+void HTMLElementImp::invoke(EventImp* event)
+{
+    if (!shadowTarget) {
+        EventTargetImp::invoke(event);
+        return;
+    }
+    event->setCurrentTarget(this);
+    switch (event->getEventPhase()) {
+    case events::Event::CAPTURING_PHASE:
+        EventTargetImp::invoke(event);
+        dynamic_cast<EventTargetImp*>(shadowTarget.self())->invoke(event);
+        break;
+    case events::Event::BUBBLING_PHASE:
+    case events::Event::AT_TARGET:
+        dynamic_cast<EventTargetImp*>(shadowTarget.self())->invoke(event);
+        EventTargetImp::invoke(event);
+        break;
+    default:
+        break;
+    }
+
 }
 
 // Node

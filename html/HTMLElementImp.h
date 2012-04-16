@@ -30,6 +30,7 @@
 #include <org/w3c/dom/html/HTMLMenuElement.h>
 #include <org/w3c/dom/html/Function.h>
 #include <org/w3c/dom/html/HTMLPropertiesCollection.h>
+#include <org/w3c/dom/xbl2/XBLImplementation.h>
 
 #include "ElementImp.h"
 #include "EventListenerImp.h"
@@ -51,6 +52,8 @@ class HTMLElementImp : public ObjectMixin<HTMLElementImp, ElementImp>
 
     // XBL 2.0
     html::HTMLTemplateElement shadowTree;
+    events::EventTarget shadowTarget;
+    xbl2::XBLImplementation shadowImplementation;
 
     void handleClick(events::Event event);
     void handleMouseMove(events::Event event);
@@ -64,12 +67,20 @@ public:
     Box* getBox();
 
     // XBL 2.0 internal
+    virtual void invoke(EventImp* event);
     void setShadowTree(html::HTMLTemplateElement& e) {
         shadowTree = e;
     }
     html::HTMLTemplateElement getShadowTree() {
         return shadowTree;
     }
+    void setShadowImplementation(xbl2::XBLImplementation& t) {
+        shadowImplementation = t;
+    }
+    xbl2::XBLImplementation getShadowImplementation() {
+        return shadowImplementation;
+    }
+
     virtual void generateShadowContent(CSSStyleDeclarationImp* style);
 
     // Node

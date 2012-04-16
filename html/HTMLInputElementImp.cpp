@@ -75,8 +75,6 @@ HTMLInputElementImp::HTMLInputElementImp(DocumentImp* ownerDocument) :
     cursor(0),
     checked(false)
 {
-    addEventListener(u"click", &clickListener);
-    addEventListener(u"keydown", &keydownListener);
 }
 
 HTMLInputElementImp::HTMLInputElementImp(HTMLInputElementImp* org, bool deep) :
@@ -88,8 +86,7 @@ HTMLInputElementImp::HTMLInputElementImp(HTMLInputElementImp* org, bool deep) :
     cursor(0),
     checked(org->checked)
 {
-    addEventListener(u"click", &clickListener);
-    addEventListener(u"keydown", &keydownListener);
+    // TODO: check event listeners.
 }
 
 void HTMLInputElementImp::eval()
@@ -176,6 +173,8 @@ void HTMLInputElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
             element.appendChild(text);
             style->setCssText(u"display: inline-block; white-space: pre; background-color: white; border: 2px inset; text-align: left; padding: 1px; min-height: 1em;");
             setShadowTree(element);
+            addEventListener(u"click", &clickListener);
+            addEventListener(u"keydown", &keydownListener);
         }
         break;
     }
@@ -186,6 +185,8 @@ void HTMLInputElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
             element.appendChild(text);
             style->setCssText(u"display: inline-block; border: 2px outset; padding: 1px; text-align: center; min-height: 1em;");
             setShadowTree(element);
+            addEventListener(u"click", &clickListener);
+            addEventListener(u"keydown", &keydownListener);
         }
         break;
     }
@@ -196,6 +197,8 @@ void HTMLInputElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
             element.appendChild(text);
             style->setCssText(u"display: inline-block; border-style: none; padding: 2px;");
             setShadowTree(element);
+            addEventListener(u"click", &clickListener);
+            addEventListener(u"keydown", &keydownListener);
         }
         break;
     }

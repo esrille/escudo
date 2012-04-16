@@ -32,7 +32,6 @@ void EventTargetImp::invoke(EventImp* event)
     if (found == map.end())
         return;
     std::list<Listener>& listeners = found->second;  // TODO listeners should be a static copy
-    event->setCurrentTarget(this);
     for (auto i = listeners.begin(); i != listeners.end(); ++i) {
         if (event->getStopImmediatePropagationFlag())
             return;
@@ -124,24 +123,29 @@ bool EventTargetImp::dispatchEvent(events::Event evt)
         for (auto i = eventPath.begin(); i != eventPath.end(); ++i) {
             if (event->getStopPropagationFlag())
                 break;
+            event->setCurrentTarget(*i);
             (*i)->invoke(event);
         }
 
         event->setEventPhase(events::Event::AT_TARGET);
-        if (!event->getStopPropagationFlag())
+        if (!event->getStopPropagationFlag()) {
+            event->setCurrentTarget(node);
             node->invoke(event);
+        }
 
         if (event->getBubbles()) {
             event->setEventPhase(events::Event::BUBBLING_PHASE);
             for (auto i = eventPath.rbegin(); i != eventPath.rend(); ++i) {
                 if (event->getStopPropagationFlag())
                     break;
+                event->setCurrentTarget(*i);
                 (*i)->invoke(event);
             }
         }
     } else if (DocumentWindow* window = dynamic_cast<DocumentWindow*>(this)) {
         window->activate();
         event->setEventPhase(events::Event::AT_TARGET);
+        event->setCurrentTarget(this);
         invoke(event);
     }
     event->setDispatchFlag(false);

@@ -48,7 +48,7 @@ html::HTMLTemplateElement HTMLBindingElementImp::getTemplate()
 
 void HTMLBindingElementImp::setImplementation(Object implementationPrototypeObject)
 {
-    // TODO: implement me!
+    implementation = implementationPrototypeObject;
 }
 
 void HTMLBindingElementImp::addToDocument()

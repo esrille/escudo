@@ -38,6 +38,7 @@ namespace bootstrap
 {
 class HTMLBindingElementImp : public ObjectMixin<HTMLBindingElementImp, HTMLElementImp>
 {
+    Object implementation;
 public:
     HTMLBindingElementImp(DocumentImp* ownerDocument) :
         ObjectMixin(ownerDocument, u"binding") {
@@ -47,6 +48,9 @@ public:
     }
 
     html::HTMLTemplateElement cloneTemplate();
+    Object getImplementation() {
+        return implementation;
+    }
 
     // Node
     virtual Node cloneNode(bool deep) {

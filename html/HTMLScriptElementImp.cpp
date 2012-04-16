@@ -30,6 +30,8 @@
 #include "DocumentWindow.h"
 #include "U16InputStream.h"
 
+#include "HTMLBindingElementImp.h"
+
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 HTMLScriptElementImp::HTMLScriptElementImp(DocumentImp* ownerDocument, const std::u16string& localName) :
@@ -128,7 +130,11 @@ bool HTMLScriptElementImp::execute()
     if (3 <= script.length() && script.compare(script.length() - 3, 3, u"-->") == 0)
         script.erase(script.length() - 3);
     DocumentWindowPtr window = getOwnerDocumentImp()->activate();
-    window->getContext()->evaluate(script);
+    Any result = window->getContext()->evaluate(script);
+    if (auto binding = dynamic_cast<HTMLBindingElementImp*>(getParentElement().self())) {
+        if (result.isObject() && !binding->getImplementation())
+            binding->setImplementation(result.toObject());
+    }
     return true;
 }
 
