@@ -691,3 +691,23 @@ Any ECMAScriptContext::Impl::callFunction(Object thisObject, Object functionObje
     return convert(getContext(), result);
 }
 
+Object* ECMAScriptContext::Impl::xblCreateImplementation(Object object, Object prototype, Object boundElement, Object shadowTree)
+{
+    JSObject* imp = convert(getContext(), object.self());
+
+    if (prototype) {
+        JSObject* p = convert(getContext(), prototype.self());
+        JS_SetPrototype(getContext(), p, JS_GetPrototype(getContext(), imp));
+        JS_SetPrototype(getContext(), imp, p);
+    }
+
+    // TODO: Create an external object.
+
+    jsval val;
+    val = OBJECT_TO_JSVAL(convert(getContext(), boundElement.self()));
+    JS_SetProperty(getContext(), imp, "boundElement", &val);
+    val = OBJECT_TO_JSVAL(convert(getContext(), shadowTree.self()));
+    JS_SetProperty(getContext(), imp, "shadowTree", &val);
+
+    return new(std::nothrow) ProxyObject(getContext(), imp);
+}

@@ -582,7 +582,7 @@ Any ECMAScriptContext::callFunction(Object thisObject, Object functionObject, in
 
 Object* ECMAScriptContext::xblCreateImplementation(Object object, Object prototype, Object boundElement, Object shadowTree)
 {
-    return 0;
+    return pimpl->xblCreateImplementation(object, prototype, boundElement, shadowTree);
 }
 
 void ECMAScriptContext::shutDown()

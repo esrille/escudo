@@ -49,6 +49,7 @@ public:
     Any evaluate(const std::u16string& script);
     Object* compileFunction(const std::u16string& body);
     Any callFunction(Object thisObject, Object functionObject, int argc, Any* argv);
+    Object* xblCreateImplementation(Object object, Object prototype, Object boundElement, Object shadowTree);
 
     static void shutDown()
     {
