@@ -150,7 +150,7 @@ void HTMLElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
     if (html::HTMLTemplateElement shadowTree = binding->cloneTemplate()) {
         setShadowTree(shadowTree);
         shadowTarget = new(std::nothrow) EventTargetImp;
-        DocumentWindowPtr window = getOwnerDocumentImp()->activate();
+        DocumentWindowPtr window = document->activate();
         ECMAScriptContext* context = window->getContext();
         xbl2::XBLImplementation implementation = context->xblCreateImplementation(shadowTarget, binding->getImplementation(), this, shadowTree);
         setShadowImplementation(implementation);
