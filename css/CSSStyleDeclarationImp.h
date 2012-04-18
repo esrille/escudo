@@ -225,7 +225,7 @@ private:
     static const char16_t* PropertyNames[PropertyCount];
 
     Object* owner;
-    css::CSSRule parentRule;
+    mutable css::CSSRule parentRule;
     std::bitset<PropertyCount> propertySet;
     std::bitset<PropertyCount> importantSet;
     std::bitset<PropertyCount> inheritSet;
@@ -480,6 +480,8 @@ public:
 
     void setProperty(int id, Nullable<std::u16string> value, const std::u16string& prio = u"");
     std::u16string removeProperty(int id);
+
+    std::u16string resolveRelativeURL(const std::u16string& url) const;
 
     // CSSStyleDeclaration
     virtual std::u16string getCssText();

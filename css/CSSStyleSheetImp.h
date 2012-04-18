@@ -36,9 +36,8 @@ class CSSStyleSheetImp : public ObjectMixin<CSSStyleSheetImp, StyleSheetImp>
 {
     Retained<CSSRuleListImp> ruleList;
 public:
-    void append(css::CSSRule rule, DocumentImp* document) {
-        ruleList.append(rule, document);
-    }
+
+    void append(css::CSSRule rule, DocumentImp* document);
 
     // StyleSheet
     virtual std::u16string getType();

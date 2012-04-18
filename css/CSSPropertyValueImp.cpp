@@ -2006,4 +2006,10 @@ float CSSVerticalAlignValueImp::getOffset(ViewCSSImp* view, CSSStyleDeclarationI
     }
 }
 
+void CSSBindingValueImp::specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl)
+{
+    value = decl->binding.value;
+    uri = decl->resolveRelativeURL(decl->binding.uri);
+}
+
 }}}}  // org::w3c::bootstrap

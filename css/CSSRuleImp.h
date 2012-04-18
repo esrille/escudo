@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,13 +26,22 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class CSSRuleImp : public ObjectMixin<CSSRuleImp>
 {
+    css::CSSStyleSheet parent;
+
 public:
+    CSSRuleImp() :
+        parent(0)
+    {
+    }
+
+    void setParentStyleSheet(css::CSSStyleSheet sheet);
+
     // CSSRule
     virtual unsigned short getType();
     virtual std::u16string getCssText();
     virtual void setCssText(std::u16string cssText);
     virtual css::CSSRule getParentRule();
-    virtual css::CSSStyleSheet getParentStyleSheet();
+    css::CSSStyleSheet getParentStyleSheet();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

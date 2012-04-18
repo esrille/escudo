@@ -27,14 +27,15 @@
 #include <org/w3c/dom/DocumentType.h>
 #include <org/w3c/dom/Text.h>
 
+#include "DOMImplementationImp.h"
+#include "NodeImp.h"
+#include "html/HTMLParser.h"
+#include "css/Box.h"
 #include "css/CSSInputStream.h"
 #include "css/CSSParser.h"
-#include "DOMImplementationImp.h"
-#include "html/HTMLParser.h"
-#include "NodeImp.h"
-
-#include "css/Box.h"
+#include "css/CSSStyleSheetImp.h"
 #include "font/FontManager.h"
+#include "utf.h"
 
 using namespace org::w3c::dom::bootstrap;
 using namespace org::w3c::dom;
@@ -121,6 +122,24 @@ css::CSSStyleSheet loadStyleSheet(std::istream& stream)
     CSSParser parser;
     CSSInputStream cssStream(stream, "utf-8");
     return parser.parse(0, cssStream);
+}
+
+css::CSSStyleSheet loadStyleSheet(const char* path)
+{
+    char url[PATH_MAX + 7];
+    strcpy(url, "file://");
+    realpath(path, url + 7);
+    std::ifstream stream(path);
+    if (!stream) {
+        std::cerr << "error: cannot open " << path << ".\n";
+        exit(EXIT_FAILURE);
+    }
+    CSSParser parser;
+    CSSInputStream cssStream(stream, "utf-8");
+    css::CSSStyleSheet sheet = parser.parse(0, cssStream);
+    if (auto imp = dynamic_cast<CSSStyleSheetImp*>(sheet.self()))
+        imp->setHref(toString(url));
+    return sheet;
 }
 
 void eval(Node node)

@@ -898,7 +898,7 @@ void CSSStyleDeclarationImp::specify(const CSSStyleDeclarationImp* decl, unsigne
         zIndex.specify(decl->zIndex);
         break;
     case Binding:
-        binding.specify(decl->binding);
+        binding.specify(this, decl);
         break;
     case HtmlAlign:
         htmlAlign.specify(decl->htmlAlign);
@@ -1673,6 +1673,16 @@ CSSStyleDeclarationImp* CSSStyleDeclarationImp::createPseudoElementStyle(int id)
             pseudoElements[id] = style;
     }
     return style;
+}
+
+std::u16string CSSStyleDeclarationImp::resolveRelativeURL(const std::u16string& url) const
+{
+    std::u16string href = parentRule.getParentStyleSheet().getHref();
+    if (href.empty())
+        return url;
+    URL base(href);
+    URL target(href, url);
+    return target;
 }
 
 //

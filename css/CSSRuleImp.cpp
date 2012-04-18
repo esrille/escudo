@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,11 @@
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 using namespace css;
+
+void CSSRuleImp::setParentStyleSheet(css::CSSStyleSheet sheet)
+{
+    parent = sheet;
+}
 
 // CSSRule
 unsigned short CSSRuleImp::getType()
@@ -45,8 +50,7 @@ css::CSSRule CSSRuleImp::getParentRule()
 
 css::CSSStyleSheet CSSRuleImp::getParentStyleSheet()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return parent;
 }
 
 }}}}  // org::w3c::dom::bootstrap

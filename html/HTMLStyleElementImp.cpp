@@ -17,6 +17,8 @@
 #include "HTMLStyleElementImp.h"
 
 #include "css/CSSParser.h"
+#include "css/CSSStyleSheetImp.h"
+
 #include "TextImp.h"
 #include "DocumentImp.h"
 #include "WindowImp.h"
@@ -37,7 +39,8 @@ void HTMLStyleElementImp::eval()
     if (DocumentImp* document = getOwnerDocumentImp()) {
         CSSParser parser;
         styleSheet = parser.parse(document, content);
-
+        if (auto imp = dynamic_cast<CSSStyleSheetImp*>(styleSheet.self()))
+            imp->setOwnerNode(this);
         if (3 <= getLogLevel())
             dumpStyleSheet(std::cerr, styleSheet.self());
 

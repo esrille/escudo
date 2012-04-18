@@ -15,9 +15,18 @@
  */
 
 #include "CSSStyleSheetImp.h"
+
+#include "CSSRuleImp.h"
 #include "ObjectArrayImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
+
+void CSSStyleSheetImp::append(css::CSSRule rule, DocumentImp* document) {
+    if (auto imp = dynamic_cast<CSSRuleImp*>(rule.self())) {
+        imp->setParentStyleSheet(this);
+        ruleList.append(rule, document);
+    }
+}
 
 // StyleSheet
 std::u16string CSSStyleSheetImp::getType()

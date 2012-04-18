@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,22 +27,28 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class StyleSheetImp : public ObjectMixin<StyleSheetImp>
 {
-private:
+    std::u16string href;
+    Node owner;
+    stylesheets::StyleSheet parent;
     bool disabled;
 
 public:
     StyleSheetImp();
 
+    void setHref(const std::u16string& location);
+    void setOwnerNode(Node node);
+    void setParentStyleSheet(stylesheets::StyleSheet sheet);
+
     // StyleSheet
     virtual std::u16string getType();
-    virtual std::u16string getHref();
-    virtual Node getOwnerNode();
-    virtual stylesheets::StyleSheet getParentStyleSheet();
+    std::u16string getHref();
+    Node getOwnerNode();
+    stylesheets::StyleSheet getParentStyleSheet();
     virtual std::u16string getTitle();
     virtual stylesheets::MediaList getMedia();
     virtual void setMedia(std::u16string media);
-    virtual bool getDisabled();
-    virtual void setDisabled(bool disabled);
+    bool getDisabled();
+    void setDisabled(bool disabled);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

@@ -2485,10 +2485,7 @@ public:
             return u"url(" + CSSSerializeString(uri) + u')';
         return Options[value];
     }
-    void specify(const CSSBindingValueImp& specified) {
-        uri = specified.uri;
-        value = specified.value;
-    }
+    void specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl);
     CSSBindingValueImp(unsigned initial = None) :
         value(initial) {
     }

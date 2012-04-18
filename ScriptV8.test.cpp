@@ -44,23 +44,11 @@ int main(int argc, char* argv[])
     initFonts(&argc, argv);
 
     // Load the default CSS file
-    std::ifstream styleStream(argv[1]);
-    if (!styleStream) {
-        std::cerr << "error: cannot open " << argv[1] << ".\n";
-        return EXIT_FAILURE;
-    }
-    getDOMImplementation()->setDefaultCSSStyleSheet(loadStyleSheet(styleStream));
+    getDOMImplementation()->setDefaultCSSStyleSheet(loadStyleSheet(argv[1]));
 
-    if (4 <= argc) {
-        // Load the user CSS file
-        std::ifstream styleStream(argv[2]);
-        if (!styleStream) {
-            std::cerr << "error: cannot open " << argv[2] << ".\n";
-            return EXIT_FAILURE;
-        }
-        getDOMImplementation()->setUserCSSStyleSheet(loadStyleSheet(styleStream));
-        dumpStyleSheet(std::cerr, getDOMImplementation()->getUserCSSStyleSheet());
-    }
+    // Load the user CSS file
+    if (4 <= argc)
+        getDOMImplementation()->setUserCSSStyleSheet(loadStyleSheet(argv[2]));
 
     window = new WindowImp();
     window.open(utfconv(argv[argc - 1]), u"_self", u"", true);

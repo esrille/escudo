@@ -25,6 +25,7 @@
 #include "WindowImp.h"
 #include "css/CSSInputStream.h"
 #include "css/CSSParser.h"
+#include "css/CSSStyleSheetImp.h"
 
 #include "Test.util.h"
 
@@ -83,7 +84,10 @@ void HTMLLinkElementImp::notify()
         CSSParser parser;
         CSSInputStream cssStream(stream, request->getResponseMessage().getContentCharset(), utfconv(document->getCharset()));
         styleSheet = parser.parse(document, cssStream);
-
+        if (auto imp = dynamic_cast<CSSStyleSheetImp*>(styleSheet.self())) {
+            imp->setHref(request->getRequestMessage().getURL());
+            imp->setOwnerNode(this);
+        }
         if (3 <= getLogLevel())
             dumpStyleSheet(std::cerr, styleSheet.self());
 

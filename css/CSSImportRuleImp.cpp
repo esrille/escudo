@@ -23,8 +23,10 @@
 
 #include "DocumentImp.h"
 #include "WindowImp.h"
-#include "css/CSSInputStream.h"
-#include "css/CSSParser.h"
+
+#include "CSSInputStream.h"
+#include "CSSParser.h"
+#include "CSSStyleSheetImp.h"
 
 #include "http/HTTPRequest.h"
 
@@ -110,7 +112,10 @@ void CSSImportRuleImp::notify()
         CSSParser parser;
         CSSInputStream cssStream(stream, request->getResponseMessage().getContentCharset(), utfconv(document->getCharset()));
         styleSheet = parser.parse(document, cssStream);
-        dumpStyleSheet(std::cerr, styleSheet.self());
+        if (auto imp = dynamic_cast<CSSStyleSheetImp*>(styleSheet.self()))
+            imp->setParentStyleSheet(getParentStyleSheet());
+        if (3 <= getLogLevel())
+            dumpStyleSheet(std::cerr, styleSheet.self());
     }
     document->decrementLoadEventDelayCount();
 
