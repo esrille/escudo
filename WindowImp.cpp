@@ -28,7 +28,7 @@
 #include "html/HTMLParser.h"
 #include "css/ViewCSSImp.h"
 
-#include "NodeImp.h"  // for eval()
+#include "NodeImp.h"
 
 #include "KeyboardEventImp.h"
 #include "MouseEventImp.h"
@@ -38,20 +38,6 @@
 #include "http/HTTPConnection.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
-
-namespace {
-
-void evalTree(Node node)
-{
-    while (node) {
-        if (node.hasChildNodes())
-            eval(node.getFirstChild());
-        dynamic_cast<NodeImp*>(node.self())->eval();;
-        node = node.getNextSibling();
-    }
-}
-
-}
 
 WindowImp::WindowImp(WindowImp* parent) :
     request(parent ? parent->getLocation().getHref() : u""),
@@ -170,9 +156,7 @@ bool WindowImp::poll()
             if (imp)
                 imp->setCharset(utfconv(htmlInputStream.getEncoding()));
 
-            // Each HTML element will have a style attribute if there's the style content attribute.
-            // Each HTML style element will have a style sheet.
-            evalTree(window->getDocument());
+            NodeImp::evalTree(window->getDocument());
             if (3 <= getLogLevel())
                 dumpTree(std::cerr, window->getDocument());
             recordTime("html parsed");

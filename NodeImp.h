@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,8 +67,7 @@ public:
     virtual void eval();
 
     // Returns true if this is an ancestor of the node
-    bool isAncestorOf(NodeImp* node)
-    {
+    bool isAncestorOf(NodeImp* node) {
         for (NodeImp* parent = node->parentNode; parent; parent = parent->parentNode) {
             if (this == parent)
                 return true;
@@ -118,13 +117,20 @@ public:
     virtual std::u16string lookupNamespaceURI(Nullable<std::u16string> prefix);
     virtual bool isDefaultNamespace(std::u16string _namespace);
     // Object
-    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
-    {
+    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
         return Node::dispatch(this, selector, id, argc, argv);
     }
-    static const char* const getMetaData()
-    {
+    static const char* const getMetaData() {
         return Node::getMetaData();
+    }
+
+    static void evalTree(Node node) {
+        while (node) {
+            if (node.hasChildNodes())
+                evalTree(node.getFirstChild());
+            dynamic_cast<NodeImp*>(node.self())->eval();;
+            node = node.getNextSibling();
+        }
     }
 };
 
