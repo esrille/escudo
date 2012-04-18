@@ -84,11 +84,11 @@ wbr:before	{ content: "\200B" }
 nobr wbr	{ white-space: normal; }
 
 /* CSS 3 Lists */
-ol, ul { 
-	counter-reset: list-item; 
-	padding-left: 40px; 
+ol, ul {
+	counter-reset: list-item;
+	padding-left: 40px;
 }
-li::marker { 
+li::marker {
 	display: inline-block;
 	margin-right: 1em;
 	text-align: end;
@@ -101,7 +101,7 @@ binding, implementation, template, content, inherited { display: none; }
 /* Bindings */
 button { binding: button; }
 details { binding: details; }
-input { binding: input-textfield; }
+input { binding: url(navigator.html#input-textfield); }
 input[type=password] { binding: input-password; } /* case-insensitive */
 input[type=datetime] { binding: input-datetime; } /* case-insensitive */
 input[type=date] { binding: input-date; } /* case-insensitive */

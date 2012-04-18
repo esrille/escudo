@@ -22,102 +22,19 @@ body
 {
     background-color: silver;
 }
-.textbox
+#location
 {
-    display: inline-block;
-    white-space: pre;
-    background-color: white;
-    border: 2px inset;
-    height: 1.2em;
-    width: 8em;
-    padding: 1px;
-    overflow: hidden;
-}
-.textbox > .before
-{
-    border-right: black solid 1px;
-    margin-right: -1px;
-    text-align: right;
-}
-.textbox > .after
-{
+    width: 520px;
+    height: 20px;
 }
 </style>
 <script>
-
-function Textbox(boundElement)
-{
-    this.boundElement = boundElement;
-    boundElement.tabIndex = 0;
-}
-
-Textbox.prototype = {
-    enteredDocument: function() {
-        var before = document.createTextNode('');
-        var after = document.createTextNode('');
-        this.boundElement.firstChild.appendChild(before);
-        this.boundElement.lastChild.appendChild(after);
-        this.boundElement.addEventListener('keypress', function(e) {
-            var c = e.charCode;
-            if (c)
-                before.appendData(String.fromCharCode(c));
-        }, false);
-        this.boundElement.addEventListener('keydown', function(e) {
-            switch (e.keyCode) {
-            case 8:   // Backspace
-                if (0 < before.length)
-                    before.deleteData(before.length - 1, 1);
-                break;
-            case 35:  // End
-                before.appendData(after.data);
-                after.deleteData(0, after.length);
-                break;
-            case 36:  // Home
-                after.insertData(0, before.data);
-                before.deleteData(0, before.length);
-                break;
-            case 37:  // <-
-                if (0 < before.length) {
-                    var c = before.substringData(before.length - 1, 1);
-                    before.deleteData(before.length - 1, 1);
-                    after.insertData(0, c);
-                }
-                break;
-            case 39:  // ->
-                if (0 < after.length) {
-                    var c = after.substringData(0, 1);
-                    after.deleteData(0, 1);
-                    before.appendData(c);
-                }
-                break;
-            case 46:  // Del
-                if (0 < after.length)
-                    after.deleteData(0, 1);
-                break;
-            default:
-                break;
-            }
-        }, false);
-    }
-};
-
-var textbox1;
-var textbox2;
-
 function init() {
-    var e = document.getElementById('textbox1');
-    textbox1 = new Textbox(e);
-    textbox1.enteredDocument();
-    e.focus();
-
-    e = document.getElementById('textbox2');
-    textbox2 = new Textbox(e);
-    textbox2.enteredDocument();
+    document.getElementById('location').focus();
 }
 </script>
 </head>
 <body onload='init()'>
-<div id='textbox1' class='textbox'><span class='before'></span><span class='after'></span></div>
-<div id='textbox2' class='textbox'><span class='before'></span><span class='after'></span></div>
+<input type='text' id='location' value='http://'>
 </body>
 </html>

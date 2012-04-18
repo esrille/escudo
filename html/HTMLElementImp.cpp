@@ -136,8 +136,12 @@ void HTMLElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
     assert(document);
     URL base(document->getDocumentURI());
     URL url(base, style->binding.getURL());
-    if (!base.isSameExceptFragments(url))
-        return;   // TODO: Support external bindings later.
+    if (!base.isSameExceptFragments(url)) {
+        document = dynamic_cast<DocumentImp*>(document->loadBindingDocument(url).self());
+        if (!document || document->getReadyState() != u"complete")
+            return;
+    }
+
     std::u16string hash = url.getHash();
     if (hash[0] == '#')
         hash.erase(0, 1);

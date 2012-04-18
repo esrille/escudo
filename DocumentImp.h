@@ -76,8 +76,10 @@ class DocumentImp : public ObjectMixin<DocumentImp, NodeImp>
     unsigned loadEventDelayCount;
 
     WindowImp* defaultView;
-
     ElementImp* activeElement;
+
+    // XBL 2.0
+    std::map<const std::u16string, html::Window> bindingDocuments;
 
 public:
     DocumentImp(const std::u16string& url = u"about:blank");

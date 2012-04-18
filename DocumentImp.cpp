@@ -1595,8 +1595,16 @@ html::HTMLCollection DocumentImp::getBindingDocuments()
 
 Document DocumentImp::loadBindingDocument(std::u16string documentURI)
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    auto found = bindingDocuments.find(documentURI);
+    if (found != bindingDocuments.end())
+        return found->second.getDocument();
+
+    html::Window window = new WindowImp(defaultView);
+    if (!window)
+        return 0;
+    bindingDocuments.insert(std::pair<std::u16string, html::Window>(documentURI, window));
+    window.open(documentURI, u"_self", u"", true);
+    return window.getDocument();
 }
 
 // Node - override
