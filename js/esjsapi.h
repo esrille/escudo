@@ -33,6 +33,7 @@ class NativeClass
     static const size_t MAX_RANK = 16;
 
     static JSNative operations[MAX_METHOD_COUNT];
+    static JSNative staticOperations[MAX_CONSTRUCTOR_COUNT];
     static JSNative constructors[MAX_CONSTRUCTOR_COUNT];
     static JSPropertyOp getters[MAX_RANK];
     static JSStrictPropertyOp setters[MAX_RANK];
@@ -69,6 +70,9 @@ public:
     JSObject* createJSObject(JSContext* cx, ObjectImp* self);
 
     static bool isNativeClass(JSClass* jsclass);
+
+    template <int N>
+    static JSBool staticOperation(JSContext* cx, uintN argc, jsval* vp);
 
     template <int N>
     static JSBool constructor(JSContext* cx, uintN argc, jsval* vp);

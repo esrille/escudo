@@ -29,6 +29,7 @@ class ObjectImp;
 class NativeClass
 {
     const char* metaData;
+    Object (*getConstructor)();
     v8::Persistent<v8::FunctionTemplate> classTemplate;
 public:
     NativeClass(v8::Handle<v8::ObjectTemplate> global, const char* metadata, Object (*getConstructor)() = 0);
@@ -36,6 +37,7 @@ public:
 
     v8::Handle<v8::Object> createJSObject(ObjectImp* self);
 
+    static v8::Handle<v8::Value> staticOperation(const v8::Arguments& args);
     static v8::Handle<v8::Value> constructor(const v8::Arguments& args);
     static void finalize(v8::Persistent<v8::Value> object, void* parameter);
 

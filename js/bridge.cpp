@@ -254,6 +254,32 @@ uint32_t NativeClass::getHash(JSContext* cx, jsval* vp, int n)
 }
 
 template <int N>
+JSBool NativeClass::staticOperation(JSContext* cx, uintN argc, jsval* vp)
+{
+    Object (*getConstructor)() = NativeClass::constructorGetters[N];
+    if (getConstructor) {
+        uint32_t hash = 0;
+        jsval val = JS_CALLEE(cx, vp);
+        if (JSFunction* f = JS_ValueToFunction(cx, val)) {
+            JSString* s = JS_GetFunctionId(f);
+            size_t l;
+            const jschar* b = JS_GetStringCharsAndLength(cx, s, &l);
+            std::u16string name(reinterpret_cast<const char16_t*>(b), l);
+            hash = uc_one_at_a_time(name.c_str(), name.length());
+        }
+        if (!hash)
+            return JS_FALSE;
+        Any arguments[argc];
+        for (unsigned i = 0; i < argc; ++i)
+            arguments[i] = convert(cx, JS_ARGV(cx, vp)[i]);
+        Any result = getConstructor().message_(hash, "", argc, arguments).toObject();
+        JS_SET_RVAL(cx, vp, convert(cx, result));
+        return JS_TRUE;
+    }
+    return JS_FALSE;
+}
+
+template <int N>
 JSBool NativeClass::constructor(JSContext* cx, uintN argc, jsval* vp)
 {
     Object (*getConstructor)() = NativeClass::constructorGetters[N];
@@ -382,6 +408,23 @@ JSNative NativeClass::operations[MAX_METHOD_COUNT] =
     &operation<255>
 };
 
+JSNative NativeClass::staticOperations[MAX_CONSTRUCTOR_COUNT] =
+{
+    &staticOperation<0>, &staticOperation<1>, &staticOperation<2>, &staticOperation<3>, &staticOperation<4>,
+    &staticOperation<5>, &staticOperation<6>, &staticOperation<7>, &staticOperation<8>, &staticOperation<9>,
+    &staticOperation<10>, &staticOperation<11>, &staticOperation<12>, &staticOperation<13>, &staticOperation<14>,
+    &staticOperation<15>, &staticOperation<16>, &staticOperation<17>, &staticOperation<18>, &staticOperation<19>,
+    &staticOperation<20>, &staticOperation<21>, &staticOperation<22>, &staticOperation<23>, &staticOperation<24>,
+    &staticOperation<25>, &staticOperation<26>, &staticOperation<27>, &staticOperation<28>, &staticOperation<29>,
+    &staticOperation<30>, &staticOperation<31>, &staticOperation<32>, &staticOperation<33>, &staticOperation<34>,
+    &staticOperation<35>, &staticOperation<36>, &staticOperation<37>, &staticOperation<38>, &staticOperation<39>,
+    &staticOperation<40>, &staticOperation<41>, &staticOperation<42>, &staticOperation<43>, &staticOperation<44>,
+    &staticOperation<45>, &staticOperation<46>, &staticOperation<47>, &staticOperation<48>, &staticOperation<49>,
+    &staticOperation<50>, &staticOperation<51>, &staticOperation<52>, &staticOperation<53>, &staticOperation<54>,
+    &staticOperation<55>, &staticOperation<56>, &staticOperation<57>, &staticOperation<58>, &staticOperation<59>,
+    &staticOperation<60>, &staticOperation<61>, &staticOperation<62>, &staticOperation<63>
+};
+
 JSNative NativeClass::constructors[MAX_CONSTRUCTOR_COUNT] =
 {
     &constructor<0>, &constructor<1>, &constructor<2>, &constructor<3>, &constructor<4>,
@@ -463,10 +506,12 @@ NativeClass::NativeClass(JSContext* cx, JSObject* global, const char* metadata, 
 
     const int attributeCount = meta.getAttributeCount() + 1;
     const int operationCount = meta.getOperationCount() + 2;  // +1 for stringifier
+    const int staticOperationCount = meta.getStaticOperationCount() + 1;
     std::unique_ptr<JSPropertySpec[]> ps(new JSPropertySpec[attributeCount]);
     std::unique_ptr<JSFunctionSpec[]> fs(new JSFunctionSpec[operationCount]);
+    std::unique_ptr<JSFunctionSpec[]> sfs(new JSFunctionSpec[staticOperationCount]);
     std::unique_ptr<char[]> stringHeap(new char[meta.getStringSize()]);
-    size_t propertyCount = attributeCount + operationCount;
+    size_t propertyCount = attributeCount + operationCount + staticOperationCount;
     if (0 < propertyCount) {
         auto table = std::unique_ptr<uint32_t[]>(new uint32_t[propertyCount]);
         hashTable = std::move(table);
@@ -475,7 +520,16 @@ NativeClass::NativeClass(JSContext* cx, JSObject* global, const char* metadata, 
     char* heap = stringHeap.get();
     JSPropertySpec* pps = ps.get();
     JSFunctionSpec* pfs = fs.get();
+    JSFunctionSpec* psfs = sfs.get();
     size_t propertyNumber = 0;
+
+    JSNative constructor = constructors[0];
+    JSNative sop = staticOperations[0];
+    if (meta.hasConstructor() || 0 < meta.getStaticOperationCount()) {
+        constructor = constructors[++constructorCount];
+        sop = staticOperations[constructorCount];
+        constructorGetters[constructorCount] = getConstructor;
+    }
 
     Reflect::Property prop(meta);
     while (prop.getType()) {
@@ -483,13 +537,22 @@ NativeClass::NativeClass(JSContext* cx, JSObject* global, const char* metadata, 
         case Reflect::kOperation:
             if (!prop.isOmittable() && 0 < prop.getName().length()) {
                 hashTable.get()[propertyNumber] = one_at_a_time(prop.getName().c_str(), prop.getName().length());
-                pfs->name = heap;
-                pfs->call = operations[propertyNumber];
-                pfs->nargs = 0;
-                pfs->flags = JSPROP_ENUMERATE | JSPROP_PERMANENT;
-                heap = storeName(heap, prop);
-                ++pfs;
-                ++propertyNumber;
+                if (prop.isStatic()) {
+                    psfs->name = heap;
+                    psfs->call = sop;
+                    psfs->nargs = 0;
+                    psfs->flags = JSPROP_ENUMERATE | JSPROP_PERMANENT;
+                    heap = storeName(heap, prop);
+                    ++psfs;
+                } else {
+                    pfs->name = heap;
+                    pfs->call = operations[propertyNumber];
+                    pfs->nargs = 0;
+                    pfs->flags = JSPROP_ENUMERATE | JSPROP_PERMANENT;
+                    heap = storeName(heap, prop);
+                    ++pfs;
+                    ++propertyNumber;
+                }
             }
             if (prop.isGetter())
                 jsclass.getProperty = specialGetter;
@@ -545,23 +608,22 @@ NativeClass::NativeClass(JSContext* cx, JSObject* global, const char* metadata, 
     pps->flags = 0;
     pps->getter = 0;
     pps->setter = 0;
-
-    JSNative constructor = constructors[0];
-    if (meta.hasConstructor()) {
-        constructor = constructors[++constructorCount];
-        constructorGetters[constructorCount] = getConstructor;
-    }
+    psfs->name = 0;
+    psfs->call = 0;
+    psfs->nargs = 0;
+    psfs->flags = 0;
 
     assert(propertyNumber <= propertyCount);
     assert(pps - ps.get() <= attributeCount);
     assert(pfs - fs.get() <= operationCount);
     assert(heap - stringHeap.get() <= meta.getStringSize());
+    assert(psfs - sfs.get() <= staticOperationCount);
     JS_InitClass(cx, global,
                  parentProto,
                  &jsclass,
                  constructor, 0,
                  ps.get(), fs.get(),
-                 NULL, NULL);
+                 NULL, sfs.get());
 
     // Define constants
     jsval val;

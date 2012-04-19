@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  * Copyright 2008-2010 Google Inc.
  * Copyright 2006, 2007 Nintendo Co., Ltd.
  *
@@ -49,6 +49,7 @@
  *    f: caller
  *    t: stringifier
  *    o: omittable
+ *    i: static
  *
  *  type ->
  *    b: boolean
@@ -82,6 +83,7 @@ public:
     static const char kCaller = 'f';
     static const char kStringifier = 't';
     static const char kOmittable = 'o';
+    static const char kStatic = 'i';
 
     static const char kBoolean = 'b';
     static const char kByte = 'g';
@@ -306,6 +308,11 @@ public:
             return hasSpecial(kOmittable);
         }
 
+        bool isStatic() const
+        {
+            return hasSpecial(kStatic);
+        }
+
         bool hasConstructor() const
         {
             return hasSpecial(kConstructor);
@@ -357,6 +364,7 @@ public:
         size_t attributeCount;
         size_t constantCount;
         size_t stringSize;
+        size_t staticOperationCount;
 
     public:
         /**
@@ -366,7 +374,8 @@ public:
             operationCount(0),
             attributeCount(0),
             constantCount(0),
-            stringSize(0)
+            stringSize(0),
+            staticOperationCount(0)
         {
         }
 
@@ -379,7 +388,8 @@ public:
             operationCount(0),
             attributeCount(0),
             constantCount(0),
-            stringSize(0)
+            stringSize(0),
+            staticOperationCount(0)
         {
             const char* p = skipProperty(info);  // skip I
             while (*p)
@@ -391,7 +401,10 @@ public:
                     ++constantCount;
                     break;
                 case kOperation:
-                    ++operationCount;
+                    if (p[1] == kStatic)   // TODO:
+                        ++staticOperationCount;
+                    else
+                        ++operationCount;
                     break;
                 case kAttribute:
                     ++attributeCount;
@@ -466,6 +479,15 @@ public:
         size_t getStringSize() const
         {
             return stringSize;
+        }
+
+        /**
+         * Gets the number of static operations in this interface.
+         * @return the static operation count excluding base interface operations.
+         */
+        size_t getStaticOperationCount() const
+        {
+            return staticOperationCount;
         }
     };
 };

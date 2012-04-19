@@ -268,6 +268,38 @@ v8::Handle<v8::Value> indexedPropertySetter(uint32_t index, v8::Local<v8::Value>
 
 }  // namespace
 
+v8::Handle<v8::Value> NativeClass::staticOperation(const v8::Arguments& args)
+{
+    int argc = args.Length();
+
+    // TODO: It is better if we can get 'hash' through args.Data() and get
+    //       'getConstructor' by other means.
+
+    auto data = v8::Handle<v8::External>::Cast(args.Data());
+    Object (*getConstructor)() = reinterpret_cast<Object (*)()>(data->Value());
+
+    auto function = v8::Local<v8::Function>::Cast(args.Callee());
+    if (function.IsEmpty())
+        return v8::Null();
+    v8::Handle<v8::Value> val = function->GetName();
+    if (!val->IsString())
+        return v8::Null();
+    v8::String::Value value(val);
+    if (!*value)
+        return v8::Null();
+    std::u16string name(reinterpret_cast<const char16_t*>(*value));
+    uint32_t hash = uc_one_at_a_time(name.c_str(), name.length());
+
+    Any arguments[(0 < argc) ? argc : 1];
+    for (int i = 0; i < argc; ++i)
+        arguments[i] = convert(args[i]);
+    if (getConstructor) {
+        Any result = getConstructor().message_(hash, 0, argc, arguments);
+        return convert(result);
+    }
+    return v8::Null();
+}
+
 void NativeClass::finalize(v8::Persistent<v8::Value> object, void* parameter)
 {
     assert(parameter);
@@ -370,7 +402,8 @@ NativeClass::~NativeClass()
 }
 
 NativeClass::NativeClass(v8::Handle<v8::ObjectTemplate> global, const char* metadata, Object (*getConstructor)()) :
-    metaData(metadata)
+    metaData(metadata),
+    getConstructor(getConstructor)
 {
     v8::HandleScope handleScope;
 
@@ -417,8 +450,12 @@ NativeClass::NativeClass(v8::Handle<v8::ObjectTemplate> global, const char* meta
 
         switch (prop.getType()) {
         case Reflect::kOperation:
-            if (!prop.isOmittable() && 0 < prop.getName().length())
-                prototypeTemplate->Set(v8::String::New(prop.getName().c_str()), v8::FunctionTemplate::New(operation, v8::Uint32::New(hash)));
+            if (!prop.isOmittable() && 0 < prop.getName().length()) {
+                if (prop.isStatic())
+                    classTemplate->Set(v8::String::New(prop.getName().c_str()), v8::FunctionTemplate::New(staticOperation, v8::External::New(reinterpret_cast<void*>(getConstructor))));
+                else
+                    prototypeTemplate->Set(v8::String::New(prop.getName().c_str()), v8::FunctionTemplate::New(operation, v8::Uint32::New(hash)));
+            }
 
             if (prop.isGetter())
                 namedGetter = namedPropertyGetter;
