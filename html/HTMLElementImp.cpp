@@ -33,6 +33,7 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 HTMLElementImp::HTMLElementImp(DocumentImp* ownerDocument, const std::u16string& localName) :
     ObjectMixin(ownerDocument, localName, u"http://www.w3.org/1999/xhtml"),
     style(0),
+    tabIndex(-1),
     scrollTop(0),
     scrollLeft(0),
     clickListener(boost::bind(&HTMLElementImp::handleClick, this, _1)),
@@ -48,6 +49,7 @@ HTMLElementImp::HTMLElementImp(DocumentImp* ownerDocument, const std::u16string&
 HTMLElementImp::HTMLElementImp(HTMLElementImp* org, bool deep) :
     ObjectMixin(org, deep),
     style(org->style),  // TODO: clone
+    tabIndex(org->tabIndex),
     scrollTop(0),
     scrollLeft(0),
     clickListener(boost::bind(&HTMLElementImp::handleClick, this, _1)),
@@ -73,6 +75,7 @@ void HTMLElementImp::handleClick(events::Event event)
     case 0:
         moveX = mouse.getScreenX();
         moveY = mouse.getScreenY();
+        focus();
         break;
     default:
         break;
@@ -297,8 +300,7 @@ int HTMLElementImp::getClientHeight()
 
 void HTMLElementImp::focus()
 {
-    // TODO: check if this element is focusable.
-    if (!ownerDocument || !ownerDocument->getDefaultView())
+    if (!ownerDocument || !ownerDocument->getDefaultView() || getTabIndex() < 0)
         return;
     ownerDocument->setFocus(this);
 }
@@ -508,13 +510,12 @@ void HTMLElementImp::click()
 
 int HTMLElementImp::getTabIndex()
 {
-    // TODO: implement me!
-    return 0;
+    return tabIndex;
 }
 
 void HTMLElementImp::setTabIndex(int tabIndex)
 {
-    // TODO: implement me!
+    this->tabIndex = tabIndex;
 }
 
 std::u16string HTMLElementImp::getAccessKey()

@@ -52,10 +52,13 @@ HTMLLinkElementImp::~HTMLLinkElementImp()
 
 void HTMLLinkElementImp::eval()
 {
+    HTMLElementImp::eval();
+
     std::u16string href = getHref();
     if (href.empty())
         return;
-    HTMLElementImp::eval();
+    setTabIndex(0);
+
     std::u16string rel = getRel();
     if (contains(rel, u"stylesheet")) {
         // TODO: check type

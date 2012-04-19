@@ -46,7 +46,7 @@ public:
     HTMLIFrameElementImp(HTMLIFrameElementImp* org, bool deep);
     ~HTMLIFrameElementImp();
 
-    void eval();
+    virtual void eval();
 
     // HTMLIFrameElement
     std::u16string getSrc();

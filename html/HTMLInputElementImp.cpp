@@ -96,6 +96,9 @@ void HTMLInputElementImp::eval()
     HTMLElementImp::evalVspace(this);
 
     setType(getAttribute(u"type"));
+
+    if (!getDisabled() && type != Hidden)
+        setTabIndex(0);
 }
 
 void HTMLInputElementImp::handleClick(events::Event event)

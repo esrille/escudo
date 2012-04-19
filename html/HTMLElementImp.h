@@ -43,6 +43,7 @@ class CSSStyleDeclarationImp;
 class HTMLElementImp : public ObjectMixin<HTMLElementImp, ElementImp>
 {
     css::CSSStyleDeclaration style;
+    int tabIndex;
     int scrollTop;
     int scrollLeft;
     int moveX;

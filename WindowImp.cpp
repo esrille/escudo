@@ -25,17 +25,15 @@
 
 #include "DOMImplementationImp.h"
 #include "DocumentImp.h"
-#include "html/HTMLParser.h"
-#include "css/ViewCSSImp.h"
-
-#include "NodeImp.h"
-
 #include "KeyboardEventImp.h"
 #include "MouseEventImp.h"
+#include "NodeImp.h"
+#include "css/ViewCSSImp.h"
+#include "html/HTMLParser.h"
+#include "html/HTMLIFrameElementImp.h"
+#include "http/HTTPConnection.h"
 
 #include "Test.util.h"
-
-#include "http/HTTPConnection.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -234,7 +232,9 @@ bool WindowImp::mouse(int button, int up, int x, int y, int modifiers)
         html::Window child = shadow->getDocument().getDefaultView();
         if (child) {
             WindowImp* childWindow = dynamic_cast<WindowImp*>(child.self());
-            return childWindow->mouse(button, up, x, y, modifiers);
+            propagte = childWindow->mouse(button, up, x, y, modifiers);
+            if (!propagte)
+                return propagte;
         }
     }
 
@@ -285,7 +285,9 @@ bool WindowImp::mouseMove(int x, int y, int modifiers)
         html::Window child = shadow->getDocument().getDefaultView();
         if (child) {
             WindowImp* childWindow = dynamic_cast<WindowImp*>(child.self());
-            return childWindow->mouseMove(x, y, modifiers);
+            propagte = childWindow->mouseMove(x, y, modifiers);
+            if (!propagte)
+                return propagte;
         }
     }
 
@@ -318,6 +320,15 @@ bool WindowImp::keydown(unsigned charCode, unsigned keyCode, int modifiers)
     Element e = document.getActiveElement();
     if (!e)
         return propagte;
+
+    if (auto iframe = dynamic_cast<HTMLIFrameElementImp*>(e.self())) {
+        if (auto child = dynamic_cast<WindowImp*>(iframe->getContentWindow().self())) {
+            propagte = child->keydown(charCode, keyCode, modifiers);
+            if (!propagte)
+                return propagte;
+        }
+    }
+
     KeyboardEventImp* imp = new(std::nothrow) KeyboardEventImp(modifiers, charCode, keyCode, 0);
     events::KeyboardEvent event(imp);
     event.initKeyboardEvent(u"keydown", true, true, this,
@@ -330,7 +341,7 @@ bool WindowImp::keydown(unsigned charCode, unsigned keyCode, int modifiers)
         return propagte;
     events::KeyboardEvent text = new(std::nothrow) KeyboardEventImp(modifiers, charCode, keyCode, 0);
     text.initKeyboardEvent(u"keypress", true, true, this,
-                            u"", u"", 0, u"", false, u"");
+                           u"", u"", 0, u"", false, u"");
     e.dispatchEvent(text);
     if (imp->getStopPropagationFlag())
         propagte = false;
@@ -346,6 +357,15 @@ bool WindowImp::keyup(unsigned charCode, unsigned keyCode, int modifiers)
     Element e = document.getActiveElement();
     if (!e)
         return propagte;
+
+    if (auto iframe = dynamic_cast<HTMLIFrameElementImp*>(e.self())) {
+        if (auto child = dynamic_cast<WindowImp*>(iframe->getContentWindow().self())) {
+            propagte = child->keyup(charCode, keyCode, modifiers);
+            if (!propagte)
+                return propagte;
+        }
+    }
+
     KeyboardEventImp* imp = new(std::nothrow) KeyboardEventImp(modifiers, charCode, keyCode, 0);
     events::KeyboardEvent event(imp);
     event.initKeyboardEvent(u"keyup", true, true, this,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,6 +60,16 @@ void HTMLAnchorElementImp::handleClick(events::Event event)
         getOwnerDocument().setLocation(href);
 }
 
+void HTMLAnchorElementImp::eval()
+{
+    HTMLElementImp::eval();
+
+    std::u16string href = getHref();
+    if (href.empty())
+        return;
+    setTabIndex(0);
+}
+
 std::u16string HTMLAnchorElementImp::getHref()
 {
     return getAttribute(u"href");
@@ -67,7 +77,7 @@ std::u16string HTMLAnchorElementImp::getHref()
 
 void HTMLAnchorElementImp::setHref(std::u16string href)
 {
-    // TODO: implement me!
+    setAttribute(u"href", href);
 }
 
 std::u16string HTMLAnchorElementImp::getTarget()
