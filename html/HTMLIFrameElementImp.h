@@ -29,6 +29,8 @@
 #include <org/w3c/dom/DOMSettableTokenList.h>
 #include <org/w3c/dom/html/Window.h>
 
+#include "EventListenerImp.h"
+
 namespace org
 {
 namespace w3c
@@ -40,6 +42,9 @@ namespace bootstrap
 class HTMLIFrameElementImp : public ObjectMixin<HTMLIFrameElementImp, HTMLElementImp>
 {
     html::Window window;
+    Retained<EventListenerImp> blurListener;
+
+    void handleBlur(events::Event event);
 
 public:
     HTMLIFrameElementImp(DocumentImp* ownerDocument);

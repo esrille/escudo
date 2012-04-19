@@ -16,9 +16,10 @@
 
 #include "HTMLIFrameElementImp.h"
 
+#include <boost/bind.hpp>
+
 #include "WindowImp.h"
 #include "DocumentImp.h"
-
 
 namespace org
 {
@@ -31,7 +32,8 @@ namespace bootstrap
 
 HTMLIFrameElementImp::HTMLIFrameElementImp(DocumentImp* ownerDocument) :
     ObjectMixin(ownerDocument, u"iframe"),
-    window(0)
+    window(0),
+    blurListener(boost::bind(&HTMLIFrameElementImp::handleBlur, this, _1))
 {
     if (ownerDocument)
         window = new WindowImp(dynamic_cast<WindowImp*>(ownerDocument->getDefaultView().self()));  // TODO set JS global
@@ -39,7 +41,8 @@ HTMLIFrameElementImp::HTMLIFrameElementImp(DocumentImp* ownerDocument) :
 
 HTMLIFrameElementImp::HTMLIFrameElementImp(HTMLIFrameElementImp* org, bool deep) :
     ObjectMixin(org, deep),
-    window(org->window)
+    window(org->window),
+    blurListener(boost::bind(&HTMLIFrameElementImp::handleBlur, this, _1))
 {
 }
 
@@ -58,6 +61,14 @@ void HTMLIFrameElementImp::eval()
     HTMLElementImp::evalMarginWidth(this);
 
     setTabIndex(0);
+
+    addEventListener(u"blur", &blurListener);
+}
+
+void HTMLIFrameElementImp::handleBlur(events::Event event)
+{
+    if (auto imp = dynamic_cast<DocumentImp*>(window.getDocument().self()))
+        imp->setFocus(0);
 }
 
 //
