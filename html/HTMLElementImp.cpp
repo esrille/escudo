@@ -48,7 +48,7 @@ HTMLElementImp::HTMLElementImp(DocumentImp* ownerDocument, const std::u16string&
 
 HTMLElementImp::HTMLElementImp(HTMLElementImp* org, bool deep) :
     ObjectMixin(org, deep),
-    style(org->style),  // TODO: clone
+    style(0),
     tabIndex(org->tabIndex),
     scrollTop(0),
     scrollLeft(0),
@@ -58,6 +58,13 @@ HTMLElementImp::HTMLElementImp(HTMLElementImp* org, bool deep) :
     shadowTarget(0),          // TODO: clone
     shadowImplementation(0)   // TODO: clone
 {
+    if (auto orgStyle = dynamic_cast<CSSStyleDeclarationImp*>(org->style.self())) {
+        CSSStyleDeclarationImp* imp = new(std::nothrow) CSSStyleDeclarationImp(orgStyle);
+        if (imp) {
+            imp->setOwner(this);
+            style = imp;
+        }
+    }
     addEventListener(u"click", &clickListener);
     addEventListener(u"mousemove", &mouseMoveListener);
 }

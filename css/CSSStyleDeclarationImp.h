@@ -369,6 +369,7 @@ public:
 
 public:
     CSSStyleDeclarationImp(int pseudoElementSelectorType = CSSPseudoElementSelector::NonPseudo);
+    CSSStyleDeclarationImp(CSSStyleDeclarationImp* org);  // for cloneNode()
     ~CSSStyleDeclarationImp();
 
     void setOwner(Object* owner) {

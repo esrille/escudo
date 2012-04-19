@@ -3118,8 +3118,8 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp(int pseudoElementSelectorType) :
     fontTexture(0),
     propertyID(Unknown),
     expression(0),
-    emptyInline(0),
     pseudoElementSelectorType(pseudoElementSelectorType),
+    emptyInline(0),
     backgroundColor(CSSColorValueImp::Transparent),
     counterIncrement(1),
     counterReset(0),
@@ -3185,6 +3185,40 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp(int pseudoElementSelectorType) :
     pseudoElements[CSSPseudoElementSelector::NonPseudo] = this;
     for (int i = 1; i < CSSPseudoElementSelector::MaxPseudoElements; ++i)
         pseudoElements[i] = 0;
+}
+
+// for cloneNode()
+CSSStyleDeclarationImp::CSSStyleDeclarationImp(CSSStyleDeclarationImp* org) :
+    owner(0),   // TODO: set later
+    parentRule(0),
+    resolved(false),
+    parentStyle(0),
+    box(0),
+    lastBox(0),
+    stackingContext(0),
+    fontTexture(0),
+    propertyID(Unknown),
+    expression(0),
+    pseudoElementSelectorType(org->pseudoElementSelectorType),
+    emptyInline(0),
+    backgroundColor(CSSColorValueImp::Transparent),
+    counterIncrement(1),
+    counterReset(0),
+    borderTop(0),
+    borderRight(1),
+    borderBottom(2),
+    borderLeft(3),
+    marginTop(0.0f, css::CSSPrimitiveValue::CSS_PX),
+    marginRight(0.0f, css::CSSPrimitiveValue::CSS_PX),
+    marginLeft(0.0f, css::CSSPrimitiveValue::CSS_PX),
+    marginBottom(0.0f, css::CSSPrimitiveValue::CSS_PX),
+    minHeight(0.0f, css::CSSPrimitiveValue::CSS_PX),
+    minWidth(0.0f, css::CSSPrimitiveValue::CSS_PX),
+    textIndent(0.0f, css::CSSPrimitiveValue::CSS_PX)
+{
+    pseudoElements[CSSPseudoElementSelector::NonPseudo] = this;
+    specify(org);
+    specifyImportant(org);
 }
 
 CSSStyleDeclarationImp::~CSSStyleDeclarationImp()
