@@ -18,7 +18,7 @@
  -->
 <head>
 <binding id="input-textfield">
-<template><span style="border-right: black solid 1px; margin-right: -1px;"></span><span></span></template>
+<template><span style="border-right: transparent solid 1px; margin-right: -1px;"></span><span></span></template>
 <implementation>
   ({
     xblEnteredDocument: function() {
@@ -34,6 +34,13 @@
         var after = document.createTextNode('');
         this.shadowTree.firstChild.appendChild(before);
         this.shadowTree.lastChild.appendChild(after);
+        var caret = this.shadowTree.firstChild;
+        this.addEventListener('blur', function(event) {
+            caret.style.borderRightColor = 'transparent';
+        }, false);
+        this.addEventListener('focus', function(event) {
+            caret.style.borderRightColor = 'black';
+        }, false);
         this.addEventListener('keypress', function(event) {
             var c = event.charCode;
             if (c) {
