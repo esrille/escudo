@@ -99,6 +99,9 @@ void HTMLInputElementImp::eval()
 
     if (!getDisabled() && type != Hidden)
         setTabIndex(0);
+
+    if (hasAttribute(u"checked"))
+        checked = true;
 }
 
 void HTMLInputElementImp::handleClick(events::Event event)
