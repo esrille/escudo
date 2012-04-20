@@ -89,6 +89,42 @@
   })
 </implementation>
 </binding>
+<binding id="input-radio">
+<template><span></span></template>
+<implementation>
+  ({
+    xblEnteredDocument: function() {
+        this.boundElement.tabIndex = 0;
+        this.boundElement.style.display = 'inline-block';
+        this.boundElement.style.borderStyle = 'none';
+        this.boundElement.style.padding = '2px';
+        var button = document.createTextNode(this.boundElement.checked ? '◉' : '○');
+        this.shadowTree.firstChild.appendChild(button);
+        this.addEventListener('click', function(event) {
+            event.currentTarget.checked = !event.currentTarget.checked;
+            button.data = event.currentTarget.checked ? '◉' : '○';
+        }, false);
+    }
+  })
+</implementation>
+</binding>
+<binding id="input-button">
+<template><span></span></template>
+<implementation>
+  ({
+    xblEnteredDocument: function() {
+        this.boundElement.tabIndex = 0;
+        this.boundElement.style.display = 'inline-block';
+        this.boundElement.style.backgroundColor = 'silver';
+        this.boundElement.style.border = '2px silver outset';
+        this.boundElement.style.padding = '1px 1em';
+        this.boundElement.style.minHeight = '1em';
+        var button = document.createTextNode(this.boundElement.value);
+        this.shadowTree.firstChild.appendChild(button);
+    }
+  })
+</implementation>
+</binding>
 <style type="text/css">
 body
 {

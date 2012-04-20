@@ -113,10 +113,10 @@ input[type=number] { binding: input-number; } /* case-insensitive */
 input[type=range] { binding: input-range; } /* case-insensitive */
 input[type=color] { binding: input-color; } /* case-insensitive */
 input[type=checkbox] { binding: input-checkbox; } /* case-insensitive */
-input[type=radio] { binding: input-radio; } /* case-insensitive */
+input[type=radio] { binding: url(navigator.html#input-radio); } /* case-insensitive */
 input[type=file] { binding: input-file; } /* case-insensitive */
 input[type=submit], input[type=reset], input[type=button] { /* case-insensitive */
-  binding: input-button;
+  binding: url(navigator.html#input-button);
 }
 marquee { binding: marquee; }
 meter { binding: meter; }
