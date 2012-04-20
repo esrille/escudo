@@ -533,7 +533,6 @@ void ECMAScriptContext::Impl::activate(ObjectImp* window)
     if (current != context)
         current->Exit();
     context->Enter();
-
     v8::Handle<v8::Object> globalProxy = context->Global();
     v8::Handle<v8::Object> global = globalProxy->GetPrototype().As<v8::Object>();
     global->SetInternalField(0, v8::External::New(window));
@@ -557,6 +556,7 @@ ECMAScriptContext::~ECMAScriptContext()
 
 void ECMAScriptContext::activate(ObjectImp* window)
 {
+    current = window;
     pimpl->activate(window);
 }
 
@@ -574,3 +574,5 @@ void ECMAScriptContext::shutDown()
 {
     Impl::shutDown();
 }
+
+ObjectImp* ECMAScriptContext::current;

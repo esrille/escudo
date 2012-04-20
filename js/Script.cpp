@@ -562,6 +562,7 @@ ECMAScriptContext::~ECMAScriptContext()
 
 void ECMAScriptContext::activate(ObjectImp* window)
 {
+    current = window;
     pimpl->activate(window);
 }
 
@@ -589,3 +590,5 @@ void ECMAScriptContext::shutDown()
 {
     Impl::shutDown();
 }
+
+ObjectImp* ECMAScriptContext::current;

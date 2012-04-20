@@ -39,13 +39,7 @@ public:
     Impl();
     ~Impl();
 
-    void activate(ObjectImp* window)
-    {
-        JS_SetGlobalObject(getContext(), global);
-        JS_SetPrivate(getContext(), global, window);
-        window->setPrivate(global);
-    }
-
+    void activate(ObjectImp* window);
     Any evaluate(const std::u16string& script);
     Object* compileFunction(const std::u16string& body);
     Any callFunction(Object thisObject, Object functionObject, int argc, Any* argv);

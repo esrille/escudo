@@ -30,6 +30,7 @@ class ECMAScriptContext
 {
     class Impl;
     boost::scoped_ptr<Impl> pimpl;
+    static ObjectImp* current;
 
     // ECMAScriptContext is not copyable.
     ECMAScriptContext(const ECMAScriptContext&);
@@ -61,6 +62,9 @@ public:
 
     Object* xblCreateImplementation(Object object, Object prototype, Object boundElement, Object shadowTree);
 
+    static ObjectImp* getCurrent() {
+        return current;
+    }
     static void shutDown();
 };
 

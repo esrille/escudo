@@ -101,6 +101,8 @@ bool EventTargetImp::dispatchEvent(events::Event evt)
     if (!event)
         return false;
 
+    auto currentWindow = static_cast<WindowImp*>(ECMAScriptContext::getCurrent());
+
     event->setDispatchFlag(true);
     event->setTarget(this);
 
@@ -151,6 +153,10 @@ bool EventTargetImp::dispatchEvent(events::Event evt)
     event->setDispatchFlag(false);
     event->setEventPhase(events::Event::AT_TARGET);
     event->setCurrentTarget(0);
+
+    if (currentWindow)
+        currentWindow->activate();
+
     return !event->getDefaultPrevented();
 }
 

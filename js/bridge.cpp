@@ -710,6 +710,13 @@ Any ProxyObject::message_(uint32_t selector, const char* id, int argc, Any* argv
     return Any();
 }
 
+void ECMAScriptContext::Impl::activate(ObjectImp* window)
+{
+    JS_SetGlobalObject(getContext(), global);
+    JS_SetPrivate(getContext(), global, window);
+    window->setPrivate(global);
+}
+
 Any ECMAScriptContext::Impl::evaluate(const std::u16string& script)
 {
     jsval rval;
