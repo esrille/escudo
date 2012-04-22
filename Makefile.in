@@ -42,7 +42,8 @@ bin_PROGRAMS = harness$(EXEEXT) Any.test$(EXEEXT) \
 	HTMLTokenizer.test$(EXEEXT) HTMLParser.test$(EXEEXT) \
 	CSSTokenizer.test$(EXEEXT) CSSParser.test$(EXEEXT) \
 	CSSStyle.test$(EXEEXT) Box.test$(EXEEXT) Script.test$(EXEEXT) \
-	ScriptV8.test$(EXEEXT) Navigator.test$(EXEEXT)
+	ScriptV8.test$(EXEEXT) Navigator.test$(EXEEXT) \
+	NavigatorV8.test$(EXEEXT)
 subdir = .
 DIST_COMMON = $(am__configure_deps) $(srcdir)/../depcomp \
 	$(srcdir)/../install-sh $(srcdir)/../missing \
@@ -396,17 +397,26 @@ HTTPHeader_test_DEPENDENCIES = $(js_LDADD)
 am_HTTPRequest_test_OBJECTS = HTTPRequest.test.$(OBJEXT)
 HTTPRequest_test_OBJECTS = $(am_HTTPRequest_test_OBJECTS)
 HTTPRequest_test_DEPENDENCIES = $(js_LDADD)
-am_Navigator_test_OBJECTS = Navigator.test.$(OBJEXT) \
-	Test.glut.$(OBJEXT)
+am_Navigator_test_OBJECTS = Navigator_test-Navigator.test.$(OBJEXT) \
+	Navigator_test-Test.glut.$(OBJEXT)
 Navigator_test_OBJECTS = $(am_Navigator_test_OBJECTS)
 Navigator_test_DEPENDENCIES = $(js_LDADD)
+Navigator_test_LINK = $(CXXLD) $(Navigator_test_CXXFLAGS) $(CXXFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+am_NavigatorV8_test_OBJECTS =  \
+	NavigatorV8_test-Navigator.test.$(OBJEXT) \
+	NavigatorV8_test-Test.glut.$(OBJEXT)
+NavigatorV8_test_OBJECTS = $(am_NavigatorV8_test_OBJECTS)
+am__DEPENDENCIES_1 = libeshtml5.a libesv8api.a libeshtml5.a \
+	libesv8api.a libesfontmanager.a
+NavigatorV8_test_DEPENDENCIES = $(am__DEPENDENCIES_1)
+NavigatorV8_test_LINK = $(CXXLD) $(NavigatorV8_test_CXXFLAGS) \
+	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 am_Script_test_OBJECTS = Script.test.$(OBJEXT) Test.glut.$(OBJEXT)
 Script_test_OBJECTS = $(am_Script_test_OBJECTS)
 Script_test_DEPENDENCIES = $(js_LDADD)
 am_ScriptV8_test_OBJECTS = ScriptV8.test.$(OBJEXT) Test.glut.$(OBJEXT)
 ScriptV8_test_OBJECTS = $(am_ScriptV8_test_OBJECTS)
-am__DEPENDENCIES_1 = libeshtml5.a libesv8api.a libeshtml5.a \
-	libesv8api.a libesfontmanager.a
 ScriptV8_test_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am_URL_test_OBJECTS = URL.test.$(OBJEXT)
 URL_test_OBJECTS = $(am_URL_test_OBJECTS)
@@ -438,9 +448,9 @@ SOURCES = $(libesfontmanager_a_SOURCES) $(libeshtml5_a_SOURCES) \
 	$(HTMLInputStream_test_getChar_SOURCES) \
 	$(HTMLParser_test_SOURCES) $(HTMLTokenizer_test_SOURCES) \
 	$(HTTPHeader_test_SOURCES) $(HTTPRequest_test_SOURCES) \
-	$(Navigator_test_SOURCES) $(Script_test_SOURCES) \
-	$(ScriptV8_test_SOURCES) $(URL_test_SOURCES) \
-	$(harness_SOURCES)
+	$(Navigator_test_SOURCES) $(NavigatorV8_test_SOURCES) \
+	$(Script_test_SOURCES) $(ScriptV8_test_SOURCES) \
+	$(URL_test_SOURCES) $(harness_SOURCES)
 DIST_SOURCES = $(libesfontmanager_a_SOURCES) $(libeshtml5_a_SOURCES) \
 	$(libesjsapi_a_SOURCES) $(libesv8api_a_SOURCES) \
 	$(Any_test_SOURCES) $(Box_test_SOURCES) \
@@ -450,9 +460,9 @@ DIST_SOURCES = $(libesfontmanager_a_SOURCES) $(libeshtml5_a_SOURCES) \
 	$(HTMLInputStream_test_getChar_SOURCES) \
 	$(HTMLParser_test_SOURCES) $(HTMLTokenizer_test_SOURCES) \
 	$(HTTPHeader_test_SOURCES) $(HTTPRequest_test_SOURCES) \
-	$(Navigator_test_SOURCES) $(Script_test_SOURCES) \
-	$(ScriptV8_test_SOURCES) $(URL_test_SOURCES) \
-	$(harness_SOURCES)
+	$(Navigator_test_SOURCES) $(NavigatorV8_test_SOURCES) \
+	$(Script_test_SOURCES) $(ScriptV8_test_SOURCES) \
+	$(URL_test_SOURCES) $(harness_SOURCES)
 HEADERS = $(nobase_nodist_include_HEADERS)
 ETAGS = etags
 CTAGS = ctags
@@ -1411,6 +1421,10 @@ ScriptV8_test_SOURCES = ScriptV8.test.cpp Test.glut.cpp
 ScriptV8_test_LDADD = $(v8_LDADD)
 Navigator_test_SOURCES = Navigator.test.cpp Test.glut.cpp
 Navigator_test_LDADD = $(js_LDADD)
+Navigator_test_CXXFLAGS = $(AM_CFLAGS)  -DUSE_JS
+NavigatorV8_test_SOURCES = Navigator.test.cpp Test.glut.cpp
+NavigatorV8_test_LDADD = $(v8_LDADD)
+NavigatorV8_test_CXXFLAGS = $(AM_CFLAGS)  -DUSE_V8
 EXTRA_DIST = \
 	config.h \
 	idl/COPYRIGHT.html \
@@ -1641,7 +1655,10 @@ HTTPRequest.test$(EXEEXT): $(HTTPRequest_test_OBJECTS) $(HTTPRequest_test_DEPEND
 	$(CXXLINK) $(HTTPRequest_test_OBJECTS) $(HTTPRequest_test_LDADD) $(LIBS)
 Navigator.test$(EXEEXT): $(Navigator_test_OBJECTS) $(Navigator_test_DEPENDENCIES) 
 	@rm -f Navigator.test$(EXEEXT)
-	$(CXXLINK) $(Navigator_test_OBJECTS) $(Navigator_test_LDADD) $(LIBS)
+	$(Navigator_test_LINK) $(Navigator_test_OBJECTS) $(Navigator_test_LDADD) $(LIBS)
+NavigatorV8.test$(EXEEXT): $(NavigatorV8_test_OBJECTS) $(NavigatorV8_test_DEPENDENCIES) 
+	@rm -f NavigatorV8.test$(EXEEXT)
+	$(NavigatorV8_test_LINK) $(NavigatorV8_test_OBJECTS) $(NavigatorV8_test_LDADD) $(LIBS)
 Script.test$(EXEEXT): $(Script_test_OBJECTS) $(Script_test_DEPENDENCIES) 
 	@rm -f Script.test$(EXEEXT)
 	$(CXXLINK) $(Script_test_OBJECTS) $(Script_test_LDADD) $(LIBS)
@@ -2063,8 +2080,11 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MutationNameEvent.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MutationNameEventImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Navigator.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Navigator.test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NavigatorImp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NavigatorV8_test-Navigator.test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NavigatorV8_test-Test.glut.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Navigator_test-Navigator.test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Navigator_test-Test.glut.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Node.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NodeFilter.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NodeFilterImp.Po@am__quote@
@@ -7842,6 +7862,62 @@ ScriptV8.obj: v8/ScriptV8.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='v8/ScriptV8.cpp' object='ScriptV8.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ScriptV8.obj `if test -f 'v8/ScriptV8.cpp'; then $(CYGPATH_W) 'v8/ScriptV8.cpp'; else $(CYGPATH_W) '$(srcdir)/v8/ScriptV8.cpp'; fi`
+
+Navigator_test-Navigator.test.o: Navigator.test.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Navigator_test_CXXFLAGS) $(CXXFLAGS) -MT Navigator_test-Navigator.test.o -MD -MP -MF $(DEPDIR)/Navigator_test-Navigator.test.Tpo -c -o Navigator_test-Navigator.test.o `test -f 'Navigator.test.cpp' || echo '$(srcdir)/'`Navigator.test.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/Navigator_test-Navigator.test.Tpo $(DEPDIR)/Navigator_test-Navigator.test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Navigator.test.cpp' object='Navigator_test-Navigator.test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Navigator_test_CXXFLAGS) $(CXXFLAGS) -c -o Navigator_test-Navigator.test.o `test -f 'Navigator.test.cpp' || echo '$(srcdir)/'`Navigator.test.cpp
+
+Navigator_test-Navigator.test.obj: Navigator.test.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Navigator_test_CXXFLAGS) $(CXXFLAGS) -MT Navigator_test-Navigator.test.obj -MD -MP -MF $(DEPDIR)/Navigator_test-Navigator.test.Tpo -c -o Navigator_test-Navigator.test.obj `if test -f 'Navigator.test.cpp'; then $(CYGPATH_W) 'Navigator.test.cpp'; else $(CYGPATH_W) '$(srcdir)/Navigator.test.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/Navigator_test-Navigator.test.Tpo $(DEPDIR)/Navigator_test-Navigator.test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Navigator.test.cpp' object='Navigator_test-Navigator.test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Navigator_test_CXXFLAGS) $(CXXFLAGS) -c -o Navigator_test-Navigator.test.obj `if test -f 'Navigator.test.cpp'; then $(CYGPATH_W) 'Navigator.test.cpp'; else $(CYGPATH_W) '$(srcdir)/Navigator.test.cpp'; fi`
+
+Navigator_test-Test.glut.o: Test.glut.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Navigator_test_CXXFLAGS) $(CXXFLAGS) -MT Navigator_test-Test.glut.o -MD -MP -MF $(DEPDIR)/Navigator_test-Test.glut.Tpo -c -o Navigator_test-Test.glut.o `test -f 'Test.glut.cpp' || echo '$(srcdir)/'`Test.glut.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/Navigator_test-Test.glut.Tpo $(DEPDIR)/Navigator_test-Test.glut.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Test.glut.cpp' object='Navigator_test-Test.glut.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Navigator_test_CXXFLAGS) $(CXXFLAGS) -c -o Navigator_test-Test.glut.o `test -f 'Test.glut.cpp' || echo '$(srcdir)/'`Test.glut.cpp
+
+Navigator_test-Test.glut.obj: Test.glut.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Navigator_test_CXXFLAGS) $(CXXFLAGS) -MT Navigator_test-Test.glut.obj -MD -MP -MF $(DEPDIR)/Navigator_test-Test.glut.Tpo -c -o Navigator_test-Test.glut.obj `if test -f 'Test.glut.cpp'; then $(CYGPATH_W) 'Test.glut.cpp'; else $(CYGPATH_W) '$(srcdir)/Test.glut.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/Navigator_test-Test.glut.Tpo $(DEPDIR)/Navigator_test-Test.glut.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Test.glut.cpp' object='Navigator_test-Test.glut.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Navigator_test_CXXFLAGS) $(CXXFLAGS) -c -o Navigator_test-Test.glut.obj `if test -f 'Test.glut.cpp'; then $(CYGPATH_W) 'Test.glut.cpp'; else $(CYGPATH_W) '$(srcdir)/Test.glut.cpp'; fi`
+
+NavigatorV8_test-Navigator.test.o: Navigator.test.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(NavigatorV8_test_CXXFLAGS) $(CXXFLAGS) -MT NavigatorV8_test-Navigator.test.o -MD -MP -MF $(DEPDIR)/NavigatorV8_test-Navigator.test.Tpo -c -o NavigatorV8_test-Navigator.test.o `test -f 'Navigator.test.cpp' || echo '$(srcdir)/'`Navigator.test.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/NavigatorV8_test-Navigator.test.Tpo $(DEPDIR)/NavigatorV8_test-Navigator.test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Navigator.test.cpp' object='NavigatorV8_test-Navigator.test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(NavigatorV8_test_CXXFLAGS) $(CXXFLAGS) -c -o NavigatorV8_test-Navigator.test.o `test -f 'Navigator.test.cpp' || echo '$(srcdir)/'`Navigator.test.cpp
+
+NavigatorV8_test-Navigator.test.obj: Navigator.test.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(NavigatorV8_test_CXXFLAGS) $(CXXFLAGS) -MT NavigatorV8_test-Navigator.test.obj -MD -MP -MF $(DEPDIR)/NavigatorV8_test-Navigator.test.Tpo -c -o NavigatorV8_test-Navigator.test.obj `if test -f 'Navigator.test.cpp'; then $(CYGPATH_W) 'Navigator.test.cpp'; else $(CYGPATH_W) '$(srcdir)/Navigator.test.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/NavigatorV8_test-Navigator.test.Tpo $(DEPDIR)/NavigatorV8_test-Navigator.test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Navigator.test.cpp' object='NavigatorV8_test-Navigator.test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(NavigatorV8_test_CXXFLAGS) $(CXXFLAGS) -c -o NavigatorV8_test-Navigator.test.obj `if test -f 'Navigator.test.cpp'; then $(CYGPATH_W) 'Navigator.test.cpp'; else $(CYGPATH_W) '$(srcdir)/Navigator.test.cpp'; fi`
+
+NavigatorV8_test-Test.glut.o: Test.glut.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(NavigatorV8_test_CXXFLAGS) $(CXXFLAGS) -MT NavigatorV8_test-Test.glut.o -MD -MP -MF $(DEPDIR)/NavigatorV8_test-Test.glut.Tpo -c -o NavigatorV8_test-Test.glut.o `test -f 'Test.glut.cpp' || echo '$(srcdir)/'`Test.glut.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/NavigatorV8_test-Test.glut.Tpo $(DEPDIR)/NavigatorV8_test-Test.glut.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Test.glut.cpp' object='NavigatorV8_test-Test.glut.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(NavigatorV8_test_CXXFLAGS) $(CXXFLAGS) -c -o NavigatorV8_test-Test.glut.o `test -f 'Test.glut.cpp' || echo '$(srcdir)/'`Test.glut.cpp
+
+NavigatorV8_test-Test.glut.obj: Test.glut.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(NavigatorV8_test_CXXFLAGS) $(CXXFLAGS) -MT NavigatorV8_test-Test.glut.obj -MD -MP -MF $(DEPDIR)/NavigatorV8_test-Test.glut.Tpo -c -o NavigatorV8_test-Test.glut.obj `if test -f 'Test.glut.cpp'; then $(CYGPATH_W) 'Test.glut.cpp'; else $(CYGPATH_W) '$(srcdir)/Test.glut.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/NavigatorV8_test-Test.glut.Tpo $(DEPDIR)/NavigatorV8_test-Test.glut.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Test.glut.cpp' object='NavigatorV8_test-Test.glut.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(NavigatorV8_test_CXXFLAGS) $(CXXFLAGS) -c -o NavigatorV8_test-Test.glut.obj `if test -f 'Test.glut.cpp'; then $(CYGPATH_W) 'Test.glut.cpp'; else $(CYGPATH_W) '$(srcdir)/Test.glut.cpp'; fi`
 
 harness.o: harness/harness.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT harness.o -MD -MP -MF $(DEPDIR)/harness.Tpo -c -o harness.o `test -f 'harness/harness.cpp' || echo '$(srcdir)/'`harness/harness.cpp

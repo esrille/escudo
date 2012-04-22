@@ -1118,7 +1118,8 @@ bin_PROGRAMS = \
 	Box.test \
 	Script.test \
 	ScriptV8.test \
-	Navigator.test
+	Navigator.test \
+	NavigatorV8.test
 
 bin_PROGRAMS : $(LDADD)
 
@@ -1175,6 +1176,11 @@ ScriptV8_test_LDADD = $(v8_LDADD)
 
 Navigator_test_SOURCES = Navigator.test.cpp Test.glut.cpp
 Navigator_test_LDADD = $(js_LDADD)
+Navigator_test_CXXFLAGS = $(AM_CFLAGS)  -DUSE_JS
+
+NavigatorV8_test_SOURCES = Navigator.test.cpp Test.glut.cpp
+NavigatorV8_test_LDADD = $(v8_LDADD)
+NavigatorV8_test_CXXFLAGS = $(AM_CFLAGS)  -DUSE_V8
 
 clean-local:
 	rm -rf org css html $(generated_sources) $(generated_headers) $(generated_scanners) *.output
