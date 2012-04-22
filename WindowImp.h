@@ -76,6 +76,8 @@ class WindowImp : public ObjectMixin<WindowImp>
     unsigned width;
     unsigned height;
     bool redisplay;  // set true to force redisplay
+    bool zoomable;
+    float zoom;
 
 public:
     WindowImp(WindowImp* parent = 0);
@@ -102,6 +104,10 @@ public:
     void refreshView();
 
     DocumentWindowPtr activate();
+
+    void enableZoom(bool value);
+    float getZoom() const;
+    void setZoom(float value);
 
     // mouse()
     //   button:

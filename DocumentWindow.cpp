@@ -117,13 +117,13 @@ void DocumentWindow::handleClick(events::Event event)
         moveY = mouse.getScreenY();
         break;
     case 1:
-        view->setZoom(1.0f);
+        imp->setZoom(1.0f);
         break;
     case 3:
-        view->setZoom(view->getZoom() - 0.1f);
+        imp->setZoom(imp->getZoom() - 0.1f);
         break;
     case 4:
-        view->setZoom(view->getZoom() + 0.1f);
+        imp->setZoom(imp->getZoom() + 0.1f);
         break;
     case 7:
         defaultView.getHistory().back();

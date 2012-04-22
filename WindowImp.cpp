@@ -48,7 +48,9 @@ WindowImp::WindowImp(WindowImp* parent) :
     buttons(0),
     width(816),     // US letter size, 96 DPI
     height(1056),
-    redisplay(false)
+    redisplay(false),
+    zoomable(true),
+    zoom(1.0f)
 {
     if (parent)
         parent->childWindows.push_back(this);
@@ -81,6 +83,25 @@ DocumentWindowPtr WindowImp::activate()
     return 0;
 }
 
+void WindowImp::enableZoom(bool value)
+{
+    zoomable = value;
+}
+
+float WindowImp::getZoom() const
+{
+    return zoom;
+}
+
+void WindowImp::setZoom(float value)
+{
+    if (zoomable) {
+        zoom = value;
+        if (view)
+            view->setZoom(zoom);
+    }
+}
+
 void WindowImp::refreshView()
 {
     if (!window || !window->getDocument())
@@ -92,6 +113,7 @@ void WindowImp::refreshView()
         return;
     view->cascade();
     view->setSize(width, height);
+    view->setZoom(zoom);
     boxTree = view->layOut();
     detail = 0;
     redisplay = true;

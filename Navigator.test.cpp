@@ -54,8 +54,11 @@ int main(int argc, char* argv[])
     if (4 <= argc)
         getDOMImplementation()->setUserCSSStyleSheet(loadStyleSheet(argv[2]));
 
-    window = new WindowImp();
-    window.open(utfconv(argv[argc - 1]), u"_self", u"", true);
+    // Set privileges to the navigator window.
+    WindowImp* imp = new WindowImp();
+    window = imp;
+    imp->enableZoom(false);
+    imp->open(utfconv(argv[argc - 1]), u"_self", u"", true);
 
     glutMainLoop();
 
