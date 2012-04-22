@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-// #define DEBUG 1 // for JS_DumpHeap
-
 #include <GL/freeglut.h>
 
-#include "js/Script.h"
-
 #include "DOMImplementationImp.h"
+#include "ECMAScript.h"
 #include "WindowImp.h"
 #include "font/FontDatabase.h"
 
 #include "Test.util.h"
+
+#ifdef USE_V8
+#include "v8/ScriptV8.h"
+#endif  // USE_V8
 
 using namespace org::w3c::dom::bootstrap;
 using namespace org::w3c::dom;
@@ -33,6 +34,10 @@ html::Window window(0);
 
 int main(int argc, char* argv[])
 {
+#ifdef USE_V8
+    v8::HandleScope handleScope;
+#endif  // USE_V8
+
     if (argc < 3) {
         std::cout << "usage : " << argv[0] << " default.css [user.css] url\n";
         return EXIT_FAILURE;
@@ -55,10 +60,6 @@ int main(int argc, char* argv[])
     glutMainLoop();
 
     window = 0;
-
-#ifdef DEBUG
-    JS_DumpHeap(jscontext, stdout, 0, 0, 0, 32, 0);
-#endif
 
     ECMAScriptContext::shutDown();
 }

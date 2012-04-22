@@ -412,12 +412,18 @@ am__DEPENDENCIES_1 = libeshtml5.a libesv8api.a libeshtml5.a \
 NavigatorV8_test_DEPENDENCIES = $(am__DEPENDENCIES_1)
 NavigatorV8_test_LINK = $(CXXLD) $(NavigatorV8_test_CXXFLAGS) \
 	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-am_Script_test_OBJECTS = Script.test.$(OBJEXT) Test.glut.$(OBJEXT)
+am_Script_test_OBJECTS = Script_test-Script.test.$(OBJEXT) \
+	Script_test-Test.glut.$(OBJEXT)
 Script_test_OBJECTS = $(am_Script_test_OBJECTS)
 Script_test_DEPENDENCIES = $(js_LDADD)
-am_ScriptV8_test_OBJECTS = ScriptV8.test.$(OBJEXT) Test.glut.$(OBJEXT)
+Script_test_LINK = $(CXXLD) $(Script_test_CXXFLAGS) $(CXXFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+am_ScriptV8_test_OBJECTS = ScriptV8_test-Script.test.$(OBJEXT) \
+	ScriptV8_test-Test.glut.$(OBJEXT)
 ScriptV8_test_OBJECTS = $(am_ScriptV8_test_OBJECTS)
 ScriptV8_test_DEPENDENCIES = $(am__DEPENDENCIES_1)
+ScriptV8_test_LINK = $(CXXLD) $(ScriptV8_test_CXXFLAGS) $(CXXFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 am_URL_test_OBJECTS = URL.test.$(OBJEXT)
 URL_test_OBJECTS = $(am_URL_test_OBJECTS)
 URL_test_DEPENDENCIES = $(js_LDADD)
@@ -1417,14 +1423,16 @@ HTTPRequest_test_SOURCES = HTTPRequest.test.cpp
 HTTPRequest_test_LDADD = $(js_LDADD)
 Script_test_SOURCES = Script.test.cpp Test.glut.cpp
 Script_test_LDADD = $(js_LDADD)
-ScriptV8_test_SOURCES = ScriptV8.test.cpp Test.glut.cpp
+Script_test_CXXFLAGS = $(AM_CFLAGS) -DUSE_JS
+ScriptV8_test_SOURCES = Script.test.cpp Test.glut.cpp
 ScriptV8_test_LDADD = $(v8_LDADD)
+ScriptV8_test_CXXFLAGS = $(AM_CFLAGS) -DUSE_V8
 Navigator_test_SOURCES = Navigator.test.cpp Test.glut.cpp
 Navigator_test_LDADD = $(js_LDADD)
-Navigator_test_CXXFLAGS = $(AM_CFLAGS)  -DUSE_JS
+Navigator_test_CXXFLAGS = $(AM_CFLAGS) -DUSE_JS
 NavigatorV8_test_SOURCES = Navigator.test.cpp Test.glut.cpp
 NavigatorV8_test_LDADD = $(v8_LDADD)
-NavigatorV8_test_CXXFLAGS = $(AM_CFLAGS)  -DUSE_V8
+NavigatorV8_test_CXXFLAGS = $(AM_CFLAGS) -DUSE_V8
 EXTRA_DIST = \
 	config.h \
 	idl/COPYRIGHT.html \
@@ -1661,10 +1669,10 @@ NavigatorV8.test$(EXEEXT): $(NavigatorV8_test_OBJECTS) $(NavigatorV8_test_DEPEND
 	$(NavigatorV8_test_LINK) $(NavigatorV8_test_OBJECTS) $(NavigatorV8_test_LDADD) $(LIBS)
 Script.test$(EXEEXT): $(Script_test_OBJECTS) $(Script_test_DEPENDENCIES) 
 	@rm -f Script.test$(EXEEXT)
-	$(CXXLINK) $(Script_test_OBJECTS) $(Script_test_LDADD) $(LIBS)
+	$(Script_test_LINK) $(Script_test_OBJECTS) $(Script_test_LDADD) $(LIBS)
 ScriptV8.test$(EXEEXT): $(ScriptV8_test_OBJECTS) $(ScriptV8_test_DEPENDENCIES) 
 	@rm -f ScriptV8.test$(EXEEXT)
-	$(CXXLINK) $(ScriptV8_test_OBJECTS) $(ScriptV8_test_LDADD) $(LIBS)
+	$(ScriptV8_test_LINK) $(ScriptV8_test_OBJECTS) $(ScriptV8_test_LDADD) $(LIBS)
 URL.test$(EXEEXT): $(URL_test_OBJECTS) $(URL_test_DEPENDENCIES) 
 	@rm -f URL.test$(EXEEXT)
 	$(CXXLINK) $(URL_test_OBJECTS) $(URL_test_LDADD) $(LIBS)
@@ -2115,15 +2123,16 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Screen.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ScreenImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Script.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Script.test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ScriptV8.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ScriptV8.test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ScriptV8_test-Script.test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ScriptV8_test-Test.glut.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Script_test-Script.test.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Script_test-Test.glut.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StackingContext.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StyleSheet.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/StyleSheetImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Table.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TableGL.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Test.glut.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Test.util.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Text.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/TextEvent.Po@am__quote@
@@ -7918,6 +7927,62 @@ NavigatorV8_test-Test.glut.obj: Test.glut.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Test.glut.cpp' object='NavigatorV8_test-Test.glut.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(NavigatorV8_test_CXXFLAGS) $(CXXFLAGS) -c -o NavigatorV8_test-Test.glut.obj `if test -f 'Test.glut.cpp'; then $(CYGPATH_W) 'Test.glut.cpp'; else $(CYGPATH_W) '$(srcdir)/Test.glut.cpp'; fi`
+
+Script_test-Script.test.o: Script.test.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Script_test_CXXFLAGS) $(CXXFLAGS) -MT Script_test-Script.test.o -MD -MP -MF $(DEPDIR)/Script_test-Script.test.Tpo -c -o Script_test-Script.test.o `test -f 'Script.test.cpp' || echo '$(srcdir)/'`Script.test.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/Script_test-Script.test.Tpo $(DEPDIR)/Script_test-Script.test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Script.test.cpp' object='Script_test-Script.test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Script_test_CXXFLAGS) $(CXXFLAGS) -c -o Script_test-Script.test.o `test -f 'Script.test.cpp' || echo '$(srcdir)/'`Script.test.cpp
+
+Script_test-Script.test.obj: Script.test.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Script_test_CXXFLAGS) $(CXXFLAGS) -MT Script_test-Script.test.obj -MD -MP -MF $(DEPDIR)/Script_test-Script.test.Tpo -c -o Script_test-Script.test.obj `if test -f 'Script.test.cpp'; then $(CYGPATH_W) 'Script.test.cpp'; else $(CYGPATH_W) '$(srcdir)/Script.test.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/Script_test-Script.test.Tpo $(DEPDIR)/Script_test-Script.test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Script.test.cpp' object='Script_test-Script.test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Script_test_CXXFLAGS) $(CXXFLAGS) -c -o Script_test-Script.test.obj `if test -f 'Script.test.cpp'; then $(CYGPATH_W) 'Script.test.cpp'; else $(CYGPATH_W) '$(srcdir)/Script.test.cpp'; fi`
+
+Script_test-Test.glut.o: Test.glut.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Script_test_CXXFLAGS) $(CXXFLAGS) -MT Script_test-Test.glut.o -MD -MP -MF $(DEPDIR)/Script_test-Test.glut.Tpo -c -o Script_test-Test.glut.o `test -f 'Test.glut.cpp' || echo '$(srcdir)/'`Test.glut.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/Script_test-Test.glut.Tpo $(DEPDIR)/Script_test-Test.glut.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Test.glut.cpp' object='Script_test-Test.glut.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Script_test_CXXFLAGS) $(CXXFLAGS) -c -o Script_test-Test.glut.o `test -f 'Test.glut.cpp' || echo '$(srcdir)/'`Test.glut.cpp
+
+Script_test-Test.glut.obj: Test.glut.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Script_test_CXXFLAGS) $(CXXFLAGS) -MT Script_test-Test.glut.obj -MD -MP -MF $(DEPDIR)/Script_test-Test.glut.Tpo -c -o Script_test-Test.glut.obj `if test -f 'Test.glut.cpp'; then $(CYGPATH_W) 'Test.glut.cpp'; else $(CYGPATH_W) '$(srcdir)/Test.glut.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/Script_test-Test.glut.Tpo $(DEPDIR)/Script_test-Test.glut.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Test.glut.cpp' object='Script_test-Test.glut.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(Script_test_CXXFLAGS) $(CXXFLAGS) -c -o Script_test-Test.glut.obj `if test -f 'Test.glut.cpp'; then $(CYGPATH_W) 'Test.glut.cpp'; else $(CYGPATH_W) '$(srcdir)/Test.glut.cpp'; fi`
+
+ScriptV8_test-Script.test.o: Script.test.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ScriptV8_test_CXXFLAGS) $(CXXFLAGS) -MT ScriptV8_test-Script.test.o -MD -MP -MF $(DEPDIR)/ScriptV8_test-Script.test.Tpo -c -o ScriptV8_test-Script.test.o `test -f 'Script.test.cpp' || echo '$(srcdir)/'`Script.test.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/ScriptV8_test-Script.test.Tpo $(DEPDIR)/ScriptV8_test-Script.test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Script.test.cpp' object='ScriptV8_test-Script.test.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ScriptV8_test_CXXFLAGS) $(CXXFLAGS) -c -o ScriptV8_test-Script.test.o `test -f 'Script.test.cpp' || echo '$(srcdir)/'`Script.test.cpp
+
+ScriptV8_test-Script.test.obj: Script.test.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ScriptV8_test_CXXFLAGS) $(CXXFLAGS) -MT ScriptV8_test-Script.test.obj -MD -MP -MF $(DEPDIR)/ScriptV8_test-Script.test.Tpo -c -o ScriptV8_test-Script.test.obj `if test -f 'Script.test.cpp'; then $(CYGPATH_W) 'Script.test.cpp'; else $(CYGPATH_W) '$(srcdir)/Script.test.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/ScriptV8_test-Script.test.Tpo $(DEPDIR)/ScriptV8_test-Script.test.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Script.test.cpp' object='ScriptV8_test-Script.test.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ScriptV8_test_CXXFLAGS) $(CXXFLAGS) -c -o ScriptV8_test-Script.test.obj `if test -f 'Script.test.cpp'; then $(CYGPATH_W) 'Script.test.cpp'; else $(CYGPATH_W) '$(srcdir)/Script.test.cpp'; fi`
+
+ScriptV8_test-Test.glut.o: Test.glut.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ScriptV8_test_CXXFLAGS) $(CXXFLAGS) -MT ScriptV8_test-Test.glut.o -MD -MP -MF $(DEPDIR)/ScriptV8_test-Test.glut.Tpo -c -o ScriptV8_test-Test.glut.o `test -f 'Test.glut.cpp' || echo '$(srcdir)/'`Test.glut.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/ScriptV8_test-Test.glut.Tpo $(DEPDIR)/ScriptV8_test-Test.glut.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Test.glut.cpp' object='ScriptV8_test-Test.glut.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ScriptV8_test_CXXFLAGS) $(CXXFLAGS) -c -o ScriptV8_test-Test.glut.o `test -f 'Test.glut.cpp' || echo '$(srcdir)/'`Test.glut.cpp
+
+ScriptV8_test-Test.glut.obj: Test.glut.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ScriptV8_test_CXXFLAGS) $(CXXFLAGS) -MT ScriptV8_test-Test.glut.obj -MD -MP -MF $(DEPDIR)/ScriptV8_test-Test.glut.Tpo -c -o ScriptV8_test-Test.glut.obj `if test -f 'Test.glut.cpp'; then $(CYGPATH_W) 'Test.glut.cpp'; else $(CYGPATH_W) '$(srcdir)/Test.glut.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/ScriptV8_test-Test.glut.Tpo $(DEPDIR)/ScriptV8_test-Test.glut.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Test.glut.cpp' object='ScriptV8_test-Test.glut.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ScriptV8_test_CXXFLAGS) $(CXXFLAGS) -c -o ScriptV8_test-Test.glut.obj `if test -f 'Test.glut.cpp'; then $(CYGPATH_W) 'Test.glut.cpp'; else $(CYGPATH_W) '$(srcdir)/Test.glut.cpp'; fi`
 
 harness.o: harness/harness.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT harness.o -MD -MP -MF $(DEPDIR)/harness.Tpo -c -o harness.o `test -f 'harness/harness.cpp' || echo '$(srcdir)/'`harness/harness.cpp

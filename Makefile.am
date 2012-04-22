@@ -1170,17 +1170,19 @@ HTTPRequest_test_LDADD = $(js_LDADD)
 
 Script_test_SOURCES = Script.test.cpp Test.glut.cpp
 Script_test_LDADD = $(js_LDADD)
+Script_test_CXXFLAGS = $(AM_CFLAGS) -DUSE_JS
 
-ScriptV8_test_SOURCES = ScriptV8.test.cpp Test.glut.cpp
+ScriptV8_test_SOURCES = Script.test.cpp Test.glut.cpp
 ScriptV8_test_LDADD = $(v8_LDADD)
+ScriptV8_test_CXXFLAGS = $(AM_CFLAGS) -DUSE_V8
 
 Navigator_test_SOURCES = Navigator.test.cpp Test.glut.cpp
 Navigator_test_LDADD = $(js_LDADD)
-Navigator_test_CXXFLAGS = $(AM_CFLAGS)  -DUSE_JS
+Navigator_test_CXXFLAGS = $(AM_CFLAGS) -DUSE_JS
 
 NavigatorV8_test_SOURCES = Navigator.test.cpp Test.glut.cpp
 NavigatorV8_test_LDADD = $(v8_LDADD)
-NavigatorV8_test_CXXFLAGS = $(AM_CFLAGS)  -DUSE_V8
+NavigatorV8_test_CXXFLAGS = $(AM_CFLAGS) -DUSE_V8
 
 clean-local:
 	rm -rf org css html $(generated_sources) $(generated_headers) $(generated_scanners) *.output
