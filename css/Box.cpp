@@ -24,9 +24,6 @@
 #include <org/w3c/dom/Document.h>
 #include <org/w3c/dom/Element.h>
 #include <org/w3c/dom/Text.h>
-#include <org/w3c/dom/html/HTMLIFrameElement.h>
-#include <org/w3c/dom/html/HTMLImageElement.h>
-#include <org/w3c/dom/html/HTMLDivElement.h>
 
 #include "CSSSerialize.h"
 #include "CSSStyleDeclarationImp.h"

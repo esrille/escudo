@@ -83,19 +83,17 @@ DocumentWindowPtr WindowImp::activate()
 
 void WindowImp::refreshView()
 {
-    assert(window->getDocument());
+    if (!window || !window->getDocument())
+        return;
 
     delete view;
-
     view = new(std::nothrow) ViewCSSImp(window, getDOMImplementation()->getDefaultCSSStyleSheet(), getDOMImplementation()->getUserCSSStyleSheet());
     if (!view)
         return;
     view->cascade();
     view->setSize(width, height);
     boxTree = view->layOut();
-
     detail = 0;
-
     redisplay = true;
 }
 
@@ -172,7 +170,7 @@ bool WindowImp::poll()
                 recordTime("  flagged");
                 if (flags & 1) {
                     view->cascade();
-                    view->setSize(8.5f * 96, 11.0f * 96);  // US letter size, 96 DPI
+                    view->setSize(width, height);
                     recordTime("  cascade");
                     boxTree = view->layOut();
                     recordTime("  layout ");

@@ -38,6 +38,11 @@ void reshape(int w, int h)
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+
+    if (WindowImp* imp = static_cast<WindowImp*>(window.self())) {
+        imp->setSize(w, h);
+        imp->refreshView();
+    }
 }
 
 void display()
