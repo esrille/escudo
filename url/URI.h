@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,10 +41,6 @@ class URI
 
     void clear();
 
-    bool isPort80() const {
-        return portStart + 2 == portEnd && uri[portStart] == '8' && uri[portStart + 1] == '0';
-    }
-
 public:
     bool isEmpty() const {
         return uri.empty();
@@ -58,16 +54,12 @@ public:
         return uri.substr(0, protocolEnd);
     }
     std::string getHost() const {
-        if (isPort80())
-            return getHostname();
         return uri.substr(hostStart, hostEnd - hostStart);
     }
     std::string getHostname() const {
         return uri.substr(hostnameStart, hostnameEnd - hostnameStart);
     }
-    std::string getPort() const {
-        return uri.substr(portStart, portEnd - portStart);
-    }
+    std::string getPort() const;
     std::string getPathname() const {
         return uri.substr(pathnameStart, pathnameEnd - pathnameStart);
     }

@@ -67,10 +67,6 @@ class URL
     bool parse();
     bool parseRelative(const URL& base);
 
-    bool isPort80() const {
-        return portStart + 2 == portEnd && url[portStart] == '8' && url[portStart + 1] == '0';
-    }
-
 public:
     bool isEmpty() const {
         return url.empty();
@@ -85,8 +81,6 @@ public:
     }
     void setProtocol(std::u16string protocol);
     std::u16string getHost() const {
-        if (isPort80())
-            return getHostname();
         return url.substr(hostStart, hostEnd - hostStart);
     }
     void setHost(std::u16string host);
@@ -94,9 +88,7 @@ public:
         return url.substr(hostnameStart, hostnameEnd - hostnameStart);
     }
     void setHostname(std::u16string hostname);
-    std::u16string getPort() const {
-        return url.substr(portStart, portEnd - portStart);
-    }
+    std::u16string getPort() const;
     void setPort(std::u16string port);
     std::u16string getPathname() const {
         return url.substr(pathnameStart, pathnameEnd - pathnameStart);

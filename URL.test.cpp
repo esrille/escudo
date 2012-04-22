@@ -109,52 +109,52 @@ int main()
     // cf. RFC 3986
     URL base(u"http://a/b/c/d;p?q");
     test(base);
-    test(base, u"g", u"http://a:80/b/c/g");
-    test(base, u"./g", u"http://a:80/b/c/g");
-    test(base, u"g/", u"http://a:80/b/c/g/");
-    test(base, u"/g", u"http://a:80/g");
-    test(base, u"//g", u"http://g:80/");
-    test(base, u"?y", u"http://a:80/b/c/d;p?y");
-    test(base, u"g?y", u"http://a:80/b/c/g?y");
-    test(base, u"#s", u"http://a:80/b/c/d;p?q#s");
-    test(base, u"g#s", u"http://a:80/b/c/g#s");
-    test(base, u"g?y#s", u"http://a:80/b/c/g?y#s");
-    test(base, u";x", u"http://a:80/b/c/;x");
-    test(base, u"g;x", u"http://a:80/b/c/g;x");
-    test(base, u"g;x?y#s", u"http://a:80/b/c/g;x?y#s");
-    test(base, u"", u"http://a:80/b/c/d;p?q");
-    test(base, u".", u"http://a:80/b/c/");
-    test(base, u"./", u"http://a:80/b/c/");
-    test(base, u"..", u"http://a:80/b/");
-    test(base, u"../", u"http://a:80/b/");
-    test(base, u"../g", u"http://a:80/b/g");
-    test(base, u"../..", u"http://a:80/");
-    test(base, u"../../", u"http://a:80/");
-    test(base, u"../../g", u"http://a:80/g");
+    test(base, u"g", u"http://a/b/c/g");
+    test(base, u"./g", u"http://a/b/c/g");
+    test(base, u"g/", u"http://a/b/c/g/");
+    test(base, u"/g", u"http://a/g");
+    test(base, u"//g", u"http://g/");
+    test(base, u"?y", u"http://a/b/c/d;p?y");
+    test(base, u"g?y", u"http://a/b/c/g?y");
+    test(base, u"#s", u"http://a/b/c/d;p?q#s");
+    test(base, u"g#s", u"http://a/b/c/g#s");
+    test(base, u"g?y#s", u"http://a/b/c/g?y#s");
+    test(base, u";x", u"http://a/b/c/;x");
+    test(base, u"g;x", u"http://a/b/c/g;x");
+    test(base, u"g;x?y#s", u"http://a/b/c/g;x?y#s");
+    test(base, u"", u"http://a/b/c/d;p?q");
+    test(base, u".", u"http://a/b/c/");
+    test(base, u"./", u"http://a/b/c/");
+    test(base, u"..", u"http://a/b/");
+    test(base, u"../", u"http://a/b/");
+    test(base, u"../g", u"http://a/b/g");
+    test(base, u"../..", u"http://a/");
+    test(base, u"../../", u"http://a/");
+    test(base, u"../../g", u"http://a/g");
 
-    test(base, u"../../../g", u"http://a:80/g");
-    test(base, u"../../../../g", u"http://a:80/g");
+    test(base, u"../../../g", u"http://a/g");
+    test(base, u"../../../../g", u"http://a/g");
 
-    test(base, u"/./g", u"http://a:80/g");
-    test(base, u"/../g", u"http://a:80/g");
-    test(base, u"g.", u"http://a:80/b/c/g.");
-    test(base, u".g", u"http://a:80/b/c/.g");
-    test(base, u"g..", u"http://a:80/b/c/g..");
-    test(base, u"..g", u"http://a:80/b/c/..g");
+    test(base, u"/./g", u"http://a/g");
+    test(base, u"/../g", u"http://a/g");
+    test(base, u"g.", u"http://a/b/c/g.");
+    test(base, u".g", u"http://a/b/c/.g");
+    test(base, u"g..", u"http://a/b/c/g..");
+    test(base, u"..g", u"http://a/b/c/..g");
 
-    test(base, u"./../g", u"http://a:80/b/g");
-    test(base, u"./g/.", u"http://a:80/b/c/g/");
-    test(base, u"g/./h", u"http://a:80/b/c/g/h");
-    test(base, u"g/../h", u"http://a:80/b/c/h");
-    test(base, u"g;x=1/./y", u"http://a:80/b/c/g;x=1/y");
-    test(base, u"g;x=1/../y", u"http://a:80/b/c/y");
+    test(base, u"./../g", u"http://a/b/g");
+    test(base, u"./g/.", u"http://a/b/c/g/");
+    test(base, u"g/./h", u"http://a/b/c/g/h");
+    test(base, u"g/../h", u"http://a/b/c/h");
+    test(base, u"g;x=1/./y", u"http://a/b/c/g;x=1/y");
+    test(base, u"g;x=1/../y", u"http://a/b/c/y");
 
-    test(base, u"g?y/./x", u"http://a:80/b/c/g?y/./x");
-    test(base, u"g?y/../x", u"http://a:80/b/c/g?y/../x");
-    test(base, u"g#s/./x", u"http://a:80/b/c/g#s/./x");
-    test(base, u"g#s/../x", u"http://a:80/b/c/g#s/../x");
+    test(base, u"g?y/./x", u"http://a/b/c/g?y/./x");
+    test(base, u"g?y/../x", u"http://a/b/c/g?y/../x");
+    test(base, u"g#s/./x", u"http://a/b/c/g#s/./x");
+    test(base, u"g#s/../x", u"http://a/b/c/g#s/../x");
 
-    test(base, u"http:g", u"http://a:80/b/c/g");  // for backward compatibility
+    test(base, u"http:g", u"http://a/b/c/g");  // for backward compatibility
 
     // cf. RFC 1738; File URL - file://<host>/<path>
     URL f1(u"file://localhost/etc/hosts");

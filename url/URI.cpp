@@ -42,7 +42,7 @@ std::string percentEncode(const std::u16string& string, size_t pos, size_t n)
                 char hex[3];
                 sprintf(hex, "%02X", *p & 0xff);
                 encoding += hex;
-            } else 
+            } else
                 encoding += *p;
         }
     }
@@ -119,6 +119,17 @@ URI::URI(const URL& url)
         hashEnd = uri.length();
     } else
         hashStart = hashEnd = 0;
+}
+
+std::string URI::getPort() const
+{
+    if (portStart < portEnd)
+        return uri.substr(portStart, portEnd - portStart);
+    if (!uri.compare(0, 5, "http:"))
+        return "80";
+    if (!uri.compare(0, 6, "https:"))
+        return "443";
+    return "";
 }
 
 }}}}  // org::w3c::dom::bootstrap

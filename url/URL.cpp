@@ -404,14 +404,14 @@ bool URL::parseHTTP(size_t& pos)
     hostnameEnd = pos;
 
     //  [ ":" port ]
-    if (url.length() <= pos || url[pos] != ':')
-        url.insert(pos, u":80", 3);  // TODO: https 443
-    assert(url[pos] == ':');
-    ++pos;
-    portStart = pos;
-    while (pos < url.length() && isDigit(url[pos]))
+    if (pos < url.length() && url[pos] == ':') {
         ++pos;
-    portEnd = pos;
+        portStart = pos;
+        while (pos < url.length() && isDigit(url[pos]))
+            ++pos;
+        portEnd = pos;
+    } else
+        portStart = portEnd = pos;
     hostEnd = pos;
 
     // [ path-absolute [ "?" iquery ]]
@@ -463,14 +463,14 @@ bool URL::parseHTTPRelative(const URL& base)
             hostnameEnd = pos;
 
             //  [ ":" port ]
-            if (url.length() <= pos || url[pos] != ':')
-                url.insert(pos, u":80", 3);  // TODO: https 443
-            assert(url[pos] == ':');
-            ++pos;
-            portStart = pos;
-            while (pos < url.length() && isDigit(url[pos]))
+            if (pos < url.length() && url[pos] == ':') {
                 ++pos;
-            portEnd = pos;
+                portStart = pos;
+                while (pos < url.length() && isDigit(url[pos]))
+                    ++pos;
+                portEnd = pos;
+            } else
+                portStart = portEnd = pos;
             hostEnd = pos;
 
             // An empty abs_path is equivalent to an abs_path of "/"
@@ -685,7 +685,7 @@ bool URL::parseRelative(const URL& base)
     protocolEnd = base.protocolEnd;
     ptrdiff_t offset = 0;
     if (hostStart == hostEnd) {
-        targetURL += base.url.substr(base.hostStart, base.hostEnd - base.hostStart);
+        targetURL += base.getHost();
         hostStart = base.hostStart;
         hostEnd = base.hostEnd;
         hostnameStart = base.hostnameStart;
@@ -693,7 +693,7 @@ bool URL::parseRelative(const URL& base)
         portStart = base.portStart;
         portEnd = base.portEnd;
     } else {
-        targetURL += url.substr(hostStart, hostEnd - hostStart);
+        targetURL += getHost();
         ptrdiff_t d = base.hostStart - hostStart;
         hostStart += d;
         hostEnd += d;
@@ -807,6 +807,16 @@ URL::URL(const URL&other) :
     hashStart(other.hashStart),
     hashEnd(other.hashEnd)
 {
+}
+
+std::u16string URL::getPort() const {
+    if (portStart < portEnd)
+        return url.substr(portStart, portEnd - portStart);
+    if (!url.compare(0, 5, u"http:"))
+        return u"80";
+    if (!url.compare(0, 6, u"https:"))
+        return u"443";
+    return u"";
 }
 
 }}}}  // org::w3c::dom::bootstrap
