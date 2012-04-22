@@ -246,7 +246,7 @@ generated_headers = \
 	org/w3c/dom/views/ClientRectList.h \
 	org/w3c/dom/xbl2/XBLContentElement.h \
 	org/w3c/dom/xbl2/XBLImplementation.h \
-	org/w3c/dom/xbl2/XBLImplementationList.h 
+	org/w3c/dom/xbl2/XBLImplementationList.h
 
 #	org/w3c/dom/html/AudioTrack.h \
 #	org/w3c/dom/html/AudioTrackList.h \
@@ -1117,7 +1117,8 @@ bin_PROGRAMS = \
 	CSSStyle.test \
 	Box.test \
 	Script.test \
-	ScriptV8.test
+	ScriptV8.test \
+	Navigator.test
 
 bin_PROGRAMS : $(LDADD)
 
@@ -1171,6 +1172,9 @@ Script_test_LDADD = $(js_LDADD)
 
 ScriptV8_test_SOURCES = ScriptV8.test.cpp Test.glut.cpp
 ScriptV8_test_LDADD = $(v8_LDADD)
+
+Navigator_test_SOURCES = Navigator.test.cpp Test.glut.cpp
+Navigator_test_LDADD = $(js_LDADD)
 
 clean-local:
 	rm -rf org css html $(generated_sources) $(generated_headers) $(generated_scanners) *.output
