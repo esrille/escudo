@@ -179,7 +179,6 @@ void HTMLInputElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
             element.appendChild(text);
             style->setCssText(u"display: inline-block; white-space: pre; background-color: white; border: 2px inset; text-align: left; padding: 1px; min-height: 1em;");
             setShadowTree(element);
-            addEventListener(u"click", &clickListener);
             addEventListener(u"keydown", &keydownListener);
         }
         break;
@@ -192,7 +191,6 @@ void HTMLInputElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
             style->setCssText(u"display: inline-block; border: 2px outset; padding: 1px; text-align: center; min-height: 1em;");
             setShadowTree(element);
             addEventListener(u"click", &clickListener);
-            addEventListener(u"keydown", &keydownListener);
         }
         break;
     }
@@ -203,13 +201,18 @@ void HTMLInputElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
             element.appendChild(text);
             style->setCssText(u"display: inline-block; border-style: none; padding: 2px;");
             setShadowTree(element);
-            addEventListener(u"click", &clickListener);
-            addEventListener(u"keydown", &keydownListener);
         }
         break;
     }
     default:
         HTMLElementImp::generateShadowContent(style);
+        switch (type) {
+        case SubmitButton:
+            addEventListener(u"click", &clickListener);
+            break;
+        default:
+            break;
+        }
         break;
     }
 }
