@@ -887,11 +887,11 @@ float BlockLevelBox::getBaseline(const Box* box) const
     float h = box->getBlankTop();
     for (Box* i = box->getFirstChild(); i; i = i->getNextSibling()) {
         if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(i))
-            baseline = h + table->getBaseline();
+            baseline = h + table->getBaseline() + table->offsetV;
         else if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(i)) {
             float x = getBaseline(block);
             if (!isnanf(x))
-                baseline = h + x;
+                baseline = h + x + block->offsetV;
         } else if (LineBox* lineBox = dynamic_cast<LineBox*>(i)) {
             if (lineBox->hasInlineBox())
                 baseline = h + lineBox->getBaseline();
