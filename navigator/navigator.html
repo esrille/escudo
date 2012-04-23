@@ -219,6 +219,7 @@ function forward(e) {
 function reload(e) {
     var url = document.getElementById('location').value;
     document.getElementById('main').src = url;
+    document.getElementById('main').focus();
     e.preventDefault();
 }
 function stop(e) {
@@ -234,6 +235,7 @@ function keypress(e) {
     if (e.keyCode == 13) {
         var url = document.getElementById('location').value;
         document.getElementById('main').src = url;
+        document.getElementById('main').focus();
         e.preventDefault();
     }
 }

@@ -125,7 +125,7 @@ input[type=checkbox] { binding: input-checkbox; } /* case-insensitive */
 input[type=radio] {
     binding: url(navigator.html#input-radio);
     display: inline-block;
-    border-style:  none;
+    border-style: none;
     padding: 2px;
 }
 input[type=file] { binding: input-file; } /* case-insensitive */
