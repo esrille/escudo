@@ -23,13 +23,6 @@
   ({
     xblEnteredDocument: function() {
         this.boundElement.tabIndex = 0;
-        this.boundElement.style.display = 'inline-block';
-        this.boundElement.style.whiteSpace = 'pre';
-        this.boundElement.style.backgroundColor = 'white';
-        this.boundElement.style.border = '2px inset';
-        this.boundElement.style.textAlign = 'left';
-        this.boundElement.style.padding = '1px';
-        this.boundElement.style.minHeight = '1em';
         var before = document.createTextNode(this.boundElement.value);
         var after = document.createTextNode('');
         this.shadowTree.firstChild.appendChild(before);
@@ -95,9 +88,6 @@
   ({
     xblEnteredDocument: function() {
         this.boundElement.tabIndex = 0;
-        this.boundElement.style.display = 'inline-block';
-        this.boundElement.style.borderStyle = 'none';
-        this.boundElement.style.padding = '2px';
         var button = document.createTextNode(this.boundElement.checked ? '◉' : '○');
         this.shadowTree.firstChild.appendChild(button);
         this.addEventListener('click', function(event) {
@@ -114,11 +104,6 @@
   ({
     xblEnteredDocument: function() {
         this.boundElement.tabIndex = 0;
-        this.boundElement.style.display = 'inline-block';
-        this.boundElement.style.backgroundColor = 'silver';
-        this.boundElement.style.border = '2px silver outset';
-        this.boundElement.style.padding = '1px 1em';
-        this.boundElement.style.minHeight = '1em';
         var button = document.createTextNode(this.boundElement.value);
         this.shadowTree.firstChild.appendChild(button);
     }

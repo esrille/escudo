@@ -101,7 +101,16 @@ binding, implementation, template, content, inherited { display: none; }
 /* Bindings */
 button { binding: button; }
 details { binding: details; }
-input { binding: url(navigator.html#input-textfield); }
+input {
+    binding: url(navigator.html#input-textfield);
+    display: inline-block;
+    white-space: pre;
+    background-color: white;
+    border: 2px silver inset;
+    text-align: left;
+    padding: 1px;
+    min-height: 1em;
+}
 input[type=password] { binding: input-password; } /* case-insensitive */
 input[type=datetime] { binding: input-datetime; } /* case-insensitive */
 input[type=date] { binding: input-date; } /* case-insensitive */
@@ -113,10 +122,20 @@ input[type=number] { binding: input-number; } /* case-insensitive */
 input[type=range] { binding: input-range; } /* case-insensitive */
 input[type=color] { binding: input-color; } /* case-insensitive */
 input[type=checkbox] { binding: input-checkbox; } /* case-insensitive */
-input[type=radio] { binding: url(navigator.html#input-radio); } /* case-insensitive */
+input[type=radio] {
+    binding: url(navigator.html#input-radio);
+    display: inline-block;
+    border-style:  none;
+    padding: 2px;
+}
 input[type=file] { binding: input-file; } /* case-insensitive */
 input[type=submit], input[type=reset], input[type=button] { /* case-insensitive */
-  binding: url(navigator.html#input-button);
+    binding: url(navigator.html#input-button);
+    display: inline-block;
+    background-color: silver;
+    border: 2px silver outset;
+    padding: 1px 0.5em;
+    min-height: 1em;
 }
 marquee { binding: marquee; }
 meter { binding: meter; }
