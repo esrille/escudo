@@ -22,7 +22,9 @@
 #include "DocumentWindow.h"
 #include "EventImp.h"
 #include "NodeImp.h"
+#include "UIEventImp.h"
 #include "WindowImp.h"
+#include "html/HTMLTemplateElementImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -118,8 +120,20 @@ bool EventTargetImp::dispatchEvent(events::Event evt)
             if (WindowImp* view = document->getDefaultWindow())
                 eventPath.push_front(view->getDocumentWindow().get());
         }
-        for (NodeImp* ancestor = node->parentNode; ancestor; ancestor = ancestor->parentNode)
+        for (NodeImp* ancestor = node->parentNode; ancestor; ancestor = ancestor->parentNode) {
+            if (auto shadowTree = dynamic_cast<HTMLTemplateElementImp*>(ancestor)) {
+                if (NodeImp* host = dynamic_cast<NodeImp*>(shadowTree->getHost().self())) {
+                    // TODO: Fix 'target' of the event as well.
+                    // TODO: Check the mouseover and mouseout events.
+                    ancestor = host;
+                    eventPath.push_front(ancestor);
+                    if (!dynamic_cast<UIEventImp*>(event))
+                        break;
+                    continue;
+                }
+            }
             eventPath.push_front(ancestor);
+        }
 
         event->setEventPhase(events::Event::CAPTURING_PHASE);
         for (auto i = eventPath.begin(); i != eventPath.end(); ++i) {
