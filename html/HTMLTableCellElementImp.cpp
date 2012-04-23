@@ -41,11 +41,16 @@ void HTMLTableCellElementImp::eval()
     HTMLElementImp::evalValign(this);
 
     for (Element e = getParentElement(); e; e = e.getParentElement()) {
-        if (html::HTMLTableElement::hasInstance(e)) {
-            if (e.hasAttribute(u"border")) {
+        if (auto table = dynamic_cast<HTMLTableElementImp*>(e.self())) {
+            std::u16string border = table->getBorder();
+            if (!border.empty()) {
                 css::CSSStyleDeclaration style = getStyle();
-                style.setProperty(u"border-width", u"1px", u"non-css");
-                style.setProperty(u"border-style", u"inset", u"non-css");
+                if (border == u"0")
+                    style.setProperty(u"border-style", u"none", u"non-css");
+                else {
+                    style.setProperty(u"border-width", u"1px", u"non-css");
+                    style.setProperty(u"border-style", u"inset", u"non-css");
+                }
             }
         }
     }
