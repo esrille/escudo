@@ -138,7 +138,8 @@ Box* HTMLElementImp::getBox()
 // XBL 2.0 internal
 void HTMLElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
 {
-    if (style->binding.getValue() != CSSBindingValueImp::Uri)
+    if (style->binding.getValue() != CSSBindingValueImp::Uri ||
+        style->display.getValue() == CSSDisplayValueImp::None)
         return;
     if (getShadowTree())  // already attached?
         return;
