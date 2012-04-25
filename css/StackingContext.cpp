@@ -40,7 +40,7 @@ StackingContext* StackingContext::removeChild(StackingContext* item)
         firstChild = next;
     else
         prev->nextSibling = next;
-    item->parent = 0;
+    item->parent = item->nextSibling = item->previousSibling = 0;
     --childCount;
     return item;
 }

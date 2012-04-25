@@ -38,7 +38,7 @@ NodeImp* NodeImp::removeChild(NodeImp* item)
         firstChild = next;
     else
         prev->nextSibling = next;
-    item->parentNode = 0;
+    item->parentNode = item->previousSibling = item->nextSibling = 0;
     --childCount;
     return item;
 }

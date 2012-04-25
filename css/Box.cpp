@@ -104,7 +104,7 @@ Box* Box::removeChild(Box* item)
         firstChild = next;
     else
         prev->nextSibling = next;
-    item->parentBox = 0;
+    item->parentBox = item->previousSibling = item->nextSibling = 0;
     --childCount;
     return item;
 }
