@@ -1337,6 +1337,8 @@ void CSSStyleDeclarationImp::copyInheritedProperties(const CSSStyleDeclarationIm
 
 void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle, Element element)
 {
+    resolved = false;
+
     this->parentStyle = parentStyle;
     if (!parentStyle)  // is it the root element?
         resetInheritedProperties();
