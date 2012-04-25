@@ -132,11 +132,9 @@ void DocumentImp::setReadyState(const std::u16string& readyState)
         if (defaultView) {
             if (1 <= getLogLevel())
                 std::cout << "\n## complete\n";
-            if (EventImp* event = new(std::nothrow) EventImp) {
-                events::Event e(event);
-                event->initEvent(u"load", false, false);
-                defaultView->dispatchEvent(event);
-            }
+            events::Event event = new(std::nothrow) EventImp;
+            event.initEvent(u"load", false, false);
+            defaultView->dispatchEvent(event);
         }
     }
 }
@@ -151,19 +149,15 @@ void DocumentImp::setFocus(ElementImp* element)
     if (activeElement == element)
         return;
     if (activeElement) {
-        if (EventImp* event = new(std::nothrow) EventImp) {
-            events::Event e(event);
-            event->initEvent(u"blur", false, false);
-            activeElement->dispatchEvent(event);
-        }
+        events::Event event = new(std::nothrow) EventImp;
+        event.initEvent(u"blur", false, false);
+        activeElement->dispatchEvent(event);
     }
     activeElement = element;
     if (activeElement) {
-        if (EventImp* event = new(std::nothrow) EventImp) {
-            events::Event e(event);
-            event->initEvent(u"focus", false, false);
-            activeElement->dispatchEvent(event);
-        }
+        events::Event event = new(std::nothrow) EventImp;
+        event.initEvent(u"focus", false, false);
+        activeElement->dispatchEvent(event);
     }
 }
 
