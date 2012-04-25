@@ -29,8 +29,21 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 using namespace http;
 
+HttpConnection::HttpConnection(const std::string& hostname, const std::string& port) :
+    state(Closed),
+    retryCount(0),
+    hostname(hostname),
+    port(port),
+    socket(HttpConnectionManager::getIOService()),
+    current(0)
+{
+}
+
 void HttpConnection::sendRequest()
 {
+    if (3 <= getLogLevel())
+        std::cerr << __func__ << ' ' << current->getRequestMessage().toString() << '\n';
+
     std::ostream stream(&request);
     stream << current->getRequestMessage().toString();
     stream << "\r\n";
@@ -103,6 +116,8 @@ void HttpConnection::handleConnect(const boost::system::error_code& err, boost::
 
     if (!err) {
         state = Connected;
+        boost::asio::ip::tcp::no_delay option(true);
+        socket.set_option(option);
         if (current) {
             sendRequest();
             boost::asio::async_read(socket, response, boost::asio::transfer_at_least(1), boost::bind(&HttpConnection::handleRead, this, boost::asio::placeholders::error));

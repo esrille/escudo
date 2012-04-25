@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -127,15 +127,7 @@ class HttpConnection
     void abort(HttpRequest* request);
 
 public:
-    HttpConnection(const std::string& hostname, const std::string& port) :
-        state(Closed),
-        retryCount(0),
-        hostname(hostname),
-        port(port),
-        socket(HttpConnectionManager::getIOService()),
-        current(0)
-    {
-    }
+    HttpConnection(const std::string& hostname, const std::string& port);
 
     void send(HttpRequest* request);
     void done(bool error);
