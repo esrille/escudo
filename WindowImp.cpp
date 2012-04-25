@@ -179,10 +179,9 @@ bool WindowImp::poll()
                 dumpTree(std::cerr, window->getDocument());
             recordTime("html parsed");
 
-            if (EventImp* event = new(std::nothrow) EventImp) {
-                event->initEvent(u"DOMContentLoaded", true, false);
-                imp->dispatchEvent(event);
-            }
+            events::Event event = new(std::nothrow) EventImp;
+            event.initEvent(u"DOMContentLoaded", true, false);
+            imp->dispatchEvent(event);
 
             refreshView();
 
@@ -350,19 +349,20 @@ bool WindowImp::keydown(unsigned charCode, unsigned keyCode, int modifiers)
     }
 
     KeyboardEventImp* imp = new(std::nothrow) KeyboardEventImp(modifiers, charCode, keyCode, 0);
-    events::KeyboardEvent event(imp);
-    event.initKeyboardEvent(u"keydown", true, true, this,
-                            u"", u"", 0, u"", false, u"");
+    events::KeyboardEvent event = imp;
+    imp->initKeyboardEvent(u"keydown", true, true, this,
+                           u"", u"", 0, u"", false, u"");
     e.dispatchEvent(event);
     if (imp->getStopPropagationFlag())
         propagte = false;
 
     if (!charCode)
         return propagte;
-    events::KeyboardEvent text = new(std::nothrow) KeyboardEventImp(modifiers, charCode, keyCode, 0);
-    text.initKeyboardEvent(u"keypress", true, true, this,
+    imp = new(std::nothrow) KeyboardEventImp(modifiers, charCode, keyCode, 0);
+    event = imp;
+    imp->initKeyboardEvent(u"keypress", true, true, this,
                            u"", u"", 0, u"", false, u"");
-    e.dispatchEvent(text);
+    e.dispatchEvent(event);
     if (imp->getStopPropagationFlag())
         propagte = false;
     return propagte;
@@ -388,8 +388,8 @@ bool WindowImp::keyup(unsigned charCode, unsigned keyCode, int modifiers)
 
     KeyboardEventImp* imp = new(std::nothrow) KeyboardEventImp(modifiers, charCode, keyCode, 0);
     events::KeyboardEvent event(imp);
-    event.initKeyboardEvent(u"keyup", true, true, this,
-                            u"", u"", 0, u"", false, u"");
+    imp->initKeyboardEvent(u"keyup", true, true, this,
+                           u"", u"", 0, u"", false, u"");
     e.dispatchEvent(event);
     if (imp->getStopPropagationFlag())
         propagte = false;
