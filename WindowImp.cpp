@@ -195,6 +195,11 @@ bool WindowImp::poll()
                     recordTime("  cascade");
                     boxTree = view->layOut();
                     recordTime("  layout ");
+                } else if (flags & 2) {
+                    boxTree->clearFlags();
+                    recordTime("  cleared");
+                    boxTree = view->layOut();
+                    recordTime("  layout ");
                 } else {
                     boxTree->clearFlags();
                     recordTime("  cleared");
