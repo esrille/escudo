@@ -1338,6 +1338,7 @@ void CSSStyleDeclarationImp::copyInheritedProperties(const CSSStyleDeclarationIm
 void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle, Element element)
 {
     resolved = false;   // This style needs to be resolved later.
+    clearBox();
 
     this->parentStyle = parentStyle;
     if (!parentStyle)  // is it the root element?
@@ -1651,6 +1652,11 @@ void CSSStyleDeclarationImp::addBox(Box* box)
         if (parentStyle)
             parentStyle->addBox(box);
     }
+}
+
+void CSSStyleDeclarationImp::clearBox()
+{
+    box = lastBox = 0;
 }
 
 CSSStyleDeclarationImp* CSSStyleDeclarationImp::getPseudoElementStyle(int id)

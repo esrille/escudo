@@ -223,7 +223,7 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle)
                     node = shadowTree;
                 }
             }
-        }
+        } // TODO: detach the shadow tree froom element (if any)
 
         style->compute(this, parentStyle, element);
     }
@@ -370,6 +370,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
     CSSStyleDeclarationImp* style = map[element].get();
     if (!style || style->display.isNone())
         return 0;
+    style->clearBox();
     bool runIn = style->display.isRunIn() && parentBox;
     bool anonInlineTable = style->display.isTableParts() && parentStyle && parentStyle->display.isInlineLevel();
 
@@ -600,7 +601,10 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
 // Lay out a tree box block-level boxes
 BlockLevelBox* ViewCSSImp::layOutBlockBoxes()
 {
+    assert(absoluteList.empty());
+
     CSSAutoNumberingValueImp::CounterContext cc(this);
+    boxTree = 0;
     floatMap.clear();
     boxTree = layOutBlockBoxes(getDocument(), 0, 0, &cc);
     clearCounters();

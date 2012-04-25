@@ -456,6 +456,7 @@ public:
         return box && box != lastBox;
     }
     void addBox(Box* box);
+    void clearBox();
 
     StackingContext* getStackingContext() const {
         return stackingContext;
