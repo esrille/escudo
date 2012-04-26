@@ -18,6 +18,7 @@
 #define ES_HTTP_CONNECTION_H
 
 #include <list>
+#include <thread>
 
 #include <boost/asio.hpp>
 
@@ -29,12 +30,15 @@ class HttpConnection;
 
 class HttpConnectionManager
 {
+    std::mutex mutex;
     std::list<HttpConnection*> connections;
+    std::list<HttpRequest*> completed;
 
-    // Boost
     boost::asio::io_service ioService;
     boost::asio::ip::tcp::resolver resolver;
     boost::asio::io_service::work work;
+
+    HttpRequest* getCompleted();
 
 public:
     HttpConnectionManager() :
@@ -44,29 +48,43 @@ public:
     }
 
     HttpConnection* getConnection(const std::string& hostname, const std::string& port);
-
     void send(HttpRequest* request);
     void abort(HttpRequest* request);
+    void done(HttpConnection* conn, bool error);
+    void poll();
+
+    void complete(HttpRequest* request, bool error) {
+        request->setError(error);
+        completed.push_back(request);
+    }
 
     template <typename ResolveHandler>
     void resolve(const boost::asio::ip::tcp::resolver::query& q, ResolveHandler handler) {
         resolver.async_resolve(q,handler);
     }
 
-    static HttpConnectionManager& getInstance()
-    {
+    void operator()() {
+        ioService.run();
+    }
+
+    void stop() {
+        ioService.stop();
+    }
+
+    static HttpConnectionManager& getInstance() {
         static HttpConnectionManager manager;
         return manager;
     }
 
-    static boost::asio::io_service& getIOService()
-    {
+    static boost::asio::io_service& getIOService() {
         return getInstance().ioService;
     }
 };
 
 class HttpConnection
 {
+    friend class HttpConnectionManager;
+
     // State
     enum {
         Closed,
@@ -124,13 +142,12 @@ class HttpConnection
     void close();
     void retry();
 
+    void send(HttpRequest* request);
     void abort(HttpRequest* request);
+    void done(HttpConnectionManager* manager, bool error);
 
 public:
     HttpConnection(const std::string& hostname, const std::string& port);
-
-    void send(HttpRequest* request);
-    void done(bool error);
 };
 
 }}}}  // org::w3c::dom::bootstrap

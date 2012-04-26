@@ -96,13 +96,13 @@ libeshtml5_a_AR = $(AR) $(ARFLAGS)
 libeshtml5_a_LIBADD =
 am_libeshtml5_a_OBJECTS = Any.$(OBJEXT) utf.$(OBJEXT) \
 	U16InputStream.$(OBJEXT) DocumentWindow.$(OBJEXT) \
-	URI.$(OBJEXT) URL.$(OBJEXT) HTTPUtil.$(OBJEXT) \
-	HTTPHeader.$(OBJEXT) HTTPRequestMessage.$(OBJEXT) \
-	HTTPResponseMessage.$(OBJEXT) HTTPHeader.$(OBJEXT) \
-	HTTPRequest.$(OBJEXT) HTTPConnection.$(OBJEXT) \
-	HTTPCache.$(OBJEXT) HTMLInputStream.$(OBJEXT) \
-	HTMLParser.$(OBJEXT) HTMLTokenizer.$(OBJEXT) Box.$(OBJEXT) \
-	BoxGL.$(OBJEXT) BoxImage.$(OBJEXT) FormattingContext.$(OBJEXT) \
+	URI.$(OBJEXT) URL.$(OBJEXT) HTTPCache.$(OBJEXT) \
+	HTTPConnection.$(OBJEXT) HTTPHeader.$(OBJEXT) \
+	HTTPRequest.$(OBJEXT) HTTPRequestMessage.$(OBJEXT) \
+	HTTPResponseMessage.$(OBJEXT) HTTPUtil.$(OBJEXT) \
+	HTMLInputStream.$(OBJEXT) HTMLParser.$(OBJEXT) \
+	HTMLTokenizer.$(OBJEXT) Box.$(OBJEXT) BoxGL.$(OBJEXT) \
+	BoxImage.$(OBJEXT) FormattingContext.$(OBJEXT) \
 	LineBox.$(OBJEXT) StackingContext.$(OBJEXT) \
 	CSSPropertyValueImp.$(OBJEXT) CSSSerialize.$(OBJEXT) \
 	CSSGrammar.$(OBJEXT) CSSSelector.$(OBJEXT) CSSParser.$(OBJEXT) \
@@ -1162,17 +1162,16 @@ libeshtml5_a_SOURCES = Object.h ObjectArrayImp.h Any.cpp Any.h \
 	nullable.h sequence.h ECMAScript.h utf.h utf.cpp \
 	TextIterator.h U16InputStream.cpp U16InputStream.h \
 	DocumentWindow.cpp DocumentWindow.h url/URI.h url/URI.cpp \
-	url/URL.h url/URL.cpp http/HTTPUtil.h http/HTTPUtil.cpp \
-	http/HTTPHeader.h http/HTTPHeader.cpp \
-	http/HTTPRequestMessage.h http/HTTPRequestMessage.cpp \
-	http/HTTPResponseMessage.h http/HTTPResponseMessage.cpp \
-	http/HTTPHeader.cpp http/HTTPRequest.h http/HTTPRequest.cpp \
-	http/HTTPConnection.h http/HTTPConnection.cpp http/HTTPCache.h \
-	http/HTTPCache.cpp html/HTMLInputStream.cpp \
-	html/HTMLInputStream.h html/HTMLParser.cpp html/HTMLParser.h \
-	html/HTMLTokenizer.cpp html/HTMLTokenizer.h css/Box.cpp \
-	css/Box.h css/BoxGL.cpp css/BoxImage.cpp \
-	css/FormattingContext.cpp css/LineBox.cpp \
+	url/URL.h url/URL.cpp http/HTTPCache.h http/HTTPCache.cpp \
+	http/HTTPConnection.h http/HTTPConnection.cpp \
+	http/HTTPHeader.h http/HTTPHeader.cpp http/HTTPRequest.h \
+	http/HTTPRequest.cpp http/HTTPRequestMessage.h \
+	http/HTTPRequestMessage.cpp http/HTTPResponseMessage.h \
+	http/HTTPResponseMessage.cpp http/HTTPUtil.h http/HTTPUtil.cpp \
+	html/HTMLInputStream.cpp html/HTMLInputStream.h \
+	html/HTMLParser.cpp html/HTMLParser.h html/HTMLTokenizer.cpp \
+	html/HTMLTokenizer.h css/Box.cpp css/Box.h css/BoxGL.cpp \
+	css/BoxImage.cpp css/FormattingContext.cpp css/LineBox.cpp \
 	css/StackingContext.cpp css/StackingContext.h css/CSSColor.re \
 	css/CSSPropertyNames.re css/CSSPropertyValueImp.cpp \
 	css/CSSPropertyValueImp.h css/CSSSerialize.cpp \
@@ -2258,19 +2257,33 @@ URL.obj: url/URL.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o URL.obj `if test -f 'url/URL.cpp'; then $(CYGPATH_W) 'url/URL.cpp'; else $(CYGPATH_W) '$(srcdir)/url/URL.cpp'; fi`
 
-HTTPUtil.o: http/HTTPUtil.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTTPUtil.o -MD -MP -MF $(DEPDIR)/HTTPUtil.Tpo -c -o HTTPUtil.o `test -f 'http/HTTPUtil.cpp' || echo '$(srcdir)/'`http/HTTPUtil.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/HTTPUtil.Tpo $(DEPDIR)/HTTPUtil.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='http/HTTPUtil.cpp' object='HTTPUtil.o' libtool=no @AMDEPBACKSLASH@
+HTTPCache.o: http/HTTPCache.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTTPCache.o -MD -MP -MF $(DEPDIR)/HTTPCache.Tpo -c -o HTTPCache.o `test -f 'http/HTTPCache.cpp' || echo '$(srcdir)/'`http/HTTPCache.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/HTTPCache.Tpo $(DEPDIR)/HTTPCache.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='http/HTTPCache.cpp' object='HTTPCache.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTTPUtil.o `test -f 'http/HTTPUtil.cpp' || echo '$(srcdir)/'`http/HTTPUtil.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTTPCache.o `test -f 'http/HTTPCache.cpp' || echo '$(srcdir)/'`http/HTTPCache.cpp
 
-HTTPUtil.obj: http/HTTPUtil.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTTPUtil.obj -MD -MP -MF $(DEPDIR)/HTTPUtil.Tpo -c -o HTTPUtil.obj `if test -f 'http/HTTPUtil.cpp'; then $(CYGPATH_W) 'http/HTTPUtil.cpp'; else $(CYGPATH_W) '$(srcdir)/http/HTTPUtil.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/HTTPUtil.Tpo $(DEPDIR)/HTTPUtil.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='http/HTTPUtil.cpp' object='HTTPUtil.obj' libtool=no @AMDEPBACKSLASH@
+HTTPCache.obj: http/HTTPCache.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTTPCache.obj -MD -MP -MF $(DEPDIR)/HTTPCache.Tpo -c -o HTTPCache.obj `if test -f 'http/HTTPCache.cpp'; then $(CYGPATH_W) 'http/HTTPCache.cpp'; else $(CYGPATH_W) '$(srcdir)/http/HTTPCache.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/HTTPCache.Tpo $(DEPDIR)/HTTPCache.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='http/HTTPCache.cpp' object='HTTPCache.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTTPUtil.obj `if test -f 'http/HTTPUtil.cpp'; then $(CYGPATH_W) 'http/HTTPUtil.cpp'; else $(CYGPATH_W) '$(srcdir)/http/HTTPUtil.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTTPCache.obj `if test -f 'http/HTTPCache.cpp'; then $(CYGPATH_W) 'http/HTTPCache.cpp'; else $(CYGPATH_W) '$(srcdir)/http/HTTPCache.cpp'; fi`
+
+HTTPConnection.o: http/HTTPConnection.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTTPConnection.o -MD -MP -MF $(DEPDIR)/HTTPConnection.Tpo -c -o HTTPConnection.o `test -f 'http/HTTPConnection.cpp' || echo '$(srcdir)/'`http/HTTPConnection.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/HTTPConnection.Tpo $(DEPDIR)/HTTPConnection.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='http/HTTPConnection.cpp' object='HTTPConnection.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTTPConnection.o `test -f 'http/HTTPConnection.cpp' || echo '$(srcdir)/'`http/HTTPConnection.cpp
+
+HTTPConnection.obj: http/HTTPConnection.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTTPConnection.obj -MD -MP -MF $(DEPDIR)/HTTPConnection.Tpo -c -o HTTPConnection.obj `if test -f 'http/HTTPConnection.cpp'; then $(CYGPATH_W) 'http/HTTPConnection.cpp'; else $(CYGPATH_W) '$(srcdir)/http/HTTPConnection.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/HTTPConnection.Tpo $(DEPDIR)/HTTPConnection.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='http/HTTPConnection.cpp' object='HTTPConnection.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTTPConnection.obj `if test -f 'http/HTTPConnection.cpp'; then $(CYGPATH_W) 'http/HTTPConnection.cpp'; else $(CYGPATH_W) '$(srcdir)/http/HTTPConnection.cpp'; fi`
 
 HTTPHeader.o: http/HTTPHeader.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTTPHeader.o -MD -MP -MF $(DEPDIR)/HTTPHeader.Tpo -c -o HTTPHeader.o `test -f 'http/HTTPHeader.cpp' || echo '$(srcdir)/'`http/HTTPHeader.cpp
@@ -2285,6 +2298,20 @@ HTTPHeader.obj: http/HTTPHeader.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='http/HTTPHeader.cpp' object='HTTPHeader.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTTPHeader.obj `if test -f 'http/HTTPHeader.cpp'; then $(CYGPATH_W) 'http/HTTPHeader.cpp'; else $(CYGPATH_W) '$(srcdir)/http/HTTPHeader.cpp'; fi`
+
+HTTPRequest.o: http/HTTPRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTTPRequest.o -MD -MP -MF $(DEPDIR)/HTTPRequest.Tpo -c -o HTTPRequest.o `test -f 'http/HTTPRequest.cpp' || echo '$(srcdir)/'`http/HTTPRequest.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/HTTPRequest.Tpo $(DEPDIR)/HTTPRequest.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='http/HTTPRequest.cpp' object='HTTPRequest.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTTPRequest.o `test -f 'http/HTTPRequest.cpp' || echo '$(srcdir)/'`http/HTTPRequest.cpp
+
+HTTPRequest.obj: http/HTTPRequest.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTTPRequest.obj -MD -MP -MF $(DEPDIR)/HTTPRequest.Tpo -c -o HTTPRequest.obj `if test -f 'http/HTTPRequest.cpp'; then $(CYGPATH_W) 'http/HTTPRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/http/HTTPRequest.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/HTTPRequest.Tpo $(DEPDIR)/HTTPRequest.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='http/HTTPRequest.cpp' object='HTTPRequest.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTTPRequest.obj `if test -f 'http/HTTPRequest.cpp'; then $(CYGPATH_W) 'http/HTTPRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/http/HTTPRequest.cpp'; fi`
 
 HTTPRequestMessage.o: http/HTTPRequestMessage.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTTPRequestMessage.o -MD -MP -MF $(DEPDIR)/HTTPRequestMessage.Tpo -c -o HTTPRequestMessage.o `test -f 'http/HTTPRequestMessage.cpp' || echo '$(srcdir)/'`http/HTTPRequestMessage.cpp
@@ -2314,47 +2341,19 @@ HTTPResponseMessage.obj: http/HTTPResponseMessage.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTTPResponseMessage.obj `if test -f 'http/HTTPResponseMessage.cpp'; then $(CYGPATH_W) 'http/HTTPResponseMessage.cpp'; else $(CYGPATH_W) '$(srcdir)/http/HTTPResponseMessage.cpp'; fi`
 
-HTTPRequest.o: http/HTTPRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTTPRequest.o -MD -MP -MF $(DEPDIR)/HTTPRequest.Tpo -c -o HTTPRequest.o `test -f 'http/HTTPRequest.cpp' || echo '$(srcdir)/'`http/HTTPRequest.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/HTTPRequest.Tpo $(DEPDIR)/HTTPRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='http/HTTPRequest.cpp' object='HTTPRequest.o' libtool=no @AMDEPBACKSLASH@
+HTTPUtil.o: http/HTTPUtil.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTTPUtil.o -MD -MP -MF $(DEPDIR)/HTTPUtil.Tpo -c -o HTTPUtil.o `test -f 'http/HTTPUtil.cpp' || echo '$(srcdir)/'`http/HTTPUtil.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/HTTPUtil.Tpo $(DEPDIR)/HTTPUtil.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='http/HTTPUtil.cpp' object='HTTPUtil.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTTPRequest.o `test -f 'http/HTTPRequest.cpp' || echo '$(srcdir)/'`http/HTTPRequest.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTTPUtil.o `test -f 'http/HTTPUtil.cpp' || echo '$(srcdir)/'`http/HTTPUtil.cpp
 
-HTTPRequest.obj: http/HTTPRequest.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTTPRequest.obj -MD -MP -MF $(DEPDIR)/HTTPRequest.Tpo -c -o HTTPRequest.obj `if test -f 'http/HTTPRequest.cpp'; then $(CYGPATH_W) 'http/HTTPRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/http/HTTPRequest.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/HTTPRequest.Tpo $(DEPDIR)/HTTPRequest.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='http/HTTPRequest.cpp' object='HTTPRequest.obj' libtool=no @AMDEPBACKSLASH@
+HTTPUtil.obj: http/HTTPUtil.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTTPUtil.obj -MD -MP -MF $(DEPDIR)/HTTPUtil.Tpo -c -o HTTPUtil.obj `if test -f 'http/HTTPUtil.cpp'; then $(CYGPATH_W) 'http/HTTPUtil.cpp'; else $(CYGPATH_W) '$(srcdir)/http/HTTPUtil.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/HTTPUtil.Tpo $(DEPDIR)/HTTPUtil.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='http/HTTPUtil.cpp' object='HTTPUtil.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTTPRequest.obj `if test -f 'http/HTTPRequest.cpp'; then $(CYGPATH_W) 'http/HTTPRequest.cpp'; else $(CYGPATH_W) '$(srcdir)/http/HTTPRequest.cpp'; fi`
-
-HTTPConnection.o: http/HTTPConnection.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTTPConnection.o -MD -MP -MF $(DEPDIR)/HTTPConnection.Tpo -c -o HTTPConnection.o `test -f 'http/HTTPConnection.cpp' || echo '$(srcdir)/'`http/HTTPConnection.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/HTTPConnection.Tpo $(DEPDIR)/HTTPConnection.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='http/HTTPConnection.cpp' object='HTTPConnection.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTTPConnection.o `test -f 'http/HTTPConnection.cpp' || echo '$(srcdir)/'`http/HTTPConnection.cpp
-
-HTTPConnection.obj: http/HTTPConnection.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTTPConnection.obj -MD -MP -MF $(DEPDIR)/HTTPConnection.Tpo -c -o HTTPConnection.obj `if test -f 'http/HTTPConnection.cpp'; then $(CYGPATH_W) 'http/HTTPConnection.cpp'; else $(CYGPATH_W) '$(srcdir)/http/HTTPConnection.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/HTTPConnection.Tpo $(DEPDIR)/HTTPConnection.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='http/HTTPConnection.cpp' object='HTTPConnection.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTTPConnection.obj `if test -f 'http/HTTPConnection.cpp'; then $(CYGPATH_W) 'http/HTTPConnection.cpp'; else $(CYGPATH_W) '$(srcdir)/http/HTTPConnection.cpp'; fi`
-
-HTTPCache.o: http/HTTPCache.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTTPCache.o -MD -MP -MF $(DEPDIR)/HTTPCache.Tpo -c -o HTTPCache.o `test -f 'http/HTTPCache.cpp' || echo '$(srcdir)/'`http/HTTPCache.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/HTTPCache.Tpo $(DEPDIR)/HTTPCache.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='http/HTTPCache.cpp' object='HTTPCache.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTTPCache.o `test -f 'http/HTTPCache.cpp' || echo '$(srcdir)/'`http/HTTPCache.cpp
-
-HTTPCache.obj: http/HTTPCache.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTTPCache.obj -MD -MP -MF $(DEPDIR)/HTTPCache.Tpo -c -o HTTPCache.obj `if test -f 'http/HTTPCache.cpp'; then $(CYGPATH_W) 'http/HTTPCache.cpp'; else $(CYGPATH_W) '$(srcdir)/http/HTTPCache.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/HTTPCache.Tpo $(DEPDIR)/HTTPCache.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='http/HTTPCache.cpp' object='HTTPCache.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTTPCache.obj `if test -f 'http/HTTPCache.cpp'; then $(CYGPATH_W) 'http/HTTPCache.cpp'; else $(CYGPATH_W) '$(srcdir)/http/HTTPCache.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTTPUtil.obj `if test -f 'http/HTTPUtil.cpp'; then $(CYGPATH_W) 'http/HTTPUtil.cpp'; else $(CYGPATH_W) '$(srcdir)/http/HTTPUtil.cpp'; fi`
 
 HTMLInputStream.o: html/HTMLInputStream.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTMLInputStream.o -MD -MP -MF $(DEPDIR)/HTMLInputStream.Tpo -c -o HTMLInputStream.o `test -f 'html/HTMLInputStream.cpp' || echo '$(srcdir)/'`html/HTMLInputStream.cpp

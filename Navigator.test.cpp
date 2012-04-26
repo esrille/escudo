@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+#include <thread>
 #include <GL/freeglut.h>
 
 #include "DOMImplementationImp.h"
 #include "ECMAScript.h"
 #include "WindowImp.h"
 #include "font/FontDatabase.h"
+#include "http/HTTPConnection.h"
 
 #include "Test.util.h"
 
@@ -54,6 +56,8 @@ int main(int argc, char* argv[])
     if (4 <= argc)
         getDOMImplementation()->setUserCSSStyleSheet(loadStyleSheet(argv[2]));
 
+    std::thread httpService(std::ref(HttpConnectionManager::getInstance()));
+
     // Set privileges to the navigator window.
     WindowImp* imp = new WindowImp();
     window = imp;
@@ -65,4 +69,7 @@ int main(int argc, char* argv[])
     window = 0;
 
     ECMAScriptContext::shutDown();
+
+    HttpConnectionManager::getInstance().stop();
+    httpService.join();
 }

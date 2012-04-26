@@ -146,7 +146,7 @@ bool WindowImp::poll()
         break;
     case HttpRequest::DONE:
         if (!window->getDocument()) {
-            if (!request.getErrorFlag()) {
+            if (!request.getError()) {
                 // TODO: Check header
                 window->setDocument(getDOMImplementation()->createDocument(u"", u"", 0));
             }

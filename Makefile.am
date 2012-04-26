@@ -607,21 +607,20 @@ libeshtml5_a_SOURCES = \
 	url/URI.cpp \
 	url/URL.h \
 	url/URL.cpp \
-	http/HTTPUtil.h \
-	http/HTTPUtil.cpp \
+	http/HTTPCache.h \
+	http/HTTPCache.cpp \
+	http/HTTPConnection.h \
+	http/HTTPConnection.cpp \
 	http/HTTPHeader.h \
 	http/HTTPHeader.cpp \
+	http/HTTPRequest.h \
+	http/HTTPRequest.cpp \
 	http/HTTPRequestMessage.h \
 	http/HTTPRequestMessage.cpp \
 	http/HTTPResponseMessage.h \
 	http/HTTPResponseMessage.cpp \
-	http/HTTPHeader.cpp \
-	http/HTTPRequest.h \
-	http/HTTPRequest.cpp \
-	http/HTTPConnection.h \
-	http/HTTPConnection.cpp \
-	http/HTTPCache.h \
-	http/HTTPCache.cpp \
+	http/HTTPUtil.h \
+	http/HTTPUtil.cpp \
 	html/HTMLInputStream.cpp \
 	html/HTMLInputStream.h \
 	html/HTMLParser.cpp \

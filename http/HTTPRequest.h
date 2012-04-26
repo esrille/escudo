@@ -91,8 +91,11 @@ public:
     const std::string& getAllResponseHeaders() const;
     // void overrideMimeType(std::u16string mime);
 
-    bool getErrorFlag() const {
+    bool getError() const {
         return errorFlag;
+    }
+    void setError(bool error) {
+        errorFlag = error;
     }
 };
 

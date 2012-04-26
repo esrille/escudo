@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,9 +41,11 @@ int test(std::u16string urlString)
 
     request.send();
 
-    while (request.getReadyState() != HttpRequest::DONE)
+    while (request.getReadyState() != HttpRequest::DONE) {
         HttpConnectionManager::getIOService().run_one();
-    if (request.getErrorFlag())
+        HttpConnectionManager::getInstance().poll();
+    }
+    if (request.getError())
         return 1;
 
     std::cerr << request.getResponseMessage().toString() << "----\n";

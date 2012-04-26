@@ -172,7 +172,7 @@ void mouseMove(int x, int y)
 
 void timer(int value)
 {
-    HttpConnectionManager::getIOService().poll();
+    HttpConnectionManager::getInstance().poll();
     if (WindowImp* imp = static_cast<WindowImp*>(window.self())) {
         if (imp->poll())
             glutPostRedisplay();

@@ -185,7 +185,7 @@ void BoxImage::open(const std::u16string& url)
     state = Sent;
     if (request.getReadyState() != HttpRequest::DONE)
         return;
-    if (!request.getErrorFlag()) {
+    if (!request.getError()) {
         if (FILE* file = request.openFile()) {
             open(file);
             fclose(file);
