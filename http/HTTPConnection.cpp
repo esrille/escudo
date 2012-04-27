@@ -478,7 +478,7 @@ void HttpConnection::abort(HttpRequest* request)
         return;
     }
     close();
-    HttpConnectionManager::getInstance().done(this, true);
+    done(&HttpConnectionManager::getInstance(), true);
 }
 
 HttpConnection* HttpConnectionManager::getConnection(const std::string& hostname, const std::string& port)

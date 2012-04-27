@@ -102,8 +102,6 @@ class HttpConnection
 
     static const int MaxRetryCount = 3;
 
-    friend class HttpConnectionManager;
-
     int state;
     int retryCount;
     std::string line;  // line buffer
