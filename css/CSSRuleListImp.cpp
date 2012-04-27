@@ -77,7 +77,7 @@ void CSSRuleListImp::append(css::CSSRule rule, DocumentImp* document)
     ruleList.push_back(rule);
 }
 
-void CSSRuleListImp::find(DeclarationSet& set, ViewCSSImp* view, Element element, std::multimap<std::u16string, Rule>& map, const std::u16string& key)
+void CSSRuleListImp::find(DeclarationSet& set, ViewCSSImp* view, Element& element, std::multimap<std::u16string, Rule>& map, const std::u16string& key)
 {
     for (auto i = map.find(key); i != map.end() && (*i).first == key; ++i) {
         CSSSelector* selector = (*i).second.selector;
@@ -91,14 +91,14 @@ void CSSRuleListImp::find(DeclarationSet& set, ViewCSSImp* view, Element element
     }
 }
 
-void CSSRuleListImp::findByID(DeclarationSet& set, ViewCSSImp* view, Element element)
+void CSSRuleListImp::findByID(DeclarationSet& set, ViewCSSImp* view, Element& element)
 {
     Nullable<std::u16string> attr = element.getAttribute(u"id");
     if (attr.hasValue())
         find(set, view, element, mapID, attr.value());
 }
 
-void CSSRuleListImp::findByClass(DeclarationSet& set, ViewCSSImp* view, Element element)
+void CSSRuleListImp::findByClass(DeclarationSet& set, ViewCSSImp* view, Element& element)
 {
     Nullable<std::u16string> attr = element.getAttribute(u"class");
     if (attr.hasValue()) {
@@ -116,12 +116,12 @@ void CSSRuleListImp::findByClass(DeclarationSet& set, ViewCSSImp* view, Element 
     }
 }
 
-void CSSRuleListImp::findByType(DeclarationSet& set, ViewCSSImp* view, Element element)
+void CSSRuleListImp::findByType(DeclarationSet& set, ViewCSSImp* view, Element& element)
 {
     find(set, view, element, mapType, element.getLocalName());
 }
 
-void CSSRuleListImp::findMisc(DeclarationSet& set, ViewCSSImp* view, Element element)
+void CSSRuleListImp::findMisc(DeclarationSet& set, ViewCSSImp* view, Element& element)
 {
     for (auto i = misc.begin(); i != misc.end(); ++i) {
         CSSSelector* selector = (*i).selector;
@@ -135,7 +135,7 @@ void CSSRuleListImp::findMisc(DeclarationSet& set, ViewCSSImp* view, Element ele
     }
 }
 
-void CSSRuleListImp::find(DeclarationSet& set, ViewCSSImp* view, Element element, unsigned importance)
+void CSSRuleListImp::find(DeclarationSet& set, ViewCSSImp* view, Element& element, unsigned importance)
 {
     this->importance = importance;
 

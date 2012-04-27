@@ -100,7 +100,7 @@ public:
         text += CSSSerializeIdentifier(name);
     }
     virtual CSSSpecificity getSpecificity() = 0;
-    virtual bool match(Element element, ViewCSSImp* view) {
+    virtual bool match(Element& element, ViewCSSImp* view) {
         return false;
     }
     virtual bool isValid() const {
@@ -159,7 +159,7 @@ public:
     }
     virtual void serialize(std::u16string& text);
     virtual CSSSpecificity getSpecificity();
-    virtual bool match(Element element, ViewCSSImp* view);
+    virtual bool match(Element& element, ViewCSSImp* view);
     virtual bool isValid() const;
     void registerToRuleList(CSSRuleListImp* ruleList, CSSSelector* selector, CSSStyleDeclarationImp* declaration);
     CSSPseudoElementSelector* getPseudoElement() const;
@@ -178,7 +178,7 @@ public:
     virtual CSSSpecificity getSpecificity() {
         return CSSSpecificity(1, 0, 0);
     }
-    virtual bool match(Element element, ViewCSSImp* view);
+    virtual bool match(Element& element, ViewCSSImp* view);
     virtual bool isValid() const {
         return !name.empty();
     }
@@ -197,7 +197,7 @@ public:
     virtual CSSSpecificity getSpecificity() {
             return CSSSpecificity(0, 1, 0);
     }
-    virtual bool match(Element element, ViewCSSImp* view);
+    virtual bool match(Element& element, ViewCSSImp* view);
     virtual bool isValid() const {
         return !name.empty();
     }
@@ -248,7 +248,7 @@ public:
     virtual CSSSpecificity getSpecificity() {
             return CSSSpecificity(0, 1, 0);
     }
-    virtual bool match(Element element, ViewCSSImp* view);
+    virtual bool match(Element& element, ViewCSSImp* view);
 };
 
 class CSSPseudoSelector : public CSSSimpleSelector
@@ -328,7 +328,7 @@ public:
     virtual CSSSpecificity getSpecificity() {
         return CSSSpecificity(0, 1, 0);
     }
-    virtual bool match(Element element, ViewCSSImp* view);
+    virtual bool match(Element& element, ViewCSSImp* view);
     virtual bool isValid() const {
         return id != Unknown;
     }
@@ -350,7 +350,7 @@ public:
         toLower(this->lang);    // TODO: html only
     }
     virtual void serialize(std::u16string& text);
-    virtual bool match(Element element, ViewCSSImp* view);
+    virtual bool match(Element& element, ViewCSSImp* view);
 };
 
 // :nth-
@@ -398,7 +398,7 @@ public:
     virtual CSSSpecificity getSpecificity() {
         return CSSSpecificity(0, 0, 1);
     }
-    virtual bool match(Element element, ViewCSSImp* view) {
+    virtual bool match(Element& element, ViewCSSImp* view) {
         return id != Unknown;
     }
     virtual bool isValid() const {
@@ -448,7 +448,7 @@ public:
     void serialize(std::u16string& text);
     CSSSpecificity getSpecificity();
 
-    bool match(Element element, ViewCSSImp* view);
+    bool match(Element& element, ViewCSSImp* view);
     CSSPseudoElementSelector* getPseudoElement() const;
 
     bool isValid() const;

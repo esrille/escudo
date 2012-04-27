@@ -149,7 +149,7 @@ CSSSpecificity CSSSelector::getSpecificity()
     return specificity;
 }
 
-bool CSSPrimarySelector::match(Element e, ViewCSSImp* view)
+bool CSSPrimarySelector::match(Element& e, ViewCSSImp* view)
 {
     if (name != u"*") {
         if (e.getLocalName() != name)
@@ -166,7 +166,7 @@ bool CSSPrimarySelector::match(Element e, ViewCSSImp* view)
     return true;
 }
 
-bool CSSIDSelector::match(Element e, ViewCSSImp* view)
+bool CSSIDSelector::match(Element& e, ViewCSSImp* view)
 {
     Nullable<std::u16string> id = e.getAttribute(u"id");
     if (!id.hasValue())
@@ -174,7 +174,7 @@ bool CSSIDSelector::match(Element e, ViewCSSImp* view)
     return id.value() == name;
 }
 
-bool CSSClassSelector::match(Element e, ViewCSSImp* view)
+bool CSSClassSelector::match(Element& e, ViewCSSImp* view)
 {
     Nullable<std::u16string> classes = e.getAttribute(u"class");
     if (!classes.hasValue())
@@ -182,7 +182,7 @@ bool CSSClassSelector::match(Element e, ViewCSSImp* view)
     return contains(classes.value(), name);
 }
 
-bool CSSAttributeSelector::match(Element e, ViewCSSImp* view)
+bool CSSAttributeSelector::match(Element& e, ViewCSSImp* view)
 {
     Nullable<std::u16string> attr = e.getAttribute(name);
     if (!attr.hasValue())
@@ -215,16 +215,17 @@ bool CSSAttributeSelector::match(Element e, ViewCSSImp* view)
     }
 }
 
-bool CSSSelector::match(Element e, ViewCSSImp* view)
+bool CSSSelector::match(Element& element, ViewCSSImp* view)
 {
-    if (!e || simpleSelectors.size() == 0)
+    if (!element || simpleSelectors.size() == 0)
         return false;
 
     auto i = simpleSelectors.rbegin();
-    if (!(*i)->match(e, view))
+    if (!(*i)->match(element, view))
         return false;
     int combinator = (*i)->getCombinator();
     ++i;
+    Element e = element;
     while (i != simpleSelectors.rend()) {
         switch (combinator) {
         case CSSPrimarySelector::Descendant:
@@ -264,7 +265,7 @@ bool CSSSelector::match(Element e, ViewCSSImp* view)
     return true;
 }
 
-bool CSSPseudoClassSelector::match(Element element, ViewCSSImp* view)
+bool CSSPseudoClassSelector::match(Element& element, ViewCSSImp* view)
 {
     switch (id) {
     case Link:
@@ -288,7 +289,7 @@ bool CSSPseudoClassSelector::match(Element element, ViewCSSImp* view)
     return false;
 }
 
-bool CSSLangPseudoClassSelector::match(Element element, ViewCSSImp* view)
+bool CSSLangPseudoClassSelector::match(Element& element, ViewCSSImp* view)
 {
     std::u16string attr = interface_cast<html::HTMLElement>(element).getLang();
     toLower(attr);
