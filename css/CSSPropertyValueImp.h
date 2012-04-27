@@ -1765,8 +1765,8 @@ public:
         return value.getPx();
     }
     CSSLineHeightValueImp() :
-        value(Normal),
-        computed(Normal)
+        computed(Normal),
+        value(Normal)
     {
     }
 };
