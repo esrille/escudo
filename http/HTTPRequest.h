@@ -58,7 +58,7 @@ public:
     HttpRequest(const std::u16string& base = u"");
     ~HttpRequest();
 
-    void constructResponseFromCache();
+    bool constructResponseFromCache(bool sync = false);
 
     HttpRequestMessage& getRequestMessage() {
         return request;

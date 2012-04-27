@@ -102,7 +102,7 @@ void HttpRequest::setRequestHeader(const std::u16string& header, const std::u16s
     request.setHeader(utfconv(header), utfconv(value));
 }
 
-void HttpRequest::constructResponseFromCache()
+bool HttpRequest::constructResponseFromCache(bool sync)
 {
     readyState = DONE;
     errorFlag = false;
@@ -114,7 +114,11 @@ void HttpRequest::constructResponseFromCache()
         fdContent = dup(fd);
 
     cache = 0;
-    HttpConnectionManager::getInstance().complete(this, errorFlag);
+    if (sync)
+        notify();
+    else
+        HttpConnectionManager::getInstance().complete(this, errorFlag);
+    return errorFlag;
 }
 
 bool HttpRequest::send()
@@ -136,8 +140,7 @@ bool HttpRequest::send()
     cache = HttpCacheManager::getInstance().send(this);
     if (!cache || cache->isBusy())
         return false;
-    constructResponseFromCache();
-    return false;
+    return constructResponseFromCache(true);
 }
 
 void HttpRequest::abort()
