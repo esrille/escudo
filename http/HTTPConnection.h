@@ -51,12 +51,8 @@ public:
     void send(HttpRequest* request);
     void abort(HttpRequest* request);
     void done(HttpConnection* conn, bool error);
+    void complete(HttpRequest* request, bool error);
     void poll();
-
-    void complete(HttpRequest* request, bool error) {
-        request->setError(error);
-        completed.push_back(request);
-    }
 
     template <typename ResolveHandler>
     void resolve(const boost::asio::ip::tcp::resolver::query& q, ResolveHandler handler) {

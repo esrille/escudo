@@ -27,6 +27,13 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
+const unsigned short HttpRequest::UNSENT;
+const unsigned short HttpRequest::OPENED;
+const unsigned short HttpRequest::HEADERS_RECEIVED;
+const unsigned short HttpRequest::LOADING;
+const unsigned short HttpRequest::COMPLETE;
+const unsigned short HttpRequest::DONE;
+
 int HttpRequest::getContentDescriptor()
 {
     return fdContent;  // TODO: call dup internally?
@@ -58,15 +65,29 @@ std::fstream& HttpRequest::getContent()
     return content;
 }
 
-bool HttpRequest::notify(bool error)
+bool HttpRequest::complete(bool error)
 {
-    readyState = DONE;
+    readyState = handler ? COMPLETE : DONE;
     errorFlag = error;
     if (cache)
         cache->notify(this, error);
-    if (handler)
+    return handler;
+}
+
+void HttpRequest::notify()
+{
+    readyState = DONE;
+    if (handler) {
         handler();
-    return error;
+        handler.clear();
+    }
+}
+
+bool HttpRequest::notify(bool error)
+{
+    if (complete(error))
+        notify();
+    return errorFlag;
 }
 
 void HttpRequest::open(const std::u16string& method, const std::u16string& urlString)
@@ -92,8 +113,8 @@ void HttpRequest::constructResponseFromCache()
     if (0 <= fd)
         fdContent = dup(fd);
 
-    if (handler)
-        handler();
+    cache = 0;
+    HttpConnectionManager::getInstance().complete(this, errorFlag);
 }
 
 bool HttpRequest::send()
@@ -126,12 +147,8 @@ void HttpRequest::abort()
 
     // TODO: implement more details.
     clearHanndler();
-    if (cache)
-        cache->abort(this);
-    else {
-        HttpConnectionManager& manager = HttpConnectionManager::getInstance();
-        manager.abort(this);
-    }
+    HttpConnectionManager& manager = HttpConnectionManager::getInstance();
+    manager.abort(this);
     readyState = UNSENT;
     errorFlag = false;
     request.clear();
@@ -169,7 +186,8 @@ HttpRequest::HttpRequest(const std::u16string& base) :
     readyState(UNSENT),
     errorFlag(false),
     fdContent(-1),
-    cache(0)
+    cache(0),
+    handler(0)
 {
 }
 

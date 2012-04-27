@@ -32,13 +32,16 @@ class HttpCache;
 
 class HttpRequest
 {
+    friend class HttpConnectionManager;
+
 public:
     // states
     static const unsigned short UNSENT = 0;
     static const unsigned short OPENED = 1;
     static const unsigned short HEADERS_RECEIVED = 2;
     static const unsigned short LOADING = 3;
-    static const unsigned short DONE = 4;
+    static const unsigned short COMPLETE = 4;
+    static const unsigned short DONE = 5;
 
 private:
     std::u16string base;
@@ -74,6 +77,8 @@ public:
         handler.clear();
     }
 
+    bool complete(bool error);
+    void notify();
     bool notify(bool error);
 
     unsigned short getReadyState() const {

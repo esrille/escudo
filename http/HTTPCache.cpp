@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -110,14 +110,13 @@ HttpCache* HttpCache::send(HttpRequest* request)
     return this;
 }
 
-void HttpCache::abort(HttpRequest* request)
+bool HttpCache::abort(HttpRequest* request)
 {
-    if (current != request)
+    if (current != request) {
         requests.remove(request);
-    else {
-        HttpConnectionManager& manager = HttpConnectionManager::getInstance();
-        manager.abort(request);
+        return true;
     }
+    return false;
 }
 
 HttpCache* HttpCacheManager::getCache(const URL& url)

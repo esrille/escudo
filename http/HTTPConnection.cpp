@@ -510,13 +510,19 @@ void HttpConnectionManager::abort(HttpRequest* request)
 {
     std::lock_guard<std::mutex> lock(mutex);
 
-    URI uri(request->getRequestMessage().getURL());
-    std::string hostname = uri.getHostname();
-    std::string port = uri.getPort();
-    HttpConnection* conn = getConnection(hostname, port);
-    if (!conn)
-        return;
-    conn->abort(request);
+    if (request->getReadyState() != HttpRequest::COMPLETE) {
+        if (!request->cache || !request->cache->abort(request)) {
+            URI uri(request->getRequestMessage().getURL());
+            std::string hostname = uri.getHostname();
+            std::string port = uri.getPort();
+            HttpConnection* conn = getConnection(hostname, port);
+            if (conn)
+                conn->abort(request);
+        }
+    }
+    if (request->getReadyState() == HttpRequest::COMPLETE)
+        completed.remove(request);
+    request->notify();
 }
 
 void HttpConnectionManager::done(HttpConnection* conn, bool error)
@@ -524,6 +530,12 @@ void HttpConnectionManager::done(HttpConnection* conn, bool error)
     std::lock_guard<std::mutex> lock(mutex);
 
     conn->done(this, error);
+}
+
+void HttpConnectionManager::complete(HttpRequest* request, bool error)
+{
+    if (request->complete(error))
+        completed.push_back(request);
 }
 
 HttpRequest* HttpConnectionManager::getCompleted()
@@ -541,7 +553,7 @@ HttpRequest* HttpConnectionManager::getCompleted()
 void HttpConnectionManager::poll()
 {
     while (HttpRequest* request = getCompleted())
-        request->notify(request->getError());
+        request->notify();
 }
 
 }}}}  // org::w3c::dom::bootstrap
