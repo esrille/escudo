@@ -574,6 +574,7 @@ public:
     void specify(const CSSBackgroundImageValueImp& specified) {
         uri = specified.uri;
     }
+    void compute(ViewCSSImp* view, CSSStyleDeclarationImp* self);
     CSSBackgroundImageValueImp() {
     }
 };

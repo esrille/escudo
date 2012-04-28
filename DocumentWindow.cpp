@@ -63,16 +63,16 @@ void DocumentWindow::activate(WindowImp* proxy)
         global->activate(proxy);
 }
 
-void DocumentWindow::preload(const std::u16string& base, const std::u16string& urlString)
+HttpRequest* DocumentWindow::preload(const std::u16string& base, const std::u16string& urlString)
 {
     URL url(base, urlString);
     if (url.isEmpty())
-        return;
+        return 0;
 
     for (auto i = cache.begin(); i != cache.end(); ++i) {
         HttpRequest* request = *i;
         if (request->getRequestMessage().getURL() == url)
-            return;
+            return request ;
     }
 
     HttpRequest* request = new(std::nothrow) HttpRequest(base);
@@ -84,6 +84,7 @@ void DocumentWindow::preload(const std::u16string& base, const std::u16string& u
             imp->incrementLoadEventDelayCount();
         request->send();
     }
+    return request;
 }
 
 void DocumentWindow::notify()

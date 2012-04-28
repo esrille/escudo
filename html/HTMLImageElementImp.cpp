@@ -60,7 +60,7 @@ void HTMLImageElementImp::notify()
     else {
         // TODO: Check type
         delete image;
-        image = new(std::nothrow) BoxImage();
+        image = new(std::nothrow) BoxImage;
         if (!image)
             active = false;
         else {

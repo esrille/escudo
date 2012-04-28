@@ -90,9 +90,10 @@ public:
     void cascade();
     void cascade(Node node, CSSStyleDeclarationImp* parentStyle = 0);
 
-    void preload(const std::u16string& base, const std::u16string& url) {
+    HttpRequest* preload(const std::u16string& base, const std::u16string& url) {
         if (window)
-            window->preload(base, url);
+            return window->preload(base, url);
+        return 0;
     }
 
     BlockLevelBox* createBlockLevelBox(Element element,  BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, bool newContext, bool asBlock);

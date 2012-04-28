@@ -82,7 +82,7 @@ void HTMLObjectElementImp::notify()
         active = false;
     else {
         // TODO: Check type
-        image = new(std::nothrow) BoxImage();
+        image = new(std::nothrow) BoxImage;
         if (!image)
             active = false;
         else {

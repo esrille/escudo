@@ -191,27 +191,24 @@ public:
     static const unsigned Clamp = 4;
 
 private:
-    Box* box;
     int state;
     unsigned char* pixels;  // in argb32 format
     unsigned naturalWidth;
     unsigned naturalHeight;
     unsigned repeat;
     unsigned format;
-    HttpRequest request;
-
-    void open(const std::u16string& url);
-    void notify();
 
 public:
-    BoxImage(Box* box = 0, unsigned repeat = Clamp);
-    BoxImage(Box* box, const std::u16string& base, const std::u16string& url, unsigned repeat = 0);
+    BoxImage(unsigned repeat = Clamp);
     ~BoxImage();
 
     void open(FILE* file);
 
     int getState() const {
         return state;
+    }
+    void setState(int value) {
+        state = value;
     }
     unsigned getNaturalWidth() const {
         return naturalWidth;

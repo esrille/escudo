@@ -1128,8 +1128,9 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
             rowImages[y] = 0;
             CSSStyleDeclarationImp* rowStyle = rows[y].get();
             if (rowStyle && !rowStyle->backgroundImage.isNone()) {
-                view->preload(view->getDocument().getDocumentURI(), rowStyle->backgroundImage.getValue());
-                rowImages[y] = new(std::nothrow) BoxImage(this, view->getDocument().getDocumentURI(), rowStyle->backgroundImage.getValue(), rowStyle->backgroundRepeat.getValue());
+                HttpRequest* request = view->preload(view->getDocument().getDocumentURI(), rowStyle->backgroundImage.getValue());
+                if (request)
+                    rowImages[y] = request->getBoxImage(rowStyle->backgroundRepeat.getValue());
             }
         }
         for (auto i = rowGroupImages.begin(); i != rowGroupImages.end(); ++i)
@@ -1140,8 +1141,9 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
             CSSStyleDeclarationImp* rowGroupStyle = rowGroups[y].get();
             if (rowGroupStyle) {
                 if (!rowGroupStyle->backgroundImage.isNone()) {
-                    view->preload(view->getDocument().getDocumentURI(), rowGroupStyle->backgroundImage.getValue());
-                    rowGroupImages[y] = new(std::nothrow) BoxImage(this, view->getDocument().getDocumentURI(), rowGroupStyle->backgroundImage.getValue(), rowGroupStyle->backgroundRepeat.getValue());
+                    HttpRequest* request = view->preload(view->getDocument().getDocumentURI(), rowGroupStyle->backgroundImage.getValue());
+                    if (request)
+                        rowGroupImages[y] = request->getBoxImage(rowGroupStyle->backgroundRepeat.getValue());
                 }
                 while (rowGroupStyle == rowGroups[++y].get())
                     ;
@@ -1156,8 +1158,9 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
             columnImages[x] = 0;
             CSSStyleDeclarationImp* columnStyle = columns[x].get();
             if (columnStyle && !columnStyle->backgroundImage.isNone()) {
-                view->preload(view->getDocument().getDocumentURI(), columnStyle->backgroundImage.getValue());
-                columnImages[x] = new(std::nothrow) BoxImage(this, view->getDocument().getDocumentURI(), columnStyle->backgroundImage.getValue(), columnStyle->backgroundRepeat.getValue());
+                HttpRequest* request = view->preload(view->getDocument().getDocumentURI(), columnStyle->backgroundImage.getValue());
+                if (request)
+                    columnImages[x] = request->getBoxImage(columnStyle->backgroundRepeat.getValue());
             }
         }
         for (auto i = columnGroupImages.begin(); i != columnGroupImages.end(); ++i)
@@ -1168,8 +1171,9 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
             CSSStyleDeclarationImp* columnGroupStyle = columnGroups[x].get();
             if (columnGroupStyle) {
                 if (!columnGroupStyle->backgroundImage.isNone()) {
-                    view->preload(view->getDocument().getDocumentURI(), columnGroupStyle->backgroundImage.getValue());
-                    columnGroupImages[x] = new(std::nothrow) BoxImage(this, view->getDocument().getDocumentURI(), columnGroupStyle->backgroundImage.getValue(), columnGroupStyle->backgroundRepeat.getValue());
+                    HttpRequest* request = view->preload(view->getDocument().getDocumentURI(), columnGroupStyle->backgroundImage.getValue());
+                    if (request)
+                        columnGroupImages[x] = request->getBoxImage(columnGroupStyle->backgroundRepeat.getValue());
                 }
                 while (columnGroupStyle == columnGroups[++x].get())
                     ;

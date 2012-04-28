@@ -74,7 +74,7 @@ public:
     void activate();
     void activate(WindowImp* proxy);
 
-    void preload(const std::u16string& base, const std::u16string& url);
+    HttpRequest* preload(const std::u16string& base, const std::u16string& url);
 
     // CSSOM View
     int getScrollX() const {

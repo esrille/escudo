@@ -89,7 +89,6 @@ Box::~Box()
         Box* child = removeChild(firstChild);
         child->release_();
     }
-    delete backgroundImage;
 }
 
 Box* Box::removeChild(Box* item)
@@ -417,10 +416,10 @@ void BlockLevelBox::resolveBackground(ViewCSSImp* view)
 {
     assert(style);
     backgroundColor = style->backgroundColor.getARGB();
-    if (!style->backgroundImage.isNone()) {
-        view->preload(view->getDocument().getDocumentURI(), style->backgroundImage.getValue());
-        backgroundImage = new(std::nothrow) BoxImage(this, view->getDocument().getDocumentURI(), style->backgroundImage.getValue(), style->backgroundRepeat.getValue());
-    }
+    if (style->backgroundImage.isNone())
+        return;
+    if (HttpRequest* request = view->preload(view->getDocument().getDocumentURI(), style->backgroundImage.getValue()))
+        backgroundImage = request->getBoxImage(style->backgroundRepeat.getValue());
 }
 
 void BlockLevelBox::resolveBackgroundPosition(ViewCSSImp* view, const ContainingBlock* containingBlock)

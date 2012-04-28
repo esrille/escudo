@@ -1384,6 +1384,7 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     borderBottomColor.compute(this);
     borderLeftColor.compute(this);
 
+    backgroundImage.compute(view, this);
     backgroundPosition.compute(view, this);
 
     borderSpacing.compute(view, this);

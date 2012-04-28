@@ -28,6 +28,7 @@ namespace org { namespace w3c { namespace dom {
 
 namespace bootstrap {
 
+class BoxImage;
 class HttpCache;
 
 class HttpRequest
@@ -53,6 +54,8 @@ private:
     int fdContent;
     HttpCache* cache;
     boost::function<void (void)> handler;
+
+    BoxImage* boxImage;
 
 public:
     HttpRequest(const std::u16string& base = u"");
@@ -102,6 +105,8 @@ public:
     void setError(bool error) {
         errorFlag = error;
     }
+
+    BoxImage* getBoxImage(unsigned repeat);
 };
 
 }}}}  // org::w3c::dom::bootstrap

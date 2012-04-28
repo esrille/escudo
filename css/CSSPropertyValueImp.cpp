@@ -512,6 +512,14 @@ void CSSAutoNumberingValueImp::resetCounter(ViewCSSImp* view, CounterContext* co
     }
 }
 
+void CSSBackgroundImageValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* self)
+{
+    if (isNone())
+        return;
+    if (view->getDocument())
+        view->preload(view->getDocument().getDocumentURI(), getValue());
+}
+
 std::deque<CSSParserTerm*>::iterator CSSBackgroundPositionValueImp::setValue(std::deque<CSSParserTerm*>& stack, std::deque<CSSParserTerm*>::iterator i)
 {
     bool h = false;

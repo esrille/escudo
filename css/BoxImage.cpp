@@ -25,6 +25,7 @@
 #include <boost/bind.hpp>
 
 #include "utf.h"
+#include "http/HTTPRequest.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -153,8 +154,7 @@ unsigned char* readAsJpeg(FILE* file, unsigned& width, unsigned& height, unsigne
 
 }  // namespace
 
-BoxImage::BoxImage(Box* box, unsigned repeat) :
-    box(box),
+BoxImage::BoxImage(unsigned repeat) :
     state(Unavailable),
     pixels(0),
     naturalWidth(0),
@@ -162,37 +162,6 @@ BoxImage::BoxImage(Box* box, unsigned repeat) :
     repeat(repeat),
     format(GL_RGBA)
 {
-}
-
-BoxImage::BoxImage(Box* box, const std::u16string& base, const std::u16string& url, unsigned repeat) :
-    box(box),
-    state(Unavailable),
-    pixels(0),
-    naturalWidth(0),
-    naturalHeight(0),
-    repeat(repeat),
-    format(GL_RGBA),
-    request(base)
-{
-    open(url);
-}
-
-void BoxImage::open(const std::u16string& url)
-{
-    request.open(u"GET", url);
-    request.setHanndler(boost::bind(&BoxImage::notify, this));
-    request.send();
-    state = Sent;
-    if (request.getReadyState() != HttpRequest::DONE)
-        return;
-    if (!request.getError()) {
-        if (FILE* file = request.openFile()) {
-            open(file);
-            fclose(file);
-            return;
-        }
-    }
-    state = Broken;
 }
 
 void BoxImage::open(FILE* file)
@@ -209,14 +178,45 @@ void BoxImage::open(FILE* file)
         state = Broken;
 }
 
-void BoxImage::notify()
+//
+// HttpRequest
+//
+
+BoxImage* HttpRequest::getBoxImage(unsigned repeat)
 {
-    if (state == Sent) {
-        if (request.getStatus() == 200 && box)
-            box->setFlags(2);   // for updating render tree.
-        else
-            state = Unavailable;
+    if (!boxImage)
+        boxImage = new(std::nothrow) BoxImage(repeat);
+    if (!boxImage)
+        return 0;
+
+    switch (getReadyState()) {
+    case UNSENT:
+        boxImage->setState(BoxImage::Unavailable);
+        break;
+    case OPENED:
+    case HEADERS_RECEIVED:
+    case LOADING:
+    case COMPLETE:
+        boxImage->setState(BoxImage::Sent);
+        break;
+    case DONE:
+        if (boxImage->getState() < BoxImage::PartiallyAvailable) {
+            if (getError()) {
+                boxImage->setState(BoxImage::Unavailable);
+                break;
+            }
+            if (FILE* file = openFile()) {
+                boxImage->open(file);
+                fclose(file);
+            }
+        }
+        break;
+    default:
+        boxImage->setState(BoxImage::Unavailable);
+        break;
     }
+    return boxImage;
 }
+
 
 }}}}  // org::w3c::dom::bootstrap

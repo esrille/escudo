@@ -25,6 +25,8 @@
 #include "http/HTTPCache.h"
 #include "http/HTTPConnection.h"
 
+#include "css/Box.h"
+
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 const unsigned short HttpRequest::UNSENT;
@@ -190,13 +192,15 @@ HttpRequest::HttpRequest(const std::u16string& base) :
     errorFlag(false),
     fdContent(-1),
     cache(0),
-    handler(0)
+    handler(0),
+    boxImage(0)
 {
 }
 
 HttpRequest::~HttpRequest()
 {
     abort();
+    delete boxImage;
 }
 
 }}}}  // org::w3c::dom::bootstrap
