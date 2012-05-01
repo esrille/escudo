@@ -22,6 +22,7 @@
 #include <sequence.h>
 #include <Variadic.h>
 
+#include <atomic>
 #include <type_traits>
 
 #include <assert.h>
@@ -131,7 +132,7 @@ X interface_cast(const Object& object)
 
 class ObjectImp : public Object
 {
-    unsigned int count;
+    std::atomic_uint count;
     void* privateDate;
 public:
     unsigned int count_() const {
@@ -150,6 +151,11 @@ public:
         return count;
     };
     ObjectImp() :
+        Object(this),
+        count(0),
+        privateDate(0) {
+    }
+    ObjectImp(const ObjectImp& other) :
         Object(this),
         count(0),
         privateDate(0) {
@@ -209,7 +215,6 @@ public:
         static_assert(std::is_base_of<ObjectImp, T>::value, "not ObjectImp");
         T::retain_();
     }
-
     template<class... As>
     Retained(As&&... as) :
         T(std::forward<As>(as)...)
