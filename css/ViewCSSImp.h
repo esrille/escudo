@@ -278,6 +278,21 @@ public:
     FontTexture* selectFont(CSSStyleDeclarationImp* style);
     FontTexture* selectAltFont(CSSStyleDeclarationImp* style, FontTexture* current, char32_t u);
 
+    BlockLevelBox* getTree() const {
+        return boxTree.get();
+    }
+    void setFlags(unsigned f) {
+        if (boxTree)
+            boxTree->setFlags(f);
+    }
+    unsigned getFlags() const {
+        return boxTree ? boxTree->getFlags() : 0;
+    }
+    void clearFlags() {
+        if (boxTree)
+            boxTree->clearFlags();
+    }
+
     // ViewCSS
     virtual css::CSSStyleDeclaration getComputedStyle(Element elt, Nullable<std::u16string> pseudoElt);
 };

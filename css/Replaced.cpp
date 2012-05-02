@@ -130,7 +130,7 @@ bool BlockLevelBox::layOutReplacedElement(ViewCSSImp* view, Box* replaced, Eleme
         html::Window contentWindow = iframe.getContentWindow();
         if (WindowImp* imp = dynamic_cast<WindowImp*>(contentWindow.self())) {
             imp->setSize(replaced->width, replaced->height);
-            replaced->shadow = imp->getView();
+            replaced->childWindow = imp;
             std::u16string src = iframe.getSrc();
             if (!src.empty() && !imp->getDocument())
                 iframe.setSrc(src);

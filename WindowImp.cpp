@@ -40,9 +40,10 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 WindowImp::WindowImp(WindowImp* parent) :
     request(parent ? parent->getLocation().getHref() : u""),
     history(this),
+    backgroundTask(this),
+    thread(std::ref(backgroundTask)),
     window(0),
     view(0),
-    boxTree(0),
     parent(parent),
     detail(0),
     buttons(0),
@@ -66,12 +67,21 @@ WindowImp::~WindowImp()
             }
         }
     }
+    backgroundTask.abort();
+    thread.join();
 }
 
-void WindowImp::setFlagsToBoxTree(unsigned f)
+void WindowImp::setSize(unsigned w, unsigned h)
 {
-    if (boxTree)
-        boxTree->setFlags(f);
+    width = w;
+    height = h;
+    setFlags(2);
+}
+
+void WindowImp::setFlags(unsigned f)
+{
+    if (view)
+        view->setFlags(f);
 }
 
 DocumentWindowPtr WindowImp::activate()
@@ -97,24 +107,22 @@ void WindowImp::setZoom(float value)
 {
     if (zoomable) {
         zoom = value;
-        if (view)
+        if (view) {
             view->setZoom(zoom);
+            redisplay = true;
+        }
     }
 }
 
-void WindowImp::refreshView()
+void WindowImp::updateView(ViewCSSImp* next)
 {
     if (!window || !window->getDocument())
         return;
-
     delete view;
-    view = new(std::nothrow) ViewCSSImp(window, getDOMImplementation()->getDefaultCSSStyleSheet(), getDOMImplementation()->getUserCSSStyleSheet());
+    view = next;
     if (!view)
         return;
-    view->cascade();
-    view->setSize(width, height);
     view->setZoom(zoom);
-    boxTree = view->layOut();
     detail = 0;
     redisplay = true;
 }
@@ -122,7 +130,14 @@ void WindowImp::refreshView()
 void WindowImp::setDocumentWindow(const DocumentWindowPtr& window)
 {
     this->window = window;
-    refreshView();
+    delete view;
+    view = 0;
+    if (window) {
+        backgroundTask.restart();
+        backgroundTask.wakeUp(BackgroundTask::Cascade | BackgroundTask::Layout);
+    }
+    detail = 0;
+    redisplay = true;
 }
 
 bool WindowImp::poll()
@@ -131,8 +146,8 @@ bool WindowImp::poll()
         WindowImp* child = *i;
         if (child->poll()) {
             redisplay |= true;
-            if (boxTree)
-                boxTree->setFlags(1); // TODO: refine
+            if (view)
+                view->setFlags(4);
         }
     }
 
@@ -146,92 +161,92 @@ bool WindowImp::poll()
         break;
     case HttpRequest::DONE:
         if (!window->getDocument()) {
+            recordTime("request done");
             if (!request.getError()) {
                 // TODO: Check header
                 window->setDocument(getDOMImplementation()->createDocument(u"", u"", 0));
-            }
-            if (!activate())
-                break;
+                if (DocumentImp* imp = dynamic_cast<DocumentImp*>(window->getDocument().self())) {
+                    imp->setDefaultView(this);
+                    imp->setURL(request.getRequestMessage().getURL());
+                    history.update(window);
 
-            DocumentImp* imp = dynamic_cast<DocumentImp*>(window->getDocument().self());
-            if (imp) {
-                imp->setDefaultView(this);
-                imp->setURL(request.getRequestMessage().getURL());
-                history.update(window);
-            }
-
+                    // TODO: Note white it would be nice to parse the HTML docucment in
+                    // the background task, firstly we need to check if we can run JS
+                    // in the background.
+                    activate();
 #if 104400 <= BOOST_VERSION
-            boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request.getContentDescriptor(), boost::iostreams::never_close_handle);
+                    boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request.getContentDescriptor(), boost::iostreams::never_close_handle);
 #else
-            boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request.getContentDescriptor(), false);
+                    boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request.getContentDescriptor(), false);
 #endif
-            recordTime("request done");
-            stream.seekg(0, std::ios::beg);
-            HTMLInputStream htmlInputStream(stream, request.getResponseMessage().getContentCharset());
-            HTMLTokenizer tokenizer(&htmlInputStream);
-            HTMLParser parser(window->getDocument(), &tokenizer);
-            parser.mainLoop();  // TODO: run thin in background
-            if (imp)
-                imp->setCharset(utfconv(htmlInputStream.getEncoding()));
+                    stream.seekg(0, std::ios::beg);
+                    HTMLInputStream htmlInputStream(stream, request.getResponseMessage().getContentCharset());
+                    HTMLTokenizer tokenizer(&htmlInputStream);
+                    HTMLParser parser(imp, &tokenizer);
+                    parser.mainLoop();  // TODO: run thin in background
+                    if (imp)
+                        imp->setCharset(utfconv(htmlInputStream.getEncoding()));
+                    NodeImp::evalTree(imp);
+                    recordTime("html parsed");
 
-            NodeImp::evalTree(window->getDocument());
-            if (3 <= getLogLevel())
-                dumpTree(std::cerr, window->getDocument());
-            recordTime("html parsed");
+                    if (3 <= getLogLevel())
+                        dumpTree(std::cerr, imp);
 
-            events::Event event = new(std::nothrow) EventImp;
-            event.initEvent(u"DOMContentLoaded", true, false);
-            imp->dispatchEvent(event);
-
-            refreshView();
-
-            imp->decrementLoadEventDelayCount();
-        } else if (boxTree) {
-            if (unsigned flags = boxTree->getFlags()) {
-                recordTime("  flagged");
-                if (flags & 1) {
-                    view->cascade();
-                    view->setSize(width, height);
-                    recordTime("  cascade");
-                    boxTree = view->layOut();
-                    recordTime("  layout ");
-                } else if (flags & 2) {
-                    boxTree->clearFlags();
-                    recordTime("  cleared");
-                    boxTree = view->layOut();
-                    recordTime("  layout ");
-                } else {
-                    boxTree->clearFlags();
-                    recordTime("  cleared");
+                    if (events::Event event = new(std::nothrow) EventImp) {
+                        event.initEvent(u"DOMContentLoaded", true, false);
+                        imp->dispatchEvent(event);
+                    }
+                    imp->decrementLoadEventDelayCount();
+                    backgroundTask.wakeUp(BackgroundTask::Cascade | BackgroundTask::Layout);
                 }
-                redisplay = true;
             }
+            break;
         }
+        switch (backgroundTask.getState()) {
+        case BackgroundTask::Done:
+            if (ViewCSSImp* next = backgroundTask.getView())
+                updateView(next);
+            else if (view) {
+                if (unsigned flags = view->getFlags()) {
+                    view->clearFlags();
+                    if (flags & 1)
+                        backgroundTask.wakeUp(BackgroundTask::Cascade | BackgroundTask::Layout);
+                    else if (flags & 2)
+                        backgroundTask.wakeUp(BackgroundTask::Layout);
+                    else if (flags & 4)
+                        redisplay = true;
+                }
+            }
+            break;
+        default:
+            break;
+        }
+        break;
+    default:
+        break;
     }
     bool result = redisplay;
     redisplay = false;
-
     return result;
 }
 
 void WindowImp::render()
 {
     if (view) {
-        recordTime("render begin");
         view->render();
-        recordTime("render end  ");
         if (2 <= getLogLevel()) {
             view->dump();
-            std::cout << "##\n";
             std::cout.flush();
-        } else if (1 <= getLogLevel())
-            std::cout << "##\n";
+        }
     }
 }
 
 bool WindowImp::mouse(int button, int up, int x, int y, int modifiers)
 {
     bool propagte = true;
+    if (!view || backgroundTask.getState() != BackgroundTask::Done)
+        return propagte;
+
     recordTime("mouse");
 
     int shift = button;
@@ -244,22 +259,16 @@ bool WindowImp::mouse(int button, int up, int x, int y, int modifiers)
     else
         buttons |= (1u << shift);
 
-    if (!view)
-        return propagte;
-
     events::MouseEvent event(0);
     MouseEventImp* imp = 0;
 
     Box* box = view->boxFromPoint(x, y);
-    ViewCSSImp* shadow = box->getShadow();
-    if (shadow) {
-        html::Window child = shadow->getDocument().getDefaultView();
-        if (child) {
-            WindowImp* childWindow = dynamic_cast<WindowImp*>(child.self());
-            propagte = childWindow->mouse(button, up, x, y, modifiers);
-            if (!propagte)
-                return propagte;
-        }
+    if (WindowImp* childWindow = box->getChildWindow()) {
+        propagte = childWindow->mouse(button, up,
+                                      x - box->getX() - box->getBlankLeft(), y - box->getY() - box->getBlankTop(),
+                                      modifiers);
+        if (!propagte)
+            return propagte;
     }
 
     // mousedown, mousemove
@@ -300,19 +309,16 @@ bool WindowImp::mouse(int button, int up, int x, int y, int modifiers)
 bool WindowImp::mouseMove(int x, int y, int modifiers)
 {
     bool propagte = true;
-    if (!view)
+    if (!view || backgroundTask.getState() != BackgroundTask::Done)
         return propagte;
 
     Box* box = view->boxFromPoint(x, y);
-    ViewCSSImp* shadow = box->getShadow();
-    if (shadow) {
-        html::Window child = shadow->getDocument().getDefaultView();
-        if (child) {
-            WindowImp* childWindow = dynamic_cast<WindowImp*>(child.self());
-            propagte = childWindow->mouseMove(x, y, modifiers);
-            if (!propagte)
-                return propagte;
-        }
+    if (WindowImp* childWindow = box->getChildWindow()) {
+        propagte = childWindow->mouseMove(x - box->getX() - box->getBlankLeft(),
+                                          y - box->getY() - box->getBlankTop(),
+                                          modifiers);
+        if (!propagte)
+            return propagte;
     }
 
     view->setHovered(box->getTargetNode());
@@ -339,7 +345,7 @@ bool WindowImp::keydown(unsigned charCode, unsigned keyCode, int modifiers)
 {
     bool propagte = true;
     Document document = window->getDocument();
-    if (!document)
+    if (!document || backgroundTask.getState() != BackgroundTask::Done)
         return propagte;
     Element e = document.getActiveElement();
     if (!e)
@@ -377,7 +383,7 @@ bool WindowImp::keyup(unsigned charCode, unsigned keyCode, int modifiers)
 {
     bool propagte = true;
     Document document = window->getDocument();
-    if (!document)
+    if (!document || backgroundTask.getState() != BackgroundTask::Done)
         return propagte;
     Element e = document.getActiveElement();
     if (!e)
@@ -495,6 +501,8 @@ html::Window WindowImp::open(std::u16string url, std::u16string target, std::u16
         }
     }
 
+    backgroundTask.restart();
+
     // TODO: add more details
     window = new(std::nothrow) DocumentWindow;
 
@@ -503,7 +511,6 @@ html::Window WindowImp::open(std::u16string url, std::u16string target, std::u16
     request.abort();
     request.open(u"get", url);
     request.send();
-    HttpConnectionManager::getIOService().poll();
     return this;
 }
 
@@ -1559,7 +1566,7 @@ int WindowImp::getPageYOffset()
 
 void WindowImp::scroll(int x, int y)
 {
-    if (!view || !boxTree)
+    if (!view)
         return;
 
     float overflow = view->getScrollWidth() - width;
@@ -1569,7 +1576,7 @@ void WindowImp::scroll(int x, int y)
     y = std::max(0, std::min(y, static_cast<int>(overflow)));
 
     window->scroll(x, y);
-    boxTree->setFlags(2);
+    view->setFlags(2);
 }
 
 void WindowImp::scrollTo(int x, int y)

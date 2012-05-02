@@ -95,7 +95,7 @@ void HTMLLinkElementImp::notify()
             dumpStyleSheet(std::cerr, styleSheet.self());
 
         if (WindowImp* view = document->getDefaultWindow())
-            view->setFlagsToBoxTree(1);
+            view->setFlags(1);
     }
     document->decrementLoadEventDelayCount();
 }

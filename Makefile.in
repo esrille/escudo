@@ -95,14 +95,14 @@ libesfontmanager_a_OBJECTS = $(am_libesfontmanager_a_OBJECTS)
 libeshtml5_a_AR = $(AR) $(ARFLAGS)
 libeshtml5_a_LIBADD =
 am_libeshtml5_a_OBJECTS = Any.$(OBJEXT) utf.$(OBJEXT) \
-	U16InputStream.$(OBJEXT) DocumentWindow.$(OBJEXT) \
-	URI.$(OBJEXT) URL.$(OBJEXT) HTTPCache.$(OBJEXT) \
-	HTTPConnection.$(OBJEXT) HTTPHeader.$(OBJEXT) \
-	HTTPRequest.$(OBJEXT) HTTPRequestMessage.$(OBJEXT) \
-	HTTPResponseMessage.$(OBJEXT) HTTPUtil.$(OBJEXT) \
-	HTMLInputStream.$(OBJEXT) HTMLParser.$(OBJEXT) \
-	HTMLTokenizer.$(OBJEXT) Box.$(OBJEXT) BoxGL.$(OBJEXT) \
-	BoxImage.$(OBJEXT) FormattingContext.$(OBJEXT) \
+	U16InputStream.$(OBJEXT) BackgroundTask.$(OBJEXT) \
+	DocumentWindow.$(OBJEXT) URI.$(OBJEXT) URL.$(OBJEXT) \
+	HTTPCache.$(OBJEXT) HTTPConnection.$(OBJEXT) \
+	HTTPHeader.$(OBJEXT) HTTPRequest.$(OBJEXT) \
+	HTTPRequestMessage.$(OBJEXT) HTTPResponseMessage.$(OBJEXT) \
+	HTTPUtil.$(OBJEXT) HTMLInputStream.$(OBJEXT) \
+	HTMLParser.$(OBJEXT) HTMLTokenizer.$(OBJEXT) Box.$(OBJEXT) \
+	BoxGL.$(OBJEXT) BoxImage.$(OBJEXT) FormattingContext.$(OBJEXT) \
 	LineBox.$(OBJEXT) StackingContext.$(OBJEXT) \
 	CSSPropertyValueImp.$(OBJEXT) CSSSerialize.$(OBJEXT) \
 	CSSGrammar.$(OBJEXT) CSSSelector.$(OBJEXT) CSSParser.$(OBJEXT) \
@@ -1161,17 +1161,18 @@ nodist_libeshtml5_a_SOURCES = $(generated_sources) $(generated_headers) $(genera
 libeshtml5_a_SOURCES = Object.h ObjectArrayImp.h Any.cpp Any.h \
 	nullable.h sequence.h ECMAScript.h utf.h utf.cpp \
 	TextIterator.h U16InputStream.cpp U16InputStream.h \
-	DocumentWindow.cpp DocumentWindow.h url/URI.h url/URI.cpp \
-	url/URL.h url/URL.cpp http/HTTPCache.h http/HTTPCache.cpp \
-	http/HTTPConnection.h http/HTTPConnection.cpp \
-	http/HTTPHeader.h http/HTTPHeader.cpp http/HTTPRequest.h \
-	http/HTTPRequest.cpp http/HTTPRequestMessage.h \
-	http/HTTPRequestMessage.cpp http/HTTPResponseMessage.h \
-	http/HTTPResponseMessage.cpp http/HTTPUtil.h http/HTTPUtil.cpp \
-	html/HTMLInputStream.cpp html/HTMLInputStream.h \
-	html/HTMLParser.cpp html/HTMLParser.h html/HTMLTokenizer.cpp \
-	html/HTMLTokenizer.h css/Box.cpp css/Box.h css/BoxGL.cpp \
-	css/BoxImage.cpp css/FormattingContext.cpp css/LineBox.cpp \
+	BackgroundTask.cpp DocumentWindow.cpp DocumentWindow.h \
+	url/URI.h url/URI.cpp url/URL.h url/URL.cpp http/HTTPCache.h \
+	http/HTTPCache.cpp http/HTTPConnection.h \
+	http/HTTPConnection.cpp http/HTTPHeader.h http/HTTPHeader.cpp \
+	http/HTTPRequest.h http/HTTPRequest.cpp \
+	http/HTTPRequestMessage.h http/HTTPRequestMessage.cpp \
+	http/HTTPResponseMessage.h http/HTTPResponseMessage.cpp \
+	http/HTTPUtil.h http/HTTPUtil.cpp html/HTMLInputStream.cpp \
+	html/HTMLInputStream.h html/HTMLParser.cpp html/HTMLParser.h \
+	html/HTMLTokenizer.cpp html/HTMLTokenizer.h css/Box.cpp \
+	css/Box.h css/BoxGL.cpp css/BoxImage.cpp \
+	css/FormattingContext.cpp css/LineBox.cpp \
 	css/StackingContext.cpp css/StackingContext.h css/CSSColor.re \
 	css/CSSPropertyNames.re css/CSSPropertyValueImp.cpp \
 	css/CSSPropertyValueImp.h css/CSSSerialize.cpp \
@@ -1697,6 +1698,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ArrayBufferViewImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Attr.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/AttrImp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BackgroundTask.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BarProp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BarPropImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BeforeUnloadEvent.Po@am__quote@

@@ -45,7 +45,7 @@ void HTMLStyleElementImp::eval()
             dumpStyleSheet(std::cerr, styleSheet.self());
 
         if (WindowImp* view = document->getDefaultWindow())
-            view->setFlagsToBoxTree(1);
+            view->setFlags(1);
     }
 }
 

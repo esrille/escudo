@@ -794,9 +794,7 @@ void InlineLevelBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLev
 {
     left += offsetH;
     top += offsetV + leading / 2.0f;
-    if (shadow)
-        shadow->resolveXY(left, top);
-    else if (getFirstChild())
+    if (!childWindow && getFirstChild())
         getFirstChild()->resolveXY(view, left + getBlankLeft(), top + getBlankTop(), clip);
     x = left;
     y = top;

@@ -120,7 +120,7 @@ void CSSImportRuleImp::notify()
     document->decrementLoadEventDelayCount();
 
     if (WindowImp* view = document->getDefaultWindow())
-        view->setFlagsToBoxTree(1);
+        view->setFlags(1);
 }
 
 }

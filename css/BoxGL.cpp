@@ -21,10 +21,11 @@
 
 #include <stdio.h>
 
-#include "StackingContext.h"
 #include "CSSStyleDeclarationImp.h"
-#include "ViewCSSImp.h"
+#include "StackingContext.h"
 #include "Table.h"
+#include "ViewCSSImp.h"
+#include "WindowImp.h"
 
 #include "html/HTMLReplacedElementImp.h"
 
@@ -588,7 +589,7 @@ void BlockLevelBox::renderEnd(ViewCSSImp* view, unsigned overflow, bool scrollBa
 
 void BlockLevelBox::renderNonInline(ViewCSSImp* view, StackingContext* stackingContext)
 {
-    if (shadow)
+    if (childWindow)
         return;
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
         if (!child->isAnonymous() && child->isPositioned())
@@ -610,8 +611,11 @@ void BlockLevelBox::renderNonInline(ViewCSSImp* view, StackingContext* stackingC
 
 void BlockLevelBox::renderInline(ViewCSSImp* view, StackingContext* stackingContext)
 {
-    if (shadow) {
-        shadow->render();
+    if (childWindow) {
+        glPushMatrix();
+        glTranslatef(x + getBlankLeft(), y + getBlankTop(), 0.0f);
+        childWindow->render();
+        glPopMatrix();
         return;
     }
 
@@ -877,9 +881,12 @@ void InlineLevelBox::render(ViewCSSImp* view, StackingContext* stackingContext)
         else if (style->getBox() == this)
             renderMultipleBackground(view);
     }
-    if (shadow)
-        shadow->render();
-    else if (getFirstChild())  // for inline-block
+    if (childWindow) {
+        glPushMatrix();
+        glTranslatef(x + getBlankLeft(), y + getBlankTop(), 0.0f);
+        childWindow->render();
+        glPopMatrix();
+    } else if (getFirstChild())  // for inline-block
         getFirstChild()->render(view, stackingContext);
     else if (font && isVisible()) {
         glPushMatrix();

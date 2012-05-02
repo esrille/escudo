@@ -42,8 +42,8 @@ class Box;
 class LineBox;
 class BlockLevelBox;
 class StackingContext;
-
 class ViewCSSImp;
+class WindowImp;
 
 class ContainingBlock : public ObjectMixin<ContainingBlock>
 {
@@ -283,7 +283,7 @@ protected:
 
     unsigned flags;
 
-    ViewCSSImp* shadow;
+    WindowImp* childWindow;
 
     void renderBorderEdge(ViewCSSImp* view, int edge, unsigned borderStyle, unsigned color,
                           float a, float b, float c, float d,
@@ -301,8 +301,8 @@ public:
     Node getNode() const {
         return node;
     }
-    ViewCSSImp* getShadow() const {
-        return shadow;
+    WindowImp* getChildWindow() const {
+        return childWindow;
     }
 
     Node getTargetNode() const {

@@ -601,6 +601,7 @@ libeshtml5_a_SOURCES = \
 	TextIterator.h \
 	U16InputStream.cpp \
 	U16InputStream.h \
+	BackgroundTask.cpp \
 	DocumentWindow.cpp \
 	DocumentWindow.h \
 	url/URI.h \

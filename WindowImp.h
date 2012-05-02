@@ -42,6 +42,7 @@
 #include <org/w3c/dom/html/UndoManager.h>
 
 #include <deque>
+#include <thread>
 
 #include <org/w3c/dom/css/CSSStyleSheet.h>
 
@@ -58,12 +59,51 @@ class ViewCSSImp;
 
 class WindowImp : public ObjectMixin<WindowImp>
 {
+    class BackgroundTask
+    {
+    public:
+        enum {
+            Init = 0,
+            Cascading,
+            Layouting,
+            Done,
+        };
+        enum {
+            Abort = 1,
+            Cascade = 4,
+            Layout = 8,
+            Restart = 16
+        };
+
+    private:
+        WindowImp* window;
+        std::mutex mutex;
+        std::condition_variable cond;
+        volatile int state;
+        volatile unsigned flags;
+        ViewCSSImp* view;
+
+    public:
+        BackgroundTask(WindowImp* window);
+        ~BackgroundTask();
+        void operator()();
+        unsigned sleep();
+        void wakeUp(unsigned flags);
+        void abort();
+        void restart();
+        ViewCSSImp* getView();
+        int getState() const {
+            return state;
+        }
+    };
+
     HttpRequest request;
     Retained<HistoryImp> history;
+    BackgroundTask backgroundTask;
+    std::thread thread;
 
     DocumentWindowPtr window;
     ViewCSSImp* view;
-    Box* boxTree;
 
     WindowImp* parent;
     std::deque<WindowImp*> childWindows;
@@ -85,23 +125,19 @@ public:
 
     static css::CSSStyleSheet defaultStyleSheet;
 
-    void setSize(unsigned w, unsigned h) {
-        width = w;
-        height = h;
-    }
     ViewCSSImp* getView() const {
         return view;
     }
-
-    void setFlagsToBoxTree(unsigned f);
+    void setSize(unsigned w, unsigned h);
+    void setFlags(unsigned f);
 
     bool poll();
     void render();
     DocumentWindowPtr getDocumentWindow() const {
         return window;
     }
+    void updateView(ViewCSSImp* next);
     void setDocumentWindow(const DocumentWindowPtr& window);
-    void refreshView();
 
     DocumentWindowPtr activate();
 

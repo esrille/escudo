@@ -79,7 +79,7 @@ Box::Box(Node node) :
     style(0),
     formattingContext(0),
     flags(0),
-    shadow(0)
+    childWindow(0)
 {
 }
 
@@ -1676,9 +1676,7 @@ void BlockLevelBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLeve
     if (isClipped())
         clip = this;
 
-    if (shadow)
-        shadow->resolveXY(left, top);
-    else {
+    if (!childWindow) {
         for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
             child->resolveXY(view, left, top, clip);
             top += child->getTotalHeight() + child->getClearance();
