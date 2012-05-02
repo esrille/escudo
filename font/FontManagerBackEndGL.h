@@ -51,6 +51,57 @@ class FontManagerBackEndGL : public FontManagerBackEnd
         glMatrixMode(GL_MODELVIEW);
     }
 
+    void addImage(uint8_t* image)
+    {
+        GLuint texname;
+
+        glGenTextures(1, &texname);
+        bindTexture(texname);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        unsigned px = FontTexture::Width;
+        for (int level = 0; level < FontTexture::Level; ++level) {
+            glTexImage2D(GL_TEXTURE_2D, level, GL_INTENSITY4, px, px, 0,
+                         GL_LUMINANCE, GL_UNSIGNED_BYTE, FontTexture::getMipmapImage(image, level));
+            px >>= 1;
+        }
+        texnames.insert(std::pair<uint8_t*, GLuint>(image, texname));
+    }
+
+    void updateImage(uint8_t* image, FontGlyph* glyph)
+    {
+        bindImage(image);
+        unsigned x = glyph->x;
+        unsigned y = glyph->y % FontTexture::Height;
+        unsigned w = glyph->width;
+        unsigned h = glyph->height;
+        unsigned px = FontTexture::Width;
+        for (int level = 0; level < FontTexture::Level; ++level) {
+            uint8_t* p = FontTexture::getMipmapImage(image, level) + px * y + x;
+            for (int i = 0; i < h; ++i, p += px) {
+                glTexSubImage2D(GL_TEXTURE_2D, level, x, y + i, w, 1,
+                                GL_LUMINANCE, GL_UNSIGNED_BYTE, p);
+            }
+            px >>= 1;
+            x >>= 1;
+            y >>= 1;
+            w >>= 1;
+            h >>= 1;
+            if (w == 0 || h == 0)
+                break;
+        }
+    }
+
+    void deleteImage(uint8_t* image)
+    {
+        std::map<uint8_t*, GLuint>::iterator it = texnames.find(image);
+        assert(it != texnames.end());
+        glDeleteTextures(1, &it->second);
+        texnames.erase(it);
+    }
+
 public:
     FontManagerBackEndGL() :
         fontManager(0),
@@ -79,57 +130,6 @@ public:
         bindTexture(texname);
     }
 
-    void addImage(uint8_t* image)
-    {
-        GLuint texname;
-
-        glGenTextures(1, &texname);
-        bindTexture(texname);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        unsigned px = FontTexture::Width;
-        for (int level = 0; level < FontTexture::Level; ++level) {
-            glTexImage2D(GL_TEXTURE_2D, level, GL_INTENSITY4, px, px, 0,
-                         GL_LUMINANCE, GL_UNSIGNED_BYTE, FontTexture::getMipmapImage(image, level));
-            px >>= 1;
-        }
-        texnames.insert(std::pair<uint8_t*, GLuint>(image, texname));
-    }
-
-    void deleteImage(uint8_t* image)
-    {
-        std::map<uint8_t*, GLuint>::iterator it = texnames.find(image);
-        assert(it != texnames.end());
-        glDeleteTextures(1, &it->second);
-        texnames.erase(it);
-    }
-
-    void updateImage(uint8_t* image, FontGlyph* glyph)
-    {
-        bindImage(image);
-        unsigned x = glyph->x;
-        unsigned y = glyph->y % FontTexture::Height;
-        unsigned w = glyph->width;
-        unsigned h = glyph->height;
-        unsigned px = FontTexture::Width;
-        for (int level = 0; level < FontTexture::Level; ++level) {
-            uint8_t* p = FontTexture::getMipmapImage(image, level) + px * y + x;
-            for (int i = 0; i < h; ++i, p += px) {
-                glTexSubImage2D(GL_TEXTURE_2D, level, x, y + i, w, 1,
-                                GL_LUMINANCE, GL_UNSIGNED_BYTE, p);
-            }
-            px >>= 1;
-            x >>= 1;
-            y >>= 1;
-            w >>= 1;
-            h >>= 1;
-            if (w == 0 || h == 0)
-                break;
-        }
-    }
-
     FontFace* getFontFace(const std::u16string& familyName) throw ()
     {
         face = getFontManager()->getFontFace(familyName);
@@ -150,7 +150,7 @@ public:
 
         if (!fontTexture)
             return;
-        setMatrixMode();
+        beginRender();
         while ((string = utf8to32(string, &u)) && u) {
             FontGlyph* glyph = fontTexture->getGlyph(u);
             uint8_t* image = fontTexture->getImage(glyph);
@@ -169,12 +169,13 @@ public:
             glEnd();
             glTranslatef((-glyph->left + glyph->advance) / 64.0f, (glyph->top - fontTexture->getBearingGap()) / 64.0f, 0.0f);
         }
+        endRender();
     }
 
     void renderText(FontTexture* fontTexture, const char16_t* text, size_t length,
                     float letterSpacing, float wordSpacing)
     {
-        setMatrixMode();
+        beginRender();
         const char16_t* end = text + length;
         const char16_t* n;
         for (const char16_t* p = text; p < end; p = n) {
@@ -190,11 +191,21 @@ public:
                 glTranslatef((-glyph->left + glyph->advance) / 64.0f + spacing, (glyph->top - fontTexture->getBearingGap()) / 64.0f, 0.0f);
             }
         }
+        endRender();
     }
-
 
     void beginRender()
     {
+        // TODO: sync
+        for (auto i = updateList.begin(); i != updateList.end(); ++i) {
+            if (i->second == Add)
+                addImage(i->first);
+            else if (i->second == Delete)
+                deleteImage(i->first);
+            else
+                updateImage(i->first, i->second);
+        }
+        clear();
         setMatrixMode();
     }
 

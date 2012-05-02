@@ -61,9 +61,13 @@ bool isCollapsingSpace(unsigned value) {
 const bool USE_HINTING = false;
 
 }
+
 //
 // FontManager
 //
+
+FontGlyph* const FontManagerBackEnd::Add = (FontGlyph*) 1;
+FontGlyph* const FontManagerBackEnd::Delete = (FontGlyph*) 2;
 
 FontManager::FontManager(FontManagerBackEnd* backend) :
     backend(backend)
