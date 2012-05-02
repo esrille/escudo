@@ -46,17 +46,17 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 ViewCSSImp::ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyleSheet, css::CSSStyleSheet userStyleSheet) :
     window(window),
+    dpi(96),
+    zoom(1.0f),
+    hovered(0),
+    mutationListener(boost::bind(&ViewCSSImp::handleMutation, this, _1)),
     defaultStyleSheet(defaultStyleSheet),
     userStyleSheet(userStyleSheet),
     stackingContexts(0),
     overflow(CSSOverflowValueImp::Auto),
     quotingDepth(0),
     scrollWidth(0.0f),
-    scrollHeight(0.0f),
-    zoom(1.0f),
-    hovered(0),
-    dpi(96),
-    mutationListener(boost::bind(&ViewCSSImp::handleMutation, this, _1))
+    scrollHeight(0.0f)
 {
     setMediumFontSize(16);
     getDocument().addEventListener(u"DOMAttrModified", &mutationListener);

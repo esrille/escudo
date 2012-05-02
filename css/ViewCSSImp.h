@@ -44,36 +44,37 @@ class StackingContext;
 
 class ViewCSSImp
 {
-    DocumentWindowPtr window;
+    static const unsigned MaxFontSizes = 8;
+
     css::CSSStyleSheet defaultStyleSheet;
     css::CSSStyleSheet userStyleSheet;
-    std::map<Element, CSSStyleDeclarationPtr> map;
-    std::map<Node, BlockLevelBoxPtr> floatMap;
-    std::list<BlockLevelBox*> absoluteList;
-    BlockLevelBoxPtr boxTree;
     Retained<ContainingBlock> initialContainingBlock;
-    StackingContext* stackingContexts;
-    unsigned overflow;
 
-    std::list<CSSStyleSheetImp*> styleSheets;
-    std::list<CounterImpPtr> counterList;
-    int quotingDepth;
-
-    float scrollWidth;
-    float scrollHeight;
+    DocumentWindowPtr window;
+    unsigned dpi;
+    unsigned mediumFontSize;  // [px]
+    float fontSizeTable[MaxFontSizes];
     float zoom;
 
     Node hovered;
-
-    unsigned dpi;
-    unsigned mediumFontSize;  // [px]
-
-    static const unsigned MaxFontSizes = 8;
-    float fontSizeTable[MaxFontSizes];
-
     Retained<EventListenerImp> mutationListener;
-    void handleMutation(events::Event event);
 
+    // cascade
+    std::map<Element, CSSStyleDeclarationPtr> map;
+    StackingContext* stackingContexts;
+    std::list<CSSStyleSheetImp*> styleSheets;
+    unsigned overflow;
+
+    // layout
+    BlockLevelBoxPtr boxTree;
+    std::map<Node, BlockLevelBoxPtr> floatMap;
+    std::list<BlockLevelBox*> absoluteList;
+    std::list<CounterImpPtr> counterList;
+    int quotingDepth;
+    float scrollWidth;
+    float scrollHeight;
+
+    void handleMutation(events::Event event);
     void findDeclarations(CSSRuleListImp::DeclarationSet& set, Element element, css::CSSRuleList list, unsigned importance);
 
 public:
