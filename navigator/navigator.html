@@ -174,8 +174,20 @@ body
 {
     position: absolute;
     top: 0;
-    right: 0;
+    right: 32px;
     background: url(Settings_32x32.png) no-repeat center center;
+    width: 32px;
+    height: 32px;
+    margin: 2px;
+}
+#indicator
+{
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-image: url(Green_32x32.png);
+    background-repeat: no-repeat;
+    background-position: center center;
     width: 32px;
     height: 32px;
     margin: 2px;
@@ -231,11 +243,16 @@ function settings(e) {
     document.getElementById('location').value = 'about.html';
     e.preventDefault();
 }
+function complete(e) {
+    document.getElementById('indicator').style.backgroundImage = 'url(Green_32x32.png)';
+    e.preventDefault();
+}
 function keypress(e) {
     if (e.keyCode == 13) {
         var url = document.getElementById('location').value;
         document.getElementById('main').src = url;
         document.getElementById('main').focus();
+        document.getElementById('indicator').style.backgroundImage = 'url(Busy_32x32.gif)';
         e.preventDefault();
     }
 }
@@ -243,11 +260,12 @@ function init() {
     var l = document.getElementById('location');
     l.focus();
     l.addEventListener('keydown', keypress, false);
-    document.getElementById('back').addEventListener("click", back, false);
-    document.getElementById('forward').addEventListener("click", forward, false);
-    document.getElementById('reload').addEventListener("click", reload, false);
-    document.getElementById('stop').addEventListener("click", stop, false);
-    document.getElementById('settings').addEventListener("click", settings, false);
+    document.getElementById('back').addEventListener('click', back, false);
+    document.getElementById('forward').addEventListener('click', forward, false);
+    document.getElementById('reload').addEventListener('click', reload, false);
+    document.getElementById('stop').addEventListener('click', stop, false);
+    document.getElementById('settings').addEventListener('click', settings, false);
+    document.getElementById('main').addEventListener('load', complete, false);
 }
 </script>
 </head>
@@ -259,6 +277,7 @@ function init() {
   <div id='reload'></div>
   <div id='stop'></div>
   <div id='settings'></div>
+  <div id='indicator'></div>
 </div>
 <iframe id='main' src=''></iframe>
 </body>
