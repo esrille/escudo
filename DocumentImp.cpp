@@ -135,6 +135,8 @@ void DocumentImp::setReadyState(const std::u16string& readyState)
             events::Event event = new(std::nothrow) EventImp;
             event.initEvent(u"load", false, false);
             defaultView->dispatchEvent(event);
+            if (ElementImp* frame = defaultView->getFrameElementImp())
+                frame->dispatchEvent(event);
         }
     }
 }

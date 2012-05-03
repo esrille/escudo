@@ -29,7 +29,6 @@
 #include <org/w3c/dom/events/Event.h>
 #include <org/w3c/dom/events/EventListener.h>
 #include <org/w3c/dom/Document.h>
-#include <org/w3c/dom/Element.h>
 #include <org/w3c/dom/html/Transferable.h>
 #include <org/w3c/dom/html/Window.h>
 #include <org/w3c/dom/html/BarProp.h>
@@ -47,6 +46,7 @@
 #include <org/w3c/dom/css/CSSStyleSheet.h>
 
 #include "DocumentWindow.h"
+#include "ElementImp.h"
 #include "EventTargetImp.h"
 #include "HistoryImp.h"
 #include "LocationImp.h"
@@ -107,6 +107,7 @@ class WindowImp : public ObjectMixin<WindowImp>
 
     WindowImp* parent;
     std::deque<WindowImp*> childWindows;
+    ElementImp* frameElement;
 
     // for MouseEvent
     int detail;
@@ -120,7 +121,7 @@ class WindowImp : public ObjectMixin<WindowImp>
     float zoom;
 
 public:
-    WindowImp(WindowImp* parent = 0);
+    WindowImp(WindowImp* parent = 0, ElementImp* frameElement = 0);
     ~WindowImp();
 
     static css::CSSStyleSheet defaultStyleSheet;
@@ -178,6 +179,10 @@ public:
 
     // Window customized
     html::Window open(std::u16string url = u"about:blank", std::u16string target = u"_blank", std::u16string features = u"", bool replace = false);
+
+    ElementImp* getFrameElementImp() const {
+        return frameElement;
+    }
 
     // Window
     html::Window getWindow();

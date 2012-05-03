@@ -36,7 +36,7 @@ HTMLIFrameElementImp::HTMLIFrameElementImp(DocumentImp* ownerDocument) :
     blurListener(boost::bind(&HTMLIFrameElementImp::handleBlur, this, _1))
 {
     if (ownerDocument)
-        window = new WindowImp(dynamic_cast<WindowImp*>(ownerDocument->getDefaultView().self()));  // TODO set JS global
+        window = new WindowImp(dynamic_cast<WindowImp*>(ownerDocument->getDefaultView().self()), this);
 }
 
 HTMLIFrameElementImp::HTMLIFrameElementImp(HTMLIFrameElementImp* org, bool deep) :

@@ -37,7 +37,7 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
-WindowImp::WindowImp(WindowImp* parent) :
+WindowImp::WindowImp(WindowImp* parent, ElementImp* frameElement) :
     request(parent ? parent->getLocation().getHref() : u""),
     history(this),
     backgroundTask(this),
@@ -45,6 +45,7 @@ WindowImp::WindowImp(WindowImp* parent) :
     window(0),
     view(0),
     parent(parent),
+    frameElement(frameElement),
     detail(0),
     buttons(0),
     width(816),     // US letter size, 96 DPI
@@ -669,6 +670,7 @@ void WindowImp::setOpener(html::Window opener)
 
 Element WindowImp::getFrameElement()
 {
+
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
