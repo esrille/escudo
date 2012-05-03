@@ -32,6 +32,8 @@
 #include "font/FontManager.h"
 #include "font/FontManagerBackEndGL.h"
 
+#include "Test.util.h"
+
 namespace {
 
 FontManagerBackEndGL backend;
@@ -88,6 +90,9 @@ FontTexture* ViewCSSImp::selectAltFont(CSSStyleDeclarationImp* style, FontTextur
 
 void ViewCSSImp::render()
 {
+    last = getTick();
+    delay = 1000;
+
     glPushMatrix();
     glScalef(zoom, zoom, zoom);
     glTranslatef(-window->getScrollX(), -window->getScrollY(), 0.0f);

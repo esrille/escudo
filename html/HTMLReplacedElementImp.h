@@ -26,6 +26,8 @@
 #include "http/HTTPRequest.h"
 #include "css/Box.h"
 
+#include "Test.util.h"
+
 namespace org
 {
 namespace w3c
@@ -41,20 +43,23 @@ protected:
     HttpRequest* request;
     bool active;
     BoxImage* image;
+    unsigned imageStart;
 
 public:
     HTMLReplacedElementImp(DocumentImp* ownerDocument, const std::u16string& localName) :
         HTMLElementImp(ownerDocument, localName),
         request(0),
         active(true),
-        image(0)
+        image(0),
+        imageStart(getTick())
     {
     }
     HTMLReplacedElementImp(HTMLReplacedElementImp* org, bool deep) :
         HTMLElementImp(org, deep),
-        request(0), // TODO
+        request(0),     // TODO
         active(org->active),
-        image(0)    // TODO
+        image(0),       // TODO
+        imageStart(getTick())
     {
     }
     ~HTMLReplacedElementImp()
@@ -76,6 +81,12 @@ public:
     }
     BoxImage* getImage() const {
         return image;
+    }
+    unsigned getImageStart() const {
+        return imageStart;
+    }
+    void setImageStart(unsigned tick) {
+        imageStart = tick;
     }
 };
 

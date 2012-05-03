@@ -32,6 +32,8 @@
 #include "font/FontManager.h"
 #include "font/FontManagerBackEndGL.h"
 
+#include "Test.util.h"
+
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 namespace {
@@ -90,15 +92,20 @@ void getOriginScreenPosition(float& x, float& y)
 
 BoxImage::~BoxImage()
 {
-    if (state == CompletelyAvailable)
-        deleteImage(pixels);
+    if (state == CompletelyAvailable) {
+        for (int i = 0; i < frameCount; ++i)
+            deleteImage(pixels + i * (naturalWidth * naturalHeight * 4));
+    }
     delete pixels;
 }
 
-void BoxImage::render(ViewCSSImp* view, float x, float y, float width, float height, float left, float top)
+unsigned BoxImage::render(ViewCSSImp* view, float x, float y, float width, float height, float left, float top, unsigned start)
 {
     if (state != CompletelyAvailable)
-        return;
+        return getTick();
+    if (!(flags & Rendered))
+        start = getTick();
+    flags |= Rendered;
 
     glMatrixMode(GL_TEXTURE);
     glLoadIdentity();
@@ -108,7 +115,15 @@ void BoxImage::render(ViewCSSImp* view, float x, float y, float width, float hei
         glScalef(1.0f / naturalWidth, 1.0f / naturalHeight, 0.0f);
     glMatrixMode(GL_MODELVIEW);
 
-    GLuint texname = getTexname(pixels, naturalWidth, naturalHeight, repeat, format);
+    int frame = 0;
+    if (0 < frameCount) {
+        unsigned delay = view->getDelay();
+        frame = getCurrentFrame(getTick(), delay, start);
+        view->setDelay(delay);
+    }
+
+    GLuint texname = getTexname(pixels + frame * (naturalWidth * naturalHeight * 4),
+                                naturalWidth, naturalHeight, repeat, format);
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, texname);
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
@@ -125,6 +140,7 @@ void BoxImage::render(ViewCSSImp* view, float x, float y, float width, float hei
     glEnd();
     glDisable(GL_TEXTURE_2D);
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    return start;
 }
 
 void Box::renderBorderEdge(ViewCSSImp* view, int edge, unsigned borderStyle, unsigned color,
@@ -324,7 +340,7 @@ void Box::renderBorder(ViewCSSImp* view, float left, float top,
         if (getParentBox()) {
             glTranslatef(lr, tb, 0.0f);
             if (!style->backgroundAttachment.isFixed())
-                backgroundImage->render(view, -borderLeft, -borderTop, rr - ll, bb - tt, backgroundLeft, backgroundTop);
+                backgroundStart = backgroundImage->render(view, -borderLeft, -borderTop, rr - ll, bb - tt, backgroundLeft, backgroundTop, backgroundStart);
             else {
                 float fixedX = left + lr - view->getWindow()->getScrollX();
                 float fixedY = top + tb - view->getWindow()->getScrollY();
@@ -332,7 +348,7 @@ void Box::renderBorder(ViewCSSImp* view, float left, float top,
                     fixedX -= element.getScrollLeft();
                     fixedY -= element.getScrollTop();
                 }
-                backgroundImage->render(view, -borderLeft, -borderTop, rr - ll, bb - tt, backgroundLeft - fixedX, backgroundTop - fixedY);
+                backgroundStart = backgroundImage->render(view, -borderLeft, -borderTop, rr - ll, bb - tt, backgroundLeft - fixedX, backgroundTop - fixedY, backgroundStart);
             }
         } else {
             const ContainingBlock* containingBlock = getContainingBlock(view);
@@ -342,11 +358,11 @@ void Box::renderBorder(ViewCSSImp* view, float left, float top,
             float r = containingBlock->width + view->getWindow()->getScrollX();
             float b = containingBlock->height + view->getWindow()->getScrollY();
             if (!style->backgroundAttachment.isFixed())
-                backgroundImage->render(view, l, t, r, b, backgroundLeft, backgroundTop);
+                backgroundStart = backgroundImage->render(view, l, t, r, b, backgroundLeft, backgroundTop, backgroundStart);
             else {
                 float fixedX = left - l;
                 float fixedY = top - t;
-                backgroundImage->render(view, l, t, r, b, backgroundLeft - fixedX, backgroundTop - fixedY);
+                backgroundStart = backgroundImage->render(view, l, t, r, b, backgroundLeft - fixedX, backgroundTop - fixedY, backgroundStart);
             }
         }
         glPopMatrix();
@@ -624,7 +640,7 @@ void BlockLevelBox::renderInline(ViewCSSImp* view, StackingContext* stackingCont
             if (isVisible()) {
                 glPushMatrix();
                 glTranslatef(x + getBlankLeft(), y + getBlankTop(), 0.0f);
-                image->render(view, 0, 0, width, height, 0, 0);
+                replaced->setImageStart(image->render(view, 0, 0, width, height, 0, 0, replaced->getImageStart()));
                 glPopMatrix();
                 glEnable(GL_TEXTURE_2D);
             }

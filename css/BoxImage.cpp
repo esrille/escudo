@@ -16,6 +16,7 @@
 
 #include "Box.h"
 
+#include <gif_lib.h>
 #include <jpeglib.h>
 #include <png.h>
 #include <stdio.h>
@@ -152,15 +153,121 @@ unsigned char* readAsJpeg(FILE* file, unsigned& width, unsigned& height, unsigne
     return data;
 }
 
+uint16_t readUint16(const char* p)
+{
+    return static_cast<uint16_t >(p[0]) + (static_cast<uint16_t >(p[1]) << 8);
+}
+
+unsigned char* expandColors(unsigned char* dst, unsigned char* src, unsigned count, int transparentIndex, GifColorType* colors)
+{
+    for (int i = 0; i < count; ++i, ++src) {
+        if (*src == transparentIndex) {
+            *dst++ = 0;
+            *dst++ = 0;
+            *dst++ = 0;
+            *dst++ = 0;
+        } else {
+            GifColorType* color = &colors[*src];
+            *dst++ = color->Red;
+            *dst++ = color->Green;
+            *dst++ = color->Blue;
+            *dst++ = 255;
+        }
+    }
+    return src;
+}
+
+unsigned char* readAsGif(FILE* file, unsigned& width, unsigned& height, unsigned& format, unsigned &frameCount, std::vector<uint16_t>& delays, unsigned& loop)
+{
+    unsigned char sig[6];
+    if (fread(sig, 1, 6, file) != 6)
+        return 0;
+    if (memcmp(sig, GIF87_STAMP, 6) && memcmp(sig, GIF89_STAMP, 6))
+        return 0;
+    rewind(file);
+
+    int fd = dup(fileno(file));
+    lseek(fd, 0, SEEK_SET);
+    GifFileType* gif = DGifOpenFileHandle(fd);
+    if (!gif)
+        return 0;
+    if (DGifSlurp(gif) != GIF_OK || gif->ImageCount < 1) {
+        DGifCloseFile(gif);
+        return 0;
+    }
+
+    width = gif->SWidth;
+    height = gif->SHeight;
+    frameCount = gif->ImageCount;
+    loop = 1;
+    unsigned char* data = (unsigned char*) malloc(width * height * 4 * frameCount);
+    if (!data) {
+        DGifCloseFile(gif);
+        return 0;
+    }
+
+    if (1 < frameCount)
+        delays.resize(frameCount, 10);
+
+    format = GL_RGBA;
+    for (int frame = 0; frame < frameCount; ++frame) {
+        SavedImage* image = &gif->SavedImages[frame];
+        int transparentIndex = -1;
+        int delay = 0;
+        for (int i = 0; i < image->ExtensionBlockCount; ++i) {
+            ExtensionBlock* ext = image->ExtensionBlocks + i;
+            switch (ext->Function) {
+            case GRAPHICS_EXT_FUNC_CODE:
+                if (ext->ByteCount == 4) {
+                    if ((ext->Bytes[0] & 1))    // transparent?
+                        transparentIndex = ext->Bytes[3];
+                    delays[frame] = readUint16(ext->Bytes + 1);
+                }
+                break;
+            case APPLICATION_EXT_FUNC_CODE:
+                if (ext->ByteCount == 11 && (!memcmp(ext->Bytes, "NETSCAPE2.0", 11) || !memcmp(ext->Bytes, "ANIMEXTS1.0", 11))) {
+                    ++ext;  // Move to the sub-block
+                    if (ext->ByteCount == 3) {
+                        loop = readUint16(ext->Bytes + 1);
+                    }
+                }
+                break;
+            default:
+                break;
+            }
+        }
+        unsigned char* p0 = data + frame * width * height * 4;
+        if (!gif->Image.Interlace)
+            expandColors(p0, image->RasterBits, width * height, transparentIndex, gif->SColorMap->Colors);
+        else {
+            unsigned char* index = image->RasterBits;
+            for (int row = 0; row < height; row += 8)
+                index = expandColors(p0 + width * row, index, width, transparentIndex, gif->SColorMap->Colors);
+            for (int row = 4; row < height; row += 8)
+                index = expandColors(p0 + width * row, index, width, transparentIndex, gif->SColorMap->Colors);
+            for (int row = 2; row < height; row += 4)
+                index = expandColors(p0 + width * row, index, width, transparentIndex, gif->SColorMap->Colors);
+            for (int row = 1; row < height; row += 2)
+                index = expandColors(p0 + width * row, index, width, transparentIndex, gif->SColorMap->Colors);
+        }
+    }
+    DGifCloseFile(gif);
+    return data;
+}
+
 }  // namespace
 
 BoxImage::BoxImage(unsigned repeat) :
     state(Unavailable),
+    flags(0),
     pixels(0),
     naturalWidth(0),
     naturalHeight(0),
     repeat(repeat),
-    format(GL_RGBA)
+    format(GL_RGBA),
+    frameCount(1),
+    delays(1),
+    total(0.0f)
 {
 }
 
@@ -172,10 +279,39 @@ void BoxImage::open(FILE* file)
         rewind(file);
         pixels = readAsJpeg(file, naturalWidth, naturalHeight, format);
     }
-    if (pixels)
-        state = CompletelyAvailable;
-    else
+    if (!pixels) {
+        rewind(file);
+        pixels = readAsGif(file, naturalWidth, naturalHeight, format, frameCount, delays, loop);
+    }
+    if (!pixels) {
         state = Broken;
+        return;
+    }
+    state = CompletelyAvailable;
+    total = 0.0f;
+    for (auto i = 0; i < delays.size(); ++i)
+        total += delays[i];
+}
+
+unsigned BoxImage::getCurrentFrame(unsigned t, unsigned& delay, unsigned start)
+{
+    if (frameCount <= 1 || total == 0.0f)
+        return 0;
+    if (loop) {
+        t -= start;
+        if (total * loop <= t)
+            return 0;
+    }
+    t %= total;
+    unsigned d = 0.0f;
+    for (unsigned i = 0; i < delays.size(); ++i) {
+        d += delays[i];
+        if (t < d) {
+            delay = d - t;
+            return i;
+        }
+    }
+    return 0;
 }
 
 //
@@ -217,6 +353,5 @@ BoxImage* HttpRequest::getBoxImage(unsigned repeat)
     }
     return boxImage;
 }
-
 
 }}}}  // org::w3c::dom::bootstrap

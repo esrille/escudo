@@ -76,6 +76,7 @@ Box::Box(Node node) :
     backgroundImage(0),
     backgroundLeft(0.0f),
     backgroundTop(0.0f),
+    backgroundStart(getTick()),
     style(0),
     formattingContext(0),
     flags(0),

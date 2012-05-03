@@ -180,23 +180,30 @@ public:
 class BoxImage
 {
 public:
-    static const int Unavailable = 0;
-    static const int Sent = 1;
-    static const int PartiallyAvailable = 2;
-    static const int CompletelyAvailable = 3;
-    static const int Broken = 4;
+    static const short Unavailable = 0;
+    static const short Sent = 1;
+    static const short PartiallyAvailable = 2;
+    static const short CompletelyAvailable = 3;
+    static const short Broken = 4;
 
     static const unsigned RepeatS = 1;
     static const unsigned RepeatT = 2;
     static const unsigned Clamp = 4;
 
 private:
-    int state;
+    static const short Rendered = 1;
+
+    short state;
+    unsigned short flags;
     unsigned char* pixels;  // in argb32 format
     unsigned naturalWidth;
     unsigned naturalHeight;
     unsigned repeat;
     unsigned format;
+    unsigned frameCount;
+    unsigned loop;
+    std::vector<uint16_t> delays;
+    unsigned total;
 
 public:
     BoxImage(unsigned repeat = Clamp);
@@ -204,10 +211,10 @@ public:
 
     void open(FILE* file);
 
-    int getState() const {
+    short getState() const {
         return state;
     }
-    void setState(int value) {
+    void setState(short value) {
         state = value;
     }
     unsigned getNaturalWidth() const {
@@ -216,7 +223,8 @@ public:
     unsigned getNaturalHeight() const {
         return naturalHeight;
     }
-    void render(ViewCSSImp* view, float x, float y, float width, float height, float left, float top);
+    unsigned getCurrentFrame(unsigned t, unsigned& delay, unsigned start);
+    unsigned render(ViewCSSImp* view, float x, float y, float width, float height, float left, float top, unsigned start);
 };
 
 class Box : public ContainingBlock
@@ -277,6 +285,7 @@ protected:
     BoxImage* backgroundImage;
     float backgroundLeft;
     float backgroundTop;
+    unsigned backgroundStart;
 
     CSSStyleDeclarationPtr style;
     FormattingContext* formattingContext;

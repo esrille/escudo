@@ -74,6 +74,10 @@ class ViewCSSImp
     float scrollWidth;
     float scrollHeight;
 
+    // animation;
+    unsigned last;   // in 1/100 sec for GIF
+    unsigned delay;  // in 1/100 sec for GIF
+
     void handleMutation(events::Event event);
     void findDeclarations(CSSRuleListImp::DeclarationSet& set, Element element, css::CSSRuleList list, unsigned importance);
 
@@ -274,10 +278,6 @@ public:
 
     CSSStyleDeclarationImp* getStyle(Element elt, Nullable<std::u16string> pseudoElt = Nullable<std::u16string>());
 
-    // TODO OpenGL specific part...
-    FontTexture* selectFont(CSSStyleDeclarationImp* style);
-    FontTexture* selectAltFont(CSSStyleDeclarationImp* style, FontTexture* current, char32_t u);
-
     BlockLevelBox* getTree() const {
         return boxTree.get();
     }
@@ -293,8 +293,26 @@ public:
             boxTree->clearFlags();
     }
 
+    unsigned getLast() const {
+        return last;
+    }
+    unsigned getDelay() const {
+        return delay;
+    }
+    unsigned setDelay(unsigned value) {
+        delay = std::min(delay, value);
+        return delay;
+    }
+    bool hasExpired(unsigned t) {
+        return (static_cast<int>(last + delay) - static_cast<int>(t)) <= 0;
+    }
+
     // ViewCSS
     virtual css::CSSStyleDeclaration getComputedStyle(Element elt, Nullable<std::u16string> pseudoElt);
+
+    // TODO: Refine the following OpenGL specific part
+    FontTexture* selectFont(CSSStyleDeclarationImp* style);
+    FontTexture* selectAltFont(CSSStyleDeclarationImp* style, FontTexture* current, char32_t u);
 };
 
 }}}}  // org::w3c::dom::bootstrap

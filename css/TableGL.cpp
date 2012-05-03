@@ -61,7 +61,7 @@ void TableWrapperBox::renderBackground(ViewCSSImp* view, CSSStyleDeclarationImp*
         glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border);
         glPushMatrix();
             glTranslatef(x, y, 0.0f);
-            backgroundImage->render(view, left - x, top - y, right - left, bottom - top, backgroundLeft, backgroundTop);
+            backgroundStart = backgroundImage->render(view, left - x, top - y, right - left, bottom - top, backgroundLeft, backgroundTop, backgroundStart);
         glPopMatrix();
     }
 

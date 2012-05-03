@@ -227,6 +227,8 @@ bool WindowImp::poll()
     }
     bool result = redisplay;
     redisplay = false;
+    if (!result && view)
+        result = view->hasExpired(getTick());
     return result;
 }
 
@@ -1576,7 +1578,7 @@ void WindowImp::scroll(int x, int y)
     y = std::max(0, std::min(y, static_cast<int>(overflow)));
 
     window->scroll(x, y);
-    view->setFlags(2);
+    view->setFlags(4);
 }
 
 void WindowImp::scrollTo(int x, int y)
