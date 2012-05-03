@@ -43,6 +43,8 @@ org::w3c::dom::Document loadDocument(const char* html);
 
 double recordTime(const char* msg);
 
+unsigned getTick();
+
 inline bool isReplacedElement(org::w3c::dom::Element& element)
 {
     std::u16string tag = element.getLocalName();  // TODO: Check HTML namespace

@@ -183,6 +183,13 @@ double recordTime(const char* msg)
     return diff;
 }
 
+unsigned getTick()
+{
+    timespec ts;
+    clock_gettime(CLOCK_REALTIME, &ts);
+    return ts.tv_sec * 100 + ts.tv_nsec / 10000000;
+}
+
 void initLogLevel(int* argc, char* argv[])
 {
     for (int i = 1; i < *argc; ++i) {
