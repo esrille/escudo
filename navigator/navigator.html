@@ -78,6 +78,12 @@
             }
             event.currentTarget.value = before.data + after.data;
         }, false);
+        this.addEventListener('DOMAttrModified', function(event) {
+            if (event.currentTarget.value != before.data + after.data) {
+                before.data = event.currentTarget.value;
+                after.data = '';
+            }
+        }, false);
     }
   })
 </implementation>
