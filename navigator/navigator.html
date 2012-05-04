@@ -218,6 +218,10 @@ body
 }
 </style>
 <script type="text/javascript">
+function busy(e) {
+    if (e.returnValue.length == 0 && !e.defaultPrevented)
+        document.getElementById('indicator').style.backgroundImage = 'url(Busy_32x32.gif)';
+}
 function back(e) {
     document.getElementById('main').contentWindow.history.back();
     document.getElementById('location').value = document.getElementById('main').contentWindow.location;
@@ -245,6 +249,8 @@ function settings(e) {
 }
 function complete(e) {
     document.getElementById('indicator').style.backgroundImage = 'url(Green_32x32.png)';
+    document.getElementById('main').contentWindow.addEventListener('beforeunload', busy, false);
+    document.getElementById('location').value = document.getElementById('main').contentWindow.location;
     e.preventDefault();
 }
 function keypress(e) {
