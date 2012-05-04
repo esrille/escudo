@@ -59,6 +59,8 @@ class HTMLElementImp : public ObjectMixin<HTMLElementImp, ElementImp>
     void handleClick(events::Event event);
     void handleMouseMove(events::Event event);
 
+    void invokeShadowTarget(EventImp* event);
+
 public:
     HTMLElementImp(DocumentImp* ownerDocument, const std::u16string& localName);
     HTMLElementImp(HTMLElementImp* org, bool deep);

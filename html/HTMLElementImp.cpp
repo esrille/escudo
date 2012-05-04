@@ -23,6 +23,7 @@
 #include "DocumentImp.h"
 #include "EventImp.h"
 #include "ECMAScript.h"
+#include "WindowImp.h"
 #include "css/Box.h"
 #include "css/CSSParser.h"
 #include "css/CSSStyleDeclarationImp.h"
@@ -165,12 +166,27 @@ void HTMLElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
     if (html::HTMLTemplateElement shadowTree = binding->cloneTemplate()) {
         setShadowTree(shadowTree);
         shadowTarget = new(std::nothrow) EventTargetImp;
+        // TODO: We don't want to run the script like below; cf.
+        // - both Microsoft and Mozilla folks wish to avoid running script when
+        //   instantiating elements, which is a valid concern (mutation events
+        //   redux)
+        //   http://lists.w3.org/Archives/Public/public-webapps/2012AprJun/0419.html
         DocumentWindowPtr window = document->activate();
         ECMAScriptContext* context = window->getContext();
         xbl2::XBLImplementation implementation = context->xblCreateImplementation(shadowTarget, binding->getImplementation(), this, shadowTree);
         setShadowImplementation(implementation);
         implementation.xblEnteredDocument();
     }
+}
+
+void HTMLElementImp::invokeShadowTarget(EventImp* event)
+{
+    auto currentWindow = static_cast<WindowImp*>(ECMAScriptContext::getCurrent());
+    if (auto shadowDocument = dynamic_cast<DocumentImp*>(shadowTree.getOwnerDocument().self()))
+        shadowDocument->activate();
+    dynamic_cast<EventTargetImp*>(shadowTarget.self())->invoke(event);
+    if (currentWindow)
+        currentWindow->activate();
 }
 
 void HTMLElementImp::invoke(EventImp* event)
@@ -183,11 +199,11 @@ void HTMLElementImp::invoke(EventImp* event)
     switch (event->getEventPhase()) {
     case events::Event::CAPTURING_PHASE:
         EventTargetImp::invoke(event);
-        dynamic_cast<EventTargetImp*>(shadowTarget.self())->invoke(event);
+        invokeShadowTarget(event);
         break;
     case events::Event::BUBBLING_PHASE:
     case events::Event::AT_TARGET:
-        dynamic_cast<EventTargetImp*>(shadowTarget.self())->invoke(event);
+        invokeShadowTarget(event);
         EventTargetImp::invoke(event);
         break;
     default:
