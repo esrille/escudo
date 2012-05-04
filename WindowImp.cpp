@@ -23,6 +23,7 @@
 #include <boost/iostreams/stream.hpp>
 #include <boost/iostreams/device/file_descriptor.hpp>
 
+#include "BeforeUnloadEventImp.h"
 #include "DOMImplementationImp.h"
 #include "DocumentImp.h"
 #include "KeyboardEventImp.h"
@@ -504,6 +505,13 @@ html::Window WindowImp::open(std::u16string url, std::u16string target, std::u16
                 if (Element element = document->getElementById(hash))
                     element.scrollIntoView(true);
                 return this;
+            }
+
+            // Prompt to unload the Document object.
+            if (html::BeforeUnloadEvent event = new(std::nothrow) BeforeUnloadEventImp) {
+                window->dispatchEvent(event);
+                if (!event.getReturnValue().empty() || event.getDefaultPrevented())
+                    return this;
             }
         }
     }
