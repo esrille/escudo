@@ -165,16 +165,20 @@ bool WindowImp::poll()
             recordTime("request done");
             if (!request.getError()) {
                 // TODO: Check header
-                window->setDocument(getDOMImplementation()->createDocument(u"", u"", 0));
-                if (DocumentImp* imp = dynamic_cast<DocumentImp*>(window->getDocument().self())) {
+
+                Document newDocument = getDOMImplementation()->createDocument(u"", u"", 0);
+                if (DocumentImp* imp = dynamic_cast<DocumentImp*>(newDocument.self())) {
+                    // TODO: Fire a simple unload event.
+                    window->setDocument(newDocument);
                     imp->setDefaultView(this);
                     imp->setURL(request.getRequestMessage().getURL());
                     history.update(window);
 
+                    activate();
+
                     // TODO: Note white it would be nice to parse the HTML docucment in
                     // the background task, firstly we need to check if we can run JS
                     // in the background.
-                    activate();
 #if 104400 <= BOOST_VERSION
                     boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request.getContentDescriptor(), boost::iostreams::never_close_handle);
 #else
