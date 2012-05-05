@@ -24,6 +24,7 @@
 #include <map>
 #include <stdexcept>
 #include <string>
+#include <thread>
 #include <vector>
 
 // FreeType 2, http://www.freetype.org/index2.html
@@ -72,21 +73,28 @@ class FontManager
 {
     friend class FontFace;
 
+    std::mutex mutex;
     FontManagerBackEnd* backend;
     FT_Library library;
     // a map from font family name to FontFace
     std::multimap<std::u16string, FontFace*, CompareIgnoreCase> faces;
     std::list<FontFace*> genericLists[6];
+
+    void registerFont(const std::u16string& familyName, FontFace* face);
+
 public:
     FontManager(FontManagerBackEnd* backend = 0);
     ~FontManager();
 
     FontFace* loadFont(const char* fontFilename);
-    void registerFont(const std::u16string& familyName, FontFace* face);
 
     FontFace* getFontFace(unsigned generic, unsigned style, unsigned weight, int mask = 0x3f);
     FontFace* getAltFontFace(unsigned generic, unsigned style, unsigned weight, FontTexture* current, char32_t u);
     FontFace* getFontFace(const std::u16string& familyName, unsigned style = 0, unsigned weight = 400);
+
+    std::mutex& getMutex() {
+        return mutex;
+    }
 
     FontManagerBackEnd* getBackEnd() const {
         return backend;

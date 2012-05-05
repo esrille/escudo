@@ -315,6 +315,8 @@ bool FontFace::hasGlyph(char32_t ucode) const
 
 FontTexture* FontFace::getFontTexture(unsigned int point, bool bold, bool oblique)
 {
+    std::lock_guard<std::mutex> lock(getManager()->getMutex());
+
     for (auto it = textures.find(point); it != textures.end(); ++it) {
         FontTexture* font = it->second;
         if (font->getPoint() == point && font->getBold() == bold && font->getOblique() == oblique)
@@ -434,12 +436,15 @@ FontGlyph* FontTexture::getGlyph(int32_t ucode)
         return glyphs;
     FontGlyph* glyph = &glyphs[result - face->charmap.begin()];
     if (!glyph->isInitialized()) {
-        FT_UInt glyphIndex = FT_Get_Char_Index(face->face, ucode);
-        assert(glyphIndex);
-        if (!glyphIndex)
-            return glyphs;
-        if (!storeGlyph(glyph, glyphIndex))
-            return glyphs;
+        std::lock_guard<std::mutex> lock(getFace()->getManager()->getMutex());
+        if (!glyph->isInitialized()) {
+            FT_UInt glyphIndex = FT_Get_Char_Index(face->face, ucode);
+            assert(glyphIndex);
+            if (!glyphIndex)
+                return glyphs;
+            if (!storeGlyph(glyph, glyphIndex))
+                return glyphs;
+        }
     }
     return glyph;
 }
