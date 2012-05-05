@@ -165,4 +165,11 @@ int main()
     test(f3);
     test(f3, u"another", u"file:///home/user/dir/another");
     test(f3, u"../another", u"file:///home/user/another");
+
+    // About URI
+    URL a1(u"about:");
+    URL a2(u"about:blank");
+    test(a1);
+    test(a2);
+    test(a2, u"plugins", u"about:plugins");
 }

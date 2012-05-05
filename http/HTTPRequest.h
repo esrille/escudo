@@ -45,6 +45,8 @@ public:
     static const unsigned short DONE = 5;
 
 private:
+    static std::string aboutPath;
+
     std::u16string base;
     unsigned short readyState;
     bool errorFlag;
@@ -107,6 +109,10 @@ public:
     }
 
     BoxImage* getBoxImage(unsigned repeat);
+
+    static void setAboutPath(const char* path) {
+        aboutPath = path;
+    }
 };
 
 }}}}  // org::w3c::dom::bootstrap

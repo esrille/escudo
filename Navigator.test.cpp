@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
 #endif  // USE_V8
 
     if (argc < 3) {
-        std::cout << "usage : " << argv[0] << " default.css [user.css] url\n";
+        std::cout << "usage : " << argv[0] << " navigator_directory [user.css]\n";
         return EXIT_FAILURE;
     }
 
@@ -50,19 +50,26 @@ int main(int argc, char* argv[])
     initFonts(&argc, argv);
 
     // Load the default CSS file
-    getDOMImplementation()->setDefaultCSSStyleSheet(loadStyleSheet(argv[1]));
+    std::string defaultSheet = argv[1];
+    defaultSheet += "/default.css";
+    getDOMImplementation()->setDefaultCSSStyleSheet(loadStyleSheet(defaultSheet.c_str()));
 
     // Load the user CSS file
-    if (4 <= argc)
+    if (3 <= argc)
         getDOMImplementation()->setUserCSSStyleSheet(loadStyleSheet(argv[2]));
 
     std::thread httpService(std::ref(HttpConnectionManager::getInstance()));
 
     // Set privileges to the navigator window.
+    char navigatorUrl[PATH_MAX + 7];
+    strcpy(navigatorUrl, "file://");
+    realpath(argv[1], navigatorUrl + 7);
+    HttpRequest::setAboutPath(navigatorUrl + 7);
+    strcat(navigatorUrl,  "/navigator.html");
     WindowImp* imp = new WindowImp();
     window = imp;
     imp->enableZoom(false);
-    imp->open(utfconv(argv[argc - 1]), u"_self", u"", true);
+    imp->open(utfconv(navigatorUrl), u"_self", u"", true);
 
     glutMainLoop();
 

@@ -445,7 +445,7 @@ bool URL::parseHTTP(size_t& pos)
     return url.length() <= pos;
 }
 
-bool URL::parseHTTPRelative(const URL& base)
+bool URL::parseHTTPRelative()
 {
     size_t pos = protocolEnd;
     do {
@@ -597,7 +597,7 @@ bool URL::parseFile(size_t& pos)
     return url.length() <= pos;
 }
 
-bool URL::parseFileRelative(const URL& base)
+bool URL::parseFileRelative()
 {
     size_t pos = protocolEnd;
     do {
@@ -655,6 +655,71 @@ bool URL::parseFileRelative(const URL& base)
 }
 
 //
+// about URI
+//   "about:" about-token [ about-query ]
+//     about-token = *pchar
+//     about-query = "?" query
+//
+
+bool URL::parseAbout(size_t& pos)
+{
+    if (url.length() <= pos)
+        return true;
+
+    // *pchar
+    pathnameStart = pos;
+    while (pos < url.length() && parsePchar(pos))
+        ;
+    pathnameEnd = pos;
+    if (url.length() <= pos)
+        return true;
+
+    if (url[pos] == '?') {
+        searchStart = pos;
+        ++pos;
+        parseQuery(pos);
+        searchEnd = pos;
+    }
+    if (url.length() <= pos)
+        return true;
+
+    // [ "#" ifragment ]
+    if (url[pos] == '#') {
+        hashStart = pos;
+        ++pos;
+        parseFragment(pos);
+        hashEnd = pos;
+    }
+
+    return url.length() <= pos;
+}
+
+bool URL::parseAboutRelative()
+{
+    size_t pos = protocolEnd;
+    do {
+        pathnameStart = pos;
+        while (pos < url.length() && parsePchar(pos))
+            ;
+        pathnameEnd = pos;
+        if (url.length() <= pos)
+            break;
+
+        // [ "#" ifragment ]
+        if (url[pos] == '#') {
+            hashStart = pos;
+            ++pos;
+            parseFragment(pos);
+            hashEnd = pos;
+        }
+        if (pos < url.length())
+            return false;
+        break;
+    } while (0);
+    return true;
+}
+
+//
 // Base
 //
 
@@ -665,6 +730,8 @@ bool URL::parse()
         return parseHTTP(pos);
     if (url.compare(0, pos - 1, u"file") == 0)
         return parseFile(pos);
+    if (url.compare(0, pos - 1, u"about") == 0)
+        return parseAbout(pos);
     // TODO: support other schemes
     return false;
 }
@@ -673,15 +740,22 @@ bool URL::parseRelative(const URL& base)
 {
     size_t pos = base.protocolEnd - 1;
     bool result = false;
+    bool hier = true;
     if (base.url.compare(0, pos, u"http") == 0 || base.url.compare(0, pos, u"https") == 0)
-        result = parseHTTPRelative(base);
+        result = parseHTTPRelative();
     else if (base.url.compare(0, pos, u"file") == 0)
-        result = parseFileRelative(base);
+        result = parseFileRelative();
+    else if (base.url.compare(0, pos, u"about") == 0) {
+        result = parseAboutRelative();
+        hier = false;
+    }
     // TODO: support other schemes
     if (!result)
         return false;
 
-    std::u16string targetURL = base.getProtocol() + u"//";
+    std::u16string targetURL = base.getProtocol();
+    if (hier)
+        targetURL += u"//";
     protocolEnd = base.protocolEnd;
     ptrdiff_t offset = 0;
     if (hostStart == hostEnd) {
@@ -713,7 +787,9 @@ bool URL::parseRelative(const URL& base)
         else
             targetURL += base.getSearch();
     } else {
-        if (url[pathnameStart] == '/')
+        if (!hier)
+            targetURL += getPathname();
+        else if (url[pathnameStart] == '/')
             targetURL += removeDotSegments(getPathname());
         else {
             // merge paths

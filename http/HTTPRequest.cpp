@@ -36,6 +36,8 @@ const unsigned short HttpRequest::LOADING;
 const unsigned short HttpRequest::COMPLETE;
 const unsigned short HttpRequest::DONE;
 
+std::string HttpRequest::aboutPath;
+
 int HttpRequest::getContentDescriptor()
 {
     return fdContent;  // TODO: call dup internally?
@@ -134,8 +136,20 @@ bool HttpRequest::send()
         std::u16string host = request.getURL().getHostname();
         if (!host.empty() && host != u"localhost")  // TODO: maybe allow local host IP addresses?
             return notify(true);
-        std::u16string path = request.getURL().getPathname();
-        fdContent = ::open(utfconv(path).c_str(), O_RDONLY);
+        std::string path = utfconv(request.getURL().getPathname());
+        fdContent = ::open(path.c_str(), O_RDONLY);
+        return notify(fdContent == -1);
+    }
+
+    if (request.getURL().testProtocol(u"about")) {
+        if (aboutPath.empty() || request.getMethodCode() != HttpRequestMessage::GET)
+            return notify(true);
+        std::string path = utfconv(request.getURL().getPathname());
+        if (path.empty())
+            path = aboutPath + "/about.html";
+        else
+            path = aboutPath + "/about/" + path;
+        fdContent = ::open(path.c_str(), O_RDONLY);
         return notify(fdContent == -1);
     }
 

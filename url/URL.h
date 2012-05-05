@@ -57,10 +57,13 @@ class URL
     bool parseQuery(size_t& pos);
     bool parseFragment(size_t& pos);
     bool parseHTTP(size_t& pos);
-    bool parseHTTPRelative(const URL& base);
+    bool parseHTTPRelative();
 
     bool parseFile(size_t& pos);
-    bool parseFileRelative(const URL& base);
+    bool parseFileRelative();
+
+    bool parseAbout(size_t& pos);
+    bool parseAboutRelative();
 
     void clear();
     bool hasScheme();

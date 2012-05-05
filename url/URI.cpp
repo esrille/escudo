@@ -79,10 +79,11 @@ URI::URI(const URL& url)
     uri += percentEncode(url.url, 0, url.protocolEnd);
     protocolEnd = uri.length();
 
-    // TODO: the following code is HTTP specific.
-    uri += "//";
-    hostStart = hostnameStart = uri.length();
-    if (url.hostnameStart < url.hostnameEnd) {
+    if (url.hostnameStart == url.hostnameEnd)
+        hostStart = hostnameStart = 0;
+    else {
+        uri += "//";
+        hostStart = hostnameStart = uri.length();
         UChar idn[256];
         int32_t len;
         UErrorCode status = U_ZERO_ERROR;
