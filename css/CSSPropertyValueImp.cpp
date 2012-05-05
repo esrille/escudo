@@ -1285,8 +1285,10 @@ Element CSSContentValueImp::eval(ViewCSSImp* view, Element element, CounterConte
     std::u16string data;
     for (auto i = contents.begin(); i != contents.end(); ++i)
         data += (*i)->eval(view, element, context);
-    if (org::w3c::dom::Text text = view->getDocument().createTextNode(data))
-        span.appendChild(text);
+    if (org::w3c::dom::Text text = view->getDocument().createTextNode(data)) {
+        auto imp = dynamic_cast<NodeImp*>(span.self());
+        imp->appendChild(text, true);   // TODO: Find a better way. We don't want to fire any events.
+    }
 
     // Set the pseudo parentNode of the new span element so that
     // setContainingBlock() works even for the positioned :before and
