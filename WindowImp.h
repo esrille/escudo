@@ -65,6 +65,7 @@ class WindowImp : public ObjectMixin<WindowImp>
         enum {
             Init = 0,
             Cascading,
+            Cascaded,
             Layouting,
             Done,
         };

@@ -136,7 +136,7 @@ void WindowImp::setDocumentWindow(const DocumentWindowPtr& window)
     view = 0;
     if (window) {
         backgroundTask.restart();
-        backgroundTask.wakeUp(BackgroundTask::Cascade | BackgroundTask::Layout);
+        backgroundTask.wakeUp(BackgroundTask::Cascade);
     }
     detail = 0;
     redisplay = true;
@@ -203,12 +203,16 @@ bool WindowImp::poll()
                         imp->dispatchEvent(event);
                     }
                     imp->decrementLoadEventDelayCount();
-                    backgroundTask.wakeUp(BackgroundTask::Cascade | BackgroundTask::Layout);
+                    backgroundTask.wakeUp(BackgroundTask::Cascade);
                 }
             }
             break;
         }
         switch (backgroundTask.getState()) {
+        case BackgroundTask::Cascaded:
+            HTMLElementImp::xblEnteredDocument(window->getDocument());
+            backgroundTask.wakeUp(BackgroundTask::Layout);
+            break;
         case BackgroundTask::Done:
             if (ViewCSSImp* next = backgroundTask.getView())
                 updateView(next);
@@ -216,7 +220,7 @@ bool WindowImp::poll()
                 if (unsigned flags = view->getFlags()) {
                     view->clearFlags();
                     if (flags & 1)
-                        backgroundTask.wakeUp(BackgroundTask::Cascade | BackgroundTask::Layout);
+                        backgroundTask.wakeUp(BackgroundTask::Cascade);
                     else if (flags & 2)
                         backgroundTask.wakeUp(BackgroundTask::Layout);
                     else if (flags & 4)

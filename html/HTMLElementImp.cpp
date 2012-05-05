@@ -39,6 +39,7 @@ HTMLElementImp::HTMLElementImp(DocumentImp* ownerDocument, const std::u16string&
     scrollLeft(0),
     clickListener(boost::bind(&HTMLElementImp::handleClick, this, _1)),
     mouseMoveListener(boost::bind(&HTMLElementImp::handleMouseMove, this, _1)),
+    bindingImplementation(0),
     shadowTree(0),
     shadowTarget(0),
     shadowImplementation(0)
@@ -55,6 +56,7 @@ HTMLElementImp::HTMLElementImp(HTMLElementImp* org, bool deep) :
     scrollLeft(0),
     clickListener(boost::bind(&HTMLElementImp::handleClick, this, _1)),
     mouseMoveListener(boost::bind(&HTMLElementImp::handleMouseMove, this, _1)),
+    bindingImplementation(0), // TODO: clone
     shadowTree(0),            // TODO: clone
     shadowTarget(0),          // TODO: clone
     shadowImplementation(0)   // TODO: clone
@@ -163,19 +165,38 @@ void HTMLElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
     auto binding = dynamic_cast<HTMLBindingElementImp*>(element.self());
     if (!binding)
         return;
+    bindingImplementation = binding->getImplementation();
+    if (!bindingImplementation)
+        return;
     if (html::HTMLTemplateElement shadowTree = binding->cloneTemplate()) {
         setShadowTree(shadowTree);
         shadowTarget = new(std::nothrow) EventTargetImp;
-        // TODO: We don't want to run the script like below; cf.
-        // - both Microsoft and Mozilla folks wish to avoid running script when
-        //   instantiating elements, which is a valid concern (mutation events
-        //   redux)
-        //   http://lists.w3.org/Archives/Public/public-webapps/2012AprJun/0419.html
-        DocumentWindowPtr window = document->activate();
-        ECMAScriptContext* context = window->getContext();
-        xbl2::XBLImplementation implementation = context->xblCreateImplementation(shadowTarget, binding->getImplementation(), this, shadowTree);
-        setShadowImplementation(implementation);
-        implementation.xblEnteredDocument();
+        // TODO: if (not called from the background thread) {
+#if 0
+            DocumentWindowPtr window = document->activate();
+            ECMAScriptContext* context = window->getContext();
+            shadowImplementation = context->xblCreateImplementation(shadowTarget, bindingImplementation, this, shadowTree);
+            shadowImplementation .xblEnteredDocument();
+        }
+#endif
+    }
+}
+
+void HTMLElementImp::xblEnteredDocument(Node node)
+{
+    while (node) {
+        if (auto element = dynamic_cast<HTMLElementImp*>(node.self())) {
+            if (element->shadowTarget && !element->shadowImplementation) {
+                DocumentImp* document = element->getOwnerDocumentImp();
+                DocumentWindowPtr window = document->activate();
+                ECMAScriptContext* context = window->getContext();
+                element->shadowImplementation = context->xblCreateImplementation(element->shadowTarget, element->bindingImplementation, element, element->shadowTree);
+                element->shadowImplementation.xblEnteredDocument();
+            }
+        }
+        if (node.hasChildNodes())
+            xblEnteredDocument(node.getFirstChild());
+        node = node.getNextSibling();
     }
 }
 

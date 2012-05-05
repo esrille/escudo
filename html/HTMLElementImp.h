@@ -52,6 +52,7 @@ class HTMLElementImp : public ObjectMixin<HTMLElementImp, ElementImp>
     Retained<EventListenerImp> mouseMoveListener;
 
     // XBL 2.0
+    Object bindingImplementation;
     html::HTMLTemplateElement shadowTree;
     events::EventTarget shadowTarget;
     xbl2::XBLImplementation shadowImplementation;
@@ -314,6 +315,9 @@ public:
     }
     static bool evalNoWrap(HTMLElementImp* element);
     static bool evalValign(HTMLElementImp* element);
+
+    // xblEnteredDocument() should be called after view->cascade().
+    static void xblEnteredDocument(Node node);
 };
 
 }}}}  // org::w3c::dom::bootstrap

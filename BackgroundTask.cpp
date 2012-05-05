@@ -76,6 +76,8 @@ void WindowImp::BackgroundTask::operator()()
             if (!view)
                 continue;
             view->cascade();
+            state = Cascaded;
+            continue;
         }
 
         //
