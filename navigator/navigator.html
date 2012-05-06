@@ -180,18 +180,8 @@ body
 {
     position: absolute;
     top: 0;
-    right: 32px;
-    background: url(Settings_32x32.png) no-repeat center center;
-    width: 32px;
-    height: 32px;
-    margin: 2px;
-}
-#indicator
-{
-    position: absolute;
-    top: 0;
     right: 0;
-    background-image: url(Green_32x32.png);
+    background-image: url(Gear_32x32.png);
     background-repeat: no-repeat;
     background-position: center center;
     width: 32px;
@@ -226,7 +216,7 @@ body
 <script type="text/javascript">
 function busy(e) {
     if (e.returnValue.length == 0 && !e.defaultPrevented)
-        document.getElementById('indicator').style.backgroundImage = 'url(Busy_32x32.gif)';
+        document.getElementById('settings').style.backgroundImage = 'url(Gear_32x32.gif)';
 }
 function back(e) {
     document.getElementById('main').contentWindow.history.back();
@@ -254,7 +244,7 @@ function settings(e) {
     e.preventDefault();
 }
 function complete(e) {
-    document.getElementById('indicator').style.backgroundImage = 'url(Green_32x32.png)';
+    document.getElementById('settings').style.backgroundImage = 'url(Gear_32x32.png)';
     document.getElementById('main').contentWindow.addEventListener('beforeunload', busy, false);
     document.getElementById('location').value = document.getElementById('main').contentWindow.location;
     e.preventDefault();
@@ -264,7 +254,7 @@ function keypress(e) {
         var url = document.getElementById('location').value;
         document.getElementById('main').src = url;
         document.getElementById('main').focus();
-        document.getElementById('indicator').style.backgroundImage = 'url(Busy_32x32.gif)';
+        document.getElementById('settings').style.backgroundImage = 'url(Gear_32x32.gif)';
         e.preventDefault();
     }
 }
@@ -289,7 +279,6 @@ function init() {
   <div id='reload'></div>
   <div id='stop'></div>
   <div id='settings'></div>
-  <div id='indicator'></div>
 </div>
 <iframe id='main' src=''></iframe>
 </body>
