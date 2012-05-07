@@ -59,13 +59,9 @@ void HTMLIFrameElementImp::eval()
     HTMLElementImp::evalVspace(this);
     HTMLElementImp::evalMarginHeight(this);
     HTMLElementImp::evalMarginWidth(this);
-
     setTabIndex(0);
-
     addEventListener(u"blur", &blurListener);
-
-    std::u16string src = getSrc();
-    window.open(src, u"_self");
+    setSrc(getSrc());
 }
 
 void HTMLIFrameElementImp::handleBlur(events::Event event)
@@ -85,7 +81,16 @@ std::u16string HTMLIFrameElementImp::getSrc()
 
 void HTMLIFrameElementImp::setSrc(std::u16string src)
 {
-    window.open(src, u"_self", u"", true);
+    if (!src.empty()) {
+        if (DocumentImp* document = getOwnerDocumentImp()) {
+            URL base(document->getDocumentURI());
+            URL url(base, src);
+            src = url;
+        } else
+            src.clear();
+        // TODO: Check what should be done if src is still empty (i.e. invalid)
+    }
+    window.open(src, u"_self");
 }
 
 std::u16string HTMLIFrameElementImp::getSrcdoc()
