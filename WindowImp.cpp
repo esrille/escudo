@@ -164,47 +164,47 @@ bool WindowImp::poll()
     case HttpRequest::DONE:
         if (!window->getDocument()) {
             recordTime("request done");
-            if (!request.getError()) {
-                // TODO: Check header
+            // TODO: Check header
 
-                Document newDocument = getDOMImplementation()->createDocument(u"", u"", 0);
-                if (DocumentImp* imp = dynamic_cast<DocumentImp*>(newDocument.self())) {
-                    // TODO: Fire a simple unload event.
-                    window->setDocument(newDocument);
-                    imp->setDefaultView(this);
-                    imp->setURL(request.getRequestMessage().getURL());
+            Document newDocument = getDOMImplementation()->createDocument(u"", u"", 0);
+            if (DocumentImp* imp = dynamic_cast<DocumentImp*>(newDocument.self())) {
+                // TODO: Fire a simple unload event.
+                window->setDocument(newDocument);
+                imp->setDefaultView(this);
+                imp->setURL(request.getRequestMessage().getURL());
+                if (!request.getError())
                     history.update(window);
+                else
+                    imp->setError(request.getError());
+                activate();
 
-                    activate();
-
-                    // TODO: Note white it would be nice to parse the HTML docucment in
-                    // the background task, firstly we need to check if we can run JS
-                    // in the background.
+                // TODO: Note white it would be nice to parse the HTML docucment in
+                // the background task, firstly we need to check if we can run JS
+                // in the background.
 #if 104400 <= BOOST_VERSION
-                    boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request.getContentDescriptor(), boost::iostreams::never_close_handle);
+                boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request.getContentDescriptor(), boost::iostreams::never_close_handle);
 #else
-                    boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request.getContentDescriptor(), false);
+                boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request.getContentDescriptor(), false);
 #endif
-                    stream.seekg(0, std::ios::beg);
-                    HTMLInputStream htmlInputStream(stream, request.getResponseMessage().getContentCharset());
-                    HTMLTokenizer tokenizer(&htmlInputStream);
-                    HTMLParser parser(imp, &tokenizer);
-                    parser.mainLoop();  // TODO: run thin in background
-                    if (imp)
-                        imp->setCharset(utfconv(htmlInputStream.getEncoding()));
-                    NodeImp::evalTree(imp);
-                    recordTime("html parsed");
+                stream.seekg(0, std::ios::beg);
+                HTMLInputStream htmlInputStream(stream, request.getResponseMessage().getContentCharset());
+                HTMLTokenizer tokenizer(&htmlInputStream);
+                HTMLParser parser(imp, &tokenizer);
+                parser.mainLoop();  // TODO: run thin in background
+                if (imp)
+                    imp->setCharset(utfconv(htmlInputStream.getEncoding()));
+                NodeImp::evalTree(imp);
+                recordTime("html parsed");
 
-                    if (3 <= getLogLevel())
-                        dumpTree(std::cerr, imp);
+                if (3 <= getLogLevel())
+                    dumpTree(std::cerr, imp);
 
-                    if (events::Event event = new(std::nothrow) EventImp) {
-                        event.initEvent(u"DOMContentLoaded", true, false);
-                        imp->dispatchEvent(event);
-                    }
-                    imp->decrementLoadEventDelayCount();
-                    backgroundTask.wakeUp(BackgroundTask::Cascade);
+                if (events::Event event = new(std::nothrow) EventImp) {
+                    event.initEvent(u"DOMContentLoaded", true, false);
+                    imp->dispatchEvent(event);
                 }
+                imp->decrementLoadEventDelayCount();
+                backgroundTask.wakeUp(BackgroundTask::Cascade);
             }
             break;
         }

@@ -252,9 +252,9 @@ function complete(e) {
 function keypress(e) {
     if (e.keyCode == 13) {
         var url = document.getElementById('location').value;
+        document.getElementById('settings').style.backgroundImage = 'url(Gear_32x32.gif)';
         document.getElementById('main').src = url;
         document.getElementById('main').focus();
-        document.getElementById('settings').style.backgroundImage = 'url(Gear_32x32.gif)';
         e.preventDefault();
     }
 }
@@ -267,7 +267,9 @@ function init() {
     document.getElementById('reload').addEventListener('click', reload, false);
     document.getElementById('stop').addEventListener('click', stop, false);
     document.getElementById('settings').addEventListener('click', settings, false);
-    document.getElementById('main').addEventListener('load', complete, false);
+    var m = document.getElementById('main');
+    m.addEventListener('load', complete, false);
+    m.addEventListener('error', complete, false);
 }
 </script>
 </head>

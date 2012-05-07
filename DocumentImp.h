@@ -77,6 +77,7 @@ class DocumentImp : public ObjectMixin<DocumentImp, NodeImp>
 
     WindowImp* defaultView;
     ElementImp* activeElement;
+    int error;
 
     // XBL 2.0
     std::map<const std::u16string, html::Window> bindingDocuments;
@@ -100,8 +101,15 @@ public:
     int getMode() const {
         return mode;
     }
-    void setMode(int mode) {
-        this->mode = mode;
+    void setMode(int value) {
+        mode = value;
+    }
+
+    int getError() const {
+        return error;
+    }
+    void setError(int value) {
+        error = value;
     }
 
     void setReadyState(const std::u16string& readyState);
