@@ -47,7 +47,8 @@ class DocumentWindow : public EventTargetImp
     Retained<EventListenerImp> clickListener;
     Retained<EventListenerImp> mouseMoveListener;
 
-    DocumentWindow(const DocumentWindow& window);
+    DocumentWindow(const DocumentWindow& window) = delete;
+    DocumentWindow& operator=(const DocumentWindow&) = delete;
 
     void handleClick(events::Event event);
     void handleMouseMove(events::Event event);

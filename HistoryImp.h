@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,11 +55,18 @@ class HistoryImp : public ObjectMixin<HistoryImp>
     WindowImp* window;
     std::deque<SessionHistoryEntry> sessionHistory;
     int currentSession;
+    bool replace;
 
 public:
     HistoryImp(WindowImp* window) :
         window(window),
-        currentSession(0) {
+        currentSession(0),
+        replace(false)
+    {
+    }
+
+    void setReplace(bool value) {
+        replace = value;
     }
 
     // Update the session history with the new page

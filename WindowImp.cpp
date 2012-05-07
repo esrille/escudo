@@ -528,6 +528,7 @@ html::Window WindowImp::open(std::u16string url, std::u16string target, std::u16
     if (url.empty())
         url = u"about:blank";
     request.abort();
+    history.setReplace(replace);
     request.open(u"get", url);
     request.send();
     return this;

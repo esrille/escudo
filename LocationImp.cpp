@@ -29,23 +29,31 @@ std::u16string LocationImp::getHref()
 
 void LocationImp::setHref(std::u16string href)
 {
-    // TODO: still need to refine a lot.
-    URL resolved(url, href);
-    window->open(resolved);
+    assign(href);
 }
 
 void LocationImp::assign(std::u16string url)
 {
+    URL base(window->getLocation().getHref());    // TODO: window must be of the script.
+    URL resolved(base, url);
+    if (resolved.isEmpty())
+        return;
+    window->open(resolved, u"_self", u"", false);
 }
 
 void LocationImp::replace(std::u16string url)
 {
-    // TODO: implement me!
+    URL base(window->getLocation().getHref());    // TODO: window must be of the script.
+    URL resolved(base, url);
+    if (resolved.isEmpty())
+        return;
+    window->open(resolved, u"_self", u"", true);
 }
 
 void LocationImp::reload()
 {
-    // TODO: implement me!
+    // TODO: Refine me!
+    window->open(url, u"_self", u"", true);
 }
 
 std::u16string LocationImp::getProtocol()
@@ -120,8 +128,10 @@ void LocationImp::setHash(std::u16string hash)
 
 std::u16string LocationImp::resolveURL(std::u16string url)
 {
-    URL resolved(this->url, url);  // TODO: base might not be this->url
-    return static_cast<std::u16string>(resolved);  // TODO: raise an exception upon error
+    URL base(window->getLocation().getHref());    // TODO: window must be of the script.
+    URL resolved(base, url);
+    // TODO: Raise an exception upon failure.
+    return resolved;
 }
 
 LocationImp::LocationImp(WindowImp* window, std::u16string url) :

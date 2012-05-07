@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,15 +34,20 @@ namespace bootstrap
 
 void HistoryImp::update(const DocumentWindowPtr& window)
 {
-    if (!sessionHistory.empty())
-        sessionHistory.erase(sessionHistory.begin() + currentSession + 1, sessionHistory.end());
+    if (!sessionHistory.empty()) {
+        if (!replace) {
+            Document currentDocument = sessionHistory.back().window->getDocument();
+            if (sessionHistory.size() == 1 && currentDocument.getURL() == u"about:blank")
+                replace = true;
+            else if (currentDocument.getReadyState() != u"complete")
+                replace = true;
+        }
+        sessionHistory.erase(sessionHistory.begin() + currentSession + (replace ? 0 : 1), sessionHistory.end());
+    }
+    replace = false;
     SessionHistoryEntry e(window);
     sessionHistory.push_back(e);
     currentSession = getLength() - 1;
-
-    for (auto i = sessionHistory.begin(); i != sessionHistory.end(); ++i)
-        std::cerr << i->window->getDocument().getURL() << ' ';
-    std::cerr << '\n';
 }
 
 int HistoryImp::getLength()

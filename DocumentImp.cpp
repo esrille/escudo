@@ -512,6 +512,8 @@ events::Event DocumentImp::createEvent(std::u16string interface)
 
 html::Location DocumentImp::getLocation()
 {
+    if (!defaultView)
+        return 0;
     return new(std::nothrow) LocationImp(defaultView, url);
 }
 
