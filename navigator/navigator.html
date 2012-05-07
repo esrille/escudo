@@ -231,7 +231,6 @@ function forward(e) {
 function reload(e) {
     var url = document.getElementById('location').value;
     document.getElementById('main').src = url;
-    document.getElementById('main').focus();
     e.preventDefault();
 }
 function stop(e) {
@@ -240,21 +239,18 @@ function stop(e) {
 }
 function settings(e) {
     document.getElementById('main').src = 'about:';
-    document.getElementById('location').value = 'about:';
     e.preventDefault();
 }
 function complete(e) {
     document.getElementById('settings').style.backgroundImage = 'url(Gear_32x32.png)';
-    document.getElementById('main').contentWindow.addEventListener('beforeunload', busy, false);
     document.getElementById('location').value = document.getElementById('main').contentWindow.location;
+    document.getElementById('main').focus();
     e.preventDefault();
 }
 function keypress(e) {
     if (e.keyCode == 13) {
         var url = document.getElementById('location').value;
-        document.getElementById('settings').style.backgroundImage = 'url(Gear_32x32.gif)';
         document.getElementById('main').src = url;
-        document.getElementById('main').focus();
         e.preventDefault();
     }
 }
@@ -270,6 +266,7 @@ function init() {
     var m = document.getElementById('main');
     m.addEventListener('load', complete, false);
     m.addEventListener('error', complete, false);
+    m.contentWindow.addEventListener('beforeunload', busy, false);
 }
 </script>
 </head>
@@ -277,7 +274,7 @@ function init() {
 <div id='top'>
   <div id='back'></div>
   <div id='forward'></div>
-  <input type='text' id='location' value='http://'>
+  <input type='text' id='location'>
   <div id='reload'></div>
   <div id='stop'></div>
   <div id='settings'></div>

@@ -63,6 +63,9 @@ void HTMLIFrameElementImp::eval()
     setTabIndex(0);
 
     addEventListener(u"blur", &blurListener);
+
+    std::u16string src = getSrc();
+    window.open(src, u"_self");
 }
 
 void HTMLIFrameElementImp::handleBlur(events::Event event)
