@@ -778,7 +778,9 @@ bool URL::parseRelative(const URL& base)
     }
 
     pos = targetURL.length();
-    if (pathnameStart == pathnameEnd) {
+    if (!hier)
+        targetURL += getPathname();
+    else if (pathnameStart == pathnameEnd) {
         targetURL += base.getPathname();
         pathnameStart = pos;
         pathnameEnd = targetURL.length();
@@ -787,9 +789,7 @@ bool URL::parseRelative(const URL& base)
         else
             targetURL += base.getSearch();
     } else {
-        if (!hier)
-            targetURL += getPathname();
-        else if (url[pathnameStart] == '/')
+        if (url[pathnameStart] == '/')
             targetURL += removeDotSegments(getPathname());
         else {
             // merge paths

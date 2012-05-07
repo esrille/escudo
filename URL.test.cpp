@@ -172,4 +172,5 @@ int main()
     test(a1);
     test(a2);
     test(a2, u"plugins", u"about:plugins");
+    test(a2, u"about:", u"about:");
 }
