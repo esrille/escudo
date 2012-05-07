@@ -245,6 +245,7 @@ function complete(e) {
     document.getElementById('settings').style.backgroundImage = 'url(Gear_32x32.png)';
     document.getElementById('location').value = document.getElementById('main').contentWindow.location;
     document.getElementById('main').focus();
+    document.getElementById('main').contentWindow.addEventListener('beforeunload', busy, false);
     e.preventDefault();
 }
 function keypress(e) {
