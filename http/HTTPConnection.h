@@ -59,10 +59,7 @@ public:
         resolver.async_resolve(q,handler);
     }
 
-    void operator()() {
-        ioService.run();
-    }
-
+    void operator()();
     void stop() {
         ioService.stop();
     }

@@ -556,4 +556,9 @@ void HttpConnectionManager::poll()
         request->notify();
 }
 
+void HttpConnectionManager::operator()()
+{
+    ioService.run();
+}
+
 }}}}  // org::w3c::dom::bootstrap
