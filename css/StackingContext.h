@@ -40,6 +40,9 @@ class StackingContext
     Box* firstBase;
     Box* lastBase;
 
+    // render
+    Box* firstRenderBase;
+    Box* lastRenderBase;
     Box* firstFloat;
     Box* lastFloat;
     Box* currentFloat;
@@ -98,6 +101,13 @@ public:
     void addBase(Box* box);
 
     void addFloat(Box* box);
+
+    void flip() {
+        firstRenderBase = firstBase;
+        lastRenderBase = lastBase;
+        for (auto i = getFirstChild(); i; i = i->getNextSibling())
+            i->flip();
+    }
 
     void render(ViewCSSImp* view);
 

@@ -77,11 +77,11 @@ ViewCSSImp::~ViewCSSImp()
 
 Box* ViewCSSImp::boxFromPoint(int x, int y)
 {
-    if (!boxTree)
+    if (!renderTree)
         return 0;
-    if (Box* target = boxTree.get()->boxFromPoint(x, y))
+    if (Box* target = renderTree.get()->boxFromPoint(x, y))
         return target;
-    return boxTree.get();
+    return renderTree.get();
 }
 
 bool ViewCSSImp::isHovered(Node node)
@@ -95,8 +95,8 @@ bool ViewCSSImp::isHovered(Node node)
 
 void ViewCSSImp::handleMutation(events::Event event)
 {
-    if (boxTree)
-        boxTree->setFlags(1);
+    if (renderTree)
+        renderTree->setFlags(1);
 }
 
 void ViewCSSImp::findDeclarations(CSSRuleListImp::DeclarationSet& set, Element element, css::CSSRuleList list, unsigned importance)
@@ -648,13 +648,26 @@ BlockLevelBox* ViewCSSImp::layOut()
     return boxTree.get();
 }
 
+bool ViewCSSImp::flip()
+{
+    if (boxTree) {
+        for (auto i = map.begin(); i != map.end(); ++i)
+            i->second->flip();
+        stackingContexts->flip();
+        renderTree = boxTree;
+        boxTree = 0;
+        return true;
+    }
+    return false;
+}
+
 BlockLevelBox* ViewCSSImp::dump()
 {
     std::cout << "## render tree\n";
     // When the root element has display:none, no box is created at all.
-    if (boxTree) {
-        boxTree->dump();
-        return boxTree.get();
+    if (renderTree) {
+        renderTree->dump();
+        return renderTree.get();
     }
     return 0;
 }

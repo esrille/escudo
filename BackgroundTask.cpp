@@ -28,19 +28,30 @@
 #include "css/ViewCSSImp.h"
 #include "html/HTMLParser.h"
 
+#include "Test.util.h"
+
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 WindowImp::BackgroundTask::BackgroundTask(WindowImp* window) :
     window(window),
     state(Init),
     flags(0),
-    view(0)
+    view(0),
+    xfered(false)
 {
 }
 
 WindowImp::BackgroundTask::~BackgroundTask()
 {
-    delete view;
+    deleteView();
+}
+
+void WindowImp::BackgroundTask::deleteView()
+{
+    if (!xfered)
+        delete view;
+    view = 0;
+    xfered = false;
 }
 
 void WindowImp::BackgroundTask::operator()()
@@ -60,8 +71,7 @@ void WindowImp::BackgroundTask::operator()()
         //
         if (command & Restart) {
             command &= ~Restart;
-            delete view;
-            view = 0;
+            deleteView();
             state = Init;
         }
 
@@ -71,7 +81,7 @@ void WindowImp::BackgroundTask::operator()()
         if (!view || (command & Cascade)) {
             command &= ~Cascade;
             state = Cascading;
-            delete view;
+            deleteView();
             view = new(std::nothrow) ViewCSSImp(window->getDocumentWindow(), getDOMImplementation()->getDefaultCSSStyleSheet(), getDOMImplementation()->getUserCSSStyleSheet());
             if (!view)
                 continue;
@@ -88,6 +98,7 @@ void WindowImp::BackgroundTask::operator()()
             state = Layouting;
             view->setSize(window->width, window->height);   // TODO: sync with mainloop
             view->layOut();
+            view->setFlags(4);
         }
 
         state = Done;
@@ -130,9 +141,8 @@ void WindowImp::BackgroundTask::restart()
 ViewCSSImp* WindowImp::BackgroundTask::getView()
 {
     assert(state == Done);
-    ViewCSSImp* next = view;
-    view = 0;
-    return next;
+    xfered = true;
+    return view;
 }
 
 }}}}  // org::w3c::dom::bootstrap

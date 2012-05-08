@@ -1636,6 +1636,11 @@ bool CSSStyleDeclarationImp::isFlowRoot() const
            /* TODO || and more conditions... */
 }
 
+void CSSStyleDeclarationImp::clearBox()
+{
+    box = lastBox = 0;
+}
+
 void CSSStyleDeclarationImp::addBox(Box* box)
 {
     if (dynamic_cast<BlockLevelBox*>(box)) {
@@ -1655,9 +1660,10 @@ void CSSStyleDeclarationImp::addBox(Box* box)
     }
 }
 
-void CSSStyleDeclarationImp::clearBox()
+void CSSStyleDeclarationImp::flip()
 {
-    box = lastBox = 0;
+    renderBox = box;
+    renderLastBox = lastBox;
 }
 
 CSSStyleDeclarationImp* CSSStyleDeclarationImp::getPseudoElementStyle(int id)

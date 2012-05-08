@@ -87,6 +87,8 @@ StackingContext::StackingContext(bool auto_, int zIndex) :
     childCount(0),
     firstBase(0),
     lastBase(0),
+    firstRenderBase(0),
+    lastRenderBase(0),
     firstFloat(0),
     lastFloat(0),
     currentFloat(0)
@@ -181,8 +183,8 @@ void StackingContext::render(ViewCSSImp* view)
 {
     float scrollX = view->getWindow()->getScrollX();
     float scrollY = view->getWindow()->getScrollY();
-    currentFloat = 0;
-    for (Box* base = firstBase; base; base = base->nextBase) {
+    currentFloat = firstFloat = lastFloat = 0;
+    for (Box* base = firstRenderBase; base; base = base->nextBase) {
         glPushMatrix();
         clip(view, base, scrollX, scrollY);
         BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(base);

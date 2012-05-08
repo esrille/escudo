@@ -66,7 +66,8 @@ class ViewCSSImp
     unsigned overflow;
 
     // layout
-    BlockLevelBoxPtr boxTree;
+    BlockLevelBoxPtr renderTree;    // A box tree ready to be rendered
+    BlockLevelBoxPtr boxTree;       // A box tree under construction
     std::map<Node, BlockLevelBoxPtr> floatMap;
     std::list<BlockLevelBox*> absoluteList;
     std::list<CounterImpPtr> counterList;
@@ -107,6 +108,7 @@ public:
     BlockLevelBox* layOutBlockBoxes(Element element, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSAutoNumberingValueImp::CounterContext* counterContext, bool asBlock = false);
     BlockLevelBox* layOutBlockBoxes();
     BlockLevelBox* layOut();
+    bool flip();
     BlockLevelBox* dump();
 
     void resolveXY(float left, float top);
@@ -260,8 +262,7 @@ public:
         if (value < 0.01f || 100.0f < value || zoom == value)
             return;
         zoom = value;
-        if (boxTree)
-            boxTree->setFlags(2);
+        setFlags(2);
     }
 
     CounterImpPtr getCounter(const std::u16string identifier);
@@ -282,15 +283,15 @@ public:
         return boxTree.get();
     }
     void setFlags(unsigned f) {
-        if (boxTree)
-            boxTree->setFlags(f);
+        if (renderTree)
+            renderTree->setFlags(f);
     }
     unsigned getFlags() const {
-        return boxTree ? boxTree->getFlags() : 0;
+        return renderTree ? renderTree->getFlags() : 0;
     }
     void clearFlags() {
-        if (boxTree)
-            boxTree->clearFlags();
+        if (renderTree)
+            renderTree->clearFlags();
     }
 
     unsigned getLast() const {

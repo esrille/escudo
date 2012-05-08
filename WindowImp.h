@@ -83,6 +83,9 @@ class WindowImp : public ObjectMixin<WindowImp>
         volatile int state;
         volatile unsigned flags;
         ViewCSSImp* view;
+        volatile bool xfered;
+
+        void deleteView();
 
     public:
         BackgroundTask(WindowImp* window);

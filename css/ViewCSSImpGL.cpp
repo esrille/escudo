@@ -100,7 +100,7 @@ void ViewCSSImp::render()
         stackingContexts->render(this);
     glPopMatrix();
 
-    if (boxTree && overflow != CSSOverflowValueImp::Hidden) {
+    if (renderTree && overflow != CSSOverflowValueImp::Hidden) {
         Box::renderVerticalScrollBar(initialContainingBlock.width, initialContainingBlock.height, window->getScrollY(), scrollHeight);
         Box::renderHorizontalScrollBar(initialContainingBlock.width, initialContainingBlock.height, window->getScrollX(), scrollWidth);
     }
@@ -133,8 +133,8 @@ const int cursorMap[CSSCursorValueImp::CursorsMax] = {
 void ViewCSSImp::setHovered(Node node)
 {
     if (hovered != node) {
-        if (boxTree) {
-            boxTree->setFlags(1);
+        if (renderTree) {
+            renderTree->setFlags(1);
             if (CSSStyleDeclarationImp* style = getStyle(Box::getContainingElement(node)))
                 glutSetCursor(cursorMap[style->cursor.getValue()]);
         }

@@ -213,21 +213,28 @@ bool WindowImp::poll()
             HTMLElementImp::xblEnteredDocument(window->getDocument());
             backgroundTask.wakeUp(BackgroundTask::Layout);
             break;
-        case BackgroundTask::Done:
-            if (ViewCSSImp* next = backgroundTask.getView())
-                updateView(next);
-            else if (view) {
+        case BackgroundTask::Done: {
+            ViewCSSImp* next = backgroundTask.getView();
+            if (view != next) {
+                if (next->flip())
+                    updateView(next);
+            } else if (view) {
                 if (unsigned flags = view->getFlags()) {
-                    view->clearFlags();
-                    if (flags & 1)
-                        backgroundTask.wakeUp(BackgroundTask::Cascade);
-                    else if (flags & 2)
-                        backgroundTask.wakeUp(BackgroundTask::Layout);
-                    else if (flags & 4)
+                    if (view->flip())
                         redisplay = true;
+                    else {
+                        view->clearFlags();
+                        if (flags & 1)
+                            backgroundTask.wakeUp(BackgroundTask::Cascade);
+                        else if (flags & 2)
+                            backgroundTask.wakeUp(BackgroundTask::Layout);
+                        if (flags & 4)
+                            redisplay = true;
+                    }
                 }
             }
             break;
+        }
         default:
             break;
         }
