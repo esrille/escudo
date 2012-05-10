@@ -81,8 +81,6 @@ const char16_t* CSSStyleDeclarationImp::PropertyNames[PropertyCount] = {
     u"font",
     u"font-family",
     u"font-size",
-    u"font-size-adjust",
-    u"font-stretch",
     u"font-style",
     u"font-variant",
     u"font-weight",
@@ -99,8 +97,6 @@ const char16_t* CSSStyleDeclarationImp::PropertyNames[PropertyCount] = {
     u"margin-right",
     u"margin-bottom",
     u"margin-left",
-    u"marker-offset",
-    u"marks",
     u"max-height",
     u"max-width",
     u"min-height",
@@ -116,7 +112,6 @@ const char16_t* CSSStyleDeclarationImp::PropertyNames[PropertyCount] = {
     u"padding-right",
     u"padding-bottom",
     u"padding-left",
-    u"page",
     u"page-break-after",
     u"page-break-before",
     u"page-break-inside",
@@ -130,7 +125,6 @@ const char16_t* CSSStyleDeclarationImp::PropertyNames[PropertyCount] = {
     u"quotes",
     u"richness",
     u"right",
-    u"size",
     u"speak",
     u"speak-header",
     u"speak-numeral",
@@ -141,7 +135,6 @@ const char16_t* CSSStyleDeclarationImp::PropertyNames[PropertyCount] = {
     u"text-align",
     u"text-decoration",
     u"text-indent",
-    u"text-shadow",
     u"text-transform",
     u"top",
     u"unicode-bidi",
@@ -2350,7 +2343,6 @@ Nullable<std::u16string> CSSStyleDeclarationImp::getFontSizeAdjust()
 
 void CSSStyleDeclarationImp::setFontSizeAdjust(Nullable<std::u16string> fontSizeAdjust)
 {
-    setProperty(FontSizeAdjust, fontSizeAdjust);
 }
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getFontStretch()
@@ -2361,7 +2353,6 @@ Nullable<std::u16string> CSSStyleDeclarationImp::getFontStretch()
 
 void CSSStyleDeclarationImp::setFontStretch(Nullable<std::u16string> fontStretch)
 {
-    setProperty(FontStretch, fontStretch);
 }
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getFontStyle()
@@ -2532,7 +2523,6 @@ Nullable<std::u16string> CSSStyleDeclarationImp::getMarkerOffset()
 
 void CSSStyleDeclarationImp::setMarkerOffset(Nullable<std::u16string> markerOffset)
 {
-    setProperty(MarkerOffset, markerOffset);
 }
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getMarks()
@@ -2543,7 +2533,6 @@ Nullable<std::u16string> CSSStyleDeclarationImp::getMarks()
 
 void CSSStyleDeclarationImp::setMarks(Nullable<std::u16string> marks)
 {
-    setProperty(Marks, marks);
 }
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getMaxHeight()
@@ -2705,7 +2694,6 @@ Nullable<std::u16string> CSSStyleDeclarationImp::getPage()
 
 void CSSStyleDeclarationImp::setPage(Nullable<std::u16string> page)
 {
-    setProperty(Page, page);
 }
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getPageBreakAfter()
@@ -2853,7 +2841,6 @@ Nullable<std::u16string> CSSStyleDeclarationImp::getSize()
 
 void CSSStyleDeclarationImp::setSize(Nullable<std::u16string> size)
 {
-    setProperty(Size, size);
 }
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getSpeak()
@@ -2970,7 +2957,6 @@ Nullable<std::u16string> CSSStyleDeclarationImp::getTextShadow()
 
 void CSSStyleDeclarationImp::setTextShadow(Nullable<std::u16string> textShadow)
 {
-    setProperty(TextShadow, textShadow);
 }
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getTextTransform()

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,8 +84,6 @@ int CSSStyleDeclarationImp::getPropertyID(const std::u16string& ident)
     "font"	{ return *yyin ? Unknown : Font; }
     "font-family"	{ return *yyin ? Unknown : FontFamily; }
     "font-size"	{ return *yyin ? Unknown : FontSize; }
-    "font-size-adjust"	{ return *yyin ? Unknown : FontSizeAdjust; }
-    "font-stretch"	{ return *yyin ? Unknown : FontStretch; }
     "font-style"	{ return *yyin ? Unknown : FontStyle; }
     "font-variant"	{ return *yyin ? Unknown : FontVariant; }
     "font-weight"	{ return *yyin ? Unknown : FontWeight; }
@@ -102,8 +100,6 @@ int CSSStyleDeclarationImp::getPropertyID(const std::u16string& ident)
     "margin-right"	{ return *yyin ? Unknown : MarginRight; }
     "margin-bottom"	{ return *yyin ? Unknown : MarginBottom; }
     "margin-left"	{ return *yyin ? Unknown : MarginLeft; }
-    "marker-offset"	{ return *yyin ? Unknown : MarkerOffset; }
-    "marks"	{ return *yyin ? Unknown : Marks; }
     "max-height"	{ return *yyin ? Unknown : MaxHeight; }
     "max-width"	{ return *yyin ? Unknown : MaxWidth; }
     "min-height"	{ return *yyin ? Unknown : MinHeight; }
@@ -119,7 +115,6 @@ int CSSStyleDeclarationImp::getPropertyID(const std::u16string& ident)
     "padding-right"	{ return *yyin ? Unknown : PaddingRight; }
     "padding-bottom"	{ return *yyin ? Unknown : PaddingBottom; }
     "padding-left"	{ return *yyin ? Unknown : PaddingLeft; }
-    "page"	{ return *yyin ? Unknown : Page; }
     "page-break-after"	{ return *yyin ? Unknown : PageBreakAfter; }
     "page-break-before"	{ return *yyin ? Unknown : PageBreakBefore; }
     "page-break-inside"	{ return *yyin ? Unknown : PageBreakInside; }
@@ -133,7 +128,6 @@ int CSSStyleDeclarationImp::getPropertyID(const std::u16string& ident)
     "quotes"	{ return *yyin ? Unknown : Quotes; }
     "richness"	{ return *yyin ? Unknown : Richness; }
     "right"	{ return *yyin ? Unknown : Right; }
-    "size"	{ return *yyin ? Unknown : Size; }
     "speak"	{ return *yyin ? Unknown : Speak; }
     "speak-header"	{ return *yyin ? Unknown : SpeakHeader; }
     "speak-numeral"	{ return *yyin ? Unknown : SpeakNumeral; }
@@ -144,7 +138,6 @@ int CSSStyleDeclarationImp::getPropertyID(const std::u16string& ident)
     "text-align"	{ return *yyin ? Unknown : TextAlign; }
     "text-decoration"	{ return *yyin ? Unknown : TextDecoration; }
     "text-indent"	{ return *yyin ? Unknown : TextIndent; }
-    "text-shadow"	{ return *yyin ? Unknown : TextShadow; }
     "text-transform"	{ return *yyin ? Unknown : TextTransform; }
     "top"	{ return *yyin ? Unknown : Top; }
     "unicode-bidi"	{ return *yyin ? Unknown : UnicodeBidi; }
