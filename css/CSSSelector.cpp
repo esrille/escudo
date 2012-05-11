@@ -320,6 +320,35 @@ bool CSSSelector::isValid() const
     return true;
 }
 
+bool CSSPrimarySelector::hasPseudoClassSelector(int type) const
+{
+    for (auto i = chain.begin(); i != chain.end(); ++i) {
+        if ((*i)->hasPseudoClassSelector(type))
+            return true;
+    }
+    return false;
+}
+
+bool CSSSelector::hasPseudoClassSelector(int type) const
+{
+    for (auto i = simpleSelectors.begin(); i != simpleSelectors.end(); ++i) {
+        if ((*i)->hasPseudoClassSelector(type))
+            return true;
+    }
+    return false;
+}
+
+void CSSSelector::registerToRuleList(CSSRuleListImp* ruleList, CSSStyleDeclarationImp* declaration)
+{
+    if (simpleSelectors.empty())
+        return;
+    if (hasHover()) {
+        ruleList->appendHover(this, declaration);
+        return;
+    }
+    simpleSelectors.back()->registerToRuleList(ruleList, this, declaration);
+}
+
 void CSSPrimarySelector::registerToRuleList(CSSRuleListImp* ruleList, CSSSelector* selector, CSSStyleDeclarationImp* declaration)
 {
     if (chain.empty()) {

@@ -151,6 +151,36 @@ const char16_t* CSSStyleDeclarationImp::PropertyNames[PropertyCount] = {
     u"binding",
 };
 
+bool CSSStyleDeclarationImp::isPaintCategory(unsigned id)
+{
+    switch (id) {
+    case BackgroundAttachment:
+    case BackgroundColor:
+    case BackgroundImage:
+    case BackgroundPosition:
+    case BackgroundRepeat:
+    case Background:
+    case BorderTopColor:
+    case BorderRightColor:
+    case BorderBottomColor:
+    case BorderLeftColor:
+    case BorderColor:
+    case BorderTopStyle:
+    case BorderRightStyle:
+    case BorderBottomStyle:
+    case BorderLeftStyle:
+    case BorderStyle:
+    case Color:
+    case Cursor:
+    case OutlineColor:
+    case OutlineStyle:
+    case Visibility:
+        return true;
+    default:
+        return false;
+    }
+}
+
 CSSPropertyValueImp* CSSStyleDeclarationImp::getProperty(unsigned id)
 {
     switch (id) {
@@ -1667,18 +1697,41 @@ CSSStyleDeclarationImp* CSSStyleDeclarationImp::getPseudoElementStyle(int id)
 
 CSSStyleDeclarationImp* CSSStyleDeclarationImp::getPseudoElementStyle(const std::u16string& name)
 {
-    int id = CSSPseudoElementSelector::getPseudoElementID(name);
-    if (0 <= id)
-        return pseudoElements[id].get();
-    return 0;
+    return getPseudoElementStyle(CSSPseudoElementSelector::getPseudoElementID(name));
 }
 
-CSSStyleDeclarationImp* CSSStyleDeclarationImp::createPseudoElementStyle(int id) {
+CSSStyleDeclarationImp* CSSStyleDeclarationImp::createPseudoElementStyle(int id)
+{
     assert(0 <= id && id < CSSPseudoElementSelector::MaxPseudoElements);
     CSSStyleDeclarationImp* style = pseudoElements[id].get();
     if (!style) {
         if (style = new(std::nothrow) CSSStyleDeclarationImp(id))
             pseudoElements[id] = style;
+    }
+    return style;
+}
+
+CSSStyleDeclarationImp* CSSStyleDeclarationImp::getPseudoClassStyle(int id)
+{
+    assert(0 <= id && id < CSSPseudoClassSelector::MaxPseudoClasses);
+    return pseudoClasses[id].get();
+}
+
+CSSStyleDeclarationImp* CSSStyleDeclarationImp::getPseudoClassStyle(const std::u16string& name)
+{
+    return getPseudoClassStyle(CSSPseudoClassSelector::getPseudoClassID(name));
+}
+
+CSSStyleDeclarationImp* CSSStyleDeclarationImp::createPseudoClassStyle(int id)
+{
+    assert(baseStyle == 0);
+    assert(0 <= id && id < CSSPseudoClassSelector::MaxPseudoClasses);
+    CSSStyleDeclarationImp* style = pseudoClasses[id].get();
+    if (!style) {
+        if (style = new(std::nothrow) CSSStyleDeclarationImp) {
+            style->setBaseStyle(this, id);
+            pseudoClasses[id] = style;
+        }
     }
     return style;
 }
@@ -3117,9 +3170,13 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp(int pseudoElementSelectorType) :
     lastBox(0),
     stackingContext(0),
     fontTexture(0),
+    renderBox(0),
+    renderLastBox(0),
     propertyID(Unknown),
     expression(0),
     pseudoElementSelectorType(pseudoElementSelectorType),
+    baseStyle(0),
+    pseudoClassSelectorType(-1),
     emptyInline(0),
     backgroundColor(CSSColorValueImp::Transparent),
     counterIncrement(1),
@@ -3186,6 +3243,8 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp(int pseudoElementSelectorType) :
     pseudoElements[CSSPseudoElementSelector::NonPseudo] = this;
     for (int i = 1; i < CSSPseudoElementSelector::MaxPseudoElements; ++i)
         pseudoElements[i] = 0;
+    for (int i = 0; i < CSSPseudoClassSelector::MaxPseudoClasses; ++i)
+        pseudoClasses[i] = 0;
 }
 
 // for cloneNode()
@@ -3198,9 +3257,13 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp(CSSStyleDeclarationImp* org) :
     lastBox(0),
     stackingContext(0),
     fontTexture(0),
+    renderBox(0),
+    renderLastBox(0),
     propertyID(Unknown),
     expression(0),
     pseudoElementSelectorType(org->pseudoElementSelectorType),
+    baseStyle(0),
+    pseudoClassSelectorType(org->pseudoClassSelectorType),
     emptyInline(0),
     backgroundColor(CSSColorValueImp::Transparent),
     counterIncrement(1),
@@ -3218,6 +3281,10 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp(CSSStyleDeclarationImp* org) :
     textIndent(0.0f, css::CSSPrimitiveValue::CSS_PX)
 {
     pseudoElements[CSSPseudoElementSelector::NonPseudo] = this;
+    for (int i = 1; i < CSSPseudoElementSelector::MaxPseudoElements; ++i)
+        pseudoElements[i] = 0;
+    for (int i = 0; i < CSSPseudoClassSelector::MaxPseudoClasses; ++i)
+        pseudoClasses[i] = 0;
     specify(org);
     specifyImportant(org);
 }

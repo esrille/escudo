@@ -56,16 +56,17 @@ class ViewCSSImp
     float fontSizeTable[MaxFontSizes];
     float zoom;
 
-    Node hovered;
     Retained<EventListenerImp> mutationListener;
 
     // cascade
+    Node hovered;
     std::map<Element, CSSStyleDeclarationPtr> map;
     StackingContext* stackingContexts;
     std::list<CSSStyleSheetImp*> styleSheets;
     unsigned overflow;
 
     // layout
+    Node hoveredNow;
     BlockLevelBoxPtr renderTree;    // A box tree ready to be rendered
     BlockLevelBoxPtr boxTree;       // A box tree under construction
     std::map<Node, BlockLevelBoxPtr> floatMap;
@@ -80,7 +81,7 @@ class ViewCSSImp
     unsigned delay;  // in 1/100 sec for GIF
 
     void handleMutation(events::Event event);
-    void findDeclarations(CSSRuleListImp::DeclarationSet& set, Element element, css::CSSRuleList list, unsigned importance);
+    void findDeclarations(CSSRuleListImp::DeclarationSet& set, CSSRuleListImp::DeclarationList& hoverList, Element element, css::CSSRuleList list, unsigned importance);
 
 public:
     ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyleSheet, css::CSSStyleSheet userStyleSheet = 0);
@@ -243,12 +244,13 @@ public:
         return scrollHeight;
     }
 
-    Node getHovered() const {
-        return hovered;
-    }
-    // Set hovered to node.
+    // pseudo hovered node for style computation
     void setHovered(Node node);
     bool isHovered(Node node);
+
+    // currently hovered node in the view
+    void setHoveredNow(Node node);
+    bool isHoveredNow(Node node);
 
     bool canScroll() const {
         // Note the 'visible' value is interpreted as 'auto' in the viewport.

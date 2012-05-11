@@ -240,6 +240,10 @@ private:
     int pseudoElementSelectorType;
     CSSStyleDeclarationPtr pseudoElements[CSSPseudoElementSelector::MaxPseudoElements];
 
+    CSSStyleDeclarationImp* baseStyle;
+    int pseudoClassSelectorType;
+    CSSStyleDeclarationPtr pseudoClasses[CSSPseudoClassSelector::MaxPseudoClasses];
+
     int emptyInline;    // 0: none, 1: first, 2: last, 3: both, 4: empty
 
     void specify(const CSSStyleDeclarationImp* decl, unsigned id);
@@ -395,6 +399,17 @@ public:
     CSSStyleDeclarationImp* getPseudoElementStyle(int id);
     CSSStyleDeclarationImp* getPseudoElementStyle(const std::u16string& name);
     CSSStyleDeclarationImp* createPseudoElementStyle(int id);
+
+    int getPseudoClassSelectorType() const {
+        return pseudoClassSelectorType;
+    }
+    CSSStyleDeclarationImp* getPseudoClassStyle(int id);
+    CSSStyleDeclarationImp* getPseudoClassStyle(const std::u16string& name);
+    CSSStyleDeclarationImp* createPseudoClassStyle(int id);
+    void setBaseStyle(CSSStyleDeclarationImp* style, int id) {
+        baseStyle = style;
+        pseudoClassSelectorType = id;
+    }
 
     void specifyWithoutInherited(const CSSStyleDeclarationImp* style);
     void specify(const CSSStyleDeclarationImp* style);
@@ -753,6 +768,9 @@ public:
     {
         return css::CSSStyleDeclaration::getMetaData();
     }
+
+    // Returns true is the specified property does not change the positions of render boxes.
+    static bool isPaintCategory(unsigned id);
 };
 
 }}}}  // org::w3c::dom::bootstrap

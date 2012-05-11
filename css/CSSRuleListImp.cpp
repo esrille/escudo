@@ -20,6 +20,8 @@
 #include "CSSStyleDeclarationImp.h"
 #include "CSSStyleSheetImp.h"
 
+#include "ViewCSSImp.h"
+
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 using namespace css;
@@ -27,6 +29,11 @@ using namespace css;
 void CSSRuleListImp::appendMisc(CSSSelector* selector, CSSStyleDeclarationImp* declaration)
 {
     misc.push_back(Rule{ selector, declaration, ++order });
+}
+
+void CSSRuleListImp::appendHover(CSSSelector* selector, CSSStyleDeclarationImp* declaration)
+{
+    hover.push_back(Rule{ selector, declaration, ++order });
 }
 
 void CSSRuleListImp::appendID(CSSSelector* selector, CSSStyleDeclarationImp* declaration, const std::u16string& key)
@@ -79,14 +86,14 @@ void CSSRuleListImp::append(css::CSSRule rule, DocumentImp* document)
 
 void CSSRuleListImp::find(DeclarationSet& set, ViewCSSImp* view, Element& element, std::multimap<std::u16string, Rule>& map, const std::u16string& key)
 {
-    for (auto i = map.find(key); i != map.end() && (*i).first == key; ++i) {
-        CSSSelector* selector = (*i).second.selector;
+    for (auto i = map.find(key); i != map.end() && i->first == key; ++i) {
+        CSSSelector* selector = i->second.selector;
         if (!selector->match(element, view))
             continue;
         unsigned pseudoElementID = 0;
         if (CSSPseudoElementSelector* pseudo = selector->getPseudoElement())
             pseudoElementID = pseudo->getID();
-        PrioritizedDeclaration decl(importance | selector->getSpecificity(), (*i).second.declaration, pseudoElementID, (*i).second.order);
+        PrioritizedDeclaration decl(importance | selector->getSpecificity(), i->second.declaration, pseudoElementID, i->second.order);
         set.insert(decl);
     }
 }
@@ -124,25 +131,39 @@ void CSSRuleListImp::findByType(DeclarationSet& set, ViewCSSImp* view, Element& 
 void CSSRuleListImp::findMisc(DeclarationSet& set, ViewCSSImp* view, Element& element)
 {
     for (auto i = misc.begin(); i != misc.end(); ++i) {
-        CSSSelector* selector = (*i).selector;
+        CSSSelector* selector = i->selector;
         if (!selector->match(element, view))
             continue;
         unsigned pseudoElementID = 0;
         if (CSSPseudoElementSelector* pseudo = selector->getPseudoElement())
             pseudoElementID = pseudo->getID();
-        PrioritizedDeclaration decl(importance | selector->getSpecificity(), (*i).declaration, pseudoElementID, (*i).order);
+        PrioritizedDeclaration decl(importance | selector->getSpecificity(), i->declaration, pseudoElementID, i->order);
         set.insert(decl);
     }
 }
 
-void CSSRuleListImp::find(DeclarationSet& set, ViewCSSImp* view, Element& element, unsigned importance)
+void CSSRuleListImp::findHover(DeclarationList& list, ViewCSSImp* view, Element& element)
+{
+    for (auto i = hover.begin(); i != hover.end(); ++i) {
+        CSSSelector* selector = i->selector;
+        if (!selector->match(element, view))
+            continue;
+        unsigned pseudoElementID = 0;
+        if (CSSPseudoElementSelector* pseudo = selector->getPseudoElement())
+            pseudoElementID = pseudo->getID();
+        PrioritizedDeclaration decl(importance | selector->getSpecificity(), i->declaration, pseudoElementID, i->order);
+        list.push_back(decl);
+    }
+}
+
+void CSSRuleListImp::find(DeclarationSet& set, CSSRuleListImp::DeclarationList& hoverList, ViewCSSImp* view, Element& element, unsigned importance)
 {
     this->importance = importance;
 
     for (auto i = importList.begin(); i != importList.end(); ++i) {
         if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>((*i)->getStyleSheet().self())) {
             if (CSSRuleListImp* ruleList = dynamic_cast<CSSRuleListImp*>(sheet->getCssRules().self()))
-                ruleList->find(set, view, element, importance);
+                ruleList->find(set, hoverList, view, element, importance);
         }
     }
 
@@ -150,6 +171,8 @@ void CSSRuleListImp::find(DeclarationSet& set, ViewCSSImp* view, Element& elemen
     findByType(set, view, element);
     findByClass(set, view, element);
     findByID(set, view, element);
+
+    findHover(hoverList, view, element);
 }
 
 }}}}  // org::w3c::dom::bootstrap

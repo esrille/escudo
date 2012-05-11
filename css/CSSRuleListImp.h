@@ -21,6 +21,7 @@
 #include <org/w3c/dom/ObjectArray.h>
 
 #include <deque>
+#include <list>
 #include <map>
 #include <set>
 
@@ -65,6 +66,7 @@ public:
     };
 
     typedef std::multiset<PrioritizedDeclaration> DeclarationSet;
+    typedef std::list<PrioritizedDeclaration> DeclarationList;
 
 private:
     struct Rule
@@ -82,6 +84,7 @@ private:
     std::multimap<std::u16string, Rule> mapID;     // ID selectors
     std::multimap<std::u16string, Rule> mapClass;  // class selectors
     std::multimap<std::u16string, Rule> mapType;   // type selectors
+    std::deque<Rule> hover;                        // selectors containing :hover class
     std::deque<Rule> misc;
 
     void find(DeclarationSet& set, ViewCSSImp* view, Element& element, std::multimap<std::u16string, Rule>& map, const std::u16string& key);
@@ -89,6 +92,7 @@ private:
     void findByClass(DeclarationSet& set, ViewCSSImp* view, Element& element);
     void findByType(DeclarationSet& set, ViewCSSImp* view, Element& element);
     void findMisc(DeclarationSet& set, ViewCSSImp* view, Element& element);
+    void findHover(DeclarationList& list, ViewCSSImp* view, Element& element);
 
 public:
     CSSRuleListImp() :
@@ -99,11 +103,12 @@ public:
     void append(css::CSSRule rule, DocumentImp* document);
 
     void appendMisc(CSSSelector* selector, CSSStyleDeclarationImp* declaration);
+    void appendHover(CSSSelector* selector, CSSStyleDeclarationImp* declaration);
     void appendID(CSSSelector* selector, CSSStyleDeclarationImp* declaration, const std::u16string& key);
     void appendClass(CSSSelector* selector, CSSStyleDeclarationImp* declaration, const std::u16string& key);
     void appendType(CSSSelector* selector, CSSStyleDeclarationImp* declaration, const std::u16string& key);
 
-    void find(DeclarationSet& set, ViewCSSImp* view, Element& element, unsigned importance);
+    void find(DeclarationSet& set, CSSRuleListImp::DeclarationList& hoverList, ViewCSSImp* view, Element& element, unsigned importance);
 
     css::CSSRuleList getCssRules()
     {

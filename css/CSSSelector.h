@@ -106,6 +106,9 @@ public:
     virtual bool isValid() const {
         return true;
     }
+    virtual bool hasPseudoClassSelector(int type) const {
+        return false;
+    }
 };
 
 // a type selector, or a universal selector
@@ -161,6 +164,7 @@ public:
     virtual CSSSpecificity getSpecificity();
     virtual bool match(Element& element, ViewCSSImp* view);
     virtual bool isValid() const;
+    virtual bool hasPseudoClassSelector(int type) const;
     void registerToRuleList(CSSRuleListImp* ruleList, CSSSelector* selector, CSSStyleDeclarationImp* declaration);
     CSSPseudoElementSelector* getPseudoElement() const;
 };
@@ -294,7 +298,7 @@ public:
     enum
     {
         Unknown = -1,
-        // CSS 2.1
+
         Link,
         Visited,
         Hover,
@@ -302,19 +306,6 @@ public:
         Focus,
         Lang,
         FirstChild,
-        // CSS 3
-        LastChild,
-        Target,
-        Enabled,
-        Disabled,
-        Checked,
-        Indeterminate,
-        Root,
-        Empty,
-        FirstOfType,
-        LastOfType,
-        OnlyChild,
-        OnlyOfType,
 
         MaxPseudoClasses
     };
@@ -331,6 +322,9 @@ public:
     virtual bool match(Element& element, ViewCSSImp* view);
     virtual bool isValid() const {
         return id != Unknown;
+    }
+    virtual bool hasPseudoClassSelector(int type) const {
+        return id == type;
     }
 
     unsigned getID() const {
@@ -452,12 +446,11 @@ public:
     CSSPseudoElementSelector* getPseudoElement() const;
 
     bool isValid() const;
-
-    void registerToRuleList(CSSRuleListImp* ruleList, CSSStyleDeclarationImp* declaration) {
-        if (simpleSelectors.empty())
-            return;
-        simpleSelectors.back()->registerToRuleList(ruleList, this, declaration);
+    bool hasPseudoClassSelector(int type) const;
+    bool hasHover() const {
+        return hasPseudoClassSelector(CSSPseudoClassSelector::Hover);
     }
+    void registerToRuleList(CSSRuleListImp* ruleList, CSSStyleDeclarationImp* declaration);
 };
 
 class CSSSelectorsGroup

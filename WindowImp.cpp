@@ -340,7 +340,7 @@ bool WindowImp::mouseMove(int x, int y, int modifiers)
             return propagte;
     }
 
-    view->setHovered(box->getTargetNode());
+    view->setHoveredNow(box->getTargetNode());
 
     // mousemove
     events::MouseEvent event(0);
@@ -352,7 +352,7 @@ bool WindowImp::mouseMove(int x, int y, int modifiers)
                             true, true, this, detail, x, y, x, y,
                             modifiers & 2, modifiers & 4, modifiers & 1, false, 0, 0);
         imp->setButtons(buttons);
-        view->getHovered().dispatchEvent(event);
+        box->getTargetNode().dispatchEvent(event);
         if (imp->getStopPropagationFlag())
             propagte = false;
     }
