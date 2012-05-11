@@ -57,7 +57,9 @@ ViewCSSImp::ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyle
     hoveredNow(0),
     quotingDepth(0),
     scrollWidth(0.0f),
-    scrollHeight(0.0f)
+    scrollHeight(0.0f),
+    renderWidth(0.0f),
+    renderHeight(0.0f)
 {
     setMediumFontSize(16);
     getDocument().addEventListener(u"DOMAttrModified", &mutationListener);
@@ -695,6 +697,7 @@ BlockLevelBox* ViewCSSImp::layOut()
 
     quotingDepth = 0;
     scrollWidth = 0.0f;
+    scrollHeight = 0.0f;
 
     layOutBlockBoxes();
     if (!boxTree)
@@ -715,7 +718,7 @@ BlockLevelBox* ViewCSSImp::layOut()
 
     if (stackingContexts) {
         stackingContexts->addBase(boxTree.get());
-        if (2 <= getLogLevel()) {
+        if (3 <= getLogLevel()) {
             std::cout << "## stacking contexts\n";
             stackingContexts->dump();
         }
@@ -730,6 +733,8 @@ bool ViewCSSImp::flip()
             i->second->flip();
         stackingContexts->flip();
         renderTree = boxTree;
+        renderWidth = scrollWidth;
+        renderHeight = scrollHeight;
         boxTree = 0;
         return true;
     }

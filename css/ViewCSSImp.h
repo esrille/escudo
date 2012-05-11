@@ -67,7 +67,6 @@ class ViewCSSImp
 
     // layout
     Node hoveredNow;
-    BlockLevelBoxPtr renderTree;    // A box tree ready to be rendered
     BlockLevelBoxPtr boxTree;       // A box tree under construction
     std::map<Node, BlockLevelBoxPtr> floatMap;
     std::list<BlockLevelBox*> absoluteList;
@@ -75,6 +74,11 @@ class ViewCSSImp
     int quotingDepth;
     float scrollWidth;
     float scrollHeight;
+
+    // render
+    BlockLevelBoxPtr renderTree;    // A box tree ready to be rendered
+    float renderWidth;
+    float renderHeight;
 
     // animation;
     unsigned last;   // in 1/100 sec for GIF
@@ -242,6 +246,13 @@ public:
     float updateScrollHeight(float h) {
         scrollHeight = std::max(scrollHeight, h);
         return scrollHeight;
+    }
+
+    float getRenderWidth() const {
+        return renderWidth;
+    }
+    float getRenderHeight() const {
+        return renderHeight;
     }
 
     // pseudo hovered node for style computation

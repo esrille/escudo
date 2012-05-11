@@ -320,8 +320,8 @@ void Box::renderBorder(ViewCSSImp* view, float left, float top,
                 glVertex2f(ll, bb);
             } else {
                 const ContainingBlock* containingBlock = getContainingBlock(view);
-                float r = -left + view->getScrollWidth();
-                float b = -top + view->getScrollHeight() + containingBlock->height;
+                float r = -left + view->getRenderWidth();
+                float b = -top + view->getRenderHeight() + containingBlock->height;
                 glVertex2f(-left, -top);
                 glVertex2f(r, -top);
                 glVertex2f(r, b);

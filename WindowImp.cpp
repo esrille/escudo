@@ -1597,10 +1597,10 @@ void WindowImp::scroll(int x, int y)
     if (!view)
         return;
 
-    float overflow = view->getScrollWidth() - width;
+    float overflow = view->getRenderWidth() - width;
     x = std::max(0, std::min(x, static_cast<int>(overflow)));
 
-    overflow = view->getScrollHeight() - height;
+    overflow = view->getRenderHeight() - height;
     y = std::max(0, std::min(y, static_cast<int>(overflow)));
 
     window->scroll(x, y);
