@@ -217,7 +217,8 @@ float BlockLevelBox::measureText(ViewCSSImp* view, CSSStyleDeclarationImp* activ
         append(transformed, u);
         if (u == ' ' || u == u'\u00A0')  // SP or NBSP
             width += activeStyle->wordSpacing.getPx();
-        width += activeStyle->letterSpacing.getPx();
+        if (!activeStyle->letterSpacing.isNormal())
+            width += activeStyle->letterSpacing.getPx();
     }
     return width;
 }
@@ -730,7 +731,9 @@ float InlineLevelBox::atEndOfLine()
             width = 0.0f;
             return w;
         } else {
-            float w = -font->measureText(u" ", point) - getStyle()->letterSpacing.getPx() - getStyle()->wordSpacing.getPx();
+            float w = -font->measureText(u" ", point) - getStyle()->wordSpacing.getPx();
+            if (!getStyle()->letterSpacing.isNormal())
+                w -= getStyle()->letterSpacing.getPx();
             width += w;
             return w;
         }

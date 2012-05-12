@@ -959,7 +959,9 @@ void InlineLevelBox::renderText(ViewCSSImp* view, const std::u16string& data, fl
 {
     CSSStyleDeclarationImp* activeStyle = getStyle();
     FontTexture* font = activeStyle->getFontTexture();
-    float letterSpacing = activeStyle->letterSpacing.getPx() * font->getPoint() / point;
+    float letterSpacing = 0.0f;
+    if (!activeStyle->letterSpacing.isNormal())
+        letterSpacing = activeStyle->letterSpacing.getPx() * font->getPoint() / point;
     float wordSpacing = activeStyle->wordSpacing.getPx() * font->getPoint() / point;
     unsigned variant = activeStyle->fontVariant.getValue();
     font->beginRender();
