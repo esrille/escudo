@@ -216,6 +216,7 @@ public:
 private:
     static const size_t PropertyCount = MaxProperties;
     static const char16_t* PropertyNames[PropertyCount];
+    static const unsigned paintProperties[];
 
     Object* owner;
     mutable css::CSSRule parentRule;
@@ -396,20 +397,24 @@ public:
     int getPseudoElementSelectorType() const {
         return pseudoElementSelectorType;
     }
-    CSSStyleDeclarationImp* getPseudoElementStyle(int id);
-    CSSStyleDeclarationImp* getPseudoElementStyle(const std::u16string& name);
+    CSSStyleDeclarationImp* getPseudoElementStyle(int id) const;
+    CSSStyleDeclarationImp* getPseudoElementStyle(const std::u16string& name) const;
     CSSStyleDeclarationImp* createPseudoElementStyle(int id);
 
     int getPseudoClassSelectorType() const {
         return pseudoClassSelectorType;
     }
-    CSSStyleDeclarationImp* getPseudoClassStyle(int id);
-    CSSStyleDeclarationImp* getPseudoClassStyle(const std::u16string& name);
+    CSSStyleDeclarationImp* getPseudoClassStyle(int id) const;
+    CSSStyleDeclarationImp* getPseudoClassStyle(const std::u16string& name) const;
     CSSStyleDeclarationImp* createPseudoClassStyle(int id);
+    CSSStyleDeclarationImp* getBaseStyle() const {
+        return baseStyle;
+    }
     void setBaseStyle(CSSStyleDeclarationImp* style, int id) {
         baseStyle = style;
         pseudoClassSelectorType = id;
     }
+    bool isAffectedByHover() const;
 
     void specifyWithoutInherited(const CSSStyleDeclarationImp* style);
     void specify(const CSSStyleDeclarationImp* style);
@@ -418,11 +423,14 @@ public:
     void reset(unsigned id);
     void resetInheritedProperties();
 
-    void copy(const CSSStyleDeclarationImp* parentStyle, unsigned id);
-    void copyInheritedProperties(const CSSStyleDeclarationImp* parentStyle);
+    void inherit(const CSSStyleDeclarationImp* parentStyle, unsigned id);
+    void inheritProperties(const CSSStyleDeclarationImp* parentStyle);
+
+    void copyPaintProperties(const CSSStyleDeclarationImp* otherStyle);
 
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle, Element element);
-
+    void computeStackingContext(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle);
+    void recompute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle);
     void resolve(ViewCSSImp* view, const ContainingBlock* containingBlock);
 
     void updateCounters(ViewCSSImp* view, CSSAutoNumberingValueImp::CounterContext* context) {

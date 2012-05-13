@@ -48,23 +48,36 @@ class CSSFontSizeValueImp;
 struct CSSNumericValue
 {
     static const char16_t* Units[];
+
     unsigned short unit;  // cf. CSSPrimitiveValue
     short index;  // non-negative value if this value has a keyword index value rather than number
     float number;
+    float resolved;
+
+public:
     CSSNumericValue(int index = 0) :
         unit(CSSParserTerm::CSS_TERM_INDEX),
         index(index),
-        number(0.0f) {
+        number(0.0f),
+        resolved(NAN)
+    {
         assert(0 <= index);
     }
     CSSNumericValue(float number, unsigned short unit = css::CSSPrimitiveValue::CSS_NUMBER) :
         unit(unit),
         index(-1),
-        number(number) {
-    }
-    std::u16string getCssText(const char16_t* options[] = 0) {
+        number(number),
+        resolved(NAN)
+    {}
+    std::u16string getCssText(const char16_t* options[] = 0, unsigned short resolvedUnit = css::CSSPrimitiveValue::CSS_PX) const {
         if (unit == CSSParserTerm::CSS_TERM_INDEX)
             return options[index];
+        if (!isnan(resolved)) {
+            std::u16string cssText = CSSSerializeNumber(resolved);
+            if (resolved != 0.0f)
+                cssText += Units[resolvedUnit - css::CSSPrimitiveValue::CSS_PERCENTAGE];
+            return cssText;
+        }
         std::u16string cssText = CSSSerializeNumber(number);
         if (number != 0.0f && css::CSSPrimitiveValue::CSS_PERCENTAGE <= unit && unit <= css::CSSPrimitiveValue::CSS_KHZ)
             cssText += Units[unit - css::CSSPrimitiveValue::CSS_PERCENTAGE];
@@ -75,6 +88,7 @@ struct CSSNumericValue
         unit = term->unit;
         index = (unit == CSSParserTerm::CSS_TERM_INDEX) ? term->getIndex() : -1;
         number = static_cast<float>(term->number);
+        resolved = NAN;
         return *this;
     }
     CSSNumericValue& setValue(float number, unsigned short unit = css::CSSPrimitiveValue::CSS_NUMBER) {
@@ -82,11 +96,15 @@ struct CSSNumericValue
         this->unit = unit;
         this->index = -1;
         this->number = number;
+        resolved = NAN;
         return *this;
     }
     float getPx() const {
-        assert(unit == css::CSSPrimitiveValue::CSS_PX || number == 0.0f);
-        return number;
+        assert(!isnan(resolved));
+        return resolved;
+    }
+    void setPx(float value) {
+        resolved = value;
     }
     bool isNegative() const {
         return !isIndex() && number < 0.0;
@@ -100,8 +118,9 @@ struct CSSNumericValue
         return -1;
     }
     CSSNumericValue& setIndex(short value) {
-        this->unit = CSSParserTerm::CSS_TERM_INDEX;
-        this->index = value;
+        unit = CSSParserTerm::CSS_TERM_INDEX;
+        index = value;
+        resolved = NAN;
         return *this;
     }
     bool isPercentage() const {
@@ -109,6 +128,8 @@ struct CSSNumericValue
     }
     bool operator==(const CSSNumericValue& value) const {
         if (unit == CSSParserTerm::CSS_TERM_INDEX && index == value.index)
+            return true;
+        if (!isnan(resolved) && resolved == value.resolved)
             return true;
         if (number == value.number) {
             if (unit == value.unit)
@@ -127,6 +148,7 @@ struct CSSNumericValue
         unit = value.unit;
         index = value.index;
         number = value.number;
+        resolved = value.resolved;
     }
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize);
@@ -229,6 +251,9 @@ public:
     float getPx() const {
         return value.getPx();
     }
+    bool isPercentage() const {
+        return value.isPercentage();
+    }
     CSSNumericValueImp(float number = 0.0f, unsigned short unit = css::CSSPrimitiveValue::CSS_NUMBER) :
         value(number, unit) {
     }
@@ -244,9 +269,6 @@ public:
     CSSNonNegativeValueImp& setValue(CSSParserTerm* term) {
         value.setValue(term);
         return *this;
-    }
-    bool isPercentage() const {
-        return value.unit == css::CSSPrimitiveValue::CSS_PERCENTAGE;
     }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
         return value.getCssText();
@@ -289,7 +311,7 @@ public:
         return length.getIndex() == 0;
     }
     bool isPercentage() const {
-        return length.unit == css::CSSPrimitiveValue::CSS_PERCENTAGE;
+        return length.isPercentage();
     }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
         if (isAuto())
@@ -345,7 +367,7 @@ public:
         return length.getIndex() == 0;
     }
     bool isPercentage() const {
-        return length.unit == css::CSSPrimitiveValue::CSS_PERCENTAGE;
+        return length.isPercentage();
     }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
         if (isNone())
@@ -361,6 +383,7 @@ public:
     void specify(const CSSNoneLengthValueImp& specified) {
         length.specify(specified.length);
     }
+    void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize);
     float getPx() const {
         return length.getPx();
@@ -407,6 +430,7 @@ public:
     void specify(const CSSNormalLengthValueImp& specified) {
         length.specify(specified.length);
     }
+    void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     float getPx() const {
         return length.getPx();
     }
@@ -425,8 +449,6 @@ public:
     CSSLetterSpacingValueImp(float number, unsigned short unit) :
         CSSNormalLengthValueImp(number, unit)
     {}
-    void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
-    void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize);
 };
 
 class CSSWordSpacingValueImp : public CSSNormalLengthValueImp
@@ -665,9 +687,10 @@ class CSSBorderColorValueImp : public CSSPropertyValueImp
 {
     unsigned value;
     bool hasValue;
+    unsigned resolved;
 public:
     CSSBorderColorValueImp& setValue(unsigned color = 0xff000000) {
-        value = color;
+        resolved = value = color;
         hasValue = true;
         return *this;
     }
@@ -692,21 +715,24 @@ public:
     void specify(const CSSBorderColorValueImp& specified) {
         value = specified.value;
         hasValue = specified.hasValue;
+        resolved = specified.resolved;
     }
     CSSBorderColorValueImp& reset() {
-        value = 0xff000000;
+        resolved = value = 0xff000000;
         hasValue = false;
         return *this;
     }
-    unsigned getARGB() {
-        return value;
+    unsigned getARGB() const {
+        return resolved;
+    }
+    void setARGB(unsigned argb) {
+        resolved = argb;
     }
     void compute(CSSStyleDeclarationImp* decl);
     CSSBorderColorValueImp(unsigned argb = 0xff000000) :
         value(0xff000000),
         hasValue(false)
-    {
-    }
+    {}
 };
 
 class CSSBorderSpacingValueImp : public CSSPropertyValueImp
@@ -791,6 +817,7 @@ public:
 class CSSBorderStyleValueImp : public CSSPropertyValueImp
 {
     unsigned value;
+    unsigned resolved;
 public:
     enum {
         // In the preferred order for the border conflict resolution
@@ -806,33 +833,41 @@ public:
         Hidden
     };
     CSSBorderStyleValueImp& setValue(unsigned value = None) {
-        this->value = value;
+        resolved = this->value = value;
         return *this;
     }
     CSSBorderStyleValueImp& setValue(CSSParserTerm* term) {
         return setValue(term->getIndex());
     }
     unsigned getValue() const {
-        return value;
+        return resolved;
     }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
-        return Options[value];
+        return Options[resolved];
     }
     bool operator==(const CSSBorderStyleValueImp& style) const {
-        return value == style.value;
+        return resolved == style.resolved;
     }
     bool operator!=(const CSSBorderStyleValueImp& style) const {
-        return value != style.value;
+        return resolved != style.resolved;
     }
     bool operator<(const CSSBorderStyleValueImp& style) const {
-        return value < style.value;
+        return resolved < style.resolved;
     }
     void specify(const CSSBorderStyleValueImp& specified) {
         value = specified.value;
+        resolved = specified.resolved;
+    }
+    void copy(const CSSBorderStyleValueImp& specified) {
+        resolved = specified.resolved;
+    }
+    void compute() {
+        resolved = value;
     }
     CSSBorderStyleValueImp(unsigned initial = None) :
-        value(initial) {
-    }
+        value(initial),
+        resolved(initial)
+    {}
     static const char16_t* Options[];
 };
 
@@ -884,11 +919,11 @@ public:
         return width.getPx();
     }
     CSSBorderWidthValueImp() :
-        width(Medium) {
-    }
+        width(Medium)
+    {}
     CSSBorderWidthValueImp(float number) :
-        width(number) {
-    }
+        width(number)
+    {}
     static const char16_t* Options[];
 };
 
@@ -986,10 +1021,11 @@ public:
 class CSSColorValueImp : public CSSPropertyValueImp
 {
     unsigned value;
+    unsigned resolved;
 public:
     static const unsigned Transparent = 0x00000000u;
     CSSColorValueImp& setValue(unsigned color = 0xff000000) {
-        value = color;
+        resolved = value = color;
         return *this;
     }
     CSSColorValueImp& setValue(CSSParserTerm* term) {
@@ -997,7 +1033,7 @@ public:
         return setValue(term->rgb);
     }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
-        return CSSSerializeRGB(value);
+        return CSSSerializeRGB(resolved);
     }
     bool operator==(const CSSColorValueImp& color) const {
         return value == color.value;
@@ -1007,13 +1043,21 @@ public:
     }
     void specify(const CSSColorValueImp& specified) {
         value = specified.value;
+        resolved = specified.resolved;
     }
-    unsigned getARGB() {
-        return value;
+    void compute() {
+        resolved = value;
+    }
+    unsigned getARGB() const {
+        return resolved;
+    }
+    void setARGB(unsigned argb) {
+        resolved = argb;
     }
     CSSColorValueImp(unsigned argb = 0xff000000) :
-        value(argb) {
-    }
+        value(argb),
+        resolved(argb)
+    {}
 };
 
 class CSSContentValueImp : public CSSPropertyValueImp
@@ -1272,7 +1316,8 @@ public:
         return value != display.value;
     }
     void specify(const CSSDisplayValueImp& specified) {
-        setValue(specified.value);
+        original = specified.original;
+        value = specified.original;
     }
     void compute(CSSStyleDeclarationImp* decl, Element element);
     CSSDisplayValueImp(unsigned initial = Inline) :
@@ -1674,15 +1719,14 @@ public:
         return *this;
     }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
-        return value.getCssText(Options);
+        return value.getCssText(Options, css::CSSPrimitiveValue::CSS_NUMBER);
     }
     void specify(const CSSFontWeightValueImp& specified) {
         value = specified.value;
     }
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle);
     unsigned getWeight() const {
-        assert(value.unit == css::CSSPrimitiveValue::CSS_NUMBER);
-        return static_cast<unsigned>(value.number);
+        return static_cast<unsigned>(value.getPx());
     }
     bool isNormal() const {
         if (value.getIndex() == Normal)
@@ -1692,8 +1736,8 @@ public:
         return false;
     }
     CSSFontWeightValueImp() :
-        value(Normal) {
-    }
+        value(Normal)
+    {}
     static const char16_t* Options[];
 };
 
@@ -1723,8 +1767,6 @@ public:
 // normal | <number> | <length> | <percentage>
 class CSSLineHeightValueImp : public CSSPropertyValueImp
 {
-    CSSNumericValue computed;
-protected:
     CSSNumericValue value;
 public:
     enum {
@@ -1739,7 +1781,6 @@ public:
             value.setValue(term);
         else
             value.setIndex(Normal);
-        computed = value;
         return *this;
     }
     bool isNormal() const {
@@ -1757,8 +1798,7 @@ public:
         return value != lineHeight.value;
     }
     void specify(const CSSLineHeightValueImp& specified) {
-        value.specify(specified.computed);
-        computed = value;
+        value.specify(specified.value);
     }
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style);
@@ -1766,7 +1806,6 @@ public:
         return value.getPx();
     }
     CSSLineHeightValueImp() :
-        computed(Normal),
         value(Normal)
     {
     }
@@ -1934,14 +1973,16 @@ class CSSOutlineColorValueImp : public CSSPropertyValueImp
 {
     int invert;
     unsigned color;
+    int resolvedInvert;
+    unsigned resolvedColor;
 public:
     enum {
         Color = 0,
         Invert = 1,
     };
     CSSOutlineColorValueImp& setValue(int index = 1, unsigned argb = 0xff000000) {
-        invert = index;
-        color = argb;
+        resolvedInvert = invert = index;
+        resolvedColor = color = argb;
         return *this;
     }
     CSSOutlineColorValueImp& setValue(CSSParserTerm* term) {
@@ -1953,29 +1994,40 @@ public:
         }
     }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
-        return invert ? u"invert" : CSSSerializeRGB(color);
+        return resolvedInvert ? u"invert" : CSSSerializeRGB(resolvedColor);
     }
     bool operator==(const CSSOutlineColorValueImp& value) const {
-        return (invert == value.invert) && (invert == Invert || color == value.color);
+        return (resolvedInvert == value.resolvedInvert) && (resolvedInvert == Invert || resolvedColor == value.resolvedColor);
     }
     bool operator!=(const CSSOutlineColorValueImp& value) const {
-        return (invert != value.invert) || (invert == Color && color != value.color);
+        return (resolvedInvert != value.resolvedInvert) || (resolvedInvert == Color && resolvedColor != value.resolvedColor);
     }
     void specify(const CSSOutlineColorValueImp& specified) {
         invert = specified.invert;
         color = specified.color;
+        resolvedInvert = specified.resolvedInvert;
+        resolvedColor = specified.resolvedColor;
+    }
+    void copy(const CSSOutlineColorValueImp& specified) {
+        resolvedInvert = specified.resolvedInvert;
+        resolvedColor = specified.resolvedColor;
+    }
+    void compute() {
+        resolvedInvert = invert;
+        resolvedColor = color;
     }
     bool isInvert() const {
-        return invert == Invert;
+        return resolvedInvert == Invert;
     }
     unsigned getARGB() {
-        return color;
+        return resolvedColor;
     }
     CSSOutlineColorValueImp() :
         invert(Invert),
-        color(0xff000000)
-    {
-    }
+        color(0xff000000),
+        resolvedInvert(Invert),
+        resolvedColor(0xff000000)
+    {}
 };
 
 class CSSOutlineShorthandImp : public CSSPropertyValueImp
@@ -2286,6 +2338,7 @@ public:
 class CSSVisibilityValueImp : public CSSPropertyValueImp
 {
     unsigned value;
+    unsigned resolved;
 public:
     enum {
         Visible,
@@ -2293,27 +2346,35 @@ public:
         Collapse
     };
     CSSVisibilityValueImp& setValue(unsigned value = Visible) {
-        this->value = value;
+        resolved = this->value = value;
         return *this;
     }
     CSSVisibilityValueImp& setValue(CSSParserTerm* term) {
         return setValue(term->getIndex());
     }
     unsigned getValue() const {
-        return value;
+        return resolved;
     }
     bool isVisible() const {
-        return value == Visible;
+        return resolved == Visible;
     }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
-        return Options[value];
+        return Options[resolved];
     }
     void specify(const CSSVisibilityValueImp& specified) {
         value = specified.value;
+        resolved = specified.resolved;
+    }
+    void copy(const CSSVisibilityValueImp& specified) {
+        resolved = specified.resolved;
+    }
+    void compute() {
+        resolved = value;
     }
     CSSVisibilityValueImp(unsigned initial = Visible) :
-        value(initial) {
-    }
+        value(initial),
+        resolved(initial)
+    {}
     static const char16_t* Options[];
 };
 

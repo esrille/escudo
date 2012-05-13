@@ -352,25 +352,23 @@ void CSSNumericValue::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, f
 {
     if (isIndex())
         return;
-    float w;
     switch (unit) {
     case css::CSSPrimitiveValue::CSS_PERCENTAGE:
-        w = view->getPx(*this, fullSize);
+        resolved = view->getPx(*this, fullSize);
         break;
     case css::CSSPrimitiveValue::CSS_EMS:
-        w = view->getPx(*this, style->fontSize.getPx());
+        resolved = view->getPx(*this, style->fontSize.getPx());
         break;
     case css::CSSPrimitiveValue::CSS_EXS:
         if (FontTexture* font = style->getFontTexture())
-            w = view->getPx(*this, font->getXHeight(view->getPointFromPx(style->fontSize.getPx())));
+            resolved = view->getPx(*this, font->getXHeight(view->getPointFromPx(style->fontSize.getPx())));
         else
-            w = view->getPx(*this, style->fontSize.getPx() * 0.5f);
+            resolved = view->getPx(*this, style->fontSize.getPx() * 0.5f);
         break;
     default:
-        w = view->getPx(*this);
+        resolved = view->getPx(*this);
         break;
     }
-    setValue(w, css::CSSPrimitiveValue::CSS_PX);
 }
 
 void CSSNumericValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style)
@@ -385,7 +383,7 @@ void CSSNumericValueImp::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style
 
 void CSSAutoLengthValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style)
 {
-    if (isAuto() || length.isPercentage())
+    if (isAuto() || isPercentage())
         return;  // leave as it is
     length.compute(view, style);
 }
@@ -397,30 +395,32 @@ void CSSAutoLengthValueImp::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* st
     length.resolve(view, style, fullSize);
 }
 
+void CSSNoneLengthValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style)
+{
+    if (isNone() || isPercentage())
+        return;  // leave as it is
+    length.compute(view, style);
+}
+
 void CSSNoneLengthValueImp::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize)
 {
     if (isNone())
-        return;  // leave length as none
+        return;  // leave as it is
     length.resolve(view, style, fullSize);
 }
 
-void CSSLetterSpacingValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style)
+void CSSNormalLengthValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style)
 {
+    assert(!length.isPercentage());
     if (isNormal())
         return;  // leave as it is
     length.compute(view, style);
 }
 
-void CSSLetterSpacingValueImp::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize)
-{
-    if (isNormal())
-        length.setValue(0.0f, CSSPrimitiveValue::CSS_PX);
-}
-
 void CSSWordSpacingValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style)
 {
     if (isNormal()) {
-        length.setValue(0.0f, CSSPrimitiveValue::CSS_PX);
+        length.setPx(0.0f);
         return;  // leave as it is
     }
     length.compute(view, style);
@@ -664,7 +664,9 @@ void CSSBorderColorValueImp::compute(CSSStyleDeclarationImp* decl)
 {
     assert(decl);
     if (!hasValue)
-        value = decl->color.getARGB();
+        resolved = decl->color.getARGB();
+    else
+        resolved = value;
 }
 
 void CSSBorderSpacingValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style)
@@ -782,30 +784,28 @@ void CSSBorderWidthValueImp::compute(ViewCSSImp* view, const CSSBorderStyleValue
     switch (borderStyle.getValue()) {
     case CSSBorderStyleValueImp::None:
     case CSSBorderStyleValueImp::Hidden:
-        width.setValue(0.0f, css::CSSPrimitiveValue::CSS_PX);
+        width.setPx(0.0f);
         return;
     default:
         break;
     }
 
-    float w;
     switch (width.unit) {
     case CSSParserTerm::CSS_TERM_INDEX:
         switch (width.getIndex()) {
         case Thin:
-            w = 1.0f;  // TODO * view->getMediumFontSize() ...
+            width.setPx(1.0f);  // TODO * view->getMediumFontSize() ...
             break;
         case Medium:
-            w = 3.0f;
+            width.setPx(3.0f);
             break;
         case Thick:
-            w = 5.0f;
+            width.setPx(5.0f);
             break;
         default:
-            w = 1.0f;   // TODO: error
+            width.setPx(1.0f);  // TODO: error
             break;
         }
-        width.setValue(w, css::CSSPrimitiveValue::CSS_PX);
         break;
     default:
         // TODO use height in the vertical writing mode
@@ -1173,6 +1173,7 @@ void CSSContentValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style
     case CSSPseudoElementSelector::Marker:
         if (isNormal()) {
             value = None;
+            clearContents();
             if (!style->listStyleImage.isNone()) {
                 if (URIContent* content = new(std::nothrow) URIContent(style->listStyleImage.getValue()))
                     contents.push_back(content);
@@ -1329,14 +1330,14 @@ std::u16string CSSCursorValueImp::getCssText(CSSStyleDeclarationImp* decl)
 
 void CSSDisplayValueImp::compute(CSSStyleDeclarationImp* decl, Element element)
 {
-    if (value == None)
+    if (original == None)
         return;
     unsigned position = decl->position.getValue();
     if (position == CSSPositionValueImp::Absolute || position == CSSPositionValueImp::Fixed)
-        decl->float_.setValue(CSSFloatValueImp::None);
+        decl->float_.setValue(CSSFloatValueImp::None);  // TOOD: keep original?
     else if (decl->float_.getValue() == CSSFloatValueImp::None && (!element || element.getParentElement()))
         return;
-    switch (value) {
+    switch (original) {
     case InlineTable:
         value = Table;
         break;
@@ -1470,7 +1471,7 @@ void CSSFontSizeValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* pare
         w = view->getPx(size);
         break;
     }
-    size.setValue(w, css::CSSPrimitiveValue::CSS_PX);
+    size.setPx(w);
 }
 
 void CSSFontWeightValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle)
@@ -1510,7 +1511,7 @@ void CSSFontWeightValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* pa
     default:
         return;
     }
-    value.setValue(w, css::CSSPrimitiveValue::CSS_NUMBER);
+    value.setPx(w);
 }
 
 bool CSSFontShorthandImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
@@ -1608,7 +1609,6 @@ void CSSLineHeightValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* st
         break;
     default:
         value.resolve(view, style, style->fontSize.getPx());
-        computed = value;
         break;
     }
 }
@@ -1628,7 +1628,7 @@ void CSSLineHeightValueImp::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* st
     default:
         return;
     }
-    value.setValue(w, css::CSSPrimitiveValue::CSS_PX);
+    value.setPx(w);
 }
 
 void CSSListStylePositionValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style)

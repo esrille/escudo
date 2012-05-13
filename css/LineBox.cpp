@@ -364,7 +364,9 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                     w += blankRight;
                 while (context->leftover < w && (context->breakable || activeStyle->whiteSpace.isBreakingLines())) {
                     if (activeStyle->whiteSpace.isCollapsingSpace() && 0 < transformed.length() && transformed[transformed.length() - 1] == u' ') {
-                        float lineEnd = (next - wrap == 1) ? 0.0f : w - glyph->advance * font->getScale(point) - activeStyle->letterSpacing.getPx() - activeStyle->wordSpacing.getPx();
+                        float lineEnd = (next - wrap == 1) ? 0.0f : w - glyph->advance * font->getScale(point) - activeStyle->wordSpacing.getPx();
+                        if (!activeStyle->letterSpacing.isNormal())
+                            lineEnd -= activeStyle->letterSpacing.getPx();
                         if (lineEnd == 0 || lineEnd <= context->leftover) {
                             context->breakable = true;
                             context->dontWrap();
@@ -650,9 +652,12 @@ InlineLevelBox::InlineLevelBox(Node node, CSSStyleDeclarationImp* style) :
     wrapWidth(0.0f),
     emptyInline(0)
 {
-    setStyle(style);
-    if (style)
+    if (style) {
+        setStyle(style);
         visibility = style->visibility.getValue();
+        if (style->getPseudoClassSelectorType() == CSSPseudoClassSelector::Hover)
+            state |= HOVERED;
+    }
 }
 
 bool InlineLevelBox::isEmptyInlineAtFirst(CSSStyleDeclarationImp* style, Element& element, Node& node)

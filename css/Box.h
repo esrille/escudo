@@ -240,6 +240,15 @@ public:
     static const unsigned short BLOCK_LEVEL_BOX = 1;
     static const unsigned short LINE_BOX = 2;
     static const unsigned short INLINE_LEVEL_BOX = 3;
+
+    // flags
+    static const unsigned short NEED_RESTYLING = 1;
+    static const unsigned short NEED_REFLOW = 2;
+    static const unsigned short NEED_REPAINT = 4;
+
+    // state
+    static const unsigned short HOVERED = 1;
+
 protected:
     Node node;
     Box* parentBox;
@@ -290,7 +299,8 @@ protected:
     CSSStyleDeclarationPtr style;
     FormattingContext* formattingContext;
 
-    unsigned flags;
+    unsigned short flags;
+    unsigned short state;
 
     WindowImp* childWindow;
 
@@ -327,12 +337,24 @@ public:
     Box* insertBefore(Box* item, Box* after);
     Box* appendChild(Box* item);
 
-    Box* getParentBox() const;
-    bool hasChildBoxes() const;
-    Box* getFirstChild() const;
-    Box* getLastChild() const;
-    Box* getPreviousSibling() const;
-    Box* getNextSibling() const;
+    Box* getParentBox() const {
+        return parentBox;
+    }
+    bool hasChildBoxes() const {
+        return firstChild;
+    }
+    Box* getFirstChild() const {
+        return firstChild;
+    }
+    Box* getLastChild() const {
+        return lastChild;
+    }
+    Box* getPreviousSibling() const {
+        return previousSibling;
+    }
+    Box* getNextSibling() const {
+        return nextSibling;
+    }
 
     float getX() const {
         return x;
@@ -470,6 +492,7 @@ public:
         return style.get();
     }
     void setStyle(CSSStyleDeclarationImp* style);
+    bool restyle(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle = 0);
 
     bool isStatic() const {
         return position == CSSPositionValueImp::Static;
@@ -544,7 +567,7 @@ public:
 
     virtual void dump(std::string indent = "") = 0;
 
-    void setFlags(unsigned f) {
+    void setFlags(unsigned short f) {
         flags |= f;
     }
     void clearFlags() {
@@ -552,8 +575,8 @@ public:
         for (Box* i = firstChild; i; i = i->nextSibling)
             i->clearFlags();
     }
-    unsigned getFlags() const {
-        unsigned f = flags;
+    unsigned short getFlags() const {
+        unsigned short f = flags;
         for (const Box* i = firstChild; i; i = i->nextSibling)
             f |= i->getFlags();
         return f;
@@ -571,6 +594,19 @@ public:
                 return target;
         }
         return isInside(x, y) ? this : 0;
+    }
+
+    bool isHovered() const {
+        return state & HOVERED;
+    }
+    void setHovered() {
+        for (Box* box = this; box; box = box->getParentBox())
+            box->state |= HOVERED;
+    }
+    void clearHovered() {
+        state &= ~HOVERED;
+        for (Box* i = firstChild; i; i = i->nextSibling)
+            i->clearHovered();
     }
 
     static void renderVerticalScrollBar(float w, float h, float pos, float total);

@@ -79,6 +79,7 @@ class ViewCSSImp
     BlockLevelBoxPtr renderTree;    // A box tree ready to be rendered
     float renderWidth;
     float renderHeight;
+    Box* hoveredBox;
 
     // animation;
     unsigned last;   // in 1/100 sec for GIF
@@ -262,6 +263,8 @@ public:
     // currently hovered node in the view
     void setHoveredNow(Node node);
     bool isHoveredNow(Node node);
+
+    void setHoveredBox(Box* box);
 
     bool canScroll() const {
         // Note the 'visible' value is interpreted as 'auto' in the viewport.

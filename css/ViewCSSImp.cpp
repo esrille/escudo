@@ -59,7 +59,8 @@ ViewCSSImp::ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyle
     scrollWidth(0.0f),
     scrollHeight(0.0f),
     renderWidth(0.0f),
-    renderHeight(0.0f)
+    renderHeight(0.0f),
+    hoveredBox(0)
 {
     setMediumFontSize(16);
     getDocument().addEventListener(u"DOMAttrModified", &mutationListener);
@@ -109,6 +110,20 @@ bool ViewCSSImp::isHoveredNow(Node node)
             return true;
     }
     return false;
+}
+
+void ViewCSSImp::setHoveredBox(Box* box)
+{
+    if (!renderTree)
+        return;
+    if (hoveredBox != box) {
+        renderTree->clearHovered();
+        hoveredBox = box;
+        box->setHovered();
+        if (renderTree->restyle(this))
+            renderTree->setFlags(Box::NEED_REPAINT);
+    }
+    setHoveredNow(box->getTargetNode());
 }
 
 void ViewCSSImp::handleMutation(events::Event event)
@@ -280,24 +295,9 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle)
             }
         } // TODO: detach the shadow tree from element (if any)
 
-        CSSStyleDeclarationImp* parentHover = 0;
-        if (parentStyle) {
-            parentHover = parentStyle->getPseudoClassStyle(CSSPseudoClassSelector::Hover);
-            if (parentHover && !hover) {
-                hover = style->createPseudoClassStyle(CSSPseudoClassSelector::Hover);
-                if (hover) {
-                    hover->specify(style);
-                    hover->specifyImportant(style);
-                }
-            }
-        }
         style->compute(this, parentStyle, element);
-        if (hover) {
-            if (parentHover)
-                hover->compute(this, parentHover, element);
-            else
-                hover->compute(this, parentStyle, element);
-        }
+        if (hover)
+            hover->compute(this, parentStyle, element);
     }
     for (Node child = node.getFirstChild(); child; child = child.getNextSibling())
         cascade(child, style);
@@ -447,6 +447,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
         if (hover)
             style = hover;
     }
+    style->compute(this, parentStyle, element);
     if (style->display.isNone())
         return 0;
     style->clearBox();

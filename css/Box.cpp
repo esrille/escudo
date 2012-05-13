@@ -144,36 +144,6 @@ Box* Box::appendChild(Box* item)
     return item;
 }
 
-Box* Box::getParentBox() const
-{
-    return parentBox;
-}
-
-bool Box::hasChildBoxes() const
-{
-    return firstChild;
-}
-
-Box* Box::getFirstChild() const
-{
-    return firstChild;
-}
-
-Box* Box::getLastChild() const
-{
-    return lastChild;
-}
-
-Box* Box::getPreviousSibling() const
-{
-    return previousSibling;
-}
-
-Box* Box::getNextSibling() const
-{
-    return nextSibling;
-}
-
 void Box::setStyle(CSSStyleDeclarationImp* style)
 {
     this->style = style;
@@ -181,6 +151,41 @@ void Box::setStyle(CSSStyleDeclarationImp* style)
         stackingContext = style->getStackingContext();
         position = style->position.getValue();
     }
+}
+
+// Returns true is there is a style switch.
+bool Box::restyle(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle)
+{
+    bool switched = false;
+    CSSStyleDeclarationImp* style = getStyle();
+    CSSStyleDeclarationImp* active = 0;
+    if (style && style != parentStyle) {
+        if (style->getPseudoClassSelectorType() == CSSPseudoClassSelector::Hover) {
+            switched = true;
+            if (!isHovered()) {
+                active = style->getBaseStyle();
+                assert(active);
+            }
+        } else {
+            CSSStyleDeclarationImp* hover = style->getPseudoClassStyle(CSSPseudoClassSelector::Hover);
+            if (hover) {
+                switched = true;
+                if (isHovered())
+                    active = hover;
+            }
+        }
+        if (switched) {
+            if (!active)
+                style->recompute(view, parentStyle);
+            else {
+                active->recompute(view, parentStyle);
+                style->copyPaintProperties(active);
+            }
+        }
+    }
+    for (Box* i = firstChild; i; i = i->nextSibling)
+        switched |= i->restyle(view, style);
+    return switched;
 }
 
 float Box::getEffectiveTotalWidth() const
@@ -370,7 +375,11 @@ BlockLevelBox::BlockLevelBox(Node node, CSSStyleDeclarationImp* style) :
     defaultBaseline(0.0f),
     defaultLineHeight(0.0f)
 {
-    setStyle(style);
+    if (style) {
+        setStyle(style);
+        if (style->getPseudoClassSelectorType() == CSSPseudoClassSelector::Hover)
+            state |= HOVERED;
+    }
 }
 
 bool BlockLevelBox::isAbsolutelyPositioned() const

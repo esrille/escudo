@@ -30,6 +30,29 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 using namespace css;
 
+const unsigned CSSStyleDeclarationImp::paintProperties[] = {
+    Color,  // Color must be processed firstly.
+    BackgroundColor,
+#if 0   // TOOD, Support these layter
+    BackgroundAttachment,
+    BackgroundImage,
+    BackgroundPosition,
+    BackgroundRepeat,
+#endif
+    BorderTopColor,
+    BorderRightColor,
+    BorderBottomColor,
+    BorderLeftColor,
+    BorderTopStyle,
+    BorderRightStyle,
+    BorderBottomStyle,
+    BorderLeftStyle,
+    OutlineColor,
+    OutlineStyle,
+    Visibility,
+    Unknown
+};
+
 const char16_t* CSSStyleDeclarationImp::PropertyNames[PropertyCount] = {
     u"",
     u"azimuth",
@@ -150,36 +173,6 @@ const char16_t* CSSStyleDeclarationImp::PropertyNames[PropertyCount] = {
 
     u"binding",
 };
-
-bool CSSStyleDeclarationImp::isPaintCategory(unsigned id)
-{
-    switch (id) {
-    case BackgroundAttachment:
-    case BackgroundColor:
-    case BackgroundImage:
-    case BackgroundPosition:
-    case BackgroundRepeat:
-    case Background:
-    case BorderTopColor:
-    case BorderRightColor:
-    case BorderBottomColor:
-    case BorderLeftColor:
-    case BorderColor:
-    case BorderTopStyle:
-    case BorderRightStyle:
-    case BorderBottomStyle:
-    case BorderLeftStyle:
-    case BorderStyle:
-    case Color:
-    case Cursor:
-    case OutlineColor:
-    case OutlineStyle:
-    case Visibility:
-        return true;
-    default:
-        return false;
-    }
-}
 
 CSSPropertyValueImp* CSSStyleDeclarationImp::getProperty(unsigned id)
 {
@@ -1323,7 +1316,7 @@ void CSSStyleDeclarationImp::resetInheritedProperties()
     }
 }
 
-void CSSStyleDeclarationImp::copy(const CSSStyleDeclarationImp* parentStyle, unsigned id)
+void CSSStyleDeclarationImp::inherit(const CSSStyleDeclarationImp* parentStyle, unsigned id)
 {
     assert(parentStyle);
     if (!inheritSet.test(id))
@@ -1351,13 +1344,68 @@ void CSSStyleDeclarationImp::copy(const CSSStyleDeclarationImp* parentStyle, uns
     }
 }
 
-void CSSStyleDeclarationImp::copyInheritedProperties(const CSSStyleDeclarationImp* parentStyle)
+void CSSStyleDeclarationImp::inheritProperties(const CSSStyleDeclarationImp* parentStyle)
 {
     assert(parentStyle);
     for (unsigned id = 1; id < MaxProperties; ++id)
-        copy(parentStyle, id);
+        inherit(parentStyle, id);
 }
 
+void CSSStyleDeclarationImp::copyPaintProperties(const CSSStyleDeclarationImp* otherStyle)
+{
+    assert(otherStyle);
+    for (unsigned id = 1; id < MaxProperties; ++id) {
+        switch (id) {
+        case BackgroundColor:
+            backgroundColor.setARGB(otherStyle->backgroundColor.getARGB());
+            break;
+        case BorderTopColor:
+            borderTopColor.setARGB(otherStyle->borderTopColor.getARGB());
+            break;
+        case BorderRightColor:
+            borderRightColor.setARGB(otherStyle->borderRightColor.getARGB());
+            break;
+        case BorderBottomColor:
+            borderBottomColor.setARGB(otherStyle->borderBottomColor.getARGB());
+            break;
+        case BorderLeftColor:
+            borderLeftColor.setARGB(otherStyle->borderLeftColor.getARGB());
+            break;
+        case BorderTopStyle:
+            borderTopStyle.copy(otherStyle->borderTopStyle);
+            break;
+        case BorderRightStyle:
+            borderRightStyle.copy(otherStyle->borderRightStyle);
+            break;
+        case BorderBottomStyle:
+            borderBottomStyle.copy(otherStyle->borderBottomStyle);
+            break;
+        case BorderLeftStyle:
+            borderLeftStyle.copy(otherStyle->borderLeftStyle);
+            break;
+        case Color:
+            color.setARGB(otherStyle->color.getARGB());
+            break;
+        case OutlineColor:
+            outlineColor.copy(otherStyle->outlineColor);
+            break;
+        case OutlineStyle:
+            outlineStyle.copy(otherStyle->outlineStyle);
+            break;
+        case Visibility:
+            visibility.copy(otherStyle->visibility);
+            break;
+#if 0   // TOOD: Support these layter
+        case BackgroundAttachment:
+        case BackgroundImage:
+        case BackgroundPosition:
+        case BackgroundRepeat:
+#endif
+        default:
+            break;
+        }
+    }
+}
 void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle, Element element)
 {
     resolved = false;   // This style needs to be resolved later.
@@ -1367,7 +1415,18 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     if (!parentStyle)  // is it the root element?
         resetInheritedProperties();
     else
-        copyInheritedProperties(parentStyle);
+        inheritProperties(parentStyle);
+
+    backgroundColor.compute();
+    borderTopStyle.compute();
+    borderRightStyle.compute();
+    borderBottomStyle.compute();
+    borderLeftStyle.compute();
+    color.compute();
+    outlineColor.compute();
+    outlineStyle.compute();
+    visibility.compute();
+
     display.compute(this, element);
     fontSize.compute(view, parentStyle);
     fontWeight.compute(view, parentStyle);
@@ -1379,6 +1438,9 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
 
     width.compute(view, this);
     height.compute(view, this);
+
+    minWidth.compute(view, this);
+    minHeight.compute(view, this);
 
     top.compute(view, this);
     right.compute(view, this);
@@ -1426,6 +1488,15 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     else
         textDecorationContext.update(this);
 
+    if (!stackingContext)
+        computeStackingContext(view, parentStyle);
+
+    // Note the parent style of a pseudo element style is not always the corresponding element's style.
+    // It will be computed layter by layout().
+}
+
+void CSSStyleDeclarationImp::computeStackingContext(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle)
+{
     if (!parentStyle) {
         assert(view->getStackingContexts() == 0);
         view->setStackingContexts(new(std::nothrow) StackingContext(false, zIndex.getValue()));
@@ -1437,9 +1508,72 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
             stackingContext = parentStyle->stackingContext->addContext(zIndex.getValue());
     } else
         stackingContext = parentStyle->stackingContext;
+}
 
-    // Note the parent style of a pseudo element style is not always the corresponding element's style.
-    // It will be computed layter by layout().
+void CSSStyleDeclarationImp::recompute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle)
+{
+    for (const unsigned* id = paintProperties; *id != Unknown; ++id) {
+        if (inheritSet.test(*id)) {
+            if (parentStyle)
+                inherit(parentStyle, *id);
+            else
+                reset(*id);
+        } else {
+            switch (*id) {
+            case BackgroundColor:
+                backgroundColor.compute();
+                break;
+            case BorderTopColor:
+                borderTopColor.compute(this);
+                break;
+            case BorderRightColor:
+                borderRightColor.compute(this);
+                break;
+            case BorderBottomColor:
+                borderBottomColor.compute(this);
+                break;
+            case BorderLeftColor:
+                borderLeftColor.compute(this);
+                break;
+            case BorderTopStyle:
+                borderTopStyle.compute();
+                break;
+            case BorderRightStyle:
+                borderRightStyle.compute();
+                break;
+            case BorderBottomStyle:
+                borderBottomStyle.compute();
+                break;
+            case BorderLeftStyle:
+                borderLeftStyle.compute();
+                break;
+            case Color:
+                color.compute();
+                break;
+            case OutlineColor:
+                outlineColor.compute();
+                break;
+            case OutlineStyle:
+                outlineStyle.compute();
+                break;
+            case Visibility:
+                visibility.compute();
+                break;
+#if 0   // TOOD: Support these layter
+            case BackgroundAttachment:
+            case BackgroundImage:
+                backgroundImage.compute(view, this);
+                break;
+            case BackgroundPosition:
+                backgroundPosition.compute(view, this);
+                break;
+            case BackgroundRepeat:
+#endif
+            default:
+                break;
+            }
+        }
+    }
 }
 
 // calculate resolved values that requite containing block information for calucuration
@@ -1552,7 +1686,6 @@ void CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* co
         maxHeight.resolve(view, this, containingBlock->height);
 
     textIndent.resolve(view, this, containingBlock->width);
-    letterSpacing.resolve(view, this, containingBlock->width);
 
     resolved = true;
 }
@@ -1689,13 +1822,13 @@ void CSSStyleDeclarationImp::flip()
     renderLastBox = lastBox;
 }
 
-CSSStyleDeclarationImp* CSSStyleDeclarationImp::getPseudoElementStyle(int id)
+CSSStyleDeclarationImp* CSSStyleDeclarationImp::getPseudoElementStyle(int id) const
 {
     assert(0 <= id && id < CSSPseudoElementSelector::MaxPseudoElements);
     return pseudoElements[id].get();
 }
 
-CSSStyleDeclarationImp* CSSStyleDeclarationImp::getPseudoElementStyle(const std::u16string& name)
+CSSStyleDeclarationImp* CSSStyleDeclarationImp::getPseudoElementStyle(const std::u16string& name) const
 {
     return getPseudoElementStyle(CSSPseudoElementSelector::getPseudoElementID(name));
 }
@@ -1711,13 +1844,13 @@ CSSStyleDeclarationImp* CSSStyleDeclarationImp::createPseudoElementStyle(int id)
     return style;
 }
 
-CSSStyleDeclarationImp* CSSStyleDeclarationImp::getPseudoClassStyle(int id)
+CSSStyleDeclarationImp* CSSStyleDeclarationImp::getPseudoClassStyle(int id) const
 {
     assert(0 <= id && id < CSSPseudoClassSelector::MaxPseudoClasses);
     return pseudoClasses[id].get();
 }
 
-CSSStyleDeclarationImp* CSSStyleDeclarationImp::getPseudoClassStyle(const std::u16string& name)
+CSSStyleDeclarationImp* CSSStyleDeclarationImp::getPseudoClassStyle(const std::u16string& name) const
 {
     return getPseudoClassStyle(CSSPseudoClassSelector::getPseudoClassID(name));
 }
@@ -1734,6 +1867,15 @@ CSSStyleDeclarationImp* CSSStyleDeclarationImp::createPseudoClassStyle(int id)
         }
     }
     return style;
+}
+
+bool CSSStyleDeclarationImp::isAffectedByHover() const
+{
+    for (const CSSStyleDeclarationImp* style = this; style; style = style->parentStyle) {
+        if (style->getPseudoClassSelectorType() == CSSPseudoClassSelector::Hover || style->getPseudoClassStyle(CSSPseudoClassSelector::Hover))
+            return true;
+    }
+    return false;
 }
 
 std::u16string CSSStyleDeclarationImp::resolveRelativeURL(const std::u16string& url) const
