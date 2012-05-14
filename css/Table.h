@@ -108,7 +108,7 @@ class TableWrapperBox : public BlockLevelBox
     {
         CSSBorderColorValueImp color;
         CSSBorderStyleValueImp style;
-        CSSBorderWidthValueImp width;
+        float width;
     public:
         BorderValue() :
             width(0.0f)
@@ -117,7 +117,7 @@ class TableWrapperBox : public BlockLevelBox
         bool resolveBorderConflict(CSSBorderColorValueImp& c, CSSBorderStyleValueImp& s, CSSBorderWidthValueImp& w);
         void resolveBorderConflict(CSSStyleDeclarationPtr s, unsigned trbl);
         float getWidth() const {
-            return width.getPx();
+            return width;
         }
         unsigned getStyle() const {
             unsigned value = style.getValue();

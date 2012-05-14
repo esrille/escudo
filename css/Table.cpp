@@ -787,13 +787,14 @@ BorderValue::resolveBorderConflict(CSSBorderColorValueImp& c, CSSBorderStyleValu
         return false;
     if (s.getValue() == CSSBorderStyleValueImp::Hidden) {
         style.setValue(CSSBorderStyleValueImp::Hidden);
-        width.setValue(0.0f, css::CSSPrimitiveValue::CSS_PX);
+        width = 0.0f;
         return true;
     }
-    if (width < w || width == w && style < s) {
+    float px = w.getPx();
+    if (width < px || width == px && style < s) {
         color.specify(c);
         style.specify(s);
-        width.specify(w);
+        width = px;
         return true;
     }
     return false;
