@@ -147,10 +147,16 @@ public:
         return !(*this == value);
     }
     void specify(const CSSNumericValue& value) {
-        unit = value.unit;
-        index = value.index;
-        number = value.number;
         resolved = value.resolved;
+        if (isNaN()) {
+            unit = value.unit;
+            index = value.index;
+            number = value.number;
+        } else {
+            unit = css::CSSPrimitiveValue::CSS_PX;
+            index = -1;
+            number = resolved;
+        }
     }
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize);
@@ -1724,7 +1730,7 @@ public:
         return value.getCssText(Options, css::CSSPrimitiveValue::CSS_NUMBER);
     }
     void specify(const CSSFontWeightValueImp& specified) {
-        value = specified.value;
+        value.specify(specified.value);
     }
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle);
     unsigned getWeight() const {
