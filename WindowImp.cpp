@@ -127,6 +127,15 @@ void WindowImp::updateView(ViewCSSImp* next)
     view->setZoom(zoom);
     detail = 0;
     redisplay = true;
+
+    if (1 <= getLogLevel()) {
+        if (window->getDocument().getReadyState() == u"complete") {
+            std::cout << "\n## complete\n";
+            view->dump();
+            std::cout << "##\n";
+            std::cout.flush();
+        }
+    }
 }
 
 void WindowImp::setDocumentWindow(const DocumentWindowPtr& window)
@@ -251,13 +260,8 @@ bool WindowImp::poll()
 
 void WindowImp::render()
 {
-    if (view) {
+    if (view)
         view->render();
-        if (2 <= getLogLevel()) {
-            view->dump();
-            std::cout.flush();
-        }
-    }
 }
 
 bool WindowImp::mouse(int button, int up, int x, int y, int modifiers)

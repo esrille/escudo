@@ -131,8 +131,6 @@ void DocumentImp::setReadyState(const std::u16string& readyState)
     this->readyState = readyState;
     if (readyState == u"complete") {
         if (defaultView) {
-            if (1 <= getLogLevel())
-                std::cout << "\n## complete\n";
             events::Event event = new(std::nothrow) EventImp;
             event.initEvent(u"load", false, false);
             defaultView->dispatchEvent(event);
