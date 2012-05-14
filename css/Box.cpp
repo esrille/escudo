@@ -590,7 +590,7 @@ void BlockLevelBox::layOutInlineLevelBox(ViewCSSImp* view, Node node, Formatting
     inlineLevelBox->parentBox = context->lineBox;  // for getContainingBlock
     context->prevChar = 0;
 
-    BlockLevelBox* inlineBlock = view->layOutBlockBoxes(element, 0, 0, 0, true);
+    BlockLevelBox* inlineBlock = view->layOutBlockBoxes(element, 0, style->parentStyle, 0, true);
     if (!inlineBlock)
         return;  // TODO error
     inlineBlock->establishFormattingContext();

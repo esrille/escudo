@@ -436,7 +436,7 @@ BlockLevelBox* ViewCSSImp::createBlockLevelBox(Element element, BlockLevelBox* p
 BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* parentBox, CSSStyleDeclarationImp* parentStyle, CSSAutoNumberingValueImp::CounterContext* counterContext, bool asBlock)
 {
 #ifndef NDEBUG
-    std::u16string tag = interface_cast<html::HTMLElement>(element).getTagName();
+    std::u16string tag(interface_cast<html::HTMLElement>(element).getTagName());
 #endif
 
     CSSStyleDeclarationImp* style = map[element].get();
