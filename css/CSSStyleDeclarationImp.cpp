@@ -1411,6 +1411,9 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     resolved = false;   // This style needs to be resolved later.
     clearBox();
 
+    if (this == parentStyle)
+        return;
+
     this->parentStyle = parentStyle;
     if (!parentStyle)  // is it the root element?
         resetInheritedProperties();
