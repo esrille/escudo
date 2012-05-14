@@ -108,6 +108,7 @@ class WindowImp : public ObjectMixin<WindowImp>
 
     DocumentWindowPtr window;
     ViewCSSImp* view;
+    unsigned viewFlags;
 
     WindowImp* parent;
     std::deque<WindowImp*> childWindows;

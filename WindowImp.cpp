@@ -45,6 +45,7 @@ WindowImp::WindowImp(WindowImp* parent, ElementImp* frameElement) :
     thread(std::ref(backgroundTask)),
     window(0),
     view(0),
+    viewFlags(0),
     parent(parent),
     frameElement(frameElement),
     detail(0),
@@ -82,8 +83,11 @@ void WindowImp::setSize(unsigned w, unsigned h)
 
 void WindowImp::setFlags(unsigned f)
 {
-    if (view)
-        view->setFlags(f);
+    if (view) {
+        view->setFlags(f | viewFlags);
+        viewFlags = 0;
+    } else
+        viewFlags |= f;
 }
 
 DocumentWindowPtr WindowImp::activate()
@@ -118,24 +122,23 @@ void WindowImp::setZoom(float value)
 
 void WindowImp::updateView(ViewCSSImp* next)
 {
-    if (!window || !window->getDocument())
+    if (!window || !window->getDocument() || !next)
         return;
     delete view;
     view = next;
-    if (!view)
-        return;
+
+    if (viewFlags)
+        setFlags(viewFlags);
+    else if (1 <= getLogLevel()) {
+        std::cout << "\n## " << window->getDocument().getReadyState() << '\n';
+        view->dump();
+        std::cout << "##\n";
+        std::cout.flush();
+    }
+
     view->setZoom(zoom);
     detail = 0;
     redisplay = true;
-
-    if (1 <= getLogLevel()) {
-        if (window->getDocument().getReadyState() == u"complete") {
-            std::cout << "\n## complete\n";
-            view->dump();
-            std::cout << "##\n";
-            std::cout.flush();
-        }
-    }
 }
 
 void WindowImp::setDocumentWindow(const DocumentWindowPtr& window)
@@ -143,6 +146,7 @@ void WindowImp::setDocumentWindow(const DocumentWindowPtr& window)
     this->window = window;
     delete view;
     view = 0;
+    viewFlags = 0;
     if (window) {
         backgroundTask.restart();
         backgroundTask.wakeUp(BackgroundTask::Cascade);
@@ -227,7 +231,8 @@ bool WindowImp::poll()
             if (view != next) {
                 if (next->flip())
                     updateView(next);
-            } else if (view) {
+            }
+            if (view) {
                 if (unsigned flags = view->getFlags()) {
                     if (view->flip())
                         redisplay = true;
