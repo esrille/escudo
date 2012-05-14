@@ -99,9 +99,11 @@ public:
         resolved = NAN;
         return *this;
     }
+    bool isNaN() const {
+        return isnan(resolved);
+    }
     float getPx() const {
-        assert(!isnan(resolved));
-        return resolved;
+        return (!isNaN()) ? resolved : 0.0f;
     }
     void setPx(float value) {
         resolved = value;
@@ -1807,8 +1809,7 @@ public:
     }
     CSSLineHeightValueImp() :
         value(Normal)
-    {
-    }
+    {}
 };
 
 class CSSListStyleImageValueImp : public CSSPropertyValueImp
