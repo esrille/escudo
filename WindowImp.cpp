@@ -129,13 +129,6 @@ void WindowImp::updateView(ViewCSSImp* next)
 
     if (viewFlags)
         setFlags(viewFlags);
-    else if (1 <= getLogLevel()) {
-        std::cout << "\n## " << window->getDocument().getReadyState() << '\n';
-        view->dump();
-        std::cout << "##\n";
-        std::cout.flush();
-    }
-
     view->setZoom(zoom);
     detail = 0;
     redisplay = true;
@@ -265,8 +258,15 @@ bool WindowImp::poll()
 
 void WindowImp::render()
 {
-    if (view)
+    if (view) {
         view->render();
+        if (1 <= getLogLevel() && backgroundTask.getState() == BackgroundTask::Done) {
+            std::cout << "\n## " << window->getDocument().getReadyState() << '\n';
+            view->dump();
+            std::cout << "##\n";
+            std::cout.flush();
+        }
+    }
 }
 
 bool WindowImp::mouse(int button, int up, int x, int y, int modifiers)
