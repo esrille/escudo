@@ -2011,7 +2011,7 @@ float CSSVerticalAlignValueImp::getOffset(ViewCSSImp* view, CSSStyleDeclarationI
         return offset;
     }
     default:
-        assert(value.unit == css::CSSPrimitiveValue::CSS_PX);
+        assert(!value.isNaN());
         return line->getBaseline() - (leading + text->getBaseline()) - value.getPx();
     }
 }
