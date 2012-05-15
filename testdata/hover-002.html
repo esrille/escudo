@@ -1,0 +1,37 @@
+<html>
+    <head>
+        <title>CSS Test: :hover</title>
+        <style type="text/css">
+
+            #div1:hover
+            {
+                color: green;
+            }
+            #div2:hover
+            {
+                color: blue;
+            }
+            #div3:hover
+            {
+                color: magenta;
+            }
+            #div4:hover
+            {
+                color: cyan;
+            }
+            div:hover + p
+            {
+                color: purple;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="div1">Filler Text
+            <div id="div2">Filler Text
+                <div id="div3">Flller Text</div>
+            </div>
+        </div>
+        <div id="div4">Filler Text</div>
+        <p>Filler Text</p>
+    </body>
+</html>
