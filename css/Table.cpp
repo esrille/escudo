@@ -182,14 +182,6 @@ TableWrapperBox::TableWrapperBox(ViewCSSImp* view, Element element, CSSStyleDecl
 
 TableWrapperBox::~TableWrapperBox()
 {
-    for (auto i = rowImages.begin(); i != rowImages.end(); ++i)
-        delete *i;
-    for (auto i = rowGroupImages.begin(); i != rowGroupImages.end(); ++i)
-        delete *i;
-    for (auto i = columnImages.begin(); i != columnImages.end(); ++i)
-        delete *i;
-    for (auto i = columnGroupImages.begin(); i != columnGroupImages.end(); ++i)
-        delete *i;
     if (counterContext)
         delete counterContext;
 }
@@ -1122,8 +1114,6 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
         heights.resize(yHeight);
         baselines.resize(yHeight);
 
-        for (auto i = rowImages.begin(); i != rowImages.end(); ++i)
-            delete *i;
         rowImages.resize(yHeight);
         for (unsigned y = 0; y < yHeight; ++y) {
             rowImages[y] = 0;
@@ -1134,8 +1124,6 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
                     rowImages[y] = request->getBoxImage(rowStyle->backgroundRepeat.getValue());
             }
         }
-        for (auto i = rowGroupImages.begin(); i != rowGroupImages.end(); ++i)
-            delete *i;
         rowGroupImages.resize(yHeight);
         for (unsigned y = 0; y < yHeight; ++y) {
             rowGroupImages[y] = 0;
@@ -1152,8 +1140,6 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
             }
         }
 
-        for (auto i = columnImages.begin(); i != columnImages.end(); ++i)
-            delete *i;
         columnImages.resize(xWidth);
         for (unsigned x = 0; x < xWidth; ++x) {
             columnImages[x] = 0;
@@ -1164,8 +1150,6 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
                     columnImages[x] = request->getBoxImage(columnStyle->backgroundRepeat.getValue());
             }
         }
-        for (auto i = columnGroupImages.begin(); i != columnGroupImages.end(); ++i)
-            delete *i;
         columnGroupImages.resize(xWidth);
         for (unsigned x = 0; x < xWidth; ++x) {
             columnGroupImages[x] = 0;
