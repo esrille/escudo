@@ -35,6 +35,14 @@ class DocumentImp;
 class CSSRuleListImp : public ObjectImp
 {
 public:
+    struct Rule
+    {
+        // TODO: Make sure the following two pointers are valid while this is in use.
+        CSSSelector* selector;
+        CSSStyleDeclarationImp* declaration;
+        unsigned order;
+    };
+
     enum Importance
     {
         UserAgent = (1 << 24),
@@ -42,40 +50,52 @@ public:
         Author = (4 << 24)
     };
 
-    struct PrioritizedDeclaration
+    struct PrioritizedRule
     {
+        // TODO: Make sure the rule is valid while this is in use.
         unsigned priority;
-        unsigned order;
-        CSSStyleDeclarationImp* decl;
-        unsigned pseudoElementID;
-
-        PrioritizedDeclaration(unsigned priority, CSSStyleDeclarationImp* decl, unsigned pseudoElementID, unsigned order) :
-            priority(priority),
-            order(order),
-            decl(decl),
-            pseudoElementID(pseudoElementID)
+        CSSRuleListImp::Rule rule;
+    public:
+        PrioritizedRule(unsigned priority, const CSSRuleListImp::Rule& rule) :
+            priority(priority | rule.selector->getSpecificity()),
+            rule(rule)
+        {}
+        PrioritizedRule(unsigned priority, CSSStyleDeclarationImp* decl) :
+            priority(priority)
         {
+            rule.selector = 0;
+            rule.declaration = decl;
+            rule.order = 0;
         }
-        bool operator <(const PrioritizedDeclaration& decl) const
-        {
-            return (priority < decl.priority) || (priority == decl.priority && order < decl.order) ;
+        CSSSelector* getSelector() const {
+            return rule.selector;
+        }
+        CSSStyleDeclarationImp* getDeclaration() const {
+            return rule.declaration;
+        }
+        unsigned getOrder() const {
+            return rule.order;
         }
         bool isUserStyle() const {
             return (priority & 0xff000000) == User;
         }
+        unsigned getPseudoElementID() const {
+            CSSSelector* selector = getSelector();
+            if (!selector)
+                return CSSPseudoElementSelector::NonPseudo;
+            if (CSSPseudoElementSelector* pseudo = selector->getPseudoElement())
+                return pseudo->getID();
+            return CSSPseudoElementSelector::NonPseudo;
+        }
+        bool isActive(Element& element, ViewCSSImp* view) const;
+        bool operator <(const PrioritizedRule& decl) const {
+            return (priority < decl.priority) || (priority == decl.priority && getOrder() < decl.getOrder()) ;
+        }
     };
 
-    typedef std::multiset<PrioritizedDeclaration> DeclarationSet;
-    typedef std::list<PrioritizedDeclaration> DeclarationList;
+    typedef std::multiset<PrioritizedRule> RuleSet;
 
 private:
-    struct Rule
-    {
-        CSSSelector* selector;
-        CSSStyleDeclarationImp* declaration;
-        unsigned order;
-    };
-
     unsigned importance;
     unsigned order;
     std::deque<css::CSSRule> ruleList;
@@ -84,15 +104,13 @@ private:
     std::multimap<std::u16string, Rule> mapID;     // ID selectors
     std::multimap<std::u16string, Rule> mapClass;  // class selectors
     std::multimap<std::u16string, Rule> mapType;   // type selectors
-    std::deque<Rule> hover;                        // selectors containing :hover class
     std::deque<Rule> misc;
 
-    void find(DeclarationSet& set, ViewCSSImp* view, Element& element, std::multimap<std::u16string, Rule>& map, const std::u16string& key);
-    void findByID(DeclarationSet& set, ViewCSSImp* view, Element& element);
-    void findByClass(DeclarationSet& set, ViewCSSImp* view, Element& element);
-    void findByType(DeclarationSet& set, ViewCSSImp* view, Element& element);
-    void findMisc(DeclarationSet& set, ViewCSSImp* view, Element& element);
-    void findHover(DeclarationList& list, ViewCSSImp* view, Element& element);
+    void find(RuleSet& set, ViewCSSImp* view, Element& element, std::multimap<std::u16string, Rule>& map, const std::u16string& key);
+    void findByID(RuleSet& set, ViewCSSImp* view, Element& element);
+    void findByClass(RuleSet& set, ViewCSSImp* view, Element& element);
+    void findByType(RuleSet& set, ViewCSSImp* view, Element& element);
+    void findMisc(RuleSet& set, ViewCSSImp* view, Element& element);
 
 public:
     CSSRuleListImp() :
@@ -103,12 +121,11 @@ public:
     void append(css::CSSRule rule, DocumentImp* document);
 
     void appendMisc(CSSSelector* selector, CSSStyleDeclarationImp* declaration);
-    void appendHover(CSSSelector* selector, CSSStyleDeclarationImp* declaration);
     void appendID(CSSSelector* selector, CSSStyleDeclarationImp* declaration, const std::u16string& key);
     void appendClass(CSSSelector* selector, CSSStyleDeclarationImp* declaration, const std::u16string& key);
     void appendType(CSSSelector* selector, CSSStyleDeclarationImp* declaration, const std::u16string& key);
 
-    void find(DeclarationSet& set, CSSRuleListImp::DeclarationList& hoverList, ViewCSSImp* view, Element& element, unsigned importance);
+    void find(RuleSet& set, ViewCSSImp* view, Element& element, unsigned importance);
 
     css::CSSRuleList getCssRules()
     {
@@ -146,6 +163,8 @@ public:
     virtual void* getStaticPrivate() const {
         return 0;
     }
+
+    static bool hasHover(const RuleSet& set);
 };
 
 }}}}  // org::w3c::dom::bootstrap

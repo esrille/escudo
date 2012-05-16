@@ -1351,61 +1351,6 @@ void CSSStyleDeclarationImp::inheritProperties(const CSSStyleDeclarationImp* par
         inherit(parentStyle, id);
 }
 
-void CSSStyleDeclarationImp::copyPaintProperties(const CSSStyleDeclarationImp* otherStyle)
-{
-    assert(otherStyle);
-    for (unsigned id = 1; id < MaxProperties; ++id) {
-        switch (id) {
-        case BackgroundColor:
-            backgroundColor.setARGB(otherStyle->backgroundColor.getARGB());
-            break;
-        case BorderTopColor:
-            borderTopColor.setARGB(otherStyle->borderTopColor.getARGB());
-            break;
-        case BorderRightColor:
-            borderRightColor.setARGB(otherStyle->borderRightColor.getARGB());
-            break;
-        case BorderBottomColor:
-            borderBottomColor.setARGB(otherStyle->borderBottomColor.getARGB());
-            break;
-        case BorderLeftColor:
-            borderLeftColor.setARGB(otherStyle->borderLeftColor.getARGB());
-            break;
-        case BorderTopStyle:
-            borderTopStyle.copy(otherStyle->borderTopStyle);
-            break;
-        case BorderRightStyle:
-            borderRightStyle.copy(otherStyle->borderRightStyle);
-            break;
-        case BorderBottomStyle:
-            borderBottomStyle.copy(otherStyle->borderBottomStyle);
-            break;
-        case BorderLeftStyle:
-            borderLeftStyle.copy(otherStyle->borderLeftStyle);
-            break;
-        case Color:
-            color.setARGB(otherStyle->color.getARGB());
-            break;
-        case OutlineColor:
-            outlineColor.copy(otherStyle->outlineColor);
-            break;
-        case OutlineStyle:
-            outlineStyle.copy(otherStyle->outlineStyle);
-            break;
-        case Visibility:
-            visibility.copy(otherStyle->visibility);
-            break;
-#if 0   // TOOD: Support these layter
-        case BackgroundAttachment:
-        case BackgroundImage:
-        case BackgroundPosition:
-        case BackgroundRepeat:
-#endif
-        default:
-            break;
-        }
-    }
-}
 void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle, Element element)
 {
     resolved = false;   // This style needs to be resolved later.
@@ -1413,6 +1358,37 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
 
     if (this == parentStyle)
         return;
+
+    // TODO: find a way to skip the following cascading operation when there's no change in the decorations.
+    initialize();
+    CSSStyleDeclarationImp* elementDecl(0);
+    html::HTMLElement htmlElement(0);
+    if (html::HTMLElement::hasInstance(element)) {
+        htmlElement = interface_cast<html::HTMLElement>(element);
+        elementDecl = dynamic_cast<CSSStyleDeclarationImp*>(htmlElement.getStyle().self());
+    }
+    for (auto i = ruleSet.begin(); i != ruleSet.end(); ++i) {
+        if (CSSStyleDeclarationImp* pseudo = createPseudoElementStyle(i->getPseudoElementID())) {
+            if (i->isActive(element, view))
+                pseudo->specify(i->getDeclaration());
+        }
+    }
+    if (elementDecl)
+        specify(elementDecl);
+    for (auto i = ruleSet.begin(); i != ruleSet.end(); ++i) {
+        if (CSSStyleDeclarationImp* pseudo = createPseudoElementStyle(i->getPseudoElementID())) {
+            if (i->isActive(element, view) && !i->isUserStyle())
+                pseudo->specifyImportant(i->getDeclaration());
+        }
+    }
+    if (elementDecl)
+        specifyImportant(elementDecl);
+    for (auto i = ruleSet.begin(); i != ruleSet.end(); ++i) {
+        if (CSSStyleDeclarationImp* pseudo = createPseudoElementStyle(i->getPseudoElementID())) {
+            if (i->isActive(element, view) && i->isUserStyle())
+                pseudo->specifyImportant(i->getDeclaration());
+        }
+    }
 
     this->parentStyle = parentStyle;
     if (!parentStyle)  // is it the root element?
@@ -1494,6 +1470,19 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     if (!stackingContext)
         computeStackingContext(view, parentStyle);
 
+    if (htmlElement && htmlElement.getLocalName() == u"body") {
+        assert(parentStyle);
+        if (parentStyle->overflow.getValue() == CSSOverflowValueImp::Visible) {
+            parentStyle->overflow.specify(overflow);
+            overflow.setValue(CSSOverflowValueImp::Visible);
+        }
+        if (parentStyle->backgroundColor.getARGB() == 0 &&  // transparent?
+            parentStyle->backgroundImage.isNone()) {
+            parentStyle->background.specify(parentStyle, this);
+            background.reset(this);
+        }
+    }
+
     // Note the parent style of a pseudo element style is not always the corresponding element's style.
     // It will be computed layter by layout().
 }
@@ -1513,8 +1502,73 @@ void CSSStyleDeclarationImp::computeStackingContext(ViewCSSImp* view, CSSStyleDe
         stackingContext = parentStyle->stackingContext;
 }
 
-void CSSStyleDeclarationImp::recompute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle)
+void CSSStyleDeclarationImp::respecify(const CSSStyleDeclarationImp* decl, const std::bitset<PropertyCount>& set)
 {
+    for (const unsigned* id = paintProperties; *id != Unknown; ++id) {
+        if (!set.test(*id))
+            continue;
+        if (decl->inheritSet.test(*id))
+            setInherit(*id);
+        else {
+            resetInherit(*id);
+            specify(decl, *id);
+        }
+        propertySet.set(*id);  // Note computed values do not have any important bit set.
+    }
+}
+
+void CSSStyleDeclarationImp::respecify(const CSSStyleDeclarationImp* style)
+{
+    if (style)
+        respecify(style, style->propertySet);
+}
+
+void CSSStyleDeclarationImp::respecifyImportant(const CSSStyleDeclarationImp* style)
+{
+    if (style)
+        respecify(style, style->importantSet);
+}
+
+void CSSStyleDeclarationImp::recompute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle, Node node)
+{
+    if (this == parentStyle)
+        return;
+
+    if (!html::HTMLElement::hasInstance(node))
+        return;
+    Element element(interface_cast<Element>(node));
+
+    // TODO: find a way to skip the following cascading operation when there's no change in the decorations.
+    initialize();
+    CSSStyleDeclarationImp* elementDecl(0);
+    html::HTMLElement htmlElement(0);
+    if (html::HTMLElement::hasInstance(element)) {
+        htmlElement = interface_cast<html::HTMLElement>(element);
+        elementDecl = dynamic_cast<CSSStyleDeclarationImp*>(htmlElement.getStyle().self());
+    }
+    for (auto i = ruleSet.begin(); i != ruleSet.end(); ++i) {
+        if (CSSStyleDeclarationImp* pseudo = createPseudoElementStyle(i->getPseudoElementID())) {
+            if (i->isActive(element, view))
+                pseudo->respecify(i->getDeclaration());
+        }
+    }
+    if (elementDecl)
+        respecify(elementDecl);
+    for (auto i = ruleSet.begin(); i != ruleSet.end(); ++i) {
+        if (CSSStyleDeclarationImp* pseudo = createPseudoElementStyle(i->getPseudoElementID())) {
+            if (i->isActive(element, view) && !i->isUserStyle())
+                pseudo->respecifyImportant(i->getDeclaration());
+        }
+    }
+    if (elementDecl)
+        respecifyImportant(elementDecl);
+    for (auto i = ruleSet.begin(); i != ruleSet.end(); ++i) {
+        if (CSSStyleDeclarationImp* pseudo = createPseudoElementStyle(i->getPseudoElementID())) {
+            if (i->isActive(element, view) && i->isUserStyle())
+                pseudo->respecifyImportant(i->getDeclaration());
+        }
+    }
+
     for (const unsigned* id = paintProperties; *id != Unknown; ++id) {
         if (inheritSet.test(*id)) {
             if (parentStyle)
@@ -1847,35 +1901,10 @@ CSSStyleDeclarationImp* CSSStyleDeclarationImp::createPseudoElementStyle(int id)
     return style;
 }
 
-CSSStyleDeclarationImp* CSSStyleDeclarationImp::getPseudoClassStyle(int id) const
-{
-    assert(0 <= id && id < CSSPseudoClassSelector::MaxPseudoClasses);
-    return pseudoClasses[id].get();
-}
-
-CSSStyleDeclarationImp* CSSStyleDeclarationImp::getPseudoClassStyle(const std::u16string& name) const
-{
-    return getPseudoClassStyle(CSSPseudoClassSelector::getPseudoClassID(name));
-}
-
-CSSStyleDeclarationImp* CSSStyleDeclarationImp::createPseudoClassStyle(int id)
-{
-    assert(baseStyle == 0);
-    assert(0 <= id && id < CSSPseudoClassSelector::MaxPseudoClasses);
-    CSSStyleDeclarationImp* style = pseudoClasses[id].get();
-    if (!style) {
-        if (style = new(std::nothrow) CSSStyleDeclarationImp) {
-            style->setBaseStyle(this, id);
-            pseudoClasses[id] = style;
-        }
-    }
-    return style;
-}
-
 bool CSSStyleDeclarationImp::isAffectedByHover() const
 {
     for (const CSSStyleDeclarationImp* style = this; style; style = style->parentStyle) {
-        if (style->getPseudoClassSelectorType() == CSSPseudoClassSelector::Hover || style->getPseudoClassStyle(CSSPseudoClassSelector::Hover))
+        if (CSSRuleListImp::hasHover(style->ruleSet))
             return true;
     }
     return false;
@@ -3306,37 +3335,7 @@ void CSSStyleDeclarationImp::setHTMLAlign(Nullable<std::u16string> align)
     setProperty(HtmlAlign);
 }
 
-CSSStyleDeclarationImp::CSSStyleDeclarationImp(int pseudoElementSelectorType) :
-    owner(0),
-    parentRule(0),
-    resolved(false),
-    parentStyle(0),
-    box(0),
-    lastBox(0),
-    stackingContext(0),
-    fontTexture(0),
-    renderBox(0),
-    renderLastBox(0),
-    propertyID(Unknown),
-    expression(0),
-    pseudoElementSelectorType(pseudoElementSelectorType),
-    baseStyle(0),
-    pseudoClassSelectorType(-1),
-    emptyInline(0),
-    backgroundColor(CSSColorValueImp::Transparent),
-    counterIncrement(1),
-    counterReset(0),
-    borderTop(0),
-    borderRight(1),
-    borderBottom(2),
-    borderLeft(3),
-    marginTop(0.0f, css::CSSPrimitiveValue::CSS_PX),
-    marginRight(0.0f, css::CSSPrimitiveValue::CSS_PX),
-    marginLeft(0.0f, css::CSSPrimitiveValue::CSS_PX),
-    marginBottom(0.0f, css::CSSPrimitiveValue::CSS_PX),
-    minHeight(0.0f, css::CSSPrimitiveValue::CSS_PX),
-    minWidth(0.0f, css::CSSPrimitiveValue::CSS_PX),
-    textIndent(0.0f, css::CSSPrimitiveValue::CSS_PX)
+void CSSStyleDeclarationImp::initialize()
 {
     const static int defaultInherit[] = {
         Azimuth,
@@ -3383,13 +3382,46 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp(int pseudoElementSelectorType) :
 
         HtmlAlign
     };
+    for (unsigned i = 1; i < MaxProperties; ++i)
+        inheritSet.reset(i);
     for (unsigned i = 0; i < sizeof defaultInherit / sizeof defaultInherit[0]; ++i)
         setInherit(defaultInherit[i]);
-    pseudoElements[CSSPseudoElementSelector::NonPseudo] = this;
     for (int i = 1; i < CSSPseudoElementSelector::MaxPseudoElements; ++i)
         pseudoElements[i] = 0;
-    for (int i = 0; i < CSSPseudoClassSelector::MaxPseudoClasses; ++i)
-        pseudoClasses[i] = 0;
+}
+
+CSSStyleDeclarationImp::CSSStyleDeclarationImp(int pseudoElementSelectorType) :
+    owner(0),
+    parentRule(0),
+    resolved(false),
+    parentStyle(0),
+    box(0),
+    lastBox(0),
+    stackingContext(0),
+    fontTexture(0),
+    renderBox(0),
+    renderLastBox(0),
+    propertyID(Unknown),
+    expression(0),
+    pseudoElementSelectorType(pseudoElementSelectorType),
+    emptyInline(0),
+    backgroundColor(CSSColorValueImp::Transparent),
+    counterIncrement(1),
+    counterReset(0),
+    borderTop(0),
+    borderRight(1),
+    borderBottom(2),
+    borderLeft(3),
+    marginTop(0.0f, css::CSSPrimitiveValue::CSS_PX),
+    marginRight(0.0f, css::CSSPrimitiveValue::CSS_PX),
+    marginLeft(0.0f, css::CSSPrimitiveValue::CSS_PX),
+    marginBottom(0.0f, css::CSSPrimitiveValue::CSS_PX),
+    minHeight(0.0f, css::CSSPrimitiveValue::CSS_PX),
+    minWidth(0.0f, css::CSSPrimitiveValue::CSS_PX),
+    textIndent(0.0f, css::CSSPrimitiveValue::CSS_PX)
+{
+    pseudoElements[CSSPseudoElementSelector::NonPseudo] = this;
+    initialize();
 }
 
 // for cloneNode()
@@ -3407,8 +3439,6 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp(CSSStyleDeclarationImp* org) :
     propertyID(Unknown),
     expression(0),
     pseudoElementSelectorType(org->pseudoElementSelectorType),
-    baseStyle(0),
-    pseudoClassSelectorType(org->pseudoClassSelectorType),
     emptyInline(0),
     backgroundColor(CSSColorValueImp::Transparent),
     counterIncrement(1),
@@ -3428,8 +3458,6 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp(CSSStyleDeclarationImp* org) :
     pseudoElements[CSSPseudoElementSelector::NonPseudo] = this;
     for (int i = 1; i < CSSPseudoElementSelector::MaxPseudoElements; ++i)
         pseudoElements[i] = 0;
-    for (int i = 0; i < CSSPseudoClassSelector::MaxPseudoClasses; ++i)
-        pseudoClasses[i] = 0;
     specify(org);
     specifyImportant(org);
 }

@@ -655,8 +655,6 @@ InlineLevelBox::InlineLevelBox(Node node, CSSStyleDeclarationImp* style) :
     if (style) {
         setStyle(style);
         visibility = style->visibility.getValue();
-        if (style->getPseudoClassSelectorType() == CSSPseudoClassSelector::Hover)
-            state |= HOVERED;
     }
 }
 

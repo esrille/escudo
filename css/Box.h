@@ -246,9 +246,6 @@ public:
     static const unsigned short NEED_REFLOW = 2;
     static const unsigned short NEED_REPAINT = 4;
 
-    // state
-    static const unsigned short HOVERED = 1;
-
 protected:
     Node node;
     Box* parentBox;
@@ -492,7 +489,7 @@ public:
         return style.get();
     }
     void setStyle(CSSStyleDeclarationImp* style);
-    bool restyle(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle = 0);
+    void restyle(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle = 0);
 
     bool isStatic() const {
         return position == CSSPositionValueImp::Static;
@@ -594,19 +591,6 @@ public:
                 return target;
         }
         return isInside(x, y) ? this : 0;
-    }
-
-    bool isHovered() const {
-        return state & HOVERED;
-    }
-    void setHovered() {
-        for (Box* box = this; box; box = box->getParentBox())
-            box->state |= HOVERED;
-    }
-    void clearHovered() {
-        state &= ~HOVERED;
-        for (Box* i = firstChild; i; i = i->nextSibling)
-            i->clearHovered();
     }
 
     static void renderVerticalScrollBar(float w, float h, float pos, float total);

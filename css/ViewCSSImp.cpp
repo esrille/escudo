@@ -48,13 +48,12 @@ ViewCSSImp::ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyle
     window(window),
     dpi(96),
     zoom(1.0f),
-    hovered(0),
     mutationListener(boost::bind(&ViewCSSImp::handleMutation, this, _1)),
     defaultStyleSheet(defaultStyleSheet),
     userStyleSheet(userStyleSheet),
     stackingContexts(0),
     overflow(CSSOverflowValueImp::Auto),
-    hoveredNow(0),
+    hovered(0),
     quotingDepth(0),
     scrollWidth(0.0f),
     scrollHeight(0.0f),
@@ -88,42 +87,14 @@ Box* ViewCSSImp::boxFromPoint(int x, int y)
     return renderTree.get();
 }
 
-void ViewCSSImp::setHovered(Node node)
-{
-    hovered = node;
-}
-
 bool ViewCSSImp::isHovered(Node node)
 {
+    // TODO: Check if we need to process forefront node only or not.
     for (Node i = hovered; i; i = i.getParentNode()) {
         if (node == i)
             return true;
     }
     return false;
-}
-
-bool ViewCSSImp::isHoveredNow(Node node)
-{
-    // TODO: Check if we need to process forefront node only or not.
-    for (Node i = hoveredNow; i; i = i.getParentNode()) {
-        if (node == i)
-            return true;
-    }
-    return false;
-}
-
-void ViewCSSImp::setHoveredBox(Box* box)
-{
-    if (!renderTree)
-        return;
-    if (hoveredBox != box) {
-        renderTree->clearHovered();
-        hoveredBox = box;
-        box->setHovered();
-        if (renderTree->restyle(this))
-            renderTree->setFlags(Box::NEED_REPAINT);
-    }
-    setHoveredNow(box->getTargetNode());
 }
 
 void ViewCSSImp::handleMutation(events::Event event)
@@ -132,12 +103,12 @@ void ViewCSSImp::handleMutation(events::Event event)
         renderTree->setFlags(1);
 }
 
-void ViewCSSImp::findDeclarations(CSSRuleListImp::DeclarationSet& set, CSSRuleListImp::DeclarationList& hoverList, Element element, css::CSSRuleList list, unsigned importance)
+void ViewCSSImp::findDeclarations(CSSRuleListImp::RuleSet& set, Element element, css::CSSRuleList list, unsigned importance)
 {
     CSSRuleListImp* ruleList = dynamic_cast<CSSRuleListImp*>(list.self());
     if (!ruleList)
         return;
-    ruleList->find(set, hoverList, this, element, importance);
+    ruleList->find(set, this, element, importance);
 }
 
 void ViewCSSImp::resolveXY(float left, float top)
@@ -173,7 +144,6 @@ void ViewCSSImp::cascade()
     }
 
     cascade(document, 0);
-    setHovered(0);
 
     if (DocumentImp* imp = dynamic_cast<DocumentImp*>(document.self())) {
         imp->clearStyleSheets();
@@ -201,7 +171,6 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle)
             return;  // TODO: error
         }
         map[element] = style;
-        setHovered(node);
 
         CSSStyleDeclarationImp* elementDecl = 0;
         if (html::HTMLElement::hasInstance(element)) {
@@ -209,79 +178,26 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle)
             elementDecl = dynamic_cast<CSSStyleDeclarationImp*>(htmlElement.getStyle().self());
         }
 
-        CSSRuleListImp::DeclarationSet set;
-        CSSRuleListImp::DeclarationList hoverList;
         if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(defaultStyleSheet.self()))
-            findDeclarations(set, hoverList, element, sheet->getCssRules(), CSSRuleListImp::UserAgent);
+            findDeclarations(style->ruleSet, element, sheet->getCssRules(), CSSRuleListImp::UserAgent);
         if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(userStyleSheet.self()))
-            findDeclarations(set, hoverList, element, sheet->getCssRules(), CSSRuleListImp::User);
+            findDeclarations(style->ruleSet, element, sheet->getCssRules(), CSSRuleListImp::User);
         if (elementDecl) {
             CSSStyleDeclarationImp* nonCSS = elementDecl->getPseudoElementStyle(CSSPseudoElementSelector::NonCSS);
             if (nonCSS) {
-                CSSRuleListImp::PrioritizedDeclaration decl(CSSRuleListImp::User | 0, nonCSS, CSSPseudoElementSelector::NonPseudo, 0);
-                set.insert(decl);
+                // TODO: emplace() seems to be not ready yet with libstdc++.
+                CSSRuleListImp::PrioritizedRule rule(CSSRuleListImp::User, nonCSS);
+                style->ruleSet.insert(rule);
             }
         }
         unsigned importance = CSSRuleListImp::Author;
         for (auto i = styleSheets.begin(); i != styleSheets.end(); ++i) {
             CSSStyleSheetImp* sheet = *i;
-            findDeclarations(set, hoverList, element, sheet->getCssRules(), importance++);
+            findDeclarations(style->ruleSet, element, sheet->getCssRules(), importance++);
             // TODO: Check overflow of importance
         }
 
-        for (auto i = set.begin(); i != set.end(); ++i) {
-            if (CSSStyleDeclarationImp* pseudo = style->createPseudoElementStyle(i->pseudoElementID))
-                pseudo->specify(i->decl);
-        }
-        if (elementDecl)
-            style->specify(elementDecl);
-        for (auto i = set.begin(); i != set.end(); ++i) {
-            if (CSSStyleDeclarationImp* pseudo = style->createPseudoElementStyle(i->pseudoElementID)) {
-                if (!i->isUserStyle())
-                    pseudo->specifyImportant(i->decl);
-            }
-        }
-        if (elementDecl)
-            style->specifyImportant(elementDecl);
-        for (auto i = set.begin(); i != set.end(); ++i) {
-            if (CSSStyleDeclarationImp* pseudo = style->createPseudoElementStyle(i->pseudoElementID)) {
-                if (i->isUserStyle())
-                    pseudo->specifyImportant(i->decl);
-            }
-        }
-
-        CSSStyleDeclarationImp* hover = 0;
-        if (!hoverList.empty()) {
-            // Cascade :hover style
-            for (auto i = hoverList.begin(); i != hoverList.end(); ++i)
-                set.insert(*i);
-            hoverList.clear();
-            hover = style->createPseudoClassStyle(CSSPseudoClassSelector::Hover);
-            if (hover) {
-                for (auto i = set.begin(); i != set.end(); ++i) {
-                    if (CSSStyleDeclarationImp* pseudo = hover->createPseudoElementStyle(i->pseudoElementID))
-                        pseudo->specify(i->decl);
-                }
-                if (elementDecl)
-                    hover->specify(elementDecl);
-                for (auto i = set.begin(); i != set.end(); ++i) {
-                    if (CSSStyleDeclarationImp* pseudo = hover->createPseudoElementStyle(i->pseudoElementID)) {
-                        if (!i->isUserStyle())
-                            pseudo->specifyImportant(i->decl);
-                    }
-                }
-                if (elementDecl)
-                    hover->specifyImportant(elementDecl);
-                for (auto i = set.begin(); i != set.end(); ++i) {
-                    if (CSSStyleDeclarationImp* pseudo = hover->createPseudoElementStyle(i->pseudoElementID)) {
-                        if (i->isUserStyle())
-                            pseudo->specifyImportant(i->decl);
-                    }
-                }
-            }
-        }
-
-        set.clear();
+        style->compute(this, parentStyle, element);
 
         // expand binding
         if (style->binding.getValue() != CSSBindingValueImp::None) {
@@ -294,30 +210,9 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle)
                 }
             }
         } // TODO: detach the shadow tree from element (if any)
-
-        style->compute(this, parentStyle, element);
-        if (hover)
-            hover->compute(this, parentStyle, element);
     }
     for (Node child = node.getFirstChild(); child; child = child.getNextSibling())
         cascade(child, style);
-
-    if (node.getNodeType() == Node::ELEMENT_NODE) {
-        Element element = interface_cast<Element>(node);
-        if (element.getLocalName() == u"body") {  // TODO: check HTML namespace
-            assert(parentStyle);
-            assert(style);
-            if (parentStyle->overflow.getValue() == CSSOverflowValueImp::Visible) {
-                parentStyle->overflow.specify(style->overflow);
-                style->overflow.setValue(CSSOverflowValueImp::Visible);
-            }
-            if (parentStyle->backgroundColor.getARGB() == 0 &&  // transparent?
-                parentStyle->backgroundImage.isNone()) {
-                parentStyle->background.specify(parentStyle, style);
-                style->background.reset(style);
-            }
-        }
-    }
 
     if (!parentStyle && style)
         overflow = style->overflow.getValue();
@@ -442,11 +337,6 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
     CSSStyleDeclarationImp* style = map[element].get();
     if (!style)
         return 0;
-    if (isHoveredNow(element)) {
-        CSSStyleDeclarationImp* hover = style->getPseudoClassStyle(CSSPseudoClassSelector::Hover);
-        if (hover)
-            style = hover;
-    }
     style->compute(this, parentStyle, element);
     if (style->display.isNone())
         return 0;
@@ -773,14 +663,8 @@ CSSStyleDeclarationImp* ViewCSSImp::getStyle(Element elt, Nullable<std::u16strin
     if (i == map.end())
         return 0;
     CSSStyleDeclarationImp* style = i->second.get();
-    if (!pseudoElt.hasValue() || pseudoElt.value().length() == 0) {
-        if (isHoveredNow(elt)) {
-            CSSStyleDeclarationImp* hover = style->getPseudoClassStyle(CSSPseudoClassSelector::Hover);
-            if (hover)
-                return hover;
-        }
+    if (!pseudoElt.hasValue() || pseudoElt.value().length() == 0)
         return style;
-    }
     return style->getPseudoElementStyle(pseudoElt.value());
 }
 

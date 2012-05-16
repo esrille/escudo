@@ -153,39 +153,14 @@ void Box::setStyle(CSSStyleDeclarationImp* style)
     }
 }
 
-// Returns true is there is a style switch.
-bool Box::restyle(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle)
+// Recalculate properties for repaint.
+void Box::restyle(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle)
 {
-    bool switched = false;
     CSSStyleDeclarationImp* style = getStyle();
-    CSSStyleDeclarationImp* active = 0;
-    if (style && style != parentStyle) {
-        if (style->getPseudoClassSelectorType() == CSSPseudoClassSelector::Hover) {
-            switched = true;
-            if (!isHovered()) {
-                active = style->getBaseStyle();
-                assert(active);
-            }
-        } else {
-            CSSStyleDeclarationImp* hover = style->getPseudoClassStyle(CSSPseudoClassSelector::Hover);
-            if (hover) {
-                switched = true;
-                if (isHovered())
-                    active = hover;
-            }
-        }
-        if (switched) {
-            if (!active)
-                style->recompute(view, parentStyle);
-            else {
-                active->recompute(view, parentStyle);
-                style->copyPaintProperties(active);
-            }
-        }
-    }
+    if (style && style != parentStyle)
+        style->recompute(view, parentStyle, getNode());
     for (Box* i = firstChild; i; i = i->nextSibling)
-        switched |= i->restyle(view, style);
-    return switched;
+        i->restyle(view, style);
 }
 
 float Box::getEffectiveTotalWidth() const
@@ -375,11 +350,8 @@ BlockLevelBox::BlockLevelBox(Node node, CSSStyleDeclarationImp* style) :
     defaultBaseline(0.0f),
     defaultLineHeight(0.0f)
 {
-    if (style) {
+    if (style)
         setStyle(style);
-        if (style->getPseudoClassSelectorType() == CSSPseudoClassSelector::Hover)
-            state |= HOVERED;
-    }
 }
 
 bool BlockLevelBox::isAbsolutelyPositioned() const

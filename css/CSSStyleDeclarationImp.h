@@ -35,6 +35,7 @@
 #include "CSSPropertyValueImp.h"
 #include "CSSSelector.h"
 #include "CSSRuleImp.h"
+#include "CSSRuleListImp.h"
 
 class FontTexture;  // TODO: define namespace
 
@@ -218,6 +219,8 @@ private:
     static const char16_t* PropertyNames[PropertyCount];
     static const unsigned paintProperties[];
 
+    CSSRuleListImp::RuleSet ruleSet;
+
     Object* owner;
     mutable css::CSSRule parentRule;
     std::bitset<PropertyCount> propertySet;
@@ -241,14 +244,13 @@ private:
     int pseudoElementSelectorType;
     CSSStyleDeclarationPtr pseudoElements[CSSPseudoElementSelector::MaxPseudoElements];
 
-    CSSStyleDeclarationImp* baseStyle;
-    int pseudoClassSelectorType;
-    CSSStyleDeclarationPtr pseudoClasses[CSSPseudoClassSelector::MaxPseudoClasses];
-
     int emptyInline;    // 0: none, 1: first, 2: last, 3: both, 4: empty
+
+    void initialize();
 
     void specify(const CSSStyleDeclarationImp* decl, unsigned id);
     void specify(const CSSStyleDeclarationImp* decl, const std::bitset<PropertyCount>& set);
+    void respecify(const CSSStyleDeclarationImp* decl, const std::bitset<PropertyCount>& set);
 
     void setInherit(unsigned id);
     void resetInherit(unsigned id);
@@ -401,19 +403,6 @@ public:
     CSSStyleDeclarationImp* getPseudoElementStyle(const std::u16string& name) const;
     CSSStyleDeclarationImp* createPseudoElementStyle(int id);
 
-    int getPseudoClassSelectorType() const {
-        return pseudoClassSelectorType;
-    }
-    CSSStyleDeclarationImp* getPseudoClassStyle(int id) const;
-    CSSStyleDeclarationImp* getPseudoClassStyle(const std::u16string& name) const;
-    CSSStyleDeclarationImp* createPseudoClassStyle(int id);
-    CSSStyleDeclarationImp* getBaseStyle() const {
-        return baseStyle;
-    }
-    void setBaseStyle(CSSStyleDeclarationImp* style, int id) {
-        baseStyle = style;
-        pseudoClassSelectorType = id;
-    }
     bool isAffectedByHover() const;
 
     void specifyWithoutInherited(const CSSStyleDeclarationImp* style);
@@ -426,12 +415,13 @@ public:
     void inherit(const CSSStyleDeclarationImp* parentStyle, unsigned id);
     void inheritProperties(const CSSStyleDeclarationImp* parentStyle);
 
-    void copyPaintProperties(const CSSStyleDeclarationImp* otherStyle);
-
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle, Element element);
     void computeStackingContext(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle);
-    void recompute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle);
     void resolve(ViewCSSImp* view, const ContainingBlock* containingBlock);
+
+    void respecify(const CSSStyleDeclarationImp* style);
+    void respecifyImportant(const CSSStyleDeclarationImp* style);
+    void recompute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle, Node node);
 
     void updateCounters(ViewCSSImp* view, CSSAutoNumberingValueImp::CounterContext* context) {
         counterReset.resetCounter(view, context);

@@ -59,14 +59,13 @@ class ViewCSSImp
     Retained<EventListenerImp> mutationListener;
 
     // cascade
-    Node hovered;
     std::map<Element, CSSStyleDeclarationPtr> map;
     StackingContext* stackingContexts;
     std::list<CSSStyleSheetImp*> styleSheets;
     unsigned overflow;
 
     // layout
-    Node hoveredNow;
+    Node hovered;
     BlockLevelBoxPtr boxTree;       // A box tree under construction
     std::map<Node, BlockLevelBoxPtr> floatMap;
     std::list<BlockLevelBox*> absoluteList;
@@ -86,7 +85,7 @@ class ViewCSSImp
     unsigned delay;  // in 1/100 sec for GIF
 
     void handleMutation(events::Event event);
-    void findDeclarations(CSSRuleListImp::DeclarationSet& set, CSSRuleListImp::DeclarationList& hoverList, Element element, css::CSSRuleList list, unsigned importance);
+    void findDeclarations(CSSRuleListImp::RuleSet& set, Element element, css::CSSRuleList list, unsigned importance);
 
 public:
     ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyleSheet, css::CSSStyleSheet userStyleSheet = 0);
@@ -256,15 +255,8 @@ public:
         return renderHeight;
     }
 
-    // pseudo hovered node for style computation
     void setHovered(Node node);
     bool isHovered(Node node);
-
-    // currently hovered node in the view
-    void setHoveredNow(Node node);
-    bool isHoveredNow(Node node);
-
-    void setHoveredBox(Box* box);
 
     bool canScroll() const {
         // Note the 'visible' value is interpreted as 'auto' in the viewport.

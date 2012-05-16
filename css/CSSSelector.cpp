@@ -149,7 +149,7 @@ CSSSpecificity CSSSelector::getSpecificity()
     return specificity;
 }
 
-bool CSSPrimarySelector::match(Element& e, ViewCSSImp* view)
+bool CSSPrimarySelector::match(Element& e, ViewCSSImp* view, bool dynamic)
 {
     if (name != u"*") {
         if (e.getLocalName() != name)
@@ -160,13 +160,13 @@ bool CSSPrimarySelector::match(Element& e, ViewCSSImp* view)
         }
     }
     for (auto i = chain.begin(); i != chain.end(); ++i) {
-        if (!(*i)->match(e, view))
+        if (!(*i)->match(e, view, dynamic))
             return false;
     }
     return true;
 }
 
-bool CSSIDSelector::match(Element& e, ViewCSSImp* view)
+bool CSSIDSelector::match(Element& e, ViewCSSImp* view, bool dynamic)
 {
     Nullable<std::u16string> id = e.getAttribute(u"id");
     if (!id.hasValue())
@@ -174,7 +174,7 @@ bool CSSIDSelector::match(Element& e, ViewCSSImp* view)
     return id.value() == name;
 }
 
-bool CSSClassSelector::match(Element& e, ViewCSSImp* view)
+bool CSSClassSelector::match(Element& e, ViewCSSImp* view, bool dynamic)
 {
     Nullable<std::u16string> classes = e.getAttribute(u"class");
     if (!classes.hasValue())
@@ -182,7 +182,7 @@ bool CSSClassSelector::match(Element& e, ViewCSSImp* view)
     return contains(classes.value(), name);
 }
 
-bool CSSAttributeSelector::match(Element& e, ViewCSSImp* view)
+bool CSSAttributeSelector::match(Element& e, ViewCSSImp* view, bool dynamic)
 {
     Nullable<std::u16string> attr = e.getAttribute(name);
     if (!attr.hasValue())
@@ -215,13 +215,13 @@ bool CSSAttributeSelector::match(Element& e, ViewCSSImp* view)
     }
 }
 
-bool CSSSelector::match(Element& element, ViewCSSImp* view)
+bool CSSSelector::match(Element& element, ViewCSSImp* view, bool dynamic)
 {
     if (!element || simpleSelectors.size() == 0)
         return false;
 
     auto i = simpleSelectors.rbegin();
-    if (!(*i)->match(element, view))
+    if (!(*i)->match(element, view, dynamic))
         return false;
     int combinator = (*i)->getCombinator();
     ++i;
@@ -230,7 +230,7 @@ bool CSSSelector::match(Element& element, ViewCSSImp* view)
         switch (combinator) {
         case CSSPrimarySelector::Descendant:
             while (e = e.getParentElement()) {  // TODO: do we need to retry from here upon failure?
-                if ((*i)->match(e, view))
+                if ((*i)->match(e, view, dynamic))
                     break;
             }
             if (!e)
@@ -238,17 +238,17 @@ bool CSSSelector::match(Element& element, ViewCSSImp* view)
             break;
         case CSSPrimarySelector::Child:
             e = e.getParentElement();
-            if (!(*i)->match(e, view))
+            if (!(*i)->match(e, view, dynamic))
                 return false;
             break;
         case CSSPrimarySelector::AdjacentSibling:
             e = e.getPreviousElementSibling();
-            if (!(*i)->match(e, view))
+            if (!(*i)->match(e, view, dynamic))
                 return false;
             break;
         case CSSPrimarySelector::GeneralSibling:
             while (e = e.getPreviousElementSibling()) {
-                if ((*i)->match(e, view))
+                if ((*i)->match(e, view, dynamic))
                     break;
             }
             if (!e)
@@ -265,7 +265,7 @@ bool CSSSelector::match(Element& element, ViewCSSImp* view)
     return true;
 }
 
-bool CSSPseudoClassSelector::match(Element& element, ViewCSSImp* view)
+bool CSSPseudoClassSelector::match(Element& element, ViewCSSImp* view, bool dynamic)
 {
     switch (id) {
     case Link:
@@ -276,12 +276,34 @@ bool CSSPseudoClassSelector::match(Element& element, ViewCSSImp* view)
         }
         break;
     case Hover:
-        if (view->isHovered(element))
+        // During the selector matching, every dynamic pseudo class is treated as "on".
+        // It it the responsibility of the reflow and repaint operation to actually
+        // check the status of each element.
+        if (!dynamic)
             return true;
+        else
+            return view->isHovered(element);
         break;
     case FirstChild:
         if (element.getParentElement().getFirstElementChild() == element)
             return true;
+        break;
+    case Active:
+        if (!dynamic)
+            return true;
+        else {
+            // TODO: Implement me!
+            return false;
+        }
+        break;
+    case Focus:
+        if (!dynamic)
+            return true;
+        else {
+            Document document = element.getOwnerDocument();
+            return document.hasFocus() && document.getActiveElement() == element;
+        }
+        return view->isHovered(element);
         break;
     default:
         break;
@@ -289,7 +311,7 @@ bool CSSPseudoClassSelector::match(Element& element, ViewCSSImp* view)
     return false;
 }
 
-bool CSSLangPseudoClassSelector::match(Element& element, ViewCSSImp* view)
+bool CSSLangPseudoClassSelector::match(Element& element, ViewCSSImp* view, bool dynamic)
 {
     std::u16string attr = interface_cast<html::HTMLElement>(element).getLang();
     toLower(attr);
@@ -342,10 +364,6 @@ void CSSSelector::registerToRuleList(CSSRuleListImp* ruleList, CSSStyleDeclarati
 {
     if (simpleSelectors.empty())
         return;
-    if (hasHover()) {
-        ruleList->appendHover(this, declaration);
-        return;
-    }
     simpleSelectors.back()->registerToRuleList(ruleList, this, declaration);
 }
 

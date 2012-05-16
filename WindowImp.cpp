@@ -349,7 +349,7 @@ bool WindowImp::mouseMove(int x, int y, int modifiers)
             return propagte;
     }
 
-    view->setHoveredBox(box);
+    view->setHovered(box->getTargetNode());
 
     // mousemove
     events::MouseEvent event(0);
