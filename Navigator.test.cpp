@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
     v8::HandleScope handleScope;
 #endif  // USE_V8
 
-    if (argc < 3) {
+    if (argc < 2) {
         std::cout << "usage : " << argv[0] << " navigator_directory [user.css]\n";
         return EXIT_FAILURE;
     }
