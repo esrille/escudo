@@ -4197,23 +4197,23 @@ if test "x$ac_cv_file__usr_share_fonts_liberation_LiberationSerif_Regular_ttf" =
 
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/share/fonts/truetype/ttf-liberation/LiberationSerif-Regular.ttf" >&5
-$as_echo_n "checking for /usr/share/fonts/truetype/ttf-liberation/LiberationSerif-Regular.ttf... " >&6; }
-if ${ac_cv_file__usr_share_fonts_truetype_ttf_liberation_LiberationSerif_Regular_ttf+:} false; then :
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/share/fonts/truetype/liberation/LiberationSerif-Regular.ttf" >&5
+$as_echo_n "checking for /usr/share/fonts/truetype/liberation/LiberationSerif-Regular.ttf... " >&6; }
+if ${ac_cv_file__usr_share_fonts_truetype_liberation_LiberationSerif_Regular_ttf+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   test "$cross_compiling" = yes &&
   as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
-if test -r "/usr/share/fonts/truetype/ttf-liberation/LiberationSerif-Regular.ttf"; then
-  ac_cv_file__usr_share_fonts_truetype_ttf_liberation_LiberationSerif_Regular_ttf=yes
+if test -r "/usr/share/fonts/truetype/liberation/LiberationSerif-Regular.ttf"; then
+  ac_cv_file__usr_share_fonts_truetype_liberation_LiberationSerif_Regular_ttf=yes
 else
-  ac_cv_file__usr_share_fonts_truetype_ttf_liberation_LiberationSerif_Regular_ttf=no
+  ac_cv_file__usr_share_fonts_truetype_liberation_LiberationSerif_Regular_ttf=no
 fi
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_share_fonts_truetype_ttf_liberation_LiberationSerif_Regular_ttf" >&5
-$as_echo "$ac_cv_file__usr_share_fonts_truetype_ttf_liberation_LiberationSerif_Regular_ttf" >&6; }
-if test "x$ac_cv_file__usr_share_fonts_truetype_ttf_liberation_LiberationSerif_Regular_ttf" = xyes; then :
-  LIBERATON_TTF=/usr/share/fonts/truetype/ttf-liberation
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_share_fonts_truetype_liberation_LiberationSerif_Regular_ttf" >&5
+$as_echo "$ac_cv_file__usr_share_fonts_truetype_liberation_LiberationSerif_Regular_ttf" >&6; }
+if test "x$ac_cv_file__usr_share_fonts_truetype_liberation_LiberationSerif_Regular_ttf" = xyes; then :
+  LIBERATON_TTF=/usr/share/fonts/truetype/liberation
 
 fi
 
@@ -4236,6 +4236,26 @@ fi
 $as_echo "$ac_cv_file__usr_share_fonts_dejavu_DejaVuSerif_ttf" >&6; }
 if test "x$ac_cv_file__usr_share_fonts_dejavu_DejaVuSerif_ttf" = xyes; then :
   DEJAVU_TTF=/usr/share/fonts/dejavu
+
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/share/fonts/truetype/ttf-dejavu/DejaVuSerif.ttf" >&5
+$as_echo_n "checking for /usr/share/fonts/truetype/ttf-dejavu/DejaVuSerif.ttf... " >&6; }
+if ${ac_cv_file__usr_share_fonts_truetype_ttf_dejavu_DejaVuSerif_ttf+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "/usr/share/fonts/truetype/ttf-dejavu/DejaVuSerif.ttf"; then
+  ac_cv_file__usr_share_fonts_truetype_ttf_dejavu_DejaVuSerif_ttf=yes
+else
+  ac_cv_file__usr_share_fonts_truetype_ttf_dejavu_DejaVuSerif_ttf=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_share_fonts_truetype_ttf_dejavu_DejaVuSerif_ttf" >&5
+$as_echo "$ac_cv_file__usr_share_fonts_truetype_ttf_dejavu_DejaVuSerif_ttf" >&6; }
+if test "x$ac_cv_file__usr_share_fonts_truetype_ttf_dejavu_DejaVuSerif_ttf" = xyes; then :
+  DEJAVU_TTF=/usr/share/fonts/truetype/ttf-dejavu
 
 fi
 
@@ -4323,83 +4343,83 @@ fi
 
 
 # check for IPA fonts on Ubuntu
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/share/fonts/truetype/takao/TakaoGothic.ttf" >&5
-$as_echo_n "checking for /usr/share/fonts/truetype/takao/TakaoGothic.ttf... " >&6; }
-if ${ac_cv_file__usr_share_fonts_truetype_takao_TakaoGothic_ttf+:} false; then :
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/share/fonts/truetype/takao-gothic/TakaoGothic.ttf" >&5
+$as_echo_n "checking for /usr/share/fonts/truetype/takao-gothic/TakaoGothic.ttf... " >&6; }
+if ${ac_cv_file__usr_share_fonts_truetype_takao_gothic_TakaoGothic_ttf+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   test "$cross_compiling" = yes &&
   as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
-if test -r "/usr/share/fonts/truetype/takao/TakaoGothic.ttf"; then
-  ac_cv_file__usr_share_fonts_truetype_takao_TakaoGothic_ttf=yes
+if test -r "/usr/share/fonts/truetype/takao-gothic/TakaoGothic.ttf"; then
+  ac_cv_file__usr_share_fonts_truetype_takao_gothic_TakaoGothic_ttf=yes
 else
-  ac_cv_file__usr_share_fonts_truetype_takao_TakaoGothic_ttf=no
+  ac_cv_file__usr_share_fonts_truetype_takao_gothic_TakaoGothic_ttf=no
 fi
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_share_fonts_truetype_takao_TakaoGothic_ttf" >&5
-$as_echo "$ac_cv_file__usr_share_fonts_truetype_takao_TakaoGothic_ttf" >&6; }
-if test "x$ac_cv_file__usr_share_fonts_truetype_takao_TakaoGothic_ttf" = xyes; then :
-  HAVE_IPA_GOTHIC=/usr/share/fonts/truetype/takao/TakaoGothic.ttf
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_share_fonts_truetype_takao_gothic_TakaoGothic_ttf" >&5
+$as_echo "$ac_cv_file__usr_share_fonts_truetype_takao_gothic_TakaoGothic_ttf" >&6; }
+if test "x$ac_cv_file__usr_share_fonts_truetype_takao_gothic_TakaoGothic_ttf" = xyes; then :
+  HAVE_IPA_GOTHIC=/usr/share/fonts/truetype/takao-gothic/TakaoGothic.ttf
 
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/share/fonts/truetype/takao/TakaoMincho.ttf" >&5
-$as_echo_n "checking for /usr/share/fonts/truetype/takao/TakaoMincho.ttf... " >&6; }
-if ${ac_cv_file__usr_share_fonts_truetype_takao_TakaoMincho_ttf+:} false; then :
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/share/fonts/truetype/takao-mincho/TakaoMincho.ttf" >&5
+$as_echo_n "checking for /usr/share/fonts/truetype/takao-mincho/TakaoMincho.ttf... " >&6; }
+if ${ac_cv_file__usr_share_fonts_truetype_takao_mincho_TakaoMincho_ttf+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   test "$cross_compiling" = yes &&
   as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
-if test -r "/usr/share/fonts/truetype/takao/TakaoMincho.ttf"; then
-  ac_cv_file__usr_share_fonts_truetype_takao_TakaoMincho_ttf=yes
+if test -r "/usr/share/fonts/truetype/takao-mincho/TakaoMincho.ttf"; then
+  ac_cv_file__usr_share_fonts_truetype_takao_mincho_TakaoMincho_ttf=yes
 else
-  ac_cv_file__usr_share_fonts_truetype_takao_TakaoMincho_ttf=no
+  ac_cv_file__usr_share_fonts_truetype_takao_mincho_TakaoMincho_ttf=no
 fi
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_share_fonts_truetype_takao_TakaoMincho_ttf" >&5
-$as_echo "$ac_cv_file__usr_share_fonts_truetype_takao_TakaoMincho_ttf" >&6; }
-if test "x$ac_cv_file__usr_share_fonts_truetype_takao_TakaoMincho_ttf" = xyes; then :
-  HAVE_IPA_MINCHO=/usr/share/fonts/truetype/takao/TakaoGothic.ttf
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_share_fonts_truetype_takao_mincho_TakaoMincho_ttf" >&5
+$as_echo "$ac_cv_file__usr_share_fonts_truetype_takao_mincho_TakaoMincho_ttf" >&6; }
+if test "x$ac_cv_file__usr_share_fonts_truetype_takao_mincho_TakaoMincho_ttf" = xyes; then :
+  HAVE_IPA_MINCHO=/usr/share/fonts/truetype/takao-mincho/TakaoMincho.ttf
 
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/share/fonts/truetype/takao/TakaoPGothic.ttf" >&5
-$as_echo_n "checking for /usr/share/fonts/truetype/takao/TakaoPGothic.ttf... " >&6; }
-if ${ac_cv_file__usr_share_fonts_truetype_takao_TakaoPGothic_ttf+:} false; then :
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/share/fonts/truetype/takao-gothic/TakaoPGothic.ttf" >&5
+$as_echo_n "checking for /usr/share/fonts/truetype/takao-gothic/TakaoPGothic.ttf... " >&6; }
+if ${ac_cv_file__usr_share_fonts_truetype_takao_gothic_TakaoPGothic_ttf+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   test "$cross_compiling" = yes &&
   as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
-if test -r "/usr/share/fonts/truetype/takao/TakaoPGothic.ttf"; then
-  ac_cv_file__usr_share_fonts_truetype_takao_TakaoPGothic_ttf=yes
+if test -r "/usr/share/fonts/truetype/takao-gothic/TakaoPGothic.ttf"; then
+  ac_cv_file__usr_share_fonts_truetype_takao_gothic_TakaoPGothic_ttf=yes
 else
-  ac_cv_file__usr_share_fonts_truetype_takao_TakaoPGothic_ttf=no
+  ac_cv_file__usr_share_fonts_truetype_takao_gothic_TakaoPGothic_ttf=no
 fi
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_share_fonts_truetype_takao_TakaoPGothic_ttf" >&5
-$as_echo "$ac_cv_file__usr_share_fonts_truetype_takao_TakaoPGothic_ttf" >&6; }
-if test "x$ac_cv_file__usr_share_fonts_truetype_takao_TakaoPGothic_ttf" = xyes; then :
-  HAVE_IPA_PGOTHIC=/usr/share/fonts/truetype/takao/TakaoPGothic.ttf
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_share_fonts_truetype_takao_gothic_TakaoPGothic_ttf" >&5
+$as_echo "$ac_cv_file__usr_share_fonts_truetype_takao_gothic_TakaoPGothic_ttf" >&6; }
+if test "x$ac_cv_file__usr_share_fonts_truetype_takao_gothic_TakaoPGothic_ttf" = xyes; then :
+  HAVE_IPA_PGOTHIC=/usr/share/fonts/truetype/takao-gothic/TakaoPGothic.ttf
 
 fi
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/share/fonts/truetype/takao/TakaoPMincho.ttf" >&5
-$as_echo_n "checking for /usr/share/fonts/truetype/takao/TakaoPMincho.ttf... " >&6; }
-if ${ac_cv_file__usr_share_fonts_truetype_takao_TakaoPMincho_ttf+:} false; then :
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/share/fonts/truetype/takao-mincho/TakaoPMincho.ttf" >&5
+$as_echo_n "checking for /usr/share/fonts/truetype/takao-mincho/TakaoPMincho.ttf... " >&6; }
+if ${ac_cv_file__usr_share_fonts_truetype_takao_mincho_TakaoPMincho_ttf+:} false; then :
   $as_echo_n "(cached) " >&6
 else
   test "$cross_compiling" = yes &&
   as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
-if test -r "/usr/share/fonts/truetype/takao/TakaoPMincho.ttf"; then
-  ac_cv_file__usr_share_fonts_truetype_takao_TakaoPMincho_ttf=yes
+if test -r "/usr/share/fonts/truetype/takao-mincho/TakaoPMincho.ttf"; then
+  ac_cv_file__usr_share_fonts_truetype_takao_mincho_TakaoPMincho_ttf=yes
 else
-  ac_cv_file__usr_share_fonts_truetype_takao_TakaoPMincho_ttf=no
+  ac_cv_file__usr_share_fonts_truetype_takao_mincho_TakaoPMincho_ttf=no
 fi
 fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_share_fonts_truetype_takao_TakaoPMincho_ttf" >&5
-$as_echo "$ac_cv_file__usr_share_fonts_truetype_takao_TakaoPMincho_ttf" >&6; }
-if test "x$ac_cv_file__usr_share_fonts_truetype_takao_TakaoPMincho_ttf" = xyes; then :
-  HAVE_IPA_PMINCHO=/usr/share/fonts/truetype/takao/TakaoPMincho.ttf
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_share_fonts_truetype_takao_mincho_TakaoPMincho_ttf" >&5
+$as_echo "$ac_cv_file__usr_share_fonts_truetype_takao_mincho_TakaoPMincho_ttf" >&6; }
+if test "x$ac_cv_file__usr_share_fonts_truetype_takao_mincho_TakaoPMincho_ttf" = xyes; then :
+  HAVE_IPA_PMINCHO=/usr/share/fonts/truetype/takao-mincho/TakaoPMincho.ttf
 
 fi
 
@@ -4422,6 +4442,26 @@ fi
 $as_echo "$ac_cv_file__usr_share_fonts_gdouros_aegean_Aegean_otf" >&6; }
 if test "x$ac_cv_file__usr_share_fonts_gdouros_aegean_Aegean_otf" = xyes; then :
   HAVE_AEGEAN=/usr/share/fonts/gdouros-aegean/Aegean.otf
+
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/share/fonts/truetype/ttf-ancient-scripts/Aegean600.ttf" >&5
+$as_echo_n "checking for /usr/share/fonts/truetype/ttf-ancient-scripts/Aegean600.ttf... " >&6; }
+if ${ac_cv_file__usr_share_fonts_truetype_ttf_ancient_scripts_Aegean600_ttf+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "/usr/share/fonts/truetype/ttf-ancient-scripts/Aegean600.ttf"; then
+  ac_cv_file__usr_share_fonts_truetype_ttf_ancient_scripts_Aegean600_ttf=yes
+else
+  ac_cv_file__usr_share_fonts_truetype_ttf_ancient_scripts_Aegean600_ttf=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_share_fonts_truetype_ttf_ancient_scripts_Aegean600_ttf" >&5
+$as_echo "$ac_cv_file__usr_share_fonts_truetype_ttf_ancient_scripts_Aegean600_ttf" >&6; }
+if test "x$ac_cv_file__usr_share_fonts_truetype_ttf_ancient_scripts_Aegean600_ttf" = xyes; then :
+  HAVE_AEGEAN=/usr/share/fonts/truetype/ttf-ancient-scripts/Aegean600.ttf
 
 fi
 

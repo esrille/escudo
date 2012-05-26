@@ -536,7 +536,10 @@ org/w3c/dom/Node.h : $(idl_files)
 
 lib_LIBRARIES = libeshtml5.a libesfontmanager.a libesjsapi.a libesv8api.a
 
-LDADD = libeshtml5.a libesfontmanager.a
+LDADD = libeshtml5.a libesfontmanager.a \
+	$(ICU_LIBS) $(FREETYPE_LIBS) \
+	-lboost_regex -lboost_system -lboost_iostreams \
+	-ljpeg -lpng -lgif -lglut -lGLU -lGL -lXext -lX11 -lm -lrt
 
 AM_CPPFLAGS = \
 	-std=gnu++0x \
@@ -547,8 +550,6 @@ AM_CPPFLAGS = \
 	-DXP_UNIX \
 	-DYYERROR_VERBOSE \
 	-Wall
-
-AM_LDFLAGS = $(ICU_LIBS) $(FREETYPE_LIBS) -ljpeg -lpng -lgif -lglut -lGLU -lGL -lXext -lX11 -lm -lrt -lboost_regex -lboost_system -lboost_iostreams
 
 AM_YFLAGS = -d -v -t
 
@@ -1123,8 +1124,8 @@ bin_PROGRAMS = \
 
 bin_PROGRAMS : $(LDADD)
 
-js_LDADD = libeshtml5.a libesjsapi.a libeshtml5.a libesjsapi.a libesfontmanager.a
-v8_LDADD = libeshtml5.a libesv8api.a libeshtml5.a libesv8api.a libesfontmanager.a -lv8
+js_LDADD = $(LDADD) libesjsapi.a
+v8_LDADD = $(LDADD) libesv8api.a -lv8
 
 harness_SOURCES = harness/harness.cpp
 harness_LDADD = $(js_LDADD)

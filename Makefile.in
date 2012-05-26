@@ -361,75 +361,78 @@ libesv8api_a_OBJECTS = $(am_libesv8api_a_OBJECTS)
 PROGRAMS = $(bin_PROGRAMS)
 am_Any_test_OBJECTS = Any.test.$(OBJEXT)
 Any_test_OBJECTS = $(am_Any_test_OBJECTS)
-Any_test_DEPENDENCIES = $(js_LDADD)
+am__DEPENDENCIES_1 =
+am__DEPENDENCIES_2 = libeshtml5.a libesfontmanager.a \
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+am__DEPENDENCIES_3 = $(am__DEPENDENCIES_2) libesjsapi.a
+Any_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
 am_Box_test_OBJECTS = Box.test.$(OBJEXT)
 Box_test_OBJECTS = $(am_Box_test_OBJECTS)
-Box_test_DEPENDENCIES = $(js_LDADD)
+Box_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
 am_CSSParser_test_OBJECTS = CSSParser.test.$(OBJEXT)
 CSSParser_test_OBJECTS = $(am_CSSParser_test_OBJECTS)
-CSSParser_test_DEPENDENCIES = $(js_LDADD)
+CSSParser_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
 am_CSSStyle_test_OBJECTS = CSSStyle.test.$(OBJEXT)
 CSSStyle_test_OBJECTS = $(am_CSSStyle_test_OBJECTS)
-CSSStyle_test_DEPENDENCIES = $(js_LDADD)
+CSSStyle_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
 am_CSSTokenizer_test_OBJECTS = CSSTokenizer.test.$(OBJEXT)
 CSSTokenizer_test_OBJECTS = $(am_CSSTokenizer_test_OBJECTS)
-CSSTokenizer_test_DEPENDENCIES = $(js_LDADD)
+CSSTokenizer_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
 am_FontManager_test_OBJECTS = FontManager.test.$(OBJEXT)
 FontManager_test_OBJECTS = $(am_FontManager_test_OBJECTS)
-FontManager_test_DEPENDENCIES = $(js_LDADD)
+FontManager_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
 am_HTMLInputStream_test_OBJECTS = HTMLInputStream.test.$(OBJEXT)
 HTMLInputStream_test_OBJECTS = $(am_HTMLInputStream_test_OBJECTS)
-HTMLInputStream_test_DEPENDENCIES = $(js_LDADD)
+HTMLInputStream_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
 am_HTMLInputStream_test_getChar_OBJECTS =  \
 	HTMLInputStream.test.getChar.$(OBJEXT)
 HTMLInputStream_test_getChar_OBJECTS =  \
 	$(am_HTMLInputStream_test_getChar_OBJECTS)
-HTMLInputStream_test_getChar_DEPENDENCIES = $(js_LDADD)
+HTMLInputStream_test_getChar_DEPENDENCIES = $(am__DEPENDENCIES_3)
 am_HTMLParser_test_OBJECTS = HTMLParser.test.$(OBJEXT)
 HTMLParser_test_OBJECTS = $(am_HTMLParser_test_OBJECTS)
-HTMLParser_test_DEPENDENCIES = $(js_LDADD)
+HTMLParser_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
 am_HTMLTokenizer_test_OBJECTS = HTMLTokenizer.test.$(OBJEXT)
 HTMLTokenizer_test_OBJECTS = $(am_HTMLTokenizer_test_OBJECTS)
-HTMLTokenizer_test_DEPENDENCIES = $(js_LDADD)
+HTMLTokenizer_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
 am_HTTPHeader_test_OBJECTS = HTTPHeader.test.$(OBJEXT)
 HTTPHeader_test_OBJECTS = $(am_HTTPHeader_test_OBJECTS)
-HTTPHeader_test_DEPENDENCIES = $(js_LDADD)
+HTTPHeader_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
 am_HTTPRequest_test_OBJECTS = HTTPRequest.test.$(OBJEXT)
 HTTPRequest_test_OBJECTS = $(am_HTTPRequest_test_OBJECTS)
-HTTPRequest_test_DEPENDENCIES = $(js_LDADD)
+HTTPRequest_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
 am_Navigator_test_OBJECTS = Navigator_test-Navigator.test.$(OBJEXT) \
 	Navigator_test-Test.glut.$(OBJEXT)
 Navigator_test_OBJECTS = $(am_Navigator_test_OBJECTS)
-Navigator_test_DEPENDENCIES = $(js_LDADD)
+Navigator_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
 Navigator_test_LINK = $(CXXLD) $(Navigator_test_CXXFLAGS) $(CXXFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 am_NavigatorV8_test_OBJECTS =  \
 	NavigatorV8_test-Navigator.test.$(OBJEXT) \
 	NavigatorV8_test-Test.glut.$(OBJEXT)
 NavigatorV8_test_OBJECTS = $(am_NavigatorV8_test_OBJECTS)
-am__DEPENDENCIES_1 = libeshtml5.a libesv8api.a libeshtml5.a \
-	libesv8api.a libesfontmanager.a
-NavigatorV8_test_DEPENDENCIES = $(am__DEPENDENCIES_1)
+am__DEPENDENCIES_4 = $(am__DEPENDENCIES_2) libesv8api.a
+NavigatorV8_test_DEPENDENCIES = $(am__DEPENDENCIES_4)
 NavigatorV8_test_LINK = $(CXXLD) $(NavigatorV8_test_CXXFLAGS) \
 	$(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 am_Script_test_OBJECTS = Script_test-Script.test.$(OBJEXT) \
 	Script_test-Test.glut.$(OBJEXT)
 Script_test_OBJECTS = $(am_Script_test_OBJECTS)
-Script_test_DEPENDENCIES = $(js_LDADD)
+Script_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
 Script_test_LINK = $(CXXLD) $(Script_test_CXXFLAGS) $(CXXFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 am_ScriptV8_test_OBJECTS = ScriptV8_test-Script.test.$(OBJEXT) \
 	ScriptV8_test-Test.glut.$(OBJEXT)
 ScriptV8_test_OBJECTS = $(am_ScriptV8_test_OBJECTS)
-ScriptV8_test_DEPENDENCIES = $(am__DEPENDENCIES_1)
+ScriptV8_test_DEPENDENCIES = $(am__DEPENDENCIES_4)
 ScriptV8_test_LINK = $(CXXLD) $(ScriptV8_test_CXXFLAGS) $(CXXFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 am_URL_test_OBJECTS = URL.test.$(OBJEXT)
 URL_test_OBJECTS = $(am_URL_test_OBJECTS)
-URL_test_DEPENDENCIES = $(js_LDADD)
+URL_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
 am_harness_OBJECTS = harness.$(OBJEXT)
 harness_OBJECTS = $(am_harness_OBJECTS)
-harness_DEPENDENCIES = $(js_LDADD)
+harness_DEPENDENCIES = $(am__DEPENDENCIES_3)
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
@@ -1113,7 +1116,11 @@ generated_scanners = \
 BUILT_SOURCES = $(generated_headers) $(generated_scanners) $(generated_sources)
 nobase_nodist_include_HEADERS = $(generated_headers)
 lib_LIBRARIES = libeshtml5.a libesfontmanager.a libesjsapi.a libesv8api.a
-LDADD = libeshtml5.a libesfontmanager.a
+LDADD = libeshtml5.a libesfontmanager.a \
+	$(ICU_LIBS) $(FREETYPE_LIBS) \
+	-lboost_regex -lboost_system -lboost_iostreams \
+	-ljpeg -lpng -lgif -lglut -lGLU -lGL -lXext -lX11 -lm -lrt
+
 AM_CPPFLAGS = \
 	-std=gnu++0x \
 	-I $(srcdir) \
@@ -1124,7 +1131,6 @@ AM_CPPFLAGS = \
 	-DYYERROR_VERBOSE \
 	-Wall
 
-AM_LDFLAGS = $(ICU_LIBS) $(FREETYPE_LIBS) -ljpeg -lpng -lgif -lglut -lGLU -lGL -lXext -lX11 -lm -lrt -lboost_regex -lboost_system -lboost_iostreams
 AM_YFLAGS = -d -v -t
 libesfontmanager_a_CPPFLAGS = \
 	$(AM_CPPFLAGS) \
@@ -1391,8 +1397,8 @@ libeshtml5_a_SOURCES = Object.h ObjectArrayImp.h Any.cpp Any.h \
 	xhr/XMLHttpRequestEventTargetImp.h xhr/XMLHttpRequestImp.cpp \
 	xhr/XMLHttpRequestImp.h xhr/XMLHttpRequestUploadImp.cpp \
 	xhr/XMLHttpRequestUploadImp.h
-js_LDADD = libeshtml5.a libesjsapi.a libeshtml5.a libesjsapi.a libesfontmanager.a
-v8_LDADD = libeshtml5.a libesv8api.a libeshtml5.a libesv8api.a libesfontmanager.a -lv8
+js_LDADD = $(LDADD) libesjsapi.a
+v8_LDADD = $(LDADD) libesv8api.a -lv8
 harness_SOURCES = harness/harness.cpp
 harness_LDADD = $(js_LDADD)
 Any_test_SOURCES = Any.test.cpp

@@ -39,10 +39,11 @@ AC_SEARCH_LIBS(JS_NewCompartmentAndGlobalObject, js mozjs185)
 
 # check for liberation fonts
 AC_CHECK_FILE(/usr/share/fonts/liberation/LiberationSerif-Regular.ttf,[AC_SUBST(LIBERATON_TTF,/usr/share/fonts/liberation)])
-AC_CHECK_FILE(/usr/share/fonts/truetype/ttf-liberation/LiberationSerif-Regular.ttf,[AC_SUBST(LIBERATON_TTF,/usr/share/fonts/truetype/ttf-liberation)])
+AC_CHECK_FILE(/usr/share/fonts/truetype/liberation/LiberationSerif-Regular.ttf,[AC_SUBST(LIBERATON_TTF,/usr/share/fonts/truetype/liberation)])
 
 # check for DejaVu fonts
 AC_CHECK_FILE(/usr/share/fonts/dejavu/DejaVuSerif.ttf,[AC_SUBST(DEJAVU_TTF,/usr/share/fonts/dejavu)])
+AC_CHECK_FILE(/usr/share/fonts/truetype/ttf-dejavu/DejaVuSerif.ttf,[AC_SUBST(DEJAVU_TTF,/usr/share/fonts/truetype/ttf-dejavu)])
 
 # check for IPA fonts on Fedora
 AC_CHECK_FILE(/usr/share/fonts/ipa-gothic/ipag.ttf,[AC_SUBST(HAVE_IPA_GOTHIC,/usr/share/fonts/ipa-gothic/ipag.ttf)])
@@ -51,13 +52,14 @@ AC_CHECK_FILE(/usr/share/fonts/ipa-pgothic/ipagp.ttf,[AC_SUBST(HAVE_IPA_PGOTHIC,
 AC_CHECK_FILE(/usr/share/fonts/ipa-pmincho/ipamp.ttf,[AC_SUBST(HAVE_IPA_PMINCHO,/usr/share/fonts/ipa-pmincho/ipamp.ttf)])
 
 # check for IPA fonts on Ubuntu
-AC_CHECK_FILE(/usr/share/fonts/truetype/takao/TakaoGothic.ttf,[AC_SUBST(HAVE_IPA_GOTHIC,/usr/share/fonts/truetype/takao/TakaoGothic.ttf)])
-AC_CHECK_FILE(/usr/share/fonts/truetype/takao/TakaoMincho.ttf,[AC_SUBST(HAVE_IPA_MINCHO,/usr/share/fonts/truetype/takao/TakaoGothic.ttf)])
-AC_CHECK_FILE(/usr/share/fonts/truetype/takao/TakaoPGothic.ttf,[AC_SUBST(HAVE_IPA_PGOTHIC,/usr/share/fonts/truetype/takao/TakaoPGothic.ttf)])
-AC_CHECK_FILE(/usr/share/fonts/truetype/takao/TakaoPMincho.ttf,[AC_SUBST(HAVE_IPA_PMINCHO,/usr/share/fonts/truetype/takao/TakaoPMincho.ttf)])
+AC_CHECK_FILE(/usr/share/fonts/truetype/takao-gothic/TakaoGothic.ttf,[AC_SUBST(HAVE_IPA_GOTHIC,/usr/share/fonts/truetype/takao-gothic/TakaoGothic.ttf)])
+AC_CHECK_FILE(/usr/share/fonts/truetype/takao-mincho/TakaoMincho.ttf,[AC_SUBST(HAVE_IPA_MINCHO,/usr/share/fonts/truetype/takao-mincho/TakaoMincho.ttf)])
+AC_CHECK_FILE(/usr/share/fonts/truetype/takao-gothic/TakaoPGothic.ttf,[AC_SUBST(HAVE_IPA_PGOTHIC,/usr/share/fonts/truetype/takao-gothic/TakaoPGothic.ttf)])
+AC_CHECK_FILE(/usr/share/fonts/truetype/takao-mincho/TakaoPMincho.ttf,[AC_SUBST(HAVE_IPA_PMINCHO,/usr/share/fonts/truetype/takao-mincho/TakaoPMincho.ttf)])
 
 # check for Aegean font
 AC_CHECK_FILE(/usr/share/fonts/gdouros-aegean/Aegean.otf,[AC_SUBST(HAVE_AEGEAN,/usr/share/fonts/gdouros-aegean/Aegean.otf)])
+AC_CHECK_FILE(/usr/share/fonts/truetype/ttf-ancient-scripts/Aegean600.ttf,[AC_SUBST(HAVE_AEGEAN,/usr/share/fonts/truetype/ttf-ancient-scripts/Aegean600.ttf)])
 
 # check for the Ahem font (http://www.w3.org/Style/CSS/Test/Fonts/Ahem/)
 AC_CHECK_FILE(/usr/share/fonts/ahem/AHEM____.TTF,[AC_SUBST(HAVE_AHEM,/usr/share/fonts/ahem/AHEM____.TTF)])
