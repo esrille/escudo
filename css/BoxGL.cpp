@@ -435,6 +435,7 @@ void Box::renderOutline(ViewCSSImp* view, float left, float top, float right, fl
 
 void Box::renderOutline(ViewCSSImp* view, float left, float top)
 {
+    float outlineWidth = getOutlineWidth();
     if (outlineWidth <= 0.0f)
         return;
     left += marginLeft + borderLeft;
@@ -1013,6 +1014,7 @@ void InlineLevelBox::renderOutline(ViewCSSImp* view)
         getFirstChild()->renderOutline(view, x,  y);
         return;
     }
+    float outlineWidth = getOutlineWidth();
     if (outlineWidth <= 0.0f || !font)
         return;
     if (!style->hasMultipleBoxes()) {

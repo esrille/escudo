@@ -49,6 +49,7 @@ const unsigned CSSStyleDeclarationImp::paintProperties[] = {
     BorderLeftStyle,
     OutlineColor,
     OutlineStyle,
+    OutlineWidth,
     Visibility,
     Unknown
 };
@@ -1540,6 +1541,8 @@ void CSSStyleDeclarationImp::recompute(ViewCSSImp* view, CSSStyleDeclarationImp*
 
     // TODO: find a way to skip the following cascading operation when there's no change in the decorations.
     initialize();
+    for (const unsigned* id = paintProperties; *id != Unknown; ++id)
+        reset(*id);
     CSSStyleDeclarationImp* elementDecl(0);
     html::HTMLElement htmlElement(0);
     if (html::HTMLElement::hasInstance(element)) {
@@ -1612,6 +1615,9 @@ void CSSStyleDeclarationImp::recompute(ViewCSSImp* view, CSSStyleDeclarationImp*
                 break;
             case OutlineStyle:
                 outlineStyle.compute();
+                break;
+            case OutlineWidth:
+                outlineWidth.compute(view, outlineStyle, this);
                 break;
             case Visibility:
                 visibility.compute();

@@ -866,9 +866,6 @@ public:
         value = specified.value;
         resolved = specified.resolved;
     }
-    void copy(const CSSBorderStyleValueImp& specified) {
-        resolved = specified.resolved;
-    }
     void compute() {
         resolved = value;
     }

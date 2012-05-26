@@ -61,7 +61,6 @@ Box::Box(Node node) :
     borderRight(0.0f),
     borderBottom(0.0f),
     borderLeft(0.0f),
-    outlineWidth(0.0f),
     position(CSSPositionValueImp::Static),
     offsetH(0.0f),
     offsetV(0.0f),
@@ -163,6 +162,13 @@ void Box::restyle(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle)
         i->restyle(view, style);
 }
 
+float Box::getOutlineWidth() const
+{
+    if (CSSStyleDeclarationImp* style = getStyle())
+        return style->outlineWidth.getPx();
+    return 0.0f;
+}
+
 float Box::getEffectiveTotalWidth() const
 {
     // cf. http://test.csswg.org/suites/css2.1/20110323/html4/clear-float-002.htm
@@ -189,7 +195,6 @@ void Box::updateBorderWidth()
     borderRight = style->borderRightWidth.getPx();
     borderBottom = style->borderBottomWidth.getPx();
     borderLeft = style->borderLeftWidth.getPx();
-    outlineWidth = style->outlineWidth.getPx();
 }
 
 const ContainingBlock* Box::getContainingBlock(ViewCSSImp* view) const
@@ -1234,7 +1239,6 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         paddingTop = paddingRight = paddingBottom = paddingLeft = 0.0f;
         borderTop = borderRight = borderBottom = borderLeft = 0.0f;
         marginTop = marginRight = marginLeft = marginBottom = 0.0f;
-        outlineWidth = 0.0f;
         width = containingBlock->width;
         height = 0.0f;
         stackingContext = style->getStackingContext();
