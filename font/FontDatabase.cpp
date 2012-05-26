@@ -173,12 +173,20 @@ const char* testFontList[] =
 
 void FontDatabase::loadBaseFonts(FontManager* manager)
 {
-    for (auto i = fontList; i < &fontList[sizeof fontList / sizeof fontList[0]]; ++i)
-        manager->loadFont(*i);
+    for (auto i = fontList; i < &fontList[sizeof fontList / sizeof fontList[0]]; ++i) {
+        try {
+            manager->loadFont(*i);
+        } catch (...) {
+        }
+    }
 }
 
 void FontDatabase::loadTestFonts(FontManager* manager)
 {
-    for (auto i = testFontList; i < &testFontList[sizeof testFontList / sizeof testFontList[0]]; ++i)
-        manager->loadFont(*i);
+    for (auto i = testFontList; i < &testFontList[sizeof testFontList / sizeof testFontList[0]]; ++i) {
+        try {
+            manager->loadFont(*i);
+        } catch (...) {
+        }
+    }
 }
