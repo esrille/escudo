@@ -63,6 +63,7 @@ AC_CHECK_FILE(/usr/share/fonts/truetype/ttf-ancient-scripts/Aegean600.ttf,[AC_SU
 
 # check for the Ahem font (http://www.w3.org/Style/CSS/Test/Fonts/Ahem/)
 AC_CHECK_FILE(/usr/share/fonts/ahem/AHEM____.TTF,[AC_SUBST(HAVE_AHEM,/usr/share/fonts/ahem/AHEM____.TTF)])
+AC_CHECK_FILE(/usr/share/fonts/truetype/ahem/AHEM____.TTF,[AC_SUBST(HAVE_AHEM,/usr/share/fonts/truetype/ahem/AHEM____.TTF)])
 
 AC_OUTPUT
 
