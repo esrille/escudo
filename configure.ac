@@ -40,16 +40,22 @@ AC_SEARCH_LIBS(JS_NewCompartmentAndGlobalObject, js mozjs185)
 # check for liberation fonts
 AC_CHECK_FILE(/usr/share/fonts/liberation/LiberationSerif-Regular.ttf,[AC_SUBST(LIBERATON_TTF,/usr/share/fonts/liberation)])
 AC_CHECK_FILE(/usr/share/fonts/truetype/liberation/LiberationSerif-Regular.ttf,[AC_SUBST(LIBERATON_TTF,/usr/share/fonts/truetype/liberation)])
+AM_CONDITIONAL([HAVE_LIBERATON], [test x"LIBERATON_TTF" != x])
 
 # check for DejaVu fonts
 AC_CHECK_FILE(/usr/share/fonts/dejavu/DejaVuSerif.ttf,[AC_SUBST(DEJAVU_TTF,/usr/share/fonts/dejavu)])
 AC_CHECK_FILE(/usr/share/fonts/truetype/ttf-dejavu/DejaVuSerif.ttf,[AC_SUBST(DEJAVU_TTF,/usr/share/fonts/truetype/ttf-dejavu)])
+AM_CONDITIONAL([HAVE_DEJAVU], [test x"DEJAVU_TTF" != x])
 
 # check for IPA fonts on Fedora
 AC_CHECK_FILE(/usr/share/fonts/ipa-gothic/ipag.ttf,[AC_SUBST(HAVE_IPA_GOTHIC,/usr/share/fonts/ipa-gothic/ipag.ttf)])
+AM_CONDITIONAL([HAVE_IPA_GOTHIC], [test x"HAVE_IPA_GOTHIC" != x])
 AC_CHECK_FILE(/usr/share/fonts/ipa-mincho/ipam.ttf,[AC_SUBST(HAVE_IPA_MINCHO,/usr/share/fonts/ipa-mincho/ipam.ttf)])
+AM_CONDITIONAL([HAVE_IPA_MINCHO], [test x"HAVE_IPA_MINCHO" != x])
 AC_CHECK_FILE(/usr/share/fonts/ipa-pgothic/ipagp.ttf,[AC_SUBST(HAVE_IPA_PGOTHIC,/usr/share/fonts/ipa-pgothic/ipagp.ttf)])
+AM_CONDITIONAL([HAVE_IPA_PGOTHIC], [test x"HAVE_IPA_PGOTHIC" != x])
 AC_CHECK_FILE(/usr/share/fonts/ipa-pmincho/ipamp.ttf,[AC_SUBST(HAVE_IPA_PMINCHO,/usr/share/fonts/ipa-pmincho/ipamp.ttf)])
+AM_CONDITIONAL([HAVE_IPA_PMINCHO], [test x"HAVE_IPA_PMINCHO" != x])
 
 # check for IPA fonts on Ubuntu
 AC_CHECK_FILE(/usr/share/fonts/truetype/takao-gothic/TakaoGothic.ttf,[AC_SUBST(HAVE_IPA_GOTHIC,/usr/share/fonts/truetype/takao-gothic/TakaoGothic.ttf)])
@@ -60,10 +66,14 @@ AC_CHECK_FILE(/usr/share/fonts/truetype/takao-mincho/TakaoPMincho.ttf,[AC_SUBST(
 # check for Aegean font
 AC_CHECK_FILE(/usr/share/fonts/gdouros-aegean/Aegean.otf,[AC_SUBST(HAVE_AEGEAN,/usr/share/fonts/gdouros-aegean/Aegean.otf)])
 AC_CHECK_FILE(/usr/share/fonts/truetype/ttf-ancient-scripts/Aegean600.ttf,[AC_SUBST(HAVE_AEGEAN,/usr/share/fonts/truetype/ttf-ancient-scripts/Aegean600.ttf)])
+AM_CONDITIONAL([HAVE_AEGEAN], [test x"$HAVE_AEGEAN" != x])
 
 # check for the Ahem font (http://www.w3.org/Style/CSS/Test/Fonts/Ahem/)
 AC_CHECK_FILE(/usr/share/fonts/ahem/AHEM____.TTF,[AC_SUBST(HAVE_AHEM,/usr/share/fonts/ahem/AHEM____.TTF)])
 AC_CHECK_FILE(/usr/share/fonts/truetype/ahem/AHEM____.TTF,[AC_SUBST(HAVE_AHEM,/usr/share/fonts/truetype/ahem/AHEM____.TTF)])
+AM_CONDITIONAL([HAVE_AHEM], [test x"$HAVE_AHEM" != x])
+
+AM_CONDITIONAL([TEST_FONTS], [test x"$TEST_FONTS" != x])
 
 AC_OUTPUT
 

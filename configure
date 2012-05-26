@@ -565,13 +565,31 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
+TEST_FONTS_FALSE
+TEST_FONTS_TRUE
+HAVE_AHEM_FALSE
+HAVE_AHEM_TRUE
 HAVE_AHEM
+HAVE_AEGEAN_FALSE
+HAVE_AEGEAN_TRUE
 HAVE_AEGEAN
+HAVE_IPA_PMINCHO_FALSE
+HAVE_IPA_PMINCHO_TRUE
 HAVE_IPA_PMINCHO
+HAVE_IPA_PGOTHIC_FALSE
+HAVE_IPA_PGOTHIC_TRUE
 HAVE_IPA_PGOTHIC
+HAVE_IPA_MINCHO_FALSE
+HAVE_IPA_MINCHO_TRUE
 HAVE_IPA_MINCHO
+HAVE_IPA_GOTHIC_FALSE
+HAVE_IPA_GOTHIC_TRUE
 HAVE_IPA_GOTHIC
+HAVE_DEJAVU_FALSE
+HAVE_DEJAVU_TRUE
 DEJAVU_TTF
+HAVE_LIBERATON_FALSE
+HAVE_LIBERATON_TRUE
 LIBERATON_TTF
 FREETYPE_LIBS
 FREETYPE_CPPFLAGS
@@ -4217,6 +4235,14 @@ if test "x$ac_cv_file__usr_share_fonts_truetype_liberation_LiberationSerif_Regul
 
 fi
 
+ if test x"LIBERATON_TTF" != x; then
+  HAVE_LIBERATON_TRUE=
+  HAVE_LIBERATON_FALSE='#'
+else
+  HAVE_LIBERATON_TRUE='#'
+  HAVE_LIBERATON_FALSE=
+fi
+
 
 # check for DejaVu fonts
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/share/fonts/dejavu/DejaVuSerif.ttf" >&5
@@ -4259,6 +4285,14 @@ if test "x$ac_cv_file__usr_share_fonts_truetype_ttf_dejavu_DejaVuSerif_ttf" = xy
 
 fi
 
+ if test x"DEJAVU_TTF" != x; then
+  HAVE_DEJAVU_TRUE=
+  HAVE_DEJAVU_FALSE='#'
+else
+  HAVE_DEJAVU_TRUE='#'
+  HAVE_DEJAVU_FALSE=
+fi
+
 
 # check for IPA fonts on Fedora
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/share/fonts/ipa-gothic/ipag.ttf" >&5
@@ -4281,6 +4315,14 @@ if test "x$ac_cv_file__usr_share_fonts_ipa_gothic_ipag_ttf" = xyes; then :
 
 fi
 
+ if test x"HAVE_IPA_GOTHIC" != x; then
+  HAVE_IPA_GOTHIC_TRUE=
+  HAVE_IPA_GOTHIC_FALSE='#'
+else
+  HAVE_IPA_GOTHIC_TRUE='#'
+  HAVE_IPA_GOTHIC_FALSE=
+fi
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/share/fonts/ipa-mincho/ipam.ttf" >&5
 $as_echo_n "checking for /usr/share/fonts/ipa-mincho/ipam.ttf... " >&6; }
 if ${ac_cv_file__usr_share_fonts_ipa_mincho_ipam_ttf+:} false; then :
@@ -4299,6 +4341,14 @@ $as_echo "$ac_cv_file__usr_share_fonts_ipa_mincho_ipam_ttf" >&6; }
 if test "x$ac_cv_file__usr_share_fonts_ipa_mincho_ipam_ttf" = xyes; then :
   HAVE_IPA_MINCHO=/usr/share/fonts/ipa-mincho/ipam.ttf
 
+fi
+
+ if test x"HAVE_IPA_MINCHO" != x; then
+  HAVE_IPA_MINCHO_TRUE=
+  HAVE_IPA_MINCHO_FALSE='#'
+else
+  HAVE_IPA_MINCHO_TRUE='#'
+  HAVE_IPA_MINCHO_FALSE=
 fi
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/share/fonts/ipa-pgothic/ipagp.ttf" >&5
@@ -4321,6 +4371,14 @@ if test "x$ac_cv_file__usr_share_fonts_ipa_pgothic_ipagp_ttf" = xyes; then :
 
 fi
 
+ if test x"HAVE_IPA_PGOTHIC" != x; then
+  HAVE_IPA_PGOTHIC_TRUE=
+  HAVE_IPA_PGOTHIC_FALSE='#'
+else
+  HAVE_IPA_PGOTHIC_TRUE='#'
+  HAVE_IPA_PGOTHIC_FALSE=
+fi
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/share/fonts/ipa-pmincho/ipamp.ttf" >&5
 $as_echo_n "checking for /usr/share/fonts/ipa-pmincho/ipamp.ttf... " >&6; }
 if ${ac_cv_file__usr_share_fonts_ipa_pmincho_ipamp_ttf+:} false; then :
@@ -4339,6 +4397,14 @@ $as_echo "$ac_cv_file__usr_share_fonts_ipa_pmincho_ipamp_ttf" >&6; }
 if test "x$ac_cv_file__usr_share_fonts_ipa_pmincho_ipamp_ttf" = xyes; then :
   HAVE_IPA_PMINCHO=/usr/share/fonts/ipa-pmincho/ipamp.ttf
 
+fi
+
+ if test x"HAVE_IPA_PMINCHO" != x; then
+  HAVE_IPA_PMINCHO_TRUE=
+  HAVE_IPA_PMINCHO_FALSE='#'
+else
+  HAVE_IPA_PMINCHO_TRUE='#'
+  HAVE_IPA_PMINCHO_FALSE=
 fi
 
 
@@ -4465,6 +4531,14 @@ if test "x$ac_cv_file__usr_share_fonts_truetype_ttf_ancient_scripts_Aegean600_tt
 
 fi
 
+ if test x"$HAVE_AEGEAN" != x; then
+  HAVE_AEGEAN_TRUE=
+  HAVE_AEGEAN_FALSE='#'
+else
+  HAVE_AEGEAN_TRUE='#'
+  HAVE_AEGEAN_FALSE=
+fi
+
 
 # check for the Ahem font (http://www.w3.org/Style/CSS/Test/Fonts/Ahem/)
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/share/fonts/ahem/AHEM____.TTF" >&5
@@ -4505,6 +4579,23 @@ $as_echo "$ac_cv_file__usr_share_fonts_truetype_ahem_AHEM_____TTF" >&6; }
 if test "x$ac_cv_file__usr_share_fonts_truetype_ahem_AHEM_____TTF" = xyes; then :
   HAVE_AHEM=/usr/share/fonts/truetype/ahem/AHEM____.TTF
 
+fi
+
+ if test x"$HAVE_AHEM" != x; then
+  HAVE_AHEM_TRUE=
+  HAVE_AHEM_FALSE='#'
+else
+  HAVE_AHEM_TRUE='#'
+  HAVE_AHEM_FALSE=
+fi
+
+
+ if test x"$TEST_FONTS" != x; then
+  TEST_FONTS_TRUE=
+  TEST_FONTS_FALSE='#'
+else
+  TEST_FONTS_TRUE='#'
+  TEST_FONTS_FALSE=
 fi
 
 
@@ -4639,6 +4730,42 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${am__fastdepCCAS_TRUE}" && test -z "${am__fastdepCCAS_FALSE}"; then
   as_fn_error $? "conditional \"am__fastdepCCAS\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_LIBERATON_TRUE}" && test -z "${HAVE_LIBERATON_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_LIBERATON\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_DEJAVU_TRUE}" && test -z "${HAVE_DEJAVU_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_DEJAVU\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_IPA_GOTHIC_TRUE}" && test -z "${HAVE_IPA_GOTHIC_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_IPA_GOTHIC\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_IPA_MINCHO_TRUE}" && test -z "${HAVE_IPA_MINCHO_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_IPA_MINCHO\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_IPA_PGOTHIC_TRUE}" && test -z "${HAVE_IPA_PGOTHIC_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_IPA_PGOTHIC\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_IPA_PMINCHO_TRUE}" && test -z "${HAVE_IPA_PMINCHO_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_IPA_PMINCHO\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_AEGEAN_TRUE}" && test -z "${HAVE_AEGEAN_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_AEGEAN\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_AHEM_TRUE}" && test -z "${HAVE_AHEM_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_AHEM\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${TEST_FONTS_TRUE}" && test -z "${TEST_FONTS_FALSE}"; then
+  as_fn_error $? "conditional \"TEST_FONTS\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 

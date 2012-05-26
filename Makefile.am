@@ -553,18 +553,36 @@ AM_CPPFLAGS = \
 
 AM_YFLAGS = -d -v -t
 
-libesfontmanager_a_CPPFLAGS = \
-	$(AM_CPPFLAGS) \
-	-DLIBERATON_TTF=\"$(LIBERATON_TTF)\" \
-	-DDEJAVU_TTF=\"$(DEJAVU_TTF)\" \
-	-DHAVE_AHEM=\"$(HAVE_AHEM)\" \
-	-DHAVE_IPA_GOTHIC=\"$(HAVE_IPA_GOTHIC)\" \
-	-DHAVE_IPA_MINCHO=\"$(HAVE_IPA_MINCHO)\" \
-	-DHAVE_IPA_PGOTHIC=\"$(HAVE_IPA_PGOTHIC)\" \
-	-DHAVE_IPA_PMINCHO=\"$(HAVE_IPA_PMINCHO)\" \
-	-DHAVE_AEGEAN=\"$(HAVE_AEGEAN)\" \
-	-DTEST_FONTS=\"$(TEST_FONTS)\"
+libesfontmanager_a_CPPFLAGS = $(AM_CPPFLAGS)
 
+if HAVE_LIBERATON
+libesfontmanager_a_CPPFLAGS += -DLIBERATON_TTF=\"$(LIBERATON_TTF)\"
+endif	
+if HAVE_DEJAVU
+libesfontmanager_a_CPPFLAGS += -DDEJAVU_TTF=\"$(DEJAVU_TTF)\"
+endif	
+if HAVE_IPA_GOTHIC
+libesfontmanager_a_CPPFLAGS += -DHAVE_IPA_GOTHIC=\"$(HAVE_IPA_GOTHIC)\"
+endif	
+if HAVE_IPA_MINCHO
+libesfontmanager_a_CPPFLAGS += -DHAVE_IPA_MINCHO=\"$(HAVE_IPA_MINCHO)\"
+endif	
+if HAVE_IPA_PGOTHIC
+libesfontmanager_a_CPPFLAGS += -DHAVE_IPA_PGOTHIC=\"$(HAVE_IPA_PGOTHIC)\"
+endif	
+if HAVE_IPA_PMINCHO
+libesfontmanager_a_CPPFLAGS += -DHAVE_IPA_PMINCHO=\"$(HAVE_IPA_PMINCHO)\"
+endif	
+if HAVE_AEGEAN
+libesfontmanager_a_CPPFLAGS += -DHAVE_AEGEAN=\"$(HAVE_AEGEAN)\"
+endif	
+if HAVE_AHEM
+libesfontmanager_a_CPPFLAGS += -DHAVE_AHEM=\"$(HAVE_AHEM)\"
+endif	
+if TEST_FONTS
+libesfontmanager_a_CPPFLAGS += -DTEST_FONTS=\"$(TEST_FONTS)\"
+endif	
+	
 libesfontmanager_a_SOURCES = \
 	font/FontManager.cpp \
 	font/FontManager.h \

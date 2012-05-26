@@ -21,6 +21,7 @@ namespace {
 
 const char* fontList[] =
 {
+#ifdef LIBERATON_TTF
     // LiberationSans
     LIBERATON_TTF "/LiberationSans-BoldItalic.ttf",
     LIBERATON_TTF "/LiberationSans-Italic.ttf",
@@ -36,6 +37,7 @@ const char* fontList[] =
     LIBERATON_TTF "/LiberationMono-Italic.ttf",
     LIBERATON_TTF "/LiberationMono-Regular.ttf",
     LIBERATON_TTF "/LiberationMono-Bold.ttf",
+#endif
 #ifdef HAVE_IPA_PGOTHIC
     // IPAPGothic
     HAVE_IPA_PGOTHIC,
@@ -80,6 +82,7 @@ const char* fontList[] =
 // Test fonts for CSS 2.1 test suite
 const char* testFontList[] =
 {
+#ifdef TEST_FONTS
     // Ahem!
     TEST_FONTS "/AhemExtra/AHEM_Ahem!.TTF",
     // MissingNormal
@@ -167,6 +170,7 @@ const char* testFontList[] =
     TEST_FONTS "/CSSTest/csstest-weights-full-w8.ttf",
     TEST_FONTS "/CSSTest/csstest-weights-full-w9.ttf",
     TEST_FONTS "/CSSTest/csstest-weights.ttf",
+#endif  // TEST_FONTS
 };
 
 }

@@ -34,6 +34,15 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
+@HAVE_LIBERATON_TRUE@am__append_1 = -DLIBERATON_TTF=\"$(LIBERATON_TTF)\"
+@HAVE_DEJAVU_TRUE@am__append_2 = -DDEJAVU_TTF=\"$(DEJAVU_TTF)\"
+@HAVE_IPA_GOTHIC_TRUE@am__append_3 = -DHAVE_IPA_GOTHIC=\"$(HAVE_IPA_GOTHIC)\"
+@HAVE_IPA_MINCHO_TRUE@am__append_4 = -DHAVE_IPA_MINCHO=\"$(HAVE_IPA_MINCHO)\"
+@HAVE_IPA_PGOTHIC_TRUE@am__append_5 = -DHAVE_IPA_PGOTHIC=\"$(HAVE_IPA_PGOTHIC)\"
+@HAVE_IPA_PMINCHO_TRUE@am__append_6 = -DHAVE_IPA_PMINCHO=\"$(HAVE_IPA_PMINCHO)\"
+@HAVE_AEGEAN_TRUE@am__append_7 = -DHAVE_AEGEAN=\"$(HAVE_AEGEAN)\"
+@HAVE_AHEM_TRUE@am__append_8 = -DHAVE_AHEM=\"$(HAVE_AHEM)\"
+@TEST_FONTS_TRUE@am__append_9 = -DTEST_FONTS=\"$(TEST_FONTS)\"
 bin_PROGRAMS = harness$(EXEEXT) Any.test$(EXEEXT) \
 	FontManager.test$(EXEEXT) URL.test$(EXEEXT) \
 	HTTPHeader.test$(EXEEXT) HTTPRequest.test$(EXEEXT) \
@@ -1132,18 +1141,10 @@ AM_CPPFLAGS = \
 	-Wall
 
 AM_YFLAGS = -d -v -t
-libesfontmanager_a_CPPFLAGS = \
-	$(AM_CPPFLAGS) \
-	-DLIBERATON_TTF=\"$(LIBERATON_TTF)\" \
-	-DDEJAVU_TTF=\"$(DEJAVU_TTF)\" \
-	-DHAVE_AHEM=\"$(HAVE_AHEM)\" \
-	-DHAVE_IPA_GOTHIC=\"$(HAVE_IPA_GOTHIC)\" \
-	-DHAVE_IPA_MINCHO=\"$(HAVE_IPA_MINCHO)\" \
-	-DHAVE_IPA_PGOTHIC=\"$(HAVE_IPA_PGOTHIC)\" \
-	-DHAVE_IPA_PMINCHO=\"$(HAVE_IPA_PMINCHO)\" \
-	-DHAVE_AEGEAN=\"$(HAVE_AEGEAN)\" \
-	-DTEST_FONTS=\"$(TEST_FONTS)\"
-
+libesfontmanager_a_CPPFLAGS = $(AM_CPPFLAGS) $(am__append_1) \
+	$(am__append_2) $(am__append_3) $(am__append_4) \
+	$(am__append_5) $(am__append_6) $(am__append_7) \
+	$(am__append_8) $(am__append_9)
 libesfontmanager_a_SOURCES = \
 	font/FontManager.cpp \
 	font/FontManager.h \
