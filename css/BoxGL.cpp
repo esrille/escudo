@@ -657,7 +657,7 @@ void BlockLevelBox::renderInline(ViewCSSImp* view, StackingContext* stackingCont
             unsigned overflow = block->renderBegin(view, true);
             block->renderInline(view, stackingContext);
             block->renderEnd(view, overflow);
-            hasOutline |= (0.0f < block->getOutlineWidth());
+            hasOutline |= (!block->isAnonymous() && 0.0f < block->getOutlineWidth());
         } else
             child->render(view, stackingContext);
     }
@@ -667,7 +667,7 @@ void BlockLevelBox::renderInline(ViewCSSImp* view, StackingContext* stackingCont
             if (!child->isAnonymous() && child->isPositioned())
                 continue;
             if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(child)) {
-                if (0.0f < block->getOutlineWidth()) {
+                if (!block->isAnonymous() && 0.0f < block->getOutlineWidth()) {
                     unsigned overflow = block->renderBegin(view, true);
                     block->renderOutline(view, block->x, block->y + block->getTopBorderEdge());
                     block->renderEnd(view, overflow, false);
@@ -1010,6 +1010,8 @@ void InlineLevelBox::renderText(ViewCSSImp* view, const std::u16string& data, fl
 
 void InlineLevelBox::renderOutline(ViewCSSImp* view)
 {
+    if (isAnonymous())
+        return;
     if (getFirstChild()) {  // for inline-block
         getFirstChild()->renderOutline(view, x,  y);
         return;
