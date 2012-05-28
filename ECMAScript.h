@@ -45,7 +45,7 @@ public:
     Object* compileFunction(const std::u16string& body);
     Any callFunction(Object thisObject, Object functionObject, int argc, Any* argv);
 
-    void callFunction(org::w3c::dom::html::Function function, org::w3c::dom::events::Event event)
+    void dispatchEvent(org::w3c::dom::html::Function function, org::w3c::dom::events::Event event)
     {
         Any arg(event);
         Any result = callFunction(event.getCurrentTarget(), function, 1, &arg);

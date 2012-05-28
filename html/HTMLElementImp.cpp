@@ -737,7 +737,7 @@ void HTMLElementImp::setOnclick(html::Function onclick)
     DocumentImp* document = getOwnerDocumentImp();
     DocumentWindowPtr window = document->activate();
     addEventListener(u"click",
-                     new(std::nothrow) EventListenerImp(boost::bind(&ECMAScriptContext::callFunction, window->getContext(), onclick, _1)),
+                     new(std::nothrow) EventListenerImp(boost::bind(&ECMAScriptContext::dispatchEvent, window->getContext(), onclick, _1)),
                      false);
 }
 

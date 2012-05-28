@@ -115,6 +115,7 @@ class WindowImp : public ObjectMixin<WindowImp>
     ElementImp* frameElement;
 
     // for MouseEvent
+    Element clickTarget;
     int detail;
     unsigned short buttons;
 

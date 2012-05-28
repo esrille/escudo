@@ -48,6 +48,7 @@ WindowImp::WindowImp(WindowImp* parent, ElementImp* frameElement) :
     viewFlags(0),
     parent(parent),
     frameElement(frameElement),
+    clickTarget(0),
     detail(0),
     buttons(0),
     width(816),     // US letter size, 96 DPI
@@ -275,7 +276,7 @@ bool WindowImp::mouse(int button, int up, int x, int y, int modifiers)
     if (!view || backgroundTask.getState() != BackgroundTask::Done)
         return propagte;
 
-    recordTime("mouse");
+    recordTime("mouse (%d, %d)", x, y);
 
     int shift = button;
     if (shift == 1)
@@ -299,16 +300,20 @@ bool WindowImp::mouse(int button, int up, int x, int y, int modifiers)
             return propagte;
     }
 
+    Element target = Box::getContainingElement(box->getTargetNode());
+
     // mousedown, mousemove
     if (imp = new(std::nothrow) MouseEventImp) {
         event = imp;
-        if (!up)
+        if (!up) {
+            clickTarget = target;
             ++detail;
+        }
         imp->initMouseEvent(up ? u"mouseup" : u"mousedown",
                             true, true, this, detail, x, y, x, y,
                             modifiers & 2, modifiers & 4, modifiers & 1, false, button, 0);
         imp->setButtons(buttons);
-        box->getTargetNode().dispatchEvent(event);
+        target.dispatchEvent(event);
         if (imp->getStopPropagationFlag())
             propagte = false;
     }
@@ -326,7 +331,7 @@ bool WindowImp::mouse(int button, int up, int x, int y, int modifiers)
                             true, true, this, detail, x, y, x, y,
                             modifiers & 2, modifiers & 4, modifiers & 1, false, button, 0);
         imp->setButtons(buttons);
-        box->getTargetNode().dispatchEvent(event);
+        target.dispatchEvent(event);
         if (imp->getStopPropagationFlag())
             propagte = false;
     }
@@ -349,19 +354,21 @@ bool WindowImp::mouseMove(int x, int y, int modifiers)
             return propagte;
     }
 
-    view->setHovered(box->getTargetNode());
+    Element target = Box::getContainingElement(box->getTargetNode());
+    view->setHovered(target);
 
     // mousemove
     events::MouseEvent event(0);
     MouseEventImp* imp = 0;
     if (imp = new(std::nothrow) MouseEventImp) {
         event = imp;
-        detail = 0;
+        if (target != clickTarget)
+            detail = 0;
         imp->initMouseEvent(u"mousemove",
                             true, true, this, detail, x, y, x, y,
                             modifiers & 2, modifiers & 4, modifiers & 1, false, 0, 0);
         imp->setButtons(buttons);
-        box->getTargetNode().dispatchEvent(event);
+        target.dispatchEvent(event);
         if (imp->getStopPropagationFlag())
             propagte = false;
     }
@@ -1123,7 +1130,7 @@ void WindowImp::setOnload(html::Function onload)
     if (!window)
         return;
     window->addEventListener(u"load",
-                             new(std::nothrow) EventListenerImp(boost::bind(&ECMAScriptContext::callFunction, window->getContext(), onload, _1)),
+                             new(std::nothrow) EventListenerImp(boost::bind(&ECMAScriptContext::dispatchEvent, window->getContext(), onload, _1)),
                              false);
 }
 
