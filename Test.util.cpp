@@ -16,6 +16,7 @@
 
 #include "Test.util.h"
 
+#include <stdarg.h>
 #include <time.h>
 
 #include <sstream>
@@ -168,18 +169,25 @@ Document loadDocument(const char* html)
     return loadDocument(stream);
 }
 
-double recordTime(const char* msg)
+double recordTime(const char* msg, ...)
 {
     if (logLevel == 0)
         return 0.0;
+
+    va_list ap;
+    va_start(ap, msg);
     static double last = 0.0;
     timespec spec;
     clock_gettime(CLOCK_REALTIME, &spec);
     double now = spec.tv_sec + (spec.tv_nsec / 1000000000.0);
     double diff = now - last;
-    if (msg)
-        std::cerr << msg << ": " << now - last << '\n';
+    if (msg) {
+        fprintf(stderr, "%f: ", now - last);
+        vfprintf(stderr, msg, ap);
+        fprintf(stderr, "\n");
+    }
     last = now;
+    va_end(ap);
     return diff;
 }
 
