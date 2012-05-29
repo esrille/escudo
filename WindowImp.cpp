@@ -151,6 +151,28 @@ void WindowImp::setDocumentWindow(const DocumentWindowPtr& window)
 
 bool WindowImp::poll()
 {
+    while (backgroundTask.getState() == BackgroundTask::Done && !eventQueue.empty()) {
+        const EventTask task = eventQueue.front();
+        switch (task.type) {
+        case EventTask::MouseDown:
+        case EventTask::MouseUp:
+            mouse(task);
+            break;
+        case EventTask::MouseMove:
+            mouseMove(task);
+            break;
+        case EventTask::KeyDown:
+            keydown(task);
+            break;
+        case EventTask::KeyUp:
+            keyup(task);
+            break;
+        default:
+            break;
+        }
+        eventQueue.pop_front();
+    }
+
     for (auto i = childWindows.begin(); i != childWindows.end(); ++i) {
         WindowImp* child = *i;
         if (child->poll()) {
@@ -232,11 +254,11 @@ bool WindowImp::poll()
                         redisplay = true;
                     else {
                         view->clearFlags();
-                        if (flags & 1)
+                        if (flags & Box::NEED_RESTYLING)
                             backgroundTask.wakeUp(BackgroundTask::Cascade);
-                        else if (flags & 2)
+                        else if (flags & Box::NEED_REFLOW)
                             backgroundTask.wakeUp(BackgroundTask::Layout);
-                        if (flags & 4)
+                        if (flags & Box::NEED_REPAINT)
                             redisplay = true;
                     }
                 }
@@ -270,11 +292,45 @@ void WindowImp::render()
     }
 }
 
-bool WindowImp::mouse(int button, int up, int x, int y, int modifiers)
+void WindowImp::mouse(int button, int up, int x, int y, int modifiers)
 {
-    bool propagte = true;
-    if (!view || backgroundTask.getState() != BackgroundTask::Done)
-        return propagte;
+    eventQueue.emplace_back(up ? EventTask::MouseUp : EventTask::MouseDown, modifiers, x, y, button);
+}
+
+void WindowImp::mouseMove(int x, int y, int modifiers)
+{
+    if (!eventQueue.empty()) {
+        EventTask& back = eventQueue.back();
+        if (back.type == EventTask::MouseMove) {
+            back.x = x;
+            back.y = y;
+            back.modifiers = modifiers;
+            return;
+        }
+    }
+    eventQueue.emplace_back(EventTask::MouseMove, modifiers, x, y);
+}
+
+void WindowImp::keydown(unsigned charCode, unsigned keyCode, int modifiers)
+{
+    eventQueue.emplace_back(EventTask::KeyDown, modifiers, charCode, keyCode);
+}
+
+void WindowImp::keyup(unsigned charCode, unsigned keyCode, int modifiers)
+{
+    eventQueue.emplace_back(EventTask::KeyUp, modifiers, charCode, keyCode);
+}
+
+void WindowImp::mouse(const EventTask& task)
+{
+    int button = task.button;
+    int up = (task.type == task.MouseUp) ? true : false;
+    int x = task.x;
+    int y = task.y;
+    int modifiers = task.modifiers;
+
+    if (!view)
+        return;
 
     recordTime("mouse (%d, %d)", x, y);
 
@@ -293,11 +349,9 @@ bool WindowImp::mouse(int button, int up, int x, int y, int modifiers)
 
     Box* box = view->boxFromPoint(x, y);
     if (WindowImp* childWindow = box->getChildWindow()) {
-        propagte = childWindow->mouse(button, up,
-                                      x - box->getX() - box->getBlankLeft(), y - box->getY() - box->getBlankTop(),
-                                      modifiers);
-        if (!propagte)
-            return propagte;
+        childWindow->mouse(button, up,
+                           x - box->getX() - box->getBlankLeft(), y - box->getY() - box->getBlankTop(),
+                           modifiers);
     }
 
     Element target = Box::getContainingElement(box->getTargetNode());
@@ -314,15 +368,13 @@ bool WindowImp::mouse(int button, int up, int x, int y, int modifiers)
                             modifiers & 2, modifiers & 4, modifiers & 1, false, button, 0);
         imp->setButtons(buttons);
         target.dispatchEvent(event);
-        if (imp->getStopPropagationFlag())
-            propagte = false;
     }
 
     if (!up || detail == 0)
-        return propagte;
+        return;
     Box* clickBox = view->boxFromPoint(x, y);
     if (box != clickBox)
-        return propagte;
+        return;
 
     // click
     if (imp = new(std::nothrow) MouseEventImp) {
@@ -332,26 +384,23 @@ bool WindowImp::mouse(int button, int up, int x, int y, int modifiers)
                             modifiers & 2, modifiers & 4, modifiers & 1, false, button, 0);
         imp->setButtons(buttons);
         target.dispatchEvent(event);
-        if (imp->getStopPropagationFlag())
-            propagte = false;
     }
-
-     return propagte;
 }
 
-bool WindowImp::mouseMove(int x, int y, int modifiers)
+void WindowImp::mouseMove(const EventTask& task)
 {
-    bool propagte = true;
-    if (!view || backgroundTask.getState() != BackgroundTask::Done)
-        return propagte;
+    int x = task.x;
+    int y = task.y;
+    int modifiers = task.modifiers;
+
+    if (!view)
+        return;
 
     Box* box = view->boxFromPoint(x, y);
     if (WindowImp* childWindow = box->getChildWindow()) {
-        propagte = childWindow->mouseMove(x - box->getX() - box->getBlankLeft(),
-                                          y - box->getY() - box->getBlankTop(),
-                                          modifiers);
-        if (!propagte)
-            return propagte;
+        childWindow->mouseMove(x - box->getX() - box->getBlankLeft(),
+                               y - box->getY() - box->getBlankTop(),
+                               modifiers);
     }
 
     Element target = Box::getContainingElement(box->getTargetNode());
@@ -369,29 +418,25 @@ bool WindowImp::mouseMove(int x, int y, int modifiers)
                             modifiers & 2, modifiers & 4, modifiers & 1, false, 0, 0);
         imp->setButtons(buttons);
         target.dispatchEvent(event);
-        if (imp->getStopPropagationFlag())
-            propagte = false;
     }
-
-    return propagte;
 }
 
-bool WindowImp::keydown(unsigned charCode, unsigned keyCode, int modifiers)
+void WindowImp::keydown(const EventTask& task)
 {
-    bool propagte = true;
+    unsigned charCode = task.charCode;
+    unsigned keyCode = task.keyCode;
+    int modifiers = task.modifiers;
+
     Document document = window->getDocument();
-    if (!document || backgroundTask.getState() != BackgroundTask::Done)
-        return propagte;
+    if (!document)
+        return;
     Element e = document.getActiveElement();
     if (!e)
-        return propagte;
+        return;
 
     if (auto iframe = dynamic_cast<HTMLIFrameElementImp*>(e.self())) {
-        if (auto child = dynamic_cast<WindowImp*>(iframe->getContentWindow().self())) {
-            propagte = child->keydown(charCode, keyCode, modifiers);
-            if (!propagte)
-                return propagte;
-        }
+        if (auto child = dynamic_cast<WindowImp*>(iframe->getContentWindow().self()))
+            child->keydown(charCode, keyCode, modifiers);
     }
 
     KeyboardEventImp* imp = new(std::nothrow) KeyboardEventImp(modifiers, charCode, keyCode, 0);
@@ -399,37 +444,32 @@ bool WindowImp::keydown(unsigned charCode, unsigned keyCode, int modifiers)
     imp->initKeyboardEvent(u"keydown", true, true, this,
                            u"", u"", 0, u"", false, u"");
     e.dispatchEvent(event);
-    if (imp->getStopPropagationFlag())
-        propagte = false;
 
     if (!charCode)
-        return propagte;
+        return;
     imp = new(std::nothrow) KeyboardEventImp(modifiers, charCode, keyCode, 0);
     event = imp;
     imp->initKeyboardEvent(u"keypress", true, true, this,
                            u"", u"", 0, u"", false, u"");
     e.dispatchEvent(event);
-    if (imp->getStopPropagationFlag())
-        propagte = false;
-    return propagte;
 }
 
-bool WindowImp::keyup(unsigned charCode, unsigned keyCode, int modifiers)
+void WindowImp::keyup(const EventTask& task)
 {
-    bool propagte = true;
+    unsigned charCode = task.charCode;
+    unsigned keyCode = task.keyCode;
+    int modifiers = task.modifiers;
+
     Document document = window->getDocument();
-    if (!document || backgroundTask.getState() != BackgroundTask::Done)
-        return propagte;
+    if (!document)
+        return;
     Element e = document.getActiveElement();
     if (!e)
-        return propagte;
+        return;
 
     if (auto iframe = dynamic_cast<HTMLIFrameElementImp*>(e.self())) {
-        if (auto child = dynamic_cast<WindowImp*>(iframe->getContentWindow().self())) {
-            propagte = child->keyup(charCode, keyCode, modifiers);
-            if (!propagte)
-                return propagte;
-        }
+        if (auto child = dynamic_cast<WindowImp*>(iframe->getContentWindow().self()))
+            child->keyup(charCode, keyCode, modifiers);
     }
 
     KeyboardEventImp* imp = new(std::nothrow) KeyboardEventImp(modifiers, charCode, keyCode, 0);
@@ -437,9 +477,6 @@ bool WindowImp::keyup(unsigned charCode, unsigned keyCode, int modifiers)
     imp->initKeyboardEvent(u"keyup", true, true, this,
                            u"", u"", 0, u"", false, u"");
     e.dispatchEvent(event);
-    if (imp->getStopPropagationFlag())
-        propagte = false;
-    return propagte;
 }
 
 //

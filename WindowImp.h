@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,6 +59,45 @@ class ViewCSSImp;
 
 class WindowImp : public ObjectMixin<WindowImp>
 {
+    class EventTask
+    {
+    public:
+        enum {
+            Null = 0,
+            MouseDown,
+            MouseUp,
+            MouseMove,
+            KeyDown,
+            KeyUp
+        };
+        int type;
+        int modifiers;
+        union {
+            struct {
+                int x;
+                int y;
+                int button;
+            };
+            struct {
+                unsigned charCode;
+                unsigned keyCode;
+            };
+        };
+        EventTask(int mouseType, int modifiers, int x, int y, int button = 0) :
+            type(mouseType),
+            modifiers(modifiers),
+            x(x),
+            y(y),
+            button(button)
+        {}
+        EventTask(int keyType, unsigned charCode, unsigned keyCode) :
+            type(keyType),
+            modifiers(modifiers),
+            charCode(charCode),
+            keyCode(keyCode)
+        {}
+    };
+
     class BackgroundTask
     {
     public:
@@ -114,6 +153,8 @@ class WindowImp : public ObjectMixin<WindowImp>
     std::deque<WindowImp*> childWindows;
     ElementImp* frameElement;
 
+    std::deque<EventTask> eventQueue;
+
     // for MouseEvent
     Element clickTarget;
     int detail;
@@ -125,6 +166,11 @@ class WindowImp : public ObjectMixin<WindowImp>
     bool redisplay;  // set true to force redisplay
     bool zoomable;
     float zoom;
+
+    void mouse(const EventTask& task);
+    void mouseMove(const EventTask& task);
+    void keydown(const EventTask& task);
+    void keyup(const EventTask& task);
 
 public:
     WindowImp(WindowImp* parent = 0, ElementImp* frameElement = 0);
@@ -171,11 +217,10 @@ public:
     //     2: ctrl
     //     4: alt
     //
-    // return true to propagate the event to the underlying layer
-    bool mouse(int button, int state, int x, int y, int modifiers);
-    bool mouseMove(int x, int y, int modifiers);
-    bool keydown(unsigned charCode, unsigned keyCode, int modifiers);
-    bool keyup(unsigned charCode, unsigned keyCode, int modifiers);
+    void mouse(int button, int state, int x, int y, int modifiers);
+    void mouseMove(int x, int y, int modifiers);
+    void keydown(unsigned charCode, unsigned keyCode, int modifiers);
+    void keyup(unsigned charCode, unsigned keyCode, int modifiers);
 
     // CSSOM View support operations
     // Maybe we should keep the old DocumentView interface
