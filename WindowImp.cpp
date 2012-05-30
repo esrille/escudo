@@ -192,7 +192,8 @@ bool WindowImp::poll()
         break;
     case HttpRequest::DONE:
         if (!window->getDocument()) {
-            recordTime("request done");
+            if (2 <= getLogLevel())
+                recordTime("request done");
             // TODO: Check header
 
             Document newDocument = getDOMImplementation()->createDocument(u"", u"", 0);
@@ -223,7 +224,8 @@ bool WindowImp::poll()
                 if (imp)
                     imp->setCharset(utfconv(htmlInputStream.getEncoding()));
                 NodeImp::evalTree(imp);
-                recordTime("html parsed");
+                if (2 <= getLogLevel())
+                    recordTime("html parsed");
 
                 if (3 <= getLogLevel())
                     dumpTree(std::cerr, imp);

@@ -207,7 +207,6 @@ void initLogLevel(int* argc, char* argv[])
             for (; i < *argc; ++i)
                 argv[i] = argv[i + 1];
             --*argc;
-            std::cerr << "logLevel=" << logLevel << '\n';
             break;
         }
     }
