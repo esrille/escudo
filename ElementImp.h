@@ -36,20 +36,21 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 class ElementImp : public ObjectMixin<ElementImp, NodeImp>
 {
     friend class AttrArray;
+    friend class ViewCSSImp;
 
 private:
     std::deque<Attr> attributes;
     std::u16string namespaceURI;
     std::u16string prefix;
     std::u16string localName;
+
+    // CSS pseudo-elements
+    Element marker;
+    Element before;
+    Element after;
+
 public:
-    ElementImp(DocumentImp* ownerDocument, const std::u16string& localName, std::u16string namespaceURI, std::u16string prefix = u"") :
-        ObjectMixin(ownerDocument),
-        namespaceURI(namespaceURI),
-        prefix(prefix),
-        localName(localName) {
-        nodeName = getTagName();
-    }
+    ElementImp(DocumentImp* ownerDocument, const std::u16string& localName, std::u16string namespaceURI, std::u16string prefix = u"");
     ElementImp(ElementImp* org, bool deep);
 
     void setAttributes(const std::deque<Attr>& attributes);

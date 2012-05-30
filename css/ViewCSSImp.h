@@ -80,7 +80,7 @@ class ViewCSSImp
     float renderHeight;
     Box* hoveredBox;
 
-    // animation;
+    // animation
     unsigned last;   // in 1/100 sec for GIF
     unsigned delay;  // in 1/100 sec for GIF
 
@@ -99,7 +99,8 @@ public:
     }
 
     void cascade();
-    void cascade(Node node, CSSStyleDeclarationImp* parentStyle = 0);
+    void cascade(Node node, CSSStyleDeclarationImp* parentStyle, CSSAutoNumberingValueImp::CounterContext* counterContext);
+    CSSStyleDeclarationImp* checkMarker(CSSStyleDeclarationImp* style, Element& element, CSSAutoNumberingValueImp::CounterContext* counterContext);
 
     HttpRequest* preload(const std::u16string& base, const std::u16string& url) {
         if (window)
@@ -108,9 +109,9 @@ public:
     }
 
     BlockLevelBox* createBlockLevelBox(Element element,  BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, bool newContext, bool asBlock);
-    BlockLevelBox* layOutBlockBoxes(Node node, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSAutoNumberingValueImp::CounterContext* counterContext);
-    BlockLevelBox* layOutBlockBoxes(Text text, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSAutoNumberingValueImp::CounterContext* counterContext);
-    BlockLevelBox* layOutBlockBoxes(Element element, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSAutoNumberingValueImp::CounterContext* counterContext, bool asBlock = false);
+    BlockLevelBox* layOutBlockBoxes(Node node, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style);
+    BlockLevelBox* layOutBlockBoxes(Text text, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style);
+    BlockLevelBox* layOutBlockBoxes(Element element, BlockLevelBox* parentBox, CSSStyleDeclarationImp* parentStyle, CSSStyleDeclarationImp* style, bool asBlock = false);
     BlockLevelBox* layOutBlockBoxes();
     BlockLevelBox* layOut();
     bool flip();

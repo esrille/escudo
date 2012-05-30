@@ -143,7 +143,8 @@ void ViewCSSImp::cascade()
         }
     }
 
-    cascade(document, 0);
+    CSSAutoNumberingValueImp::CounterContext cc(this);
+    cascade(document, 0, &cc);
 
     if (DocumentImp* imp = dynamic_cast<DocumentImp*>(document.self())) {
         imp->clearStyleSheets();
@@ -159,17 +160,15 @@ void ViewCSSImp::cascade()
         printComputedValues(document, this);
 }
 
-void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle)
+void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle, CSSAutoNumberingValueImp::CounterContext* counterContext)
 {
     CSSStyleDeclarationImp* style = 0;
     if (node.getNodeType() == Node::ELEMENT_NODE) {
         Element element = interface_cast<Element>(node);
 
         style = new(std::nothrow) CSSStyleDeclarationImp;
-        if (!style) {
-            map.erase(element);
+        if (!style)
             return;  // TODO: error
-        }
         map[element] = style;
 
         CSSStyleDeclarationImp* elementDecl = 0;
@@ -210,29 +209,129 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle)
                 }
             }
         } // TODO: detach the shadow tree from element (if any)
+
+        // Process pseudo elements:
+        assert(counterContext);
+        counterContext->update(style);
+        CSSAutoNumberingValueImp::CounterContext cc(this);
+        CSSStyleDeclarationImp* markerStyle = checkMarker(style, element, &cc);
+        ElementImp* imp = dynamic_cast<ElementImp*>(element.self());
+        assert(imp);
+        CSSStyleDeclarationImp* beforeStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::Before);
+        if (beforeStyle) {
+            beforeStyle->compute(this, style, element);
+            if (style->display.isNone() || beforeStyle->display.isNone() || beforeStyle->content.isNone())
+                beforeStyle = 0;
+        }
+        if (!beforeStyle)
+            imp->before = 0;
+        else {
+            cc.update(beforeStyle);
+            imp->before = beforeStyle->content.eval(this, element, &cc);
+            CSSAutoNumberingValueImp::CounterContext ccBefore(this);
+            checkMarker(beforeStyle, imp->before, &ccBefore);
+        }
+
+        for (Node child = node.getFirstChild(); child; child = child.getNextSibling())
+            cascade(child, style, &cc);
+
+        CSSStyleDeclarationImp* afterStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::After);
+        if (afterStyle) {
+            afterStyle->compute(this, style, element);
+            if (style->display.isNone() || afterStyle->display.isNone() || afterStyle->content.isNone())
+                afterStyle = 0;
+        }
+        if (!afterStyle)
+            imp->after = 0;
+        else {
+            cc.update(afterStyle);
+            imp->after = afterStyle->content.eval(this, element, &cc);
+            CSSAutoNumberingValueImp::CounterContext ccAfter(this);
+            checkMarker(afterStyle, imp->after, &ccAfter);
+        }
+
+        style->emptyInline = 0;
+        if (style->display.isInline() && !isReplacedElement(element)) {
+            // Empty inline elements still have margins, padding, borders and a line height. cf. 10.8
+            if (!node.hasChildNodes() && !markerStyle && !beforeStyle && !afterStyle)
+                style->emptyInline = 4;
+            else {
+                if (markerStyle || beforeStyle)
+                    style->emptyInline = 1;
+                else if (style->marginLeft.getPx() || style->borderLeftWidth.getPx() || style->paddingLeft.getPx()) {
+                    Node child = node.getFirstChild();
+                    if (child.getNodeType() != Node::TEXT_NODE)
+                        style->emptyInline = 1;
+                }
+                if (afterStyle)
+                    style->emptyInline |= 2;
+                else if (style->marginRight.getPx() || style->borderRightWidth.getPx() || style->paddingRight.getPx()) {
+                    Node child = node.getLastChild();
+                    if (child.getNodeType() != Node::TEXT_NODE)
+                        style->emptyInline |= 2;
+                }
+            }
+        }
+    } else {
+        for (Node child = node.getFirstChild(); child; child = child.getNextSibling())
+            cascade(child, style, counterContext);
     }
-    for (Node child = node.getFirstChild(); child; child = child.getNextSibling())
-        cascade(child, style);
 
     if (!parentStyle && style)
         overflow = style->overflow.getValue();
 }
 
+CSSStyleDeclarationImp* ViewCSSImp::checkMarker(CSSStyleDeclarationImp* style, Element& element, CSSAutoNumberingValueImp::CounterContext* counterContext)
+{
+    if (!style->display.isListItem() || style->display.isNone())
+        return 0;
+    ElementImp* imp = dynamic_cast<ElementImp*>(element.self());
+    assert(imp);
+    imp->marker = 0;
+    CSSStyleDeclarationImp* markerStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::Marker);
+    if (!markerStyle) {
+        // Generate the default markerStyle.
+        markerStyle = style->createPseudoElementStyle(CSSPseudoElementSelector::Marker);
+        if (markerStyle) {
+            // Set the default marker style
+            markerStyle->setDisplay(u"inline-block");
+            markerStyle->setLetterSpacing(u"normal");
+            markerStyle->setWordSpacing(u"normal");
+            markerStyle->setFontFamily(u"sans-serif");
+        }
+    }
+    if (markerStyle) {
+        markerStyle->compute(this, style, element);
+        if (markerStyle->display.isNone() || markerStyle->content.isNone())
+            markerStyle = 0;
+    }
+    if (markerStyle) {
+        // Execute implicit 'counter-increment: list-item;'
+        CounterImpPtr counter = getCounter(u"list-item");
+        if (counter)
+            counter->increment(1);
+        counterContext->update(markerStyle);
+        imp->marker = markerStyle->content.eval(this, element, counterContext);
+        assert(style->getPseudoElementStyle(CSSPseudoElementSelector::Marker));
+    }
+    return markerStyle;
+}
+
 // In this step, neither inline-level boxes nor line boxes are generated.
 // Those will be generated later by layOut().
-BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Node node, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSAutoNumberingValueImp::CounterContext* counterContext)
+BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Node node, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style)
 {
     BlockLevelBox* newBox = 0;
     switch (node.getNodeType()) {
     case Node::TEXT_NODE:
-        newBox = layOutBlockBoxes(interface_cast<Text>(node), parentBox, style, counterContext);
+        newBox = layOutBlockBoxes(interface_cast<Text>(node), parentBox, style);
         break;
     case Node::ELEMENT_NODE:
-        newBox = layOutBlockBoxes(interface_cast<Element>(node), parentBox, style, counterContext);
+        newBox = layOutBlockBoxes(interface_cast<Element>(node), parentBox, style, 0);
         break;
     case Node::DOCUMENT_NODE:
         for (Node child = node.getFirstChild(); child; child = child.getNextSibling()) {
-            if (BlockLevelBox* box = layOutBlockBoxes(child, parentBox, style, counterContext))
+            if (BlockLevelBox* box = layOutBlockBoxes(child, parentBox, style))
                 newBox = box;
         }
         break;
@@ -242,7 +341,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Node node, BlockLevelBox* parentBox,
     return newBox;
 }
 
-BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Text text, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSAutoNumberingValueImp::CounterContext* counterContext)
+BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Text text, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style)
 {
     bool discardable = true;
     if (style->display.isInline()) {
@@ -328,13 +427,14 @@ BlockLevelBox* ViewCSSImp::createBlockLevelBox(Element element, BlockLevelBox* p
     return block;
 }
 
-BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* parentBox, CSSStyleDeclarationImp* parentStyle, CSSAutoNumberingValueImp::CounterContext* counterContext, bool asBlock)
+BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* parentBox, CSSStyleDeclarationImp* parentStyle, CSSStyleDeclarationImp* style, bool asBlock)
 {
 #ifndef NDEBUG
     std::u16string tag(interface_cast<html::HTMLElement>(element).getTagName());
 #endif
 
-    CSSStyleDeclarationImp* style = map[element].get();
+    if (!style)
+        style = map[element].get();
     if (!style)
         return 0;
     style->compute(this, parentStyle, element);
@@ -343,13 +443,6 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
     style->clearBox();
     bool runIn = style->display.isRunIn() && parentBox;
     bool anonInlineTable = style->display.isTableParts() && parentStyle && parentStyle->display.isInlineLevel();
-
-    CSSAutoNumberingValueImp::CounterContext cc(this);
-    if (!counterContext)    // TODO: This is only to workaround the fatal errors.
-        counterContext = &cc;
-
-    if (style->getPseudoElementSelectorType() == CSSPseudoElementSelector::NonPseudo)
-        counterContext->update(style);
 
     Element shadow = element;
     if (HTMLElementImp* imp = dynamic_cast<HTMLElementImp*>(element.self())) {
@@ -388,62 +481,6 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
     }
 
     if (!dynamic_cast<TableWrapperBox*>(currentBox)) {
-        CSSStyleDeclarationImp* markerStyle = 0;
-        if (style->display.isListItem()) {
-            markerStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::Marker);
-            if (!markerStyle) {
-                // Generate the default markerStyle.
-                markerStyle = style->createPseudoElementStyle(CSSPseudoElementSelector::Marker);
-                if (markerStyle) {
-                    // Set the default marker style
-                    markerStyle->setDisplay(u"inline-block");
-                    markerStyle->setLetterSpacing(u"normal");
-                    markerStyle->setWordSpacing(u"normal");
-                    markerStyle->setFontFamily(u"sans-serif");
-                }
-            }
-        }
-        if (markerStyle) {
-            markerStyle->compute(this, style, element);
-            if (markerStyle->display.isNone() || markerStyle->content.isNone())
-                markerStyle = 0;
-        }
-        CSSStyleDeclarationImp* beforeStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::Before);
-        if (beforeStyle) {
-            beforeStyle->compute(this, style, element);
-            if (beforeStyle->display.isNone() || beforeStyle->content.isNone())
-                beforeStyle = 0;
-        }
-        CSSStyleDeclarationImp* afterStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::After);
-        if (afterStyle) {
-            afterStyle->compute(this, style, element);
-            if (afterStyle->display.isNone() || afterStyle->content.isNone())
-                afterStyle = 0;
-        }
-
-        style->emptyInline = 0;
-        if (style->display.isInline() && !isReplacedElement(element)) {
-            // Empty inline elements still have margins, padding, borders and a line height. cf. 10.8
-            if (!shadow.hasChildNodes() && !markerStyle && !beforeStyle && !afterStyle)
-                style->emptyInline = 4;
-            else {
-                if (markerStyle || beforeStyle)
-                    style->emptyInline = 1;
-                else if (style->marginLeft.getPx() || style->borderLeftWidth.getPx() || style->paddingLeft.getPx()) {
-                    Node child = shadow.getFirstChild();
-                    if (child.getNodeType() != Node::TEXT_NODE)
-                        style->emptyInline = 1;
-                }
-                if (afterStyle)
-                    style->emptyInline |= 2;
-                else if (style->marginRight.getPx() || style->borderRightWidth.getPx() || style->paddingRight.getPx()) {
-                    Node child = shadow.getLastChild();
-                    if (child.getNodeType() != Node::TEXT_NODE)
-                        style->emptyInline |= 2;
-                }
-            }
-        }
-
         if ((style->emptyInline & 1) || style->emptyInline == 4) {
             if (!currentBox->hasChildBoxes())
                 currentBox->insertInline(element);
@@ -452,55 +489,43 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
         }
 
         BlockLevelBox* childBox = 0;
-        CSSAutoNumberingValueImp::CounterContext ccPseudo(this);
         TableWrapperBox* tableWrapperBox = 0;
 
-        if (markerStyle) {
-            // Execute implicit 'counter-increment: list-item;'
-            CounterImpPtr counter = getCounter(u"list-item");
-            if (counter)
-                counter->increment(1);
-            ccPseudo.update(markerStyle);
-            if (Element marker = markerStyle->content.eval(this, element, &cc)) {
-                map[marker] = markerStyle;
-                if (BlockLevelBox* box = layOutBlockBoxes(marker, currentBox, style, &cc)) {
-                    childBox = box;
-                    if (tableWrapperBox = dynamic_cast<TableWrapperBox*>(box)) {
-                        if (tableWrapperBox->isAnonymousTableObject()) {
-                            tableWrapperBox->layOutBlockBoxes();
-                            tableWrapperBox = 0;
-                        }
-                    }
-                }
+        ElementImp* imp = dynamic_cast<ElementImp*>(element.self());
+        if (imp->marker) {
+            if (BlockLevelBox* box = layOutBlockBoxes(imp->marker, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::Marker))) {
+                childBox = box;
+                if (tableWrapperBox && tableWrapperBox->isAnonymousTableObject())
+                    tableWrapperBox->layOutBlockBoxes();
+                tableWrapperBox = dynamic_cast<TableWrapperBox*>(box);
             }
             // Deal with an empty list item; cf. list-alignment-001, acid2.
             // TODO: Find out where the exact behavior is defined in the specifications.
-            if (style->height.isAuto() && !shadow.hasChildNodes() && !beforeStyle && !afterStyle) {
+            if (style->height.isAuto() && !shadow.hasChildNodes() && !imp->before && !imp->after) {
                 if (!currentBox->hasChildBoxes())
                     currentBox->insertInline(element);
                 else if (BlockLevelBox* anonymousBox = currentBox->getAnonymousBox())
                     anonymousBox->insertInline(element);
             }
         }
-
-        if (beforeStyle) {
-            ccPseudo.update(beforeStyle);
-            if (Element before = beforeStyle->content.eval(this, element, &cc)) {
-                map[before] = beforeStyle;
-                if (BlockLevelBox* box = layOutBlockBoxes(before, currentBox, style, &cc)) {
-                    childBox = box;
-                    if (tableWrapperBox = dynamic_cast<TableWrapperBox*>(box)) {
-                        if (tableWrapperBox->isAnonymousTableObject()) {
-                            tableWrapperBox->layOutBlockBoxes();
-                            tableWrapperBox = 0;
-                        }
-                    }
-                }
+        if (imp->before) {
+            if (BlockLevelBox* box = layOutBlockBoxes(imp->before, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::Before))) {
+                childBox = box;
+                if (tableWrapperBox && tableWrapperBox->isAnonymousTableObject())
+                    tableWrapperBox->layOutBlockBoxes();
+                tableWrapperBox = dynamic_cast<TableWrapperBox*>(box);
             }
         }
-
         for (Node child = shadow.getFirstChild(); child; child = child.getNextSibling()) {
-            if (BlockLevelBox* box = layOutBlockBoxes(child, currentBox, style, ccPseudo.hasCounter() ? &ccPseudo : &cc)) {
+            if (BlockLevelBox* box = layOutBlockBoxes(child, currentBox, style)) {
+                childBox = box;
+                if (tableWrapperBox && tableWrapperBox->isAnonymousTableObject())
+                    tableWrapperBox->layOutBlockBoxes();
+                tableWrapperBox = dynamic_cast<TableWrapperBox*>(box);
+            }
+        }
+        if (imp->after) {
+            if (BlockLevelBox* box = layOutBlockBoxes(imp->after, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::After))) {
                 childBox = box;
                 if (tableWrapperBox && tableWrapperBox->isAnonymousTableObject())
                     tableWrapperBox->layOutBlockBoxes();
@@ -509,23 +534,6 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
         }
         if (tableWrapperBox && tableWrapperBox->isAnonymousTableObject())
             tableWrapperBox->layOutBlockBoxes();
-
-        if (afterStyle) {
-            ccPseudo.update(afterStyle);
-            if (Element after = afterStyle->content.eval(this, element, &cc)) {
-                map[after] = afterStyle;
-                if (BlockLevelBox* box = layOutBlockBoxes(after, currentBox, style, &cc)) {
-                    childBox = box;
-                    if (tableWrapperBox = dynamic_cast<TableWrapperBox*>(box)) {
-                        if (tableWrapperBox->isAnonymousTableObject()) {
-                            tableWrapperBox->layOutBlockBoxes();
-                            tableWrapperBox = 0;
-                        }
-                    }
-                }
-
-            }
-        }
 
         if (style->emptyInline & 2) {
             if (!currentBox->hasChildBoxes())
@@ -573,10 +581,9 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes()
 {
     assert(absoluteList.empty());
 
-    CSSAutoNumberingValueImp::CounterContext cc(this);
     boxTree = 0;
     floatMap.clear();
-    boxTree = layOutBlockBoxes(getDocument(), 0, 0, &cc);
+    boxTree = layOutBlockBoxes(getDocument(), 0, 0);
     clearCounters();
     return boxTree.get();
 }
@@ -620,8 +627,14 @@ BlockLevelBox* ViewCSSImp::layOut()
 bool ViewCSSImp::flip()
 {
     if (boxTree) {
-        for (auto i = map.begin(); i != map.end(); ++i)
-            i->second->flip();
+        for (auto i = map.begin(); i != map.end();) {
+            if (i->second) {
+                i->second->flip();
+                ++i;
+            }
+            else
+                i = map.erase(i);
+        }
         stackingContexts->flip();
         renderTree = boxTree;
         renderWidth = scrollWidth;
@@ -660,8 +673,34 @@ CounterImpPtr ViewCSSImp::getCounter(const std::u16string identifier)
 CSSStyleDeclarationImp* ViewCSSImp::getStyle(Element elt, Nullable<std::u16string> pseudoElt)
 {
     auto i = map.find(elt);
-    if (i == map.end())
+    if (i == map.end()) {
+        if (auto parent = dynamic_cast<ElementImp*>(elt.getParentElement().self())) {
+            auto i = map.find(parent);
+            if (i != map.end()) {
+                CSSStyleDeclarationImp* style = i->second.get();
+                assert(style);
+                if (parent->marker == elt)
+                    return style->getPseudoElementStyle(CSSPseudoElementSelector::Marker);
+                if (parent->before == elt)
+                    return style->getPseudoElementStyle(CSSPseudoElementSelector::Before);
+                if (parent->after == elt)
+                    return style->getPseudoElementStyle(CSSPseudoElementSelector::After);
+                return 0;
+            } else if (auto grandParent = dynamic_cast<ElementImp*>(parent->getParentElement().self())) {
+                auto i = map.find(grandParent);
+                if (i != map.end()) {
+                    CSSStyleDeclarationImp* style = i->second.get();
+                    assert(style);
+                    if (grandParent->before.self() == parent)
+                        return style->getPseudoElementStyle(CSSPseudoElementSelector::Before)->getPseudoElementStyle(CSSPseudoElementSelector::Marker);
+                    if (grandParent->after.self() == parent)
+                        return style->getPseudoElementStyle(CSSPseudoElementSelector::After)->getPseudoElementStyle(CSSPseudoElementSelector::Marker);
+                    return 0;
+                }
+            }
+        }
         return 0;
+    }
     CSSStyleDeclarationImp* style = i->second.get();
     if (!pseudoElt.hasValue() || pseudoElt.value().length() == 0)
         return style;

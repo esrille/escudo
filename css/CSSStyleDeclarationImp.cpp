@@ -1360,34 +1360,37 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     if (this == parentStyle)
         return;
 
-    // TODO: find a way to skip the following cascading operation when there's no change in the decorations.
-    initialize();
-    CSSStyleDeclarationImp* elementDecl(0);
     html::HTMLElement htmlElement(0);
-    if (html::HTMLElement::hasInstance(element)) {
+    if (html::HTMLElement::hasInstance(element))
         htmlElement = interface_cast<html::HTMLElement>(element);
-        elementDecl = dynamic_cast<CSSStyleDeclarationImp*>(htmlElement.getStyle().self());
-    }
-    for (auto i = ruleSet.begin(); i != ruleSet.end(); ++i) {
-        if (CSSStyleDeclarationImp* pseudo = createPseudoElementStyle(i->getPseudoElementID())) {
-            if (i->isActive(element, view))
-                pseudo->specify(i->getDeclaration());
+
+    // TODO: find a way to skip the following cascading operation when there's no change in the decorations.
+    if (getPseudoElementSelectorType() == CSSPseudoElementSelector::NonPseudo) {
+        initialize();
+        CSSStyleDeclarationImp* elementDecl(0);
+        if (htmlElement)
+            elementDecl = dynamic_cast<CSSStyleDeclarationImp*>(htmlElement.getStyle().self());
+        for (auto i = ruleSet.begin(); i != ruleSet.end(); ++i) {
+            if (CSSStyleDeclarationImp* pseudo = createPseudoElementStyle(i->getPseudoElementID())) {
+                if (i->isActive(element, view))
+                    pseudo->specify(i->getDeclaration());
+            }
         }
-    }
-    if (elementDecl)
-        specify(elementDecl);
-    for (auto i = ruleSet.begin(); i != ruleSet.end(); ++i) {
-        if (CSSStyleDeclarationImp* pseudo = createPseudoElementStyle(i->getPseudoElementID())) {
-            if (i->isActive(element, view) && !i->isUserStyle())
-                pseudo->specifyImportant(i->getDeclaration());
+        if (elementDecl)
+            specify(elementDecl);
+        for (auto i = ruleSet.begin(); i != ruleSet.end(); ++i) {
+            if (CSSStyleDeclarationImp* pseudo = createPseudoElementStyle(i->getPseudoElementID())) {
+                if (i->isActive(element, view) && !i->isUserStyle())
+                    pseudo->specifyImportant(i->getDeclaration());
+            }
         }
-    }
-    if (elementDecl)
-        specifyImportant(elementDecl);
-    for (auto i = ruleSet.begin(); i != ruleSet.end(); ++i) {
-        if (CSSStyleDeclarationImp* pseudo = createPseudoElementStyle(i->getPseudoElementID())) {
-            if (i->isActive(element, view) && i->isUserStyle())
-                pseudo->specifyImportant(i->getDeclaration());
+        if (elementDecl)
+            specifyImportant(elementDecl);
+        for (auto i = ruleSet.begin(); i != ruleSet.end(); ++i) {
+            if (CSSStyleDeclarationImp* pseudo = createPseudoElementStyle(i->getPseudoElementID())) {
+                if (i->isActive(element, view) && i->isUserStyle())
+                    pseudo->specifyImportant(i->getDeclaration());
+            }
         }
     }
 
@@ -3398,8 +3401,6 @@ void CSSStyleDeclarationImp::initialize()
         inheritSet.reset(i);
     for (unsigned i = 0; i < sizeof defaultInherit / sizeof defaultInherit[0]; ++i)
         setInherit(defaultInherit[i]);
-    for (int i = 1; i < CSSPseudoElementSelector::MaxPseudoElements; ++i)
-        pseudoElements[i] = 0;
 }
 
 CSSStyleDeclarationImp::CSSStyleDeclarationImp(int pseudoElementSelectorType) :
@@ -3434,6 +3435,8 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp(int pseudoElementSelectorType) :
 {
     pseudoElements[CSSPseudoElementSelector::NonPseudo] = this;
     initialize();
+    for (int i = 1; i < CSSPseudoElementSelector::MaxPseudoElements; ++i)
+        pseudoElements[i] = 0;
 }
 
 // for cloneNode()

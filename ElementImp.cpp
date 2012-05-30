@@ -453,8 +453,24 @@ bool ElementImp::hasBinding(std::u16string bindingURI)
     return false;
 }
 
+ElementImp::ElementImp(DocumentImp* ownerDocument, const std::u16string& localName, std::u16string namespaceURI, std::u16string prefix) :
+    ObjectMixin(ownerDocument),
+    namespaceURI(namespaceURI),
+    prefix(prefix),
+    localName(localName),
+    marker(0),
+    before(0),
+    after(0)
+{
+    nodeName = getTagName();
+}
+
 ElementImp::ElementImp(ElementImp* org, bool deep) :
-    ObjectMixin(org, deep) {
+    ObjectMixin(org, deep),
+    marker(0),
+    before(0),
+    after(0)
+{
     namespaceURI = org->namespaceURI;
     prefix = org->prefix;
     localName = org->localName;
@@ -462,6 +478,9 @@ ElementImp::ElementImp(ElementImp* org, bool deep) :
         if (Attr attr = new(std::nothrow) AttrImp(*dynamic_cast<AttrImp*>((*i).self())))
             attributes.push_back(attr);
     }
+    marker = interface_cast<Element>(org->marker.cloneNode(deep));
+    before = interface_cast<Element>(org->before.cloneNode(deep));
+    after = interface_cast<Element>(org->after.cloneNode(deep));
 }
 
 }}}}  // org::w3c::dom::bootstrap

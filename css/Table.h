@@ -99,7 +99,6 @@ typedef boost::intrusive_ptr<CellBox> CellBoxPtr;
 class TableWrapperBox : public BlockLevelBox
 {
     typedef BlockLevelBoxPtr Caption;
-    typedef CSSAutoNumberingValueImp::CounterContext CounterContext;
 
     typedef std::deque<CellBoxPtr> Row;
     typedef std::deque<Row> Grid;
@@ -177,18 +176,17 @@ class TableWrapperBox : public BlockLevelBox
     Element pendingTfootElement;
     unsigned yTfootBegin;
     unsigned yTfootEnd;
-    CounterContext* counterContext;
 
     unsigned appendRow();
     unsigned appendColumn();
 
-    void processCol(Element col, CSSStyleDeclarationImp* colStyle, CounterContext* counterContext, Element colgroup);
+    void processCol(Element col, CSSStyleDeclarationImp* colStyle, Element colgroup);
     void processColGroup(Element colgroup);
-    void processRow(Element row, CounterContext* counterContext);
-    void processRowChild(Node node, CSSStyleDeclarationImp* rowStyle, CounterContext* counterContext);
+    void processRow(Element row);
+    void processRowChild(Node node, CSSStyleDeclarationImp* rowStyle);
     void endRow();
-    void processRowGroup(Element section, CounterContext* counterContext);
-    void processRowGroupChild(Node node, CSSStyleDeclarationImp* sectionStyle, CounterContext* counterContext);
+    void processRowGroup(Element section);
+    void processRowGroupChild(Node node, CSSStyleDeclarationImp* sectionStyle);
     void endRowGroup();
     void processHeader();
     void processFooter();
@@ -200,7 +198,7 @@ class TableWrapperBox : public BlockLevelBox
     void computeTableBorders();
 
     void formCSSTable();
-    CellBox* processCell(Element current, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CounterContext* counterContext, CSSStyleDeclarationImp* rowStyle);
+    CellBox* processCell(Element current, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSStyleDeclarationImp* rowStyle);
 
     void layOutFixed(ViewCSSImp* view, const ContainingBlock* containingBlock, bool collapsingModel);
     void layOutAuto(ViewCSSImp* view, const ContainingBlock* containingBlock);

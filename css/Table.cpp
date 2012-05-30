@@ -166,8 +166,6 @@ TableWrapperBox::TableWrapperBox(ViewCSSImp* view, Element element, CSSStyleDecl
     yTfootBegin(0),
     yTfootEnd(0)
 {
-    counterContext = new(std::nothrow) CounterContext(view);
-
     isHtmlTable = html::HTMLTableElement::hasInstance(element);
     if (isAnonymousTable) {
         style = 0;
@@ -182,8 +180,6 @@ TableWrapperBox::TableWrapperBox(ViewCSSImp* view, Element element, CSSStyleDecl
 
 TableWrapperBox::~TableWrapperBox()
 {
-    if (counterContext)
-        delete counterContext;
 }
 
 unsigned TableWrapperBox::appendRow()
@@ -210,11 +206,6 @@ void TableWrapperBox::layOutBlockBoxes()
 {
     processHeader();
     processFooter();
-
-    if (counterContext) {
-        delete counterContext;
-        counterContext = 0;
-    }
 
     // Top caption boxes
     for (auto i = topCaptions.begin(); i != topCaptions.end(); ++i)
@@ -293,7 +284,7 @@ bool TableWrapperBox::processTableChild(Node node, CSSStyleDeclarationImp* style
     case CSSDisplayValueImp::TableCaption:
         // 'table-caption' doesn't seem to end the current row:
         // cf. table-caption-003.
-        if (BlockLevelBox* caption = view->layOutBlockBoxes(child, 0, childStyle, counterContext, true)) {
+        if (BlockLevelBox* caption = view->layOutBlockBoxes(child, 0, childStyle->getParentStyle(), childStyle, true)) {
             if (childStyle->captionSide.getValue() == CSSCaptionSideValueImp::Top)
                 topCaptions.push_back(caption);
             else
@@ -307,69 +298,67 @@ bool TableWrapperBox::processTableChild(Node node, CSSStyleDeclarationImp* style
         break;
     case CSSDisplayValueImp::TableColumn:
         endRow();
-        processCol(child, childStyle, counterContext, 0);
+        processCol(child, childStyle, 0);
         break;
     case CSSDisplayValueImp::TableRow:
         endRow();
         // TODO
-        processRow(child, counterContext);
+        processRow(child);
         break;
     case CSSDisplayValueImp::TableFooterGroup:
         endRow();
         if (pendingTfootElement)
-            processRowGroup(child, counterContext);
+            processRowGroup(child);
         else {
             pendingTfootElement = child;
             yTfootBegin = yHeight;
-            processRowGroup(child, counterContext);
+            processRowGroup(child);
             yTfootEnd = yHeight;
         }
         break;
     case CSSDisplayValueImp::TableHeaderGroup:
         endRow();
         if (pendingTheadElement)
-            processRowGroup(child, counterContext);
+            processRowGroup(child);
         else {
             pendingTheadElement = child;
             yTheadBegin = yHeight;
-            processRowGroup(child, counterContext);
+            processRowGroup(child);
             yTheadEnd = yHeight;
         }
         break;
     case CSSDisplayValueImp::TableRowGroup:
         endRow();
-        processRowGroup(child, counterContext);
+        processRowGroup(child);
         break;
 
     case CSSDisplayValueImp::TableCell:
         inRow = true;
-        processCell(child, 0, childStyle, counterContext, 0);
+        processCell(child, 0, childStyle, 0);
         break;
     default:
         inRow = true;
         if (!anonymousCell)
-            anonymousCell = processCell(0, 0, childStyle, counterContext, 0);
+            anonymousCell = processCell(0, 0, childStyle, 0);
         if (anonymousCell)
-            view->layOutBlockBoxes(node, anonymousCell, childStyle, counterContext);
+            view->layOutBlockBoxes(node, anonymousCell, childStyle);
         return true;
     }
 
     anonymousCell = 0;
 }
 
-void TableWrapperBox::processRowGroup(Element section, CounterContext* counterContext)
+void TableWrapperBox::processRowGroup(Element section)
 {
     CSSStyleDeclarationImp* sectionStyle = view->getStyle(section);
-    CounterContext cc(view);
-    counterContext->update(sectionStyle);
 
     for (Node node = section.getFirstChild(); node; node = node.getNextSibling())
-        processRowGroupChild(node, sectionStyle, &cc);
+        processRowGroupChild(node, sectionStyle);
     // TODO 3.
     endRowGroup();
 }
 
-void TableWrapperBox::processRowGroupChild(Node node, CSSStyleDeclarationImp* sectionStyle, CounterContext* counterContext)
+void TableWrapperBox::processRowGroupChild(Node node, CSSStyleDeclarationImp* sectionStyle)
 {
     unsigned display = CSSDisplayValueImp::None;
     Element child = 0;
@@ -421,7 +410,7 @@ void TableWrapperBox::processRowGroupChild(Node node, CSSStyleDeclarationImp* se
     case CSSDisplayValueImp::TableRow:
         endRow();
         yStart = yCurrent;
-        processRow(child, counterContext);
+        processRow(child);
         break;
 
     case CSSDisplayValueImp::TableCell:
@@ -430,7 +419,7 @@ void TableWrapperBox::processRowGroupChild(Node node, CSSStyleDeclarationImp* se
             anonymousTable = 0;
         }
         inRow = true;
-        processCell(child, 0, childStyle, counterContext, 0);
+        processCell(child, 0, childStyle, 0);
         break;
     default:
         if (anonymousTable) {
@@ -443,9 +432,9 @@ void TableWrapperBox::processRowGroupChild(Node node, CSSStyleDeclarationImp* se
         }
         inRow = true;
         if (!anonymousCell)
-            anonymousCell = processCell(0, 0, childStyle, counterContext, 0);
+            anonymousCell = processCell(0, 0, childStyle, 0);
         if (anonymousCell) {
-            anonymousTable = dynamic_cast<TableWrapperBox*>(view->layOutBlockBoxes(node, anonymousCell, childStyle, counterContext));
+            anonymousTable = dynamic_cast<TableWrapperBox*>(view->layOutBlockBoxes(node, anonymousCell, childStyle));
             if (display == CSSDisplayValueImp::Table || display == CSSDisplayValueImp::InlineTable)
                 anonymousTable = 0;
         }
@@ -467,11 +456,9 @@ void TableWrapperBox::endRowGroup()
     // downwardGrowingCells.clear();
 }
 
-void TableWrapperBox::processRow(Element row, CounterContext* counterContext)
+void TableWrapperBox::processRow(Element row)
 {
     CSSStyleDeclarationImp* rowStyle = view->getStyle(row);
-    CounterContext cc(view);
-    counterContext->update(rowStyle);
 
     if (yHeight == yCurrent)
         appendRow();
@@ -480,7 +467,7 @@ void TableWrapperBox::processRow(Element row, CounterContext* counterContext)
     xCurrent = 0;
     growDownwardGrowingCells();
     for (Node node = row.getFirstChild(); node; node = node.getNextSibling())
-        processRowChild(node, rowStyle, &cc);
+        processRowChild(node, rowStyle);
     endRow();
 }
 
@@ -488,7 +475,7 @@ void TableWrapperBox::growDownwardGrowingCells()
 {
 }
 
-void TableWrapperBox::processRowChild(Node node, CSSStyleDeclarationImp* rowStyle, CounterContext* counterContext)
+void TableWrapperBox::processRowChild(Node node, CSSStyleDeclarationImp* rowStyle)
 {
     unsigned display = CSSDisplayValueImp::None;
     Element child = 0;
@@ -538,7 +525,7 @@ void TableWrapperBox::processRowChild(Node node, CSSStyleDeclarationImp* rowStyl
     case CSSDisplayValueImp::None:
         return;
     case CSSDisplayValueImp::TableCell:
-        processCell(child, 0, childStyle, counterContext, rowStyle);
+        processCell(child, 0, childStyle, rowStyle);
         break;
     default:
         if (anonymousTable) {
@@ -550,9 +537,9 @@ void TableWrapperBox::processRowChild(Node node, CSSStyleDeclarationImp* rowStyl
             anonymousTable = 0;
         }
         if (!anonymousCell)
-            anonymousCell = processCell(0, 0, childStyle, counterContext, rowStyle);
+            anonymousCell = processCell(0, 0, childStyle, rowStyle);
         if (anonymousCell) {
-            anonymousTable = dynamic_cast<TableWrapperBox*>(view->layOutBlockBoxes(node, anonymousCell, childStyle, counterContext));
+            anonymousTable = dynamic_cast<TableWrapperBox*>(view->layOutBlockBoxes(node, anonymousCell, childStyle));
             if (display == CSSDisplayValueImp::Table || display == CSSDisplayValueImp::InlineTable)
                 anonymousTable = 0;
         }
@@ -578,7 +565,7 @@ void TableWrapperBox::endRow()
     }
 }
 
-CellBox* TableWrapperBox::processCell(Element current, BlockLevelBox* parentBox, CSSStyleDeclarationImp* currentStyle, CounterContext* counterContext, CSSStyleDeclarationImp* rowStyle)
+CellBox* TableWrapperBox::processCell(Element current, BlockLevelBox* parentBox, CSSStyleDeclarationImp* currentStyle, CSSStyleDeclarationImp* rowStyle)
 {
     if (yHeight == yCurrent) {
         appendRow();
@@ -604,7 +591,7 @@ CellBox* TableWrapperBox::processCell(Element current, BlockLevelBox* parentBox,
         appendRow();
     CellBox* cellBox = 0;
     if (current)
-        cellBox = static_cast<CellBox*>(view->layOutBlockBoxes(current, 0, currentStyle, counterContext, true));
+        cellBox = static_cast<CellBox*>(view->layOutBlockBoxes(current, 0, currentStyle->getParentStyle(), currentStyle, true));
     else {
         cellBox = new(std::nothrow) CellBox(0, currentStyle);
         if (cellBox)
@@ -629,8 +616,6 @@ CellBox* TableWrapperBox::processCell(Element current, BlockLevelBox* parentBox,
 void TableWrapperBox::processColGroup(Element colgroup)
 {
     CSSStyleDeclarationImp* columnGroupStyle = view->getStyle(colgroup);
-    CounterContext cc(view);
-    counterContext->update(columnGroupStyle);
 
     bool hasCol = false;
     int xStart = xWidth;
@@ -640,7 +625,7 @@ void TableWrapperBox::processColGroup(Element colgroup)
         if (childStyle->display.getValue() != CSSDisplayValueImp::TableColumn)
             continue;
         hasCol = true;
-        processCol(child, childStyle, &cc, colgroup);
+        processCol(child, childStyle, colgroup);
     }
     if (hasCol) {
         // TODO. 7.
@@ -658,10 +643,8 @@ void TableWrapperBox::processColGroup(Element colgroup)
     }
 }
 
-void TableWrapperBox::processCol(Element col, CSSStyleDeclarationImp* colStyle, CounterContext* counterContext, Element colgroup)
+void TableWrapperBox::processCol(Element col, CSSStyleDeclarationImp* colStyle, Element colgroup)
 {
-    counterContext->update(colStyle);
-
     unsigned span = 1;
     if (html::HTMLTableColElement::hasInstance(col)) {
         html::HTMLTableColElement c(interface_cast<html::HTMLTableColElement>(col));
