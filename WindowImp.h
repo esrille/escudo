@@ -40,7 +40,9 @@
 #include <org/w3c/dom/html/External.h>
 #include <org/w3c/dom/html/UndoManager.h>
 
+#include <condition_variable>
 #include <deque>
+#include <mutex>
 #include <thread>
 
 #include <org/w3c/dom/css/CSSStyleSheet.h>

@@ -22,6 +22,7 @@
 
 #include <list>
 #include <map>
+#include <mutex>
 #include <stdexcept>
 #include <string>
 #include <thread>

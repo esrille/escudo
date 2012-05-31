@@ -18,6 +18,7 @@
 #define ES_HTTP_CONNECTION_H
 
 #include <list>
+#include <mutex>
 #include <thread>
 
 #include <boost/asio.hpp>

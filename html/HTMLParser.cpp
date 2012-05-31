@@ -524,6 +524,12 @@ bool HTMLParser::elementInTableScope(T target)
 }
 
 template <typename T>
+bool HTMLParser::elementInTableScope(std::initializer_list<T> list)
+{
+    return elementInSpecificScope(list, tableScopingElements, tableScopingElementCount);
+}
+
+template <typename T>
 bool HTMLParser::elementInSelectScope(T target)
 {
     return elementInSpecificScope(target, selectScopingElements, selectScopingElementCount, true);

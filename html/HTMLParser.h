@@ -464,6 +464,8 @@ class HTMLParser
     template <typename T>
     bool elementInTableScope(T target);
     template <typename T>
+    bool elementInTableScope(std::initializer_list<T> list);
+    template <typename T>
     bool elementInSelectScope(T target);
 
     //
