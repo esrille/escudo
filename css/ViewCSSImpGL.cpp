@@ -92,6 +92,7 @@ void ViewCSSImp::render()
 {
     last = getTick();
     delay = 1000;
+    clipCount = 0;
 
     glPushMatrix();
     glScalef(zoom, zoom, zoom);
@@ -104,6 +105,29 @@ void ViewCSSImp::render()
         Box::renderVerticalScrollBar(initialContainingBlock.width, initialContainingBlock.height, window->getScrollY(), renderHeight);
         Box::renderHorizontalScrollBar(initialContainingBlock.width, initialContainingBlock.height, window->getScrollX(), renderWidth);
     }
+}
+
+void ViewCSSImp::clip(float left, float top, float w, float h)
+{
+    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+    glStencilFunc(GL_EQUAL, clipCount, 0xFF);
+    glStencilOp(GL_KEEP, GL_INCR, GL_INCR);
+    glRectf(left, top, left + w, top + h);
+    ++clipCount;    // TODO: check overflow
+    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+    glStencilFunc(GL_EQUAL, clipCount, 0xFF);
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+}
+
+void ViewCSSImp::unclip(float left, float top, float w, float h)
+{
+    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+    glStencilOp(GL_KEEP, GL_DECR, GL_DECR);
+    glRectf(left, top, left + w, top + h);
+    --clipCount;
+    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+    glStencilFunc(GL_EQUAL, clipCount, 0xFF);
+    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 }
 
 namespace {

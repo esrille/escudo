@@ -79,6 +79,7 @@ class ViewCSSImp
     float renderWidth;
     float renderHeight;
     Box* hoveredBox;
+    unsigned clipCount;
 
     // animation
     unsigned last;   // in 1/100 sec for GIF
@@ -316,6 +317,9 @@ public:
     bool hasExpired(unsigned t) {
         return (static_cast<int>(last + delay) - static_cast<int>(t)) <= 0;
     }
+
+    void clip(float left, float top, float w, float h);
+    void unclip(float left, float top, float w, float h);
 
     // ViewCSS
     virtual css::CSSStyleDeclaration getComputedStyle(Element elt, Nullable<std::u16string> pseudoElt);

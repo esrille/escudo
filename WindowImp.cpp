@@ -334,7 +334,8 @@ void WindowImp::mouse(const EventTask& task)
     if (!view)
         return;
 
-    recordTime("mouse (%d, %d)", x, y);
+    if (2 <= getLogLevel())
+        recordTime("mouse (%d, %d)", x, y);
 
     int shift = button;
     if (shift == 1)

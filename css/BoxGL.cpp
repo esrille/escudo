@@ -544,16 +544,11 @@ unsigned BlockLevelBox::renderBegin(ViewCSSImp* view, bool noBorder)
         if (style->parentStyle) {
             overflow = style->overflow.getValue();
             if (overflow != CSSOverflowValueImp::Visible) {
-                // TODO: Support the cumulative intersection.
                 float left = x + marginLeft + borderLeft + scrollX;
                 float top = y + marginTop + borderTop + scrollY;
                 float w = getPaddingWidth();
                 float h = getPaddingHeight();
-                glViewport(left, view->getInitialContainingBlock()->getHeight() - (top + h), w, h);
-                glMatrixMode(GL_PROJECTION);
-                glLoadIdentity();
-                glOrtho(left, left + w, top + h, top, -1000.0, 1.0);
-                glMatrixMode(GL_MODELVIEW);
+                view->clip(left, top, w, h);
 
                 glPushMatrix();
                 Element element = interface_cast<Element>(node);
@@ -572,14 +567,17 @@ void BlockLevelBox::renderEnd(ViewCSSImp* view, unsigned overflow, bool scrollBa
         if (style->parentStyle && overflow != CSSOverflowValueImp::Visible) {
             glPopMatrix();
 
-            // TODO: Support the cumulative intersection.
-            float w = view->getInitialContainingBlock()->getWidth();
-            float h = view->getInitialContainingBlock()->getHeight();
-            glViewport(0, 0, w, h);
-            glMatrixMode(GL_PROJECTION);
-            glLoadIdentity();
-            glOrtho(0, w, h, 0, -1000.0, 1.0);
-            glMatrixMode(GL_MODELVIEW);
+            float scrollX = 0.0f;
+            float scrollY = 0.0f;
+            if (isFixed() && style->parentStyle) {
+                scrollX = view->getWindow()->getScrollX();
+                scrollY = view->getWindow()->getScrollY();
+            }
+            float left = x + marginLeft + borderLeft + scrollX;
+            float top = y + marginTop + borderTop + scrollY;
+            float w = getPaddingWidth();
+            float h = getPaddingHeight();
+            view->unclip(left, top, w, h);
 
             if (scrollBar && overflow != CSSOverflowValueImp::Hidden) {
                 glPushMatrix();

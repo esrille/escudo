@@ -45,7 +45,7 @@ void reshape(int w, int h)
 
 void display()
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     if (WindowImp* imp = static_cast<WindowImp*>(window.self()))
         imp->render();
     glutSwapBuffers();  // This would block until the sync happens
@@ -182,7 +182,7 @@ void timer(int value)
 void init(int* argc, char* argv[])
 {
     glutInit(argc, argv);
-    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+    glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_STENCIL);
     glutInitWindowSize(816, 1056);
     glutCreateWindow(argv[0]);
     glutReshapeFunc(reshape);
@@ -205,4 +205,13 @@ void init(int* argc, char* argv[])
     glutPassiveMotionFunc(mouseMove);
     glutTimerFunc(50, timer, 0);
     glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
+
+#ifndef NDEBUG
+    GLint stencilBits;
+    glGetIntegerv(GL_STENCIL_BITS, &stencilBits);
+    std::cout << "GL_STENCIL_BITS: " << stencilBits << '\n';
+#endif
+    // TODO: assuming 8 <= stencilBits for now
+    glClearStencil(0x00);
+    glEnable(GL_STENCIL_TEST);
 }

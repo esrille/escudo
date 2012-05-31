@@ -1,0 +1,37 @@
+<html>
+<head>
+<title>CSS Test: CSS clipping test</title>
+<style type="text/css">
+#div1 {
+  overflow: hidden;
+  width: 100px;
+  height: 100px;
+  position: absolute;
+}
+#div2 {
+  overflow: hidden;
+  width: 100px;
+  height: 100px;
+  background-color: green;
+  position: relative;
+  left: 50px;
+  top: 50px;
+}
+#div3 {
+  width: 100px;
+  height: 100px;
+  background-color: cyan;
+  position: relative;
+  left: -25px;
+  top: -25px;
+}
+</style>
+</head>
+<body>
+<div id=div1>
+  <div id=div2>
+    <div id=div3></div>
+  </div>
+</div>
+</body>
+</html>

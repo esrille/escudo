@@ -147,35 +147,26 @@ void StackingContext::clip(ViewCSSImp* view, Box* base, float scrollX, float scr
             h = clip->getPaddingHeight();
         } else {
             Box::unionRect(left, top, w, h,
-                            clip->x + clip->marginLeft + clip->borderLeft,
-                            clip->y + clip->marginTop + clip->borderTop,
-                            clip->getPaddingWidth(),
-                            clip->getPaddingHeight());
+                           clip->x + clip->marginLeft + clip->borderLeft,
+                           clip->y + clip->marginTop + clip->borderTop,
+                           clip->getPaddingWidth(),
+                           clip->getPaddingHeight());
         }
     }
 
     if (base->clipBox) {
         left -= scrollX;
         top -= scrollY;
-        glViewport(left, view->getInitialContainingBlock()->getHeight() - (top + h), w, h);
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glOrtho(left, left + w, top + h, top, -1000.0, 1.0);
-        glMatrixMode(GL_MODELVIEW);
+        view->clip(left, top, w, h);
     }
 }
 
-// TODO: Revert to the previous clipping status
 void StackingContext::unclip(ViewCSSImp* view, Box* base)
 {
     if (base->clipBox) {
         float w = view->getInitialContainingBlock()->getWidth();
         float h = view->getInitialContainingBlock()->getHeight();
-        glViewport(0, 0, w, h);
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glOrtho(0, w, h, 0, -1000.0, 1.0);
-        glMatrixMode(GL_MODELVIEW);
+        view->unclip(0, 0, w, h);   // TODO: better to keep the original clip rect and unclip by using it.
     }
 }
 
