@@ -201,7 +201,7 @@ body
 {
     outline: deepskyblue solid 2px;
 }
-#main
+#main-pane
 {
     margin: 0;
     border: none;
@@ -209,8 +209,15 @@ body
     top: 36px;
     bottom: 0;
     width: 100%;
-    height: 100%;
     z-index: 0;
+}
+#main
+{
+    margin: 0;
+    border: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
 }
 </style>
 <script type="text/javascript">
@@ -280,6 +287,6 @@ function init() {
   <div id='stop'></div>
   <div id='settings'></div>
 </div>
-<iframe id='main' src=''></iframe>
+<div id='main-pane'><iframe id='main' src=''></iframe></div>
 </body>
 </html>
