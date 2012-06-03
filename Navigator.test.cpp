@@ -23,6 +23,7 @@
 #include "font/FontDatabase.h"
 #include "http/HTTPConnection.h"
 
+#include "Profile.h"
 #include "Test.util.h"
 
 #ifdef USE_V8
@@ -41,7 +42,27 @@ int main(int argc, char* argv[])
 #endif  // USE_V8
 
     if (argc < 2) {
-        std::cout << "usage : " << argv[0] << " navigator_directory [user.css]\n";
+        std::cout << "usage: " << argv[0] << " navigator_directory [user.css]\n";
+        return EXIT_FAILURE;
+    }
+
+    // TODO: display HTML error pages instead of these text messages upon error.
+    Profile profile(argv[1]);
+    switch (profile.hasError()) {
+    case 0:
+        break;
+    case EAGAIN:
+        // TODO: use a named pipe for requesting to open another window.
+        std::cerr << "error: another instance of the navigator might already be running.\n";
+        return EXIT_FAILURE;
+    case ENOENT:
+        std::cerr << "error: the specified profile directory '" << profile.getProfilePath() << "' does not exist.\n";
+        return EXIT_FAILURE;
+    case ENOTDIR:
+        std::cerr << "error: the specified profile '" << profile.getProfilePath() << "' is not a directory.\n";
+        return EXIT_FAILURE;
+    default:
+        std::cerr << "error: the specified profile directory '" << profile.getProfilePath() << "' appears to be invalid.\n";
         return EXIT_FAILURE;
     }
 

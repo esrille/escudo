@@ -623,6 +623,8 @@ libeshtml5_a_SOURCES = \
 	BackgroundTask.cpp \
 	DocumentWindow.cpp \
 	DocumentWindow.h \
+	Profile.cpp \
+	Profile.h \
 	url/URI.h \
 	url/URI.cpp \
 	url/URL.h \
@@ -1138,7 +1140,8 @@ bin_PROGRAMS = \
 	Script.test \
 	ScriptV8.test \
 	Navigator.test \
-	NavigatorV8.test
+	NavigatorV8.test \
+	Profile.test
 
 bin_PROGRAMS : $(LDADD)
 
@@ -1202,6 +1205,8 @@ Navigator_test_CXXFLAGS = $(AM_CFLAGS) -DUSE_JS
 NavigatorV8_test_SOURCES = Navigator.test.cpp Test.glut.cpp
 NavigatorV8_test_LDADD = $(v8_LDADD)
 NavigatorV8_test_CXXFLAGS = $(AM_CFLAGS) -DUSE_V8
+
+Profile_test_SOURCES = Profile.test.cpp
 
 clean-local:
 	rm -rf org css html $(generated_sources) $(generated_headers) $(generated_scanners) *.output
