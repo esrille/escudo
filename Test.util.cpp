@@ -216,3 +216,11 @@ int getLogLevel()
 {
     return logLevel;
 }
+
+std::string getFileURL(const std::string& path)
+{
+    char url[PATH_MAX + 7];
+    strcpy(url, "file://");
+    realpath(path.c_str(), url + 7);
+    return url;
+}

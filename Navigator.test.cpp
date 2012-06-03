@@ -79,14 +79,10 @@ int main(int argc, char* argv[])
     if (3 <= argc)
         getDOMImplementation()->setUserCSSStyleSheet(loadStyleSheet(argv[2]));
 
+    HttpRequest::setAboutPath(argv[1]);
     std::thread httpService(std::ref(HttpConnectionManager::getInstance()));
 
-    // Set privileges to the navigator window.
-    char navigatorUrl[PATH_MAX + 7];
-    strcpy(navigatorUrl, "file://");
-    realpath(argv[1], navigatorUrl + 7);
-    HttpRequest::setAboutPath(navigatorUrl + 7);
-    strcat(navigatorUrl,  "/navigator.html");
+    std::string navigatorUrl = getFileURL(profile.getProfilePath()) + "/navigator.html";
     WindowImp* imp = new WindowImp();
     window = imp;
     imp->enableZoom(false);

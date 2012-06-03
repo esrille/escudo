@@ -24,11 +24,19 @@
 
 #include <string>
 
-Profile::Profile(const char* profile) :
-    profile(profile),
+Profile::Profile(const char* path) :
     error(0)
 {
-    int lock = open((this->profile + "/lock").c_str(), O_CREAT | O_RDWR, 0600);
+    if (!path) {
+        error = ENOENT;
+        return;
+    }
+
+    profile = path;
+    while (0 < profile.length() && profile[profile.length() - 1] == '/')
+        profile.erase(profile.length() - 1);
+
+    int lock = open((profile + "/lock").c_str(), O_CREAT | O_RDWR, 0600);
     if (lock == -1) {
         error = errno;
         return;
