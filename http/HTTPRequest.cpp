@@ -37,6 +37,7 @@ const unsigned short HttpRequest::COMPLETE;
 const unsigned short HttpRequest::DONE;
 
 std::string HttpRequest::aboutPath;
+std::string HttpRequest::cachePath("/tmp/esXXXXXX");
 
 int HttpRequest::getContentDescriptor()
 {
@@ -59,7 +60,11 @@ std::fstream& HttpRequest::getContent()
     if (content.is_open())
         return content;
 
-    char filename[] = "/tmp/esXXXXXX";
+    char filename[PATH_MAX];
+    if (PATH_MAX <= cachePath.length() + 9)
+        return content;
+    strcpy(filename, cachePath.c_str());
+    strcat(filename, "/esXXXXXX");
     fdContent = mkstemp(filename);
     if (fdContent == -1)
         return content;

@@ -27,7 +27,7 @@ class Profile
     int error;
     int lock;
 public:
-    Profile(const char* path);
+    Profile(const std::string& path);
     ~Profile();
 
     // RETURN VALUES
@@ -39,6 +39,11 @@ public:
     const std::string& getProfilePath() const {
         return profile;
     }
+
+    std::string createPath(const std::string& name) const;
+    int createDirectory(const std::string& name);
+
+    bool isDirectory(const std::string& path);
 };
 
 #endif  // ES_PROFILE_H

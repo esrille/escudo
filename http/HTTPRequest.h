@@ -46,6 +46,7 @@ public:
 
 private:
     static std::string aboutPath;
+    static std::string cachePath;
 
     std::u16string base;
     unsigned short readyState;
@@ -110,8 +111,11 @@ public:
 
     BoxImage* getBoxImage(unsigned repeat);
 
-    static void setAboutPath(const char* path) {
+    static void setAboutPath(const std::string& path) {
         aboutPath = path;
+    }
+    static void setCachePath(const std::string& path) {
+        cachePath = path;
     }
 };
 

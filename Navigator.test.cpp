@@ -66,6 +66,13 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
+    // Check cache directory in the profile.
+    if (profile.createDirectory("cache") == -1) {
+        std::cerr << "error: cannot access to the cache directory '" << profile.createPath("cache") << "'.\n";
+        return EXIT_FAILURE;
+    }
+    HttpRequest::setCachePath(profile.createPath("cache"));
+
     init(&argc, argv);
     initLogLevel(&argc, argv);
     initFonts(&argc, argv);
@@ -79,7 +86,7 @@ int main(int argc, char* argv[])
     if (3 <= argc)
         getDOMImplementation()->setUserCSSStyleSheet(loadStyleSheet(argv[2]));
 
-    HttpRequest::setAboutPath(argv[1]);
+    HttpRequest::setAboutPath(profile.getProfilePath());
     std::thread httpService(std::ref(HttpConnectionManager::getInstance()));
 
     std::string navigatorUrl = getFileURL(profile.getProfilePath()) + "/navigator.html";

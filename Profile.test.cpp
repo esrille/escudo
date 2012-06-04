@@ -21,7 +21,12 @@
 int main(int argc, char* argv[])
 {
     Profile profile("profile");
-    std::cout << profile.hasError() << "\nPush any key to quit: ";
+    std::cout << "Profile: " << profile.hasError() << '\n';
+
+    profile.createDirectory("cache");
+    std::cout << "createDirectory: " << profile.hasError() << '\n';
+
+    std::cout << "Push any key to quit: ";
     std::string input;
     std::getline(std::cin, input);
     return profile.hasError();
