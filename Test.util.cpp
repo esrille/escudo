@@ -198,8 +198,9 @@ unsigned getTick()
     return ts.tv_sec * 100 + ts.tv_nsec / 10000000;
 }
 
-void initLogLevel(int* argc, char* argv[])
+void initLogLevel(int* argc, char* argv[], int defaultLevel)
 {
+    logLevel = defaultLevel;
     for (int i = 1; i < *argc; ++i) {
         if (strncmp(argv[i], "--v", 3) == 0) {
             if (argv[i][3] == '=')

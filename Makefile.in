@@ -17,6 +17,8 @@
 
 
 
+
+
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
@@ -43,7 +45,7 @@ POST_UNINSTALL = :
 @HAVE_AEGEAN_TRUE@am__append_7 = -DHAVE_AEGEAN=\"$(HAVE_AEGEAN)\"
 @HAVE_AHEM_TRUE@am__append_8 = -DHAVE_AHEM=\"$(HAVE_AHEM)\"
 @TEST_FONTS_TRUE@am__append_9 = -DTEST_FONTS=\"$(TEST_FONTS)\"
-bin_PROGRAMS = harness$(EXEEXT) Any.test$(EXEEXT) \
+noinst_PROGRAMS = harness$(EXEEXT) Any.test$(EXEEXT) \
 	FontManager.test$(EXEEXT) URL.test$(EXEEXT) \
 	HTTPHeader.test$(EXEEXT) HTTPRequest.test$(EXEEXT) \
 	HTMLInputStream.test$(EXEEXT) \
@@ -53,10 +55,11 @@ bin_PROGRAMS = harness$(EXEEXT) Any.test$(EXEEXT) \
 	CSSStyle.test$(EXEEXT) Box.test$(EXEEXT) Script.test$(EXEEXT) \
 	ScriptV8.test$(EXEEXT) Navigator.test$(EXEEXT) \
 	NavigatorV8.test$(EXEEXT) Profile.test$(EXEEXT)
+navigatorlibexec_PROGRAMS = navigator$(EXEEXT)
 subdir = .
-DIST_COMMON = $(am__configure_deps) $(srcdir)/../depcomp \
-	$(srcdir)/../install-sh $(srcdir)/../missing \
-	$(srcdir)/../ylwrap $(srcdir)/Makefile.am \
+DIST_COMMON = $(am__configure_deps) $(dist_bin_SCRIPTS) \
+	$(srcdir)/../depcomp $(srcdir)/../install-sh \
+	$(srcdir)/../missing $(srcdir)/../ylwrap $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
 	$(top_srcdir)/configure CSSGrammar.cc CSSGrammar.h
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -69,36 +72,7 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
-am__vpath_adj = case $$p in \
-    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
-    *) f=$$p;; \
-  esac;
-am__strip_dir = f=`echo $$p | sed -e 's|^.*/||'`;
-am__install_max = 40
-am__nobase_strip_setup = \
-  srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*|]/\\\\&/g'`
-am__nobase_strip = \
-  for p in $$list; do echo "$$p"; done | sed -e "s|$$srcdirstrip/||"
-am__nobase_list = $(am__nobase_strip_setup); \
-  for p in $$list; do echo "$$p $$p"; done | \
-  sed "s| $$srcdirstrip/| |;"' / .*\//!s/ .*/ ./; s,\( .*\)/[^/]*$$,\1,' | \
-  $(AWK) 'BEGIN { files["."] = "" } { files[$$2] = files[$$2] " " $$1; \
-    if (++n[$$2] == $(am__install_max)) \
-      { print $$2, files[$$2]; n[$$2] = 0; files[$$2] = "" } } \
-    END { for (dir in files) print dir, files[dir] }'
-am__base_list = \
-  sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
-  sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
-am__uninstall_files_from_dir = { \
-  test -z "$$files" \
-    || { test ! -d "$$dir" && test ! -f "$$dir" && test ! -r "$$dir"; } \
-    || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
-         $(am__cd) "$$dir" && rm -f $$files; }; \
-  }
-am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" \
-	"$(DESTDIR)$(includedir)"
-LIBRARIES = $(lib_LIBRARIES)
+LIBRARIES = $(noinst_LIBRARIES)
 AR = ar
 ARFLAGS = cru
 libesfontmanager_a_AR = $(AR) $(ARFLAGS)
@@ -373,7 +347,10 @@ libesv8api_a_AR = $(AR) $(ARFLAGS)
 libesv8api_a_LIBADD =
 am_libesv8api_a_OBJECTS = bridgeV8.$(OBJEXT) ScriptV8.$(OBJEXT)
 libesv8api_a_OBJECTS = $(am_libesv8api_a_OBJECTS)
-PROGRAMS = $(bin_PROGRAMS)
+am__installdirs = "$(DESTDIR)$(navigatorlibexecdir)" \
+	"$(DESTDIR)$(bindir)" "$(DESTDIR)$(aboutdatadir)" \
+	"$(DESTDIR)$(navigatordatadir)"
+PROGRAMS = $(navigatorlibexec_PROGRAMS) $(noinst_PROGRAMS)
 am_Any_test_OBJECTS = Any.test.$(OBJEXT)
 Any_test_OBJECTS = $(am_Any_test_OBJECTS)
 am__DEPENDENCIES_1 =
@@ -453,6 +430,40 @@ URL_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
 am_harness_OBJECTS = harness.$(OBJEXT)
 harness_OBJECTS = $(am_harness_OBJECTS)
 harness_DEPENDENCIES = $(am__DEPENDENCIES_3)
+am_navigator_OBJECTS = navigator-Navigator.$(OBJEXT) \
+	navigator-Test.glut.$(OBJEXT)
+navigator_OBJECTS = $(am_navigator_OBJECTS)
+navigator_DEPENDENCIES = $(am__DEPENDENCIES_3)
+navigator_LINK = $(CXXLD) $(navigator_CXXFLAGS) $(CXXFLAGS) \
+	$(AM_LDFLAGS) $(LDFLAGS) -o $@
+am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
+am__vpath_adj = case $$p in \
+    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
+    *) f=$$p;; \
+  esac;
+am__strip_dir = f=`echo $$p | sed -e 's|^.*/||'`;
+am__install_max = 40
+am__nobase_strip_setup = \
+  srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*|]/\\\\&/g'`
+am__nobase_strip = \
+  for p in $$list; do echo "$$p"; done | sed -e "s|$$srcdirstrip/||"
+am__nobase_list = $(am__nobase_strip_setup); \
+  for p in $$list; do echo "$$p $$p"; done | \
+  sed "s| $$srcdirstrip/| |;"' / .*\//!s/ .*/ ./; s,\( .*\)/[^/]*$$,\1,' | \
+  $(AWK) 'BEGIN { files["."] = "" } { files[$$2] = files[$$2] " " $$1; \
+    if (++n[$$2] == $(am__install_max)) \
+      { print $$2, files[$$2]; n[$$2] = 0; files[$$2] = "" } } \
+    END { for (dir in files) print dir, files[dir] }'
+am__base_list = \
+  sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
+  sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
+am__uninstall_files_from_dir = { \
+  test -z "$$files" \
+    || { test ! -d "$$dir" && test ! -f "$$dir" && test ! -r "$$dir"; } \
+    || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
+         $(am__cd) "$$dir" && rm -f $$files; }; \
+  }
+SCRIPTS = $(dist_bin_SCRIPTS)
 DEFAULT_INCLUDES = -I.@am__isrc@
 depcomp = $(SHELL) $(top_srcdir)/../depcomp
 am__depfiles_maybe = depfiles
@@ -480,7 +491,7 @@ SOURCES = $(libesfontmanager_a_SOURCES) $(libeshtml5_a_SOURCES) \
 	$(Navigator_test_SOURCES) $(NavigatorV8_test_SOURCES) \
 	$(Profile_test_SOURCES) $(Script_test_SOURCES) \
 	$(ScriptV8_test_SOURCES) $(URL_test_SOURCES) \
-	$(harness_SOURCES)
+	$(harness_SOURCES) $(navigator_SOURCES)
 DIST_SOURCES = $(libesfontmanager_a_SOURCES) $(libeshtml5_a_SOURCES) \
 	$(libesjsapi_a_SOURCES) $(libesv8api_a_SOURCES) \
 	$(Any_test_SOURCES) $(Box_test_SOURCES) \
@@ -493,8 +504,9 @@ DIST_SOURCES = $(libesfontmanager_a_SOURCES) $(libeshtml5_a_SOURCES) \
 	$(Navigator_test_SOURCES) $(NavigatorV8_test_SOURCES) \
 	$(Profile_test_SOURCES) $(Script_test_SOURCES) \
 	$(ScriptV8_test_SOURCES) $(URL_test_SOURCES) \
-	$(harness_SOURCES)
-HEADERS = $(nobase_nodist_include_HEADERS)
+	$(harness_SOURCES) $(navigator_SOURCES)
+DATA = $(aboutdata_DATA) $(navigatordata_DATA)
+HEADERS = $(nobase_nodist_noinst_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -1140,8 +1152,8 @@ generated_scanners = \
 	CSSGrammar.cc CSSGrammar.h
 
 BUILT_SOURCES = $(generated_headers) $(generated_scanners) $(generated_sources)
-nobase_nodist_include_HEADERS = $(generated_headers)
-lib_LIBRARIES = libeshtml5.a libesfontmanager.a libesjsapi.a libesv8api.a
+nobase_nodist_noinst_HEADERS = $(generated_headers)
+noinst_LIBRARIES = libeshtml5.a libesfontmanager.a libesjsapi.a libesv8api.a
 LDADD = libeshtml5.a libesfontmanager.a \
 	$(ICU_LIBS) $(FREETYPE_LIBS) \
 	-lboost_regex -lboost_system -lboost_iostreams \
@@ -1458,6 +1470,31 @@ NavigatorV8_test_SOURCES = Navigator.test.cpp Test.glut.cpp
 NavigatorV8_test_LDADD = $(v8_LDADD)
 NavigatorV8_test_CXXFLAGS = $(AM_CFLAGS) -DUSE_V8
 Profile_test_SOURCES = Profile.test.cpp
+dist_bin_SCRIPTS = esnavigator
+esrillelibexecdir = $(libexecdir)/esrille
+navigatorlibexecdir = $(esrillelibexecdir)/navigator
+navigator_SOURCES = Navigator.cpp Test.glut.cpp
+navigator_LDADD = $(js_LDADD)
+navigator_CXXFLAGS = $(AM_CFLAGS) -DUSE_JS
+esrilledatadir = $(datadir)/esrille
+navigatordatadir = $(esrilledatadir)/navigator
+aboutdatadir = $(navigatordatadir)/about
+navigatordata_DATA = \
+	navigator/about.html \
+	navigator/default.css \
+	navigator/navigator.html \
+	navigator/Cancel_32x32.png \
+	navigator/Favorites_32x32.png \
+	navigator/Gear_32x32.gif \
+	navigator/Gear_32x32.png \
+	navigator/Next_32x32.png \
+	navigator/Previous_32x32.png \
+	navigator/Refresh_32x32.png \
+	navigator/Stop_32x32.png
+
+aboutdata_DATA = \
+	navigator/about/blank
+
 EXTRA_DIST = \
 	config.h \
 	idl/COPYRIGHT.html \
@@ -1558,36 +1595,9 @@ $(srcdir)/config.h.in:  $(am__configure_deps)
 
 distclean-hdr:
 	-rm -f config.h stamp-h1
-install-libLIBRARIES: $(lib_LIBRARIES)
-	@$(NORMAL_INSTALL)
-	test -z "$(libdir)" || $(MKDIR_P) "$(DESTDIR)$(libdir)"
-	@list='$(lib_LIBRARIES)'; test -n "$(libdir)" || list=; \
-	list2=; for p in $$list; do \
-	  if test -f $$p; then \
-	    list2="$$list2 $$p"; \
-	  else :; fi; \
-	done; \
-	test -z "$$list2" || { \
-	  echo " $(INSTALL_DATA) $$list2 '$(DESTDIR)$(libdir)'"; \
-	  $(INSTALL_DATA) $$list2 "$(DESTDIR)$(libdir)" || exit $$?; }
-	@$(POST_INSTALL)
-	@list='$(lib_LIBRARIES)'; test -n "$(libdir)" || list=; \
-	for p in $$list; do \
-	  if test -f $$p; then \
-	    $(am__strip_dir) \
-	    echo " ( cd '$(DESTDIR)$(libdir)' && $(RANLIB) $$f )"; \
-	    ( cd "$(DESTDIR)$(libdir)" && $(RANLIB) $$f ) || exit $$?; \
-	  else :; fi; \
-	done
 
-uninstall-libLIBRARIES:
-	@$(NORMAL_UNINSTALL)
-	@list='$(lib_LIBRARIES)'; test -n "$(libdir)" || list=; \
-	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	dir='$(DESTDIR)$(libdir)'; $(am__uninstall_files_from_dir)
-
-clean-libLIBRARIES:
-	-test -z "$(lib_LIBRARIES)" || rm -f $(lib_LIBRARIES)
+clean-noinstLIBRARIES:
+	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
 libesfontmanager.a: $(libesfontmanager_a_OBJECTS) $(libesfontmanager_a_DEPENDENCIES) $(EXTRA_libesfontmanager_a_DEPENDENCIES) 
 	-rm -f libesfontmanager.a
 	$(libesfontmanager_a_AR) libesfontmanager.a $(libesfontmanager_a_OBJECTS) $(libesfontmanager_a_LIBADD)
@@ -1607,10 +1617,10 @@ libesv8api.a: $(libesv8api_a_OBJECTS) $(libesv8api_a_DEPENDENCIES) $(EXTRA_libes
 	-rm -f libesv8api.a
 	$(libesv8api_a_AR) libesv8api.a $(libesv8api_a_OBJECTS) $(libesv8api_a_LIBADD)
 	$(RANLIB) libesv8api.a
-install-binPROGRAMS: $(bin_PROGRAMS)
+install-navigatorlibexecPROGRAMS: $(navigatorlibexec_PROGRAMS)
 	@$(NORMAL_INSTALL)
-	test -z "$(bindir)" || $(MKDIR_P) "$(DESTDIR)$(bindir)"
-	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
+	test -z "$(navigatorlibexecdir)" || $(MKDIR_P) "$(DESTDIR)$(navigatorlibexecdir)"
+	@list='$(navigatorlibexec_PROGRAMS)'; test -n "$(navigatorlibexecdir)" || list=; \
 	for p in $$list; do echo "$$p $$p"; done | \
 	sed 's/$(EXEEXT)$$//' | \
 	while read p p1; do if test -f $$p; \
@@ -1627,23 +1637,26 @@ install-binPROGRAMS: $(bin_PROGRAMS)
 	while read type dir files; do \
 	    if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
 	    test -z "$$files" || { \
-	      echo " $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(bindir)$$dir'"; \
-	      $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
+	      echo " $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(navigatorlibexecdir)$$dir'"; \
+	      $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(navigatorlibexecdir)$$dir" || exit $$?; \
 	    } \
 	; done
 
-uninstall-binPROGRAMS:
+uninstall-navigatorlibexecPROGRAMS:
 	@$(NORMAL_UNINSTALL)
-	@list='$(bin_PROGRAMS)'; test -n "$(bindir)" || list=; \
+	@list='$(navigatorlibexec_PROGRAMS)'; test -n "$(navigatorlibexecdir)" || list=; \
 	files=`for p in $$list; do echo "$$p"; done | \
 	  sed -e 'h;s,^.*/,,;s/$(EXEEXT)$$//;$(transform)' \
 	      -e 's/$$/$(EXEEXT)/' `; \
 	test -n "$$list" || exit 0; \
-	echo " ( cd '$(DESTDIR)$(bindir)' && rm -f" $$files ")"; \
-	cd "$(DESTDIR)$(bindir)" && rm -f $$files
+	echo " ( cd '$(DESTDIR)$(navigatorlibexecdir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(navigatorlibexecdir)" && rm -f $$files
 
-clean-binPROGRAMS:
-	-test -z "$(bin_PROGRAMS)" || rm -f $(bin_PROGRAMS)
+clean-navigatorlibexecPROGRAMS:
+	-test -z "$(navigatorlibexec_PROGRAMS)" || rm -f $(navigatorlibexec_PROGRAMS)
+
+clean-noinstPROGRAMS:
+	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
 Any.test$(EXEEXT): $(Any_test_OBJECTS) $(Any_test_DEPENDENCIES) $(EXTRA_Any_test_DEPENDENCIES) 
 	@rm -f Any.test$(EXEEXT)
 	$(CXXLINK) $(Any_test_OBJECTS) $(Any_test_LDADD) $(LIBS)
@@ -1701,6 +1714,41 @@ URL.test$(EXEEXT): $(URL_test_OBJECTS) $(URL_test_DEPENDENCIES) $(EXTRA_URL_test
 harness$(EXEEXT): $(harness_OBJECTS) $(harness_DEPENDENCIES) $(EXTRA_harness_DEPENDENCIES) 
 	@rm -f harness$(EXEEXT)
 	$(CXXLINK) $(harness_OBJECTS) $(harness_LDADD) $(LIBS)
+navigator$(EXEEXT): $(navigator_OBJECTS) $(navigator_DEPENDENCIES) $(EXTRA_navigator_DEPENDENCIES) 
+	@rm -f navigator$(EXEEXT)
+	$(navigator_LINK) $(navigator_OBJECTS) $(navigator_LDADD) $(LIBS)
+install-dist_binSCRIPTS: $(dist_bin_SCRIPTS)
+	@$(NORMAL_INSTALL)
+	test -z "$(bindir)" || $(MKDIR_P) "$(DESTDIR)$(bindir)"
+	@list='$(dist_bin_SCRIPTS)'; test -n "$(bindir)" || list=; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  if test -f "$$d$$p"; then echo "$$d$$p"; echo "$$p"; else :; fi; \
+	done | \
+	sed -e 'p;s,.*/,,;n' \
+	    -e 'h;s|.*|.|' \
+	    -e 'p;x;s,.*/,,;$(transform)' | sed 'N;N;N;s,\n, ,g' | \
+	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1; } \
+	  { d=$$3; if (dirs[d] != 1) { print "d", d; dirs[d] = 1 } \
+	    if ($$2 == $$4) { files[d] = files[d] " " $$1; \
+	      if (++n[d] == $(am__install_max)) { \
+		print "f", d, files[d]; n[d] = 0; files[d] = "" } } \
+	    else { print "f", d "/" $$4, $$1 } } \
+	  END { for (d in files) print "f", d, files[d] }' | \
+	while read type dir files; do \
+	     if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
+	     test -z "$$files" || { \
+	       echo " $(INSTALL_SCRIPT) $$files '$(DESTDIR)$(bindir)$$dir'"; \
+	       $(INSTALL_SCRIPT) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
+	     } \
+	; done
+
+uninstall-dist_binSCRIPTS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(dist_bin_SCRIPTS)'; test -n "$(bindir)" || exit 0; \
+	files=`for p in $$list; do echo "$$p"; done | \
+	       sed -e 's,.*/,,;$(transform)'`; \
+	dir='$(DESTDIR)$(bindir)'; $(am__uninstall_files_from_dir)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -2211,6 +2259,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/harness.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libesfontmanager_a-FontDatabase.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libesfontmanager_a-FontManager.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/navigator-Navigator.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/navigator-Test.glut.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/utf.Po@am__quote@
 
 .cc.o:
@@ -8023,6 +8073,34 @@ harness.obj: harness/harness.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o harness.obj `if test -f 'harness/harness.cpp'; then $(CYGPATH_W) 'harness/harness.cpp'; else $(CYGPATH_W) '$(srcdir)/harness/harness.cpp'; fi`
 
+navigator-Navigator.o: Navigator.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(navigator_CXXFLAGS) $(CXXFLAGS) -MT navigator-Navigator.o -MD -MP -MF $(DEPDIR)/navigator-Navigator.Tpo -c -o navigator-Navigator.o `test -f 'Navigator.cpp' || echo '$(srcdir)/'`Navigator.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/navigator-Navigator.Tpo $(DEPDIR)/navigator-Navigator.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Navigator.cpp' object='navigator-Navigator.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(navigator_CXXFLAGS) $(CXXFLAGS) -c -o navigator-Navigator.o `test -f 'Navigator.cpp' || echo '$(srcdir)/'`Navigator.cpp
+
+navigator-Navigator.obj: Navigator.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(navigator_CXXFLAGS) $(CXXFLAGS) -MT navigator-Navigator.obj -MD -MP -MF $(DEPDIR)/navigator-Navigator.Tpo -c -o navigator-Navigator.obj `if test -f 'Navigator.cpp'; then $(CYGPATH_W) 'Navigator.cpp'; else $(CYGPATH_W) '$(srcdir)/Navigator.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/navigator-Navigator.Tpo $(DEPDIR)/navigator-Navigator.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Navigator.cpp' object='navigator-Navigator.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(navigator_CXXFLAGS) $(CXXFLAGS) -c -o navigator-Navigator.obj `if test -f 'Navigator.cpp'; then $(CYGPATH_W) 'Navigator.cpp'; else $(CYGPATH_W) '$(srcdir)/Navigator.cpp'; fi`
+
+navigator-Test.glut.o: Test.glut.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(navigator_CXXFLAGS) $(CXXFLAGS) -MT navigator-Test.glut.o -MD -MP -MF $(DEPDIR)/navigator-Test.glut.Tpo -c -o navigator-Test.glut.o `test -f 'Test.glut.cpp' || echo '$(srcdir)/'`Test.glut.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/navigator-Test.glut.Tpo $(DEPDIR)/navigator-Test.glut.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Test.glut.cpp' object='navigator-Test.glut.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(navigator_CXXFLAGS) $(CXXFLAGS) -c -o navigator-Test.glut.o `test -f 'Test.glut.cpp' || echo '$(srcdir)/'`Test.glut.cpp
+
+navigator-Test.glut.obj: Test.glut.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(navigator_CXXFLAGS) $(CXXFLAGS) -MT navigator-Test.glut.obj -MD -MP -MF $(DEPDIR)/navigator-Test.glut.Tpo -c -o navigator-Test.glut.obj `if test -f 'Test.glut.cpp'; then $(CYGPATH_W) 'Test.glut.cpp'; else $(CYGPATH_W) '$(srcdir)/Test.glut.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/navigator-Test.glut.Tpo $(DEPDIR)/navigator-Test.glut.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Test.glut.cpp' object='navigator-Test.glut.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(navigator_CXXFLAGS) $(CXXFLAGS) -c -o navigator-Test.glut.obj `if test -f 'Test.glut.cpp'; then $(CYGPATH_W) 'Test.glut.cpp'; else $(CYGPATH_W) '$(srcdir)/Test.glut.cpp'; fi`
+
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/$*.Tpo $(DEPDIR)/$*.Po
@@ -8044,27 +8122,42 @@ CSSGrammar.cc: css/CSSGrammar.yy
 	 \
 	$(am__skipyacc) \
 	$(SHELL) $(YLWRAP) `test -f 'css/CSSGrammar.yy' || echo '$(srcdir)/'`css/CSSGrammar.yy y.tab.c CSSGrammar.cc y.tab.h CSSGrammar.h y.output CSSGrammar.output -- $(YACC) $(AM_YFLAGS) $(YFLAGS)
-install-nobase_nodist_includeHEADERS: $(nobase_nodist_include_HEADERS)
+install-aboutdataDATA: $(aboutdata_DATA)
 	@$(NORMAL_INSTALL)
-	test -z "$(includedir)" || $(MKDIR_P) "$(DESTDIR)$(includedir)"
-	@list='$(nobase_nodist_include_HEADERS)'; test -n "$(includedir)" || list=; \
-	$(am__nobase_list) | while read dir files; do \
-	  xfiles=; for file in $$files; do \
-	    if test -f "$$file"; then xfiles="$$xfiles $$file"; \
-	    else xfiles="$$xfiles $(srcdir)/$$file"; fi; done; \
-	  test -z "$$xfiles" || { \
-	    test "x$$dir" = x. || { \
-	      echo "$(MKDIR_P) '$(DESTDIR)$(includedir)/$$dir'"; \
-	      $(MKDIR_P) "$(DESTDIR)$(includedir)/$$dir"; }; \
-	    echo " $(INSTALL_HEADER) $$xfiles '$(DESTDIR)$(includedir)/$$dir'"; \
-	    $(INSTALL_HEADER) $$xfiles "$(DESTDIR)$(includedir)/$$dir" || exit $$?; }; \
+	test -z "$(aboutdatadir)" || $(MKDIR_P) "$(DESTDIR)$(aboutdatadir)"
+	@list='$(aboutdata_DATA)'; test -n "$(aboutdatadir)" || list=; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(aboutdatadir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(aboutdatadir)" || exit $$?; \
 	done
 
-uninstall-nobase_nodist_includeHEADERS:
+uninstall-aboutdataDATA:
 	@$(NORMAL_UNINSTALL)
-	@list='$(nobase_nodist_include_HEADERS)'; test -n "$(includedir)" || list=; \
-	$(am__nobase_strip_setup); files=`$(am__nobase_strip)`; \
-	dir='$(DESTDIR)$(includedir)'; $(am__uninstall_files_from_dir)
+	@list='$(aboutdata_DATA)'; test -n "$(aboutdatadir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(aboutdatadir)'; $(am__uninstall_files_from_dir)
+install-navigatordataDATA: $(navigatordata_DATA)
+	@$(NORMAL_INSTALL)
+	test -z "$(navigatordatadir)" || $(MKDIR_P) "$(DESTDIR)$(navigatordatadir)"
+	@list='$(navigatordata_DATA)'; test -n "$(navigatordatadir)" || list=; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(navigatordatadir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(navigatordatadir)" || exit $$?; \
+	done
+
+uninstall-navigatordataDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(navigatordata_DATA)'; test -n "$(navigatordatadir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(navigatordatadir)'; $(am__uninstall_files_from_dir)
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -8283,9 +8376,10 @@ distcleancheck: distclean
 check-am: all-am
 check: $(BUILT_SOURCES)
 	$(MAKE) $(AM_MAKEFLAGS) check-am
-all-am: Makefile $(LIBRARIES) $(PROGRAMS) $(HEADERS) config.h
+all-am: Makefile $(LIBRARIES) $(PROGRAMS) $(SCRIPTS) $(DATA) \
+		$(HEADERS) config.h
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(includedir)"; do \
+	for dir in "$(DESTDIR)$(navigatorlibexecdir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(aboutdatadir)" "$(DESTDIR)$(navigatordatadir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: $(BUILT_SOURCES)
@@ -8324,8 +8418,8 @@ maintainer-clean-generic:
 	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-am
 
-clean-am: clean-binPROGRAMS clean-generic clean-libLIBRARIES \
-	clean-local mostlyclean-am
+clean-am: clean-generic clean-local clean-navigatorlibexecPROGRAMS \
+	clean-noinstLIBRARIES clean-noinstPROGRAMS mostlyclean-am
 
 distclean: distclean-am
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
@@ -8346,13 +8440,14 @@ info: info-am
 
 info-am:
 
-install-data-am: install-nobase_nodist_includeHEADERS
+install-data-am: install-aboutdataDATA install-navigatordataDATA
 
 install-dvi: install-dvi-am
 
 install-dvi-am:
 
-install-exec-am: install-binPROGRAMS install-libLIBRARIES
+install-exec-am: install-dist_binSCRIPTS \
+	install-navigatorlibexecPROGRAMS
 
 install-html: install-html-am
 
@@ -8393,29 +8488,30 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-binPROGRAMS uninstall-libLIBRARIES \
-	uninstall-nobase_nodist_includeHEADERS
+uninstall-am: uninstall-aboutdataDATA uninstall-dist_binSCRIPTS \
+	uninstall-navigatordataDATA uninstall-navigatorlibexecPROGRAMS
 
 .MAKE: all check install install-am install-strip
 
 .PHONY: CTAGS GTAGS all all-am am--refresh check check-am clean \
-	clean-binPROGRAMS clean-generic clean-libLIBRARIES clean-local \
-	ctags dist dist-all dist-bzip2 dist-gzip dist-lzip dist-lzma \
-	dist-shar dist-tarZ dist-xz dist-zip distcheck distclean \
-	distclean-compile distclean-generic distclean-hdr \
-	distclean-tags distcleancheck distdir distuninstallcheck dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-binPROGRAMS install-data install-data-am install-dvi \
+	clean-generic clean-local clean-navigatorlibexecPROGRAMS \
+	clean-noinstLIBRARIES clean-noinstPROGRAMS ctags dist dist-all \
+	dist-bzip2 dist-gzip dist-lzip dist-lzma dist-shar dist-tarZ \
+	dist-xz dist-zip distcheck distclean distclean-compile \
+	distclean-generic distclean-hdr distclean-tags distcleancheck \
+	distdir distuninstallcheck dvi dvi-am html html-am info \
+	info-am install install-aboutdataDATA install-am install-data \
+	install-data-am install-dist_binSCRIPTS install-dvi \
 	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am \
-	install-libLIBRARIES install-man \
-	install-nobase_nodist_includeHEADERS install-pdf \
-	install-pdf-am install-ps install-ps-am install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic pdf pdf-am ps ps-am tags uninstall \
-	uninstall-am uninstall-binPROGRAMS uninstall-libLIBRARIES \
-	uninstall-nobase_nodist_includeHEADERS
+	install-html-am install-info install-info-am install-man \
+	install-navigatordataDATA install-navigatorlibexecPROGRAMS \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic pdf pdf-am ps ps-am \
+	tags uninstall uninstall-aboutdataDATA uninstall-am \
+	uninstall-dist_binSCRIPTS uninstall-navigatordataDATA \
+	uninstall-navigatorlibexecPROGRAMS
 
 
 %.cpp : %.re
@@ -8434,7 +8530,8 @@ org/w3c/dom/Node.cpp : $(idl_files)
 
 $(generated_sources) : org/w3c/dom/Node.cpp
 
-bin_PROGRAMS : $(LDADD)
+noinst_PROGRAMS : $(LDADD) libesjsapi.a libesv8api.a
+navigatorlibexec_PROGRAMS : $(LDADD) libesjsapi.a libesv8api.a
 
 clean-local:
 	rm -rf org css html $(generated_sources) $(generated_headers) $(generated_scanners) *.output

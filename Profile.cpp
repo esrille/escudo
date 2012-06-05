@@ -31,6 +31,8 @@ Profile::Profile(const std::string& path) :
 {
     while (0 < profile.length() && profile[profile.length() - 1] == '/')
         profile.erase(profile.length() - 1);
+    if (createDirectories(profile) == -1)
+        return;
 
     std::string lockPath(createPath("lock"));
     int lock = open(lockPath.c_str(), O_CREAT | O_RDWR, 0600);
@@ -54,6 +56,52 @@ Profile::~Profile()
     close(lock);
 }
 
+int Profile::createDirectories(const std::string& path)
+{
+    if (path.empty()) {
+        error = EACCES;
+        return -1;
+    }
+
+    std::string p;
+    if (path[0] == '/')
+        p = "/";
+    struct stat buf;
+    for (;;) {
+        size_t pos = path.find('/', p.length());
+        if (pos != std::string::npos) {
+            p = path.substr(0, pos);
+            if (stat(p.c_str(), &buf) == -1) {
+                if (mkdir(p.c_str(), 0700) == -1)
+                    return -1;
+                stat(p.c_str(), &buf);
+            }
+            if (!S_ISDIR(buf.st_mode)) {
+                error = ENOTDIR;
+                return -1;
+            }
+            p += '/';
+        } else {
+            if (stat(path.c_str(), &buf) == -1) {
+                if (mkdir(path.c_str(), 0700) == -1)
+                    return -1;
+                stat(path.c_str(), &buf);
+            }
+            if (!S_ISDIR(buf.st_mode)) {
+                error = ENOTDIR;
+                return -1;
+            }
+            if ((buf.st_mode & 0700) != 0700) {
+                error = EACCES;
+                return -1;
+            }
+            break;
+        }
+    }
+    error = 0;
+    return 0;
+}
+
 std::string Profile::createPath(const std::string& name) const
 {
     std::string path(name);
@@ -75,6 +123,24 @@ int Profile::createDirectory(const std::string& name)
     }
     error = errno;
     return -1;
+}
+
+bool Profile::hasFile(const std::string& path, int mode)
+{
+    struct stat buf;
+
+    if (stat(path.c_str(), &buf) == -1)
+        return false;
+    if (!S_ISREG(buf.st_mode)) {
+        error = ENOENT;
+        return false;
+    }
+    if ((buf.st_mode & mode) != mode) {
+        error = EACCES;
+        return false;
+    }
+    error = 0;
+    return true;
 }
 
 bool Profile::isDirectory(const std::string& path)

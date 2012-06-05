@@ -43,7 +43,9 @@ public:
     std::string createPath(const std::string& name) const;
     int createDirectory(const std::string& name);
 
+    bool hasFile(const std::string& path, int mode = 0600);
     bool isDirectory(const std::string& path);
+    int createDirectories(const std::string& path);
 };
 
 #endif  // ES_PROFILE_H

@@ -527,14 +527,14 @@ generated_scanners = \
 
 BUILT_SOURCES = $(generated_headers) $(generated_scanners) $(generated_sources)
 
-nobase_nodist_include_HEADERS = $(generated_headers)
+nobase_nodist_noinst_HEADERS = $(generated_headers)
 
 $(generated_headers) : org/w3c/dom/Node.h
 
 org/w3c/dom/Node.h : $(idl_files)
 	esidl -messenger -string std::u16string -object Object -fno-multipleinheritance $^
 
-lib_LIBRARIES = libeshtml5.a libesfontmanager.a libesjsapi.a libesv8api.a
+noinst_LIBRARIES = libeshtml5.a libesfontmanager.a libesjsapi.a libesv8api.a
 
 LDADD = libeshtml5.a libesfontmanager.a \
 	$(ICU_LIBS) $(FREETYPE_LIBS) \
@@ -1122,7 +1122,7 @@ libeshtml5_a_SOURCES += \
 	xhr/XMLHttpRequestUploadImp.cpp \
 	xhr/XMLHttpRequestUploadImp.h
 
-bin_PROGRAMS = \
+noinst_PROGRAMS = \
 	harness \
 	Any.test \
 	FontManager.test \
@@ -1143,7 +1143,7 @@ bin_PROGRAMS = \
 	NavigatorV8.test \
 	Profile.test
 
-bin_PROGRAMS : $(LDADD)
+noinst_PROGRAMS : $(LDADD) libesjsapi.a libesv8api.a
 
 js_LDADD = $(LDADD) libesjsapi.a
 v8_LDADD = $(LDADD) libesv8api.a -lv8
@@ -1207,6 +1207,38 @@ NavigatorV8_test_LDADD = $(v8_LDADD)
 NavigatorV8_test_CXXFLAGS = $(AM_CFLAGS) -DUSE_V8
 
 Profile_test_SOURCES = Profile.test.cpp
+
+dist_bin_SCRIPTS = esnavigator
+
+esrillelibexecdir = $(libexecdir)/esrille
+navigatorlibexecdir = $(esrillelibexecdir)/navigator
+
+navigatorlibexec_PROGRAMS = navigator
+navigatorlibexec_PROGRAMS : $(LDADD) libesjsapi.a libesv8api.a
+
+navigator_SOURCES = Navigator.cpp Test.glut.cpp
+navigator_LDADD = $(js_LDADD)
+navigator_CXXFLAGS = $(AM_CFLAGS) -DUSE_JS
+
+esrilledatadir = $(datadir)/esrille
+navigatordatadir = $(esrilledatadir)/navigator
+aboutdatadir = $(navigatordatadir)/about
+
+navigatordata_DATA =  \
+	navigator/about.html \
+	navigator/default.css \
+	navigator/navigator.html \
+	navigator/Cancel_32x32.png \
+	navigator/Favorites_32x32.png \
+	navigator/Gear_32x32.gif \
+	navigator/Gear_32x32.png \
+	navigator/Next_32x32.png \
+	navigator/Previous_32x32.png \
+	navigator/Refresh_32x32.png \
+	navigator/Stop_32x32.png
+
+aboutdata_DATA =  \
+	navigator/about/blank
 
 clean-local:
 	rm -rf org css html $(generated_sources) $(generated_headers) $(generated_scanners) *.output
