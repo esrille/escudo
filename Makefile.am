@@ -1158,7 +1158,7 @@ noinst_PROGRAMS : $(LDADD) libesjsapi.a libesv8api.a
 js_LDADD = $(LDADD) libesjsapi.a
 v8_LDADD = $(LDADD) libesv8api.a -lv8
 
-harness_SOURCES = harness/harness.cpp
+harness_SOURCES = harness.cpp
 harness_LDADD = $(js_LDADD)
 
 Any_test_SOURCES = Any.test.cpp
@@ -1235,25 +1235,28 @@ navigatordatadir = $(esrilledatadir)/navigator
 aboutdatadir = $(navigatordatadir)/about
 
 dist_navigatordata_DATA =  \
-	navigator/about.html \
-	navigator/default.css \
-	navigator/navigator.html \
-	navigator/Cancel_32x32.png \
-	navigator/Favorites_32x32.png \
-	navigator/Gear_32x32.gif \
-	navigator/Gear_32x32.png \
-	navigator/Next_32x32.png \
-	navigator/Previous_32x32.png \
-	navigator/Refresh_32x32.png \
-	navigator/Stop_32x32.png
+	data/navigator/about.html \
+	data/navigator/default.css \
+	data/navigator/navigator.html \
+	data/navigator/Cancel_32x32.png \
+	data/navigator/Favorites_32x32.png \
+	data/navigator/Gear_32x32.gif \
+	data/navigator/Gear_32x32.png \
+	data/navigator/Next_32x32.png \
+	data/navigator/Previous_32x32.png \
+	data/navigator/Refresh_32x32.png \
+	data/navigator/Stop_32x32.png
 
 dist_aboutdata_DATA =  \
-	navigator/about/blank
+	data/navigator/about/blank
 
 clean-local:
 	rm -rf org css html $(generated_sources) $(generated_headers) $(generated_scanners) *.output
 
 EXTRA_DIST = \
+	esnavigator.spec.in \
+	esnavigator.spec \
+	LICENSE \
 	config.h \
 	idl/COPYRIGHT.html \
 	idl/2dcontext.idl \

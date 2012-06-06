@@ -1,5 +1,6 @@
 dnl Process this file with autoconf to produce a configure script
-AC_INIT([es-www], [0.1.5])
+AC_INIT([esnavigator], [0.1.5])
+AC_CONFIG_AUX_DIR(.)
 AM_INIT_AUTOMAKE([foreign no-define])
 AC_PROG_YACC
 AC_PROG_CXX
@@ -7,7 +8,7 @@ AC_PROG_CC
 AM_PROG_AS
 AC_PROG_RANLIB
 AC_CONFIG_HEADER([config.h])
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([esnavigator.spec Makefile])
 
 AH_BOTTOM([#include <Object.h>])
 AH_BOTTOM([#if 4 < __GNUC__ || __GNUC__ == 4 && 6 <= __GNUC_MINOR__

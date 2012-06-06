@@ -57,12 +57,12 @@ noinst_PROGRAMS = harness$(EXEEXT) Any.test$(EXEEXT) \
 	NavigatorV8.test$(EXEEXT) Profile.test$(EXEEXT)
 navigatorlibexec_PROGRAMS = navigator$(EXEEXT)
 subdir = .
-DIST_COMMON = $(am__configure_deps) $(dist_aboutdata_DATA) \
+DIST_COMMON = README $(am__configure_deps) $(dist_aboutdata_DATA) \
 	$(dist_bin_SCRIPTS) $(dist_navigatordata_DATA) \
-	$(srcdir)/../depcomp $(srcdir)/../install-sh \
-	$(srcdir)/../missing $(srcdir)/../ylwrap $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
-	$(top_srcdir)/configure CSSGrammar.cc CSSGrammar.h
+	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
+	$(srcdir)/config.h.in $(srcdir)/esnavigator.spec.in \
+	$(top_srcdir)/configure CSSGrammar.cc CSSGrammar.h ChangeLog \
+	depcomp install-sh missing ylwrap
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -71,7 +71,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = esnavigator.spec
 CONFIG_CLEAN_VPATH_FILES =
 LIBRARIES = $(noinst_LIBRARIES)
 AR = ar
@@ -466,7 +466,7 @@ am__uninstall_files_from_dir = { \
   }
 SCRIPTS = $(dist_bin_SCRIPTS)
 DEFAULT_INCLUDES = -I.@am__isrc@
-depcomp = $(SHELL) $(top_srcdir)/../depcomp
+depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 am__mv = mv -f
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
@@ -475,7 +475,7 @@ CXXLD = $(CXX)
 CXXLINK = $(CXXLD) $(AM_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) $(LDFLAGS) \
 	-o $@
 YACCCOMPILE = $(YACC) $(AM_YFLAGS) $(YFLAGS)
-YLWRAP = $(top_srcdir)/../ylwrap
+YLWRAP = $(top_srcdir)/ylwrap
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
@@ -1436,7 +1436,7 @@ libeshtml5_a_SOURCES = Object.h ObjectArrayImp.h Reflect.h Any.cpp \
 	xhr/XMLHttpRequestUploadImp.h
 js_LDADD = $(LDADD) libesjsapi.a
 v8_LDADD = $(LDADD) libesv8api.a -lv8
-harness_SOURCES = harness/harness.cpp
+harness_SOURCES = harness.cpp
 harness_LDADD = $(js_LDADD)
 Any_test_SOURCES = Any.test.cpp
 Any_test_LDADD = $(js_LDADD)
@@ -1487,22 +1487,25 @@ esrilledatadir = $(datadir)/esrille
 navigatordatadir = $(esrilledatadir)/navigator
 aboutdatadir = $(navigatordatadir)/about
 dist_navigatordata_DATA = \
-	navigator/about.html \
-	navigator/default.css \
-	navigator/navigator.html \
-	navigator/Cancel_32x32.png \
-	navigator/Favorites_32x32.png \
-	navigator/Gear_32x32.gif \
-	navigator/Gear_32x32.png \
-	navigator/Next_32x32.png \
-	navigator/Previous_32x32.png \
-	navigator/Refresh_32x32.png \
-	navigator/Stop_32x32.png
+	data/navigator/about.html \
+	data/navigator/default.css \
+	data/navigator/navigator.html \
+	data/navigator/Cancel_32x32.png \
+	data/navigator/Favorites_32x32.png \
+	data/navigator/Gear_32x32.gif \
+	data/navigator/Gear_32x32.png \
+	data/navigator/Next_32x32.png \
+	data/navigator/Previous_32x32.png \
+	data/navigator/Refresh_32x32.png \
+	data/navigator/Stop_32x32.png
 
 dist_aboutdata_DATA = \
-	navigator/about/blank
+	data/navigator/about/blank
 
 EXTRA_DIST = \
+	esnavigator.spec.in \
+	esnavigator.spec \
+	LICENSE \
 	config.h \
 	idl/COPYRIGHT.html \
 	idl/2dcontext.idl \
@@ -1602,6 +1605,8 @@ $(srcdir)/config.h.in:  $(am__configure_deps)
 
 distclean-hdr:
 	-rm -f config.h stamp-h1
+esnavigator.spec: $(top_builddir)/config.status $(srcdir)/esnavigator.spec.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
 
 clean-noinstLIBRARIES:
 	-test -z "$(noinst_LIBRARIES)" || rm -f $(noinst_LIBRARIES)
@@ -8065,20 +8070,6 @@ ScriptV8_test-Test.glut.obj: Test.glut.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Test.glut.cpp' object='ScriptV8_test-Test.glut.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ScriptV8_test_CXXFLAGS) $(CXXFLAGS) -c -o ScriptV8_test-Test.glut.obj `if test -f 'Test.glut.cpp'; then $(CYGPATH_W) 'Test.glut.cpp'; else $(CYGPATH_W) '$(srcdir)/Test.glut.cpp'; fi`
-
-harness.o: harness/harness.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT harness.o -MD -MP -MF $(DEPDIR)/harness.Tpo -c -o harness.o `test -f 'harness/harness.cpp' || echo '$(srcdir)/'`harness/harness.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/harness.Tpo $(DEPDIR)/harness.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='harness/harness.cpp' object='harness.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o harness.o `test -f 'harness/harness.cpp' || echo '$(srcdir)/'`harness/harness.cpp
-
-harness.obj: harness/harness.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT harness.obj -MD -MP -MF $(DEPDIR)/harness.Tpo -c -o harness.obj `if test -f 'harness/harness.cpp'; then $(CYGPATH_W) 'harness/harness.cpp'; else $(CYGPATH_W) '$(srcdir)/harness/harness.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/harness.Tpo $(DEPDIR)/harness.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='harness/harness.cpp' object='harness.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o harness.obj `if test -f 'harness/harness.cpp'; then $(CYGPATH_W) 'harness/harness.cpp'; else $(CYGPATH_W) '$(srcdir)/harness/harness.cpp'; fi`
 
 navigator-Navigator.o: Navigator.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(navigator_CXXFLAGS) $(CXXFLAGS) -MT navigator-Navigator.o -MD -MP -MF $(DEPDIR)/navigator-Navigator.Tpo -c -o navigator-Navigator.o `test -f 'Navigator.cpp' || echo '$(srcdir)/'`Navigator.cpp
