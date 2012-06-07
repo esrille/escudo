@@ -98,7 +98,7 @@ void WindowImp::BackgroundTask::operator()()
             state = Layouting;
             view->setSize(window->width, window->height);   // TODO: sync with mainloop
             view->layOut();
-            view->setFlags(4);
+            view->setFlags(Box::NEED_REPAINT);
         }
 
         state = Done;

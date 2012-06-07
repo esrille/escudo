@@ -245,24 +245,25 @@ bool WindowImp::poll()
             backgroundTask.wakeUp(BackgroundTask::Layout);
             break;
         case BackgroundTask::Done: {
+            unsigned flags = 0;
             ViewCSSImp* next = backgroundTask.getView();
             if (view != next) {
-                if (next->flip())
+                if (next->flip()) {
+                    if (view)
+                        flags |= view->getFlags();
                     updateView(next);
+                }
             }
             if (view) {
-                if (unsigned flags = view->getFlags()) {
-                    if (view->flip())
+                if (flags |= view->getFlags()) {
+                    view->flip();
+                    view->clearFlags();
+                    if (flags & Box::NEED_RESTYLING)
+                        backgroundTask.wakeUp(BackgroundTask::Cascade);
+                    else if (flags & Box::NEED_REFLOW)
+                        backgroundTask.wakeUp(BackgroundTask::Layout);
+                    if (flags & Box::NEED_REPAINT)
                         redisplay = true;
-                    else {
-                        view->clearFlags();
-                        if (flags & Box::NEED_RESTYLING)
-                            backgroundTask.wakeUp(BackgroundTask::Cascade);
-                        else if (flags & Box::NEED_REFLOW)
-                            backgroundTask.wakeUp(BackgroundTask::Layout);
-                        if (flags & Box::NEED_REPAINT)
-                            redisplay = true;
-                    }
                 }
             }
             break;
@@ -1660,7 +1661,7 @@ void WindowImp::scroll(int x, int y)
     y = std::max(0, std::min(y, static_cast<int>(overflow)));
 
     window->scroll(x, y);
-    view->setFlags(4);
+    view->setFlags(Box::NEED_REPAINT);
 }
 
 void WindowImp::scrollTo(int x, int y)
