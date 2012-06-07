@@ -125,28 +125,24 @@ StackingContext* StackingContext::addContext(bool auto_, int zIndex)
 
 void StackingContext::clip(ViewCSSImp* view, Box* base, float scrollX, float scrollY)
 {
-    float left;
-    float top;
-    float w;
-    float h;
-
+    clipLeft = clipTop = clipWidth = clipHeight = 0.0f;
     for (BlockLevelBox* clip = base->clipBox; clip; clip = clip->clipBox) {
         if (clip->style->overflow.getValue() != CSSOverflowValueImp::Visible) {
             Element element = interface_cast<Element>(clip->node);
             glTranslatef(-element.getScrollLeft(), -element.getScrollTop(), 0.0f);
             if (clip != base->clipBox) {
-                left -= element.getScrollLeft();
-                top -= element.getScrollTop();
+                clipLeft -= element.getScrollLeft();
+                clipTop -= element.getScrollTop();
             }
         }
         // TODO: if (base->isAbsolutelyPositioned()) ... else ...
         if (clip == base->clipBox) {
-            left = clip->x + clip->marginLeft + clip->borderLeft;
-            top = clip->y + clip->marginTop + clip->borderTop;
-            w = clip->getPaddingWidth();
-            h = clip->getPaddingHeight();
+            clipLeft = clip->x + clip->marginLeft + clip->borderLeft;
+            clipTop = clip->y + clip->marginTop + clip->borderTop;
+            clipWidth = clip->getPaddingWidth();
+            clipHeight = clip->getPaddingHeight();
         } else {
-            Box::unionRect(left, top, w, h,
+            Box::unionRect(clipLeft, clipTop, clipWidth, clipHeight,
                            clip->x + clip->marginLeft + clip->borderLeft,
                            clip->y + clip->marginTop + clip->borderTop,
                            clip->getPaddingWidth(),
@@ -154,20 +150,14 @@ void StackingContext::clip(ViewCSSImp* view, Box* base, float scrollX, float scr
         }
     }
 
-    if (base->clipBox) {
-        left -= scrollX;
-        top -= scrollY;
-        view->clip(left, top, w, h);
-    }
+    if (0.0f < clipWidth && 0.0f < clipHeight)
+        view->clip(clipLeft, clipTop, clipWidth, clipHeight);
 }
 
 void StackingContext::unclip(ViewCSSImp* view, Box* base)
 {
-    if (base->clipBox) {
-        float w = view->getInitialContainingBlock()->getWidth();
-        float h = view->getInitialContainingBlock()->getHeight();
-        view->unclip(0, 0, w, h);   // TODO: better to keep the original clip rect and unclip by using it.
-    }
+    if (0.0f < clipWidth && 0.0f < clipHeight)
+        view->unclip(clipLeft, clipTop, clipWidth, clipHeight);
 }
 
 void StackingContext::render(ViewCSSImp* view)
