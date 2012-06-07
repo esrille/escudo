@@ -206,12 +206,12 @@ void init(int* argc, char* argv[])
     glutTimerFunc(50, timer, 0);
     glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
 
-#ifndef NDEBUG
     GLint stencilBits;
     glGetIntegerv(GL_STENCIL_BITS, &stencilBits);
-    std::cout << "GL_STENCIL_BITS: " << stencilBits << '\n';
-#endif
-    // TODO: assuming 8 <= stencilBits for now
+    if (stencilBits < 8) {
+        std::cout << "error: The number of the OpenGL stencil bits needs to be greater than or equal to 8. Current: " << stencilBits << ".\n";
+        exit(EXIT_FAILURE);
+    }
     glClearStencil(0x00);
     glEnable(GL_STENCIL_TEST);
 }
