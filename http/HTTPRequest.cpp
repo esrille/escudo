@@ -37,7 +37,7 @@ const unsigned short HttpRequest::COMPLETE;
 const unsigned short HttpRequest::DONE;
 
 std::string HttpRequest::aboutPath;
-std::string HttpRequest::cachePath("/tmp/esXXXXXX");
+std::string HttpRequest::cachePath("/tmp");
 
 int HttpRequest::getContentDescriptor()
 {
