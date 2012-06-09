@@ -82,6 +82,8 @@ Box* ViewCSSImp::boxFromPoint(int x, int y)
 {
     if (!renderTree)
         return 0;
+    x += window->getScrollX();
+    y += window->getScrollY();
     if (Box* target = renderTree.get()->boxFromPoint(x, y))
         return target;
     return renderTree.get();
