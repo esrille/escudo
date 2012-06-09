@@ -65,6 +65,7 @@ public:
     ~HttpRequest();
 
     bool constructResponseFromCache(bool sync = false);
+    bool constructResponseFromData();
 
     HttpRequestMessage& getRequestMessage() {
         return request;

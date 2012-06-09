@@ -65,6 +65,8 @@ class URL
     bool parseAbout(size_t& pos);
     bool parseAboutRelative();
 
+    bool parseData(size_t& pos);
+
     void clear();
     bool hasScheme();
     bool parse();
@@ -75,7 +77,7 @@ public:
         return url.empty();
     }
 
-    operator std::u16string() const {
+    operator const std::u16string&() const {
         return url;
     }
 

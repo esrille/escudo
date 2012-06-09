@@ -46,7 +46,7 @@ public:
         return uri.empty();
     }
 
-    operator std::string() const {
+    operator const std::string&() const {
         return uri;
     }
 
@@ -71,6 +71,9 @@ public:
     }
 
     URI(const URL& url);
+
+    static std::string percentEncode(const std::u16string& string, size_t pos = 0, size_t n = std::string::npos);
+    static std::string percentDecode(const std::string& string, size_t pos = 0, size_t n = std::string::npos);
 };
 
 }}}}  // org::w3c::dom::bootstrap

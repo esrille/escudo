@@ -130,6 +130,75 @@ bool HttpRequest::constructResponseFromCache(bool sync)
     return errorFlag;
 }
 
+namespace {
+
+bool decodeBase64(std::fstream& content, const std::string& data)
+{
+    static const char* const table = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    char buf[4];
+    char out[3];
+    const char* p = data.c_str();
+    int i = 0;
+    int count = 3;
+    while (char c = *p++) {
+        if (c == '=') {
+            buf[i++] = 0;
+            if (--count <= 0)
+                return false;
+        } else if (const char* found = strchr(table, c))
+            buf[i++] = found - table;
+        else if (isspace(c))
+            continue;
+        else
+            return false;
+        if (i == 4) {
+            out[0] = ((buf[0] << 2) & 0xfc) | ((buf[1] >> 4) & 0x03);
+            out[1] = ((buf[1] << 4) & 0xf0) | ((buf[2] >> 2) & 0x0f);
+            out[2] = ((buf[2] << 6) & 0xc0) | (buf[3] & 0x3f);
+            content.write(out, count);
+            i = 0;
+            count = 3;
+        }
+    }
+    return i == 0;
+}
+
+}  // namespace
+
+bool HttpRequest::constructResponseFromData()
+{
+    URI dataURI(request.getURL());
+    const std::string& data(dataURI);
+    size_t end = data.find(',');
+    if (end == std::string::npos) {
+        notify(true);
+        return errorFlag;
+    }
+    bool base64(false);
+    if (7 <= end && data.compare(end - 7, 7, ";base64") == 0) {
+        end -= 7;
+        base64 = true;
+    }
+    response.parseMediaType(data.c_str() + 5, data.c_str() + end);
+    std::fstream& content = getContent();
+    if (!content.is_open()) {
+        notify(true);
+        return errorFlag;
+    }
+    if (!base64) {
+        end += 1;
+        std::string decoded(URI::percentDecode(URI::percentDecode(data, end, data.length() - end)));
+        content << decoded;
+    } else {
+        end += 8;
+        std::string decoded(URI::percentDecode(URI::percentDecode(data, end, data.length() - end)));
+        errorFlag = !decodeBase64(content, decoded);
+    }
+    content.flush();
+    notify(errorFlag);
+    return errorFlag;
+}
+
 bool HttpRequest::send()
 {
     if (request.getURL().isEmpty())
@@ -158,6 +227,10 @@ bool HttpRequest::send()
         return notify(fdContent == -1);
     }
 
+    if (request.getURL().testProtocol(u"data"))
+        return constructResponseFromData();
+
+    // TODO: check protocol is http.
     cache = HttpCacheManager::getInstance().send(this);
     if (!cache || cache->isBusy())
         return false;

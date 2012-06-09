@@ -694,6 +694,21 @@ bool URL::parseAbout(size_t& pos)
     return url.length() <= pos;
 }
 
+bool URL::parseData(size_t& pos)
+{
+    if (url.length() <= pos)
+        return false;
+    size_t data = url.find(u',', pos);
+    if (data == std::u16string::npos)
+        return false;
+    pathnameStart = pos;
+    pos = data + 1;
+    while (pos < url.length() && parsePchar(pos))
+        ;
+    pathnameEnd = pos;
+    return url.length() <= pos;
+}
+
 bool URL::parseAboutRelative()
 {
     size_t pos = protocolEnd;
@@ -732,6 +747,8 @@ bool URL::parse()
         return parseFile(pos);
     if (url.compare(0, pos - 1, u"about") == 0)
         return parseAbout(pos);
+    if (url.compare(0, pos - 1, u"data") == 0)
+        return parseData(pos);
     // TODO: support other schemes
     return false;
 }
@@ -856,7 +873,7 @@ URL::URL(const URL& base, const std::u16string& relative) :
     hashEnd(0)
 {
     stripLeadingAndTrailingWhitespace(url);
-    if (hasScheme() && (base.isEmpty() || base.getProtocol() != getProtocol())) {
+    if (hasScheme() && (testProtocol(u"data") || base.isEmpty() || base.getProtocol() != getProtocol())) {
         if (!parse())
             clear();
         return;

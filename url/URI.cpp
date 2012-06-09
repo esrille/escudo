@@ -23,11 +23,11 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
-namespace {
-
-std::string percentEncode(const std::u16string& string, size_t pos, size_t n)
+std::string URI::percentEncode(const std::u16string& string, size_t pos, size_t n)
 {
     std::string encoding;
+    if (n == std::string::npos)
+        n = string.length();
     const char16_t* p = string.c_str() + pos;
     for (const char16_t* s = p; s < p + n; ) {
         char32_t utf32;
@@ -49,7 +49,31 @@ std::string percentEncode(const std::u16string& string, size_t pos, size_t n)
     return encoding;
 }
 
-}  // namespace
+std::string URI::percentDecode(const std::string& string, size_t pos, size_t n)
+{
+    std::string decoding;
+    if (n == std::string::npos)
+        n = string.length();
+    const char* p = string.c_str() + pos;
+    const char* end = p + n;
+    while (p < end) {
+        char c = *p++;
+        if (c == '%' && p + 2 <= end) {
+            int x0 = isHexDigit(p[0]);
+            int x1 = isHexDigit(p[1]);
+            if (x0 && x1)
+                decoding += static_cast<char>(((p[0] - x0) << 4) | (p[1] - x1));
+            else {
+                decoding += '%';
+                decoding += p[0];
+                decoding += p[1];
+            }
+            p += 2;
+        } else
+            decoding += c;
+    }
+    return decoding;
+}
 
 void URI::clear()
 {
