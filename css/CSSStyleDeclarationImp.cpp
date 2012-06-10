@@ -1555,29 +1555,31 @@ void CSSStyleDeclarationImp::recompute(ViewCSSImp* view, CSSStyleDeclarationImp*
 #endif
 
     // TODO: find a way to skip the following cascading operation when there's no change in the decorations.
-    initialize();
-    for (const unsigned* id = paintProperties; *id != Unknown; ++id)
-        reset(*id);
-    for (auto i = ruleSet.begin(); i != ruleSet.end(); ++i) {
-        if (CSSStyleDeclarationImp* pseudo = createPseudoElementStyle(i->getPseudoElementID())) {
-            if (i->isActive(element, view))
-                pseudo->specify(i->getDeclaration());
+    if (!ruleSet.empty()) {
+        initialize();
+        for (const unsigned* id = paintProperties; *id != Unknown; ++id)
+            reset(*id);
+        for (auto i = ruleSet.begin(); i != ruleSet.end(); ++i) {
+            if (CSSStyleDeclarationImp* pseudo = createPseudoElementStyle(i->getPseudoElementID())) {
+                if (i->isActive(element, view))
+                    pseudo->specify(i->getDeclaration());
+            }
         }
-    }
-    if (elementDecl)
-        specify(elementDecl);
-    for (auto i = ruleSet.begin(); i != ruleSet.end(); ++i) {
-        if (CSSStyleDeclarationImp* pseudo = createPseudoElementStyle(i->getPseudoElementID())) {
-            if (i->isActive(element, view) && !i->isUserStyle())
-                pseudo->specifyImportant(i->getDeclaration());
+        if (elementDecl)
+            specify(elementDecl);
+        for (auto i = ruleSet.begin(); i != ruleSet.end(); ++i) {
+            if (CSSStyleDeclarationImp* pseudo = createPseudoElementStyle(i->getPseudoElementID())) {
+                if (i->isActive(element, view) && !i->isUserStyle())
+                    pseudo->specifyImportant(i->getDeclaration());
+            }
         }
-    }
-    if (elementDecl)
-        specifyImportant(elementDecl);
-    for (auto i = ruleSet.begin(); i != ruleSet.end(); ++i) {
-        if (CSSStyleDeclarationImp* pseudo = createPseudoElementStyle(i->getPseudoElementID())) {
-            if (i->isActive(element, view) && i->isUserStyle())
-                pseudo->specifyImportant(i->getDeclaration());
+        if (elementDecl)
+            specifyImportant(elementDecl);
+        for (auto i = ruleSet.begin(); i != ruleSet.end(); ++i) {
+            if (CSSStyleDeclarationImp* pseudo = createPseudoElementStyle(i->getPseudoElementID())) {
+                if (i->isActive(element, view) && i->isUserStyle())
+                    pseudo->specifyImportant(i->getDeclaration());
+            }
         }
     }
 
