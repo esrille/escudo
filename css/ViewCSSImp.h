@@ -44,6 +44,8 @@ class StackingContext;
 
 class ViewCSSImp
 {
+    friend class CSSPseudoClassSelector;    // TODO: only for match()
+
     static const unsigned MaxFontSizes = 8;
 
     css::CSSStyleSheet defaultStyleSheet;
@@ -62,6 +64,7 @@ class ViewCSSImp
     std::map<Element, CSSStyleDeclarationPtr> map;
     StackingContext* stackingContexts;
     std::list<CSSStyleSheetImp*> styleSheets;
+    std::list<Object*> hoverList;
     unsigned overflow;
 
     // layout

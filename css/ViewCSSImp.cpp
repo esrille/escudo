@@ -200,7 +200,20 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle, CSSAuto
 
         style->compute(this, parentStyle, element);
 
-        // expand binding
+        // Set style->affectedBits
+        if (!hoverList.empty()) {
+            style->affectedBits |= 1u << CSSPseudoClassSelector::Hover;
+            for (auto i = hoverList.begin(); i != hoverList.end(); ++i) {
+                if (*i != element.self()) {
+                    Element e(*i);
+                    if (CSSStyleDeclarationImp* s = getStyle(e))
+                        s->affectedBits |= 1u << CSSPseudoClassSelector::Hover;
+                }
+            }
+            hoverList.clear();
+        }
+
+        // Expand binding
         if (style->binding.getValue() != CSSBindingValueImp::None) {
             if (HTMLElementImp* imp = dynamic_cast<HTMLElementImp*>(element.self())) {
                 imp->generateShadowContent(style);

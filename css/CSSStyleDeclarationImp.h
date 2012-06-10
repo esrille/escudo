@@ -220,6 +220,7 @@ private:
     static const unsigned paintProperties[];
 
     CSSRuleListImp::RuleSet ruleSet;
+    unsigned affectedBits;  // 1u << CSSPseudoClassSelector::Hover, etc.
 
     Object* owner;
     mutable css::CSSRule parentRule;

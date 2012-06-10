@@ -1919,7 +1919,7 @@ CSSStyleDeclarationImp* CSSStyleDeclarationImp::createPseudoElementStyle(int id)
 bool CSSStyleDeclarationImp::isAffectedByHover() const
 {
     for (const CSSStyleDeclarationImp* style = this; style; style = style->parentStyle) {
-        if (CSSRuleListImp::hasHover(style->ruleSet))
+        if (style->affectedBits & (1u << CSSPseudoClassSelector::Hover))
             return true;
     }
     return false;
@@ -3404,6 +3404,7 @@ void CSSStyleDeclarationImp::initialize()
 }
 
 CSSStyleDeclarationImp::CSSStyleDeclarationImp(int pseudoElementSelectorType) :
+    affectedBits(0),
     owner(0),
     parentRule(0),
     resolved(false),
@@ -3441,6 +3442,7 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp(int pseudoElementSelectorType) :
 
 // for cloneNode()
 CSSStyleDeclarationImp::CSSStyleDeclarationImp(CSSStyleDeclarationImp* org) :
+    affectedBits(0),
     owner(0),   // TODO: set later
     parentRule(0),
     resolved(false),
