@@ -781,12 +781,15 @@ void InlineLevelBox::resolveWidth()
 // is repeatedly applied to this inline level box up to a non-inline element.
 void InlineLevelBox::resolveOffset(ViewCSSImp* view)
 {
-    if (!font) {
-        Box::resolveOffset(view);
-        return;
-    }
     CSSStyleDeclarationImp* s = getStyle();
     Element element = getContainingElement(node);
+    if (!font) {
+        Box::resolveOffset(view);
+        element = element.getParentElement();
+        if (!element)
+            return;
+        s = view->getStyle(element);
+    }
     while (s && s->display.isInline()) {
         Box::resolveOffset(s);
         element = element.getParentElement();
