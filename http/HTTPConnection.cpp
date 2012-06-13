@@ -258,7 +258,7 @@ void HttpConnection::readHead(const boost::system::error_code& err)
         }
 
         if (3 <= getLogLevel())
-            std::cerr << __func__ << ": " <<  std::string(start, eol - start) << '\n';
+            std::cerr << __func__ << ": " <<  std::string(start, eol - start);
 
         const char* header = parseCRLF(start, eol);
         if (*header == '\n') {
