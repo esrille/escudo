@@ -534,7 +534,7 @@ unsigned BlockLevelBox::renderBegin(ViewCSSImp* view, bool noBorder)
     if (!isAnonymous() || isTableBox()) {
         float relativeX = 0.0f;
         float relativeY = 0.0f;
-        resolveOffset(view, relativeX, relativeY);
+        resolveOffset(relativeX, relativeY);
         glTranslatef(relativeX, relativeY, 0.0f);
 
         float scrollX = 0.0f;
@@ -883,10 +883,9 @@ void InlineLevelBox::render(ViewCSSImp* view, StackingContext* stackingContext)
     glPushMatrix();
 
     if (!isAnonymous()) {
-
         float relativeX = 0.0f;
         float relativeY = 0.0f;
-        resolveOffset(view, relativeX, relativeY);
+        resolveOffset(relativeX, relativeY);
         glTranslatef(relativeX, relativeY, 0.0f);
 
         if (style->getBox() == this && 0.0f < getTotalWidth()) {

@@ -337,7 +337,7 @@ void Box::resolveOffset(CSSStyleDeclarationImp* style, float& x, float &y)
     y += v;
 }
 
-void Box::resolveOffset(ViewCSSImp* view, float& x, float &y)
+void Box::resolveOffset(float& x, float &y)
 {
     if (isAnonymous() || !isRelative())
         return;
@@ -1621,25 +1621,24 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
     }
 }
 
-void BlockLevelBox::resolveOffset(ViewCSSImp* view, float& x, float &y)
+void BlockLevelBox::resolveOffset(float& x, float &y)
 {
     if (dynamic_cast<InlineLevelBox*>(getParentBox()))  // inline block?
         return;
 
     // cf. http://test.csswg.org/suites/css2.1/20110323/html4/inline-box-002.htm
-    Box::resolveOffset(view, x, y);
+    Box::resolveOffset(x, y);
     if (isAnonymous())
         return;
-    Element element = getContainingElement(node);
-    element = element.getParentElement();
-    if (!element)
+    CSSStyleDeclarationImp* s = getStyle();
+    if (!s)
         return;
-    CSSStyleDeclarationImp* parentStyle = view->getStyle(element);
-    if (!parentStyle)
+    s = s->getParentStyle();
+    if (!s)
         return;
-    if (!parentStyle->display.isInline())
+    if (!s->display.isInline())
         return;
-    Box::resolveOffset(parentStyle, x, y);
+    Box::resolveOffset(s, x, y);
 }
 
 void BlockLevelBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip)
@@ -1675,13 +1674,17 @@ void BlockLevelBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLeve
 void BlockLevelBox::dump(std::string indent)
 {
     std::cout << indent << "* block-level box";
-    if (!node)
+    float relativeX = 0.0f;
+    float relativeY = 0.0f;
+    if (isAnonymous())
         std::cout << " [anonymous]";
-    else
+    else {
         std::cout << " [" << node.getNodeName() << ']';
-    std::cout << " (" << x << ", " << y << ") " <<
+        resolveOffset(relativeX, relativeY);
+    }
+    std::cout << " (" << x + relativeX << ", " << y + relativeY << ") " <<
         "w:" << width << " h:" << height << ' ' <<
-        "(" << offsetH << ", " << offsetV <<") ";
+        "(" << relativeX << ", " << relativeY <<") ";
     if (hasClearance())
         std::cout << "c:" << clearance << ' ';
     if (isCollapsedThrough())

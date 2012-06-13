@@ -631,8 +631,11 @@ void LineBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* 
 
 void LineBox::dump(std::string indent)
 {
-    std::cout << indent << "* line box (" << x << ", " << y << ") " <<
-        "w:" << width << " h:" << height << " (" << offsetH << ", " << offsetV <<") ";
+    float relativeX = 0.0f;
+    float relativeY = 0.0f;
+    resolveOffset(relativeX, relativeY);
+    std::cout << indent << "* line box (" << x + relativeX << ", " << y + relativeY << ") " <<
+        "w:" << width << " h:" << height << " (" << relativeX << ", " << relativeY <<") ";
     if (hasClearance())
         std::cout << "c:" << clearance << ' ';
     std::cout << "m:" << marginTop << ':' << marginRight << ':' << marginBottom << ':' << marginLeft << '\n';
@@ -778,23 +781,16 @@ void InlineLevelBox::resolveWidth()
 
 // To deal with nested inline elements in the document tree, resolveOffset
 // is repeatedly applied to this inline level box up to a non-inline element.
-void InlineLevelBox::resolveOffset(ViewCSSImp* view, float& x, float &y)
+void InlineLevelBox::resolveOffset(float& x, float &y)
 {
     CSSStyleDeclarationImp* s = getStyle();
-    Element element = getContainingElement(node);
     if (!font) {
-        Box::resolveOffset(view, x, y);
-        element = element.getParentElement();
-        if (!element)
-            return;
-        s = view->getStyle(element);
+        Box::resolveOffset(x, y);
+        s = s->getParentStyle();
     }
     while (s && s->display.isInline()) {
         Box::resolveOffset(s, x, y);
-        element = element.getParentElement();
-        if (!element)
-            break;
-        s = view->getStyle(element);
+        s = s->getParentStyle();
     }
 }
 
