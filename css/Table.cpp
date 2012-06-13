@@ -923,7 +923,7 @@ void TableWrapperBox::computeTableBorders()
     //     excess = std::max(borderLeft, getColumnBorderValue(0, y)->getWidth() / 2.0f - l) - borderLeft;
     //     marginLeft = std::max(marginLeft, excess);
     //     excess = std::max(borderRight, getColumnBorderValue(xWidth, y)->getWidth() / 2.0f - r) - borderRight;
-    //     marginRight =  std::max(marginRight, excess);
+    //     marginRight = std::max(marginRight, excess);
     // }
 }
 
