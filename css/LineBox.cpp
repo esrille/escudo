@@ -507,7 +507,6 @@ bool LineBox::layOut(ViewCSSImp* view, FormattingContext* context)
     for (Box* box = getFirstChild(); box; box = box->getNextSibling()) {
         if (box->isAbsolutelyPositioned())
             continue;
-        box->resolveOffset(view);
         if (InlineLevelBox* inlineBox = dynamic_cast<InlineLevelBox*>(box)) {
             CSSStyleDeclarationImp* style = box->getStyle();
             if (style && style->display.isInlineLevel())
@@ -779,19 +778,19 @@ void InlineLevelBox::resolveWidth()
 
 // To deal with nested inline elements in the document tree, resolveOffset
 // is repeatedly applied to this inline level box up to a non-inline element.
-void InlineLevelBox::resolveOffset(ViewCSSImp* view)
+void InlineLevelBox::resolveOffset(ViewCSSImp* view, float& x, float &y)
 {
     CSSStyleDeclarationImp* s = getStyle();
     Element element = getContainingElement(node);
     if (!font) {
-        Box::resolveOffset(view);
+        Box::resolveOffset(view, x, y);
         element = element.getParentElement();
         if (!element)
             return;
         s = view->getStyle(element);
     }
     while (s && s->display.isInline()) {
-        Box::resolveOffset(s);
+        Box::resolveOffset(s, x, y);
         element = element.getParentElement();
         if (!element)
             break;

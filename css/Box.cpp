@@ -317,7 +317,7 @@ bool Box::isFlowOf(const Box* flowRoot) const
 
 // Calculate left, right, top, bottom for a 'relative' element.
 // TODO: rtl
-void Box::resolveOffset(CSSStyleDeclarationImp* style)
+void Box::resolveOffset(CSSStyleDeclarationImp* style, float& x, float &y)
 {
     if (style->position.getValue() != CSSPositionValueImp::Relative)
         return;
@@ -327,21 +327,21 @@ void Box::resolveOffset(CSSStyleDeclarationImp* style)
         h = style->left.getPx();
     else if (!style->right.isAuto())
         h = -style->right.getPx();
-    offsetH += h;
+    x += h;
 
     float v = 0.0f;
     if (!style->top.isAuto())
         v = style->top.getPx();
     else if (!style->bottom.isAuto())
         v = -style->bottom.getPx();
-    offsetV += v;
+    y += v;
 }
 
-void Box::resolveOffset(ViewCSSImp* view)
+void Box::resolveOffset(ViewCSSImp* view, float& x, float &y)
 {
     if (isAnonymous() || !isRelative())
         return;
-    resolveOffset(getStyle());
+    resolveOffset(getStyle(), x, y);
 }
 
 BlockLevelBox::BlockLevelBox(Node node, CSSStyleDeclarationImp* style) :
@@ -1305,10 +1305,8 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         context->updateRemainingHeight(height);
 
     // Now that 'height' is fixed, calculate 'left', 'right', 'top', and 'bottom'.
-    for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
+    for (Box* child = getFirstChild(); child; child = child->getNextSibling())
         child->fit(width);
-        child->resolveOffset(view);
-    }
 
     resolveBackgroundPosition(view, containingBlock);
 
@@ -1592,10 +1590,8 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
     maskV = applyAbsoluteMinMaxHeight(containingBlock, top, bottom, maskV);
 
     // Now that 'height' is fixed, calculate 'left', 'right', 'top', and 'bottom'.
-    for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
-        child->resolveOffset(view);
+    for (Box* child = getFirstChild(); child; child = child->getNextSibling())
         child->fit(width);
-    }
 
     resolveBackgroundPosition(view, containingBlock);
 
@@ -1625,10 +1621,13 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
     }
 }
 
-void BlockLevelBox::resolveOffset(ViewCSSImp* view)
+void BlockLevelBox::resolveOffset(ViewCSSImp* view, float& x, float &y)
 {
+    if (dynamic_cast<InlineLevelBox*>(getParentBox()))  // inline block?
+        return;
+
     // cf. http://test.csswg.org/suites/css2.1/20110323/html4/inline-box-002.htm
-    Box::resolveOffset(view);
+    Box::resolveOffset(view, x, y);
     if (isAnonymous())
         return;
     Element element = getContainingElement(node);
@@ -1640,7 +1639,7 @@ void BlockLevelBox::resolveOffset(ViewCSSImp* view)
         return;
     if (!parentStyle->display.isInline())
         return;
-    Box::resolveOffset(parentStyle);
+    Box::resolveOffset(parentStyle, x, y);
 }
 
 void BlockLevelBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip)

@@ -532,6 +532,11 @@ unsigned BlockLevelBox::renderBegin(ViewCSSImp* view, bool noBorder)
     unsigned overflow = CSSOverflowValueImp::Visible;
     glPushMatrix();
     if (!isAnonymous() || isTableBox()) {
+        float relativeX = 0.0f;
+        float relativeY = 0.0f;
+        resolveOffset(view, relativeX, relativeY);
+        glTranslatef(relativeX, relativeY, 0.0f);
+
         float scrollX = 0.0f;
         float scrollY = 0.0f;
         if (isFixed() && style->parentStyle) {
@@ -875,17 +880,27 @@ void InlineLevelBox::render(ViewCSSImp* view, StackingContext* stackingContext)
 {
     assert(stackingContext);
 
-    if (!isAnonymous() && style->getBox() == this && 0.0f < getTotalWidth()) {
-        std::list<CSSStyleDeclarationImp*> parentStyleList;
-        for (CSSStyleDeclarationImp* parentStyle = getStyle()->getParentStyle();
-             parentStyle && parentStyle->display.isInline() && parentStyle->getBox() == this;
-             parentStyle = parentStyle->getParentStyle())
-        {
-            if (parentStyle->visibility.isVisible())
-                parentStyleList.push_front(parentStyle);
+    glPushMatrix();
+
+    if (!isAnonymous()) {
+
+        float relativeX = 0.0f;
+        float relativeY = 0.0f;
+        resolveOffset(view, relativeX, relativeY);
+        glTranslatef(relativeX, relativeY, 0.0f);
+
+        if (style->getBox() == this && 0.0f < getTotalWidth()) {
+            std::list<CSSStyleDeclarationImp*> parentStyleList;
+            for (CSSStyleDeclarationImp* parentStyle = getStyle()->getParentStyle();
+                parentStyle && parentStyle->display.isInline() && parentStyle->getBox() == this;
+                parentStyle = parentStyle->getParentStyle())
+            {
+                if (parentStyle->visibility.isVisible())
+                    parentStyleList.push_front(parentStyle);
+            }
+            for (auto i = parentStyleList.begin(); i != parentStyleList.end(); ++i)
+                renderEmptyBox(view, *i);
         }
-        for (auto i = parentStyleList.begin(); i != parentStyleList.end(); ++i)
-            renderEmptyBox(view, *i);
     }
 
     if (isVisible()) {
@@ -952,6 +967,8 @@ void InlineLevelBox::render(ViewCSSImp* view, StackingContext* stackingContext)
 
     if (isVisible())
         renderOutline(view);
+
+    glPopMatrix();
 }
 
 void InlineLevelBox::renderText(ViewCSSImp* view, const std::u16string& data, float point)

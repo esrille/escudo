@@ -51,7 +51,12 @@ const unsigned CSSStyleDeclarationImp::paintProperties[] = {
     OutlineStyle,
     OutlineWidth,
     Visibility,
-    Unknown
+    // for relative positioning:
+    Top,
+    Right,
+    Bottom,
+    Left,
+    Unknown,
 };
 
 const char16_t* CSSStyleDeclarationImp::PropertyNames[PropertyCount] = {
@@ -1546,11 +1551,14 @@ void CSSStyleDeclarationImp::recompute(ViewCSSImp* view, CSSStyleDeclarationImp*
 
 #ifndef NDEBUG
     std::u16string tag(htmlElement.getTagName());
-
-    std::cout << tag << ":\n";
-    for (auto i = ruleSet.begin(); i != ruleSet.end(); ++i) {
-        if (i->isActive(element, view))
-            std::cout << "    " << i->getDeclaration()->getCssText() << '\n';
+    if (3 <= getLogLevel()) {
+        std::cout << "recompute: " << tag << ":\n";
+        for (auto i = ruleSet.begin(); i != ruleSet.end(); ++i) {
+            if (i->isActive(element, view))
+                std::cout << "    " << i->getDeclaration()->getCssText() << '\n';
+        }
+        if (elementDecl)
+            std::cout << "    " << elementDecl->getCssText() << '\n';
     }
 #endif
 
@@ -1642,7 +1650,20 @@ void CSSStyleDeclarationImp::recompute(ViewCSSImp* view, CSSStyleDeclarationImp*
                 backgroundPosition.compute(view, this);
                 break;
             case BackgroundRepeat:
+                break;
 #endif
+            case Top:
+                top.compute(view, this);
+                break;
+            case Right:
+                right.compute(view, this);
+                break;
+            case Bottom:
+                bottom.compute(view, this);
+                break;
+            case Left:
+                left.compute(view, this);
+                break;
             default:
                 break;
             }
