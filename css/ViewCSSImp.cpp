@@ -414,7 +414,7 @@ BlockLevelBox* ViewCSSImp::createBlockLevelBox(Element element, BlockLevelBox* p
             if (style->display == CSSDisplayValueImp::TableCell)
                 block = new(std::nothrow) CellBox(element, style);
             else
-                block =  new(std::nothrow) BlockLevelBox(element, style);
+                block = new(std::nothrow) BlockLevelBox(element, style);
         } else {
             if (parentBox) {
                 TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(parentBox->getLastChild());
@@ -427,7 +427,7 @@ BlockLevelBox* ViewCSSImp::createBlockLevelBox(Element element, BlockLevelBox* p
         }
         newContext = true;
     } else
-        block =  new(std::nothrow) BlockLevelBox(element, style);
+        block = new(std::nothrow) BlockLevelBox(element, style);
     if (!block)
         return 0;
     if (newContext)
@@ -436,7 +436,7 @@ BlockLevelBox* ViewCSSImp::createBlockLevelBox(Element element, BlockLevelBox* p
 
     StackingContext* stackingContext = style->getStackingContext();
     assert(stackingContext);
-    if (style->isPositioned())
+    if (style->isPositioned() && parentBox)
         stackingContext->addBase(block);
 
     return block;
