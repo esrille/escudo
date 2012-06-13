@@ -67,7 +67,7 @@ const char* load(std::ifstream& stream, char* data)
             break;
         }
         *p++ = c;
-        last =  c;
+        last = c;
     }
     while (data < p && p[-1] == '\n')
         --p;
