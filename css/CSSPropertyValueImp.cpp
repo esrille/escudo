@@ -1963,6 +1963,7 @@ float CSSVerticalAlignValueImp::getOffset(ViewCSSImp* view, CSSStyleDeclarationI
 {
     assert(self->display.isInlineLevel());
     float leading = text->getLeading() / 2.0f;
+    float h = text->getLeading() + text->getHeight();
     // TODO: Check if there is a parent inline element firstly.
     switch (value.getIndex()) {
     case Top:
@@ -1970,7 +1971,7 @@ float CSSVerticalAlignValueImp::getOffset(ViewCSSImp* view, CSSStyleDeclarationI
     case Baseline:
         return line->getBaseline() - (leading + text->getBaseline());
     case Middle: {
-        float offset = line->getBaseline() - (text->getHeight() / 2.0f);
+        float offset = line->getBaseline() - (h / 2.0f);
         if (CSSStyleDeclarationImp* parent = self->getParentStyle()) {
             FontTexture* font = parent->getFontTexture();
             if (!font)
@@ -1981,7 +1982,7 @@ float CSSVerticalAlignValueImp::getOffset(ViewCSSImp* view, CSSStyleDeclarationI
         return offset;
     }
     case Bottom:
-        return line->getHeight() - text->getHeight();
+        return line->getHeight() - h;
     case Sub:
         return line->getBaseline() - (leading + text->getBaseline()) + text->getSub();
     case Super:

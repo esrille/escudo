@@ -461,8 +461,9 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
         }
 
         if (inlineBox->hasHeight()) {
-            inlineBox->height = activeStyle->lineHeight.getPx();
-            inlineBox->leading = std::max(inlineBox->height, getStyle()->lineHeight.getPx()) - font->getLineHeight(point);
+            // Switch height from 'line-height' to the content height.
+            inlineBox->height = font->getLineHeight(point);
+            inlineBox->leading = std::max(activeStyle->lineHeight.getPx(), getStyle()->lineHeight.getPx()) - inlineBox->height;
             lineBox->underlinePosition = std::max(lineBox->underlinePosition, font->getUnderlinePosition(point));
             lineBox->underlineThickness = std::max(lineBox->underlineThickness, font->getUnderlineThickness(point));
             lineBox->lineThroughPosition = std::max(lineBox->lineThroughPosition, font->getLineThroughPosition(point));
@@ -470,9 +471,6 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
         }
         context->x += advanced + blankRight;
         context->appendInlineBox(view, inlineBox, activeStyle);
-        // Switch height from 'line-height' to the content height.
-        if (inlineBox->hasHeight())
-            inlineBox->height = font->getLineHeight(point);
         style->addBox(inlineBox);  // activeStyle? maybe not...
         if (data.length() <= position) {  // layout done?
             if (linefeed)

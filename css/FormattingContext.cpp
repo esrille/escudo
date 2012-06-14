@@ -311,11 +311,11 @@ void FormattingContext::appendInlineBox(ViewCSSImp* view, InlineLevelBox* inline
         lineBox->baseline -= offset;
         offset = 0.0f;
     }
-    if (0.0f < descender && descender < offset + inlineBox->getTotalHeight() - lineBox->baseline)
+    if (0.0f < descender && descender < offset + inlineBox->getLeading() + inlineBox->height - lineBox->baseline)
         descender = 0.0f;
 
-    if (0.0f < inlineBox->height)
-        lineBox->height = std::max(lineBox->baseline + descender, offset + inlineBox->height);
+    if (0.0f < inlineBox->getLeading() + inlineBox->height)
+        lineBox->height = std::max(lineBox->baseline + descender, offset + inlineBox->getLeading() + inlineBox->height);
     lineBox->height = std::max(lineBox->height, activeStyle->lineHeight.getPx());
     lineBox->height = std::max(lineBox->height, lineBox->getStyle()->lineHeight.getPx());
 
