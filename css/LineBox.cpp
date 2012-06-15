@@ -787,7 +787,7 @@ void InlineLevelBox::resolveOffset(float& x, float &y)
         s = s->getParentStyle();
     }
     while (s && s->display.isInline()) {
-        Box::resolveOffset(s, x, y);
+        s->resolveOffset(x, y);
         s = s->getParentStyle();
     }
 }

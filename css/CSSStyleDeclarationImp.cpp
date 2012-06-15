@@ -1500,13 +1500,13 @@ void CSSStyleDeclarationImp::computeStackingContext(ViewCSSImp* view, CSSStyleDe
 {
     if (!parentStyle) {
         assert(view->getStackingContexts() == 0);
-        view->setStackingContexts(new(std::nothrow) StackingContext(false, zIndex.getValue()));
+        view->setStackingContexts(new(std::nothrow) StackingContext(false, zIndex.getValue(), this));
         stackingContext = view->getStackingContexts();
     } else if (isPositioned()) {
         if (zIndex.isAuto())
-            stackingContext = parentStyle->stackingContext->getAuto();
+            stackingContext = parentStyle->stackingContext->getAuto(this);
         else
-            stackingContext = parentStyle->stackingContext->addContext(zIndex.getValue());
+            stackingContext = parentStyle->stackingContext->addContext(zIndex.getValue(), this);
     } else
         stackingContext = parentStyle->stackingContext;
 }
@@ -1783,6 +1783,30 @@ void CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* co
     textIndent.resolve(view, this, containingBlock->width);
 
     resolved = true;
+}
+
+// Calculate left, right, top, bottom for a 'relative' element.
+// TODO: rtl
+bool CSSStyleDeclarationImp::resolveOffset(float& x, float &y)
+{
+    if (position.getValue() != CSSPositionValueImp::Relative)
+        return false;
+
+    float h = 0.0f;
+    if (!left.isAuto())
+        h = left.getPx();
+    else if (!right.isAuto())
+        h = -right.getPx();
+    x += h;
+
+    float v = 0.0f;
+    if (!top.isAuto())
+        v = top.getPx();
+    else if (!bottom.isAuto())
+        v = -bottom.getPx();
+    y += v;
+
+    return true;
 }
 
 size_t CSSStyleDeclarationImp::processWhiteSpace(std::u16string& data, char16_t& prevChar)

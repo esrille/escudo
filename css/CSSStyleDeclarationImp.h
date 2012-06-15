@@ -420,6 +420,8 @@ public:
     void computeStackingContext(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle);
     void resolve(ViewCSSImp* view, const ContainingBlock* containingBlock);
 
+    bool resolveOffset(float& x, float &y);
+
     void respecify(const CSSStyleDeclarationImp* style);
     void respecifyImportant(const CSSStyleDeclarationImp* style);
     void recompute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle, Node node);

@@ -148,7 +148,7 @@ void Box::setStyle(CSSStyleDeclarationImp* style)
     this->style = style;
     if (style) {
         stackingContext = style->getStackingContext();
-        position = style->position.getValue();
+        setPosition(style->position.getValue());
     }
 }
 
@@ -315,33 +315,11 @@ bool Box::isFlowOf(const Box* flowRoot) const
     return false;
 }
 
-// Calculate left, right, top, bottom for a 'relative' element.
-// TODO: rtl
-void Box::resolveOffset(CSSStyleDeclarationImp* style, float& x, float &y)
-{
-    if (style->position.getValue() != CSSPositionValueImp::Relative)
-        return;
-
-    float h = 0.0f;
-    if (!style->left.isAuto())
-        h = style->left.getPx();
-    else if (!style->right.isAuto())
-        h = -style->right.getPx();
-    x += h;
-
-    float v = 0.0f;
-    if (!style->top.isAuto())
-        v = style->top.getPx();
-    else if (!style->bottom.isAuto())
-        v = -style->bottom.getPx();
-    y += v;
-}
-
 void Box::resolveOffset(float& x, float &y)
 {
     if (isAnonymous() || !isRelative())
         return;
-    resolveOffset(getStyle(), x, y);
+    getStyle()->resolveOffset(x, y);
 }
 
 BlockLevelBox::BlockLevelBox(Node node, CSSStyleDeclarationImp* style) :
@@ -1638,7 +1616,7 @@ void BlockLevelBox::resolveOffset(float& x, float &y)
         return;
     if (!s->display.isInline())
         return;
-    Box::resolveOffset(s, x, y);
+    s->resolveOffset(x, y);
 }
 
 void BlockLevelBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip)
@@ -1659,6 +1637,10 @@ void BlockLevelBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLeve
 
     if (isClipped())
         clip = this;
+    if (isPositioned()) {
+        assert(getStyle());
+        getStyle()->stackingContext->setClipBox(clipBox);
+    }
 
     if (!childWindow) {
         for (auto child = getFirstChild(); child; child = child->getNextSibling()) {

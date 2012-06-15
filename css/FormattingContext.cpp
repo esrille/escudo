@@ -322,8 +322,7 @@ void FormattingContext::appendInlineBox(ViewCSSImp* view, InlineLevelBox* inline
     lineBox->width += inlineBox->getTotalWidth();
 
     lineBox->appendChild(inlineBox);
-    if (activeStyle->isPositioned() && !inlineBox->isAnonymous())
-        activeStyle->getStackingContext()->addBase(inlineBox);
+    activeStyle->getStackingContext()->addBox(inlineBox, lineBox->getParentBox());
 
     atLineHead = false;
 }

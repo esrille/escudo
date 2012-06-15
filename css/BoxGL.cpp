@@ -532,11 +532,6 @@ unsigned BlockLevelBox::renderBegin(ViewCSSImp* view, bool noBorder)
     unsigned overflow = CSSOverflowValueImp::Visible;
     glPushMatrix();
     if (!isAnonymous() || isTableBox()) {
-        float relativeX = 0.0f;
-        float relativeY = 0.0f;
-        resolveOffset(relativeX, relativeY);
-        glTranslatef(relativeX, relativeY, 0.0f);
-
         float scrollX = 0.0f;
         float scrollY = 0.0f;
         if (isFixed() && style->parentStyle) {
@@ -612,7 +607,7 @@ void BlockLevelBox::renderNonInline(ViewCSSImp* view, StackingContext* stackingC
     if (childWindow)
         return;
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
-        if (!child->isAnonymous() && child->isPositioned())
+        if (child->style && child->style->getStackingContext() != stackingContext)
             continue;
         if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(child)) {
             unsigned overflow = block->renderBegin(view);
@@ -654,7 +649,7 @@ void BlockLevelBox::renderInline(ViewCSSImp* view, StackingContext* stackingCont
 
     bool hasOutline = false;
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
-        if (!child->isAnonymous() && child->isPositioned())
+        if (child->style && child->style->getStackingContext() != stackingContext)
             continue;
         if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(child)) {
             unsigned overflow = block->renderBegin(view, true);
@@ -667,7 +662,7 @@ void BlockLevelBox::renderInline(ViewCSSImp* view, StackingContext* stackingCont
 
     if (hasOutline) {
         for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
-            if (!child->isAnonymous() && child->isPositioned())
+            if (child->style && child->style->getStackingContext() != stackingContext)
                 continue;
             if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(child)) {
                 if (!block->isAnonymous() && 0.0f < block->getOutlineWidth()) {
@@ -694,7 +689,7 @@ void BlockLevelBox::render(ViewCSSImp* view, StackingContext* stackingContext)
 void LineBox::render(ViewCSSImp* view, StackingContext* stackingContext)
 {
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
-        if (child->style && (child->style->isFloat() || !child->isAnonymous() && child->isPositioned()))
+        if (child->style && (child->style->isFloat() || child->style->getStackingContext() != stackingContext))
             continue;
         child->render(view, stackingContext);
     }
@@ -883,11 +878,6 @@ void InlineLevelBox::render(ViewCSSImp* view, StackingContext* stackingContext)
     glPushMatrix();
 
     if (!isAnonymous()) {
-        float relativeX = 0.0f;
-        float relativeY = 0.0f;
-        resolveOffset(relativeX, relativeY);
-        glTranslatef(relativeX, relativeY, 0.0f);
-
         if (style->getBox() == this && 0.0f < getTotalWidth()) {
             std::list<CSSStyleDeclarationImp*> parentStyleList;
             for (CSSStyleDeclarationImp* parentStyle = getStyle()->getParentStyle();

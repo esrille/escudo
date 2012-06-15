@@ -436,8 +436,8 @@ BlockLevelBox* ViewCSSImp::createBlockLevelBox(Element element, BlockLevelBox* p
 
     StackingContext* stackingContext = style->getStackingContext();
     assert(stackingContext);
-    if (style->isPositioned() && parentBox)
-        stackingContext->addBase(block);
+    if (parentBox)
+        stackingContext->addBox(block, parentBox);
 
     return block;
 }

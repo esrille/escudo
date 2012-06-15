@@ -22,10 +22,13 @@
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class Box;
+class BlockLevelBox;
 class ViewCSSImp;
+class CSSStyleDeclarationImp;
 
 class StackingContext
 {
+    CSSStyleDeclarationImp* style;
     bool auto_;
     int zIndex;
     StackingContext* parent;
@@ -35,10 +38,13 @@ class StackingContext
     StackingContext* nextSibling;
     unsigned int childCount;
 
+    StackingContext* positioned;
+
     // The top level boxes in this StackingContext. Note a single, positioned
     // inline element can generate multiple inline boxes.
     Box* firstBase;
     Box* lastBase;
+    BlockLevelBox* clipBox;
 
     // render
     Box* firstRenderBase;
@@ -79,20 +85,19 @@ class StackingContext
         return auto_;
     }
 
-    void clip(ViewCSSImp* view, Box* base, float scrollX, float scrollY);
-    void unclip(ViewCSSImp* view, Box* base);
+    void clip(StackingContext* s, float relativeX, float relativeY);
 
 public:
-    StackingContext(bool auto_, int zIndex = 0);
+    StackingContext(bool auto_, int zIndex, CSSStyleDeclarationImp* style);
     ~StackingContext();
 
-    StackingContext* getAuto() {
-        return addContext(true, 0);
+    StackingContext* getAuto(CSSStyleDeclarationImp* style) {
+        return addContext(true, 0, style);
     }
-    StackingContext* addContext(int zIndex) {
-        return addContext(false, zIndex);
+    StackingContext* addContext(int zIndex, CSSStyleDeclarationImp* style) {
+        return addContext(false, zIndex, style);
     }
-    StackingContext* addContext(bool auto_, int zIndex);
+    StackingContext* addContext(bool auto_, int zIndex, CSSStyleDeclarationImp* style);
 
     void clearBase() {
         firstBase = lastBase = 0;
@@ -104,8 +109,14 @@ public:
         return firstBase;
     }
     void addBase(Box* box);
-
+    void addBox(Box* box, Box* parentBox);
     void addFloat(Box* box);
+
+    void setClipBox(BlockLevelBox* box) {
+        clipBox = box;
+    }
+
+    bool resolveOffset(float& x, float &y);
 
     void flip() {
         firstRenderBase = firstBase;

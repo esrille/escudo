@@ -539,7 +539,6 @@ public:
     void resolveReplacedWidth(float intrinsicWidth, float intrinsicHeight);
     void applyReplacedMinMax(float w, float h);
 
-    void resolveOffset(CSSStyleDeclarationImp* style, float& x, float &y);
     virtual void resolveOffset(float& x, float &y);
     virtual void resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip) = 0;
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context) {
