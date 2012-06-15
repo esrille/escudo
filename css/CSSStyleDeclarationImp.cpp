@@ -3448,6 +3448,11 @@ void CSSStyleDeclarationImp::initialize()
         inheritSet.reset(i);
     for (unsigned i = 0; i < sizeof defaultInherit / sizeof defaultInherit[0]; ++i)
         setInherit(defaultInherit[i]);
+    if (!parentStyle) {
+        // for the interaction with the "body" element.
+        overflow.setValue();
+        background.reset(this);
+    }
 }
 
 CSSStyleDeclarationImp::CSSStyleDeclarationImp(int pseudoElementSelectorType) :
