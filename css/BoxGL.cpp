@@ -127,7 +127,6 @@ unsigned BoxImage::render(ViewCSSImp* view, float x, float y, float width, float
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, texname);
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-    glEnable(GL_TEXTURE_2D);
     glBegin(GL_QUADS);
         glTexCoord2f(x - left, y - top);
         glVertex2f(x, y);
@@ -331,11 +330,8 @@ void Box::renderBorder(ViewCSSImp* view, float left, float top,
     }
 
     if (backgroundImage && backgroundImage->getState() == BoxImage::CompletelyAvailable) {
-        GLfloat border[] = { ((backgroundColor >> 16) & 0xff) / 255.0f,
-                             ((backgroundColor >> 8) & 0xff) / 255.0f,
-                             ((backgroundColor) & 0xff) / 255.0f,
-                             ((backgroundColor >> 24) & 0xff) / 255.0f };
-        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, border);
+        static const GLfloat transparent[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, transparent);
         glPushMatrix();
         if (getParentBox()) {
             glTranslatef(lr, tb, 0.0f);
