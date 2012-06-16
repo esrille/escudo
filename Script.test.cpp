@@ -32,7 +32,7 @@
 using namespace org::w3c::dom::bootstrap;
 using namespace org::w3c::dom;
 
-html::Window window(0);
+extern html::Window window;
 
 int main(int argc, char* argv[])
 {

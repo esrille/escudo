@@ -64,6 +64,11 @@ std::string getFileURL(const std::string& path);
 void init(int* argc, char* argv[]);
 
 //
+// Test.x11.cpp
+//
+void setWindowTitle(const std::string& title);
+
+//
 // ViewCSSImpGL.cpp
 //
 void initFonts(int* argc, char* argv[]);

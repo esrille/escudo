@@ -23,7 +23,7 @@
 using namespace org::w3c::dom::bootstrap;
 using namespace org::w3c::dom;
 
-extern html::Window window;
+html::Window window(0);
 
 void reshape(int w, int h)
 {

@@ -539,7 +539,7 @@ noinst_LIBRARIES = libeshtml5.a libesfontmanager.a libesjsapi.a libesv8api.a
 LDADD = libeshtml5.a libesfontmanager.a \
 	$(ICU_LIBS) $(FREETYPE_LIBS) \
 	-lboost_regex -lboost_system -lboost_iostreams \
-	-ljpeg -lpng -lgif -lglut -lGLU -lGL -lXext -lX11 -lm -lrt
+	-ljpeg -lpng -lgif -lglut -lGLU -lGL -lXext -lX11 -lXmu -lm -lrt
 
 AM_CPPFLAGS = \
 	-std=gnu++0x \
@@ -630,6 +630,10 @@ libeshtml5_a_SOURCES = \
 	DocumentWindow.h \
 	Profile.cpp \
 	Profile.h \
+	Test.util.h \
+	Test.util.cpp \
+	Test.glut.cpp \
+	Test.x11.cpp \
 	url/URI.h \
 	url/URI.cpp \
 	url/URL.h \
@@ -685,9 +689,7 @@ libeshtml5_a_SOURCES = \
 	css/TableGL.cpp \
 	css/ViewCSSImp.cpp \
 	css/ViewCSSImp.h \
-	css/ViewCSSImpGL.cpp \
-	Test.util.h \
-	Test.util.cpp
+	css/ViewCSSImpGL.cpp
 	
 # third party
 libeshtml5_a_SOURCES += \
@@ -1200,19 +1202,19 @@ HTTPHeader_test_LDADD = $(js_LDADD)
 HTTPRequest_test_SOURCES = HTTPRequest.test.cpp
 HTTPRequest_test_LDADD = $(js_LDADD)
 
-Script_test_SOURCES = Script.test.cpp Test.glut.cpp
+Script_test_SOURCES = Script.test.cpp
 Script_test_LDADD = $(js_LDADD)
 Script_test_CXXFLAGS = $(AM_CFLAGS) -DUSE_JS
 
-ScriptV8_test_SOURCES = Script.test.cpp Test.glut.cpp
+ScriptV8_test_SOURCES = Script.test.cpp
 ScriptV8_test_LDADD = $(v8_LDADD)
 ScriptV8_test_CXXFLAGS = $(AM_CFLAGS) -DUSE_V8
 
-Navigator_test_SOURCES = Navigator.test.cpp Test.glut.cpp
+Navigator_test_SOURCES = Navigator.test.cpp
 Navigator_test_LDADD = $(js_LDADD)
 Navigator_test_CXXFLAGS = $(AM_CFLAGS) -DUSE_JS
 
-NavigatorV8_test_SOURCES = Navigator.test.cpp Test.glut.cpp
+NavigatorV8_test_SOURCES = Navigator.test.cpp
 NavigatorV8_test_LDADD = $(v8_LDADD)
 NavigatorV8_test_CXXFLAGS = $(AM_CFLAGS) -DUSE_V8
 
@@ -1226,7 +1228,7 @@ navigatorlibexecdir = $(esrillelibexecdir)/navigator
 navigatorlibexec_PROGRAMS = navigator
 navigatorlibexec_PROGRAMS : $(LDADD) libesjsapi.a libesv8api.a
 
-navigator_SOURCES = Navigator.cpp Test.glut.cpp
+navigator_SOURCES = Navigator.cpp
 navigator_LDADD = $(js_LDADD)
 navigator_CXXFLAGS = $(AM_CFLAGS) -DUSE_JS
 
