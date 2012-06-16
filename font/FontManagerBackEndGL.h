@@ -31,6 +31,21 @@ class FontManagerBackEndGL : public FontManagerBackEnd
     FontFace* face;
     FontTexture* fontTexture;
 
+    void update()
+    {
+        if (!updateList.empty()) {
+            for (auto i = updateList.begin(); i != updateList.end(); ++i) {
+                if (i->second == Add)
+                    addImage(i->first);
+                else if (i->second == Delete)
+                    deleteImage(i->first);
+                else
+                    updateImage(i->first, i->second);
+            }
+            clear();
+        }
+    }
+
     void bindTexture(GLuint texname)
     {
         glBindTexture(GL_TEXTURE_2D, texname);
@@ -39,7 +54,12 @@ class FontManagerBackEndGL : public FontManagerBackEnd
     GLuint getTexname(uint8_t* image)
     {
         std::map<uint8_t*, GLuint>::iterator it = texnames.find(image);
-        assert(it != texnames.end());
+        if (it == texnames.end()) {
+            // Note FontTexture::getGlyph() can be invoked after beginRender() is called.
+            update();
+            it = texnames.find(image);
+            assert(it != texnames.end());
+        }
         return it->second;
     }
 
@@ -196,16 +216,7 @@ public:
 
     void beginRender()
     {
-        // TODO: sync
-        for (auto i = updateList.begin(); i != updateList.end(); ++i) {
-            if (i->second == Add)
-                addImage(i->first);
-            else if (i->second == Delete)
-                deleteImage(i->first);
-            else
-                updateImage(i->first, i->second);
-        }
-        clear();
+        update();
         setMatrixMode();
     }
 
