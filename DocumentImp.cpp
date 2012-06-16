@@ -630,13 +630,31 @@ Any DocumentImp::getElement(std::u16string name)
 
 std::u16string DocumentImp::getTitle()
 {
-    // TODO: implement me!
+    html::HTMLHeadElement head = getHead();
+    if (!head)
+        return u"";
+    for (auto i = head.getFirstElementChild(); i; i = i.getNextElementSibling()) {
+        if (i.getTagName() == u"title")
+            return i.getTextContent();
+    }
     return u"";
 }
 
 void DocumentImp::setTitle(std::u16string title)
 {
-    // TODO: implement me!
+    html::HTMLHeadElement head = getHead();
+    if (!head)
+        return;
+    for (auto i = head.getFirstElementChild(); i; i = i.getNextElementSibling()) {
+        if (i.getTagName() == u"title") {
+            i.setTextContent(title);
+            return;
+        }
+    }
+    if (Element t = createElement(u"title")) {
+        t.setTextContent(title);
+        head.appendChild(t);
+    }
 }
 
 std::u16string DocumentImp::getDir()
