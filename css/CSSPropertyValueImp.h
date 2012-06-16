@@ -147,15 +147,15 @@ public:
         return !(*this == value);
     }
     void specify(const CSSNumericValue& value) {
-        resolved = value.resolved;
-        if (isNaN()) {
+        if (isnan(value.resolved)) {
             unit = value.unit;
             index = value.index;
             number = value.number;
+            // Keep the current resolved value for recompute().
         } else {
             unit = css::CSSPrimitiveValue::CSS_PX;
             index = -1;
-            number = resolved;
+            resolved = number = value.resolved;
         }
     }
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
