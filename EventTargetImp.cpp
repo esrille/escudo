@@ -126,10 +126,13 @@ bool EventTargetImp::dispatchEvent(events::Event evt)
                     // TODO: Fix 'target' of the event as well.
                     // TODO: Check the mouseover and mouseout events.
                     ancestor = host;
-                    eventPath.push_front(ancestor);
-                    if (!dynamic_cast<UIEventImp*>(event))
+                    if (!dynamic_cast<UIEventImp*>(event)) {
+                        // To repaint the window, we still need to notify the bound document
+                        // of the event.
+                        // TODO: Support nesting of bound elements.
+                        eventPath.push_back(ancestor->getOwnerDocumentImp());
                         break;
-                    continue;
+                    }
                 }
             }
             eventPath.push_front(ancestor);
