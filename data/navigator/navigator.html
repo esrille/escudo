@@ -253,6 +253,7 @@ function complete(e) {
     document.getElementById('location').value = document.getElementById('main').contentWindow.location;
     document.getElementById('main').focus();
     document.getElementById('main').contentWindow.addEventListener('beforeunload', busy, false);
+    document.title = document.getElementById('main').contentDocument.title;
     e.preventDefault();
 }
 function keypress(e) {
