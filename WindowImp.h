@@ -41,6 +41,7 @@
 #include <org/w3c/dom/html/UndoManager.h>
 
 #include <condition_variable>
+#include <cstdio>
 #include <deque>
 #include <mutex>
 #include <thread>
@@ -57,6 +58,7 @@
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class Box;
+class IcoImage;
 class ViewCSSImp;
 
 class WindowImp : public ObjectMixin<WindowImp>
@@ -229,6 +231,9 @@ public:
     // to make these operations usable via the formal way from
     // DocumentImp.
     Element elementFromPoint(float x, float y);
+
+    void setFavicon(IcoImage* ico, std::FILE* file);
+    void setFavicon(BoxImage* image);
 
     // Window customized
     html::Window open(std::u16string url = u"about:blank", std::u16string target = u"_blank", std::u16string features = u"", bool replace = false);

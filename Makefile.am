@@ -664,6 +664,8 @@ libeshtml5_a_SOURCES = \
 	css/Box.h \
 	css/BoxGL.cpp \
 	css/BoxImage.cpp \
+	css/Ico.cpp \
+	css/Ico.h \
 	css/FormattingContext.cpp \
 	css/LineBox.cpp \
 	css/StackingContext.cpp \
@@ -1151,6 +1153,7 @@ noinst_PROGRAMS = \
 	CSSParser.test \
 	CSSStyle.test \
 	Box.test \
+	Ico.test \
 	Script.test \
 	ScriptV8.test \
 	Navigator.test \
@@ -1191,6 +1194,9 @@ CSSStyle_test_LDADD = $(js_LDADD)
 
 Box_test_SOURCES = Box.test.cpp
 Box_test_LDADD = $(js_LDADD)
+
+Ico_test_SOURCES = Ico.test.cpp
+Ico_test_LDADD = $(js_LDADD)
 
 FontManager_test_SOURCES = FontManager.test.cpp
 FontManager_test_LDADD = $(js_LDADD)

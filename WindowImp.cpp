@@ -29,6 +29,7 @@
 #include "KeyboardEventImp.h"
 #include "MouseEventImp.h"
 #include "NodeImp.h"
+#include "css/Ico.h"
 #include "css/ViewCSSImp.h"
 #include "html/HTMLParser.h"
 #include "html/HTMLIFrameElementImp.h"
@@ -486,6 +487,28 @@ void WindowImp::keyup(const EventTask& task)
     imp->initKeyboardEvent(u"keyup", true, true, this,
                            u"", u"", 0, u"", false, u"");
     e.dispatchEvent(event);
+}
+
+void WindowImp::setFavicon(IcoImage* ico, std::FILE* file)
+{
+    if (parent)
+        return;
+    for (size_t i = 0; i < ico->getPlaneCount(); ++i) {
+        const IconDirectoryEntry& ent(ico->getEntry(i));
+        if (BoxImage* image = ico->open(file, i)) {
+            uint32_t* pixels = reinterpret_cast<uint32_t*>(image->getPixels());
+            setIcon(i, ent.width, ent.height, pixels);
+            delete image;
+        }
+    }
+}
+
+void WindowImp::setFavicon(BoxImage* image)
+{
+    if (parent)
+        return;
+    uint32_t* pixels = reinterpret_cast<uint32_t*>(image->getPixels());
+    setIcon(0, image->getNaturalWidth(), image->getNaturalHeight(), pixels);
 }
 
 //

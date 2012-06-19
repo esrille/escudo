@@ -276,7 +276,35 @@ unsigned char* readAsBmp(FILE* file, unsigned& width, unsigned& height, unsigned
         return 0;
     if (std::fseek(file, fileHeader.offset, SEEK_SET) == -1)
         return false;
-    // TODO: Support JPEG and PNG
+    bool result = header.readPixels(file, colorTable, data);
+    if (!result) {
+        free(data);
+        return 0;
+    }
+    return data;
+}
+
+// file must points to BitmapInfoheader
+unsigned char* readAsIco(FILE* file, unsigned& width, unsigned& height, unsigned& format)
+{
+    BitmapInfoheader header;
+    if (!header.read(file))
+        return 0;
+    RGBQuad colorTable[header.usedColors ? header.usedColors : 1];
+    if (0 < header.usedColors && !header.readColorTable(file, colorTable))
+        return 0;
+    width = header.getWidth();
+    height = header.getHeight();
+    if (width * 2 == height) {   // has AND plane?
+        header.height /= 2;
+        height /= 2;
+    }
+    format = GL_RGBA;
+    unsigned char* data = static_cast<unsigned char*>(malloc(width * height * 4));
+    if (!data)
+        return 0;
+    // TODO: Process AND plane.
+    // TODO: Support JPEG and PNG.
     bool result = header.readPixels(file, colorTable, data);
     if (!result) {
         free(data);
@@ -304,7 +332,11 @@ BoxImage::BoxImage(unsigned repeat) :
 void BoxImage::open(FILE* file)
 {
     assert(file);
-    pixels = readAsPng(file, naturalWidth, naturalHeight, format);
+    pixels = readAsIco(file, naturalWidth, naturalHeight, format);
+    if (!pixels) {
+        rewind(file);
+        pixels = readAsPng(file, naturalWidth, naturalHeight, format);
+    }
     if (!pixels) {
         rewind(file);
         pixels = readAsJpeg(file, naturalWidth, naturalHeight, format);

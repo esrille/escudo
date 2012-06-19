@@ -16,6 +16,7 @@
 
 #include <GL/glx.h>
 #include <X11/Xatom.h>
+#include <X11/Xutil.h>
 #include <X11/Xmu/Atoms.h>
 
 #include <string>
@@ -30,4 +31,25 @@ void setWindowTitle(const std::string& title)
     text.format = 8;
     text.nitems = title.length();
     XSetWMName(glXGetCurrentDisplay(), glXGetCurrentDrawable(), &text);
+}
+
+void setIcon(size_t n, size_t width, size_t height, uint32_t* image)
+{
+    Atom netWmIcon = XInternAtom(glXGetCurrentDisplay(), "_NET_WM_ICON", False);
+    Atom cardinal = XInternAtom(glXGetCurrentDisplay(), "CARDINAL", False);
+    size_t length = 2 + width * height;
+    long buffer[length];
+    buffer[0] = width;
+    buffer[1] = height;
+    for (size_t i = 0; i < width * height; ++i) {
+        // Convert RGBA (OpenGL) to ARGB (X11); i.e., swap R and B.
+        uint32_t argb = image[i] & 0xff00ff00;
+        argb |= (image[i] >> 16) & 0x000000ff;
+        argb |= (image[i] << 16) & 0x00ff0000;
+        buffer[2 + i] = argb;
+    }
+    XChangeProperty(glXGetCurrentDisplay(), glXGetCurrentDrawable(), netWmIcon, cardinal, 32,
+                    (n == 0) ? PropModeReplace : PropModeAppend,
+                    reinterpret_cast<const unsigned char*>(buffer), length);
+    XFlush(glXGetCurrentDisplay());
 }

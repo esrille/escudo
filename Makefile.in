@@ -52,9 +52,10 @@ noinst_PROGRAMS = harness$(EXEEXT) Any.test$(EXEEXT) \
 	HTMLInputStream.test.getChar$(EXEEXT) \
 	HTMLTokenizer.test$(EXEEXT) HTMLParser.test$(EXEEXT) \
 	CSSTokenizer.test$(EXEEXT) CSSParser.test$(EXEEXT) \
-	CSSStyle.test$(EXEEXT) Box.test$(EXEEXT) Script.test$(EXEEXT) \
-	ScriptV8.test$(EXEEXT) Navigator.test$(EXEEXT) \
-	NavigatorV8.test$(EXEEXT) Profile.test$(EXEEXT)
+	CSSStyle.test$(EXEEXT) Box.test$(EXEEXT) Ico.test$(EXEEXT) \
+	Script.test$(EXEEXT) ScriptV8.test$(EXEEXT) \
+	Navigator.test$(EXEEXT) NavigatorV8.test$(EXEEXT) \
+	Profile.test$(EXEEXT)
 navigatorlibexec_PROGRAMS = navigator$(EXEEXT)
 subdir = .
 DIST_COMMON = README $(am__configure_deps) $(dist_aboutdata_DATA) \
@@ -93,7 +94,7 @@ am_libeshtml5_a_OBJECTS = Any.$(OBJEXT) utf.$(OBJEXT) \
 	HTTPRequestMessage.$(OBJEXT) HTTPResponseMessage.$(OBJEXT) \
 	HTTPUtil.$(OBJEXT) HTMLInputStream.$(OBJEXT) \
 	HTMLParser.$(OBJEXT) HTMLTokenizer.$(OBJEXT) Bmp.$(OBJEXT) \
-	Box.$(OBJEXT) BoxGL.$(OBJEXT) BoxImage.$(OBJEXT) \
+	Box.$(OBJEXT) BoxGL.$(OBJEXT) BoxImage.$(OBJEXT) Ico.$(OBJEXT) \
 	FormattingContext.$(OBJEXT) LineBox.$(OBJEXT) \
 	StackingContext.$(OBJEXT) CSSPropertyValueImp.$(OBJEXT) \
 	CSSSerialize.$(OBJEXT) CSSGrammar.$(OBJEXT) \
@@ -395,6 +396,9 @@ HTTPHeader_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
 am_HTTPRequest_test_OBJECTS = HTTPRequest.test.$(OBJEXT)
 HTTPRequest_test_OBJECTS = $(am_HTTPRequest_test_OBJECTS)
 HTTPRequest_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
+am_Ico_test_OBJECTS = Ico.test.$(OBJEXT)
+Ico_test_OBJECTS = $(am_Ico_test_OBJECTS)
+Ico_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
 am_Navigator_test_OBJECTS = Navigator_test-Navigator.test.$(OBJEXT)
 Navigator_test_OBJECTS = $(am_Navigator_test_OBJECTS)
 Navigator_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
@@ -485,10 +489,10 @@ SOURCES = $(libesfontmanager_a_SOURCES) $(libeshtml5_a_SOURCES) \
 	$(HTMLInputStream_test_getChar_SOURCES) \
 	$(HTMLParser_test_SOURCES) $(HTMLTokenizer_test_SOURCES) \
 	$(HTTPHeader_test_SOURCES) $(HTTPRequest_test_SOURCES) \
-	$(Navigator_test_SOURCES) $(NavigatorV8_test_SOURCES) \
-	$(Profile_test_SOURCES) $(Script_test_SOURCES) \
-	$(ScriptV8_test_SOURCES) $(URL_test_SOURCES) \
-	$(harness_SOURCES) $(navigator_SOURCES)
+	$(Ico_test_SOURCES) $(Navigator_test_SOURCES) \
+	$(NavigatorV8_test_SOURCES) $(Profile_test_SOURCES) \
+	$(Script_test_SOURCES) $(ScriptV8_test_SOURCES) \
+	$(URL_test_SOURCES) $(harness_SOURCES) $(navigator_SOURCES)
 DIST_SOURCES = $(libesfontmanager_a_SOURCES) $(libeshtml5_a_SOURCES) \
 	$(libesjsapi_a_SOURCES) $(libesv8api_a_SOURCES) \
 	$(Any_test_SOURCES) $(Box_test_SOURCES) \
@@ -498,10 +502,10 @@ DIST_SOURCES = $(libesfontmanager_a_SOURCES) $(libeshtml5_a_SOURCES) \
 	$(HTMLInputStream_test_getChar_SOURCES) \
 	$(HTMLParser_test_SOURCES) $(HTMLTokenizer_test_SOURCES) \
 	$(HTTPHeader_test_SOURCES) $(HTTPRequest_test_SOURCES) \
-	$(Navigator_test_SOURCES) $(NavigatorV8_test_SOURCES) \
-	$(Profile_test_SOURCES) $(Script_test_SOURCES) \
-	$(ScriptV8_test_SOURCES) $(URL_test_SOURCES) \
-	$(harness_SOURCES) $(navigator_SOURCES)
+	$(Ico_test_SOURCES) $(Navigator_test_SOURCES) \
+	$(NavigatorV8_test_SOURCES) $(Profile_test_SOURCES) \
+	$(Script_test_SOURCES) $(ScriptV8_test_SOURCES) \
+	$(URL_test_SOURCES) $(harness_SOURCES) $(navigator_SOURCES)
 DATA = $(dist_aboutdata_DATA) $(dist_navigatordata_DATA)
 HEADERS = $(nobase_nodist_noinst_HEADERS)
 ETAGS = etags
@@ -1211,16 +1215,16 @@ libeshtml5_a_SOURCES = Object.h ObjectArrayImp.h Reflect.h Any.cpp \
 	html/HTMLInputStream.h html/HTMLParser.cpp html/HTMLParser.h \
 	html/HTMLTokenizer.cpp html/HTMLTokenizer.h css/Bmp.cpp \
 	css/Bmp.h css/Box.cpp css/Box.h css/BoxGL.cpp css/BoxImage.cpp \
-	css/FormattingContext.cpp css/LineBox.cpp \
-	css/StackingContext.cpp css/StackingContext.h css/CSSColor.re \
-	css/CSSPropertyNames.re css/CSSPropertyValueImp.cpp \
-	css/CSSPropertyValueImp.h css/CSSSerialize.cpp \
-	css/CSSSerialize.h css/CSSGrammar.yy css/CSSSelector.cpp \
-	css/CSSSelector.h css/CSSTokenizer.h css/CSSTokenizer.re \
-	css/CSSParser.cpp css/CSSParser.h css/CSSValueParser.cpp \
-	css/CSSValueParser.h css/CSSInputStream.cpp \
-	css/CSSInputStream.h css/Replaced.cpp css/Table.cpp \
-	css/Table.h css/TableGL.cpp css/ViewCSSImp.cpp \
+	css/Ico.cpp css/Ico.h css/FormattingContext.cpp \
+	css/LineBox.cpp css/StackingContext.cpp css/StackingContext.h \
+	css/CSSColor.re css/CSSPropertyNames.re \
+	css/CSSPropertyValueImp.cpp css/CSSPropertyValueImp.h \
+	css/CSSSerialize.cpp css/CSSSerialize.h css/CSSGrammar.yy \
+	css/CSSSelector.cpp css/CSSSelector.h css/CSSTokenizer.h \
+	css/CSSTokenizer.re css/CSSParser.cpp css/CSSParser.h \
+	css/CSSValueParser.cpp css/CSSValueParser.h \
+	css/CSSInputStream.cpp css/CSSInputStream.h css/Replaced.cpp \
+	css/Table.cpp css/Table.h css/TableGL.cpp css/ViewCSSImp.cpp \
 	css/ViewCSSImp.h css/ViewCSSImpGL.cpp picojson.h \
 	ApplicationCacheImp.cpp ApplicationCacheImp.h AttrImp.cpp \
 	AttrImp.h BarPropImp.cpp BarPropImp.h BeforeUnloadEventImp.cpp \
@@ -1453,6 +1457,8 @@ CSSStyle_test_SOURCES = CSSStyle.test.cpp
 CSSStyle_test_LDADD = $(js_LDADD)
 Box_test_SOURCES = Box.test.cpp
 Box_test_LDADD = $(js_LDADD)
+Ico_test_SOURCES = Ico.test.cpp
+Ico_test_LDADD = $(js_LDADD)
 FontManager_test_SOURCES = FontManager.test.cpp
 FontManager_test_LDADD = $(js_LDADD)
 URL_test_SOURCES = URL.test.cpp
@@ -1702,6 +1708,9 @@ HTTPHeader.test$(EXEEXT): $(HTTPHeader_test_OBJECTS) $(HTTPHeader_test_DEPENDENC
 HTTPRequest.test$(EXEEXT): $(HTTPRequest_test_OBJECTS) $(HTTPRequest_test_DEPENDENCIES) $(EXTRA_HTTPRequest_test_DEPENDENCIES) 
 	@rm -f HTTPRequest.test$(EXEEXT)
 	$(CXXLINK) $(HTTPRequest_test_OBJECTS) $(HTTPRequest_test_LDADD) $(LIBS)
+Ico.test$(EXEEXT): $(Ico_test_OBJECTS) $(Ico_test_DEPENDENCIES) $(EXTRA_Ico_test_DEPENDENCIES) 
+	@rm -f Ico.test$(EXEEXT)
+	$(CXXLINK) $(Ico_test_OBJECTS) $(Ico_test_LDADD) $(LIBS)
 Navigator.test$(EXEEXT): $(Navigator_test_OBJECTS) $(Navigator_test_DEPENDENCIES) $(EXTRA_Navigator_test_DEPENDENCIES) 
 	@rm -f Navigator.test$(EXEEXT)
 	$(Navigator_test_LINK) $(Navigator_test_OBJECTS) $(Navigator_test_LDADD) $(LIBS)
@@ -2134,6 +2143,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HashChangeEventImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/History.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HistoryImp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Ico.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Ico.test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ImageData.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ImageDataImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Int16Array.Po@am__quote@
@@ -2535,6 +2546,20 @@ BoxImage.obj: css/BoxImage.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='css/BoxImage.cpp' object='BoxImage.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o BoxImage.obj `if test -f 'css/BoxImage.cpp'; then $(CYGPATH_W) 'css/BoxImage.cpp'; else $(CYGPATH_W) '$(srcdir)/css/BoxImage.cpp'; fi`
+
+Ico.o: css/Ico.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Ico.o -MD -MP -MF $(DEPDIR)/Ico.Tpo -c -o Ico.o `test -f 'css/Ico.cpp' || echo '$(srcdir)/'`css/Ico.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/Ico.Tpo $(DEPDIR)/Ico.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='css/Ico.cpp' object='Ico.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Ico.o `test -f 'css/Ico.cpp' || echo '$(srcdir)/'`css/Ico.cpp
+
+Ico.obj: css/Ico.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Ico.obj -MD -MP -MF $(DEPDIR)/Ico.Tpo -c -o Ico.obj `if test -f 'css/Ico.cpp'; then $(CYGPATH_W) 'css/Ico.cpp'; else $(CYGPATH_W) '$(srcdir)/css/Ico.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/Ico.Tpo $(DEPDIR)/Ico.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='css/Ico.cpp' object='Ico.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Ico.obj `if test -f 'css/Ico.cpp'; then $(CYGPATH_W) 'css/Ico.cpp'; else $(CYGPATH_W) '$(srcdir)/css/Ico.cpp'; fi`
 
 FormattingContext.o: css/FormattingContext.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT FormattingContext.o -MD -MP -MF $(DEPDIR)/FormattingContext.Tpo -c -o FormattingContext.o `test -f 'css/FormattingContext.cpp' || echo '$(srcdir)/'`css/FormattingContext.cpp

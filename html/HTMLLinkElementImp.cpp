@@ -26,6 +26,7 @@
 #include "css/CSSInputStream.h"
 #include "css/CSSParser.h"
 #include "css/CSSStyleSheetImp.h"
+#include "css/Ico.h"
 
 #include "Test.util.h"
 
@@ -67,15 +68,25 @@ void HTMLLinkElementImp::eval()
             request = new(std::nothrow) HttpRequest(document->getDocumentURI());
             if (request) {
                 request->open(u"GET", href);
-                request->setHanndler(boost::bind(&HTMLLinkElementImp::notify, this));
+                request->setHanndler(boost::bind(&HTMLLinkElementImp::linkStyleSheet, this));
                 document->incrementLoadEventDelayCount();
                 request->send();
             }
         }
     }
+    else if (contains(rel, u"icon")) {
+        DocumentImp* document = getOwnerDocumentImp();
+        request = new(std::nothrow) HttpRequest(document->getDocumentURI());
+        if (request) {
+            request->open(u"GET", href);
+            request->setHanndler(boost::bind(&HTMLLinkElementImp::linkIcon, this));
+            document->incrementLoadEventDelayCount();
+            request->send();
+        }
+    }
 }
 
-void HTMLLinkElementImp::notify()
+void HTMLLinkElementImp::linkStyleSheet()
 {
     DocumentImp* document = getOwnerDocumentImp();
     if (request->getStatus() == 200) {
@@ -96,6 +107,32 @@ void HTMLLinkElementImp::notify()
 
         if (WindowImp* view = document->getDefaultWindow())
             view->setFlags(Box::NEED_RESTYLING);
+    }
+    document->decrementLoadEventDelayCount();
+}
+
+void HTMLLinkElementImp::linkIcon()
+{
+    DocumentImp* document = getOwnerDocumentImp();
+    if (request->getStatus() == 200) {
+        if (FILE* file = request->openFile()) {
+            std::u16string type = getType();
+            if (type == u"image/vnd.microsoft.icon" || type.empty()) {
+                IcoImage ico;
+                if (ico.open(file)) {
+                    if (WindowImp* view = document->getDefaultWindow())
+                        view->setFavicon(&ico, file);
+                }
+            } else {
+                BoxImage image;
+                image.open(file);
+                if (image.getState() == BoxImage::CompletelyAvailable) {
+                    if (WindowImp* view = document->getDefaultWindow())
+                        view->setFavicon(&image);
+                }
+            }
+            fclose(file);
+        }
     }
     document->decrementLoadEventDelayCount();
 }

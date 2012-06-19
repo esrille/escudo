@@ -67,6 +67,7 @@ void init(int* argc, char* argv[]);
 // Test.x11.cpp
 //
 void setWindowTitle(const std::string& title);
+void setIcon(size_t n, size_t width, size_t height, uint32_t* image);
 
 //
 // ViewCSSImpGL.cpp
