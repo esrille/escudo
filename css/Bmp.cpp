@@ -125,7 +125,7 @@ bool BitmapInfoheader::read(std::FILE* file)
         break;
     }
 
-    if (std::fseek(file, headerSize - 40, SEEK_CUR) == -1)
+    if (std::fseek(file, headerSize - sizeof header, SEEK_CUR) == -1)
         return false;
     return true;
 }
@@ -153,6 +153,8 @@ bool BitmapInfoheader::readBitFields(std::FILE* file)
 
     uint8_t data[16];
     if (std::fread(data, 1, sizeof data, file) != sizeof data)
+        return false;
+    if (std::fseek(file, -(sizeof data), SEEK_CUR) == -1)
         return false;
     redMask = (data[3] << 24) | (data[2] << 16) | (data[1] << 8) | data[0];
     greenMask = (data[7] << 24) | (data[6] << 16) | (data[5] << 8) | data[4];
@@ -191,13 +193,13 @@ bool BitmapInfoheader::readPixels(std::FILE* file, const RGBQuad* colorTable, vo
     if (compression == RGB || compression == BITFIELDS) {
         int from, to, inc;
         if (0 <= height) {
-            from = height - 1;
-            to = 0;
             inc = -1;
+            from = height - 1;
+            to = 0 + inc;
         } else {
-            from = 0;
-            to = -height - 1;
             inc = 1;
+            from = 0;
+            to = -height - 1 + inc;
         }
         for (int y = from; y != to; y += inc) {
             if (std::fread(line, 1, lineWidth, file) != lineWidth)
