@@ -658,6 +658,8 @@ libeshtml5_a_SOURCES = \
 	html/HTMLParser.h \
 	html/HTMLTokenizer.cpp \
 	html/HTMLTokenizer.h \
+	css/Bmp.cpp \
+	css/Bmp.h \
 	css/Box.cpp \
 	css/Box.h \
 	css/BoxGL.cpp \

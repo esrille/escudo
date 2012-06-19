@@ -92,11 +92,12 @@ am_libeshtml5_a_OBJECTS = Any.$(OBJEXT) utf.$(OBJEXT) \
 	HTTPHeader.$(OBJEXT) HTTPRequest.$(OBJEXT) \
 	HTTPRequestMessage.$(OBJEXT) HTTPResponseMessage.$(OBJEXT) \
 	HTTPUtil.$(OBJEXT) HTMLInputStream.$(OBJEXT) \
-	HTMLParser.$(OBJEXT) HTMLTokenizer.$(OBJEXT) Box.$(OBJEXT) \
-	BoxGL.$(OBJEXT) BoxImage.$(OBJEXT) FormattingContext.$(OBJEXT) \
-	LineBox.$(OBJEXT) StackingContext.$(OBJEXT) \
-	CSSPropertyValueImp.$(OBJEXT) CSSSerialize.$(OBJEXT) \
-	CSSGrammar.$(OBJEXT) CSSSelector.$(OBJEXT) CSSParser.$(OBJEXT) \
+	HTMLParser.$(OBJEXT) HTMLTokenizer.$(OBJEXT) Bmp.$(OBJEXT) \
+	Box.$(OBJEXT) BoxGL.$(OBJEXT) BoxImage.$(OBJEXT) \
+	FormattingContext.$(OBJEXT) LineBox.$(OBJEXT) \
+	StackingContext.$(OBJEXT) CSSPropertyValueImp.$(OBJEXT) \
+	CSSSerialize.$(OBJEXT) CSSGrammar.$(OBJEXT) \
+	CSSSelector.$(OBJEXT) CSSParser.$(OBJEXT) \
 	CSSValueParser.$(OBJEXT) CSSInputStream.$(OBJEXT) \
 	Replaced.$(OBJEXT) Table.$(OBJEXT) TableGL.$(OBJEXT) \
 	ViewCSSImp.$(OBJEXT) ViewCSSImpGL.$(OBJEXT) \
@@ -1208,8 +1209,8 @@ libeshtml5_a_SOURCES = Object.h ObjectArrayImp.h Reflect.h Any.cpp \
 	http/HTTPResponseMessage.h http/HTTPResponseMessage.cpp \
 	http/HTTPUtil.h http/HTTPUtil.cpp html/HTMLInputStream.cpp \
 	html/HTMLInputStream.h html/HTMLParser.cpp html/HTMLParser.h \
-	html/HTMLTokenizer.cpp html/HTMLTokenizer.h css/Box.cpp \
-	css/Box.h css/BoxGL.cpp css/BoxImage.cpp \
+	html/HTMLTokenizer.cpp html/HTMLTokenizer.h css/Bmp.cpp \
+	css/Bmp.h css/Box.cpp css/Box.h css/BoxGL.cpp css/BoxImage.cpp \
 	css/FormattingContext.cpp css/LineBox.cpp \
 	css/StackingContext.cpp css/StackingContext.h css/CSSColor.re \
 	css/CSSPropertyNames.re css/CSSPropertyValueImp.cpp \
@@ -1784,6 +1785,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Blob.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BlobCallback.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BlobImp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Bmp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Box.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Box.test.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/BoxGL.Po@am__quote@
@@ -2477,6 +2479,20 @@ HTMLTokenizer.obj: html/HTMLTokenizer.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='html/HTMLTokenizer.cpp' object='HTMLTokenizer.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTMLTokenizer.obj `if test -f 'html/HTMLTokenizer.cpp'; then $(CYGPATH_W) 'html/HTMLTokenizer.cpp'; else $(CYGPATH_W) '$(srcdir)/html/HTMLTokenizer.cpp'; fi`
+
+Bmp.o: css/Bmp.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Bmp.o -MD -MP -MF $(DEPDIR)/Bmp.Tpo -c -o Bmp.o `test -f 'css/Bmp.cpp' || echo '$(srcdir)/'`css/Bmp.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/Bmp.Tpo $(DEPDIR)/Bmp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='css/Bmp.cpp' object='Bmp.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Bmp.o `test -f 'css/Bmp.cpp' || echo '$(srcdir)/'`css/Bmp.cpp
+
+Bmp.obj: css/Bmp.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Bmp.obj -MD -MP -MF $(DEPDIR)/Bmp.Tpo -c -o Bmp.obj `if test -f 'css/Bmp.cpp'; then $(CYGPATH_W) 'css/Bmp.cpp'; else $(CYGPATH_W) '$(srcdir)/css/Bmp.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/Bmp.Tpo $(DEPDIR)/Bmp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='css/Bmp.cpp' object='Bmp.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o Bmp.obj `if test -f 'css/Bmp.cpp'; then $(CYGPATH_W) 'css/Bmp.cpp'; else $(CYGPATH_W) '$(srcdir)/css/Bmp.cpp'; fi`
 
 Box.o: css/Box.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Box.o -MD -MP -MF $(DEPDIR)/Box.Tpo -c -o Box.o `test -f 'css/Box.cpp' || echo '$(srcdir)/'`css/Box.cpp

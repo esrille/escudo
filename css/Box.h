@@ -223,6 +223,9 @@ public:
     unsigned getNaturalHeight() const {
         return naturalHeight;
     }
+    unsigned char* getPixels() const {
+        return pixels;
+    }
     unsigned getCurrentFrame(unsigned t, unsigned& delay, unsigned start);
     unsigned render(ViewCSSImp* view, float x, float y, float width, float height, float left, float top, unsigned start);
 };
