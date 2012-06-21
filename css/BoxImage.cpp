@@ -35,7 +35,7 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 // image/png - 89 50 4E 47 0D 0A 1A 0A
 // image/gif - "GIF87a" or "GIF89a"
 // image/jpeg - FF D8
-// image/bmp - "BM"
+// image/x-bmp - "BM"
 // image/vnd.microsoft.icon - 00 00 01 00 (.ico), 00 00 02 00 (.cur)
 
 namespace {
@@ -117,9 +117,9 @@ unsigned char* readAsPng(FILE* file, unsigned& width, unsigned& height, unsigned
 unsigned char* readAsJpeg(FILE* file, unsigned& width, unsigned& height, unsigned& format)
 {
     unsigned char sig[2];
-    if (fread(sig, 1, 2, file) != 2 || sig[0] != 0xFF || sig[1] != 0xD8)
+    if (fread(sig, 1, sizeof sig, file) != sizeof sig || sig[0] != 0xFF || sig[1] != 0xD8)
         return 0;
-    rewind(file);
+    fseek(file, -(sizeof sig), SEEK_CUR);
 
     JSAMPARRAY img;
     struct jpeg_decompress_struct cinfo;
@@ -182,14 +182,15 @@ unsigned char* expandColors(unsigned char* dst, unsigned char* src, unsigned cou
 unsigned char* readAsGif(FILE* file, unsigned& width, unsigned& height, unsigned& format, unsigned &frameCount, std::vector<uint16_t>& delays, unsigned& loop)
 {
     unsigned char sig[6];
-    if (fread(sig, 1, 6, file) != 6)
+    if (fread(sig, 1, sizeof sig, file) != sizeof sig)
         return 0;
     if (memcmp(sig, GIF87_STAMP, 6) && memcmp(sig, GIF89_STAMP, 6))
         return 0;
-    rewind(file);
+    fseek(file, -(sizeof sig), SEEK_CUR);
+    long pos = ftell(file);
 
     int fd = dup(fileno(file));
-    lseek(fd, 0, SEEK_SET);
+    lseek(fd, pos, SEEK_SET);
     GifFileType* gif = DGifOpenFileHandle(fd);
     if (!gif)
         return 0;
@@ -332,21 +333,22 @@ BoxImage::BoxImage(unsigned repeat) :
 void BoxImage::open(FILE* file)
 {
     assert(file);
+    long pos = ftell(file);
     pixels = readAsIco(file, naturalWidth, naturalHeight, format);
     if (!pixels) {
-        rewind(file);
+        fseek(file, pos, SEEK_SET);
         pixels = readAsPng(file, naturalWidth, naturalHeight, format);
     }
     if (!pixels) {
-        rewind(file);
+        fseek(file, pos, SEEK_SET);
         pixels = readAsJpeg(file, naturalWidth, naturalHeight, format);
     }
     if (!pixels) {
-        rewind(file);
+        fseek(file, pos, SEEK_SET);
         pixels = readAsGif(file, naturalWidth, naturalHeight, format, frameCount, delays, loop);
     }
     if (!pixels) {
-        rewind(file);
+        fseek(file, pos, SEEK_SET);
         pixels = readAsBmp(file, naturalWidth, naturalHeight, format);
     }
     if (!pixels) {
