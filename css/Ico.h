@@ -59,10 +59,10 @@ struct IconDirectoryEntry
 
     bool read(std::FILE* file);
     size_t getWidth() const {
-        return width;
+        return width ? width : 256;
     }
     size_t getHeight() const {
-        return height;
+        return height ? height : 256;
     }
 };
 

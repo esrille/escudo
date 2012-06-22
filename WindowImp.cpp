@@ -497,7 +497,7 @@ void WindowImp::setFavicon(IcoImage* ico, std::FILE* file)
         const IconDirectoryEntry& ent(ico->getEntry(i));
         if (BoxImage* image = ico->open(file, i)) {
             uint32_t* pixels = reinterpret_cast<uint32_t*>(image->getPixels());
-            setIcon(i, ent.width, ent.height, pixels);
+            setIcon(i, ent.getWidth(), ent.getHeight(), pixels);
             delete image;
         }
     }

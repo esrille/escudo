@@ -43,9 +43,9 @@ int main(int argc, char* argv[])
         assert(image->getState() == BoxImage::CompletelyAvailable);
         uint32_t* pixels = reinterpret_cast<uint32_t*>(image->getPixels());
         std::cout << std::hex;
-        for (size_t y = 0; y < ent.height; ++y) {
-            for (size_t x = 0; x < ent.width; ++x)
-                std::cout << pixels[y * ent.width + x] << ", ";
+        for (size_t y = 0; y < ent.getHeight(); ++y) {
+            for (size_t x = 0; x < ent.getWidth(); ++x)
+                std::cout << pixels[y * ent.getWidth() + x] << ", ";
             std::cout << '\n';
         }
         std::cout << std::dec;
