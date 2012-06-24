@@ -1,3 +1,178 @@
+2012-06-16 15:09  Shiki.Okasaka@gmail.com
+
+	* data/navigator/navigator.html: (complete) : Update the document
+	  title.
+
+2012-06-16 15:07  Shiki.Okasaka@gmail.com
+
+	* Makefile.am, Makefile.in, Navigator.cpp, Navigator.test.cpp,
+	  Script.test.cpp, Test.glut.cpp, Test.util.h, Test.x11.cpp,
+	  WindowImp.cpp: (WindowImp::render) : Set the window title using
+	  the document's title.
+	  (setWindowTitle) : New.
+
+2012-06-16 14:34  Shiki.Okasaka@gmail.com
+
+	* DocumentImp.cpp: (DocumentImp::getTitle, DocumentImp::setTitle) :
+	  Support the title attribute.
+
+2012-06-16 10:21  Shiki.Okasaka@gmail.com
+
+	* EventTargetImp.cpp: (EventTargetImp::dispatchEvent) : Notify the
+	  bound document of the event inside the shadow tree; this is still
+	  work in progress.
+
+2012-06-16 07:39  Shiki.Okasaka@gmail.com
+
+	* css/CSSPropertyValueImp.h: (CSSNumericValue::specify) : Refine.
+
+2012-06-16 07:22  Shiki.Okasaka@gmail.com
+
+	* font/FontManagerBackEndGL.h: (FontManagerBackEndGL::getTexname,
+	  etc.) : Fix bugs.
+
+2012-06-15 12:09  Shiki.Okasaka@gmail.com
+
+	* css/CSSStyleDeclarationImp.cpp:
+	  (CSSStyleDeclarationImp::initialize) : Fix a bug; cf.
+	  testdata/img2.html.
+
+2012-06-15 11:26  Shiki.Okasaka@gmail.com
+
+	* css/BoxGL.cpp: (Box::renderBorder) : Fix a bug.
+
+2012-06-15 08:24  Shiki.Okasaka@gmail.com
+
+	* css/Box.cpp, css/Box.h, css/BoxGL.cpp,
+	  css/CSSStyleDeclarationImp.cpp, css/CSSStyleDeclarationImp.h,
+	  css/FormattingContext.cpp, css/LineBox.cpp,
+	  css/StackingContext.cpp, css/StackingContext.h,
+	  css/ViewCSSImp.cpp: (StackingContext,
+	  ViewCSSImp::createBlockLevelBox,
+	  FormattingContext::appendInlineBox,
+	  CSSStyleDeclarationImp::computeStackingContext,
+	  BlockLevelBox::renderBegin, BlockLevelBox::renderNonInline,
+	  BlockLevelBox::renderInline, LineBox::render,
+	  InlineLevelBox::render) : Resolve relative positions in
+	  StackingContext::render.
+	  (CSSStyleDeclarationImp::resolveOffset, etc.) : New.
+
+2012-06-14 05:27  Shiki.Okasaka@gmail.com
+
+	* css/CSSPropertyValueImp.cpp, css/CSSPropertyValueImp.h,
+	  css/FormattingContext.cpp, css/LineBox.cpp:
+	  (BlockLevelBox::layOutText, FormattingContext::appendInlineBox,
+	  CSSVerticalAlignValueImp::getOffset) : Fix bugs around handling
+	  'vertical-align'.
+
+2012-06-13 15:52  Shiki.Okasaka@gmail.com
+
+	* css/Box.cpp, css/Box.h, css/BoxGL.cpp, css/LineBox.cpp:
+	  (BlockLevelBox::dump, LineBox::dump, Box::resolveOffset,
+	  BlockLevelBox::renderBegin, InlineLevelBox::render, etc.) :
+	  Refine.
+
+2012-06-13 13:20  Shiki.Okasaka@gmail.com
+
+	* css/Box.cpp, css/Box.h, css/BoxGL.cpp,
+	  css/CSSStyleDeclarationImp.cpp, css/LineBox.cpp:
+	  (CSSStyleDeclarationImp::recompute, Box::resolveOffset,
+	  BlockLevelBox::layOut, BlockLevelBox::layOutAbsolute,
+	  LineBox::layOut, BlockLevelBox::renderBegin,
+	  InlineLevelBox::render, etc.) : Resolve relative positions during
+	  re-paint rather than during reflow.
+
+2012-06-13 11:08  Shiki.Okasaka@gmail.com
+
+	* http/HTTPConnection.cpp: (HttpConnection::readHead) : Refine the
+	  log output.
+
+2012-06-13 09:40  Shiki.Okasaka@gmail.com
+
+	* css/ViewCSSImp.cpp: (ViewCSSImp::createBlockLevelBox) : Fix a
+	  bug.
+
+2012-06-13 09:38  Shiki.Okasaka@gmail.com
+
+	* css/Table.cpp: (TableWrapperBox::computeTableBorders) : Clean up.
+
+2012-06-13 09:35  Shiki.Okasaka@gmail.com
+
+	* HTMLParser.test.cpp: (load) : Clean up.
+
+2012-06-13 07:59  Shiki.Okasaka@gmail.com
+
+	* css/LineBox.cpp: (InlineLevelBox::resolveOffset) : Fix a bug.
+
+2012-06-10 09:20  Shiki.Okasaka@gmail.com
+
+	* css/CSSStyleDeclarationImp.cpp:
+	  (CSSStyleDeclarationImp::recompute) : Fix a bug.
+
+2012-06-10 04:50  Shiki.Okasaka@gmail.com
+
+	* css/CSSSelector.cpp, css/CSSStyleDeclarationImp.cpp,
+	  css/CSSStyleDeclarationImp.h, css/ViewCSSImp.cpp,
+	  css/ViewCSSImp.h: (CSSStyleDeclarationImp::isAffectedByHover,
+	  CSSStyleDeclarationImp::affectedBits,
+	  CSSPseudoClassSelector::match, ViewCSSImp::cascade,
+	  ViewCSSImp::hoverList) : Check ':hover' set to non-rightmost
+	  elements; cf. acid2.
+
+2012-06-09 22:02  Shiki.Okasaka@gmail.com
+
+	* css/Box.h: (Box::isInside) : Fix a bug and add a TODO.
+
+2012-06-09 21:54  Shiki.Okasaka@gmail.com
+
+	* css/ViewCSSImp.cpp: (ViewCSSImp::boxFromPoint) : Fix a bug.
+
+2012-06-09 06:31  Shiki.Okasaka@gmail.com
+
+	* http/HTTPRequest.cpp, http/HTTPRequest.h,
+	  http/HTTPResponseMessage.h, url/URI.cpp, url/URI.h, url/URL.cpp,
+	  url/URL.h: (HttpRequest::send,
+	  HttpRequest::constructResponseFromData, decodeBase64) : Support
+	  data URI.
+	  (URL) : Support data URI.
+	  (URI::percentEncode, URI::percentDecode) : New.
+
+2012-06-07 09:15  Shiki.Okasaka@gmail.com
+
+	* BackgroundTask.cpp, WindowImp.cpp, html/HTMLLinkElementImp.cpp:
+	  (WindowImp::poll) : Fix bugs that lose flags set to the previous
+	  view.
+
+2012-06-07 06:40  Shiki.Okasaka@gmail.com
+
+	* Test.glut.cpp: (init) : Check GL_STENCIL_BITS.
+
+2012-06-07 06:31  Shiki.Okasaka@gmail.com
+
+	* css/StackingContext.cpp, css/StackingContext.h:
+	  (StackingContext::clip, StackingContext::unclip) : Fix bugs; cf.
+	  acid2.
+
+2012-06-07 03:22  Shiki.Okasaka@gmail.com
+
+	* http/HTTPRequest.cpp: (HttpRequest::cachePath) : Fix the default
+	  path.
+
+2012-06-06 06:39  Shiki.Okasaka@gmail.com
+
+	* ChangeLog, LICENSE, Makefile.am, Makefile.in, README, configure,
+	  configure.ac, data, data/navigator, esnavigator.spec.in, harness,
+	  harness.cpp, navigator: (esnavigator.spec.in, LICENSE, README,
+	  ChangeLog) : New for rpmbuild.
+	  (AC_INIT) : Change the package name from es-www to esnavigator.
+	  (Makefile.am, configure.ac, etc.) : Include esnavigator.spec and
+	  slightly reorganize the tree structure for rpmbuild.
+
+2012-06-05 12:06  Shiki.Okasaka@gmail.com
+
+	* Makefile.am, Makefile.in: (Makefile.am) : Add missing files to
+	  the file lists.
+
 2012-06-05 08:17  Shiki.Okasaka@gmail.com
 
 	* Makefile.am, Makefile.in, Navigator.cpp, Profile.cpp, Profile.h,

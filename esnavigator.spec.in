@@ -49,11 +49,11 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/esrille/navigator/Previous_32x32.png
 %{_datadir}/esrille/navigator/Refresh_32x32.png
 %{_datadir}/esrille/navigator/Stop_32x32.png
-%{_datadir}/esrille/navigator/about.html
 %{_datadir}/esrille/navigator/default.css
 %{_datadir}/esrille/navigator/navigator.html
 %dir %{_datadir}/esrille/navigator/about
 %{_datadir}/esrille/navigator/about/blank
+%{_datadir}/esrille/navigator/about/index.html
 
 %clean
 rm -rf $RPM_BUILD_ROOT

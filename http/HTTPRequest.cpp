@@ -220,7 +220,7 @@ bool HttpRequest::send()
             return notify(true);
         std::string path = utfconv(request.getURL().getPathname());
         if (path.empty())
-            path = aboutPath + "/about.html";
+            path = aboutPath + "/about/index.html";
         else
             path = aboutPath + "/about/" + path;
         fdContent = ::open(path.c_str(), O_RDONLY);

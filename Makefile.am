@@ -1245,7 +1245,6 @@ navigatordatadir = $(esrilledatadir)/navigator
 aboutdatadir = $(navigatordatadir)/about
 
 dist_navigatordata_DATA =  \
-	data/navigator/about.html \
 	data/navigator/default.css \
 	data/navigator/navigator.html \
 	data/navigator/Cancel_32x32.png \
@@ -1258,7 +1257,8 @@ dist_navigatordata_DATA =  \
 	data/navigator/Stop_32x32.png
 
 dist_aboutdata_DATA =  \
-	data/navigator/about/blank
+	data/navigator/about/blank \
+	data/navigator/about/index.html
 
 clean-local:
 	rm -rf org css html $(generated_sources) $(generated_headers) $(generated_scanners) *.output
@@ -1267,6 +1267,7 @@ EXTRA_DIST = \
 	esnavigator.spec.in \
 	esnavigator.spec \
 	LICENSE \
+	NOTICE \
 	config.h \
 	idl/COPYRIGHT.html \
 	idl/2dcontext.idl \

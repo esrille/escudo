@@ -1,0 +1,55 @@
+ES Web Browser
+http://code.google.com/p/es-operating-system/
+Copyright 2010-2012 Esrille Inc.
+
+This product includes software developed at Esrille Inc.
+
+This product includes the IDL definitions published by World Wide Web
+Consortium under the W3C Software Copyright Notice and License:
+    http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231
+
+Boost C++ Libraries are used in addition to the C++ standard library. Boost
+C++ Libraries is released under the Boost license. The original software is
+available from
+    http://www.boost.org/
+    
+freeglut is used as a graphics backend. freeglut is released under the 
+X-Consortium license. The original software is available from
+    http://freeglut.sourceforge.net/
+    
+FreeType 2 is used as a software font engine. FreeType 2 is released under
+two open-source licenses: their own BSD-like FreeType License and the GPL.
+The original software is available from
+    http://www.freetype.org/
+
+GIFLIB is used for processing GIFs. GIFLIB is released under an X
+Consortium-like open-source license. The original software is available
+from
+    http://sourceforge.net/projects/giflib/
+    
+ICU is used for Unicode and globalization support. ICU is released under
+ICU License. The original software is available from
+    http://icu-project.org/ 
+
+Libjpeg is used for reading and writing JPEG image files. The original
+software is available from
+    http://libjpeg.sourceforge.net/
+    
+libpng is used for PNG support in Cairo. libpng is the official PNG
+reference library and is available under the libpng license. The original
+software is available from
+    http://www.libpng.org/pub/png/libpng.html
+
+SpiderMonkey may be used as a JavaScript engine for the es web browser.
+SpiderMonkey is available under MPL/GPL/LGPL tri-license. The original
+software is available from
+    https://developer.mozilla.org/en/SpiderMonkey
+
+V8 may be used as a JavaScript engine for the es web browser. V8 is 
+available under the new BSD license. The original software is available 
+from
+    http://code.google.com/p/v8/
+
+zlib is a compression library used by libpng. zlib is available under zlib
+license. The original software is available from
+    http://www.zlib.net/
