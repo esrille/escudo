@@ -102,7 +102,7 @@ binding, implementation, template, content, inherited { display: none; }
 button { binding: button; }
 details { binding: details; }
 input {
-    binding: url(navigator.html#input-textfield);
+    binding: url(escort.html#input-textfield);
     display: inline-block;
     white-space: pre;
     background-color: white;
@@ -123,14 +123,14 @@ input[type=range] { binding: input-range; } /* case-insensitive */
 input[type=color] { binding: input-color; } /* case-insensitive */
 input[type=checkbox] { binding: input-checkbox; } /* case-insensitive */
 input[type=radio] {
-    binding: url(navigator.html#input-radio);
+    binding: url(escort.html#input-radio);
     display: inline-block;
     border-style: none;
     padding: 2px;
 }
 input[type=file] { binding: input-file; } /* case-insensitive */
 input[type=submit], input[type=reset], input[type=button] { /* case-insensitive */
-    binding: url(navigator.html#input-button);
+    binding: url(escort.html#input-button);
     display: inline-block;
     background-color: silver;
     border: 2px silver outset;

@@ -1229,51 +1229,51 @@ NavigatorV8_test_CXXFLAGS = $(AM_CFLAGS) -DUSE_V8
 
 Profile_test_SOURCES = Profile.test.cpp
 
-dist_bin_SCRIPTS = esnavigator
+dist_bin_SCRIPTS = app/escort
 
 esrillelibexecdir = $(libexecdir)/esrille
-navigatorlibexecdir = $(esrillelibexecdir)/navigator
+escortlibexecdir = $(esrillelibexecdir)/escort
 
-navigatorlibexec_PROGRAMS = navigator
-navigatorlibexec_PROGRAMS : $(LDADD) libesjsapi.a libesv8api.a
+escortlibexec_PROGRAMS = escort
+escortlibexec_PROGRAMS : $(LDADD) libesjsapi.a libesv8api.a
 
-navigator_SOURCES = Navigator.cpp
-navigator_LDADD = $(js_LDADD)
-navigator_CXXFLAGS = $(AM_CFLAGS) -DUSE_JS
+escort_SOURCES = Escort.cpp
+escort_LDADD = $(js_LDADD)
+escort_CXXFLAGS = $(AM_CFLAGS) -DUSE_JS
 
 desktopdir = $(datadir)/applications
-dist_desktop_DATA = data/navigator/escort.desktop
+dist_desktop_DATA = data/escort/escort.desktop
 
 esrilledatadir = $(datadir)/esrille
-navigatordatadir = $(esrilledatadir)/navigator
-aboutdatadir = $(navigatordatadir)/about
+escortdatadir = $(esrilledatadir)/escort
+aboutdatadir = $(escortdatadir)/about
 
-dist_navigatordata_DATA =  \
-	data/navigator/default.css \
-	data/navigator/escort.ico \
-	data/navigator/navigator.html \
-	data/navigator/Cancel_32x32.png \
-	data/navigator/Favorites_32x32.png \
-	data/navigator/Gear_32x32.gif \
-	data/navigator/Gear_32x32.png \
-	data/navigator/Next_32x32.png \
-	data/navigator/Previous_32x32.png \
-	data/navigator/Refresh_32x32.png \
-	data/navigator/Stop_32x32.png
+dist_escortdata_DATA =  \
+	data/escort/default.css \
+	data/escort/escort.ico \
+	data/escort/escort.html \
+	data/escort/Cancel_32x32.png \
+	data/escort/Favorites_32x32.png \
+	data/escort/Gear_32x32.gif \
+	data/escort/Gear_32x32.png \
+	data/escort/Next_32x32.png \
+	data/escort/Previous_32x32.png \
+	data/escort/Refresh_32x32.png \
+	data/escort/Stop_32x32.png
 
 dist_aboutdata_DATA =  \
-	data/navigator/about/blank \
-	data/navigator/about/index.html \
-	data/navigator/about/escort_24.png \
-	data/navigator/about/escort_128.png
+	data/escort/about/blank \
+	data/escort/about/index.html \
+	data/escort/about/escort_24.png \
+	data/escort/about/escort_128.png
 
 clean-local:
 	rm -rf org css html $(generated_sources) $(generated_headers) $(generated_scanners) *.output
 
 EXTRA_DIST = \
-	esnavigator.spec.in \
-	esnavigator.spec \
-	data/navigator/about/index.html.in \
+	escort.spec.in \
+	escort.spec \
+	data/escort/about/index.html.in \
 	LICENSE \
 	NOTICE \
 	config.h \

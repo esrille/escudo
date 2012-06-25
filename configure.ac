@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script
-AC_INIT([esnavigator], [0.1.5])
+AC_INIT([escort], [0.1.5])
 AC_CONFIG_AUX_DIR(.)
 AM_INIT_AUTOMAKE([foreign no-define])
 AC_PROG_YACC
@@ -9,7 +9,7 @@ AM_PROG_AS
 AC_PROG_RANLIB
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_FILES([
-esnavigator.spec
+escort.spec
 Makefile
 data/Makefile
 data/16x16/Makefile
@@ -20,7 +20,7 @@ data/48x48/Makefile
 data/64x64/Makefile
 data/128x128/Makefile
 data/256x256/Makefile
-data/navigator/about/index.html
+data/escort/about/index.html
 ])
 
 AH_BOTTOM([#include <Object.h>])

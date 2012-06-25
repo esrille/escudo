@@ -17,8 +17,8 @@
 
 BASE_BIN_DIR=`dirname $0`
 BASE_DIR=`dirname $BASE_BIN_DIR`
-BASE_LIBEXEC_DIR="$BASE_DIR/libexec/esrille/navigator"
-BASE_DATA_DIR="$BASE_DIR/share/esrille/navigator"
-PROFILE_DIR="$HOME/.esrille/navigator"
+BASE_LIBEXEC_DIR="$BASE_DIR/libexec/esrille/escort"
+BASE_DATA_DIR="$BASE_DIR/share/esrille/escort"
+PROFILE_DIR="$HOME/.esrille/escort"
 
-exec "$BASE_LIBEXEC_DIR/navigator" $BASE_DATA_DIR $PROFILE_DIR "$@"
+exec "$BASE_LIBEXEC_DIR/escort" $BASE_DATA_DIR $PROFILE_DIR "$@"

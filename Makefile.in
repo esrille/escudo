@@ -56,14 +56,14 @@ noinst_PROGRAMS = harness$(EXEEXT) Any.test$(EXEEXT) \
 	Script.test$(EXEEXT) ScriptV8.test$(EXEEXT) \
 	Navigator.test$(EXEEXT) NavigatorV8.test$(EXEEXT) \
 	Profile.test$(EXEEXT)
-navigatorlibexec_PROGRAMS = navigator$(EXEEXT)
+escortlibexec_PROGRAMS = escort$(EXEEXT)
 subdir = .
 DIST_COMMON = README $(am__configure_deps) $(dist_aboutdata_DATA) \
 	$(dist_bin_SCRIPTS) $(dist_desktop_DATA) \
-	$(dist_navigatordata_DATA) $(srcdir)/Makefile.am \
+	$(dist_escortdata_DATA) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
-	$(srcdir)/esnavigator.spec.in $(top_srcdir)/configure \
-	$(top_srcdir)/data/navigator/about/index.html.in CSSGrammar.cc \
+	$(srcdir)/escort.spec.in $(top_srcdir)/configure \
+	$(top_srcdir)/data/escort/about/index.html.in CSSGrammar.cc \
 	CSSGrammar.h ChangeLog depcomp install-sh missing ylwrap
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
@@ -73,7 +73,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = esnavigator.spec data/navigator/about/index.html
+CONFIG_CLEAN_FILES = escort.spec data/escort/about/index.html
 CONFIG_CLEAN_VPATH_FILES =
 LIBRARIES = $(noinst_LIBRARIES)
 AR = ar
@@ -351,10 +351,10 @@ libesv8api_a_AR = $(AR) $(ARFLAGS)
 libesv8api_a_LIBADD =
 am_libesv8api_a_OBJECTS = bridgeV8.$(OBJEXT) ScriptV8.$(OBJEXT)
 libesv8api_a_OBJECTS = $(am_libesv8api_a_OBJECTS)
-am__installdirs = "$(DESTDIR)$(navigatorlibexecdir)" \
+am__installdirs = "$(DESTDIR)$(escortlibexecdir)" \
 	"$(DESTDIR)$(bindir)" "$(DESTDIR)$(aboutdatadir)" \
-	"$(DESTDIR)$(desktopdir)" "$(DESTDIR)$(navigatordatadir)"
-PROGRAMS = $(navigatorlibexec_PROGRAMS) $(noinst_PROGRAMS)
+	"$(DESTDIR)$(desktopdir)" "$(DESTDIR)$(escortdatadir)"
+PROGRAMS = $(escortlibexec_PROGRAMS) $(noinst_PROGRAMS)
 am_Any_test_OBJECTS = Any.test.$(OBJEXT)
 Any_test_OBJECTS = $(am_Any_test_OBJECTS)
 am__DEPENDENCIES_1 =
@@ -430,14 +430,14 @@ ScriptV8_test_LINK = $(CXXLD) $(ScriptV8_test_CXXFLAGS) $(CXXFLAGS) \
 am_URL_test_OBJECTS = URL.test.$(OBJEXT)
 URL_test_OBJECTS = $(am_URL_test_OBJECTS)
 URL_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
+am_escort_OBJECTS = escort-Escort.$(OBJEXT)
+escort_OBJECTS = $(am_escort_OBJECTS)
+escort_DEPENDENCIES = $(am__DEPENDENCIES_3)
+escort_LINK = $(CXXLD) $(escort_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
+	$(LDFLAGS) -o $@
 am_harness_OBJECTS = harness.$(OBJEXT)
 harness_OBJECTS = $(am_harness_OBJECTS)
 harness_DEPENDENCIES = $(am__DEPENDENCIES_3)
-am_navigator_OBJECTS = navigator-Navigator.$(OBJEXT)
-navigator_OBJECTS = $(am_navigator_OBJECTS)
-navigator_DEPENDENCIES = $(am__DEPENDENCIES_3)
-navigator_LINK = $(CXXLD) $(navigator_CXXFLAGS) $(CXXFLAGS) \
-	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -493,7 +493,7 @@ SOURCES = $(libesfontmanager_a_SOURCES) $(libeshtml5_a_SOURCES) \
 	$(Ico_test_SOURCES) $(Navigator_test_SOURCES) \
 	$(NavigatorV8_test_SOURCES) $(Profile_test_SOURCES) \
 	$(Script_test_SOURCES) $(ScriptV8_test_SOURCES) \
-	$(URL_test_SOURCES) $(harness_SOURCES) $(navigator_SOURCES)
+	$(URL_test_SOURCES) $(escort_SOURCES) $(harness_SOURCES)
 DIST_SOURCES = $(libesfontmanager_a_SOURCES) $(libeshtml5_a_SOURCES) \
 	$(libesjsapi_a_SOURCES) $(libesv8api_a_SOURCES) \
 	$(Any_test_SOURCES) $(Box_test_SOURCES) \
@@ -506,7 +506,7 @@ DIST_SOURCES = $(libesfontmanager_a_SOURCES) $(libeshtml5_a_SOURCES) \
 	$(Ico_test_SOURCES) $(Navigator_test_SOURCES) \
 	$(NavigatorV8_test_SOURCES) $(Profile_test_SOURCES) \
 	$(Script_test_SOURCES) $(ScriptV8_test_SOURCES) \
-	$(URL_test_SOURCES) $(harness_SOURCES) $(navigator_SOURCES)
+	$(URL_test_SOURCES) $(escort_SOURCES) $(harness_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
 	install-dvi-recursive install-exec-recursive \
@@ -515,7 +515,7 @@ RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	installcheck-recursive installdirs-recursive pdf-recursive \
 	ps-recursive uninstall-recursive
 DATA = $(dist_aboutdata_DATA) $(dist_desktop_DATA) \
-	$(dist_navigatordata_DATA)
+	$(dist_escortdata_DATA)
 HEADERS = $(nobase_nodist_noinst_HEADERS)
 RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
   distclean-recursive maintainer-clean-recursive
@@ -1521,40 +1521,40 @@ NavigatorV8_test_SOURCES = Navigator.test.cpp
 NavigatorV8_test_LDADD = $(v8_LDADD)
 NavigatorV8_test_CXXFLAGS = $(AM_CFLAGS) -DUSE_V8
 Profile_test_SOURCES = Profile.test.cpp
-dist_bin_SCRIPTS = esnavigator
+dist_bin_SCRIPTS = app/escort
 esrillelibexecdir = $(libexecdir)/esrille
-navigatorlibexecdir = $(esrillelibexecdir)/navigator
-navigator_SOURCES = Navigator.cpp
-navigator_LDADD = $(js_LDADD)
-navigator_CXXFLAGS = $(AM_CFLAGS) -DUSE_JS
+escortlibexecdir = $(esrillelibexecdir)/escort
+escort_SOURCES = Escort.cpp
+escort_LDADD = $(js_LDADD)
+escort_CXXFLAGS = $(AM_CFLAGS) -DUSE_JS
 desktopdir = $(datadir)/applications
-dist_desktop_DATA = data/navigator/escort.desktop
+dist_desktop_DATA = data/escort/escort.desktop
 esrilledatadir = $(datadir)/esrille
-navigatordatadir = $(esrilledatadir)/navigator
-aboutdatadir = $(navigatordatadir)/about
-dist_navigatordata_DATA = \
-	data/navigator/default.css \
-	data/navigator/escort.ico \
-	data/navigator/navigator.html \
-	data/navigator/Cancel_32x32.png \
-	data/navigator/Favorites_32x32.png \
-	data/navigator/Gear_32x32.gif \
-	data/navigator/Gear_32x32.png \
-	data/navigator/Next_32x32.png \
-	data/navigator/Previous_32x32.png \
-	data/navigator/Refresh_32x32.png \
-	data/navigator/Stop_32x32.png
+escortdatadir = $(esrilledatadir)/escort
+aboutdatadir = $(escortdatadir)/about
+dist_escortdata_DATA = \
+	data/escort/default.css \
+	data/escort/escort.ico \
+	data/escort/escort.html \
+	data/escort/Cancel_32x32.png \
+	data/escort/Favorites_32x32.png \
+	data/escort/Gear_32x32.gif \
+	data/escort/Gear_32x32.png \
+	data/escort/Next_32x32.png \
+	data/escort/Previous_32x32.png \
+	data/escort/Refresh_32x32.png \
+	data/escort/Stop_32x32.png
 
 dist_aboutdata_DATA = \
-	data/navigator/about/blank \
-	data/navigator/about/index.html \
-	data/navigator/about/escort_24.png \
-	data/navigator/about/escort_128.png
+	data/escort/about/blank \
+	data/escort/about/index.html \
+	data/escort/about/escort_24.png \
+	data/escort/about/escort_128.png
 
 EXTRA_DIST = \
-	esnavigator.spec.in \
-	esnavigator.spec \
-	data/navigator/about/index.html.in \
+	escort.spec.in \
+	escort.spec \
+	data/escort/about/index.html.in \
 	LICENSE \
 	NOTICE \
 	config.h \
@@ -1656,9 +1656,9 @@ $(srcdir)/config.h.in:  $(am__configure_deps)
 
 distclean-hdr:
 	-rm -f config.h stamp-h1
-esnavigator.spec: $(top_builddir)/config.status $(srcdir)/esnavigator.spec.in
+escort.spec: $(top_builddir)/config.status $(srcdir)/escort.spec.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
-data/navigator/about/index.html: $(top_builddir)/config.status $(top_srcdir)/data/navigator/about/index.html.in
+data/escort/about/index.html: $(top_builddir)/config.status $(top_srcdir)/data/escort/about/index.html.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 
 clean-noinstLIBRARIES:
@@ -1682,10 +1682,10 @@ libesv8api.a: $(libesv8api_a_OBJECTS) $(libesv8api_a_DEPENDENCIES) $(EXTRA_libes
 	-rm -f libesv8api.a
 	$(libesv8api_a_AR) libesv8api.a $(libesv8api_a_OBJECTS) $(libesv8api_a_LIBADD)
 	$(RANLIB) libesv8api.a
-install-navigatorlibexecPROGRAMS: $(navigatorlibexec_PROGRAMS)
+install-escortlibexecPROGRAMS: $(escortlibexec_PROGRAMS)
 	@$(NORMAL_INSTALL)
-	test -z "$(navigatorlibexecdir)" || $(MKDIR_P) "$(DESTDIR)$(navigatorlibexecdir)"
-	@list='$(navigatorlibexec_PROGRAMS)'; test -n "$(navigatorlibexecdir)" || list=; \
+	test -z "$(escortlibexecdir)" || $(MKDIR_P) "$(DESTDIR)$(escortlibexecdir)"
+	@list='$(escortlibexec_PROGRAMS)'; test -n "$(escortlibexecdir)" || list=; \
 	for p in $$list; do echo "$$p $$p"; done | \
 	sed 's/$(EXEEXT)$$//' | \
 	while read p p1; do if test -f $$p; \
@@ -1702,23 +1702,23 @@ install-navigatorlibexecPROGRAMS: $(navigatorlibexec_PROGRAMS)
 	while read type dir files; do \
 	    if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
 	    test -z "$$files" || { \
-	      echo " $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(navigatorlibexecdir)$$dir'"; \
-	      $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(navigatorlibexecdir)$$dir" || exit $$?; \
+	      echo " $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(escortlibexecdir)$$dir'"; \
+	      $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(escortlibexecdir)$$dir" || exit $$?; \
 	    } \
 	; done
 
-uninstall-navigatorlibexecPROGRAMS:
+uninstall-escortlibexecPROGRAMS:
 	@$(NORMAL_UNINSTALL)
-	@list='$(navigatorlibexec_PROGRAMS)'; test -n "$(navigatorlibexecdir)" || list=; \
+	@list='$(escortlibexec_PROGRAMS)'; test -n "$(escortlibexecdir)" || list=; \
 	files=`for p in $$list; do echo "$$p"; done | \
 	  sed -e 'h;s,^.*/,,;s/$(EXEEXT)$$//;$(transform)' \
 	      -e 's/$$/$(EXEEXT)/' `; \
 	test -n "$$list" || exit 0; \
-	echo " ( cd '$(DESTDIR)$(navigatorlibexecdir)' && rm -f" $$files ")"; \
-	cd "$(DESTDIR)$(navigatorlibexecdir)" && rm -f $$files
+	echo " ( cd '$(DESTDIR)$(escortlibexecdir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(escortlibexecdir)" && rm -f $$files
 
-clean-navigatorlibexecPROGRAMS:
-	-test -z "$(navigatorlibexec_PROGRAMS)" || rm -f $(navigatorlibexec_PROGRAMS)
+clean-escortlibexecPROGRAMS:
+	-test -z "$(escortlibexec_PROGRAMS)" || rm -f $(escortlibexec_PROGRAMS)
 
 clean-noinstPROGRAMS:
 	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
@@ -1779,12 +1779,12 @@ ScriptV8.test$(EXEEXT): $(ScriptV8_test_OBJECTS) $(ScriptV8_test_DEPENDENCIES) $
 URL.test$(EXEEXT): $(URL_test_OBJECTS) $(URL_test_DEPENDENCIES) $(EXTRA_URL_test_DEPENDENCIES) 
 	@rm -f URL.test$(EXEEXT)
 	$(CXXLINK) $(URL_test_OBJECTS) $(URL_test_LDADD) $(LIBS)
+escort$(EXEEXT): $(escort_OBJECTS) $(escort_DEPENDENCIES) $(EXTRA_escort_DEPENDENCIES) 
+	@rm -f escort$(EXEEXT)
+	$(escort_LINK) $(escort_OBJECTS) $(escort_LDADD) $(LIBS)
 harness$(EXEEXT): $(harness_OBJECTS) $(harness_DEPENDENCIES) $(EXTRA_harness_DEPENDENCIES) 
 	@rm -f harness$(EXEEXT)
 	$(CXXLINK) $(harness_OBJECTS) $(harness_LDADD) $(LIBS)
-navigator$(EXEEXT): $(navigator_OBJECTS) $(navigator_DEPENDENCIES) $(EXTRA_navigator_DEPENDENCIES) 
-	@rm -f navigator$(EXEEXT)
-	$(navigator_LINK) $(navigator_OBJECTS) $(navigator_LDADD) $(LIBS)
 install-dist_binSCRIPTS: $(dist_bin_SCRIPTS)
 	@$(NORMAL_INSTALL)
 	test -z "$(bindir)" || $(MKDIR_P) "$(DESTDIR)$(bindir)"
@@ -2325,10 +2325,10 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XMLHttpRequestUploadImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bridge.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bridgeV8.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/escort-Escort.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/harness.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libesfontmanager_a-FontDatabase.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libesfontmanager_a-FontManager.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/navigator-Navigator.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/utf.Po@am__quote@
 
 .cc.o:
@@ -8099,19 +8099,19 @@ ScriptV8_test-Script.test.obj: Script.test.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(ScriptV8_test_CXXFLAGS) $(CXXFLAGS) -c -o ScriptV8_test-Script.test.obj `if test -f 'Script.test.cpp'; then $(CYGPATH_W) 'Script.test.cpp'; else $(CYGPATH_W) '$(srcdir)/Script.test.cpp'; fi`
 
-navigator-Navigator.o: Navigator.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(navigator_CXXFLAGS) $(CXXFLAGS) -MT navigator-Navigator.o -MD -MP -MF $(DEPDIR)/navigator-Navigator.Tpo -c -o navigator-Navigator.o `test -f 'Navigator.cpp' || echo '$(srcdir)/'`Navigator.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/navigator-Navigator.Tpo $(DEPDIR)/navigator-Navigator.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Navigator.cpp' object='navigator-Navigator.o' libtool=no @AMDEPBACKSLASH@
+escort-Escort.o: Escort.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(escort_CXXFLAGS) $(CXXFLAGS) -MT escort-Escort.o -MD -MP -MF $(DEPDIR)/escort-Escort.Tpo -c -o escort-Escort.o `test -f 'Escort.cpp' || echo '$(srcdir)/'`Escort.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/escort-Escort.Tpo $(DEPDIR)/escort-Escort.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Escort.cpp' object='escort-Escort.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(navigator_CXXFLAGS) $(CXXFLAGS) -c -o navigator-Navigator.o `test -f 'Navigator.cpp' || echo '$(srcdir)/'`Navigator.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(escort_CXXFLAGS) $(CXXFLAGS) -c -o escort-Escort.o `test -f 'Escort.cpp' || echo '$(srcdir)/'`Escort.cpp
 
-navigator-Navigator.obj: Navigator.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(navigator_CXXFLAGS) $(CXXFLAGS) -MT navigator-Navigator.obj -MD -MP -MF $(DEPDIR)/navigator-Navigator.Tpo -c -o navigator-Navigator.obj `if test -f 'Navigator.cpp'; then $(CYGPATH_W) 'Navigator.cpp'; else $(CYGPATH_W) '$(srcdir)/Navigator.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/navigator-Navigator.Tpo $(DEPDIR)/navigator-Navigator.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Navigator.cpp' object='navigator-Navigator.obj' libtool=no @AMDEPBACKSLASH@
+escort-Escort.obj: Escort.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(escort_CXXFLAGS) $(CXXFLAGS) -MT escort-Escort.obj -MD -MP -MF $(DEPDIR)/escort-Escort.Tpo -c -o escort-Escort.obj `if test -f 'Escort.cpp'; then $(CYGPATH_W) 'Escort.cpp'; else $(CYGPATH_W) '$(srcdir)/Escort.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/escort-Escort.Tpo $(DEPDIR)/escort-Escort.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='Escort.cpp' object='escort-Escort.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(navigator_CXXFLAGS) $(CXXFLAGS) -c -o navigator-Navigator.obj `if test -f 'Navigator.cpp'; then $(CYGPATH_W) 'Navigator.cpp'; else $(CYGPATH_W) '$(srcdir)/Navigator.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(escort_CXXFLAGS) $(CXXFLAGS) -c -o escort-Escort.obj `if test -f 'Escort.cpp'; then $(CYGPATH_W) 'Escort.cpp'; else $(CYGPATH_W) '$(srcdir)/Escort.cpp'; fi`
 
 .cpp.o:
 @am__fastdepCXX_TRUE@	$(CXXCOMPILE) -MT $@ -MD -MP -MF $(DEPDIR)/$*.Tpo -c -o $@ $<
@@ -8170,24 +8170,24 @@ uninstall-dist_desktopDATA:
 	@list='$(dist_desktop_DATA)'; test -n "$(desktopdir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
 	dir='$(DESTDIR)$(desktopdir)'; $(am__uninstall_files_from_dir)
-install-dist_navigatordataDATA: $(dist_navigatordata_DATA)
+install-dist_escortdataDATA: $(dist_escortdata_DATA)
 	@$(NORMAL_INSTALL)
-	test -z "$(navigatordatadir)" || $(MKDIR_P) "$(DESTDIR)$(navigatordatadir)"
-	@list='$(dist_navigatordata_DATA)'; test -n "$(navigatordatadir)" || list=; \
+	test -z "$(escortdatadir)" || $(MKDIR_P) "$(DESTDIR)$(escortdatadir)"
+	@list='$(dist_escortdata_DATA)'; test -n "$(escortdatadir)" || list=; \
 	for p in $$list; do \
 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
 	  echo "$$d$$p"; \
 	done | $(am__base_list) | \
 	while read files; do \
-	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(navigatordatadir)'"; \
-	  $(INSTALL_DATA) $$files "$(DESTDIR)$(navigatordatadir)" || exit $$?; \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(escortdatadir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(escortdatadir)" || exit $$?; \
 	done
 
-uninstall-dist_navigatordataDATA:
+uninstall-dist_escortdataDATA:
 	@$(NORMAL_UNINSTALL)
-	@list='$(dist_navigatordata_DATA)'; test -n "$(navigatordatadir)" || list=; \
+	@list='$(dist_escortdata_DATA)'; test -n "$(escortdatadir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	dir='$(DESTDIR)$(navigatordatadir)'; $(am__uninstall_files_from_dir)
+	dir='$(DESTDIR)$(escortdatadir)'; $(am__uninstall_files_from_dir)
 
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run `make' without going through this Makefile.
@@ -8521,7 +8521,7 @@ all-am: Makefile $(LIBRARIES) $(PROGRAMS) $(SCRIPTS) $(DATA) \
 		$(HEADERS) config.h
 installdirs: installdirs-recursive
 installdirs-am:
-	for dir in "$(DESTDIR)$(navigatorlibexecdir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(aboutdatadir)" "$(DESTDIR)$(desktopdir)" "$(DESTDIR)$(navigatordatadir)"; do \
+	for dir in "$(DESTDIR)$(escortlibexecdir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(aboutdatadir)" "$(DESTDIR)$(desktopdir)" "$(DESTDIR)$(escortdatadir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: $(BUILT_SOURCES)
@@ -8560,7 +8560,7 @@ maintainer-clean-generic:
 	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-recursive
 
-clean-am: clean-generic clean-local clean-navigatorlibexecPROGRAMS \
+clean-am: clean-escortlibexecPROGRAMS clean-generic clean-local \
 	clean-noinstLIBRARIES clean-noinstPROGRAMS mostlyclean-am
 
 distclean: distclean-recursive
@@ -8583,14 +8583,13 @@ info: info-recursive
 info-am:
 
 install-data-am: install-dist_aboutdataDATA install-dist_desktopDATA \
-	install-dist_navigatordataDATA
+	install-dist_escortdataDATA
 
 install-dvi: install-dvi-recursive
 
 install-dvi-am:
 
-install-exec-am: install-dist_binSCRIPTS \
-	install-navigatorlibexecPROGRAMS
+install-exec-am: install-dist_binSCRIPTS install-escortlibexecPROGRAMS
 
 install-html: install-html-recursive
 
@@ -8632,16 +8631,16 @@ ps: ps-recursive
 ps-am:
 
 uninstall-am: uninstall-dist_aboutdataDATA uninstall-dist_binSCRIPTS \
-	uninstall-dist_desktopDATA uninstall-dist_navigatordataDATA \
-	uninstall-navigatorlibexecPROGRAMS
+	uninstall-dist_desktopDATA uninstall-dist_escortdataDATA \
+	uninstall-escortlibexecPROGRAMS
 
 .MAKE: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) all check \
 	ctags-recursive install install-am install-strip \
 	tags-recursive
 
 .PHONY: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) CTAGS GTAGS \
-	all all-am am--refresh check check-am clean clean-generic \
-	clean-local clean-navigatorlibexecPROGRAMS \
+	all all-am am--refresh check check-am clean \
+	clean-escortlibexecPROGRAMS clean-generic clean-local \
 	clean-noinstLIBRARIES clean-noinstPROGRAMS ctags \
 	ctags-recursive dist dist-all dist-bzip2 dist-gzip dist-lzip \
 	dist-lzma dist-shar dist-tarZ dist-xz dist-zip distcheck \
@@ -8650,18 +8649,17 @@ uninstall-am: uninstall-dist_aboutdataDATA uninstall-dist_binSCRIPTS \
 	dvi-am html html-am info info-am install install-am \
 	install-data install-data-am install-dist_aboutdataDATA \
 	install-dist_binSCRIPTS install-dist_desktopDATA \
-	install-dist_navigatordataDATA install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-man \
-	install-navigatorlibexecPROGRAMS install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs installdirs-am maintainer-clean \
+	install-dist_escortdataDATA install-dvi install-dvi-am \
+	install-escortlibexecPROGRAMS install-exec install-exec-am \
+	install-html install-html-am install-info install-info-am \
+	install-man install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs installdirs-am maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic pdf pdf-am ps ps-am tags tags-recursive \
 	uninstall uninstall-am uninstall-dist_aboutdataDATA \
 	uninstall-dist_binSCRIPTS uninstall-dist_desktopDATA \
-	uninstall-dist_navigatordataDATA \
-	uninstall-navigatorlibexecPROGRAMS
+	uninstall-dist_escortdataDATA uninstall-escortlibexecPROGRAMS
 
 
 %.cpp : %.re
@@ -8681,7 +8679,7 @@ org/w3c/dom/Node.cpp : $(idl_files)
 $(generated_sources) : org/w3c/dom/Node.cpp
 
 noinst_PROGRAMS : $(LDADD) libesjsapi.a libesv8api.a
-navigatorlibexec_PROGRAMS : $(LDADD) libesjsapi.a libesv8api.a
+escortlibexec_PROGRAMS : $(LDADD) libesjsapi.a libesv8api.a
 
 clean-local:
 	rm -rf org css html $(generated_sources) $(generated_headers) $(generated_scanners) *.output
