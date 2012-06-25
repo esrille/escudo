@@ -4034,7 +4034,7 @@ fi
 
 ac_config_headers="$ac_config_headers config.h"
 
-ac_config_files="$ac_config_files esnavigator.spec Makefile"
+ac_config_files="$ac_config_files esnavigator.spec Makefile data/Makefile data/16x16/Makefile data/22x22/Makefile data/24x24/Makefile data/32x32/Makefile data/48x48/Makefile data/64x64/Makefile data/128x128/Makefile data/256x256/Makefile data/navigator/about/index.html"
 
 
 
@@ -5381,6 +5381,16 @@ do
     "config.h") CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
     "esnavigator.spec") CONFIG_FILES="$CONFIG_FILES esnavigator.spec" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+    "data/Makefile") CONFIG_FILES="$CONFIG_FILES data/Makefile" ;;
+    "data/16x16/Makefile") CONFIG_FILES="$CONFIG_FILES data/16x16/Makefile" ;;
+    "data/22x22/Makefile") CONFIG_FILES="$CONFIG_FILES data/22x22/Makefile" ;;
+    "data/24x24/Makefile") CONFIG_FILES="$CONFIG_FILES data/24x24/Makefile" ;;
+    "data/32x32/Makefile") CONFIG_FILES="$CONFIG_FILES data/32x32/Makefile" ;;
+    "data/48x48/Makefile") CONFIG_FILES="$CONFIG_FILES data/48x48/Makefile" ;;
+    "data/64x64/Makefile") CONFIG_FILES="$CONFIG_FILES data/64x64/Makefile" ;;
+    "data/128x128/Makefile") CONFIG_FILES="$CONFIG_FILES data/128x128/Makefile" ;;
+    "data/256x256/Makefile") CONFIG_FILES="$CONFIG_FILES data/256x256/Makefile" ;;
+    "data/navigator/about/index.html") CONFIG_FILES="$CONFIG_FILES data/navigator/about/index.html" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

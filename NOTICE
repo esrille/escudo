@@ -2,8 +2,35 @@ ES Web Browser
 http://code.google.com/p/es-operating-system/
 Copyright 2010-2012 Esrille Inc.
 
-This product includes software developed at Esrille Inc.
+This product includes software developed at 
+Esrille Inc. (http://www.esrille.com/). 
 
+Except as otherwise noted, the content of this software, including any
+portion of the HTML/CSS, JavaScript, or visual design elements, and
+the source code of the executable software binaries are licensed under
+the Apache 2.0 License.
+
+== The es shield logo ==
+
+The es shield logo is a trademark of Esrille Inc. All rights reserved.
+
+The es shield logo is a special trademark to identify the ES operating
+system projects and any software developed and distributed by the ES
+operating system projects.
+
+The es shield logo can be used by anyone if that use of the logo is
+nominative. The "nominative use" authorizes everyone (even commercial
+companies) to use the trademark of another if:
+
+  1. The product or service cannot be readily identified without use of
+     the trademark;
+  2. The user only uses as much of the mark as is necessary to identify
+     the product or service; and,
+  3. The user does nothing to suggest sponsorship or endorsement by the
+     trademark holder.
+
+== Credits ==
+     
 This product includes the IDL definitions published by World Wide Web
 Consortium under the W3C Software Copyright Notice and License:
     http://www.w3.org/Consortium/Legal/2002/copyright-software-20021231

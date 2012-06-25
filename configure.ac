@@ -8,7 +8,20 @@ AC_PROG_CC
 AM_PROG_AS
 AC_PROG_RANLIB
 AC_CONFIG_HEADER([config.h])
-AC_CONFIG_FILES([esnavigator.spec Makefile])
+AC_CONFIG_FILES([
+esnavigator.spec
+Makefile
+data/Makefile
+data/16x16/Makefile
+data/22x22/Makefile
+data/24x24/Makefile
+data/32x32/Makefile
+data/48x48/Makefile
+data/64x64/Makefile
+data/128x128/Makefile
+data/256x256/Makefile
+data/navigator/about/index.html
+])
 
 AH_BOTTOM([#include <Object.h>])
 AH_BOTTOM([#if 4 < __GNUC__ || __GNUC__ == 4 && 6 <= __GNUC_MINOR__

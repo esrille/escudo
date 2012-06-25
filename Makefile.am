@@ -1,4 +1,5 @@
 SUFFIXES = .idl .re
+SUBDIRS = data
 
 %.cpp : %.re
 	mkdir -p $(*D);
@@ -1240,12 +1241,16 @@ navigator_SOURCES = Navigator.cpp
 navigator_LDADD = $(js_LDADD)
 navigator_CXXFLAGS = $(AM_CFLAGS) -DUSE_JS
 
+desktopdir = $(datadir)/applications
+dist_desktop_DATA = data/navigator/escort.desktop
+
 esrilledatadir = $(datadir)/esrille
 navigatordatadir = $(esrilledatadir)/navigator
 aboutdatadir = $(navigatordatadir)/about
 
 dist_navigatordata_DATA =  \
 	data/navigator/default.css \
+	data/navigator/escort.ico \
 	data/navigator/navigator.html \
 	data/navigator/Cancel_32x32.png \
 	data/navigator/Favorites_32x32.png \
@@ -1258,7 +1263,9 @@ dist_navigatordata_DATA =  \
 
 dist_aboutdata_DATA =  \
 	data/navigator/about/blank \
-	data/navigator/about/index.html
+	data/navigator/about/index.html \
+	data/navigator/about/escort_24.png \
+	data/navigator/about/escort_128.png
 
 clean-local:
 	rm -rf org css html $(generated_sources) $(generated_headers) $(generated_scanners) *.output
@@ -1266,6 +1273,7 @@ clean-local:
 EXTRA_DIST = \
 	esnavigator.spec.in \
 	esnavigator.spec \
+	data/navigator/about/index.html.in \
 	LICENSE \
 	NOTICE \
 	config.h \

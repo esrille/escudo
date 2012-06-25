@@ -51,9 +51,14 @@ rm -rf $RPM_BUILD_ROOT
 %{_datadir}/esrille/navigator/Stop_32x32.png
 %{_datadir}/esrille/navigator/default.css
 %{_datadir}/esrille/navigator/navigator.html
+%{_datadir}/esrille/navigator/escort.ico
 %dir %{_datadir}/esrille/navigator/about
 %{_datadir}/esrille/navigator/about/blank
 %{_datadir}/esrille/navigator/about/index.html
+%{_datadir}/esrille/navigator/about/escort_128.png
+%{_datadir}/esrille/navigator/about/escort_24.png
+%{_datadir}/icons/hicolor/*/apps/escort.png
+%{_datadir}/applications/escort.desktop
 
 %clean
 rm -rf $RPM_BUILD_ROOT

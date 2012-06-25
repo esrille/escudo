@@ -55,7 +55,7 @@ h3 {
 <div>
 <div id='title'>
 <h1>escort</h1>
-Pre-Alpha<br>
+@VERSION@ (Alpha)<br>
 <span class='italic'>A web browser from <a href='http://code.google.com/p/es-operating-system/'>ES operating system</a> projects.</span>
 <p>
 Copyright 2012 <a href='http://www.esrille.com/'>Esrille Inc.</a></p>
