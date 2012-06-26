@@ -1270,6 +1270,9 @@ dist_aboutdata_DATA =  \
 clean-local:
 	rm -rf org css html $(generated_sources) $(generated_headers) $(generated_scanners) *.output
 
+dist-hook:
+	-rm -f $(distdir)/CSSGrammar.cc $(distdir)/CSSGrammar.h
+
 EXTRA_DIST = \
 	escort.spec.in \
 	escort.spec \
