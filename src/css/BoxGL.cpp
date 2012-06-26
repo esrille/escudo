@@ -54,8 +54,8 @@ GLuint addImage(uint8_t* image, unsigned width, unsigned heigth, unsigned repeat
 
     glGenTextures(1, &texname);
     glBindTexture(GL_TEXTURE_2D, texname);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, (repeat & BoxImage::RepeatS) ? GL_REPEAT : (repeat & BoxImage::Clamp) ? GL_CLAMP_TO_EDGE : GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, (repeat & BoxImage::RepeatT) ? GL_REPEAT : (repeat & BoxImage::Clamp) ? GL_CLAMP_TO_EDGE : GL_CLAMP_TO_BORDER);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, (repeat & BoxImage::RepeatS) ? GL_REPEAT : GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, (repeat & BoxImage::RepeatT) ? GL_REPEAT : GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, heigth, 0, format, GL_UNSIGNED_BYTE, image);
@@ -109,10 +109,27 @@ unsigned BoxImage::render(ViewCSSImp* view, float x, float y, float width, float
 
     glMatrixMode(GL_TEXTURE);
     glLoadIdentity();
-    if (repeat & BoxImage::Clamp)
+    if (repeat & Clamp)
         glScalef(1.0f / width, 1.0f / height, 0.0f);
-    else
+    else {
         glScalef(1.0f / naturalWidth, 1.0f / naturalHeight, 0.0f);
+        if (!(repeat & RepeatS)) {
+            float r = x + width;
+            if (left + naturalWidth < r)
+                r = left + naturalWidth;
+            if (x < left)
+                x = left;
+            width = r - x;
+        }
+        if (!(repeat & RepeatT)) {
+            float b = y + height;
+            if (top + naturalHeight < b)
+                b = top + naturalHeight ;
+            if (y < top)
+                y = top;
+            height = b - y;
+        }
+    }
     glMatrixMode(GL_MODELVIEW);
 
     int frame = 0;
@@ -121,6 +138,9 @@ unsigned BoxImage::render(ViewCSSImp* view, float x, float y, float width, float
         frame = getCurrentFrame(getTick(), delay, start);
         view->setDelay(delay);
     }
+
+    if (width < 0.0f || height < 0.0f)
+        return start;
 
     GLuint texname = getTexname(pixels + frame * (naturalWidth * naturalHeight * 4),
                                 naturalWidth, naturalHeight, repeat, format);
@@ -330,8 +350,6 @@ void Box::renderBorder(ViewCSSImp* view, float left, float top,
     }
 
     if (backgroundImage && backgroundImage->getState() == BoxImage::CompletelyAvailable) {
-        static const GLfloat transparent[] = { 0.0f, 0.0f, 0.0f, 0.0f };
-        glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, transparent);
         glPushMatrix();
         if (getParentBox()) {
             glTranslatef(lr, tb, 0.0f);
