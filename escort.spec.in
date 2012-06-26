@@ -34,7 +34,7 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%doc README LICENSE ChangeLog
+%doc LICENSE NOTICE ChangeLog
 %{_bindir}/escort
 %dir %{_libexecdir}/esrille/escort
 %{_libexecdir}/esrille/escort/escort

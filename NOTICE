@@ -1,5 +1,4 @@
-ES Web Browser
-http://code.google.com/p/es-operating-system/
+Escort web browser
 Copyright 2010-2012 Esrille Inc.
 
 This product includes software developed at 
@@ -9,6 +8,9 @@ Except as otherwise noted, the content of this software, including any
 portion of the HTML/CSS, JavaScript, or visual design elements, and
 the source code of the executable software binaries are licensed under
 the Apache 2.0 License.
+
+Please consult http://code.google.com/p/es-operating-system/ for how to
+report problems.
 
 == The es shield logo ==
 
@@ -67,14 +69,12 @@ reference library and is available under the libpng license. The original
 software is available from
     http://www.libpng.org/pub/png/libpng.html
 
-SpiderMonkey may be used as a JavaScript engine for the es web browser.
-SpiderMonkey is available under MPL/GPL/LGPL tri-license. The original
-software is available from
+SpiderMonkey may be used as a JavaScript engine. SpiderMonkey is available
+under MPL/GPL/LGPL tri-license. The original software is available from
     https://developer.mozilla.org/en/SpiderMonkey
 
-V8 may be used as a JavaScript engine for the es web browser. V8 is 
-available under the new BSD license. The original software is available 
-from
+V8 may be used as a JavaScript engine. V8 is available under the new BSD
+license. The original software is available from
     http://code.google.com/p/v8/
 
 zlib is a compression library used by libpng. zlib is available under zlib
