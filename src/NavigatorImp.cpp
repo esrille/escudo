@@ -16,6 +16,8 @@
 
 #include "NavigatorImp.h"
 
+#include "utf.h"
+
 namespace org
 {
 namespace w3c
@@ -27,26 +29,23 @@ namespace bootstrap
 
 std::u16string NavigatorImp::getAppName()
 {
-    // TODO: implement me!
-    return u"";
+    return u"Escort";
 }
 
 std::u16string NavigatorImp::getAppVersion()
 {
-    // TODO: implement me!
-    return u"";
+    return utfconv(PACKAGE_VERSION);
 }
 
 std::u16string NavigatorImp::getPlatform()
 {
-    // TODO: implement me!
     return u"";
 }
 
 std::u16string NavigatorImp::getUserAgent()
 {
-    // TODO: implement me!
-    return u"";
+    // cf. http://tools.ietf.org/html/rfc2616#section-14.43
+    return getAppName() + u'/' + getAppVersion();
 }
 
 bool NavigatorImp::getOnLine()

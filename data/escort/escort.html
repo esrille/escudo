@@ -253,7 +253,11 @@ function complete(e) {
     document.getElementById('location').value = document.getElementById('main').contentWindow.location;
     document.getElementById('main').focus();
     document.getElementById('main').contentWindow.addEventListener('beforeunload', busy, false);
-    document.title = document.getElementById('main').contentDocument.title;
+    var title = document.getElementById('main').contentDocument.title;
+    if (0 < title.length)
+        document.title = title;
+    else
+        document.title = navigator.appName;
     e.preventDefault();
 }
 function keypress(e) {

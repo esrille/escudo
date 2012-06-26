@@ -797,8 +797,7 @@ void WindowImp::setElement(std::u16string name, Any value)
 
 html::Navigator WindowImp::getNavigator()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return &navigator;
 }
 
 html::External WindowImp::getExternal()

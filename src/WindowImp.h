@@ -53,6 +53,7 @@
 #include "EventTargetImp.h"
 #include "HistoryImp.h"
 #include "LocationImp.h"
+#include "NavigatorImp.h"
 #include "http/HTTPRequest.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
@@ -145,6 +146,7 @@ class WindowImp : public ObjectMixin<WindowImp>
     };
 
     HttpRequest request;
+    Retained<NavigatorImp> navigator;
     Retained<HistoryImp> history;
     BackgroundTask backgroundTask;
     std::thread thread;
