@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,10 @@
 
 #ifndef ES_HTTP_REQUEST_MESSAGE_H
 #define ES_HTTP_REQUEST_MESSAGE_H
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include <string>
 
