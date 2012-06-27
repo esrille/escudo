@@ -1250,16 +1250,14 @@ aboutdatadir = $(escortdatadir)/about
 
 dist_escortdata_DATA =  \
 	data/escort/default.css \
-	data/escort/escort.ico \
 	data/escort/escort.html \
-	data/escort/Cancel_32x32.png \
-	data/escort/Favorites_32x32.png \
-	data/escort/Gear_32x32.gif \
-	data/escort/Gear_32x32.png \
-	data/escort/Next_32x32.png \
-	data/escort/Previous_32x32.png \
-	data/escort/Refresh_32x32.png \
-	data/escort/Stop_32x32.png
+	data/escort/escort.ico \
+	data/escort/escort.png \
+	data/escort/gear.gif \
+	data/escort/go-next.png \
+	data/escort/go-previous.png \
+	data/escort/view-refresh.png \
+	data/escort/process-stop.png
 
 dist_aboutdata_DATA =  \
 	data/escort/about/blank \

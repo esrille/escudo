@@ -39,17 +39,15 @@ rm -rf $RPM_BUILD_ROOT
 %dir %{_libexecdir}/esrille/escort
 %{_libexecdir}/esrille/escort/escort
 %dir %{_datadir}/esrille/escort
-%{_datadir}/esrille/escort/Cancel_32x32.png
-%{_datadir}/esrille/escort/Favorites_32x32.png
-%{_datadir}/esrille/escort/Gear_32x32.gif
-%{_datadir}/esrille/escort/Gear_32x32.png
-%{_datadir}/esrille/escort/Next_32x32.png
-%{_datadir}/esrille/escort/Previous_32x32.png
-%{_datadir}/esrille/escort/Refresh_32x32.png
-%{_datadir}/esrille/escort/Stop_32x32.png
 %{_datadir}/esrille/escort/default.css
 %{_datadir}/esrille/escort/escort.html
 %{_datadir}/esrille/escort/escort.ico
+%{_datadir}/esrille/escort/escort.png
+%{_datadir}/esrille/escort/gear.gif
+%{_datadir}/esrille/escort/go-next.png
+%{_datadir}/esrille/escort/go-previous.png
+%{_datadir}/esrille/escort/view-refresh.png
+%{_datadir}/esrille/escort/process-stop.png
 %dir %{_datadir}/esrille/escort/about
 %{_datadir}/esrille/escort/about/blank
 %{_datadir}/esrille/escort/about/index.html

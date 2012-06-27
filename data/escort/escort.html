@@ -123,12 +123,12 @@ body
     margin: 0;
     border: none;
 }
-#top
+#toolbar
 {
-    background-color: silver;
+    background-color: #d6d2d0;
     position: fixed;
     left: 0;
-    top: 0;
+    bottom: 0;
     right: 0;
     height: 36px;
     font-family: monospace;
@@ -136,57 +136,57 @@ body
     white-space: nowrap;
     z-index: 1;
 }
-#back
+#main-pane
 {
-    display: inline-block;
-    background: url(Previous_32x32.png) no-repeat center center;
-    width: 32px;
-    height: 32px;
-    margin: 2px;
-}
-#forward
-{
-    display: inline-block;
-    background: url(Next_32x32.png) no-repeat center center;
-    width: 32px;
-    height: 32px;
-    margin: 2px;
-}
-#reload
-{
-    display: inline-block;
-    background: url(Refresh_32x32.png) no-repeat center center;
-    width: 32px;
-    height: 32px;
-    margin: 2px;
-}
-#stop
-{
-    display: inline-block;
-    background: url(Cancel_32x32.png) no-repeat center center;
-    width: 32px;
-    height: 32px;
-    margin: 2px;
-}
-#favorites
-{
-    display: inline-block;
-    background: url(Favorites_32x32.png) no-repeat center center;
-    width: 32px;
-    height: 32px;
-    margin: 2px;
+    margin: 0;
+    border: none;
+    position: fixed;
+    top: 0;
+    bottom: 36px;
+    width: 100%;
+    z-index: 0;
 }
 #settings
 {
-    position: absolute;
-    top: 0;
-    right: 0;
-    background-image: url(Gear_32x32.png);
+    display: inline-block;
+    background-image: url(escort.png);
     background-repeat: no-repeat;
     background-position: center center;
     width: 32px;
     height: 32px;
     margin: 2px;
+}
+#back
+{
+    display: inline-block;
+    background: url(go-previous.png) no-repeat center center;
+    width: 32px;
+    height: 32px;
+    margin: 2px 0;
+}
+#forward
+{
+    display: inline-block;
+    background: url(go-next.png) no-repeat center center;
+    width: 32px;
+    height: 32px;
+    margin: 2px 0;
+}
+#reload
+{
+    display: inline-block;
+    background: url(view-refresh.png) no-repeat center center;
+    width: 32px;
+    height: 32px;
+    margin: 2px 0;
+}
+#stop
+{
+    display: inline-block;
+    background: url(process-stop.png) no-repeat center center;
+    width: 32px;
+    height: 32px;
+    margin: 2px 0;
 }
 #location
 {
@@ -197,19 +197,9 @@ body
     height: 20px;
     background-color: white;
 }
-#top > div:hover
+#toolbar > div:hover
 {
     outline: deepskyblue solid 2px;
-}
-#main-pane
-{
-    margin: 0;
-    border: none;
-    position: fixed;
-    top: 36px;
-    bottom: 0;
-    width: 100%;
-    z-index: 0;
 }
 #main
 {
@@ -223,7 +213,7 @@ body
 <script type="text/javascript">
 function busy(e) {
     if (e.returnValue.length == 0 && !e.defaultPrevented)
-        document.getElementById('settings').style.backgroundImage = 'url(Gear_32x32.gif)';
+        document.getElementById('settings').style.backgroundImage = 'url(gear.gif)';
 }
 function back(e) {
     document.getElementById('main').contentWindow.history.back();
@@ -249,7 +239,7 @@ function settings(e) {
     e.preventDefault();
 }
 function complete(e) {
-    document.getElementById('settings').style.backgroundImage = 'url(Gear_32x32.png)';
+    document.getElementById('settings').style.backgroundImage = 'url(escort.png)';
     document.getElementById('location').value = document.getElementById('main').contentWindow.location;
     document.getElementById('main').focus();
     document.getElementById('main').contentWindow.addEventListener('beforeunload', busy, false);
@@ -285,13 +275,13 @@ function init() {
 <link rel='icon' href='escort.ico' type='image/vnd.microsoft.icon'>
 </head>
 <body onload='init()'>
-<div id='top'>
+<div id='toolbar'>
+  <div id='settings'></div>
   <div id='back'></div>
   <div id='forward'></div>
   <input type='text' id='location'>
   <div id='reload'></div>
   <div id='stop'></div>
-  <div id='settings'></div>
 </div>
 <div id='main-pane'><iframe id='main' src=''></iframe></div>
 </body>
