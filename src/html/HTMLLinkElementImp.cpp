@@ -114,28 +114,43 @@ void HTMLLinkElementImp::linkStyleSheet()
 void HTMLLinkElementImp::linkIcon()
 {
     DocumentImp* document = getOwnerDocumentImp();
-    if (request->getStatus() == 200) {
-        if (FILE* file = request->openFile()) {
-            std::u16string type = getType();
-            if (type == u"image/vnd.microsoft.icon" || type.empty()) {
-                IcoImage ico;
-                if (ico.open(file)) {
-                    if (WindowImp* view = document->getDefaultWindow())
-                        view->setFavicon(&ico, file);
-                }
-            } else {
-                BoxImage image;
-                image.open(file);
-                if (image.getState() == BoxImage::CompletelyAvailable) {
-                    if (WindowImp* view = document->getDefaultWindow())
-                        view->setFavicon(&image);
-                }
-            }
-            fclose(file);
-        }
-    }
+    setFavicon(document);
     document->decrementLoadEventDelayCount();
 }
+
+bool HTMLLinkElementImp::setFavicon(DocumentImp* document)
+{
+    std::u16string rel = getRel();
+    if (!contains(rel, u"icon"))
+        return false;
+    if (!request || request->getStatus() != 200)
+        return false;
+    bool result = false;
+    if (FILE* file = request->openFile()) {
+        std::u16string type = getType();
+        if (type == u"image/vnd.microsoft.icon" || type.empty()) {
+            IcoImage ico;
+            if (ico.open(file)) {
+                if (WindowImp* view = document->getDefaultWindow()) {
+                    view->setFavicon(&ico, file);
+                    result = true;
+                }
+            }
+        } else {
+            BoxImage image;
+            image.open(file);
+            if (image.getState() == BoxImage::CompletelyAvailable) {
+                if (WindowImp* view = document->getDefaultWindow()) {
+                    view->setFavicon(&image);
+                    result = true;
+                }
+            }
+        }
+        fclose(file);
+    }
+    return result;
+}
+
 
 // Node
 Node HTMLLinkElementImp::cloneNode(bool deep)

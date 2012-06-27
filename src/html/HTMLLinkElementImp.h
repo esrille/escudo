@@ -42,6 +42,7 @@ public:
     virtual void eval();
     void linkStyleSheet();
     void linkIcon();
+    bool setFavicon(DocumentImp* document);
 
     // Node
     virtual Node cloneNode(bool deep);

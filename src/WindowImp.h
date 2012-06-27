@@ -173,6 +173,8 @@ class WindowImp : public ObjectMixin<WindowImp>
     bool zoomable;
     float zoom;
 
+    bool faviconOverridable;
+
     void mouse(const EventTask& task);
     void mouseMove(const EventTask& task);
     void keydown(const EventTask& task);
@@ -183,6 +185,7 @@ public:
     ~WindowImp();
 
     static css::CSSStyleSheet defaultStyleSheet;
+
 
     ViewCSSImp* getView() const {
         return view;
@@ -203,6 +206,13 @@ public:
     void enableZoom(bool value);
     float getZoom() const;
     void setZoom(float value);
+
+    bool getFaviconOverridable() const {
+        return faviconOverridable;
+    }
+    void setFaviconOverridable(bool value) {
+        faviconOverridable = value;
+    }
 
     // mouse()
     //   button:
@@ -236,6 +246,7 @@ public:
 
     void setFavicon(IcoImage* ico, std::FILE* file);
     void setFavicon(BoxImage* image);
+    void setFavicon();
 
     // Window customized
     html::Window open(std::u16string url = u"about:blank", std::u16string target = u"_blank", std::u16string features = u"", bool replace = false);

@@ -33,6 +33,7 @@
 #include "css/ViewCSSImp.h"
 #include "html/HTMLParser.h"
 #include "html/HTMLIFrameElementImp.h"
+#include "html/HTMLLinkElementImp.h"
 #include "http/HTTPConnection.h"
 
 #include "Test.util.h"
@@ -56,7 +57,8 @@ WindowImp::WindowImp(WindowImp* parent, ElementImp* frameElement) :
     height(1056),
     redisplay(false),
     zoomable(true),
-    zoom(1.0f)
+    zoom(1.0f),
+    faviconOverridable(false)
 {
     if (parent)
         parent->childWindows.push_back(this);
@@ -148,6 +150,7 @@ void WindowImp::setDocumentWindow(const DocumentWindowPtr& window)
     }
     detail = 0;
     redisplay = true;
+    setFavicon();
 }
 
 bool WindowImp::poll()
@@ -491,8 +494,11 @@ void WindowImp::keyup(const EventTask& task)
 
 void WindowImp::setFavicon(IcoImage* ico, std::FILE* file)
 {
-    if (parent)
+    if (parent) {
+        if (parent->getFaviconOverridable())
+            parent->setFavicon(ico, file);
         return;
+    }
     for (size_t i = 0; i < ico->getPlaneCount(); ++i) {
         const IconDirectoryEntry& ent(ico->getEntry(i));
         if (BoxImage* image = ico->open(file, i)) {
@@ -505,10 +511,37 @@ void WindowImp::setFavicon(IcoImage* ico, std::FILE* file)
 
 void WindowImp::setFavicon(BoxImage* image)
 {
-    if (parent)
+    if (parent) {
+        if (parent->getFaviconOverridable())
+            parent->setFavicon(image);
         return;
+    }
     uint32_t* pixels = reinterpret_cast<uint32_t*>(image->getPixels());
     setIcon(0, image->getNaturalWidth(), image->getNaturalHeight(), pixels);
+}
+
+void WindowImp::setFavicon()
+{
+    for (WindowImp* w = this; w; w = w->parent) {
+        if (w->parent && !w->parent->getFaviconOverridable())
+            return;
+        if (!w->window)
+            continue;
+        DocumentImp* document = dynamic_cast<DocumentImp*>(w->window->getDocument().self());
+        if (!document)
+            continue;
+        html::HTMLHeadElement head = document->getHead();
+        if (!head)
+            continue;
+        for (auto i = head.getFirstElementChild(); i; i = i.getNextElementSibling()) {
+            if (i.getTagName() == u"link") {
+                if (auto link = dynamic_cast<HTMLLinkElementImp*>(i.self())) {
+                    if (link->setFavicon(document))
+                        return;
+                }
+            }
+        }
+    }
 }
 
 //
@@ -608,6 +641,8 @@ html::Window WindowImp::open(std::u16string url, std::u16string target, std::u16
                 window->dispatchEvent(event);
                 if (!event.getReturnValue().empty() || event.getDefaultPrevented())
                     return this;
+                if (parent && parent->getFaviconOverridable())
+                    parent->setFavicon();
             }
         }
     }

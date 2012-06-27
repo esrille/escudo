@@ -92,6 +92,7 @@ int main(int argc, char* argv[])
     std::string navigatorUrl = getFileURL(profile.getProfilePath()) + "/escort.html";
     WindowImp* imp = new WindowImp();
     window = imp;
+    imp->setFaviconOverridable(true);
     imp->enableZoom(false);
     imp->open(utfconv(navigatorUrl), u"_self", u"", true);
 
