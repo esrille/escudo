@@ -1477,32 +1477,32 @@ void CSSFontSizeValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* pare
 
 void CSSFontWeightValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle)
 {
-    float inherited = parentStyle ? parentStyle->fontWeight.value.number : 400.0f;
-    float w;
+    unsigned inherited = parentStyle ? parentStyle->fontWeight.getWeight() : 400;
+    unsigned w;
     switch (value.unit) {
     case CSSParserTerm::CSS_TERM_INDEX:
         switch (value.getIndex()) {
         case Normal:
-            w = 400.0f;
+            w = 400;
             break;
         case Bold:
-            w = 700.0f;
+            w = 700;
             break;
         case Bolder:
-            if (inherited < 400.0f)
-                w = 400.0f;
-            else if (inherited < 600.0f)
-                w = 700.0f;
+            if (inherited < 400)
+                w = 400;
+            else if (inherited < 600)
+                w = 700;
             else
-                w = 900.0f;
+                w = 900;
             break;
         case Lighter:
-            if (inherited < 600.0f)
-                w = 100.0f;
-            else if (inherited < 800.0f)
-                w = 400.0f;
+            if (inherited < 600)
+                w = 100;
+            else if (inherited < 800)
+                w = 400;
             else
-                w = 700.0f;
+                w = 700;
             break;
         default:  // TODO: error
             w = inherited;
