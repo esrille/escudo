@@ -25,8 +25,12 @@
 // we have to implement our own version for now.
 void setWindowTitle(const std::string& title)
 {
-    Atom name = XInternAtom(glXGetCurrentDisplay(), "_NET_WM_NAME", False);
     Atom utf8 = XInternAtom(glXGetCurrentDisplay(), "UTF8_STRING", False);
+    Atom name = XInternAtom(glXGetCurrentDisplay(), "_NET_WM_NAME", False);
+    XChangeProperty(glXGetCurrentDisplay(), glXGetCurrentDrawable(), name, utf8,
+                    8, PropModeReplace, (unsigned char*) title.c_str(),
+                    title.length());
+    name = XInternAtom(glXGetCurrentDisplay(), "_NET_WM_ICON_NAME", False);
     XChangeProperty(glXGetCurrentDisplay(), glXGetCurrentDrawable(), name, utf8,
                     8, PropModeReplace, (unsigned char*) title.c_str(),
                     title.length());
