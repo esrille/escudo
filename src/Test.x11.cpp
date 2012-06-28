@@ -21,6 +21,15 @@
 
 #include <string>
 
+void setWindowClass(const char* name, const char* cls)
+{
+    XClassHint hint;
+
+    hint.res_name = (char*) name;
+    hint.res_class = (char*) cls;
+    XSetClassHint(glXGetCurrentDisplay(), glXGetCurrentDrawable(), &hint);
+}
+
 // Since glutSetWindowTitle() only accpets a string in ASCII code,
 // we have to implement our own version for now.
 void setWindowTitle(const std::string& title)
@@ -34,10 +43,6 @@ void setWindowTitle(const std::string& title)
     XChangeProperty(glXGetCurrentDisplay(), glXGetCurrentDrawable(), name, utf8,
                     8, PropModeReplace, (unsigned char*) title.c_str(),
                     title.length());
-
-    // TODO: This should be set earlier.
-    XClassHint hint{ "escort", "Escort" };
-    XSetClassHint(glXGetCurrentDisplay(), glXGetCurrentDrawable(), &hint);
 }
 
 void setIcon(size_t n, size_t width, size_t height, uint32_t* image)
