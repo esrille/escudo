@@ -146,7 +146,22 @@ public:
     bool operator!=(const CSSNumericValue& value) const {
         return !(*this == value);
     }
+
+    // Note on specify() vs inherit()
+    // Properties like 'font-size' inherits the computed value, which is
+    // always an absolute length, and how it is computed is not relevant.
+    // On the other hand, properties like 'min-height' inherits the computed
+    // value, which can be a percentage or an absolute length. In such cases,
+    // the unit, index, and number values still need to be inherited.
     void specify(const CSSNumericValue& value) {
+        unit = value.unit;
+        index = value.index;
+        number = value.number;
+        if (!isnan(value.resolved))
+            resolved = value.resolved;
+        // otherwise, keep the current resolved value for recompute().
+    }
+    void inherit(const CSSNumericValue& value) {
         if (isnan(value.resolved)) {
             unit = value.unit;
             index = value.index;
@@ -1625,6 +1640,9 @@ public:
     void specify(const CSSFontSizeValueImp& specified) {
         size.specify(specified.size);
     }
+    void inherit(const CSSFontSizeValueImp& parent) {
+        size.inherit(parent.size);
+    }
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle);
     float getPx() const {
         return size.getPx();
@@ -1804,6 +1822,9 @@ public:
     }
     void specify(const CSSLineHeightValueImp& specified) {
         value.specify(specified.value);
+    }
+    void inherit(const CSSLineHeightValueImp& parent) {
+        value.inherit(parent.value);
     }
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style);

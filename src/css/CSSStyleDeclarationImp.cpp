@@ -1344,6 +1344,12 @@ void CSSStyleDeclarationImp::inherit(const CSSStyleDeclarationImp* parentStyle, 
     case Padding:
         // ignore shorthand
         break;
+    case FontSize:
+        fontSize.inherit(parentStyle->fontSize);
+        break;
+    case LineHeight:
+        lineHeight.inherit(parentStyle->lineHeight);
+        break;
     default:
         specify(parentStyle, id);
         break;

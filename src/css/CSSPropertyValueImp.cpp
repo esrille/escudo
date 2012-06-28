@@ -1607,6 +1607,7 @@ void CSSLineHeightValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* st
     switch (value.unit) {
     case CSSParserTerm::CSS_TERM_INDEX:
     case css::CSSPrimitiveValue::CSS_NUMBER:
+        value.resolved = NAN;
         break;
     default:
         value.resolve(view, style, style->fontSize.getPx());
