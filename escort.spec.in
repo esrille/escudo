@@ -20,7 +20,7 @@ with SpiderMonkey or V8 JavaScript engine at this point.
 %setup -q
 
 %build
-%configure
+%configure CFLAGS="-O2 -g" CXXFLAGS="-O2 -g"
 make
 
 %install
