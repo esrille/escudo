@@ -8,8 +8,14 @@ URL: http://code.google.com/p/es-operating-system/
 Source0: escort-%{version}.tar.gz
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root
 BuildRequires: gcc gcc-c++ autoconf automake
+BuildRequires: desktop-file-utils
+BuildRequires: liberation-fonts-common liberation-mono-fonts liberation-sans-fonts liberation-serif-fonts
+BuildRequires: dejavu-fonts-common dejavu-sans-fonts dejavu-sans-mono-fonts dejavu-serif-fonts
+BuildRequires: ipa-gothic-fonts ipa-mincho-fonts ipa-pgothic-fonts ipa-pmincho-fonts gdouros-aegean-fonts
 BuildRequires: bison js-devel v8-devel re2c libicu-devel freetype-devel freeglut-devel giflib-devel libpng-devel libjpeg-devel libXmu-devel boost-devel boost-iostreams boost-system boost-regex
 BuildRequires: esidl
+Requires: liberation-fonts-common liberation-mono-fonts liberation-sans-fonts liberation-serif-fonts
+Requires: dejavu-fonts-common dejavu-sans-fonts dejavu-sans-mono-fonts dejavu-serif-fonts
 Requires: ipa-gothic-fonts ipa-mincho-fonts ipa-pgothic-fonts ipa-pmincho-fonts gdouros-aegean-fonts
 
 %description
