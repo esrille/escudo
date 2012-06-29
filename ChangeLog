@@ -1,3 +1,17 @@
+2012-06-29 10:40  Shiki.Okasaka@gmail.com
+
+	* escort.spec.in: (BuildRequires, Requires) : Refine for using
+	  Mock.
+
+2012-06-29 07:47  Shiki.Okasaka@gmail.com
+
+	* escort.spec.in: (BuildRequires) : Add more basic build tools for
+	  completeness.
+
+2012-06-29 07:06  Shiki.Okasaka@gmail.com
+
+	* ChangeLog: Update.
+
 2012-06-29 07:03  Shiki.Okasaka@gmail.com
 
 	* escort.spec.in: (Requires) : Add supported fonts.
