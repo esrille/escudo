@@ -7,8 +7,9 @@ Group: Applications/Internet
 URL: http://code.google.com/p/es-operating-system/
 Source0: escort-%{version}.tar.gz
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root
-BuildRequires: bison js-devel v8-devel re2c libicu-devel freetype-devel freeglut-devel giflib-devel libpng-devel libjpeg-devel boost-devel boost-iostreams boost-system boost-regex ipa-gothic-fonts ipa-mincho-fonts ipa-pgothic-fonts ipa-pmincho-fonts gdouros-aegean-fonts
+BuildRequires: bison js-devel v8-devel re2c libicu-devel freetype-devel freeglut-devel giflib-devel libpng-devel libjpeg-devel libXmu-devel boost-devel boost-iostreams boost-system boost-regex
 BuildRequires: esidl
+Requires: ipa-gothic-fonts ipa-mincho-fonts ipa-pgothic-fonts ipa-pmincho-fonts gdouros-aegean-fonts
 
 %description
 Escort web browser is a new web browser which is currently under the
