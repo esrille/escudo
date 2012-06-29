@@ -1,3 +1,326 @@
+2012-06-28 23:43  Shiki.Okasaka@gmail.com
+
+	* configure, configure.ac: Set version to 0.2.0.
+
+2012-06-28 14:22  Shiki.Okasaka@gmail.com
+
+	* src/Escort.cpp, src/Test.util.h, src/Test.x11.cpp:
+	  (setWindowClass) : New.
+
+2012-06-28 12:14  Shiki.Okasaka@gmail.com
+
+	* data/escort/escort.desktop, src/Test.x11.cpp: (setWindowTitle) :
+	  Set WM_CLASS for GNOME Shell.
+	  (StartupWMClass) : Specify WM_CLASS of the window.
+
+2012-06-28 08:23  Shiki.Okasaka@gmail.com
+
+	* src/Test.x11.cpp: (setWindowTitle) : Set _NET_WM_ICON_NAME as
+	  well, which is used in gnome-fallback.
+
+2012-06-28 07:00  Shiki.Okasaka@gmail.com
+
+	* escort.spec.in: (%configure) : Work around 'undefined reference
+	  to __atomic_fetch_add_4' issue on Fedora 17/x86.
+
+2012-06-28 04:30  Shiki.Okasaka@gmail.com
+
+	* data/escort/about/index.html, data/escort/about/index.html.in:
+	  (style) : Refine.
+
+2012-06-28 04:29  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.cpp, src/css/CSSPropertyValueImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp:
+	  (CSSFontSizeValueImp::inherit, CSSLineHeightValueImp::inherit) :
+	  New.
+	  (CSSStyleDeclarationImp::inherit) : Use inherit() for fontSize
+	  and lineHeight.
+	  (CSSNumericValue::specify , CSSNumericValue::inherit) : See the
+	  comment in the source.
+	  (CSSLineHeightValueImp::compute) : Refine to make
+	  CSSLineHeightValueImp::inherit() work as expected.
+
+2012-06-27 15:36  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.cpp: (CSSFontWeightValueImp::compute)
+	  : Fix a bug.
+
+2012-06-27 11:57  Shiki.Okasaka@gmail.com
+
+	* src/Test.x11.cpp: (setWindowTitle) : Use _NET_WM_NAME for old
+	  window managers just in case.
+
+2012-06-27 08:30  Shiki.Okasaka@gmail.com
+
+	* src/Escort.cpp, src/Navigator.test.cpp, src/WindowImp.cpp,
+	  src/WindowImp.h, src/html/HTMLLinkElementImp.cpp,
+	  src/html/HTMLLinkElementImp.h: (escort) : Set the favicon of the
+	  'main' iframe to the X11 window if applicable.
+	  (WindowImp::faviconOverridable) : Set true to allow child windows
+	  to override its favicon.
+	  (WindowImp::setDocumentWindow, WindowImp::setFavicon,
+	  WindowImp::open, HTMLLinkElementImp::linkIcon,
+	  HTMLLinkElementImp::setFavicon) : Manage the favicons in the
+	  hierarchical windows.
+
+2012-06-27 08:04  Shiki.Okasaka@gmail.com
+
+	* data/escort/about/index.html, data/escort/about/index.html.in,
+	  data/escort/escort.html: (head) : Fix bugs.
+
+2012-06-27 04:08  Shiki.Okasaka@gmail.com
+
+	* Makefile.am, Makefile.in, data/escort/Cancel_32x32.png,
+	  data/escort/Favorites_32x32.png, data/escort/Gear_32x32.gif,
+	  data/escort/Gear_32x32.png, data/escort/Next_32x32.png,
+	  data/escort/Previous_32x32.png, data/escort/Refresh_32x32.png,
+	  data/escort/Settings_32x32.png, data/escort/Stop_32x32.png,
+	  data/escort/about/index.html, data/escort/about/index.html.in,
+	  data/escort/escort.html, data/escort/escort.png,
+	  data/escort/gear.gif, data/escort/go-next.png,
+	  data/escort/go-previous.png, data/escort/input-textfield.html,
+	  data/escort/input-textfield.xbl, data/escort/process-stop.png,
+	  data/escort/textfield.html, data/escort/view-refresh.png,
+	  escort.spec.in: (escort.html) : Move the toolbar to the bottom,
+	  and move the 'settings' element to the bottom left corner.
+	  (dist_escortdata_DATA, etc.) : Refresh icons.
+
+2012-06-26 12:10  Shiki.Okasaka@gmail.com
+
+	* src/css/BoxGL.cpp: (BoxImage::render, Box::renderBorder,
+	  addImage) : Eliminate artifacts around non-repeating background
+	  image edges.
+
+2012-06-26 09:15  Shiki.Okasaka@gmail.com
+
+	* src/http/HTTPRequestMessage.cpp, src/http/HTTPRequestMessage.h:
+	  (HttpRequestMessage::open) : Set the default User-Agent
+	  request-header.
+
+2012-06-26 08:56  Shiki.Okasaka@gmail.com
+
+	* data/escort/escort.html, src/NavigatorImp.cpp, src/WindowImp.cpp,
+	  src/WindowImp.h: (NavigatorImp, WindowImp::getNavigator) :
+	  Support the 'NavigatorID' interface.
+
+2012-06-26 08:47  Shiki.Okasaka@gmail.com
+
+	* src/Navigator.test.cpp: (Navigator.test) : Fix a bug.
+
+2012-06-26 08:07  Shiki.Okasaka@gmail.com
+
+	* Makefile.am, Makefile.in: (dist-hook) : Drop generated parser
+	  files.
+
+2012-06-26 07:51  Shiki.Okasaka@gmail.com
+
+	* NOTICE, README, escort.spec.in: (NOTICE) : Update.
+
+2012-06-26 07:26  Shiki.Okasaka@gmail.com
+
+	* Any.cpp, Any.h, Any.test.cpp, ApplicationCacheImp.cpp,
+	  ApplicationCacheImp.h, AttrImp.cpp, AttrImp.h,
+	  BackgroundTask.cpp, BarPropImp.cpp, BarPropImp.h,
+	  BeforeUnloadEventImp.cpp, BeforeUnloadEventImp.h, BlobImp.cpp,
+	  BlobImp.h, Box.test.cpp, CSSParser.test.cpp, CSSStyle.test.cpp,
+	  CSSTokenizer.test.cpp, CaretPositionImp.cpp, CaretPositionImp.h,
+	  CharacterDataImp.cpp, CharacterDataImp.h, ClientRectImp.cpp,
+	  ClientRectImp.h, ClientRectListImp.cpp, ClientRectListImp.h,
+	  CommentImp.cpp, CommentImp.h, CompositionEventImp.cpp,
+	  CompositionEventImp.h, CustomEventImp.cpp, CustomEventImp.h,
+	  CustomEventInitImp.cpp, CustomEventInitImp.h,
+	  DOMImplementationImp.cpp, DOMImplementationImp.h,
+	  DOMSettableTokenListImp.cpp, DOMSettableTokenListImp.h,
+	  DOMStringListImp.cpp, DOMStringListImp.h, DOMStringMapImp.cpp,
+	  DOMStringMapImp.h, DOMTokenListImp.cpp, DOMTokenListImp.h,
+	  DocumentFragmentImp.cpp, DocumentFragmentImp.h, DocumentImp.cpp,
+	  DocumentImp.h, DocumentRangeImp.cpp, DocumentRangeImp.h,
+	  DocumentTraversalImp.cpp, DocumentTraversalImp.h,
+	  DocumentTypeImp.cpp, DocumentTypeImp.h, DocumentWindow.cpp,
+	  DocumentWindow.h, DragEventImp.cpp, DragEventImp.h, ECMAScript.h,
+	  ElementImp.cpp, ElementImp.h, Escort.cpp, EventImp.cpp,
+	  EventImp.h, EventInitImp.cpp, EventInitImp.h,
+	  EventListenerImp.cpp, EventListenerImp.h, EventSourceImp.cpp,
+	  EventSourceImp.h, EventTargetImp.cpp, EventTargetImp.h,
+	  FocusEventImp.cpp, FocusEventImp.h, FontDatabase.test.cpp,
+	  FontManager.test.cpp, FunctionImp.cpp, FunctionImp.h,
+	  HTMLInputStream.test.cpp, HTMLInputStream.test.getChar.cpp,
+	  HTMLParser.test.cpp, HTMLTokenizer.test.cpp, HTTPHeader.test.cpp,
+	  HTTPRequest.test.cpp, HashChangeEventImp.cpp,
+	  HashChangeEventImp.h, HistoryImp.cpp, HistoryImp.h, Ico.test.cpp,
+	  KeyboardEventImp.cpp, KeyboardEventImp.h, LinkStyleImp.cpp,
+	  LinkStyleImp.h, LocationImp.cpp, LocationImp.h, Makefile.am,
+	  Makefile.in, MediaErrorImp.cpp, MediaErrorImp.h,
+	  MediaListImp.cpp, MediaListImp.h, MediaQueryListImp.cpp,
+	  MediaQueryListImp.h, MediaQueryListListenerImp.cpp,
+	  MediaQueryListListenerImp.h, MessageChannelImp.cpp,
+	  MessageChannelImp.h, MessageEventImp.cpp, MessageEventImp.h,
+	  MessagePortImp.cpp, MessagePortImp.h, MouseEventImp.cpp,
+	  MouseEventImp.h, MutationEventImp.cpp, MutationEventImp.h,
+	  MutationNameEventImp.cpp, MutationNameEventImp.h,
+	  Navigator.test.cpp, NavigatorImp.cpp, NavigatorImp.h,
+	  NodeFilterImp.cpp, NodeFilterImp.h, NodeImp.cpp, NodeImp.h,
+	  NodeIteratorImp.cpp, NodeIteratorImp.h, NodeListImp.cpp,
+	  NodeListImp.h, Object.h, ObjectArrayImp.h,
+	  PageTransitionEventImp.cpp, PageTransitionEventImp.h,
+	  PopStateEventImp.cpp, PopStateEventImp.h,
+	  ProcessingInstructionImp.cpp, ProcessingInstructionImp.h,
+	  Profile.cpp, Profile.h, Profile.test.cpp, ProgressEventImp.cpp,
+	  ProgressEventImp.h, PropertyNodeListImp.cpp,
+	  PropertyNodeListImp.h, RangeImp.cpp, RangeImp.h, Reflect.h,
+	  ScreenImp.cpp, ScreenImp.h, Script.test.cpp, StyleSheetImp.cpp,
+	  StyleSheetImp.h, Test.glut.cpp, Test.util.cpp, Test.util.h,
+	  Test.x11.cpp, TextEventImp.cpp, TextEventImp.h, TextImp.cpp,
+	  TextImp.h, TextIterator.h, TreeWalkerImp.cpp, TreeWalkerImp.h,
+	  U16InputStream.cpp, U16InputStream.h, UIEventImp.cpp,
+	  UIEventImp.h, URL.test.cpp, UndoManagerEventImp.cpp,
+	  UndoManagerEventImp.h, UndoManagerImp.cpp, UndoManagerImp.h,
+	  Variadic.h, WheelEventImp.cpp, WheelEventImp.h, WindowImp.cpp,
+	  WindowImp.h, css, file, font, harness.cpp, html, http, js,
+	  nullable.h, picojson.h, sequence.h, src, src/Any.cpp, src/Any.h,
+	  src/Any.test.cpp, src/ApplicationCacheImp.cpp,
+	  src/ApplicationCacheImp.h, src/AttrImp.cpp, src/AttrImp.h,
+	  src/BackgroundTask.cpp, src/BarPropImp.cpp, src/BarPropImp.h,
+	  src/BeforeUnloadEventImp.cpp, src/BeforeUnloadEventImp.h,
+	  src/BlobImp.cpp, src/BlobImp.h, src/Box.test.cpp,
+	  src/CSSParser.test.cpp, src/CSSStyle.test.cpp,
+	  src/CSSTokenizer.test.cpp, src/CaretPositionImp.cpp,
+	  src/CaretPositionImp.h, src/CharacterDataImp.cpp,
+	  src/CharacterDataImp.h, src/ClientRectImp.cpp,
+	  src/ClientRectImp.h, src/ClientRectListImp.cpp,
+	  src/ClientRectListImp.h, src/CommentImp.cpp, src/CommentImp.h,
+	  src/CompositionEventImp.cpp, src/CompositionEventImp.h,
+	  src/CustomEventImp.cpp, src/CustomEventImp.h,
+	  src/CustomEventInitImp.cpp, src/CustomEventInitImp.h,
+	  src/DOMImplementationImp.cpp, src/DOMImplementationImp.h,
+	  src/DOMSettableTokenListImp.cpp, src/DOMSettableTokenListImp.h,
+	  src/DOMStringListImp.cpp, src/DOMStringListImp.h,
+	  src/DOMStringMapImp.cpp, src/DOMStringMapImp.h,
+	  src/DOMTokenListImp.cpp, src/DOMTokenListImp.h,
+	  src/DocumentFragmentImp.cpp, src/DocumentFragmentImp.h,
+	  src/DocumentImp.cpp, src/DocumentImp.h, src/DocumentRangeImp.cpp,
+	  src/DocumentRangeImp.h, src/DocumentTraversalImp.cpp,
+	  src/DocumentTraversalImp.h, src/DocumentTypeImp.cpp,
+	  src/DocumentTypeImp.h, src/DocumentWindow.cpp,
+	  src/DocumentWindow.h, src/DragEventImp.cpp, src/DragEventImp.h,
+	  src/ECMAScript.h, src/ElementImp.cpp, src/ElementImp.h,
+	  src/Escort.cpp, src/EventImp.cpp, src/EventImp.h,
+	  src/EventInitImp.cpp, src/EventInitImp.h,
+	  src/EventListenerImp.cpp, src/EventListenerImp.h,
+	  src/EventSourceImp.cpp, src/EventSourceImp.h,
+	  src/EventTargetImp.cpp, src/EventTargetImp.h,
+	  src/FocusEventImp.cpp, src/FocusEventImp.h,
+	  src/FontDatabase.test.cpp, src/FontManager.test.cpp,
+	  src/FunctionImp.cpp, src/FunctionImp.h,
+	  src/HTMLInputStream.test.cpp,
+	  src/HTMLInputStream.test.getChar.cpp, src/HTMLParser.test.cpp,
+	  src/HTMLTokenizer.test.cpp, src/HTTPHeader.test.cpp,
+	  src/HTTPRequest.test.cpp, src/HashChangeEventImp.cpp,
+	  src/HashChangeEventImp.h, src/HistoryImp.cpp, src/HistoryImp.h,
+	  src/Ico.test.cpp, src/KeyboardEventImp.cpp,
+	  src/KeyboardEventImp.h, src/LinkStyleImp.cpp, src/LinkStyleImp.h,
+	  src/LocationImp.cpp, src/LocationImp.h, src/MediaErrorImp.cpp,
+	  src/MediaErrorImp.h, src/MediaListImp.cpp, src/MediaListImp.h,
+	  src/MediaQueryListImp.cpp, src/MediaQueryListImp.h,
+	  src/MediaQueryListListenerImp.cpp,
+	  src/MediaQueryListListenerImp.h, src/MessageChannelImp.cpp,
+	  src/MessageChannelImp.h, src/MessageEventImp.cpp,
+	  src/MessageEventImp.h, src/MessagePortImp.cpp,
+	  src/MessagePortImp.h, src/MouseEventImp.cpp, src/MouseEventImp.h,
+	  src/MutationEventImp.cpp, src/MutationEventImp.h,
+	  src/MutationNameEventImp.cpp, src/MutationNameEventImp.h,
+	  src/Navigator.test.cpp, src/NavigatorImp.cpp, src/NavigatorImp.h,
+	  src/NodeFilterImp.cpp, src/NodeFilterImp.h, src/NodeImp.cpp,
+	  src/NodeImp.h, src/NodeIteratorImp.cpp, src/NodeIteratorImp.h,
+	  src/NodeListImp.cpp, src/NodeListImp.h, src/Object.h,
+	  src/ObjectArrayImp.h, src/PageTransitionEventImp.cpp,
+	  src/PageTransitionEventImp.h, src/PopStateEventImp.cpp,
+	  src/PopStateEventImp.h, src/ProcessingInstructionImp.cpp,
+	  src/ProcessingInstructionImp.h, src/Profile.cpp, src/Profile.h,
+	  src/Profile.test.cpp, src/ProgressEventImp.cpp,
+	  src/ProgressEventImp.h, src/PropertyNodeListImp.cpp,
+	  src/PropertyNodeListImp.h, src/RangeImp.cpp, src/RangeImp.h,
+	  src/Reflect.h, src/ScreenImp.cpp, src/ScreenImp.h,
+	  src/Script.test.cpp, src/StyleSheetImp.cpp, src/StyleSheetImp.h,
+	  src/Test.glut.cpp, src/Test.util.cpp, src/Test.util.h,
+	  src/Test.x11.cpp, src/TextEventImp.cpp, src/TextEventImp.h,
+	  src/TextImp.cpp, src/TextImp.h, src/TextIterator.h,
+	  src/TreeWalkerImp.cpp, src/TreeWalkerImp.h,
+	  src/U16InputStream.cpp, src/U16InputStream.h, src/UIEventImp.cpp,
+	  src/UIEventImp.h, src/URL.test.cpp, src/UndoManagerEventImp.cpp,
+	  src/UndoManagerEventImp.h, src/UndoManagerImp.cpp,
+	  src/UndoManagerImp.h, src/Variadic.h, src/WheelEventImp.cpp,
+	  src/WheelEventImp.h, src/WindowImp.cpp, src/WindowImp.h, src/css,
+	  src/file, src/font, src/harness.cpp, src/html, src/http, src/js,
+	  src/nullable.h, src/picojson.h, src/sequence.h, src/typedarray,
+	  src/url, src/utf.cpp, src/utf.h, src/v8, src/xbl, src/xhr,
+	  typedarray, url, utf.cpp, utf.h, v8, xbl, xhr: (Makefile.am, src)
+	  : Reorganize the C++ header and source files under 'src'.
+
+2012-06-26 06:20  Shiki.Okasaka@gmail.com
+
+	* data/navigator: (data) : Clean up.
+
+2012-06-26 05:54  Shiki.Okasaka@gmail.com
+
+	* .: (escort) : Rename from www.
+
+2012-06-25 07:12  Shiki.Okasaka@gmail.com
+
+	* (AC_INIT, etc.) : Rename the package from esnavigator to escort.
+
+2012-06-25 06:48  Shiki.Okasaka@gmail.com
+
+	* (NOTICE) : Add the es shield logo information.
+	  (index.html.in) : Introduce the product name 'escort' for the 1st
+	  time.
+	  (escort.desktop) : Integrating 'escort' into the desktop by
+	  freedesktop.org.
+	  (escort.ico, escort.png, etc.) : The es shield logo images.
+	  (navigator.html) : Set the es shield log as its favicon.
+
+2012-06-24 05:26  Shiki.Okasaka@gmail.com
+
+	* (Credits) : Update.
+
+2012-06-24 05:15  Shiki.Okasaka@gmail.com
+
+	* (HttpRequest::send) : Map 'about:' to 'about/index.html'.
+	  (NOTICE) : New.
+
+2012-06-22 06:37  Shiki.Okasaka@gmail.com
+
+	* (IconDirectoryEntry::getWidth, IconDirectoryEntry::getHeight,
+	  WindowImp::setFavicon) : Fix bugs.(IconDirectoryEntry::getWidth,
+	  IconDirectoryEntry::getHeight, WindowImp::setFavicon) : Fix bugs.
+
+2012-06-21 04:13  Shiki.Okasaka@gmail.com
+
+	* (BoxImage::open, readAsGif, readAsJpeg) : Revise to support the
+	  ICO files that include bitmaps compressed in the PNG format.
+
+2012-06-19 09:15  Shiki.Okasaka@gmail.com
+
+	* (HTMLLinkElementImp::eval, WindowImp::setFavicon, etc.) : Support
+	  the favicon.
+	  (BoxImage::open, readAsIco) : Support the ICO file format.
+	  (IconHeader, IconDirectoryEntry, IcoImage) : New for processing
+	  the ICO file.
+	  (setIcon) : New for setting _NET_WM_ICON of the current X11
+	  window.
+
+2012-06-19 08:03  Shiki.Okasaka@gmail.com
+
+	* (BitmapInfoheader::readPixels, BitmapInfoheader::readBitFields,
+	  etc.) : Fix bugs.
+
+2012-06-19 03:58  Shiki.Okasaka@gmail.com
+
+	* (BoxImage::open, readAsBmp) : Support Windows bitmap (bmp)
+	  images.
+	  (BitmapFileHeader, BitmapInfoheader, RGBQuad) : New.
+
 2012-06-16 15:09  Shiki.Okasaka@gmail.com
 
 	* data/navigator/navigator.html: (complete) : Update the document
