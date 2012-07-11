@@ -173,4 +173,14 @@ int main()
     test(a2);
     test(a2, u"plugins", u"about:plugins");
     test(a2, u"about:", u"about:");
+
+    // isSameExceptFragments
+    URL h1(u"http://www.esrille.com");
+    URL h2(u"http://www.esrille.com#a");
+    URL h3(u"http://www.esrille.com#b");
+    URL h4(u"http://www.esrille.org");
+    assert(h1.isSameExceptFragments(h1));
+    assert(h1.isSameExceptFragments(h2));
+    assert(h2.isSameExceptFragments(h3));
+    assert(!h1.isSameExceptFragments(h4));
 }

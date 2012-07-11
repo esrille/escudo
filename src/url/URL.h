@@ -137,7 +137,7 @@ public:
     bool isSameExceptFragments(const URL& target) const {
         size_t a = hasFragment() ? hashStart : url.length();
         size_t b = target.hasFragment() ? target.hashStart : target.url.length();
-        return (a == b) && !std::memcmp(url.data(), target.url.data(), a);
+        return url.compare(0, a, target.url, 0, b) == 0;
     }
 
     URL() {}
