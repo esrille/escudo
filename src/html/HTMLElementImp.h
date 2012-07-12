@@ -39,6 +39,7 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class Box;
 class CSSStyleDeclarationImp;
+class HTMLTemplateElementImp;
 
 class HTMLElementImp : public ObjectMixin<HTMLElementImp, ElementImp>
 {
@@ -72,6 +73,7 @@ public:
 
     // XBL 2.0 internal
     virtual void invoke(EventImp* event);
+    void setShadowTree(HTMLTemplateElementImp* e);
     void setShadowTree(html::HTMLTemplateElement& e) {
         shadowTree = e;
     }

@@ -28,6 +28,7 @@
 #include "css/CSSParser.h"
 #include "css/CSSStyleDeclarationImp.h"
 #include "HTMLBindingElementImp.h"
+#include "HTMLTemplateElementImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -139,6 +140,12 @@ Box* HTMLElementImp::getBox()
 }
 
 // XBL 2.0 internal
+
+void HTMLElementImp::setShadowTree(HTMLTemplateElementImp* e)
+{
+    shadowTree = e;
+}
+
 void HTMLElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
 {
     if (style->binding.getValue() != CSSBindingValueImp::Uri ||

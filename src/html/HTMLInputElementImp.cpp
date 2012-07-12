@@ -24,7 +24,7 @@
 
 #include "utf.h"
 #include "DocumentImp.h"
-#include "HTMLInputElementImp.h"
+#include "HTMLTemplateElementImp.h"
 #include "css/CSSStyleDeclarationImp.h"     // TODO: only for XBL; isolate this later.
 
 namespace org
@@ -173,10 +173,10 @@ void HTMLInputElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
     assert(document);
     switch (style->binding.getValue()) {
     case CSSBindingValueImp::InputTextfield: {
-        html::HTMLTemplateElement element = interface_cast<html::HTMLTemplateElement>(document->createElement(u"template"));
+        HTMLTemplateElementImp* element = new(std::nothrow) HTMLTemplateElementImp(document);
         if (element) {
             dom::Text text = document->createTextNode(getValue());
-            element.appendChild(text);
+            element->appendChild(text, true);
             style->setCssText(u"display: inline-block; white-space: pre; background-color: white; border: 2px inset; text-align: left; padding: 1px; min-height: 1em;");
             setShadowTree(element);
             addEventListener(u"keydown", &keydownListener);
@@ -184,10 +184,10 @@ void HTMLInputElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
         break;
     }
     case CSSBindingValueImp::InputButton: {
-        html::HTMLTemplateElement element = interface_cast<html::HTMLTemplateElement>(document->createElement(u"template"));
+        HTMLTemplateElementImp* element = new(std::nothrow) HTMLTemplateElementImp(document);
         if (element) {
             dom::Text text = document->createTextNode(getValue());
-            element.appendChild(text);
+            element->appendChild(text, true);
             style->setCssText(u"display: inline-block; border: 2px outset; padding: 1px; text-align: center; min-height: 1em;");
             setShadowTree(element);
             addEventListener(u"click", &clickListener);
@@ -195,10 +195,10 @@ void HTMLInputElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
         break;
     }
     case CSSBindingValueImp::InputRadio: {
-        html::HTMLTemplateElement element = interface_cast<html::HTMLTemplateElement>(document->createElement(u"template"));
+        HTMLTemplateElementImp* element = new(std::nothrow) HTMLTemplateElementImp(document);
         if (element) {
             dom::Text text = document->createTextNode(getChecked() ? u"\u25c9" : u"\u25cb");
-            element.appendChild(text);
+            element->appendChild(text, true);
             style->setCssText(u"display: inline-block; border-style: none; padding: 2px;");
             setShadowTree(element);
         }
