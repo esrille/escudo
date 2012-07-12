@@ -37,13 +37,15 @@ std::string URI::percentEncode(const std::u16string& string, size_t pos, size_t 
         char* end = utf32to8(utf32, utf8);
         assert(end);
         for (const char* p = utf8; p < end; ++p) {
-            if (*p <= 0x20 || (*p < 127 && strchr("\"#%<>[\\]^{|}", *p))) {
+            // Note percent-encoding characters in the original URL value must be preserved.
+            if (isalnum(*p) || strchr("%" "!*'();:@&=+$,/?#[]-_.~", *p))
+                encoding += *p;
+            else {
                 encoding += '%';
                 char hex[3];
                 sprintf(hex, "%02X", *p & 0xff);
                 encoding += hex;
-            } else
-                encoding += *p;
+            }
         }
     }
     return encoding;
