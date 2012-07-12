@@ -151,6 +151,8 @@ v8::Handle<v8::Value> caller(const v8::Arguments& args)
     assert(!args.IsConstructCall());
     int argc = args.Length();
     v8::Local<v8::Object> self = args.This();
+    if (self == v8::Context::GetCurrent()->Global())
+        self = self->GetPrototype().As<v8::Object>();
     auto wrap = v8::Local<v8::External>::Cast(self->GetInternalField(0));
     Any arguments[(0 < argc) ? argc : 1];
     for (int i = 0; i < argc; ++i)
@@ -164,6 +166,8 @@ v8::Handle<v8::Value> operation(const v8::Arguments& args)
 {
     int argc = args.Length();
     v8::Local<v8::Object> self = args.This();
+    if (self == v8::Context::GetCurrent()->Global())
+        self = self->GetPrototype().As<v8::Object>();
     v8::Local<v8::Value> data = args.Data();
     uint32_t hash = data->Uint32Value();
     auto wrap = v8::Local<v8::External>::Cast(self->GetInternalField(0));
@@ -182,8 +186,9 @@ v8::Handle<v8::Integer> namedPropertyQuery(v8::Local<v8::String> property, const
     uint32_t hash = uc_one_at_a_time(name.c_str(), name.length());
     if (!hash)
         return v8::Handle<v8::Integer>();
-
     v8::Local<v8::Object> self = info.This();
+    if (self == v8::Context::GetCurrent()->Global())
+        self = self->GetPrototype().As<v8::Object>();
     auto wrap = v8::Local<v8::External>::Cast(self->GetInternalField(0));
     ObjectImp* imp = static_cast<ObjectImp*>(wrap->Value());
     Any result = imp->message_(hash, 0, Object::HAS_OPERATION_, 0);
@@ -199,8 +204,9 @@ v8::Handle<v8::Value> namedPropertyGetter(v8::Local<v8::String> property, const 
     uint32_t hash = uc_one_at_a_time(name.c_str(), name.length());
     if (!hash)
         return v8::Handle<v8::Value>();
-
     v8::Local<v8::Object> self = info.This();
+    if (self == v8::Context::GetCurrent()->Global())
+        self = self->GetPrototype().As<v8::Object>();
     auto wrap = v8::Local<v8::External>::Cast(self->GetInternalField(0));
     ObjectImp* imp = static_cast<ObjectImp*>(wrap->Value());
     // TODO: Check [NamedPropertiesObject]
@@ -215,6 +221,8 @@ v8::Handle<v8::Value> namedPropertyGetter(v8::Local<v8::String> property, const 
 v8::Handle<v8::Value> indexedPropertyGetter(uint32_t index, const v8::AccessorInfo& info)
 {
     v8::Local<v8::Object> self = info.This();
+    if (self == v8::Context::GetCurrent()->Global())
+        self = self->GetPrototype().As<v8::Object>();
     auto wrap = v8::Local<v8::External>::Cast(self->GetInternalField(0));
     ObjectImp* imp = static_cast<ObjectImp*>(wrap->Value());
     Any argument(index);
@@ -225,6 +233,8 @@ v8::Handle<v8::Value> indexedPropertyGetter(uint32_t index, const v8::AccessorIn
 v8::Handle<v8::Boolean> namedPropertyDeleter(v8::Local<v8::String> property, const v8::AccessorInfo& info)
 {
     v8::Local<v8::Object> self = info.This();
+    if (self == v8::Context::GetCurrent()->Global())
+        self = self->GetPrototype().As<v8::Object>();
     auto wrap = v8::Local<v8::External>::Cast(self->GetInternalField(0));
     ObjectImp* imp = static_cast<ObjectImp*>(wrap->Value());
     Any argument(convert(property));
@@ -235,6 +245,8 @@ v8::Handle<v8::Boolean> namedPropertyDeleter(v8::Local<v8::String> property, con
 v8::Handle<v8::Boolean> indexedPropertyDeleter(uint32_t index, const v8::AccessorInfo& info)
 {
     v8::Local<v8::Object> self = info.This();
+    if (self == v8::Context::GetCurrent()->Global())
+        self = self->GetPrototype().As<v8::Object>();
     auto wrap = v8::Local<v8::External>::Cast(self->GetInternalField(0));
     ObjectImp* imp = static_cast<ObjectImp*>(wrap->Value());
     Any argument(index);
@@ -245,6 +257,8 @@ v8::Handle<v8::Boolean> indexedPropertyDeleter(uint32_t index, const v8::Accesso
 v8::Handle<v8::Value> namedPropertySetter(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8::AccessorInfo& info)
 {
     v8::Local<v8::Object> self = info.This();
+    if (self == v8::Context::GetCurrent()->Global())
+        self = self->GetPrototype().As<v8::Object>();
     auto wrap = v8::Local<v8::External>::Cast(self->GetInternalField(0));
     ObjectImp* imp = static_cast<ObjectImp*>(wrap->Value());
     Any arguments[2];
@@ -257,6 +271,8 @@ v8::Handle<v8::Value> namedPropertySetter(v8::Local<v8::String> property, v8::Lo
 v8::Handle<v8::Value> indexedPropertySetter(uint32_t index, v8::Local<v8::Value> value, const v8::AccessorInfo& info)
 {
     v8::Local<v8::Object> self = info.This();
+    if (self == v8::Context::GetCurrent()->Global())
+        self = self->GetPrototype().As<v8::Object>();
     auto wrap = v8::Local<v8::External>::Cast(self->GetInternalField(0));
     ObjectImp* imp = static_cast<ObjectImp*>(wrap->Value());
     Any arguments[2];
@@ -346,6 +362,8 @@ namespace {
 v8::Handle<v8::Value> getter(v8::Local<v8::String> property, const v8::AccessorInfo &info)
 {
     v8::Local<v8::Object> self = info.This();
+    if (self == v8::Context::GetCurrent()->Global())
+        self = self->GetPrototype().As<v8::Object>();
     v8::Local<v8::Value> data = info.Data();
     uint32_t hash = data->Uint32Value();
     auto wrap = v8::Local<v8::External>::Cast(self->GetInternalField(0));
@@ -357,6 +375,8 @@ v8::Handle<v8::Value> getter(v8::Local<v8::String> property, const v8::AccessorI
 void setter(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8::AccessorInfo& info)
 {
     v8::Local<v8::Object> self = info.This();
+    if (self == v8::Context::GetCurrent()->Global())
+        self = self->GetPrototype().As<v8::Object>();
     v8::Local<v8::Value> data = info.Data();
     uint32_t hash = data->Uint32Value();
     auto wrap = v8::Local<v8::External>::Cast(self->GetInternalField(0));
