@@ -55,7 +55,6 @@ int test(std::u16string urlString)
 #else
     boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request.getContentDescriptor(), false);
 #endif
-    stream.seekg(0, std::ios::beg);
     while (stream) {
         char c = stream.get();
         if (stream.good())

@@ -119,8 +119,10 @@ bool HttpRequest::constructResponseFromCache(bool sync)
 
     // TODO: deal with partial...
     int fd = cache->getContentDescriptor();
-    if (0 <= fd)
+    if (0 <= fd) {
         fdContent = dup(fd);
+        lseek(fdContent, 0, SEEK_SET);
+    }
 
     cache = 0;
     if (sync)
