@@ -88,11 +88,11 @@ FontTexture* ViewCSSImp::selectAltFont(CSSStyleDeclarationImp* style, FontTextur
     return 0;
 }
 
-void ViewCSSImp::render()
+void ViewCSSImp::render(ViewCSSImp* parentView)
 {
     last = getTick();
     delay = 1000;
-    clipCount = 0;
+    clipCount = parentView ? parentView->clipCount : 0;
 
     glPushMatrix();
     glScalef(zoom, zoom, zoom);

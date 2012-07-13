@@ -286,10 +286,10 @@ bool WindowImp::poll()
     return result;
 }
 
-void WindowImp::render()
+void WindowImp::render(ViewCSSImp* parentView)
 {
     if (view) {
-        view->render();
+        view->render(parentView);
 
         std::u16string title = view->getDocument().getTitle();
         if (!parent)

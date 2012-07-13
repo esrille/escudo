@@ -194,7 +194,7 @@ public:
     void setFlags(unsigned f);
 
     bool poll();
-    void render();
+    void render(ViewCSSImp* parentView);
     DocumentWindowPtr getDocumentWindow() const {
         return window;
     }

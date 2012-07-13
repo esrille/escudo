@@ -47,7 +47,7 @@ void display()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
     if (WindowImp* imp = static_cast<WindowImp*>(window.self()))
-        imp->render();
+        imp->render(0);
     glutSwapBuffers();  // This would block until the sync happens
 }
 

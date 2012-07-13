@@ -577,7 +577,7 @@ unsigned BlockLevelBox::renderBegin(ViewCSSImp* view, bool noBorder)
 
 void BlockLevelBox::renderEnd(ViewCSSImp* view, unsigned overflow, bool scrollBar)
 {
-    if (!isAnonymous()) {
+    if (!isAnonymous() || isTableBox()) {
         if (style->parentStyle && overflow != CSSOverflowValueImp::Visible) {
             glPopMatrix();
 
@@ -643,7 +643,7 @@ void BlockLevelBox::renderInline(ViewCSSImp* view, StackingContext* stackingCont
     if (childWindow) {
         glPushMatrix();
         glTranslatef(x + getBlankLeft(), y + getBlankTop(), 0.0f);
-        childWindow->render();
+        childWindow->render(view);
         glPopMatrix();
         return;
     }
@@ -917,7 +917,7 @@ void InlineLevelBox::render(ViewCSSImp* view, StackingContext* stackingContext)
     if (childWindow) {
         glPushMatrix();
         glTranslatef(x + getBlankLeft(), y + getBlankTop(), 0.0f);
-        childWindow->render();
+        childWindow->render(view);
         glPopMatrix();
     } else if (getFirstChild())  // for inline-block
         getFirstChild()->render(view, stackingContext);
