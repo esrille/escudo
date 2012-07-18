@@ -38,6 +38,9 @@ enum {
     UPDATE
 };
 
+int forkMax = 1;
+int forkCount = 0;
+
 int processOutput(std::istream& stream, std::string& result)
 {
     std::string output;
@@ -137,6 +140,160 @@ bool saveLog(const std::string& path, const std::string& url, const std::string&
     return true;
 }
 
+std::string test(int mode, int argc, char* argv[], const std::string& url, const std::string& userStyle, const std::string& testFonts, unsigned timeout)
+{
+    std::string path(url);
+    size_t pos = path.rfind('.');
+    if (pos != std::string::npos) {
+        path.erase(pos);
+        path += ".log";
+    }
+    std::string evaluation;
+    std::string log;
+    loadLog(path, evaluation, log);
+
+    pid_t pid = -1;
+    std::string output;
+    switch (mode) {
+    case REPORT:
+        break;
+    case UPDATE:
+        if (evaluation[0] == '?')
+            break;
+        // FALL THROUGH
+    default:
+        pid = runTest(argc, argv, userStyle, testFonts, url, output, timeout);
+        break;
+    }
+
+    std::string result;
+    if (0 < pid && output.empty())
+        result = "fatal";
+    else if (mode == INTERACTIVE) {
+        std::cout << "## complete\n" << output;
+        std::cout << '[' << url << "] ";
+        if (evaluation.empty() || evaluation[0] == '?')
+            std::cout << "pass? ";
+        else {
+            std::cout << evaluation << "? ";
+            if (evaluation != "pass")
+                std::cout << '\a';
+        }
+        std::getline(std::cin, result);
+        if (result.empty()) {
+            if (evaluation.empty() || evaluation[0] == '?')
+                result = "pass";
+            else
+                result = evaluation;
+        } else if (result == "p" || result == "\x1b")
+            result = "pass";
+        else if (result == "f")
+            result = "fail";
+        else if (result == "i")
+            result = "invalid";
+        else if (result == "k") // keep
+            result = evaluation;
+        else if (result == "n")
+            result = "na";
+        else if (result == "s")
+            result = "skip";
+        else if (result == "u")
+            result = "uncertain";
+        else if (result == "q" || result == "quit")
+            exit(EXIT_FAILURE);
+        else if (result == "z")
+            result = "undo";
+        if (result != "undo" && !saveLog(path, url, result, output)) {
+            std::cerr << "error: failed to open the report file\n";
+            exit(EXIT_FAILURE);
+        }
+    } else if (mode == HEADLESS) {
+        if (evaluation != "?" && output != log)
+            result = "uncertain";
+        else
+            result = evaluation;
+    } else if (mode == REPORT) {
+        result = evaluation;
+    } else if (mode == UPDATE) {
+        result = evaluation;
+        if (result[0] != '?') {
+            if (!saveLog(path, url, result, output)) {
+                std::cerr << "error: failed to open the report file\n";
+                exit(EXIT_FAILURE);
+            }
+        }
+    }
+
+    if (0 < pid)
+        killTest(pid);
+    if (mode != INTERACTIVE && result[0] != '?')
+        std::cout << url << '\t' << result << '\n';
+    return result;
+}
+
+std::string map(int mode, int argc, char* argv[], const std::string& url, const std::string& userStyle, const std::string& testFonts, unsigned timeout)
+{
+    pid_t pid = fork();
+    if (pid == -1) {
+        std::cerr << "error: no more process to create\n";
+        exit(EXIT_FAILURE);
+    }
+    if (pid == 0) {
+        std::string path(url);
+        size_t pos = path.rfind('.');
+        if (pos != std::string::npos) {
+            path.erase(pos);
+            path += ".log";
+        }
+        std::string evaluation;
+        std::string log;
+        loadLog(path, evaluation, log);
+
+        pid_t pid = -1;
+        std::string output;
+        switch (mode) {
+        case UPDATE:
+            if (evaluation[0] == '?')
+                break;
+            // FALL THROUGH
+        default:
+            pid = runTest(argc, argv, userStyle, testFonts, url, output, timeout);
+            break;
+        }
+
+        std::string result;
+        if (0 < pid && output.empty())
+            result = "fatal";
+        else if (mode == HEADLESS) {
+            if (evaluation != "?" && output != log)
+                result = "uncertain";
+            else
+                result = evaluation;
+        } else if (mode == UPDATE) {
+            result = evaluation;
+            if (result[0] != '?') {
+                if (!saveLog(path, url, result, output)) {
+                    std::cerr << "error: failed to open the report file\n";
+                    exit(EXIT_FAILURE);
+                }
+            }
+        }
+        if (0 < pid)
+            killTest(pid);
+        if (result[0] != '?')
+            std::cout << url << '\t' << result << '\n';
+        exit(EXIT_SUCCESS);
+    }
+    if (++forkCount == forkMax) {
+        for (int j = 0; j < forkCount; ++j) {
+            int status;
+            wait(&status);
+        }
+        forkCount = 0;
+    }
+    return "na";
+}
+
 int main(int argc, char* argv[])
 {
     int mode = HEADLESS;
@@ -154,6 +311,9 @@ int main(int argc, char* argv[])
             break;
         case 'u':
             mode = UPDATE;
+            break;
+        case 'j':
+            forkMax = strtoul(argv[argi] + 2, 0, 10);
             break;
         default:
             break;
@@ -189,132 +349,69 @@ int main(int argc, char* argv[])
     std::string userStyle;
     std::string testFonts;
     bool redo = false;
-    while (data) {
-        if (result == "undo") {
-            std::swap(url, undo);
-            redo = true;
-        } else if (redo) {
-            std::swap(url, undo);
-            redo = false;
-        } else {
-            std::string line;
-            std::getline(data, line);
-            if (line.empty() || line == "testname    result  comment") {
-                report << line << '\n';
-                continue;
-            }
-            if (line[0] == '#') {
-                if (line.compare(1, 9, "userstyle") == 0) {
-                    if (10 < line.length()) {
-                        std::stringstream s(line.substr(10), std::stringstream::in);
-                        s >> userStyle;
-                    } else
-                        userStyle.clear();
-                } else if (line.compare(1, 9, "testfonts") == 0) {
-                    if (10 < line.length()) {
-                        std::stringstream s(line.substr(10), std::stringstream::in);
-                        s >> testFonts;
-                    } else
-                        testFonts.clear();
+    for (;;) {
+        while (data) {
+            if (result == "undo") {
+                std::swap(url, undo);
+                redo = true;
+            } else if (redo) {
+                std::swap(url, undo);
+                redo = false;
+            } else {
+                std::string line;
+                std::getline(data, line);
+                if (line.empty() || line == "testname    result  comment") {
+                    report << line << '\n';
+                    continue;
                 }
-                report << line << '\n';
-                continue;
-            }
-            undo = url;
-            std::stringstream s(line, std::stringstream::in);
-            s >> url;
-        }
-        if (url.empty())
-            continue;
-
-        std::string path(url);
-        size_t pos = path.rfind('.');
-        if (pos != std::string::npos) {
-            path.erase(pos);
-            path += ".log";
-        }
-        std::string evaluation;
-        std::string log;
-        loadLog(path, evaluation, log);
-
-        pid_t pid = -1;
-        std::string output;
-        switch (mode) {
-        case REPORT:
-            break;
-        case UPDATE:
-            if (evaluation[0] == '?')
-                break;
-            // FALL THROUGH
-        default:
-            pid = runTest(argc - argi, args, userStyle, testFonts, url, output, timeout);
-            break;
-        }
-
-        if (0 < pid && output.empty())
-            result = "fatal";
-        else if (mode == INTERACTIVE) {
-            std::cout << "## complete\n" << output;
-            std::cout << '[' << url << "] ";
-            if (evaluation.empty() || evaluation[0] == '?')
-                std::cout << "pass? ";
-            else {
-                std::cout << evaluation << "? ";
-                if (evaluation != "pass")
-                    std::cout << '\a';
-            }
-            std::getline(std::cin, result);
-            if (result.empty()) {
-                if (evaluation.empty() || evaluation[0] == '?')
-                    result = "pass";
-                else
-                    result = evaluation;
-            } else if (result == "p" || result == "\x1b")
-                result = "pass";
-            else if (result == "f")
-                result = "fail";
-            else if (result == "i")
-                result = "invalid";
-            else if (result == "k") // keep
-                result = evaluation;
-            else if (result == "n")
-                result = "na";
-            else if (result == "s")
-                result = "skip";
-            else if (result == "u")
-                result = "uncertain";
-            else if (result == "q" || result == "quit")
-                break;
-            else if (result == "z")
-                result = "undo";
-            if (result != "undo" && !saveLog(path, url, result, output)) {
-                std::cerr << "error: failed to open the report file\n";
-                return EXIT_FAILURE;
-            }
-        } else if (mode == HEADLESS) {
-            if (evaluation != "?" && output != log)
-                result = "uncertain";
-            else
-                result = evaluation;
-        } else if (mode == REPORT) {
-            result = evaluation;
-        } else if (mode == UPDATE) {
-            result = evaluation;
-            if (result[0] != '?') {
-                if (!saveLog(path, url, result, output)) {
-                    std::cerr << "error: failed to open the report file\n";
-                    return EXIT_FAILURE;
+                if (line[0] == '#') {
+                    if (line.compare(1, 9, "userstyle") == 0) {
+                        if (10 < line.length()) {
+                            std::stringstream s(line.substr(10), std::stringstream::in);
+                            s >> userStyle;
+                        } else
+                            userStyle.clear();
+                    } else if (line.compare(1, 9, "testfonts") == 0) {
+                        if (10 < line.length()) {
+                            std::stringstream s(line.substr(10), std::stringstream::in);
+                            s >> testFonts;
+                        } else
+                            testFonts.clear();
+                    }
+                    report << line << '\n';
+                    continue;
                 }
+                undo = url;
+                std::stringstream s(line, std::stringstream::in);
+                s >> url;
+            }
+            if (url.empty())
+                continue;
+
+            switch (mode) {
+            case HEADLESS:
+            case UPDATE:
+                result = map(mode, argc - argi, args, url, userStyle, testFonts, timeout);
+                break;
+            default:
+                result = test(mode, argc - argi, args, url, userStyle, testFonts, timeout);
+                if (result != "undo")
+                    report << url << '\t' << result << '\n';
+                break;
             }
         }
 
-        if (0 < pid)
-            killTest(pid);
-
-        if (result != "undo")
-            report << url << '\t' << result << '\n';
-        if (mode != INTERACTIVE && result[0] != '?')
-            std::cout << url << '\t' << result << '\n';
+        if (mode == HEADLESS || mode == UPDATE) {
+            for (int j = 0; j < forkCount; ++j) {
+                int status;
+                wait(&status);
+            }
+            mode = REPORT;
+            data.clear();
+            data.seekg(0);
+        } else
+            break;
     }
+
     report.close();
 }
