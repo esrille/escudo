@@ -121,14 +121,18 @@ bool HttpCache::abort(HttpRequest* request)
 
 HttpCache* HttpCacheManager::getCache(const URL& url)
 {
-    for (auto i = list.begin(); i != list.end(); ++i) {
-        if ((*i)->url == url)
-            return *i;
+    for (auto i = lru.begin(); i != lru.end(); ++i) {
+        HttpCache* cache = *i;
+        if (cache->url == url) {
+            lru.erase(i);
+            lru.push_front(cache);
+            return cache;
+        }
     }
-    HttpCache* c = new(std::nothrow) HttpCache(url);
-    if (c)
-        list.push_back(c);
-    return c;
+    HttpCache* cache = new(std::nothrow) HttpCache(url);
+    if (cache)
+        lru.push_front(cache);
+    return cache;
 }
 
 HttpCache* HttpCacheManager::send(HttpRequest* request)

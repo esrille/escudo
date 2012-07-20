@@ -95,7 +95,7 @@ public:
 
 class HttpCacheManager
 {
-    std::list<HttpCache*> list;
+    std::list<HttpCache*> lru;
 public:
     HttpCache* getCache(const URL& url);
     HttpCache* send(HttpRequest* request);
