@@ -203,6 +203,9 @@ bool HttpRequest::constructResponseFromData()
 
 bool HttpRequest::send()
 {
+    if (3 <= getLogLevel())
+        std::cerr << "HttpRequest::send(): " << request.getURL() << '\n';
+
     if (request.getURL().isEmpty())
         return notify(false);
 
@@ -258,6 +261,7 @@ void HttpRequest::abort()
         close(fdContent);
         fdContent = -1;
     }
+    cache = 0;
 }
 
 unsigned short HttpRequest::getStatus() const
