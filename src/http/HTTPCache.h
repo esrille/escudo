@@ -61,7 +61,6 @@ public:
 
     // via PUT, DELETE, POST, and unknown
     void invalidate();
-    bool isFresh();
     HttpCache* send(HttpRequest* request);
     bool abort(HttpRequest* request);
 
@@ -99,6 +98,7 @@ class HttpCacheManager
 public:
     HttpCache* getCache(const URL& url);
     HttpCache* send(HttpRequest* request);
+    void remove(HttpCache* cache);
 
     static HttpCacheManager& getInstance()
     {

@@ -33,20 +33,30 @@ void HttpCache::notify(HttpRequest* request, bool error)
 {
     current = 0;
 
-    if (error || !response.update(request->getResponseMessage()))
+    if (error)
         invalidate();
     else {
+        response.update(request->getResponseMessage());
         // TODO: deal with partial...
         int fd = request->getContentDescriptor();
         if (0 <= fd)
             fdContent = dup(fd);
     }
 
-    while (!isBusy() && !requests.empty()) {
+    while (!requests.empty()) {
+        // TODO: Do this only when cacheable
+        assert(!isBusy());
         request = requests.front();
         requests.pop_front();
-        request->constructResponseFromCache();
+        request->constructResponseFromCache(false);
     }
+
+    if (!error)
+        return;
+    assert(requests.empty());
+    HttpCacheManager& manager = HttpCacheManager::getInstance();
+    manager.remove(this);
+    delete this;
 }
 
 void HttpCache::invalidate()
@@ -58,24 +68,12 @@ void HttpCache::invalidate()
     requestTime = 0;
 }
 
-bool HttpCache::isFresh()
-{
-    unsigned now = time(0);
-    // TODO: if (url.hasSearch()) ...
-    unsigned freshnessLifetime = response.getFreshnessLifetime(now);
-    unsigned currentAge = response.getCurrentAge(now, requestTime);
-    return freshnessLifetime > currentAge;
-}
-
 HttpCache* HttpCache::send(HttpRequest* request)
 {
     HttpRequestMessage& requestMessage = request->getRequestMessage();
 
-    // TODO: check cache-control
-
-    if (isFresh()) {
-        if (requestMessage.getMethodCode() == HttpRequestMessage::HEAD ||
-            0 <= fdContent)
+    if (response.isCacheable() && response.isFresh(requestTime)) {
+        if (requestMessage.getMethodCode() == HttpRequestMessage::HEAD || 0 <= fdContent)
             return this;
     }
 
@@ -151,6 +149,11 @@ HttpCache* HttpCacheManager::send(HttpRequest* request)
     HttpConnectionManager& manager = HttpConnectionManager::getInstance();
     manager.send(request);
     return 0;
+}
+
+void HttpCacheManager::remove(HttpCache* cache)
+{
+    lru.remove(cache);
 }
 
 }}}}  // org::w3c::dom::bootstrap

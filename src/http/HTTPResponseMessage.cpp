@@ -399,6 +399,38 @@ unsigned HttpResponseMessage::getFreshnessLifetime(unsigned now) const
     return 0;
 }
 
+// TODO: check cache-control
+bool HttpResponseMessage::isCacheable() const
+{
+    bool cacheable = false;
+    switch (getStatus()) {
+    case 200:
+    case 203:
+    case 206:
+    case 300:
+    case 301:
+    case 410:
+        // 200, 203, 206, 300, 301 or 410 MAY be stored by a cache and used
+        // in reply to a subsequent　request
+        // cf. 13.4 Response Cacheability, RFC 2616
+        if (!isNoCache())
+            cacheable = true;
+        break;
+    default:
+        break;
+    }
+    return cacheable;
+}
+
+bool HttpResponseMessage::isFresh(unsigned requestTime) const
+{
+    unsigned now = time(0);
+    // TODO: if (url.hasSearch()) ...
+    unsigned freshnessLifetime = getFreshnessLifetime(now);
+    unsigned currentAge = getCurrentAge(now, requestTime);
+    return freshnessLifetime > currentAge;
+}
+
 void HttpResponseMessage::clear()
 {
     version = 11;
@@ -412,25 +444,8 @@ void HttpResponseMessage::clear()
     contentType.clear();
 }
 
-bool HttpResponseMessage::update(const HttpResponseMessage& response)
+void HttpResponseMessage::update(const HttpResponseMessage& response)
 {
-    unsigned short code = response.getStatus();
-    switch (code) {
-    case 200:
-    case 203:
-    case 206:
-    case 300:
-    case 301:
-    case 410:
-        // TODO: if a cache-control directive prohibits caching.
-        //    return false;
-        break;
-    default:
-        // TODO: if there are cache-control directives or another header(s) that explicitly allow it
-            return false;
-        break;
-    }
-
     for (auto i = response.headers.begin(); i !=response.headers.end(); ++i) {
         if (isHopByHopHeader(i->header))
             continue;
@@ -445,8 +460,6 @@ bool HttpResponseMessage::update(const HttpResponseMessage& response)
     // contents stored in the cache entry with the new contents received in
     // the response and use the result as the entity-body of this outgoing
     // response
-
-    return true;
 }
 
 HttpResponseMessage::HttpResponseMessage()

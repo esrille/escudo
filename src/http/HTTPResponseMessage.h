@@ -102,11 +102,13 @@ public:
     bool isNoStore() const {
         return noStore;
     }
+    bool isCacheable() const;
+    bool isFresh(unsigned requestTime) const;
 
     bool isChunked() const;
 
     void clear();
-    bool update(const HttpResponseMessage& response);
+    void update(const HttpResponseMessage& response);
 };
 
 
