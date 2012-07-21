@@ -74,12 +74,44 @@ std::fstream& HttpRequest::getContent()
     return content;
 }
 
+// Return true to put this request in the completed list.
 bool HttpRequest::complete(bool error)
 {
-    readyState = handler ? COMPLETE : DONE;
     errorFlag = error;
     if (cache)
         cache->notify(this, error);
+    if (!error) {
+        int method = request.getMethodCode();
+        if (method == HttpRequestMessage::GET || method == HttpRequestMessage::HEAD) {
+            switch (response.getStatus()) {
+            case 301:   // Moved Permanently
+            case 302:   // Found
+            case 303:   // See Other
+            case 305:   // Use Proxy
+            case 307:   // Temporary Redirect
+            {
+                std::string location = response.getResponseHeader("Location");
+                if (request.redirect(utfconv(location))) {
+                    response.clear();
+                    if (content.is_open())
+                        content.close();
+                    if (0 <= fdContent) {
+                        close(fdContent);
+                        fdContent = -1;
+                    }
+                    cache = 0;
+                    readyState = OPENED;
+                    send();
+                    return false;
+                }
+                break;
+            }
+            default:
+                break;
+            }
+        }
+    }
+    readyState = handler ? COMPLETE : DONE;
     return handler;
 }
 

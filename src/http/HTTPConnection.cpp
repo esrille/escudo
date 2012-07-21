@@ -495,7 +495,7 @@ HttpConnection* HttpConnectionManager::getConnection(const std::string& hostname
 
 void HttpConnectionManager::send(HttpRequest* request)
 {
-    std::lock_guard<std::mutex> lock(mutex);
+    std::lock_guard<std::recursive_mutex> lock(mutex);
 
     URI uri(request->getRequestMessage().getURL());
     std::string hostname = uri.getHostname();
@@ -508,7 +508,7 @@ void HttpConnectionManager::send(HttpRequest* request)
 
 void HttpConnectionManager::abort(HttpRequest* request)
 {
-    std::lock_guard<std::mutex> lock(mutex);
+    std::lock_guard<std::recursive_mutex> lock(mutex);
 
     if (request->getReadyState() != HttpRequest::COMPLETE) {
         if (!request->cache || !request->cache->abort(request)) {
@@ -527,7 +527,7 @@ void HttpConnectionManager::abort(HttpRequest* request)
 
 void HttpConnectionManager::done(HttpConnection* conn, bool error)
 {
-    std::lock_guard<std::mutex> lock(mutex);
+    std::lock_guard<std::recursive_mutex> lock(mutex);
 
     conn->done(this, error);
 }
@@ -540,7 +540,7 @@ void HttpConnectionManager::complete(HttpRequest* request, bool error)
 
 HttpRequest* HttpConnectionManager::getCompleted()
 {
-    std::lock_guard<std::mutex> lock(mutex);
+    std::lock_guard<std::recursive_mutex> lock(mutex);
 
     if (!completed.empty()) {
         HttpRequest* request = completed.front();

@@ -31,7 +31,7 @@ class HttpConnection;
 
 class HttpConnectionManager
 {
-    std::mutex mutex;
+    std::recursive_mutex mutex;
     std::list<HttpConnection*> connections;
     std::list<HttpRequest*> completed;
 

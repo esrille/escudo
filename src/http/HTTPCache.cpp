@@ -54,7 +54,7 @@ void HttpCache::notify(HttpRequest* request, bool error)
     if (!error)
         return;
     assert(requests.empty());
-    HttpCacheManager& manager = HttpCacheManager::getInstance();
+    HttpCacheManager& manager(HttpCacheManager::getInstance());
     manager.remove(this);
     delete this;
 }
@@ -70,7 +70,7 @@ void HttpCache::invalidate()
 
 HttpCache* HttpCache::send(HttpRequest* request)
 {
-    HttpRequestMessage& requestMessage = request->getRequestMessage();
+    HttpRequestMessage& requestMessage(request->getRequestMessage());
 
     if (response.isCacheable() && response.isFresh(requestTime)) {
         if (requestMessage.getMethodCode() == HttpRequestMessage::HEAD || 0 <= fdContent)
@@ -103,7 +103,7 @@ HttpCache* HttpCache::send(HttpRequest* request)
         if (!value.empty())
             requestMessage.setHeader("If-None-Match", value);
     }
-    HttpConnectionManager& manager = HttpConnectionManager::getInstance();
+    HttpConnectionManager& manager(HttpConnectionManager::getInstance());
     manager.send(request);
     return this;
 }
@@ -135,7 +135,7 @@ HttpCache* HttpCacheManager::getCache(const URL& url)
 
 HttpCache* HttpCacheManager::send(HttpRequest* request)
 {
-    HttpRequestMessage& message = request->getRequestMessage();
+    HttpRequestMessage& message(request->getRequestMessage());
     HttpCache* cache = getCache(message.getURL());
     if (!cache)
         return 0;
@@ -146,7 +146,7 @@ HttpCache* HttpCacheManager::send(HttpRequest* request)
 
     // No need for going through the cache
     // TODO: call cache->invlidate();
-    HttpConnectionManager& manager = HttpConnectionManager::getInstance();
+    HttpConnectionManager& manager(HttpConnectionManager::getInstance());
     manager.send(request);
     return 0;
 }

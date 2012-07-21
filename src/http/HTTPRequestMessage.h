@@ -73,6 +73,7 @@ public:
     int getMethodCode() const;
 
     void open(const std::string& method, const std::u16string& url);
+    bool redirect(const std::u16string& url);
     void setHeader(const std::string& header, const std::string& value);
 
     void clear();

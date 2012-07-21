@@ -55,6 +55,15 @@ void HttpRequestMessage::open(const std::string& method, const std::u16string& u
     setHeader("User-Agent", "Escort/" PACKAGE_VERSION);
 }
 
+bool HttpRequestMessage::redirect(const std::u16string& url)
+{
+    URL u(url);
+    if (u.isEmpty())
+        return false;
+    this->url = u;
+    return true;
+}
+
 void HttpRequestMessage::setHeader(const std::string& header, const std::string& value)
 {
     headers.set(header, value);
