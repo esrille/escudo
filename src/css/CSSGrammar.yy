@@ -256,7 +256,9 @@ pseudo_page
   : ':' IDENT
   ;
 font_face
-  : FONT_FACE_SYM optional_space '{' optional_space declaration_list '}' optional_space
+  : FONT_FACE_SYM optional_space '{' optional_space declaration_list '}' optional_space {
+        $$ = 0;
+    }
   | FONT_FACE_SYM error_block optional_sgml {
         $$ = 0;
     }
