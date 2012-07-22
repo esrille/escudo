@@ -85,8 +85,9 @@ void HttpConnection::close()
 
 void HttpConnection::retry()
 {
+    int count = retryCount;
     close();
-    ++retryCount;
+    retryCount = count + 1;
     if (retryCount < MaxRetryCount) {
         HttpRequest* request = current;
         current = 0;
