@@ -1,3 +1,88 @@
+2012-07-22 04:12  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSGrammar.yy: (font_face) : Fix to return zero anyway.
+
+2012-07-22 03:56  Shiki.Okasaka@gmail.com
+
+	* src/http/HTTPConnection.cpp: (HttpConnection::retry) : Fix a bug
+	  to increment the retry count correctly.
+
+2012-07-21 09:27  Shiki.Okasaka@gmail.com
+
+	* src/http/HTTPCache.cpp, src/http/HTTPConnection.cpp,
+	  src/http/HTTPConnection.h, src/http/HTTPRequest.cpp,
+	  src/http/HTTPRequestMessage.cpp, src/http/HTTPRequestMessage.h:
+	  (HttpRequest::complete, HttpRequestMessage::redirect) : Support
+	  the redirection.
+	  (HttpConnectionManager::mutex) : Change the type to
+	  recursive_mutex for supporting the redirection.
+
+2012-07-21 06:24  Shiki.Okasaka@gmail.com
+
+	* src/http/HTTPCache.cpp, src/http/HTTPCache.h,
+	  src/http/HTTPResponseMessage.cpp, src/http/HTTPResponseMessage.h:
+	  (HttpCache::notify, HttpCache::send, HttpCacheManager::remove,
+	  HttpResponseMessage::isCacheable, HttpResponseMessage::update) :
+	  Refine the caching system.
+
+2012-07-20 15:58  Shiki.Okasaka@gmail.com
+
+	* src/http/HTTPRequest.cpp: (HttpRequest::abort) : Fix a bug.
+
+2012-07-20 15:58  Shiki.Okasaka@gmail.com
+
+	* src/http/HTTPCache.cpp, src/http/HTTPCache.h:
+	  (HttpCacheManager::getCache) : Use LRU.
+
+2012-07-18 06:41  Shiki.Okasaka@gmail.com
+
+	* src/harness.cpp: (harness) : Support the -j[jobs] option to run
+	  simultaneously.
+
+2012-07-13 11:53  Shiki.Okasaka@gmail.com
+
+	* src/Test.glut.cpp, src/WindowImp.cpp, src/WindowImp.h,
+	  src/css/BoxGL.cpp, src/css/ViewCSSImp.h,
+	  src/css/ViewCSSImpGL.cpp: (WindowImp::render, ViewCSSImp::render)
+	  : Inherit the clip count of the parent view (window).
+	  (BlockLevelBox::renderInline, InlineLevelBox::render, display) :
+	  Switch over to the new render methods.
+	  (BlockLevelBox::renderEnd) : Fix a bug.
+
+2012-07-13 08:29  Shiki.Okasaka@gmail.com
+
+	* src/HTTPRequest.test.cpp, src/http/HTTPRequest.cpp:
+	  (HttpRequest::constructResponseFromCache) : Rewind the duplicated
+	  file descriptor so that receivers don't have to do so.
+
+2012-07-12 14:36  Shiki.Okasaka@gmail.com
+
+	* src/url/URI.cpp: (URI::percentEncode) : Fix a bug.
+
+2012-07-12 08:58  Shiki.Okasaka@gmail.com
+
+	* src/v8/bridgeV8.cpp: (caller, operation, namedPropertyQuery,
+	  namedPropertyGetter, indexedPropertyGetter, namedPropertyDeleter,
+	  indexedPropertyDeleter, namedPropertySetter,
+	  indexedPropertySetter, getter, setter) : If 'this' is a V8 global
+	  proxy, use the global object instead.
+
+2012-07-12 08:34  Shiki.Okasaka@gmail.com
+
+	* src/html/HTMLElementImp.cpp, src/html/HTMLElementImp.h,
+	  src/html/HTMLInputElementImp.cpp:
+	  (HTMLInputElementImp::generateShadowContent, etc.) : Fix not to
+	  run JS from generateShadowContent().
+
+2012-07-11 07:32  Shiki.Okasaka@gmail.com
+
+	* src/URL.test.cpp, src/url/URL.h: (URL:isSameExceptFragments) :
+	  Fix a bug.
+
+2012-06-29 11:20  Shiki.Okasaka@gmail.com
+
+	* ChangeLog: Update.
+
 2012-06-29 10:40  Shiki.Okasaka@gmail.com
 
 	* escort.spec.in: (BuildRequires, Requires) : Refine for using
