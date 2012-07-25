@@ -35,6 +35,7 @@ public:
         StartStyleSheet,
         StartDeclarationList,
         StartExpression,
+        StartMediaList,
         Normal,
         End
     };

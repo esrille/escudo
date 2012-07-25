@@ -265,6 +265,7 @@ public:
     css::CSSStyleSheet parse(DocumentImp* document, const std::u16string& cssText);
     css::CSSStyleDeclaration parseDeclarations(const std::u16string& cssDecl);
     CSSParserExpr* parseExpression(const std::u16string& cssExpr);
+    MediaListImp* parseMediaList(const std::u16string& mediaText);
 
     DocumentImp* getDocument() const {
         return document;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 #include "MediaListImp.h"
-#include "css/CSSSerialize.h"
+#include "css/CSSParser.h"
 
 #include <assert.h>
 
@@ -77,7 +77,11 @@ std::u16string MediaListImp::getMediaText()
 
 void MediaListImp::setMediaText(std::u16string mediaText)
 {
-    // TODO: implement me.
+    clear();
+    if (!mediaText.empty()) {
+        CSSParser parser;
+        *this = *parser.parseMediaList(mediaText);
+    }
 }
 
 unsigned int MediaListImp::getLength()

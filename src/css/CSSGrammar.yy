@@ -60,6 +60,7 @@ using namespace org::w3c::dom::css;
 %token START_STYLESHEET
 %token START_DECLARATION_LIST
 %token START_EXPRESSION
+%token START_MEDIA_LIST
 
 %token END 0 "end of file"
 %token <number> ANGLE_DEG
@@ -155,6 +156,7 @@ start
   | START_EXPRESSION expr {
         parser->setExpression($2);
     }
+  | START_MEDIA_LIST medium_list
   ;
 
 stylesheet

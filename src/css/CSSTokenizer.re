@@ -43,6 +43,9 @@ start:
     case StartExpression:
         mode = Normal;
         return START_EXPRESSION;
+    case StartMediaList:
+        mode = Normal;
+        return START_MEDIA_LIST;
     case End:
         if (!openConstructs.empty()) {
             int token = openConstructs.front();

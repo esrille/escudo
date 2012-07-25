@@ -62,15 +62,21 @@ void HTMLLinkElementImp::eval()
 
     std::u16string rel = getRel();
     if (contains(rel, u"stylesheet")) {
-        // TODO: check type
+        // TODO: check "type"
+
         if (!contains(rel, u"alternate")) {
-            DocumentImp* document = getOwnerDocumentImp();
-            request = new(std::nothrow) HttpRequest(document->getDocumentURI());
-            if (request) {
-                request->open(u"GET", href);
-                request->setHanndler(boost::bind(&HTMLLinkElementImp::linkStyleSheet, this));
-                document->incrementLoadEventDelayCount();
-                request->send();
+            // Check "media"
+            Retained<MediaListImp> mediaList;
+            mediaList.setMediaText(getMedia());
+            if (mediaList.hasMedium(MediaListImp::Screen)) {   // TODO: support other mediums, too.
+                DocumentImp* document = getOwnerDocumentImp();
+                request = new(std::nothrow) HttpRequest(document->getDocumentURI());
+                if (request) {
+                    request->open(u"GET", href);
+                    request->setHanndler(boost::bind(&HTMLLinkElementImp::linkStyleSheet, this));
+                    document->incrementLoadEventDelayCount();
+                    request->send();
+                }
             }
         }
     }
