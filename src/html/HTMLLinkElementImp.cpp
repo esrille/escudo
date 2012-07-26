@@ -66,9 +66,10 @@ void HTMLLinkElementImp::eval()
 
         if (!contains(rel, u"alternate")) {
             // Check "media"
+            std::u16string mediaText = getMedia();
             Retained<MediaListImp> mediaList;
-            mediaList.setMediaText(getMedia());
-            if (mediaList.hasMedium(MediaListImp::Screen)) {   // TODO: support other mediums, too.
+            mediaList.setMediaText(mediaText);
+            if (mediaText.empty() || mediaList.hasMedium(MediaListImp::Screen)) {   // TODO: support other mediums, too.
                 DocumentImp* document = getOwnerDocumentImp();
                 request = new(std::nothrow) HttpRequest(document->getDocumentURI());
                 if (request) {
