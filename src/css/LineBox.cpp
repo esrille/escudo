@@ -289,12 +289,12 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
         }
         LineBox* lineBox = context->lineBox;
 
+        float nbl = 0.0f;
         if (wrapBox) {
-            for (InlineLevelBox* box = wrapBox; box; box = dynamic_cast<InlineLevelBox*>(box->getNextSibling())) {
-                float wrapWidth = box->getTotalWidth();
-                context->x += wrapWidth;
-                context->leftover -= wrapWidth;
-            }
+            for (InlineLevelBox* box = wrapBox; box; box = dynamic_cast<InlineLevelBox*>(box->getNextSibling()))
+                nbl += box->getTotalWidth();
+            context->x += nbl;
+            context->leftover -= nbl;
             if (context->leftover < 0.0f && (lineBox->hasChildBoxes() || context->hasNewFloats())) {
                 nextLine(view, context, activeStyle, firstLetterStyle, firstLineStyle, style, false, font, point);
                 continue;
@@ -376,6 +376,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                             advanced += w;
                             context->leftover -= w;
                             wrap = length = next - position - 1;
+                            updateMCW(nbl + w);
                             goto BreakLine;
                         }
                     }
@@ -416,11 +417,11 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                         goto NextLine;
                     if (context->shiftDownLineBox(view)) {
                         if (wrapBox) {
-                            for (InlineLevelBox* box = wrapBox; box; box = dynamic_cast<InlineLevelBox*>(box->getNextSibling())) {
-                                float wrapWidth = box->getTotalWidth();
-                                context->x += wrapWidth;
-                                context->leftover -= wrapWidth;
-                            }
+                            nbl = 0.0f;
+                            for (InlineLevelBox* box = wrapBox; box; box = dynamic_cast<InlineLevelBox*>(box->getNextSibling()))
+                                nbl += box->getTotalWidth();
+                            context->x += nbl;
+                            context->leftover -= nbl;
                         }
                     } else {
                         inlineData += transformed;
@@ -428,13 +429,20 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                         context->leftover -= w;
                         length = next - position;
                         context->breakable = false;
+                        updateMCW(nbl + w);
                         goto BreakLine;
                     }
                 }
+
                 inlineData += transformed;
                 advanced += w;
                 context->leftover -= w;
                 length = next - position;
+                if (context->breakable || activeStyle->whiteSpace.isBreakingLines()) {
+                    updateMCW(nbl + w);
+                    nbl = 0.0f;
+                } else
+                    updateMCW(nbl + advanced);
                 context->breakable = false;
                 if (wrap < next && data[next - 1] == '\n') {
                     linefeed = true;

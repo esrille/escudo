@@ -37,6 +37,7 @@ class CellBox : public BlockLevelBox
     unsigned rowSpan;
     unsigned verticalAlign;
     float intrinsicHeight;
+    float columnWidth;
 
     float getBaseline(const Box* box) const;
 
@@ -87,6 +88,11 @@ public:
     float getBaseline() const;
 
     bool isEmptyCell() const;
+
+    float getColumnWidth() const {
+        return columnWidth;
+    }
+    float adjustWidth();
 
     virtual float shrinkTo();
     virtual void resolveWidth(float w);
@@ -154,6 +160,8 @@ class TableWrapperBox : public BlockLevelBox
     std::vector<BorderValue> borderColumns;
 
     std::vector<float> widths;
+    std::vector<float> fixedWidths;
+    std::vector<float> percentages;
     std::vector<float> heights;
     std::vector<float> baselines;
     std::vector<BoxImage*> rowImages;

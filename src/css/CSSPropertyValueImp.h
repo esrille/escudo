@@ -336,6 +336,10 @@ public:
     bool isPercentage() const {
         return length.isPercentage();
     }
+    float getPercentage() const {
+        assert(isPercentage());
+        return length.number;
+    }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
         if (isAuto())
             return u"auto";

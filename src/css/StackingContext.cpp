@@ -249,6 +249,35 @@ void StackingContext::addFloat(Box* box)
     box->nextBase = 0;
 }
 
+void StackingContext::removeBox(Box* box)
+{
+    Box* p = 0;
+    for (Box* i = firstBase; i ; p = i, i = i->nextBase) {
+        if (i == box) {
+            if (!p)
+                firstBase = i->nextBase;
+            else
+                p->nextBase = i->nextBase;
+            if (lastBase == box)
+                lastBase = p;
+            break;
+        }
+    }
+
+    p = 0;
+    for (Box* i = firstRenderBase; i ; p = i, i = i->nextBase) {
+        if (i == box) {
+            if (!p)
+                firstRenderBase = i->nextBase;
+            else
+                p->nextBase = i->nextBase;
+            if (lastRenderBase == box)
+                lastRenderBase = p;
+            break;
+        }
+    }
+}
+
 void StackingContext::dump(std::string indent)
 {
     std::cout << indent << "z-index: " << zIndex << '\n';

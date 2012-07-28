@@ -365,6 +365,7 @@ void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, boo
             floatBox->inserted = true;
             lineBox->insertBefore(floatBox, lineBox->getFirstChild());
             floatList.push_back(floatBox);
+            parentBox->updateMCW(floatBox->mcw);
         }
     }
     for (auto i = right.begin(); i != right.end(); ++i) {
@@ -374,8 +375,9 @@ void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, boo
             // We would need a gap before the 1st right floating box to be added.
             if (!lineBox->rightBox)
                 lineBox->rightBox = floatBox;
-            lineBox->appendChild(*i);
+            lineBox->appendChild(floatBox);
             floatList.push_back(floatBox);
+            parentBox->updateMCW(floatBox->mcw);
         }
     }
     float height = lineBox->getClearance() + lineBox->getTotalHeight();

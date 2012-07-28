@@ -112,6 +112,8 @@ public:
     void addBox(Box* box, Box* parentBox);
     void addFloat(Box* box);
 
+    void removeBox(Box* box);
+
     void setClipBox(BlockLevelBox* box) {
         clipBox = box;
     }

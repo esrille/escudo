@@ -1365,8 +1365,7 @@ void CSSStyleDeclarationImp::inheritProperties(const CSSStyleDeclarationImp* par
 
 void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle, Element element)
 {
-    resolved = false;   // This style needs to be resolved later.
-    clearBox();
+    unresolve();  // This style needs to be resolved later.
 
     if (this == parentStyle)
         return;

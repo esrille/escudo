@@ -85,6 +85,9 @@ Box::Box(Node node) :
 
 Box::~Box()
 {
+    if (stackingContext)
+        stackingContext->removeBox(this);
+
     while (0 < childCount) {
         Box* child = removeChild(firstChild);
         child->release_();
@@ -160,6 +163,14 @@ void Box::restyle(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle)
         style->recompute(view, parentStyle, getNode());
     for (Box* i = firstChild; i; i = i->nextSibling)
         i->restyle(view, style);
+}
+
+void Box::unresolveStyle()
+{
+    if (CSSStyleDeclarationImp* style = getStyle())
+        style->unresolve();
+    for (Box* i = firstChild; i; i = i->nextSibling)
+        i->unresolveStyle();
 }
 
 float Box::getOutlineWidth() const
@@ -331,7 +342,8 @@ BlockLevelBox::BlockLevelBox(Node node, CSSStyleDeclarationImp* style) :
     edge(0.0f),
     remainingHeight(0.0f),
     defaultBaseline(0.0f),
-    defaultLineHeight(0.0f)
+    defaultLineHeight(0.0f),
+    mcw(0.0f)
 {
     if (style)
         setStyle(style);
@@ -527,27 +539,27 @@ void BlockLevelBox::resolveMargin(ViewCSSImp* view, const ContainingBlock* conta
         height = style->height.getPx();
 }
 
-void BlockLevelBox::layOutInlineLevelBox(ViewCSSImp* view, Node node, FormattingContext* context,
-                                         Element element, CSSStyleDeclarationImp* style)
+InlineLevelBox* BlockLevelBox::layOutInlineLevelBox(ViewCSSImp* view, Node node, FormattingContext* context,
+                                                    Element element, CSSStyleDeclarationImp* style)
 {
     assert(element);
     assert(style);
 
     if (!context->lineBox) {
         if (!context->addLineBox(view, this))
-            return;  // TODO error
+            return 0;  // TODO error
     }
 
     InlineLevelBox* inlineLevelBox = new(std::nothrow) InlineLevelBox(node, style);
     if (!inlineLevelBox)
-        return;  // TODO error
+        return 0;  // TODO error
 
     inlineLevelBox->parentBox = context->lineBox;  // for getContainingBlock
     context->prevChar = 0;
 
     BlockLevelBox* inlineBlock = view->layOutBlockBoxes(element, 0, style->parentStyle, style, true);
     if (!inlineBlock)
-        return;  // TODO error
+        return 0;  // TODO error
     inlineBlock->establishFormattingContext();
     inlineLevelBox->appendChild(inlineBlock);
     inlineBlock->layOut(view, context);
@@ -566,7 +578,7 @@ void BlockLevelBox::layOutInlineLevelBox(ViewCSSImp* view, Node node, Formatting
         if (context->lineBox->hasChildBoxes() || context->hasNewFloats()) {
             context->nextLine(view, this, false);
             if (!context->addLineBox(view, this))
-                return;  // TODO error
+                return 0;  // TODO error
             continue;
         }
         if (!context->shiftDownLineBox(view))
@@ -578,6 +590,7 @@ void BlockLevelBox::layOutInlineLevelBox(ViewCSSImp* view, Node node, Formatting
     context->appendInlineBox(view, inlineLevelBox, style);
 
     style->addBox(inlineLevelBox);
+    return inlineLevelBox;
 }
 
 void BlockLevelBox::layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floatBox, FormattingContext* context)
@@ -714,7 +727,12 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
     marginUsed = false;
     context->atLineHead = true;
 
-    assert(!hasChildBoxes());
+    while (hasChildBoxes()) {
+        Box* child = getFirstChild();
+        removeChild(child);
+        child->release_();
+    }
+
     bool collapsed = true;
     for (auto i = inlines.begin(); i != inlines.end(); ++i) {
         Node node = *i;
@@ -744,6 +762,7 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
             } else if (style->display.isTableParts()) {
                 context->useMargin(this);
                 layOutAnonymousInlineTable(view, context, i);
+                // TODO: updateMCW
                 collapsed = false;
             } else if ((!isReplacedElement(element) && style->display.isInline()) || style->display.isListItem()) {
                 // empty inline element
@@ -752,7 +771,8 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
             } else {
                 context->useMargin(this);
                 // At this point, node is an inline block element or a replaced element.
-                layOutInlineLevelBox(view, node, context, element, style);
+                if (InlineLevelBox* box = layOutInlineLevelBox(view, node, context, element, style))
+                    updateMCW(box->getTotalWidth());
                 collapsed = false;
             }
         }
@@ -1156,8 +1176,11 @@ void BlockLevelBox::layOutChildren(ViewCSSImp* view, FormattingContext* context)
     Box* next;
     for (Box* child = getFirstChild(); child; child = next) {
         next = child->getNextSibling();
-        if (!child->layOut(view, context))
+        if (!child->layOut(view, context)) {
             removeChild(child);
+            child->release_();
+        } else
+            updateMCW(child->getMCW());
     }
 }
 
@@ -1206,7 +1229,10 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     if (!style)
         return false;  // TODO error
 
+    mcw = 0.0f;
     if (!isAnonymous()) {
+        if (!style->width.isAuto() && !style->width.isPercentage())
+            mcw = style->width.getPx();
         style->resolve(view, containingBlock);
         resolveWidth(view, containingBlock);
     } else {
@@ -1221,6 +1247,10 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         height = 0.0f;
         stackingContext = style->getStackingContext();
     }
+
+    CellBox* cell = dynamic_cast<CellBox*>(this);
+    if (cell)
+        cell->adjustWidth();
 
     visibility = style->visibility.getValue();
     textAlign = style->textAlign.getValue();
@@ -1254,13 +1284,21 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
             !intrinsic)
             shrinkToFit();
         applyMinMaxWidth(getTotalWidth());
-    } else if (dynamic_cast<CellBox*>(this))
+
+        mcw += borderLeft + borderRight;
+        if (!style->paddingLeft.isPercentage())
+            mcw += style->paddingLeft.getPx();
+        if (!style->paddingRight.isPercentage())
+            mcw += style->paddingRight.getPx();
+        if (!style->marginLeft.isPercentage() && !style->marginLeft.isAuto())
+            mcw += style->marginLeft.getPx();
+        if (!style->marginRight.isPercentage() && !style->marginRight.isAuto())
+            mcw += style->marginRight.getPx();
+    } else if (cell)
         shrinkToFit();
 
     // Collapse margins with the first and the last children before calculating the auto height.
     collapseMarginBottom(context);
-
-    CellBox* cell = dynamic_cast<CellBox*>(this);
 
     if ((style->height.isAuto() && !intrinsic) || isAnonymous() || cell) {
         float totalClearance = 0.0f;

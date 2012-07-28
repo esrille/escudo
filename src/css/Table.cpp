@@ -35,7 +35,9 @@ CellBox::CellBox(Element element, CSSStyleDeclarationImp* style):
     row(0),
     colSpan(1),
     rowSpan(1),
-    verticalAlign(CSSVerticalAlignValueImp::Middle)
+    verticalAlign(CSSVerticalAlignValueImp::Middle),
+    intrinsicHeight(0.0f),
+    columnWidth(NAN)
 {
     if (style)
         verticalAlign = style->verticalAlign.getValueForCell();
@@ -94,6 +96,16 @@ float CellBox::getBaseline() const
 {
     float x = getBaseline(this);
     return !isnanf(x) ? x : (getBlankTop() + height);
+}
+
+float CellBox::adjustWidth()
+{
+    if (fixedLayout || isnanf(columnWidth))
+        return NAN;
+    width = columnWidth - getBlankLeft() - getBlankRight();
+    for (Box* i = getFirstChild(); i; i = i->getNextSibling())
+        i->unresolveStyle();
+    return width;
 }
 
 float CellBox::shrinkTo()
@@ -1006,9 +1018,12 @@ void TableWrapperBox::layOutAuto(ViewCSSImp* view, const ContainingBlock* contai
                 colStyle->resolve(view, containingBlock);
                 widths[x] = colStyle->borderLeftWidth.getPx() +
                             colStyle->paddingLeft.getPx() +
-                            colStyle->width.getPx() +
                             colStyle->paddingRight.getPx() +
                             colStyle->borderRightWidth.getPx();
+                if (!colStyle->width.isPercentage())
+                    widths[x] += colStyle->width.getPx();
+                else
+                    percentages[x] = colStyle->width.getPercentage();
             }
         }
     }
@@ -1032,9 +1047,10 @@ void TableWrapperBox::layOutAutoColgroup(ViewCSSImp* view, const ContainingBlock
             columnGroupStyle->resolve(view, containingBlock);
             float w = columnGroupStyle->borderLeftWidth.getPx() +
                       columnGroupStyle->paddingLeft.getPx() +
-                      columnGroupStyle->width.getPx() +
                       columnGroupStyle->paddingRight.getPx() +
                       columnGroupStyle->borderRightWidth.getPx();
+            if (!columnGroupStyle->width.isPercentage())
+                w += columnGroupStyle->width.getPx();
             if (sum < w) {
                 float diff = (w - sum) / elements;
                 for (unsigned c = 0; c < elements; ++c)
@@ -1094,6 +1110,8 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
         }
         tableBox->height = anon ? 0.0f : height;
         widths.resize(xWidth);
+        fixedWidths.resize(xWidth);
+        percentages.resize(xWidth);
         heights.resize(yHeight);
         baselines.resize(yHeight);
 
@@ -1149,8 +1167,10 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
             }
         }
 
-        for (unsigned x = 0; x < xWidth; ++x)
-            widths[x] = fixedLayout ? NAN : 0.0f;
+        for (unsigned x = 0; x < xWidth; ++x) {
+            widths[x] = fixedWidths[x] = fixedLayout ? NAN : 0.0f;
+            percentages[x] = -1.0f;
+        }
         for (unsigned y = 0; y < yHeight; ++y)
             heights[y] = 0.0f;
         if (fixedLayout)
@@ -1158,6 +1178,8 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
         else
             layOutAuto(view, containingBlock);
         float tableWidth = width;
+        int pass = 0;
+Reflow:
         for (unsigned y = 0; y < yHeight; ++y) {
             float minHeight = 0.0f;
             if (rows[y] && !rows[y]->height.isAuto())
@@ -1187,15 +1209,24 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
                 cellBox->intrinsicHeight = cellBox->getTotalHeight();
                 // Process 'height' as the minimum height.
                 float d = minHeight;
-                if (CSSStyleDeclarationImp* cellStyle = cellBox->getStyle()) {
-                    if (!cellStyle->height.isAuto())
-                        d = std::max(minHeight, cellStyle->height.getPx());
-                }
+                CSSStyleDeclarationImp* cellStyle = cellBox->isAnonymous() ? 0 : cellBox->getStyle();
+                if (cellStyle && !cellStyle->height.isAuto())
+                    d = std::max(minHeight, cellStyle->height.getPx());
                 d -= cellBox->intrinsicHeight;
                 if (0.0f < d)
                     cellBox->height += d;
-                if (!fixedLayout && cellBox->getColSpan() == 1)
-                    widths[x] = std::max(widths[x], cellBox->getTotalWidth());
+                if (!fixedLayout && cellBox->getColSpan() == 1) {
+                    if (cellStyle) {
+                        if (cellStyle->width.isPercentage())
+                            percentages[x] = std::max(percentages[x], cellStyle->width.getPercentage());
+                        else if (!cellStyle->width.isAuto())
+                            fixedWidths[x] = std::max(fixedWidths[x], cellBox->getMCW());
+                        else
+                            fixedWidths[x] = std::max(fixedWidths[x], cellBox->getTotalWidth());
+                    } else
+                        fixedWidths[x] = std::max(fixedWidths[x], cellBox->getTotalWidth());
+                    widths[x] = std::max(widths[x], cellBox->getMCW());
+                }
                 if (cellBox->getRowSpan() == 1)
                     heights[y] = std::max(heights[y], cellBox->getTotalHeight());
                 if (cellBox->getVerticalAlign() == CSSVerticalAlignValueImp::Baseline) {
@@ -1242,8 +1273,8 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
                         float sum = 0.0f;
                         for (unsigned c = 0; c < span; ++c)
                             sum += widths[x + c];
-                        if (sum < cellBox->getTotalWidth()) {
-                            float diff = (cellBox->getTotalWidth() - sum) / span;
+                        if (sum < cellBox->getMCW()) {
+                            float diff = (cellBox->getMCW() - sum) / span;
                             for (unsigned c = 0; c < span; ++c)
                                 widths[x + c] += diff;
                         }
@@ -1265,18 +1296,66 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
                 }
             }
         }
-
         if (!fixedLayout) {
             layOutAutoColgroup(view, containingBlock);
+            // At this point, MCWs of cells have been calculated.
             float w = 0.0f;
-            for (unsigned x = 0; x < xWidth; ++x)
+            float p = 0.0f;
+            for (unsigned x = 0; x < xWidth; ++x) {
                 w += widths[x];
-            if (anon || style->width.isAuto())
-                tableBox->width = w;
-            else if (w < tableBox->width) {
-                w = (tableBox->width - w) / xWidth;
-                for (unsigned x = 0; x < xWidth; ++x)
-                    widths[x] += w;
+                p += fixedWidths[x];
+            }
+            if (anon || style->width.isAuto()) {
+                if (w < p && w < containingBlock->width)
+                    tableBox->width = std::min(p, containingBlock->width);
+                else
+                    tableBox->width = w;
+            }
+            if (w < tableBox->width) {
+                float r = tableBox->width - w;
+                unsigned fixed = 0;
+                for (unsigned x = 0; x < xWidth; ++x) {
+                    if (fixedWidths[x] == widths[x])
+                        ++fixed;
+                    else if (0.0f <= percentages[x]) {
+                        ++fixed;
+                        float cw = tableBox->width * percentages[x] / 100.0f;
+                        cw -= widths[x];
+                        if (0.0f < cw) {
+                            cw = std::min(cw, r);
+                            r -= cw;
+                            widths[x] += cw;
+                        }
+                    }
+                }
+                if (fixed < xWidth) {
+                    w = r / (xWidth - fixed);
+                    for (unsigned x = 0; x < xWidth; ++x) {
+                        if (percentages[x] < 0.0f && fixedWidths[x] != widths[x])
+                            widths[x] += w;
+                    }
+                }
+            }
+            if (++pass == 1) {
+                // At this point, column widths have been determined.
+                for (unsigned x = 0; x < xWidth; ++x) {
+                    for (unsigned y = 0; y < yHeight; ++y) {
+                        CellBox* cellBox = grid[y][x].get();
+                        if (!cellBox || cellBox->isSpanned(x, y))
+                            continue;
+                        unsigned span = cellBox->getColSpan();
+                        if (span == 1)
+                            cellBox->columnWidth = widths[x];
+                        else {
+                            float sum = 0.0f;
+                            for (unsigned c = 0; c < span; ++c)
+                                sum += widths[x + c];
+                            cellBox->columnWidth = sum;
+                        }
+                    }
+                }
+                // Reflow cells using the MCWs as the specified widths.
+                goto Reflow;
             }
         }
         float h = 0.0f;

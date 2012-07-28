@@ -20,6 +20,7 @@
 #include <Object.h>
 #include <org/w3c/dom/Text.h>
 
+#include <algorithm>
 #include <list>
 #include <string>
 
@@ -490,6 +491,7 @@ public:
     }
     void setStyle(CSSStyleDeclarationImp* style);
     void restyle(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle = 0);
+    void unresolveStyle();
 
     bool isStatic() const {
         return position == CSSPositionValueImp::Static;
@@ -546,6 +548,10 @@ public:
     virtual void resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip) = 0;
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context) {
         return true;
+    }
+
+    virtual float getMCW() const {
+        return 0.0f;
     }
 
     bool isVisible() const {
@@ -648,6 +654,9 @@ class BlockLevelBox : public Box
     float defaultBaseline;
     float defaultLineHeight;
 
+    // for automatic table layout
+    float mcw;
+
     void getPsuedoStyles(ViewCSSImp* view, FormattingContext* context, CSSStyleDeclarationImp* style,
                          CSSStyleDeclarationPtr& firstLetterStyle, CSSStyleDeclarationPtr& firstLineStyle);
     void nextLine(ViewCSSImp* view, FormattingContext* context, CSSStyleDeclarationImp*& activeStyle,
@@ -659,8 +668,8 @@ class BlockLevelBox : public Box
                       FontGlyph*& glyph, std::u16string& transformed);
     bool layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
                     std::u16string data, Element element, CSSStyleDeclarationImp* style);
-    void layOutInlineLevelBox(ViewCSSImp* view, Node node, FormattingContext* context,
-                              Element element, CSSStyleDeclarationImp* style);
+    InlineLevelBox* layOutInlineLevelBox(ViewCSSImp* view, Node node, FormattingContext* context,
+                                         Element element, CSSStyleDeclarationImp* style);
     void layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floatBox, FormattingContext* context);
     void layOutAbsolute(ViewCSSImp* view, Node node, BlockLevelBox* absBox, FormattingContext* context);  // 1st pass
     void layOutAnonymousInlineTable(ViewCSSImp* view, FormattingContext* context, std::list<Node>::iterator& i);
@@ -767,6 +776,10 @@ public:
     void resolveNormalWidth(float w, float r = NAN);
     void resolveFloatWidth(float w, float r = NAN);
 
+    virtual float getMCW() const {
+        return mcw;
+    }
+
     virtual void resolveOffset(float& x, float &y);
     virtual void resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip);
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context);
@@ -779,6 +792,10 @@ public:
     void renderInline(ViewCSSImp* view, StackingContext* stackingContext);
 
     bool isTableBox() const;
+    float updateMCW(float w) {
+        mcw = std::max(w, mcw);
+        return mcw;
+    }
 };
 
 typedef boost::intrusive_ptr<BlockLevelBox> BlockLevelBoxPtr;
