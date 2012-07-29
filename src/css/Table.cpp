@@ -1217,9 +1217,10 @@ Reflow:
                     cellBox->height += d;
                 if (!fixedLayout && cellBox->getColSpan() == 1) {
                     if (cellStyle) {
-                        if (cellStyle->width.isPercentage())
+                        if (cellStyle->width.isPercentage()) {
                             percentages[x] = std::max(percentages[x], cellStyle->width.getPercentage());
-                        else if (!cellStyle->width.isAuto())
+                            fixedWidths[x] = std::max(fixedWidths[x], cellBox->getTotalWidth());
+                        } else if (!cellStyle->width.isAuto())
                             fixedWidths[x] = std::max(fixedWidths[x], cellBox->getMCW());
                         else
                             fixedWidths[x] = std::max(fixedWidths[x], cellBox->getTotalWidth());
@@ -1303,13 +1304,18 @@ Reflow:
             float p = 0.0f;
             for (unsigned x = 0; x < xWidth; ++x) {
                 w += widths[x];
-                p += fixedWidths[x];
+                p += std::max(fixedWidths[x], widths[x]);
             }
             if (anon || style->width.isAuto()) {
-                if (w < p && w < containingBlock->width)
-                    tableBox->width = std::min(p, containingBlock->width);
-                else
+                if (containingBlock->width <= w)
                     tableBox->width = w;
+                else if (containingBlock->width < p)
+                    tableBox->width = containingBlock->width;
+                else {
+                    tableBox->width = w = p;
+                    for (unsigned x = 0; x < xWidth; ++x)
+                        widths[x] = std::max(fixedWidths[x], widths[x]);
+                }
             }
             if (w < tableBox->width) {
                 float r = tableBox->width - w;
