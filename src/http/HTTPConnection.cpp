@@ -54,8 +54,9 @@ void HttpConnection::done(HttpConnectionManager* manager, bool error)
 {
     line.clear();
     if (current) {
-        manager->complete(current, error);
+        HttpRequest* request = current;
         current = 0;
+        manager->complete(request, error);
     }
     if (!error) {
         if (!requests.empty()) {
