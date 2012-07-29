@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,13 +27,12 @@ Node HTMLTitleElementImp::cloneNode(bool deep)
 // HTMLTitleElement
 std::u16string HTMLTitleElementImp::getText()
 {
-    // TODO: implement me!
-    return u"";
+    return getTextContent();
 }
 
 void HTMLTitleElementImp::setText(std::u16string text)
 {
-    // TODO: implement me!
+    setTextContent(text);
 }
 
 }}}}  // org::w3c::dom::bootstrap

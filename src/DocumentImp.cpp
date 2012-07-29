@@ -634,8 +634,30 @@ std::u16string DocumentImp::getTitle()
     if (!head)
         return u"";
     for (auto i = head.getFirstElementChild(); i; i = i.getNextElementSibling()) {
-        if (i.getTagName() == u"title")
-            return i.getTextContent();
+        if (i.getTagName() == u"title") {
+            html::HTMLTitleElement t(interface_cast<html::HTMLTitleElement>(i));
+            std::u16string title = t.getText();
+            size_t spacePos;
+            size_t spaceLen = 0;
+            for (size_t i = 0; i < title.length(); ++i) {
+                char16_t c = title[i];
+                if (isSpace(c)) {
+                    c = title[i] = ' ';
+                    if (spaceLen == 0)
+                        spacePos = i;
+                    ++spaceLen;
+                } else if (0 < spaceLen) {
+                    if (1 < spaceLen) {
+                        ++spacePos;
+                        --spaceLen;
+                        title.erase(spacePos, spaceLen);
+                        i = spacePos;
+                    }
+                    spaceLen = 0;
+                }
+            }
+            return title;
+        }
     }
     return u"";
 }
@@ -647,12 +669,13 @@ void DocumentImp::setTitle(std::u16string title)
         return;
     for (auto i = head.getFirstElementChild(); i; i = i.getNextElementSibling()) {
         if (i.getTagName() == u"title") {
-            i.setTextContent(title);
+            html::HTMLTitleElement t(interface_cast<html::HTMLTitleElement>(i));
+            t.setText(title);
             return;
         }
     }
-    if (Element t = createElement(u"title")) {
-        t.setTextContent(title);
+    if (html::HTMLTitleElement t = interface_cast<html::HTMLTitleElement>(createElement(u"title"))) {
+        t.setText(title);
         head.appendChild(t);
     }
 }
