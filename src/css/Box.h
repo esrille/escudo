@@ -769,7 +769,7 @@ public:
 
     void resolveBackground(ViewCSSImp* view);
     void resolveBackgroundPosition(ViewCSSImp* view, const ContainingBlock* containingBlock);
-    void resolveMargin(ViewCSSImp* view, const ContainingBlock* containingBlock, float available);
+    void resolveMargin(ViewCSSImp* view, const ContainingBlock* containingBlock);
     virtual void resolveWidth(float w);
     void applyMinMaxWidth(float w);
     void resolveNormalWidth(float w, float r = NAN);

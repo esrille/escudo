@@ -1077,7 +1077,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
     backgroundColor = getParentBox() ? 0x00000000 : style->backgroundColor.getARGB();
     paddingTop = paddingRight = paddingBottom = paddingLeft = 0.0f;
     borderTop = borderRight = borderBottom = borderLeft = 0.0f;
-    resolveMargin(view, containingBlock, 0.0f);
+    resolveMargin(view, containingBlock);
     stackingContext = style->getStackingContext();
 
     collapseMarginTop(context);

@@ -515,9 +515,9 @@ void BlockLevelBox::resolveFloatWidth(float w, float r)
         width = w - getBlankLeft() - getBlankRight();
 }
 
-void BlockLevelBox::resolveMargin(ViewCSSImp* view, const ContainingBlock* containingBlock, float available)
+void BlockLevelBox::resolveMargin(ViewCSSImp* view, const ContainingBlock* containingBlock)
 {
-    resolveWidth((available != 0.0f) ? available : containingBlock->width);
+    resolveWidth(containingBlock->width);
     if (!style->marginTop.isAuto())
         marginTop = style->marginTop.getPx();
     else
@@ -1228,7 +1228,7 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         resolveBackground(view);
         updatePadding();
         updateBorderWidth();
-        resolveMargin(view, containingBlock, 0.0f);
+        resolveMargin(view, containingBlock);
     } else {
         // The properties of anonymous boxes are inherited from the enclosing non-anonymous box.
         // Theoretically, we are supposed to create a new style for this anonymous box, but
