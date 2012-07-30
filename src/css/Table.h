@@ -211,6 +211,7 @@ class TableWrapperBox : public BlockLevelBox
     void layOutFixed(ViewCSSImp* view, const ContainingBlock* containingBlock, bool collapsingModel);
     void layOutAuto(ViewCSSImp* view, const ContainingBlock* containingBlock);
     void layOutAutoColgroup(ViewCSSImp* view, const ContainingBlock* containingBlock);
+    void layOutTableBox(ViewCSSImp* view, FormattingContext* context, const ContainingBlock* containingBlock, bool collapsingModel, bool fixedLayout);
 
     void renderBackground(ViewCSSImp* view, CSSStyleDeclarationImp* style, float x, float y, float left, float top, float right, float bottom, float width, float height, unsigned backgroundColor, BoxImage* backgroundImage);
     void renderLayers(ViewCSSImp* view);
@@ -245,6 +246,8 @@ public:
     virtual void fit(float w);
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context);
     virtual float shrinkTo();
+
+    virtual void layOutAbsolute(ViewCSSImp* view);  // 2nd pass
 
     void renderTableBorders(ViewCSSImp* view);
     void renderTableOutlines(ViewCSSImp* view);

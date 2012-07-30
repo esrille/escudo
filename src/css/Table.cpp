@@ -1061,6 +1061,368 @@ void TableWrapperBox::layOutAutoColgroup(ViewCSSImp* view, const ContainingBlock
     }
 }
 
+void TableWrapperBox::layOutTableBox(ViewCSSImp* view, FormattingContext* context, const ContainingBlock* containingBlock, bool collapsingModel, bool fixedLayout)
+{
+    if (!tableBox)
+        return;
+
+    tableBox->setStyle(style.get());
+    tableBox->setPosition(CSSPositionValueImp::Static);
+    bool anon = style->display != CSSDisplayValueImp::Table && style->display != CSSDisplayValueImp::InlineTable;
+    float hs = 0.0f;
+    if (!anon) {
+        tableBox->resolveBackground(view);
+        if (!collapsingModel) {
+            tableBox->updatePadding();
+            tableBox->updateBorderWidth();
+            hs = style->borderSpacing.getHorizontalSpacing();
+        }
+    }
+    tableBox->width = width;
+    if (anon || style->width.isAuto()) {
+        tableBox->width -= tableBox->getBlankLeft() + tableBox->getBlankRight();
+        if (tableBox->width < 0.0f)
+            tableBox->width = 0.0f;
+    }
+    tableBox->height = anon ? 0.0f : height;
+    widths.resize(xWidth);
+    fixedWidths.resize(xWidth);
+    percentages.resize(xWidth);
+    heights.resize(yHeight);
+    baselines.resize(yHeight);
+
+    rowImages.resize(yHeight);
+    for (unsigned y = 0; y < yHeight; ++y) {
+        rowImages[y] = 0;
+        CSSStyleDeclarationImp* rowStyle = rows[y].get();
+        if (rowStyle && !rowStyle->backgroundImage.isNone()) {
+            HttpRequest* request = view->preload(view->getDocument().getDocumentURI(), rowStyle->backgroundImage.getValue());
+            if (request)
+                rowImages[y] = request->getBoxImage(rowStyle->backgroundRepeat.getValue());
+        }
+    }
+    rowGroupImages.resize(yHeight);
+    for (unsigned y = 0; y < yHeight; ++y) {
+        rowGroupImages[y] = 0;
+        CSSStyleDeclarationImp* rowGroupStyle = rowGroups[y].get();
+        if (rowGroupStyle) {
+            if (!rowGroupStyle->backgroundImage.isNone()) {
+                HttpRequest* request = view->preload(view->getDocument().getDocumentURI(), rowGroupStyle->backgroundImage.getValue());
+                if (request)
+                    rowGroupImages[y] = request->getBoxImage(rowGroupStyle->backgroundRepeat.getValue());
+            }
+            while (rowGroupStyle == rowGroups[++y].get())
+                ;
+            --y;
+        }
+    }
+
+    columnImages.resize(xWidth);
+    for (unsigned x = 0; x < xWidth; ++x) {
+        columnImages[x] = 0;
+        CSSStyleDeclarationImp* columnStyle = columns[x].get();
+        if (columnStyle && !columnStyle->backgroundImage.isNone()) {
+            HttpRequest* request = view->preload(view->getDocument().getDocumentURI(), columnStyle->backgroundImage.getValue());
+            if (request)
+                columnImages[x] = request->getBoxImage(columnStyle->backgroundRepeat.getValue());
+        }
+    }
+    columnGroupImages.resize(xWidth);
+    for (unsigned x = 0; x < xWidth; ++x) {
+        columnGroupImages[x] = 0;
+        CSSStyleDeclarationImp* columnGroupStyle = columnGroups[x].get();
+        if (columnGroupStyle) {
+            if (!columnGroupStyle->backgroundImage.isNone()) {
+                HttpRequest* request = view->preload(view->getDocument().getDocumentURI(), columnGroupStyle->backgroundImage.getValue());
+                if (request)
+                    columnGroupImages[x] = request->getBoxImage(columnGroupStyle->backgroundRepeat.getValue());
+            }
+            while (columnGroupStyle == columnGroups[++x].get())
+                ;
+            --x;
+        }
+    }
+
+    for (unsigned x = 0; x < xWidth; ++x) {
+        widths[x] = fixedWidths[x] = fixedLayout ? NAN : 0.0f;
+        percentages[x] = -1.0f;
+    }
+    for (unsigned y = 0; y < yHeight; ++y)
+        heights[y] = 0.0f;
+    if (fixedLayout)
+        layOutFixed(view, containingBlock, collapsingModel);
+    else
+        layOutAuto(view, containingBlock);
+    float tableWidth = width;
+    int pass = 0;
+Reflow:
+    for (unsigned y = 0; y < yHeight; ++y) {
+        float minHeight = 0.0f;
+        if (rows[y] && !rows[y]->height.isAuto())
+            minHeight = rows[y]->height.getPx();
+        baselines[y] = 0.0f;
+        bool noBaseline = true;
+        for (unsigned x = 0; x < xWidth; ++x) {
+            CellBox* cellBox = grid[y][x].get();
+            if (!cellBox || cellBox->isSpanned(x, y))
+                continue;
+            if (fixedLayout) {
+                tableBox->width = widths[x];
+                for (unsigned i = x + 1; i < x + cellBox->getColSpan(); ++i)
+                    tableBox->width += widths[i];
+                tableBox->width -= hs;
+                if (x == 0)
+                    tableBox->width -= hs / 2.0f;
+                if (x + cellBox->getColSpan() == xWidth)
+                    tableBox->width -= hs / 2.0f;
+                cellBox->fixedLayout = true;
+            }
+            cellBox->layOut(view, context);
+            if (collapsingModel)
+                cellBox->collapseBorder(this);
+            else
+                cellBox->separateBorders(style, xWidth, yHeight);
+            cellBox->intrinsicHeight = cellBox->getTotalHeight();
+            // Process 'height' as the minimum height.
+            float d = minHeight;
+            CSSStyleDeclarationImp* cellStyle = cellBox->isAnonymous() ? 0 : cellBox->getStyle();
+            if (cellStyle && !cellStyle->height.isAuto())
+                d = std::max(minHeight, cellStyle->height.getPx());
+            d -= cellBox->intrinsicHeight;
+            if (0.0f < d)
+                cellBox->height += d;
+            if (!fixedLayout && cellBox->getColSpan() == 1) {
+                if (cellStyle) {
+                    if (cellStyle->width.isPercentage()) {
+                        percentages[x] = std::max(percentages[x], cellStyle->width.getPercentage());
+                        fixedWidths[x] = std::max(fixedWidths[x], cellBox->getTotalWidth());
+                    } else if (!cellStyle->width.isAuto())
+                        fixedWidths[x] = std::max(fixedWidths[x], cellBox->getMCW());
+                    else
+                        fixedWidths[x] = std::max(fixedWidths[x], cellBox->getTotalWidth());
+                } else
+                    fixedWidths[x] = std::max(fixedWidths[x], cellBox->getTotalWidth());
+                widths[x] = std::max(widths[x], cellBox->getMCW());
+            }
+            if (cellBox->getRowSpan() == 1)
+                heights[y] = std::max(heights[y], cellBox->getTotalHeight());
+            if (cellBox->getVerticalAlign() == CSSVerticalAlignValueImp::Baseline) {
+                baselines[y] = std::max(baselines[y], cellBox->getBaseline());
+                noBaseline = false;
+            }
+        }
+        // Process baseline
+        for (unsigned x = 0; x < xWidth; ++x) {
+            CellBox* cellBox = grid[y][x].get();
+            if (!cellBox || cellBox->isSpanned(x, y) || cellBox->getRowSpan() != 1)
+                continue;
+            if (cellBox->getVerticalAlign() == CSSVerticalAlignValueImp::Baseline) {
+                float d = baselines[y] - cellBox->getBaseline();
+                if (0.0f < d)
+                    heights[y] = std::max(heights[y], d + cellBox->intrinsicHeight);
+            } else if (noBaseline) {
+                switch (cellBox->getVerticalAlign()) {
+                case CSSVerticalAlignValueImp::Top:
+                    baselines[y] = std::max(baselines[y], cellBox->intrinsicHeight - cellBox->getBlankBottom());
+                    break;
+                case CSSVerticalAlignValueImp::Bottom:
+                    baselines[y] = std::max(baselines[y], heights[y] - cellBox->getBlankBottom());
+                    break;
+                case CSSVerticalAlignValueImp::Middle:
+                    baselines[y] = std::max(baselines[y], (heights[y] + cellBox->intrinsicHeight) / 2.0f - cellBox->getBlankBottom());
+                    break;
+                default:
+                    break;
+                }
+            }
+        }
+    }
+    if (fixedLayout)
+        tableBox->width = tableWidth;
+    for (unsigned x = 0; x < xWidth; ++x) {
+        for (unsigned y = 0; y < yHeight; ++y) {
+            CellBox* cellBox = grid[y][x].get();
+            if (!cellBox || cellBox->isSpanned(x, y))
+                continue;
+            if (!fixedLayout) {
+                unsigned span = cellBox->getColSpan();
+                if (1 < span) {
+                    float sum = 0.0f;
+                    for (unsigned c = 0; c < span; ++c)
+                        sum += widths[x + c];
+                    if (sum < cellBox->getMCW()) {
+                        float diff = (cellBox->getMCW() - sum) / span;
+                        for (unsigned c = 0; c < span; ++c)
+                            widths[x + c] += diff;
+                    }
+                }
+            }
+            unsigned span = cellBox->getRowSpan();
+            if (1 < span) {
+                float sum = 0.0f;
+                for (unsigned r = 0; r < span; ++r)
+                    sum += heights[y + r];
+                float d = 0.0f;
+                if (cellBox->getVerticalAlign() == CSSVerticalAlignValueImp::Baseline)
+                    d = baselines[y] - cellBox->getBaseline();
+                if (sum < d + cellBox->intrinsicHeight) {
+                    float diff = (d + cellBox->intrinsicHeight - sum) / span;
+                    for (unsigned r = 0; r < span; ++r)
+                        heights[y + r] += diff;
+                }
+            }
+        }
+    }
+    if (!fixedLayout) {
+        layOutAutoColgroup(view, containingBlock);
+        // At this point, MCWs of cells have been calculated.
+        float w = 0.0f;
+        float p = 0.0f;
+        for (unsigned x = 0; x < xWidth; ++x) {
+            w += widths[x];
+            p += std::max(fixedWidths[x], widths[x]);
+        }
+        if (anon || style->width.isAuto()) {
+            if (containingBlock->width <= w)
+                tableBox->width = w;
+            else if (containingBlock->width < p)
+                tableBox->width = containingBlock->width;
+            else {
+                tableBox->width = w = p;
+                for (unsigned x = 0; x < xWidth; ++x)
+                    widths[x] = std::max(fixedWidths[x], widths[x]);
+            }
+        }
+        if (w < tableBox->width) {
+            float r = tableBox->width - w;
+            unsigned fixed = 0;
+            for (unsigned x = 0; x < xWidth; ++x) {
+                if (fixedWidths[x] == widths[x])
+                    ++fixed;
+                else if (0.0f <= percentages[x]) {
+                    ++fixed;
+                    float cw = tableBox->width * percentages[x] / 100.0f;
+                    cw -= widths[x];
+                    if (0.0f < cw) {
+                        cw = std::min(cw, r);
+                        r -= cw;
+                        widths[x] += cw;
+                    }
+                }
+            }
+            if (fixed < xWidth) {
+                w = r / (xWidth - fixed);
+                for (unsigned x = 0; x < xWidth; ++x) {
+                    if (percentages[x] < 0.0f && fixedWidths[x] != widths[x])
+                        widths[x] += w;
+                }
+            }
+        }
+        if (++pass == 1) {
+            // At this point, column widths have been determined.
+            for (unsigned x = 0; x < xWidth; ++x) {
+                for (unsigned y = 0; y < yHeight; ++y) {
+                    CellBox* cellBox = grid[y][x].get();
+                    if (!cellBox || cellBox->isSpanned(x, y))
+                        continue;
+                    unsigned span = cellBox->getColSpan();
+                    if (span == 1)
+                        cellBox->columnWidth = widths[x];
+                    else {
+                        float sum = 0.0f;
+                        for (unsigned c = 0; c < span; ++c)
+                            sum += widths[x + c];
+                        cellBox->columnWidth = sum;
+                    }
+                }
+            }
+            // Reflow cells using the MCWs as the specified widths.
+            goto Reflow;
+        }
+    }
+    float h = 0.0f;
+    for (unsigned y = 0; y < yHeight; ++y)
+        h += heights[y];
+    tableBox->height = std::max(tableBox->height, h);
+    if (h < tableBox->height) {
+        h = (tableBox->height - h) / yHeight;
+        for (unsigned y = 0; y < yHeight; ++y)
+            heights[y] += h;
+    }
+
+    for (unsigned x = 0; x < xWidth; ++x) {
+        for (unsigned y = 0; y < yHeight; ++y) {
+            CellBox* cellBox = grid[y][x].get();
+            if (!cellBox || cellBox->isSpanned(x, y))
+                continue;
+            if (!fixedLayout) {
+                float w = widths[x];
+                for (unsigned c = 1; c < cellBox->getColSpan(); ++c)
+                    w += widths[x + c];
+                cellBox->fit(w);
+            }
+            float h = heights[y];
+            for (unsigned r = 1; r < cellBox->getRowSpan(); ++r)
+                h += heights[y + r];
+            cellBox->height = h - cellBox->getBlankTop() - cellBox->getBlankBottom();
+            // Align cellBox vertically
+            float d = 0.0f;
+            switch (cellBox->getVerticalAlign()) {
+            case CSSVerticalAlignValueImp::Top:
+                break;
+            case CSSVerticalAlignValueImp::Bottom:
+                d = cellBox->getTotalHeight() - cellBox->intrinsicHeight;
+                break;
+            case CSSVerticalAlignValueImp::Middle:
+                d = (cellBox->getTotalHeight() - cellBox->intrinsicHeight) / 2.0f;
+                break;
+            default:
+                d = baselines[y] - cellBox->getBaseline();
+                break;
+            }
+            if (0.0f < d) {
+                cellBox->paddingTop += d;
+                cellBox->height -= d;
+            }
+        }
+    }
+
+    Box* lineBox = tableBox->getFirstChild();
+    for (unsigned y = 0; y < yHeight; ++y)  {
+        assert(lineBox);
+        lineBox->width = tableBox->width;
+        lineBox->height = heights[y];
+        lineBox = lineBox->getNextSibling();
+
+        float xOffset = 0.0f;
+        for (unsigned x = 0; x < xWidth; ++x) {
+            CellBox* cellBox = grid[y][x].get();
+            if (!cellBox || cellBox->isSpanned(x, y) && cellBox->row != y) {
+                xOffset += widths[x];
+                continue;
+            }
+            if (!cellBox->isSpanned(x, y))
+                cellBox->offsetH += xOffset;
+        }
+    }
+
+    if (collapsingModel)
+        computeTableBorders();
+    width = tableBox->getBlockWidth();
+    tableBox->resolveBackgroundPosition(view, containingBlock);
+
+    for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
+        if (child != tableBox) {
+            child->layOut(view, context);
+            width = std::max(width, child->getBlockWidth());
+        }
+    }
+
+    height = 0.0f;
+    for (Box* child = getFirstChild(); child; child = child->getNextSibling())
+        height += child->getTotalHeight() + child->getClearance();
+}
+
 bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
 {
     const ContainingBlock* containingBlock = getContainingBlock(view);
@@ -1089,367 +1451,8 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
             context->fixMargin();
         }
     }
-    if (tableBox) {
-        tableBox->setStyle(style.get());
-        tableBox->setPosition(CSSPositionValueImp::Static);
-        bool anon = style->display != CSSDisplayValueImp::Table && style->display != CSSDisplayValueImp::InlineTable;
-        float hs = 0.0f;
-        if (!anon) {
-            tableBox->resolveBackground(view);
-            if (!collapsingModel) {
-                tableBox->updatePadding();
-                tableBox->updateBorderWidth();
-                hs = style->borderSpacing.getHorizontalSpacing();
-            }
-        }
-        tableBox->width = width;
-        if (anon || style->width.isAuto()) {
-            tableBox->width -= tableBox->getBlankLeft() + tableBox->getBlankRight();
-            if (tableBox->width < 0.0f)
-                tableBox->width = 0.0f;
-        }
-        tableBox->height = anon ? 0.0f : height;
-        widths.resize(xWidth);
-        fixedWidths.resize(xWidth);
-        percentages.resize(xWidth);
-        heights.resize(yHeight);
-        baselines.resize(yHeight);
 
-        rowImages.resize(yHeight);
-        for (unsigned y = 0; y < yHeight; ++y) {
-            rowImages[y] = 0;
-            CSSStyleDeclarationImp* rowStyle = rows[y].get();
-            if (rowStyle && !rowStyle->backgroundImage.isNone()) {
-                HttpRequest* request = view->preload(view->getDocument().getDocumentURI(), rowStyle->backgroundImage.getValue());
-                if (request)
-                    rowImages[y] = request->getBoxImage(rowStyle->backgroundRepeat.getValue());
-            }
-        }
-        rowGroupImages.resize(yHeight);
-        for (unsigned y = 0; y < yHeight; ++y) {
-            rowGroupImages[y] = 0;
-            CSSStyleDeclarationImp* rowGroupStyle = rowGroups[y].get();
-            if (rowGroupStyle) {
-                if (!rowGroupStyle->backgroundImage.isNone()) {
-                    HttpRequest* request = view->preload(view->getDocument().getDocumentURI(), rowGroupStyle->backgroundImage.getValue());
-                    if (request)
-                        rowGroupImages[y] = request->getBoxImage(rowGroupStyle->backgroundRepeat.getValue());
-                }
-                while (rowGroupStyle == rowGroups[++y].get())
-                    ;
-                --y;
-            }
-        }
-
-        columnImages.resize(xWidth);
-        for (unsigned x = 0; x < xWidth; ++x) {
-            columnImages[x] = 0;
-            CSSStyleDeclarationImp* columnStyle = columns[x].get();
-            if (columnStyle && !columnStyle->backgroundImage.isNone()) {
-                HttpRequest* request = view->preload(view->getDocument().getDocumentURI(), columnStyle->backgroundImage.getValue());
-                if (request)
-                    columnImages[x] = request->getBoxImage(columnStyle->backgroundRepeat.getValue());
-            }
-        }
-        columnGroupImages.resize(xWidth);
-        for (unsigned x = 0; x < xWidth; ++x) {
-            columnGroupImages[x] = 0;
-            CSSStyleDeclarationImp* columnGroupStyle = columnGroups[x].get();
-            if (columnGroupStyle) {
-                if (!columnGroupStyle->backgroundImage.isNone()) {
-                    HttpRequest* request = view->preload(view->getDocument().getDocumentURI(), columnGroupStyle->backgroundImage.getValue());
-                    if (request)
-                        columnGroupImages[x] = request->getBoxImage(columnGroupStyle->backgroundRepeat.getValue());
-                }
-                while (columnGroupStyle == columnGroups[++x].get())
-                    ;
-                --x;
-            }
-        }
-
-        for (unsigned x = 0; x < xWidth; ++x) {
-            widths[x] = fixedWidths[x] = fixedLayout ? NAN : 0.0f;
-            percentages[x] = -1.0f;
-        }
-        for (unsigned y = 0; y < yHeight; ++y)
-            heights[y] = 0.0f;
-        if (fixedLayout)
-            layOutFixed(view, containingBlock, collapsingModel);
-        else
-            layOutAuto(view, containingBlock);
-        float tableWidth = width;
-        int pass = 0;
-Reflow:
-        for (unsigned y = 0; y < yHeight; ++y) {
-            float minHeight = 0.0f;
-            if (rows[y] && !rows[y]->height.isAuto())
-                minHeight = rows[y]->height.getPx();
-            baselines[y] = 0.0f;
-            bool noBaseline = true;
-            for (unsigned x = 0; x < xWidth; ++x) {
-                CellBox* cellBox = grid[y][x].get();
-                if (!cellBox || cellBox->isSpanned(x, y))
-                    continue;
-                if (fixedLayout) {
-                    tableBox->width = widths[x];
-                    for (unsigned i = x + 1; i < x + cellBox->getColSpan(); ++i)
-                        tableBox->width += widths[i];
-                    tableBox->width -= hs;
-                    if (x == 0)
-                        tableBox->width -= hs / 2.0f;
-                    if (x + cellBox->getColSpan() == xWidth)
-                        tableBox->width -= hs / 2.0f;
-                    cellBox->fixedLayout = true;
-                }
-                cellBox->layOut(view, context);
-                if (collapsingModel)
-                    cellBox->collapseBorder(this);
-                else
-                    cellBox->separateBorders(style, xWidth, yHeight);
-                cellBox->intrinsicHeight = cellBox->getTotalHeight();
-                // Process 'height' as the minimum height.
-                float d = minHeight;
-                CSSStyleDeclarationImp* cellStyle = cellBox->isAnonymous() ? 0 : cellBox->getStyle();
-                if (cellStyle && !cellStyle->height.isAuto())
-                    d = std::max(minHeight, cellStyle->height.getPx());
-                d -= cellBox->intrinsicHeight;
-                if (0.0f < d)
-                    cellBox->height += d;
-                if (!fixedLayout && cellBox->getColSpan() == 1) {
-                    if (cellStyle) {
-                        if (cellStyle->width.isPercentage()) {
-                            percentages[x] = std::max(percentages[x], cellStyle->width.getPercentage());
-                            fixedWidths[x] = std::max(fixedWidths[x], cellBox->getTotalWidth());
-                        } else if (!cellStyle->width.isAuto())
-                            fixedWidths[x] = std::max(fixedWidths[x], cellBox->getMCW());
-                        else
-                            fixedWidths[x] = std::max(fixedWidths[x], cellBox->getTotalWidth());
-                    } else
-                        fixedWidths[x] = std::max(fixedWidths[x], cellBox->getTotalWidth());
-                    widths[x] = std::max(widths[x], cellBox->getMCW());
-                }
-                if (cellBox->getRowSpan() == 1)
-                    heights[y] = std::max(heights[y], cellBox->getTotalHeight());
-                if (cellBox->getVerticalAlign() == CSSVerticalAlignValueImp::Baseline) {
-                    baselines[y] = std::max(baselines[y], cellBox->getBaseline());
-                    noBaseline = false;
-                }
-            }
-            // Process baseline
-            for (unsigned x = 0; x < xWidth; ++x) {
-                CellBox* cellBox = grid[y][x].get();
-                if (!cellBox || cellBox->isSpanned(x, y) || cellBox->getRowSpan() != 1)
-                    continue;
-                if (cellBox->getVerticalAlign() == CSSVerticalAlignValueImp::Baseline) {
-                    float d = baselines[y] - cellBox->getBaseline();
-                    if (0.0f < d)
-                        heights[y] = std::max(heights[y], d + cellBox->intrinsicHeight);
-                } else if (noBaseline) {
-                    switch (cellBox->getVerticalAlign()) {
-                    case CSSVerticalAlignValueImp::Top:
-                        baselines[y] = std::max(baselines[y], cellBox->intrinsicHeight - cellBox->getBlankBottom());
-                        break;
-                    case CSSVerticalAlignValueImp::Bottom:
-                        baselines[y] = std::max(baselines[y], heights[y] - cellBox->getBlankBottom());
-                        break;
-                    case CSSVerticalAlignValueImp::Middle:
-                        baselines[y] = std::max(baselines[y], (heights[y] + cellBox->intrinsicHeight) / 2.0f - cellBox->getBlankBottom());
-                        break;
-                    default:
-                        break;
-                    }
-                }
-            }
-        }
-        if (fixedLayout)
-            tableBox->width = tableWidth;
-        for (unsigned x = 0; x < xWidth; ++x) {
-            for (unsigned y = 0; y < yHeight; ++y) {
-                CellBox* cellBox = grid[y][x].get();
-                if (!cellBox || cellBox->isSpanned(x, y))
-                    continue;
-                if (!fixedLayout) {
-                    unsigned span = cellBox->getColSpan();
-                    if (1 < span) {
-                        float sum = 0.0f;
-                        for (unsigned c = 0; c < span; ++c)
-                            sum += widths[x + c];
-                        if (sum < cellBox->getMCW()) {
-                            float diff = (cellBox->getMCW() - sum) / span;
-                            for (unsigned c = 0; c < span; ++c)
-                                widths[x + c] += diff;
-                        }
-                    }
-                }
-                unsigned span = cellBox->getRowSpan();
-                if (1 < span) {
-                    float sum = 0.0f;
-                    for (unsigned r = 0; r < span; ++r)
-                        sum += heights[y + r];
-                    float d = 0.0f;
-                    if (cellBox->getVerticalAlign() == CSSVerticalAlignValueImp::Baseline)
-                        d = baselines[y] - cellBox->getBaseline();
-                    if (sum < d + cellBox->intrinsicHeight) {
-                        float diff = (d + cellBox->intrinsicHeight - sum) / span;
-                        for (unsigned r = 0; r < span; ++r)
-                            heights[y + r] += diff;
-                    }
-                }
-            }
-        }
-        if (!fixedLayout) {
-            layOutAutoColgroup(view, containingBlock);
-            // At this point, MCWs of cells have been calculated.
-            float w = 0.0f;
-            float p = 0.0f;
-            for (unsigned x = 0; x < xWidth; ++x) {
-                w += widths[x];
-                p += std::max(fixedWidths[x], widths[x]);
-            }
-            if (anon || style->width.isAuto()) {
-                if (containingBlock->width <= w)
-                    tableBox->width = w;
-                else if (containingBlock->width < p)
-                    tableBox->width = containingBlock->width;
-                else {
-                    tableBox->width = w = p;
-                    for (unsigned x = 0; x < xWidth; ++x)
-                        widths[x] = std::max(fixedWidths[x], widths[x]);
-                }
-            }
-            if (w < tableBox->width) {
-                float r = tableBox->width - w;
-                unsigned fixed = 0;
-                for (unsigned x = 0; x < xWidth; ++x) {
-                    if (fixedWidths[x] == widths[x])
-                        ++fixed;
-                    else if (0.0f <= percentages[x]) {
-                        ++fixed;
-                        float cw = tableBox->width * percentages[x] / 100.0f;
-                        cw -= widths[x];
-                        if (0.0f < cw) {
-                            cw = std::min(cw, r);
-                            r -= cw;
-                            widths[x] += cw;
-                        }
-                    }
-                }
-                if (fixed < xWidth) {
-                    w = r / (xWidth - fixed);
-                    for (unsigned x = 0; x < xWidth; ++x) {
-                        if (percentages[x] < 0.0f && fixedWidths[x] != widths[x])
-                            widths[x] += w;
-                    }
-                }
-            }
-            if (++pass == 1) {
-                // At this point, column widths have been determined.
-                for (unsigned x = 0; x < xWidth; ++x) {
-                    for (unsigned y = 0; y < yHeight; ++y) {
-                        CellBox* cellBox = grid[y][x].get();
-                        if (!cellBox || cellBox->isSpanned(x, y))
-                            continue;
-                        unsigned span = cellBox->getColSpan();
-                        if (span == 1)
-                            cellBox->columnWidth = widths[x];
-                        else {
-                            float sum = 0.0f;
-                            for (unsigned c = 0; c < span; ++c)
-                                sum += widths[x + c];
-                            cellBox->columnWidth = sum;
-                        }
-                    }
-                }
-                // Reflow cells using the MCWs as the specified widths.
-                goto Reflow;
-            }
-        }
-        float h = 0.0f;
-        for (unsigned y = 0; y < yHeight; ++y)
-            h += heights[y];
-        tableBox->height = std::max(tableBox->height, h);
-        if (h < tableBox->height) {
-            h = (tableBox->height - h) / yHeight;
-            for (unsigned y = 0; y < yHeight; ++y)
-                heights[y] += h;
-        }
-
-        for (unsigned x = 0; x < xWidth; ++x) {
-            for (unsigned y = 0; y < yHeight; ++y) {
-                CellBox* cellBox = grid[y][x].get();
-                if (!cellBox || cellBox->isSpanned(x, y))
-                    continue;
-                if (!fixedLayout) {
-                    float w = widths[x];
-                    for (unsigned c = 1; c < cellBox->getColSpan(); ++c)
-                        w += widths[x + c];
-                    cellBox->fit(w);
-                }
-                float h = heights[y];
-                for (unsigned r = 1; r < cellBox->getRowSpan(); ++r)
-                    h += heights[y + r];
-                cellBox->height = h - cellBox->getBlankTop() - cellBox->getBlankBottom();
-                // Align cellBox vertically
-                float d = 0.0f;
-                switch (cellBox->getVerticalAlign()) {
-                case CSSVerticalAlignValueImp::Top:
-                    break;
-                case CSSVerticalAlignValueImp::Bottom:
-                    d = cellBox->getTotalHeight() - cellBox->intrinsicHeight;
-                    break;
-                case CSSVerticalAlignValueImp::Middle:
-                    d = (cellBox->getTotalHeight() - cellBox->intrinsicHeight) / 2.0f;
-                    break;
-                default:
-                    d = baselines[y] - cellBox->getBaseline();
-                    break;
-                }
-                if (0.0f < d) {
-                    cellBox->paddingTop += d;
-                    cellBox->height -= d;
-                }
-            }
-        }
-
-        Box* lineBox = tableBox->getFirstChild();
-        for (unsigned y = 0; y < yHeight; ++y)  {
-            assert(lineBox);
-            lineBox->width = tableBox->width;
-            lineBox->height = heights[y];
-            lineBox = lineBox->getNextSibling();
-
-            float xOffset = 0.0f;
-            for (unsigned x = 0; x < xWidth; ++x) {
-                CellBox* cellBox = grid[y][x].get();
-                if (!cellBox || cellBox->isSpanned(x, y) && cellBox->row != y) {
-                    xOffset += widths[x];
-                    continue;
-                }
-                if (!cellBox->isSpanned(x, y))
-                    cellBox->offsetH += xOffset;
-            }
-        }
-
-        if (collapsingModel)
-            computeTableBorders();
-        width = tableBox->getBlockWidth();
-        tableBox->resolveBackgroundPosition(view, containingBlock);
-    }
-
-    for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
-        if (child != tableBox) {
-            child->layOut(view, context);
-            width = std::max(width, child->getBlockWidth());
-        }
-    }
-
-    height = 0.0f;
-    for (Box* child = getFirstChild(); child; child = child->getNextSibling())
-        height += child->getTotalHeight() + child->getClearance();
-    if (!isAnonymous()) {
-        width = std::max(width, style->minWidth.getPx());
-        height = std::max(height, style->minHeight.getPx());
-    }
+    layOutTableBox(view, context, containingBlock, collapsingModel, fixedLayout);
 
     restoreFormattingContext(context);
     if (parentContext && parentContext != context) {
@@ -1461,6 +1464,70 @@ Reflow:
         context = parentContext;
     }
     return true;
+}
+
+void TableWrapperBox::layOutAbsolute(ViewCSSImp* view)
+{
+    assert(isAbsolutelyPositioned());
+    style = view->getStyle(table);
+    if (!style)
+        return;
+
+    setContainingBlock(view);
+    const ContainingBlock* containingBlock = getContainingBlock(view);
+
+    bool collapsingModel = resolveBorderConflict();
+    bool fixedLayout = (style->tableLayout.getValue() == CSSTableLayoutValueImp::Fixed) && !style->width.isAuto();
+    style->resolve(view, containingBlock);
+
+    // The computed values of properties 'position', 'float', 'margin-*', 'top', 'right', 'bottom',
+    // and 'left' on the table element are used on the table wrapper box and not the table box;
+    backgroundColor = getParentBox() ? 0x00000000 : style->backgroundColor.getARGB();
+    paddingTop = paddingRight = paddingBottom = paddingLeft = 0.0f;
+    borderTop = borderRight = borderBottom = borderLeft = 0.0f;
+    resolveMargin(view, containingBlock);
+    stackingContext = style->getStackingContext();
+
+    float left;
+    float right;
+    unsigned maskH = resolveAbsoluteWidth(containingBlock, left, right);
+    applyAbsoluteMinMaxWidth(containingBlock, left, right, maskH);
+    float top;
+    float bottom;
+    unsigned maskV = resolveAbsoluteHeight(containingBlock, top, bottom);
+    applyAbsoluteMinMaxHeight(containingBlock, top, bottom, maskV);
+
+    if (CSSDisplayValueImp::isBlockLevel(style->display.getOriginalValue())) {
+        // This box is originally a block-level box inside an inline context.
+        // Set the static position to the beginning of the next line.
+        if (const Box* lineBox = getParentBox()) {  // A root element can be absolutely positioned.
+            for (const Box* box = getPreviousSibling(); box; box = box->getPreviousSibling()) {
+                if (!box->isAbsolutelyPositioned()) {
+                    if (maskV == (Top | Height | Bottom) || maskV == (Top | Bottom))
+                        offsetV += lineBox->height + lineBox->getBlankBottom();
+                    if (maskH == (Left | Width | Right) || maskH == (Left | Right))
+                        offsetH -= box->getTotalWidth();
+                }
+            }
+        }
+    }
+
+    FormattingContext* context = updateFormattingContext(context);
+    assert(context);
+
+    float before = height;
+    layOutTableBox(view, context, containingBlock, collapsingModel, fixedLayout);
+
+    if (maskH == (Left | Width))
+        left += containingBlock->width - getTotalWidth() - right;
+    if (maskV == (Top | Height))
+        top += before - height;
+
+    restoreFormattingContext(context);
+    adjustCollapsedThroughMargins(context);
+
+    offsetH += left;
+    offsetV += top;
 }
 
 float TableWrapperBox::shrinkTo()

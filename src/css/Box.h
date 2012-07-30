@@ -754,8 +754,6 @@ public:
     unsigned resolveAbsoluteHeight(const ContainingBlock* containingBlock, float& top, float& bottom, float r = NAN);
     unsigned applyAbsoluteMinMaxHeight(const ContainingBlock* containingBlock, float& top, float& bottom, unsigned autoMask);
 
-    void layOutAbsolute(ViewCSSImp* view);  // 2nd pass
-
     // Gets the last, anonymous child box. Creates one if there's none even
     // if there's no children; if so, the existing texts are moved to the
     // new anonymous box.
@@ -784,6 +782,8 @@ public:
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context);
     virtual void render(ViewCSSImp* view, StackingContext* stackingContext);
     virtual void dump(std::string indent = "");
+
+    virtual void layOutAbsolute(ViewCSSImp* view);  // 2nd pass
 
     unsigned renderBegin(ViewCSSImp* view, bool noBorder = false);
     void renderEnd(ViewCSSImp* view, unsigned overflow, bool scrollBar = true);
