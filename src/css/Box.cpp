@@ -380,15 +380,6 @@ BlockLevelBox* BlockLevelBox::getAnonymousBox()
     return anonymousBox;
 }
 
-void BlockLevelBox::resolveWidth(ViewCSSImp* view, const ContainingBlock* containingBlock, float available)
-{
-    assert(style);
-    resolveBackground(view);
-    updatePadding();
-    updateBorderWidth();
-    resolveMargin(view, containingBlock, available);
-}
-
 void BlockLevelBox::resolveBackground(ViewCSSImp* view)
 {
     assert(style);
@@ -1234,7 +1225,10 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         if (!style->width.isAuto() && !style->width.isPercentage())
             mcw = style->width.getPx();
         style->resolve(view, containingBlock);
-        resolveWidth(view, containingBlock);
+        resolveBackground(view);
+        updatePadding();
+        updateBorderWidth();
+        resolveMargin(view, containingBlock, 0.0f);
     } else {
         // The properties of anonymous boxes are inherited from the enclosing non-anonymous box.
         // Theoretically, we are supposed to create a new style for this anonymous box, but

@@ -767,7 +767,6 @@ public:
     bool isCollapsableInside() const;
     bool isCollapsableOutside() const;
 
-    void resolveWidth(ViewCSSImp* view, const ContainingBlock* containingBlock, float available = 0);
     void resolveBackground(ViewCSSImp* view);
     void resolveBackgroundPosition(ViewCSSImp* view, const ContainingBlock* containingBlock);
     void resolveMargin(ViewCSSImp* view, const ContainingBlock* containingBlock, float available);
