@@ -1571,10 +1571,8 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
 
     if (maskH == (Left | Width) || maskH == (Width | Right)) {
         shrinkToFit();
-        if (maskH & Left) {
-            float left = containingBlock->width - getTotalWidth() - right;
-            offsetH += left;
-        }
+        if (maskH & Left)
+            left = containingBlock->width - getTotalWidth() - right;
     }
     // Check 'max-width' and then 'min-width' again.
     maskH = applyAbsoluteMinMaxWidth(containingBlock, left, right, maskH);
@@ -1594,7 +1592,7 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
         if (height != 0.0f)
             height += totalClearance;
         if (maskV == (Top | Height))
-            top = before - height;
+            top += before - height;
     }
     // Check 'max-height' and then 'min-height' again.
     maskV = applyAbsoluteMinMaxHeight(containingBlock, top, bottom, maskV);

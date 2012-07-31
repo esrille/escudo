@@ -1079,12 +1079,11 @@ void TableWrapperBox::layOutTableBox(ViewCSSImp* view, FormattingContext* contex
         }
     }
     tableBox->width = width;
-    if (anon || style->width.isAuto()) {
-        tableBox->width -= tableBox->getBlankLeft() + tableBox->getBlankRight();
-        if (tableBox->width < 0.0f)
-            tableBox->width = 0.0f;
-    }
-    tableBox->height = anon ? 0.0f : height;
+    if (anon || style->width.isAuto())
+        width = tableBox->width = 0.0f;
+    tableBox->height = height;
+    if (anon || style->height.isAuto())
+        height = tableBox->height = 0.0f;
     widths.resize(xWidth);
     fixedWidths.resize(xWidth);
     percentages.resize(xWidth);
@@ -1418,9 +1417,10 @@ Reflow:
         }
     }
 
-    height = 0.0f;
+    h = 0.0f;
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
-        height += child->getTotalHeight() + child->getClearance();
+        h += child->getTotalHeight() + child->getClearance();
+    height = std::max(height, h);
 }
 
 bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
@@ -1519,7 +1519,7 @@ void TableWrapperBox::layOutAbsolute(ViewCSSImp* view)
     layOutTableBox(view, context, containingBlock, collapsingModel, fixedLayout);
 
     if (maskH == (Left | Width))
-        left += containingBlock->width - getTotalWidth() - right;
+        left = containingBlock->width - getTotalWidth() - right;
     if (maskV == (Top | Height))
         top += before - height;
 
