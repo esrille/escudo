@@ -325,27 +325,21 @@ void Box::renderBorder(ViewCSSImp* view, float left, float top,
                        float ll, float lr, float rl, float rr, float tt, float tb, float bt, float bb,
                        Box* leftEdge, Box* rightEdge)
 {
-    glPushMatrix();
-    glTranslatef(left, top, 0.0f);
     glDisable(GL_TEXTURE_2D);
 
-    if (backgroundColor) {
+    if (!getParentBox())
+        view->renderCanvas(backgroundColor);
+
+    glPushMatrix();
+    glTranslatef(left, top, 0.0f);
+
+    if (backgroundColor && getParentBox()) {
         glColor4ub(backgroundColor >> 16, backgroundColor >> 8, backgroundColor, backgroundColor >> 24);
         glBegin(GL_QUADS);
-            if (getParentBox()) {
-                glVertex2f(ll, tt);
-                glVertex2f(rr, tt);
-                glVertex2f(rr, bb);
-                glVertex2f(ll, bb);
-            } else {
-                const ContainingBlock* containingBlock = getContainingBlock(view);
-                float r = -left + view->getRenderWidth();
-                float b = -top + view->getRenderHeight() + containingBlock->height;
-                glVertex2f(-left, -top);
-                glVertex2f(r, -top);
-                glVertex2f(r, b);
-                glVertex2f(-left, b);
-            }
+        glVertex2f(ll, tt);
+        glVertex2f(rr, tt);
+        glVertex2f(rr, bb);
+        glVertex2f(ll, bb);
         glEnd();
     }
 

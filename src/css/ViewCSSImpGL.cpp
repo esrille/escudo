@@ -107,6 +107,24 @@ void ViewCSSImp::render(ViewCSSImp* parentView)
     }
 }
 
+void ViewCSSImp::renderCanvas(unsigned color)
+{
+    if (!color)
+        return;
+
+    glColor4ub(color >> 16, color >> 8, color, color >> 24);
+    float l = window->getScrollX();
+    float r = l + initialContainingBlock.width;
+    float t = window->getScrollY();
+    float b = t + initialContainingBlock.height;
+    glBegin(GL_QUADS);
+    glVertex2f(l, t);
+    glVertex2f(r, t);
+    glVertex2f(r, b);
+    glVertex2f(l, b);
+    glEnd();
+}
+
 void ViewCSSImp::clip(float left, float top, float w, float h)
 {
     glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);

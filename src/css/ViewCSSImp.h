@@ -123,6 +123,7 @@ public:
 
     void resolveXY(float left, float top);
     void render(ViewCSSImp* parentView);
+    void renderCanvas(unsigned color);
 
     // For the containing block of the root element's top-level boxes, we need to explicitly specify the size of the box.
     void setSize(float w, float h) {
