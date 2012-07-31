@@ -629,7 +629,7 @@ void BlockLevelBox::renderNonInline(ViewCSSImp* view, StackingContext* stackingC
             block->renderEnd(view, overflow, false);
         } else if (LineBox* lineBox = dynamic_cast<LineBox*>(child)) {
             for (auto box = lineBox->getFirstChild(); box; box = box->getNextSibling()) {
-                if (box->style && box->style->isFloat())
+                if (!box->isAnonymous() && box->style->isFloat())
                     stackingContext->addFloat(box);
                 else if (CellBox* cellBox = dynamic_cast<CellBox*>(box))
                     cellBox->renderNonInline(view, stackingContext);
@@ -703,7 +703,7 @@ void BlockLevelBox::render(ViewCSSImp* view, StackingContext* stackingContext)
 void LineBox::render(ViewCSSImp* view, StackingContext* stackingContext)
 {
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
-        if (child->style && (child->style->isFloat() || child->style->getStackingContext() != stackingContext))
+        if (!child->isAnonymous() && (child->style->isFloat() || child->style->getStackingContext() != stackingContext))
             continue;
         child->render(view, stackingContext);
     }
