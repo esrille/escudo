@@ -452,7 +452,8 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
         style = map[element].get();
     if (!style)
         return 0;
-    style->compute(this, parentStyle, element);
+    if (parentBox)  // TODO: the root style can by modified by the style of body...
+        style->compute(this, parentStyle, element);
     if (style->display.isNone())
         return 0;
     style->clearBox();
