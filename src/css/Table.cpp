@@ -605,7 +605,7 @@ CellBox* TableWrapperBox::processCell(Element current, BlockLevelBox* parentBox,
     if (current)
         cellBox = static_cast<CellBox*>(view->layOutBlockBoxes(current, 0, currentStyle->getParentStyle(), currentStyle, true));
     else {
-        cellBox = new(std::nothrow) CellBox(0, currentStyle);
+        cellBox = new(std::nothrow) CellBox(0, 0);
         if (cellBox)
             cellBox->establishFormattingContext();
     }
