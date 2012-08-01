@@ -1072,6 +1072,9 @@ public:
     void compute() {
         resolved = value;
     }
+    unsigned getSpecified() const {
+        return value;
+    }
     unsigned getARGB() const {
         return resolved;
     }

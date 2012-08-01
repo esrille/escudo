@@ -1407,8 +1407,23 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     this->parentStyle = parentStyle;
     if (!parentStyle)  // is it the root element?
         resetInheritedProperties();
-    else
+    else {
         inheritProperties(parentStyle);
+        if (parentStyle->bodyStyle == this) {
+            if (overflow.getValue() == parentStyle->overflow.getValue())
+                overflow.setValue(CSSOverflowValueImp::Visible);
+            if (parentStyle->backgroundColor.getSpecified() == 0 && parentStyle->backgroundImage.getValue() == backgroundImage.getValue())
+                background.reset(this);
+        }
+    }
+
+    if (bodyStyle) {
+        if (overflow.getValue() == CSSOverflowValueImp::Visible)
+            overflow.specify(bodyStyle->overflow);
+        backgroundColor.compute();
+        if (backgroundColor.getARGB() == 0 && backgroundImage.isNone())
+            background.specify(this, bodyStyle);
+    }
 
     backgroundColor.compute();
     borderTopStyle.compute();
@@ -1483,19 +1498,6 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
 
     if (!stackingContext)
         computeStackingContext(view, parentStyle);
-
-    if (htmlElement && htmlElement.getLocalName() == u"body") {
-        assert(parentStyle);
-        if (parentStyle->overflow.getValue() == CSSOverflowValueImp::Visible) {
-            parentStyle->overflow.specify(overflow);
-            overflow.setValue(CSSOverflowValueImp::Visible);
-        }
-        if (parentStyle->backgroundColor.getARGB() == 0 &&  // transparent?
-            parentStyle->backgroundImage.isNone()) {
-            parentStyle->background.specify(parentStyle, this);
-            background.reset(this);
-        }
-    }
 
     // Note the parent style of a pseudo element style is not always the corresponding element's style.
     // It will be computed layter by layout().
@@ -3466,6 +3468,7 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp(int pseudoElementSelectorType) :
     parentRule(0),
     resolved(false),
     parentStyle(0),
+    bodyStyle(0),
     box(0),
     lastBox(0),
     stackingContext(0),
@@ -3504,6 +3507,7 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp(CSSStyleDeclarationImp* org) :
     parentRule(0),
     resolved(false),
     parentStyle(0),
+    bodyStyle(0),
     box(0),
     lastBox(0),
     stackingContext(0),

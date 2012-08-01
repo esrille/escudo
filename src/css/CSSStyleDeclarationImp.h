@@ -230,6 +230,7 @@ private:
     bool resolved;
 
     CSSStyleDeclarationImp* parentStyle;
+    CSSStyleDeclarationImp* bodyStyle;
     Box* box;
     Box* lastBox;  // for inline
     StackingContext* stackingContext;

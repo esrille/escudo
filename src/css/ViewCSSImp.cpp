@@ -199,6 +199,11 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle, CSSAuto
         }
 
         style->compute(this, parentStyle, element);
+        html::HTMLElement htmlElement(0);
+        if (html::HTMLElement::hasInstance(element))
+            htmlElement = interface_cast<html::HTMLElement>(element);
+        if (parentStyle && htmlElement && htmlElement.getLocalName() == u"body")
+            parentStyle->bodyStyle = style;
 
         // Set style->affectedBits
         if (!hoverList.empty()) {
@@ -452,8 +457,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
         style = map[element].get();
     if (!style)
         return 0;
-    if (parentBox)  // TODO: the root style can by modified by the style of body...
-        style->compute(this, parentStyle, element);
+    style->compute(this, parentStyle, element);
     if (style->display.isNone())
         return 0;
     style->clearBox();
