@@ -102,6 +102,30 @@ void HTMLInputElementImp::eval()
 
     if (hasAttribute(u"checked"))
         checked = true;
+
+    switch (type) {
+    case Text:
+    case Search:
+    case Telephone:
+    case URL:
+    case Email:
+    case Password: {
+        Nullable<std::u16string> size = getAttribute(u"size");
+        std::u16string length(u"20em");
+        if (size.hasValue()) {
+            std::u16string length(size.value());
+            if (toUnsigned(length))
+                length += u"em";
+            else
+                length = u"20em";
+        }
+        css::CSSStyleDeclaration style = getStyle();
+        style.setProperty(u"min-width", length, u"non-css");
+        break;
+    }
+    default:
+        break;
+    }
 }
 
 void HTMLInputElementImp::handleClick(events::Event event)

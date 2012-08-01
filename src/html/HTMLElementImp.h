@@ -290,6 +290,7 @@ public:
         return html::HTMLElement::getMetaData();
     }
 
+    static bool toUnsigned(std::u16string& value);
     static bool toPx(std::u16string& value);  // for cellspacing, cellpadding, etc.
     static bool toPxOrPercentage(std::u16string& value);  // for width, heigth, etc.
 

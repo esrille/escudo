@@ -1306,7 +1306,7 @@ int HTMLElementImp::getOffsetHeight()
     return 0;
 }
 
-bool HTMLElementImp::toPx(std::u16string& value)
+bool HTMLElementImp::toUnsigned(std::u16string& value)
 {
     stripLeadingAndTrailingWhitespace(value);
     if (value.empty())
@@ -1317,7 +1317,12 @@ bool HTMLElementImp::toPx(std::u16string& value)
             return false;
         ++s;
     }
-    if (!*s) {
+    return true;
+}
+
+bool HTMLElementImp::toPx(std::u16string& value)
+{
+    if (toUnsigned(value)) {
         value += u"px";
         return true;
     }
