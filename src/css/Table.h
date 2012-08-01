@@ -239,6 +239,13 @@ public:
         return isAnonymousTable;
     }
 
+    unsigned getColumnCount() const {
+        return xWidth;
+    }
+    unsigned getRowCount() const {
+        return yHeight;
+    }
+
     bool processTableChild(Node node, CSSStyleDeclarationImp* style);
 
     float getBaseline() const;

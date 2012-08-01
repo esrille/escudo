@@ -102,6 +102,13 @@ float CellBox::adjustWidth()
 {
     if (fixedLayout || isnanf(columnWidth))
         return NAN;
+
+    TableWrapperBox* wrapper = dynamic_cast<TableWrapperBox*>(getParentBox()->getParentBox()->getParentBox());
+    assert(wrapper);
+    if (wrapper->getStyle()->borderCollapse.getValue() == CSSBorderCollapseValueImp::Collapse)
+        collapseBorder(wrapper);
+    else
+        separateBorders(wrapper->getStyle(), wrapper->getColumnCount(), wrapper->getRowCount());
     width = columnWidth - getBlankLeft() - getBlankRight();
     for (Box* i = getFirstChild(); i; i = i->getNextSibling())
         i->unresolveStyle();
@@ -605,7 +612,7 @@ CellBox* TableWrapperBox::processCell(Element current, BlockLevelBox* parentBox,
     if (current)
         cellBox = static_cast<CellBox*>(view->layOutBlockBoxes(current, 0, currentStyle->getParentStyle(), currentStyle, true));
     else {
-        cellBox = new(std::nothrow) CellBox(0, 0);
+        cellBox = new(std::nothrow) CellBox(0, 0);  // TODO: use parentStyle?
         if (cellBox)
             cellBox->establishFormattingContext();
     }
@@ -885,7 +892,7 @@ bool TableWrapperBox::resolveBorderConflict()
     assert(style);
     borderRows.clear();
     borderColumns.clear();
-    if (style->borderCollapse.getValue() != style->borderCollapse.Collapse)
+    if (style->borderCollapse.getValue() != CSSBorderCollapseValueImp::Collapse)
         return false;
     if (!tableBox)
         return false;
@@ -1078,9 +1085,9 @@ void TableWrapperBox::layOutTableBox(ViewCSSImp* view, FormattingContext* contex
             hs = style->borderSpacing.getHorizontalSpacing();
         }
     }
+    // Note 'width' needs to be preserved since it is used as the width of
+    // the containing block of cells.
     tableBox->width = width;
-    if (anon || style->width.isAuto())
-        width = tableBox->width = 0.0f;
     tableBox->height = height;
     if (anon || style->height.isAuto())
         height = tableBox->height = 0.0f;
