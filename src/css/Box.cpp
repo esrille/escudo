@@ -250,11 +250,12 @@ void BlockLevelBox::setContainingBlock(ViewCSSImp* view)
         for (auto ancestor = node.getParentElement(); ancestor; ancestor = ancestor.getParentElement()) {
             CSSStyleDeclarationImp* style = view->getStyle(ancestor);
             if (!style)
-                break;
+                continue;
             if (style->position.getValue() != CSSPositionValueImp::Static) {
                 // Now we need to find the corresponding box for this ancestor.
                 Box* box = style->box;
-                assert(box);    // TODO: check NULL case
+                if (!box)   // cf. html4/tables-001
+                    continue;
                 offsetH = box->x + box->marginLeft + box->borderLeft - x;
                 offsetV = box->y + box->marginTop + box->borderTop - y;
                 clipBox = box->clipBox;
