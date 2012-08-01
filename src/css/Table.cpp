@@ -100,15 +100,17 @@ float CellBox::getBaseline() const
 
 float CellBox::adjustWidth()
 {
-    if (fixedLayout || isnanf(columnWidth))
-        return NAN;
-
+    float w = getTotalWidth();
     TableWrapperBox* wrapper = dynamic_cast<TableWrapperBox*>(getParentBox()->getParentBox()->getParentBox());
     assert(wrapper);
     if (wrapper->getStyle()->borderCollapse.getValue() == CSSBorderCollapseValueImp::Collapse)
         collapseBorder(wrapper);
     else
         separateBorders(wrapper->getStyle(), wrapper->getColumnCount(), wrapper->getRowCount());
+    width = w - getBlankLeft() - getBlankRight();
+    if (fixedLayout || isnanf(columnWidth))
+        return NAN;
+
     width = columnWidth - getBlankLeft() - getBlankRight();
     for (Box* i = getFirstChild(); i; i = i->getNextSibling())
         i->unresolveStyle();
@@ -1184,10 +1186,6 @@ Reflow:
                 cellBox->fixedLayout = true;
             }
             cellBox->layOut(view, context);
-            if (collapsingModel)
-                cellBox->collapseBorder(this);
-            else
-                cellBox->separateBorders(style, xWidth, yHeight);
             cellBox->intrinsicHeight = cellBox->getTotalHeight();
             // Process 'height' as the minimum height.
             float d = minHeight;
@@ -1201,13 +1199,13 @@ Reflow:
                 if (cellStyle) {
                     if (cellStyle->width.isPercentage()) {
                         percentages[x] = std::max(percentages[x], cellStyle->width.getPercentage());
-                        fixedWidths[x] = std::max(fixedWidths[x], cellBox->getTotalWidth());
+                        fixedWidths[x] = std::max(fixedWidths[x], ceilf(cellBox->getTotalWidth()));
                     } else if (!cellStyle->width.isAuto())
                         fixedWidths[x] = std::max(fixedWidths[x], cellBox->getMCW());
                     else
-                        fixedWidths[x] = std::max(fixedWidths[x], cellBox->getTotalWidth());
+                        fixedWidths[x] = std::max(fixedWidths[x], ceilf(cellBox->getTotalWidth()));
                 } else
-                    fixedWidths[x] = std::max(fixedWidths[x], cellBox->getTotalWidth());
+                    fixedWidths[x] = std::max(fixedWidths[x], ceilf(cellBox->getTotalWidth()));
                 widths[x] = std::max(widths[x], cellBox->getMCW());
             }
             if (cellBox->getRowSpan() == 1)
@@ -1303,7 +1301,7 @@ Reflow:
             float r = tableBox->width - w;
             unsigned fixed = 0;
             for (unsigned x = 0; x < xWidth; ++x) {
-                if (fixedWidths[x] == widths[x])
+                if (fixedWidths[x] <= widths[x])
                     ++fixed;
                 else if (0.0f <= percentages[x]) {
                     ++fixed;
@@ -1316,12 +1314,26 @@ Reflow:
                     }
                 }
             }
-            if (fixed < xWidth) {
+            while (fixed < xWidth && 0.0f < r) {
                 w = r / (xWidth - fixed);
+                r = 0.0f;
                 for (unsigned x = 0; x < xWidth; ++x) {
-                    if (percentages[x] < 0.0f && fixedWidths[x] != widths[x])
-                        widths[x] += w;
+                    if (percentages[x] < 0.0f && widths[x] < fixedWidths[x]) {
+                        float d = fixedWidths[x] - widths[x];
+                        if (w < d)
+                            widths[x] += w;
+                        else {
+                            ++fixed;
+                            widths[x] = fixedWidths[x];
+                            r += w - d;
+                        }
+                    }
                 }
+            }
+            if (0.0f < r) {
+                w = r / xWidth;
+                for (unsigned x = 0; x < xWidth; ++x)
+                    widths[x] += w;
             }
         }
         if (++pass == 1) {
