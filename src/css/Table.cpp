@@ -1331,9 +1331,18 @@ Reflow:
                 }
             }
             if (0.0f < r) {
-                w = r / xWidth;
-                for (unsigned x = 0; x < xWidth; ++x)
-                    widths[x] += w;
+                fixed = 0;
+                for (unsigned x = 0; x < xWidth; ++x) {
+                    if (widths[x] <= 0.0f)
+                        ++fixed;
+                }
+                if (fixed < xWidth) {
+                    w = r / (xWidth - fixed);
+                    for (unsigned x = 0; x < xWidth; ++x) {
+                        if (0.0f < widths[x])
+                            widths[x] += w;
+                    }
+                }
             }
         }
         if (++pass == 1) {
