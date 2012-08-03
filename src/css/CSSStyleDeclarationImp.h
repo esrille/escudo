@@ -422,7 +422,6 @@ public:
     void resolve(ViewCSSImp* view, const ContainingBlock* containingBlock);
     void unresolve() {
         resolved = false;
-        clearBox();
     }
 
     bool resolveOffset(float& x, float &y);
