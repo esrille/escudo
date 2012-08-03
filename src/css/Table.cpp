@@ -1155,8 +1155,6 @@ void TableWrapperBox::layOutTableBox(ViewCSSImp* view, FormattingContext* contex
         widths[x] = fixedWidths[x] = fixedLayout ? NAN : 0.0f;
         percentages[x] = -1.0f;
     }
-    for (unsigned y = 0; y < yHeight; ++y)
-        heights[y] = 0.0f;
     if (fixedLayout)
         layOutFixed(view, containingBlock, collapsingModel);
     else
@@ -1168,7 +1166,7 @@ Reflow:
         float minHeight = 0.0f;
         if (rows[y] && !rows[y]->height.isAuto())
             minHeight = rows[y]->height.getPx();
-        baselines[y] = 0.0f;
+        heights[y] = baselines[y] = 0.0f;
         bool noBaseline = true;
         for (unsigned x = 0; x < xWidth; ++x) {
             CellBox* cellBox = grid[y][x].get();
