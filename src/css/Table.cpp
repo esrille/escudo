@@ -121,13 +121,13 @@ float CellBox::shrinkTo()
 {
     if (fixedLayout)
         return getBlockWidth();
-    if (isAnonymous()) {
-        float min = 0.0f;
-        for (Box* child = getFirstChild(); child; child = child->getNextSibling())
-            min = std::max(min, child->shrinkTo());
-        return min + borderLeft + paddingLeft + paddingRight + borderRight;
-    }
-    return BlockLevelBox::shrinkTo();
+
+    float min = 0.0f;
+    if (!isAnonymous() && style && !style->width.isAuto())
+        min = style->width.getPx();
+    for (Box* child = getFirstChild(); child; child = child->getNextSibling())
+        min = std::max(min, child->shrinkTo());
+    return min + getBlankLeft() + getBlankRight();
 }
 
 void CellBox::resolveWidth(float w)
