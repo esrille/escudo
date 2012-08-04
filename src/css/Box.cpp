@@ -92,6 +92,8 @@ Box::~Box()
         Box* child = removeChild(firstChild);
         child->release_();
     }
+
+    // TODO: delete formattingContext
 }
 
 Box* Box::removeChild(Box* item)
@@ -108,6 +110,10 @@ Box* Box::removeChild(Box* item)
         prev->nextSibling = next;
     item->parentBox = item->previousSibling = item->nextSibling = 0;
     --childCount;
+
+    if (auto block = dynamic_cast<BlockLevelBox*>(item))
+        block->inserted = false;
+
     return item;
 }
 
@@ -730,6 +736,7 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
         Node node = *i;
         BlockLevelBox* block = view->getFloatBox(node);
         if (block && block != this) {  // Check an empty absolutely positioned box; cf. bottom-applies-to-010.
+            block->parentBox = this;
             context->useMargin(this);
             if (block->isFloat()) {
                 if (block->style->clear.getValue())

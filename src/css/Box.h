@@ -631,6 +631,7 @@ typedef boost::intrusive_ptr<Box> BoxPtr;
 class BlockLevelBox : public Box
 {
     friend class FormattingContext;
+    friend Box* Box::removeChild(Box* item);
 
     unsigned textAlign;
 
