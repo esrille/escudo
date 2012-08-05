@@ -120,7 +120,7 @@ void BlockLevelBox::getPsuedoStyles(ViewCSSImp* view, FormattingContext* context
         box = parent;
     }
     if (!firstLineStyles.empty()) {
-        firstLineStyle = new(std::nothrow) CSSStyleDeclarationImp;
+        firstLineStyle = new(std::nothrow) CSSStyleDeclarationImp(CSSPseudoElementSelector::FirstLine);
         if (firstLineStyle) {
             for (auto i = firstLineStyles.begin(); i != firstLineStyles.end(); ++i)
                 firstLineStyle->specify(*i);
@@ -135,7 +135,7 @@ void BlockLevelBox::getPsuedoStyles(ViewCSSImp* view, FormattingContext* context
         }
     }
     if (!firstLetterStyles.empty()) {
-        firstLetterStyle = new(std::nothrow) CSSStyleDeclarationImp;
+        firstLetterStyle = new(std::nothrow) CSSStyleDeclarationImp(CSSPseudoElementSelector::FirstLetter);
         if (firstLetterStyle) {
             for (auto i = firstLetterStyles.begin(); i != firstLetterStyles.end(); ++i)
                 firstLetterStyle->specify(*i);
