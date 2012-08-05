@@ -68,7 +68,7 @@ public:
 
 size_t forkMax = 1;
 size_t forkCount = 0;
-std::vector<ForkStatus> forkStates;
+std::vector<ForkStatus> forkStates(1);
 
 int processOutput(std::istream& stream, std::string& result)
 {
