@@ -275,7 +275,6 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
             psuedoChecked = true;
             getPsuedoStyles(view, context, style, firstLetterStyle, firstLineStyle);
             if (firstLetterStyle) {
-                assert(position == 0);
                 activeStyle = setActiveStyle(view, firstLetterStyle.get(), font, point);
                 if (firstLetterStyle->isFloat()) {
                     position += layOutFloatingFirstLetter(view, context, data, firstLetterStyle.get());
