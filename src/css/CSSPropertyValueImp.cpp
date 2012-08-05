@@ -1510,7 +1510,8 @@ void CSSFontWeightValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* pa
         }
         break;
     default:
-        return;
+        w = value.number;
+        break;
     }
     value.setPx(w);
 }
