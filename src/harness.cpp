@@ -26,20 +26,49 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <vector>
 
 #include <boost/version.hpp>
 #include <boost/iostreams/stream.hpp>
 #include <boost/iostreams/device/file_descriptor.hpp>
 
 enum {
-    INTERACTIVE,
+    INTERACTIVE = 0,
     HEADLESS,
     REPORT,
-    UPDATE
+    UPDATE,
+
+    // exit status codes
+    ES_PASS = 0,
+    ES_FATAL,
+    ES_FAIL,
+    ES_INVALID,
+    ES_NA,
+    ES_SKIP,
+    ES_UNCERTAIN
 };
 
-int forkMax = 1;
-int forkCount = 0;
+const char* StatusStrings[] = {
+    "pass",
+    "fatal",
+    "fail",
+    "invalid",
+    "?",
+    "skip",
+    "uncertain",
+};
+
+struct ForkStatus {
+    pid_t       pid;
+    std::string url;
+    int         code;
+public:
+    ForkStatus() : pid(-1), code(0) {}
+};
+
+size_t forkMax = 1;
+size_t forkCount = 0;
+std::vector<ForkStatus> forkStates;
 
 int processOutput(std::istream& stream, std::string& result)
 {
@@ -231,7 +260,28 @@ std::string test(int mode, int argc, char* argv[], const std::string& url, const
     return result;
 }
 
-std::string map(int mode, int argc, char* argv[], const std::string& url, const std::string& userStyle, const std::string& testFonts, unsigned timeout)
+void reduce(std::ostream& report)
+{
+    for (int i = 0; i < forkCount; ++i) {
+        int status;
+        pid_t pid = wait(&status);
+        for (int j = 0; j < forkCount; ++j) {
+            if (forkStates[j].pid == pid) {
+                forkStates[j].pid = -1;
+                forkStates[j].code = WIFEXITED(status) ? WEXITSTATUS(status) : ES_FATAL;
+                break;
+            }
+        }
+    }
+    for (int i = 0; i < forkCount; ++i) {
+        if (forkStates[i].code != ES_NA)
+            std::cout << forkStates[i].url << '\t' << StatusStrings[forkStates[i].code] << '\n';
+        report << forkStates[i].url << '\t' << StatusStrings[forkStates[i].code] << '\n';
+    }
+    forkCount = 0;
+}
+
+void map(std::ostream& report, int mode, int argc, char* argv[], const std::string& url, const std::string& userStyle, const std::string& testFonts, unsigned timeout)
 {
     pid_t pid = fork();
     if (pid == -1) {
@@ -280,18 +330,26 @@ std::string map(int mode, int argc, char* argv[], const std::string& url, const 
         }
         if (0 < pid)
             killTest(pid);
-        if (result[0] != '?')
-            std::cout << url << '\t' << result << '\n';
-        exit(EXIT_SUCCESS);
+        int status = ES_NA;
+        if (!result.compare(0, 4, "pass"))
+            status = ES_PASS;
+        else if (!result.compare(0, 5, "fatal"))
+            status = ES_FATAL;
+        else if (!result.compare(0, 4, "fail"))
+            status = ES_FAIL;
+        else if (!result.compare(0, 7, "invalid"))
+            status = ES_INVALID;
+        else if (!result.compare(0, 4, "skip"))
+            status = ES_SKIP;
+        else if (!result.compare(0, 9, "uncertain"))
+            status = ES_UNCERTAIN;
+        exit(status);
+    } else {
+        forkStates[forkCount].url = url;
+        forkStates[forkCount].pid = pid;
     }
-    if (++forkCount == forkMax) {
-        for (int j = 0; j < forkCount; ++j) {
-            int status;
-            wait(&status);
-        }
-        forkCount = 0;
-    }
-    return "na";
+    if (++forkCount == forkMax)
+        reduce(report);
 }
 
 int main(int argc, char* argv[])
@@ -314,6 +372,9 @@ int main(int argc, char* argv[])
             break;
         case 'j':
             forkMax = strtoul(argv[argi] + 2, 0, 10);
+            if (forkMax == 0)
+                forkMax = 1;
+            forkStates.resize(forkMax);
             break;
         default:
             break;
@@ -349,69 +410,60 @@ int main(int argc, char* argv[])
     std::string userStyle;
     std::string testFonts;
     bool redo = false;
-    for (;;) {
-        while (data) {
-            if (result == "undo") {
-                std::swap(url, undo);
-                redo = true;
-            } else if (redo) {
-                std::swap(url, undo);
-                redo = false;
-            } else {
-                std::string line;
-                std::getline(data, line);
-                if (line.empty() || line == "testname    result  comment") {
-                    report << line << '\n';
-                    continue;
-                }
-                if (line[0] == '#') {
-                    if (line.compare(1, 9, "userstyle") == 0) {
-                        if (10 < line.length()) {
-                            std::stringstream s(line.substr(10), std::stringstream::in);
-                            s >> userStyle;
-                        } else
-                            userStyle.clear();
-                    } else if (line.compare(1, 9, "testfonts") == 0) {
-                        if (10 < line.length()) {
-                            std::stringstream s(line.substr(10), std::stringstream::in);
-                            s >> testFonts;
-                        } else
-                            testFonts.clear();
-                    }
-                    report << line << '\n';
-                    continue;
-                }
-                undo = url;
-                std::stringstream s(line, std::stringstream::in);
-                s >> url;
-            }
-            if (url.empty())
+    while (data) {
+        if (result == "undo") {
+            std::swap(url, undo);
+            redo = true;
+        } else if (redo) {
+            std::swap(url, undo);
+            redo = false;
+        } else {
+            std::string line;
+            std::getline(data, line);
+            if (line.empty())
                 continue;
-
-            switch (mode) {
-            case HEADLESS:
-            case UPDATE:
-                result = map(mode, argc - argi, args, url, userStyle, testFonts, timeout);
-                break;
-            default:
-                result = test(mode, argc - argi, args, url, userStyle, testFonts, timeout);
-                if (result != "undo")
-                    report << url << '\t' << result << '\n';
-                break;
+            if (line == "testname    result  comment") {
+                report << line << '\n';
+                continue;
             }
+            if (line[0] == '#') {
+                if (line.compare(1, 9, "userstyle") == 0) {
+                    if (10 < line.length()) {
+                        std::stringstream s(line.substr(10), std::stringstream::in);
+                        s >> userStyle;
+                    } else
+                        userStyle.clear();
+                } else if (line.compare(1, 9, "testfonts") == 0) {
+                    if (10 < line.length()) {
+                        std::stringstream s(line.substr(10), std::stringstream::in);
+                        s >> testFonts;
+                    } else
+                        testFonts.clear();
+                }
+                reduce(report);
+                report << line << '\n';
+                continue;
+            }
+            undo = url;
+            std::stringstream s(line, std::stringstream::in);
+            s >> url;
         }
+        if (url.empty())
+            continue;
 
-        if (mode == HEADLESS || mode == UPDATE) {
-            for (int j = 0; j < forkCount; ++j) {
-                int status;
-                wait(&status);
-            }
-            mode = REPORT;
-            data.clear();
-            data.seekg(0);
-        } else
+        switch (mode) {
+        case HEADLESS:
+        case UPDATE:
+            map(report, mode, argc - argi, args, url, userStyle, testFonts, timeout);
             break;
+        default:
+            result = test(mode, argc - argi, args, url, userStyle, testFonts, timeout);
+            if (result != "undo")
+                report << url << '\t' << result << '\n';
+            break;
+        }
     }
-
+    if (mode == HEADLESS || mode == UPDATE)
+        reduce(report);
     report.close();
 }
