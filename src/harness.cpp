@@ -70,6 +70,8 @@ size_t forkMax = 1;
 size_t forkCount = 0;
 std::vector<ForkStatus> forkStates(1);
 
+size_t uncertainCount = 0;
+
 int processOutput(std::istream& stream, std::string& result)
 {
     std::string output;
@@ -274,6 +276,8 @@ void reduce(std::ostream& report)
         }
     }
     for (int i = 0; i < forkCount; ++i) {
+        if (forkStates[i].code == ES_UNCERTAIN)
+            ++uncertainCount;
         if (forkStates[i].code != ES_NA)
             std::cout << forkStates[i].url << '\t' << StatusStrings[forkStates[i].code] << '\n';
         report << forkStates[i].url << '\t' << StatusStrings[forkStates[i].code] << '\n';
@@ -466,4 +470,6 @@ int main(int argc, char* argv[])
     if (mode == HEADLESS || mode == UPDATE)
         reduce(report);
     report.close();
+
+    return (0 < uncertainCount) ? EXIT_FAILURE : EXIT_SUCCESS;
 }
