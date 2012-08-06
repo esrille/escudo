@@ -59,6 +59,7 @@ void HttpConnection::done(HttpConnectionManager* manager, bool error)
         manager->complete(request, error);
     }
     if (!error) {
+        retryCount = 0;
         if (!requests.empty()) {
             current = requests.front();
             requests.pop_front();
@@ -86,6 +87,9 @@ void HttpConnection::close()
 
 void HttpConnection::retry()
 {
+    if (3 <= getLogLevel())
+        std::cerr << __func__ << ' ' << current->getRequestMessage().getURL() << ": " << retryCount + 1 << '\n';
+
     int count = retryCount;
     close();
     retryCount = count + 1;
