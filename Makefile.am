@@ -1275,6 +1275,7 @@ EXTRA_DIST = \
 	escort.spec.in \
 	escort.spec \
 	data/escort/about/index.html.in \
+	testdata/implementation-report-html4.data \
 	LICENSE \
 	NOTICE \
 	config.h \
