@@ -584,9 +584,19 @@ public:
         return f;
     }
 
-    bool isInside(int s, int t) const {
+    bool isInside(int u, int v) const {
         // TODO: InlineLevelBox needs to be treated differently.
-        return x <= s && y <= t && s < x + getTotalWidth() && t < y + getTotalHeight();
+        float l = x + marginLeft;
+        if (u < l)
+            return false;
+        float t = y + marginTop;
+        if (v < t)
+            return false;
+        float r = l + getBorderWidth();
+        if (r <= u)
+            return false;
+        float b = t + getBorderHeight();
+        return v < b;
     }
 
     Box* boxFromPoint(int x, int y) {
