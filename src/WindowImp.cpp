@@ -256,7 +256,8 @@ bool WindowImp::poll()
                     if (view)
                         flags |= view->getFlags();
                     updateView(next);
-                }
+                } else if (!view && next)
+                    updateView(next);
             }
             if (view) {
                 if (flags |= view->getFlags()) {
@@ -361,6 +362,8 @@ void WindowImp::mouse(const EventTask& task)
     MouseEventImp* imp = 0;
 
     Box* box = view->boxFromPoint(x, y);
+    if (!box)
+        return;
     if (WindowImp* childWindow = box->getChildWindow()) {
         childWindow->mouse(button, up,
                            x - box->getX() - box->getBlankLeft(), y - box->getY() - box->getBlankTop(),
@@ -408,8 +411,9 @@ void WindowImp::mouseMove(const EventTask& task)
 
     if (!view)
         return;
-
     Box* box = view->boxFromPoint(x, y);
+    if (!box)
+        return;
     if (WindowImp* childWindow = box->getChildWindow()) {
         childWindow->mouseMove(x - box->getX() - box->getBlankLeft(),
                                y - box->getY() - box->getBlankTop(),
@@ -555,6 +559,8 @@ Element WindowImp::elementFromPoint(float x, float y)
     if (x < 0.0f || width < x || y < 0.0f || height < y)
         return 0;
     Box* box = view->boxFromPoint(x, y);
+    if (!box)
+        return 0;
     for (Node node = box->getTargetNode(); node; node = node.getParentNode()) {
         if (node.getNodeType() == Node::ELEMENT_NODE)
             return interface_cast<Element>(node);
