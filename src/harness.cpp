@@ -63,10 +63,11 @@ struct ForkStatus {
     std::string url;
     int         code;
 public:
-    ForkStatus() : pid(-1), code(0) {}
+    ForkStatus() : pid(-1), code(-1) {}
 };
 
 size_t forkMax = 1;
+size_t forkTop = 0;
 size_t forkCount = 0;
 std::vector<ForkStatus> forkStates(1);
 
@@ -262,31 +263,48 @@ std::string test(int mode, int argc, char* argv[], const std::string& url, const
     return result;
 }
 
-void reduce(std::ostream& report)
+int reduce(std::ostream& report, int option = 0)
 {
-    for (int i = 0; i < forkCount; ++i) {
+    int count;
+    int op = (forkCount < forkMax) ? option : 0;
+    for (count = 0; count < forkCount; ++count) {
         int status;
-        pid_t pid = wait(&status);
-        for (int j = 0; j < forkCount; ++j) {
-            if (forkStates[j].pid == pid) {
-                forkStates[j].pid = -1;
-                forkStates[j].code = WIFEXITED(status) ? WEXITSTATUS(status) : ES_FATAL;
+        pid_t pid = waitpid(-1, &status, op);
+        if (pid == 0)
+            break;
+        for (int i = 0; i < forkCount; ++i) {
+            auto s = &forkStates[(forkTop + i) % forkMax];
+            if (s->pid == pid) {
+                s->code = WIFEXITED(status) ? WEXITSTATUS(status) : ES_FATAL;
+                if (i == 0)
+                    op = option;
                 break;
             }
         }
     }
-    for (int i = 0; i < forkCount; ++i) {
-        if (forkStates[i].code == ES_UNCERTAIN)
-            ++uncertainCount;
-        if (forkStates[i].code != ES_NA)
-            std::cout << forkStates[i].url << '\t' << StatusStrings[forkStates[i].code] << '\n';
-        report << forkStates[i].url << '\t' << StatusStrings[forkStates[i].code] << '\n';
+    if (0 < count) {
+        for (count = 0; count < forkMax; ++count) {
+            auto s = &forkStates[(forkTop + count) % forkMax];
+            if (s->code == -1)
+                break;
+            if (s->code == ES_UNCERTAIN)
+                ++uncertainCount;
+            if (s->code != ES_NA)
+                std::cout << s->url << '\t' << StatusStrings[s->code] << '\n';
+            report << s->url << '\t' << StatusStrings[s->code] << '\n';
+            s->code = -1;
+        }
+        assert(count <= forkCount);
+        forkTop += count;
+        forkTop %= forkMax;
+        forkCount -= count;
     }
-    forkCount = 0;
+    return count;
 }
 
 void map(std::ostream& report, int mode, int argc, char* argv[], const std::string& url, const std::string& userStyle, const std::string& testFonts, unsigned timeout)
 {
+    assert(forkCount < forkMax);
     pid_t pid = fork();
     if (pid == -1) {
         std::cerr << "error: no more process to create\n";
@@ -349,11 +367,12 @@ void map(std::ostream& report, int mode, int argc, char* argv[], const std::stri
             status = ES_UNCERTAIN;
         exit(status);
     } else {
-        forkStates[forkCount].url = url;
-        forkStates[forkCount].pid = pid;
+        auto s = &forkStates[(forkTop + forkCount) % forkMax];
+        s->url = url;
+        s->pid = pid;
+        ++forkCount;
+        reduce(report, WNOHANG);
     }
-    if (++forkCount == forkMax)
-        reduce(report);
 }
 
 int main(int argc, char* argv[])
