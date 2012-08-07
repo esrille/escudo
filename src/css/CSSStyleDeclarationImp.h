@@ -464,6 +464,7 @@ public:
 
     void clearBox();
     void addBox(Box* box);
+    void removeBox(Box* box);
     void flip();
 
     Box* getBox() const {

@@ -437,7 +437,6 @@ BlockLevelBox* ViewCSSImp::createBlockLevelBox(Element element, BlockLevelBox* p
         return 0;
     if (newContext)
         block->establishFormattingContext();  // TODO: check error
-    style->addBox(block);
 
     StackingContext* stackingContext = style->getStackingContext();
     assert(stackingContext);

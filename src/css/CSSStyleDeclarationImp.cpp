@@ -1934,22 +1934,43 @@ void CSSStyleDeclarationImp::clearBox()
     box = lastBox = 0;
 }
 
-void CSSStyleDeclarationImp::addBox(Box* box)
+void CSSStyleDeclarationImp::addBox(Box* b)
 {
-    if (dynamic_cast<BlockLevelBox*>(box)) {
+    if (dynamic_cast<BlockLevelBox*>(b)) {
         if (isBlockLevel())
-            this->box = lastBox = box;
-    } else if (InlineLevelBox* inlineBox = dynamic_cast<InlineLevelBox*>(box)) {
+            box = lastBox = b;
+    } else if (InlineLevelBox* inlineBox = dynamic_cast<InlineLevelBox*>(b)) {
         if (isBlockLevel())
             return;
         if (isInlineBlock() && inlineBox->getFont())
             return;
-        if (!this->box)
-            this->box = lastBox = box;
+        if (!box)
+            box = lastBox = b;
         else
+            lastBox = b;
+        if (parentStyle)
+            parentStyle->addBox(b);
+    }
+}
+
+void CSSStyleDeclarationImp::removeBox(Box* b)
+{
+    if (dynamic_cast<BlockLevelBox*>(b)) {
+        if (isBlockLevel() && box == b)
+            box = lastBox = 0;
+    } else if (InlineLevelBox* inlineBox = dynamic_cast<InlineLevelBox*>(b)) {
+        if (isBlockLevel())
+            return;
+        if (isInlineBlock() && inlineBox->getFont())
+            return;
+        if (box == b && lastBox == b)
+            box = lastBox = 0;
+        if (box == b)
+            box = lastBox;
+        else if (lastBox == b)
             lastBox = box;
         if (parentStyle)
-            parentStyle->addBox(box);
+            parentStyle->removeBox(b);
     }
 }
 

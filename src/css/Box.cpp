@@ -113,6 +113,8 @@ Box* Box::removeChild(Box* item)
 
     if (auto block = dynamic_cast<BlockLevelBox*>(item))
         block->inserted = false;
+    if (item->style)
+        item->style->removeBox(item);
 
     return item;
 }
@@ -1230,6 +1232,7 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
 
     mcw = 0.0f;
     if (!isAnonymous()) {
+        style->addBox(this);
         if (!style->width.isAuto() && !style->width.isPercentage())
             mcw = style->width.getPx();
         style->resolve(view, containingBlock);
@@ -1530,6 +1533,7 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
         return;  // TODO error
     if (!style)
         return;  // TODO error
+    style->addBox(this);
 
     setContainingBlock(view);
     const ContainingBlock* containingBlock = &absoluteBlock;
