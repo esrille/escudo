@@ -3531,20 +3531,20 @@ html4/caption-side-inherited-001.htm	?
 html4/caption-side-initial-001.htm	?	
 html4/caption-vs-table-box-001.htm	?	
 html4/caption-vs-table-box-002.htm	?	
-#userstyle /home/shiki/esrille/css2.1/20110323/html4/support/cascade.css
+#userstyle /var/www/html/suites/css2.1/20110323/html4/support/cascade.css
 html4/cascade-001.htm	?	
 html4/cascade-002.htm	?	
 html4/cascade-003.htm	?	
 html4/cascade-004.htm	?	
 #userstyle
 html4/cascade-005.htm	?	
-#userstyle /home/shiki/esrille/css2.1/20110323/html4/support/cascade.css
+#userstyle /var/www/html/suites/css2.1/20110323/html4/support/cascade.css
 html4/cascade-006.htm	?	
 #userstyle
 html4/cascade-007.htm	?	
 html4/cascade-008.htm	?	
 html4/cascade-009.htm	?	
-#userstyle /home/shiki/esrille/css2.1/20110323/html4/support/cascade.css
+#userstyle /var/www/html/suites/css2.1/20110323/html4/support/cascade.css
 html4/cascade-010.htm	?	
 html4/cascade-011.htm	?	
 #userstyle 
@@ -5715,7 +5715,7 @@ html4/html-attribute-029.htm	?
 html4/html-case-sensitivity-001.htm	?	
 html4/html-precedence-001.htm	?	
 html4/html-precedence-002.htm	?	
-#userstyle /home/shiki/esrille/css2.1/20110323/html4/support/html-precedence-003.css
+#userstyle /var/www/html/suites/css2.1/20110323/html4/support/html-precedence-003.css
 html4/html-precedence-003.htm	?	
 #userstyle
 html4/id-000.htm	?	
@@ -8926,7 +8926,7 @@ html4/uri-015.htm	?
 html4/uri-016.htm	?	
 html4/uri-017.htm	?	
 html4/uri-018.htm	?	
-#userstyle /home/shiki/esrille/css2.1/20110323/html4/support/user-stylesheet.css
+#userstyle /var/www/html/suites/css2.1/20110323/html4/support/user-stylesheet.css
 html4/user-stylesheet-001.htm	?	
 html4/user-stylesheet-002.htm	?	
 html4/user-stylesheet-003.htm	?	
