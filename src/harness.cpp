@@ -94,6 +94,7 @@ int runTest(int argc, char* argv[], std::string userStyle, std::string testFonts
 {
     int pipefd[2];
     pipe(pipefd);
+    char testfontsOption[] = "-testfonts";
 
     pid_t pid = fork();
     if (pid == -1) {
@@ -108,8 +109,8 @@ int runTest(int argc, char* argv[], std::string userStyle, std::string testFonts
         if (!userStyle.empty())
             argv[argi++] = strdup(userStyle.c_str());
         if (testFonts == "on")
-            argv[argi++] ="-testfonts";
-        url = "http://localhost:8000/" + url;
+            argv[argi++] = testfontsOption;
+        url = "http://localhost/suites/css2.1/20110323/" + url;
         // url = "http://test.csswg.org/suites/css2.1/20110323/" + url;
         argv[argi++] = strdup(url.c_str());
         argv[argi] = 0;
@@ -265,14 +266,14 @@ std::string test(int mode, int argc, char* argv[], const std::string& url, const
 
 int reduce(std::ostream& report, int option = 0)
 {
-    int count;
+    size_t count;
     int op = (forkCount < forkMax) ? option : 0;
     for (count = 0; count < forkCount; ++count) {
         int status;
         pid_t pid = waitpid(-1, &status, op);
         if (pid == 0)
             break;
-        for (int i = 0; i < forkCount; ++i) {
+        for (size_t i = 0; i < forkCount; ++i) {
             auto s = &forkStates[(forkTop + i) % forkMax];
             if (s->pid == pid) {
                 s->code = WIFEXITED(status) ? WEXITSTATUS(status) : ES_FATAL;
