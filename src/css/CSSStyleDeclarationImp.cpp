@@ -1413,7 +1413,9 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
         if (parentStyle->bodyStyle == this) {
             if (overflow.getValue() == parentStyle->overflow.getValue())
                 overflow.setValue(CSSOverflowValueImp::Visible);
-            if (parentStyle->backgroundColor.getSpecified() == 0 && parentStyle->backgroundImage.getValue() == backgroundImage.getValue())
+            backgroundColor.compute();
+            if (backgroundColor.getARGB() == parentStyle->backgroundColor.getARGB() &&
+                backgroundImage.getValue() == parentStyle->backgroundImage.getValue())
                 background.reset(this);
         }
     }
