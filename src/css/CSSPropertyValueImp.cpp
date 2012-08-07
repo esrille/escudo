@@ -1977,7 +1977,7 @@ float CSSVerticalAlignValueImp::getOffset(ViewCSSImp* view, CSSStyleDeclarationI
         return offset - font->getLineHeight(point);
     }
     default:
-        assert(value.unit == css::CSSPrimitiveValue::CSS_PX);
+        assert(!value.isNaN());
         return line->getBaseline() - (leading + font->getAscender(point)) - value.getPx();
     }
 }
