@@ -343,19 +343,11 @@ const char16_t* CSSBindingValueImp::Options[] = {
 
 void CSSNumericValue::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style)
 {
-    if (isIndex() || isPercentage())
+    if (isIndex() || isPercentage()) {
+        resolved = NAN;
         return;
-    resolve(view, style, 0.0f);
-}
-
-void CSSNumericValue::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize)
-{
-    if (isIndex())
-        return;
+    }
     switch (unit) {
-    case css::CSSPrimitiveValue::CSS_PERCENTAGE:
-        resolved = view->getPx(*this, fullSize);
-        break;
     case css::CSSPrimitiveValue::CSS_EMS:
         resolved = view->getPx(*this, style->fontSize.getPx());
         break;
@@ -367,6 +359,35 @@ void CSSNumericValue::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, f
         break;
     default:
         resolved = view->getPx(*this);
+        break;
+    }
+}
+
+void CSSNumericValue::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize)
+{
+    if (isIndex())
+        return;
+    switch (unit) {
+    case css::CSSPrimitiveValue::CSS_PERCENTAGE:
+        // In the 2nd layout pass, 'fullSize' can be changed.
+        // In such a case, 'resolved' is not a NaN, but it needs to be computed.
+        resolved = view->getPx(*this, fullSize);
+        break;
+    case css::CSSPrimitiveValue::CSS_EMS:
+        if (isnan(resolved))
+            resolved = view->getPx(*this, style->fontSize.getPx());
+        break;
+    case css::CSSPrimitiveValue::CSS_EXS:
+        if (isnan(resolved)) {
+            if (FontTexture* font = style->getFontTexture())
+                resolved = view->getPx(*this, font->getXHeight(view->getPointFromPx(style->fontSize.getPx())));
+            else
+                resolved = view->getPx(*this, style->fontSize.getPx() * 0.5f);
+        }
+        break;
+    default:
+        if (isnan(resolved))
+            resolved = view->getPx(*this);
         break;
     }
 }

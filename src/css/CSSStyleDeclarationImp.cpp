@@ -1418,14 +1418,6 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
         }
     }
 
-    if (bodyStyle) {
-        if (overflow.getValue() == CSSOverflowValueImp::Visible)
-            overflow.specify(bodyStyle->overflow);
-        backgroundColor.compute();
-        if (backgroundColor.getARGB() == 0 && backgroundImage.isNone())
-            background.specify(this, bodyStyle);
-    }
-
     backgroundColor.compute();
     borderTopStyle.compute();
     borderRightStyle.compute();
@@ -1478,8 +1470,24 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     borderBottomColor.compute(this);
     borderLeftColor.compute(this);
 
-    backgroundImage.compute(view, this);
-    backgroundPosition.compute(view, this);
+    bool useBody = false;
+    if (bodyStyle) {
+        if (overflow.getValue() == CSSOverflowValueImp::Visible)
+            overflow.specify(bodyStyle->overflow);
+        if (backgroundColor.getARGB() == 0 && backgroundImage.isNone()) {
+            background.specify(this, bodyStyle);
+            useBody = true;
+            bodyStyle->fontSize.compute(view, this);
+            backgroundImage.compute(view, bodyStyle);
+            // Note if the lengths are given by 'em' or 'ex', the referred font size is
+            // the one of the 'body' style.
+            backgroundPosition.compute(view, bodyStyle);
+        }
+    }
+    if (!useBody) {
+        backgroundImage.compute(view, this);
+        backgroundPosition.compute(view, this);
+    }
 
     borderSpacing.compute(view, this);
 
