@@ -1408,17 +1408,8 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     this->parentStyle = parentStyle;
     if (!parentStyle)  // is it the root element?
         resetInheritedProperties();
-    else {
+    else
         inheritProperties(parentStyle);
-        if (parentStyle->bodyStyle == this) {
-            if (overflow.getValue() == parentStyle->overflow.getValue())
-                overflow.setValue(CSSOverflowValueImp::Visible);
-            backgroundColor.compute();
-            if (backgroundColor.getARGB() == parentStyle->backgroundColor.getARGB() &&
-                backgroundImage.getValue() == parentStyle->backgroundImage.getValue())
-                background.reset(this);
-        }
-    }
 
     backgroundColor.compute();
     borderTopStyle.compute();
@@ -1472,24 +1463,8 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     borderBottomColor.compute(this);
     borderLeftColor.compute(this);
 
-    bool useBody = false;
-    if (bodyStyle) {
-        if (overflow.getValue() == CSSOverflowValueImp::Visible)
-            overflow.specify(bodyStyle->overflow);
-        if (backgroundColor.getARGB() == 0 && backgroundImage.isNone()) {
-            background.specify(this, bodyStyle);
-            useBody = true;
-            bodyStyle->fontSize.compute(view, this);
-            backgroundImage.compute(view, bodyStyle);
-            // Note if the lengths are given by 'em' or 'ex', the referred font size is
-            // the one of the 'body' style.
-            backgroundPosition.compute(view, bodyStyle);
-        }
-    }
-    if (!useBody) {
-        backgroundImage.compute(view, this);
-        backgroundPosition.compute(view, this);
-    }
+    backgroundImage.compute(view, this);
+    backgroundPosition.compute(view, this);
 
     borderSpacing.compute(view, this);
 
@@ -1512,6 +1487,26 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
 
     // Note the parent style of a pseudo element style is not always the corresponding element's style.
     // It will be computed layter by layout().
+
+    if (bodyStyle) {
+        bodyStyle->compute(view, this, view->getDocument().getBody());
+        if (overflow.getValue() == CSSOverflowValueImp::Visible)
+            overflow.specify(bodyStyle->overflow);
+        if (backgroundColor.getARGB() == 0 && backgroundImage.isNone()) {
+            background.specify(this, bodyStyle);
+            bodyStyle->fontSize.compute(view, this);
+            backgroundImage.compute(view, bodyStyle);
+            // Note if the lengths are given by 'em' or 'ex', the referred font size is
+            // the one of the 'body' style.
+            backgroundPosition.compute(view, bodyStyle);
+        }
+    } else if (parentStyle && parentStyle->bodyStyle == this) {
+        if (overflow.getValue() == parentStyle->overflow.getValue())
+            overflow.setValue(CSSOverflowValueImp::Visible);
+        if (backgroundColor.getARGB() == parentStyle->backgroundColor.getARGB() &&
+            backgroundImage.getValue() == parentStyle->backgroundImage.getValue())
+            background.reset(this);
+    }
 }
 
 void CSSStyleDeclarationImp::computeStackingContext(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle)
@@ -1581,7 +1576,7 @@ void CSSStyleDeclarationImp::recompute(ViewCSSImp* view, CSSStyleDeclarationImp*
 #endif
 
     // TODO: find a way to skip the following cascading operation when there's no change in the decorations.
-    if (!ruleSet.empty()) {
+    if (getPseudoElementSelectorType() == CSSPseudoElementSelector::NonPseudo && !ruleSet.empty()) {
         initialize();
         for (const unsigned* id = paintProperties; *id != Unknown; ++id)
             reset(*id);
