@@ -269,6 +269,9 @@ public:
     void specify(const CSSNumericValueImp& specified) {
         value.specify(specified.value);
     }
+    void inherit(const CSSNumericValueImp& parent) {
+        value.inherit(parent.value);
+    }
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize);
     float getPx() const {
@@ -304,6 +307,9 @@ public:
     }
     void specify(const CSSNonNegativeValueImp& specified) {
         value.specify(specified.value);
+    }
+    void inherit(const CSSNonNegativeValueImp& parent) {
+        value.inherit(parent.value);
     }
     float getPx() const {
         return value.getPx();
@@ -353,6 +359,9 @@ public:
     }
     void specify(const CSSAutoLengthValueImp& specified) {
         length.specify(specified.length);
+    }
+    void inherit(const CSSAutoLengthValueImp& parent) {
+        length.inherit(parent.length);
     }
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize);
@@ -410,6 +419,9 @@ public:
     void specify(const CSSNoneLengthValueImp& specified) {
         length.specify(specified.length);
     }
+    void inherit(const CSSNoneLengthValueImp& parent) {
+        length.inherit(parent.length);
+    }
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize);
     float getPx() const {
@@ -456,6 +468,9 @@ public:
     }
     void specify(const CSSNormalLengthValueImp& specified) {
         length.specify(specified.length);
+    }
+    void inherit(const CSSNormalLengthValueImp& parent) {
+        length.inherit(parent.length);
     }
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     float getPx() const {
@@ -654,6 +669,10 @@ public:
     void specify(const CSSBackgroundPositionValueImp& specified) {
         horizontal.specify(specified.horizontal);
         vertical.specify(specified.vertical);
+    }
+    void inherit(const CSSBackgroundPositionValueImp& parent) {
+        horizontal.inherit(parent.horizontal);
+        vertical.inherit(parent.vertical);
     }
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     void resolve(ViewCSSImp* view, BoxImage* image, CSSStyleDeclarationImp* style, float width, float height);
@@ -2344,6 +2363,9 @@ public:
     }
     void specify(const CSSVerticalAlignValueImp& specified) {
         value.specify(specified.value);
+    }
+    void inherit(const CSSVerticalAlignValueImp& parent) {
+        value.inherit(parent.value);
     }
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style);

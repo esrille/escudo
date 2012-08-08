@@ -1344,6 +1344,27 @@ void CSSStyleDeclarationImp::inherit(const CSSStyleDeclarationImp* parentStyle, 
     case Padding:
         // ignore shorthand
         break;
+    case Top:
+        top.inherit(parentStyle->top);
+        break;
+    case Right:
+        right.inherit(parentStyle->right);
+        break;
+    case Left:
+        left.inherit(parentStyle->left);
+        break;
+    case Bottom:
+        bottom.inherit(parentStyle->bottom);
+        break;
+    case Width:
+        width.inherit(parentStyle->width);
+        break;
+    case Height:
+        height.inherit(parentStyle->height);
+        break;
+    case BackgroundPosition:
+        backgroundPosition.inherit(parentStyle->backgroundPosition);
+        break;
     case BorderTopWidth:
         borderTopWidth.inherit(parentStyle->borderTopWidth);
         break;
@@ -1356,14 +1377,62 @@ void CSSStyleDeclarationImp::inherit(const CSSStyleDeclarationImp* parentStyle, 
     case BorderLeftWidth:
         borderLeftWidth.inherit(parentStyle->borderLeftWidth);
         break;
-    case OutlineWidth:
-        outlineWidth.inherit(parentStyle->outlineWidth);
-        break;
     case FontSize:
         fontSize.inherit(parentStyle->fontSize);
         break;
+    case LetterSpacing:
+        letterSpacing.inherit(parentStyle->letterSpacing);
+        break;
     case LineHeight:
         lineHeight.inherit(parentStyle->lineHeight);
+        break;
+    case MarginTop:
+        marginTop.inherit(parentStyle->marginTop);
+        break;
+    case MarginRight:
+        marginRight.inherit(parentStyle->marginRight);
+        break;
+    case MarginBottom:
+        marginBottom.inherit(parentStyle->marginBottom);
+        break;
+    case MarginLeft:
+        marginLeft.inherit(parentStyle->marginLeft);
+        break;
+    case MaxHeight:
+        maxHeight.inherit(parentStyle->maxHeight);
+        break;
+    case MaxWidth:
+        maxWidth.inherit(parentStyle->maxWidth);
+        break;
+    case MinHeight:
+        minHeight.inherit(parentStyle->minHeight);
+        break;
+    case MinWidth:
+        minWidth.inherit(parentStyle->minWidth);
+        break;
+    case OutlineWidth:
+        outlineWidth.inherit(parentStyle->outlineWidth);
+        break;
+    case PaddingTop:
+        paddingTop.inherit(parentStyle->paddingTop);
+        break;
+    case PaddingRight:
+        paddingRight.inherit(parentStyle->paddingRight);
+        break;
+    case PaddingBottom:
+        paddingBottom.inherit(parentStyle->paddingBottom);
+        break;
+    case PaddingLeft:
+        paddingLeft.inherit(parentStyle->paddingLeft);
+        break;
+    case TextIndent:
+        textIndent.inherit(parentStyle->textIndent);
+        break;
+    case VerticalAlign:
+        verticalAlign.inherit(parentStyle->verticalAlign);
+        break;
+    case WordSpacing:
+        wordSpacing.inherit(parentStyle->wordSpacing);
         break;
     default:
         specify(parentStyle, id);
