@@ -168,7 +168,7 @@ void Box::restyle(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle)
 {
     CSSStyleDeclarationImp* style = getStyle();
     if (style && style != parentStyle)
-        style->recompute(view, parentStyle, getNode());
+        style->recompute(view, parentStyle, getContainingElement(getNode()));
     for (Box* i = firstChild; i; i = i->nextSibling)
         i->restyle(view, style);
 }

@@ -428,7 +428,7 @@ public:
 
     void respecify(const CSSStyleDeclarationImp* style);
     void respecifyImportant(const CSSStyleDeclarationImp* style);
-    void recompute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle, Node node);
+    void recompute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle, Element element);
 
     void updateCounters(ViewCSSImp* view, CSSAutoNumberingValueImp::CounterContext* context) {
         counterReset.resetCounter(view, context);

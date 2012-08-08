@@ -1551,14 +1551,12 @@ void CSSStyleDeclarationImp::respecifyImportant(const CSSStyleDeclarationImp* st
         respecify(style, style->importantSet);
 }
 
-void CSSStyleDeclarationImp::recompute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle, Node node)
+void CSSStyleDeclarationImp::recompute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle, Element element)
 {
     if (this == parentStyle)
         return;
-
-    if (!html::HTMLElement::hasInstance(node))
+    if (!html::HTMLElement::hasInstance(element))
         return;
-    Element element(interface_cast<Element>(node));
     html::HTMLElement htmlElement(interface_cast<html::HTMLElement>(element));
     CSSStyleDeclarationImp* elementDecl = dynamic_cast<CSSStyleDeclarationImp*>(htmlElement.getStyle().self());
 
