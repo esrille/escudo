@@ -938,6 +938,9 @@ public:
     void specify(const CSSBorderWidthValueImp& specified) {
         width.specify(specified.width);
     }
+    void inherit(const CSSBorderWidthValueImp& parent) {
+        width.inherit(parent.width);
+    }
     void compute(ViewCSSImp* view, const CSSBorderStyleValueImp& borderStyle, CSSStyleDeclarationImp* style);
     float getPx() const {
         return width.getPx();

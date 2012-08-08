@@ -1344,6 +1344,21 @@ void CSSStyleDeclarationImp::inherit(const CSSStyleDeclarationImp* parentStyle, 
     case Padding:
         // ignore shorthand
         break;
+    case BorderTopWidth:
+        borderTopWidth.inherit(parentStyle->borderTopWidth);
+        break;
+    case BorderRightWidth:
+        borderRightWidth.inherit(parentStyle->borderRightWidth);
+        break;
+    case BorderBottomWidth:
+        borderBottomWidth.inherit(parentStyle->borderBottomWidth);
+        break;
+    case BorderLeftWidth:
+        borderLeftWidth.inherit(parentStyle->borderLeftWidth);
+        break;
+    case OutlineWidth:
+        outlineWidth.inherit(parentStyle->outlineWidth);
+        break;
     case FontSize:
         fontSize.inherit(parentStyle->fontSize);
         break;
