@@ -100,7 +100,7 @@ float CellBox::getBaseline() const
 
 float CellBox::adjustWidth()
 {
-    float w = getTotalWidth();
+    float w = isnanf(columnWidth) ? getTotalWidth() : columnWidth;
     TableWrapperBox* wrapper = dynamic_cast<TableWrapperBox*>(getParentBox()->getParentBox()->getParentBox());
     assert(wrapper);
     if (wrapper->getStyle()->borderCollapse.getValue() == CSSBorderCollapseValueImp::Collapse)
@@ -1173,9 +1173,10 @@ Reflow:
             if (!cellBox || cellBox->isSpanned(x, y))
                 continue;
             if (fixedLayout) {
-                tableBox->width = widths[x];
+                cellBox->columnWidth = widths[x];
                 for (unsigned i = x + 1; i < x + cellBox->getColSpan(); ++i)
-                    tableBox->width += widths[i];
+                    cellBox->columnWidth += widths[i];
+                tableBox->width += cellBox->columnWidth;
                 tableBox->width -= hs;
                 if (x == 0)
                     tableBox->width -= hs / 2.0f;
