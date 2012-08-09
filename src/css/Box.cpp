@@ -1290,21 +1290,27 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
             shrinkToFit();
         applyMinMaxWidth(getTotalWidth());
 
-        mcw += borderLeft + borderRight;
-        if (!style->paddingLeft.isPercentage())
-            mcw += style->paddingLeft.getPx();
-        if (!style->paddingRight.isPercentage())
-            mcw += style->paddingRight.getPx();
-        if (!style->marginLeft.isPercentage() && !style->marginLeft.isAuto())
-            mcw += style->marginLeft.getPx();
-        if (!style->marginRight.isPercentage() && !style->marginRight.isAuto())
-            mcw += style->marginRight.getPx();
+        if (!cell) {
+            mcw += borderLeft + borderRight;
+            if (!style->paddingLeft.isPercentage())
+                mcw += style->paddingLeft.getPx();
+            if (!style->paddingRight.isPercentage())
+                mcw += style->paddingRight.getPx();
+            if (!style->marginLeft.isPercentage() && !style->marginLeft.isAuto())
+                mcw += style->marginLeft.getPx();
+            if (!style->marginRight.isPercentage() && !style->marginRight.isAuto())
+                mcw += style->marginRight.getPx();
+        } else
+            mcw += getBlankLeft() + getBlankRight();
     } else if (cell)
         shrinkToFit();
 
     // Collapse margins with the first and the last children before calculating the auto height.
     collapseMarginBottom(context);
 
+    float h = 0.0f;
+    if (cell)
+        h = height;
     if ((style->height.isAuto() && !intrinsic) || isAnonymous() || cell) {
         float totalClearance = 0.0f;
         height = 0.0f;
@@ -1319,6 +1325,8 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         if (height != 0.0f || !dynamic_cast<LineBox*>(getFirstChild()))
             height += totalClearance;
     }
+    if (cell)
+        height = std::max(height, h);
     if (!isAnonymous()) {
         applyMinMaxHeight(context);
         // TODO: If min-height was applied, we might need to undo collapseMarginBottom().
