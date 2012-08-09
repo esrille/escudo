@@ -530,13 +530,15 @@ void BlockLevelBox::resolveMargin(ViewCSSImp* view, const ContainingBlock* conta
     if (!style->marginTop.isAuto())
         marginTop = style->marginTop.getPx();
     else
-        marginTop = 0;
+        marginTop = 0.0f;
     if (!style->marginBottom.isAuto())
         marginBottom = style->marginBottom.getPx();
     else
-        marginBottom = 0;
+        marginBottom = 0.0f;
     if (!style->height.isAuto())
         height = style->height.getPx();
+    else
+        height = 0.0f;
 }
 
 InlineLevelBox* BlockLevelBox::layOutInlineLevelBox(ViewCSSImp* view, Node node, FormattingContext* context,
