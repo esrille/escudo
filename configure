@@ -567,9 +567,6 @@ LTLIBOBJS
 LIBOBJS
 TEST_FONTS_FALSE
 TEST_FONTS_TRUE
-HAVE_AHEM_FALSE
-HAVE_AHEM_TRUE
-HAVE_AHEM
 HAVE_AEGEAN_FALSE
 HAVE_AEGEAN_TRUE
 HAVE_AEGEAN
@@ -4545,56 +4542,6 @@ else
 fi
 
 
-# check for the Ahem font (http://www.w3.org/Style/CSS/Test/Fonts/Ahem/)
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/share/fonts/ahem/AHEM____.TTF" >&5
-$as_echo_n "checking for /usr/share/fonts/ahem/AHEM____.TTF... " >&6; }
-if ${ac_cv_file__usr_share_fonts_ahem_AHEM_____TTF+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  test "$cross_compiling" = yes &&
-  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
-if test -r "/usr/share/fonts/ahem/AHEM____.TTF"; then
-  ac_cv_file__usr_share_fonts_ahem_AHEM_____TTF=yes
-else
-  ac_cv_file__usr_share_fonts_ahem_AHEM_____TTF=no
-fi
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_share_fonts_ahem_AHEM_____TTF" >&5
-$as_echo "$ac_cv_file__usr_share_fonts_ahem_AHEM_____TTF" >&6; }
-if test "x$ac_cv_file__usr_share_fonts_ahem_AHEM_____TTF" = xyes; then :
-  HAVE_AHEM=/usr/share/fonts/ahem/AHEM____.TTF
-
-fi
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/share/fonts/truetype/ahem/AHEM____.TTF" >&5
-$as_echo_n "checking for /usr/share/fonts/truetype/ahem/AHEM____.TTF... " >&6; }
-if ${ac_cv_file__usr_share_fonts_truetype_ahem_AHEM_____TTF+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  test "$cross_compiling" = yes &&
-  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
-if test -r "/usr/share/fonts/truetype/ahem/AHEM____.TTF"; then
-  ac_cv_file__usr_share_fonts_truetype_ahem_AHEM_____TTF=yes
-else
-  ac_cv_file__usr_share_fonts_truetype_ahem_AHEM_____TTF=no
-fi
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_share_fonts_truetype_ahem_AHEM_____TTF" >&5
-$as_echo "$ac_cv_file__usr_share_fonts_truetype_ahem_AHEM_____TTF" >&6; }
-if test "x$ac_cv_file__usr_share_fonts_truetype_ahem_AHEM_____TTF" = xyes; then :
-  HAVE_AHEM=/usr/share/fonts/truetype/ahem/AHEM____.TTF
-
-fi
-
- if test x"$HAVE_AHEM" != x; then
-  HAVE_AHEM_TRUE=
-  HAVE_AHEM_FALSE='#'
-else
-  HAVE_AHEM_TRUE='#'
-  HAVE_AHEM_FALSE=
-fi
-
-
  if test x"$TEST_FONTS" != x; then
   TEST_FONTS_TRUE=
   TEST_FONTS_FALSE='#'
@@ -4763,10 +4710,6 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HAVE_AEGEAN_TRUE}" && test -z "${HAVE_AEGEAN_FALSE}"; then
   as_fn_error $? "conditional \"HAVE_AEGEAN\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
-if test -z "${HAVE_AHEM_TRUE}" && test -z "${HAVE_AHEM_FALSE}"; then
-  as_fn_error $? "conditional \"HAVE_AHEM\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${TEST_FONTS_TRUE}" && test -z "${TEST_FONTS_FALSE}"; then

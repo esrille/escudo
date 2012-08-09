@@ -43,8 +43,7 @@ POST_UNINSTALL = :
 @HAVE_IPA_PGOTHIC_TRUE@am__append_5 = -DHAVE_IPA_PGOTHIC=\"$(HAVE_IPA_PGOTHIC)\"
 @HAVE_IPA_PMINCHO_TRUE@am__append_6 = -DHAVE_IPA_PMINCHO=\"$(HAVE_IPA_PMINCHO)\"
 @HAVE_AEGEAN_TRUE@am__append_7 = -DHAVE_AEGEAN=\"$(HAVE_AEGEAN)\"
-@HAVE_AHEM_TRUE@am__append_8 = -DHAVE_AHEM=\"$(HAVE_AHEM)\"
-@TEST_FONTS_TRUE@am__append_9 = -DTEST_FONTS=\"$(TEST_FONTS)\"
+@TEST_FONTS_TRUE@am__append_8 = -DTEST_FONTS=\"$(TEST_FONTS)\"
 noinst_PROGRAMS = harness$(EXEEXT) Any.test$(EXEEXT) \
 	FontManager.test$(EXEEXT) URL.test$(EXEEXT) \
 	HTTPHeader.test$(EXEEXT) HTTPRequest.test$(EXEEXT) \
@@ -592,7 +591,6 @@ EXEEXT = @EXEEXT@
 FREETYPE_CPPFLAGS = @FREETYPE_CPPFLAGS@
 FREETYPE_LIBS = @FREETYPE_LIBS@
 HAVE_AEGEAN = @HAVE_AEGEAN@
-HAVE_AHEM = @HAVE_AHEM@
 HAVE_IPA_GOTHIC = @HAVE_IPA_GOTHIC@
 HAVE_IPA_MINCHO = @HAVE_IPA_MINCHO@
 HAVE_IPA_PGOTHIC = @HAVE_IPA_PGOTHIC@
@@ -1215,7 +1213,7 @@ AM_YFLAGS = -d -v -t
 libesfontmanager_a_CPPFLAGS = $(AM_CPPFLAGS) $(am__append_1) \
 	$(am__append_2) $(am__append_3) $(am__append_4) \
 	$(am__append_5) $(am__append_6) $(am__append_7) \
-	$(am__append_8) $(am__append_9)
+	$(am__append_8)
 libesfontmanager_a_SOURCES = \
 	src/font/FontManager.cpp \
 	src/font/FontManager.h \

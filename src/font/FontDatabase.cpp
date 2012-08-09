@@ -17,6 +17,10 @@
 #include "FontDatabase.h"
 #include "FontManager.h"
 
+#ifndef TEST_FONTS
+#define TEST_FONTS "/var/www/html/Style/CSS/Test/Fonts"
+#endif  // TEST_FONTS
+
 namespace {
 
 const char* fontList[] =
@@ -73,9 +77,9 @@ const char* fontList[] =
     // Aegean
     HAVE_AEGEAN,
 #endif
-#ifdef HAVE_AHEM
+#ifdef TEST_FONTS
     // Ahem
-    HAVE_AHEM,
+    TEST_FONTS "/Ahem/AHEM____.TTF",
 #endif
 };
 

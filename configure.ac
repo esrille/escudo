@@ -82,11 +82,6 @@ AC_CHECK_FILE(/usr/share/fonts/gdouros-aegean/Aegean.otf,[AC_SUBST(HAVE_AEGEAN,/
 AC_CHECK_FILE(/usr/share/fonts/truetype/ttf-ancient-scripts/Aegean600.ttf,[AC_SUBST(HAVE_AEGEAN,/usr/share/fonts/truetype/ttf-ancient-scripts/Aegean600.ttf)])
 AM_CONDITIONAL([HAVE_AEGEAN], [test x"$HAVE_AEGEAN" != x])
 
-# check for the Ahem font (http://www.w3.org/Style/CSS/Test/Fonts/Ahem/)
-AC_CHECK_FILE(/usr/share/fonts/ahem/AHEM____.TTF,[AC_SUBST(HAVE_AHEM,/usr/share/fonts/ahem/AHEM____.TTF)])
-AC_CHECK_FILE(/usr/share/fonts/truetype/ahem/AHEM____.TTF,[AC_SUBST(HAVE_AHEM,/usr/share/fonts/truetype/ahem/AHEM____.TTF)])
-AM_CONDITIONAL([HAVE_AHEM], [test x"$HAVE_AHEM" != x])
-
 AM_CONDITIONAL([TEST_FONTS], [test x"$TEST_FONTS" != x])
 
 AC_OUTPUT

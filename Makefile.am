@@ -577,9 +577,6 @@ endif
 if HAVE_AEGEAN
 libesfontmanager_a_CPPFLAGS += -DHAVE_AEGEAN=\"$(HAVE_AEGEAN)\"
 endif	
-if HAVE_AHEM
-libesfontmanager_a_CPPFLAGS += -DHAVE_AHEM=\"$(HAVE_AHEM)\"
-endif	
 if TEST_FONTS
 libesfontmanager_a_CPPFLAGS += -DTEST_FONTS=\"$(TEST_FONTS)\"
 endif	
