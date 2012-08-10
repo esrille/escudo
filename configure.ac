@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script
-AC_INIT([escort], [0.2.1])
+AC_INIT([escort], [0.2.2])
 AC_CONFIG_AUX_DIR(.)
 AM_INIT_AUTOMAKE([foreign no-define])
 AC_PROG_YACC

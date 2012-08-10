@@ -1,3 +1,358 @@
+2012-08-10 09:08  Shiki.Okasaka@gmail.com
+
+	* src/harness.cpp: (harness) : Fix a bug.
+
+2012-08-10 08:37  Shiki.Okasaka@gmail.com
+
+	* testlog, testlog/css2.1, testlog/css2.1/20110323,
+	  testlog/css2.1/20110323/implement-report-Escort-Fedora.data: New
+
+2012-08-10 08:22  Shiki.Okasaka@gmail.com
+
+	* src/harness.cpp: (harness) : Add -g option to generate log files
+	  from the report data.
+
+2012-08-09 15:57  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp: (BlockLevelBox::resolveMargin) : Fix a bug; cf.
+	  html4/c5501-mrgn-t-000
+
+2012-08-09 14:27  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp: (BlockLevelBox::layOut) : Fix bugs; cf.
+	  html4/border-spacing-values-001, etc.
+
+2012-08-09 08:12  Shiki.Okasaka@gmail.com
+
+	* src/css/Table.cpp: (TableWrapperBox::layOutTableBox,
+	  CellBox::adjustWidth) : Fix bugs in the fixed table layout
+	  algorithm; cf. html4/fixed-table-layout-006
+
+2012-08-09 05:02  Shiki.Okasaka@gmail.com
+
+	* Makefile.am, Makefile.in, configure, configure.ac,
+	  src/font/FontDatabase.cpp: TEST_FONTS) : Set to
+	  "/var/www/html/Style/CSS/Test/Fonts" by default.
+	  (HAVE_AHEM) : Remove.
+
+2012-08-08 13:35  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp:
+	  (CSSStyleDeclarationImp::inherit) : Fix to inherit computed
+	  values; cf html4/margin-em-inherit-001,
+	  html4/padding-em-inherit-001
+	  (CSSNumericValueImp::inherit, CSSNonNegativeValueImp::inherit,
+	  CSSAutoLengthValueImp::inherit, CSSNoneLengthValueImp::inherit,
+	  CSSNormalLengthValueImp::inherit,
+	  CSSBackgroundPositionValueImp::inherit,
+	  CSSVerticalAlignValueImp::inherit) : New.
+
+2012-08-08 07:28  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp:
+	  (CSSStyleDeclarationImp::inherit) : Fix to inherit computed
+	  widths for border width values; cf. html4/border-width-011
+	  (CSSBorderWidthValueImp::inherit) : New
+
+2012-08-08 06:49  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/CSSStyleDeclarationImp.cpp,
+	  src/css/CSSStyleDeclarationImp.h: (Box::restyle,
+	  CSSStyleDeclarationImp::recompute) : Fix bugs; cf.
+	  html4/dynamic-pseudo-classes-000
+
+2012-08-08 03:56  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSStyleDeclarationImp.cpp:
+	  (CSSStyleDeclarationImp::compute) : Refine the use of a part of
+	  'body' style in the root style.
+
+2012-08-07 23:43  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/CSSStyleDeclarationImp.cpp,
+	  src/css/CSSStyleDeclarationImp.h, src/css/ViewCSSImp.cpp:
+	  (Box::removeChild, BlockLevelBox::layOut,
+	  BlockLevelBox::layOutAbsolute, ViewCSSImp::createBlockLevelBox) :
+	  Refine for supporting the partial reflow.
+	  (CSSStyleDeclarationImp::removeBox) : New.
+
+2012-08-07 09:04  Shiki.Okasaka@gmail.com
+
+	* testdata/implementation-report-html4.data:
+	  (implementation-report-html4.data) : Take user style sheets from
+	  /var/www
+
+2012-08-07 08:45  Shiki.Okasaka@gmail.com
+
+	* Makefile.am, Makefile.in,
+	  testdata/implementation-report-html4.data: (EXTRA_DIST) : Add
+	  testdata/implementation-report-html4.data
+
+2012-08-07 08:37  Shiki.Okasaka@gmail.com
+
+	* src/harness.cpp: (harness) : Change the base URL to
+	  http://localhost/suites/css2.1/20110323/
+
+2012-08-07 06:56  Shiki.Okasaka@gmail.com
+
+	* src/WindowImp.cpp: (WindowImp::poll) : Fix a bug to make sure
+	  dump the render tree even if it is empty; cf. html4/root-box-003
+	  (WindowImp::mouse, WindowImp::mouseMove,
+	  WindowImp::elementFromPoint) : Add checks for the empty render
+	  tree.
+
+2012-08-07 06:31  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.cpp:
+	  (CSSVerticalAlignValueImp::getOffset) : Fix an assertion; cf.
+	  html4/first-line-pseudo-012
+
+2012-08-07 06:02  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.h: (Box::isInside) : Activate 'hover' inside the
+	  border edge, not inside the margin edge; cf. html4/cursor-003
+
+2012-08-07 03:56  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp:
+	  (CSSStyleDeclarationImp::compute) : Fix a bug; cf.
+	  htm4/background-root-008
+
+2012-08-07 03:20  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.cpp,
+	  src/css/CSSStyleDeclarationImp.cpp:
+	  (CSSStyleDeclarationImp::compute) : If the lengths are given by
+	  'em' or 'ex' from the body style in the html root style, refer
+	  the font size of the 'body' style; cf.
+	  html4/background-position-001
+	  (CSSNumericValue::compute, CSSNumericValue::resolve) : Refine for
+	  supporting the partial reflow.
+
+2012-08-07 03:00  Shiki.Okasaka@gmail.com
+
+	* src/harness.cpp: (harness) : Run test more smoothly by
+	  eliminating the barrier.
+
+2012-08-06 13:10  Shiki.Okasaka@gmail.com
+
+	* src/http/HTTPConnection.cpp: (HttpConnection::done) : Reset the
+	  retry count upon successwq
+
+2012-08-06 07:48  Shiki.Okasaka@gmail.com
+
+	* src/harness.cpp: (harness) : Set the exit code to EXIT_SUCCESS
+	  when there's no changes, and EXIT_FAILURE otherwise in the
+	  headless and update mode.
+
+2012-08-05 09:16  Shiki.Okasaka@gmail.com
+
+	* src/harness.cpp: (harness) : Fix a bug.
+
+2012-08-05 09:06  Shiki.Okasaka@gmail.com
+
+	* src/harness.cpp: (harness) : Refine the outputs during the
+	  automated test.
+
+2012-08-05 04:46  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.cpp: (CSSFontWeightValueImp::compute)
+	  : Fix a bug; cf. html4/c525-font-wt-000.htm
+
+2012-08-05 03:43  Shiki.Okasaka@gmail.com
+
+	* src/css/LineBox.cpp: (BlockLevelBox::layOutText) : Remove a wrong
+	  assertion. Note when the leading white spaces are stripped,
+	  'position' can be greater than zero; cf.
+	  html4/first-letter-selector-000
+
+2012-08-05 03:34  Shiki.Okasaka@gmail.com
+
+	* src/css/LineBox.cpp: (BlockLevelBox::getPsuedoStyles) : Fix bugs.
+	  Note CSSStyleDeclarationImp::compute checks the pseudo element
+	  selector type.
+
+2012-08-04 14:27  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/Box.h: (Box::removeChild,
+	  BlockLevelBox::layOutInline) : Add workarounds for laying out
+	  floating boxes in the 2nd automatic table layout pass; more
+	  fundamental changes should be designed later.
+
+2012-08-03 07:41  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSStyleDeclarationImp.cpp,
+	  src/css/CSSStyleDeclarationImp.h:
+	  (CSSStyleDeclarationImp::unresolve,
+	  CSSStyleDeclarationImp::compute) : Fix bugs introduced in r2873.
+
+2012-08-03 06:09  Shiki.Okasaka@gmail.com
+
+	* src/css/Table.cpp: (TableWrapperBox::layOutTableBox) : Reset
+	  heights in each pass.
+
+2012-08-03 04:15  Shiki.Okasaka@gmail.com
+
+	* src/css/Table.cpp: (CellBox::shrinkTo) : Fix a bug; cf. r2889
+
+2012-08-02 03:49  Shiki.Okasaka@gmail.com
+
+	* src/css/Table.cpp: (TableWrapperBox::processCell) : Do not
+	  distribute the extra width to columns whose widths are zero.
+
+2012-08-01 12:01  Shiki.Okasaka@gmail.com
+
+	* src/css/Table.cpp: (TableWrapperBox::layOutTableBox,
+	  CellBox::adjustWidth) : Refine the automatic table layout
+	  algorithm and distribute the extra width to cells with less than
+	  maximum cell widths firstly.
+
+2012-08-01 09:04  Shiki.Okasaka@gmail.com
+
+	* src/html/HTMLElementImp.cpp, src/html/HTMLElementImp.h,
+	  src/html/HTMLInputElementImp.cpp: (HTMLInputElementImp::eval) :
+	  Map 'size' to 'min-width'.
+	  (HTMLElementImp::toUnsigned) : New.
+	  (HTMLElementImp::toPx) : Refine.
+
+2012-08-01 08:11  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp,
+	  src/css/CSSStyleDeclarationImp.h, src/css/ViewCSSImp.cpp:
+	  (CSSStyleDeclarationImp::compute, ViewCSSImp::cascade,
+	  ViewCSSImp::layOutBlockBoxes) : Refine the shortcomings in r2884.
+	  (CSSColorValueImp::getSpecified) : New.
+
+2012-08-01 06:09  Shiki.Okasaka@gmail.com
+
+	* src/css/Table.cpp, src/css/Table.h: (CellBox::adjustWidth) : Fix
+	  a bug; cf. html4/table-intro-example-002
+	  (TableWrapperBox::getColumnCount, TableWrapperBox::getRowCount) :
+	  New.
+	  (TableWrapperBox::layOutTableBox) : Fix a bug; cf.
+	  html4/table-intro-example-003
+
+2012-08-01 06:08  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp: (BlockLevelBox::setContainingBlock) : Fix not to
+	  crash; cf. html4/tables-001
+
+2012-07-31 15:02  Shiki.Okasaka@gmail.com
+
+	* src/css/ViewCSSImp.cpp: (ViewCSSImp::layOutBlockBoxes) : Fix a
+	  bug; note if the style of the root element is changed, probably
+	  we can simply reflow; cf.
+	  html4/abspos-containing-block-initial-004e
+
+2012-07-31 14:58  Shiki.Okasaka@gmail.com
+
+	* src/css/Table.cpp: (TableWrapperBox::processCell) : Do not set a
+	  style to an anonymous cell; cf.
+	  html4/abspos-containing-block-initial-004e
+
+2012-07-31 09:40  Shiki.Okasaka@gmail.com
+
+	* src/css/BoxGL.cpp, src/css/ViewCSSImp.h,
+	  src/css/ViewCSSImpGL.cpp: (Box::renderBorder) : Paint the entire
+	  background of the canvas; cf.
+	  html4/abspos-containing-block-initial-004c
+	  (ViewCSSImp::renderCanvas) : New.
+
+2012-07-31 07:57  Shiki.Okasaka@gmail.com
+
+	* src/css/BoxGL.cpp: (BlockLevelBox::renderNonInline,
+	  LineBox::render) : Fix bugs; cf. max-width-106
+
+2012-07-31 05:17  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/Table.cpp:
+	  (TableWrapperBox::layOutAbsolute,
+	  TableWrapperBox::layOutTableBox, BlockLevelBox::layOutAbsolute) :
+	  Fix bugs; cf. html4/abspos-006
+
+2012-07-30 10:57  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.h, src/css/Table.cpp, src/css/Table.h:
+	  (BlockLevelBox::layOutAbsolute) : Make this function virtual to
+	  support absolutely positioned tables; cf.
+	  html4/table-percent-width-001
+	  (TableWrapperBox::layOutAbsolute,
+	  TableWrapperBox::layOutTableBox) : New.
+	  (TableWrapperBox::layOut) : Clean up.
+
+2012-07-30 03:48  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/Box.h, src/css/Table.cpp:
+	  (BlockLevelBox::resolveMargin) : Remove the unused 3rd parameter.
+	  All callers changed.
+
+2012-07-30 03:40  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/Box.h:
+	  (BlockLevelBox::resolveWidth(ViewCSSImp*, const ContainingBlock*,
+	  float)) : Remove
+
+2012-07-29 07:00  Shiki.Okasaka@gmail.com
+
+	* src/http/HTTPConnection.cpp: (HttpConnection::done) : Fix a bug
+	  that occasionally causes a crash while attempting a redirection.
+
+2012-07-29 06:29  Shiki.Okasaka@gmail.com
+
+	* src/css/Table.cpp: (TableWrapperBox::layOut) : Use MAX if
+	  possible; cf.
+	  http://www.w3.org/TR/CSS2/tables.html#auto-table-layout
+
+2012-07-29 05:09  Shiki.Okasaka@gmail.com
+
+	* src/DocumentImp.cpp, src/html/HTMLTitleElementImp.cpp:
+	  (DocumentImp::getTitle) : Collapse sequences of white space; cf.
+	  http://www.whatwg.org/specs/web-apps/current-work/multipage/dom.html#document.title
+	  (DocumentImp::setTitle, HTMLTitleElementImp::getText,
+	  HTMLTitleElementImp::setText) : Add more details.
+
+2012-07-28 11:30  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/Box.h, src/css/CSSPropertyValueImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp,
+	  src/css/CSSStyleDeclarationImp.h, src/css/FormattingContext.cpp,
+	  src/css/LineBox.cpp, src/css/StackingContext.cpp,
+	  src/css/StackingContext.h, src/css/Table.cpp, src/css/Table.h:
+	  (TableWrapperBox::layOut, TableWrapperBox::layOutAuto,
+	  TableWrapperBox::layOutAutoColgroup,
+	  BlockLevelBox::layOutInlineLevelBox, BlockLevelBox::layOutInline,
+	  BlockLevelBox::layOutChildren, BlockLevelBox::layOut,
+	  FormattingContext::nextLine) : Refine automatic table layout.
+	  (BlockLevelBox::layOutText) : Compute the minimum content width
+	  of the contained box.
+	  (Box::getMCW, Box::unresolveStyle, BlockLevelBox::updateMCW,
+	  CellBox::adjustWidth, CSSAutoLengthValueImp::getPercentage,
+	  CSSStyleDeclarationImp::unresolve, StackingContext::removeBox, )
+	  : New.
+
+2012-07-26 03:39  Shiki.Okasaka@gmail.com
+
+	* src/html/HTMLLinkElementImp.cpp: (HTMLLinkElementImp::eval) : Fix
+	  a bug.
+
+2012-07-25 05:17  Shiki.Okasaka@gmail.com
+
+	* src/MediaListImp.cpp, src/css/CSSGrammar.yy,
+	  src/css/CSSParser.cpp, src/css/CSSParser.h,
+	  src/css/CSSTokenizer.h, src/css/CSSTokenizer.re,
+	  src/html/HTMLLinkElementImp.cpp: (HTMLLinkElementImp::eval) :
+	  Check the media attribute.
+	  (MediaListImp::setMediaText) : Add details.
+	  (CSSParser::parseMediaList, etc.) : New.
+
+2012-07-24 03:36  Shiki.Okasaka@gmail.com
+
+	* ChangeLog, configure, configure.ac: Set version to 0.2.1
+
 2012-07-22 04:12  Shiki.Okasaka@gmail.com
 
 	* src/css/CSSGrammar.yy: (font_face) : Fix to return zero anyway.
