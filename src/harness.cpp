@@ -486,8 +486,8 @@ int main(int argc, char* argv[])
             std::stringstream s(line, std::stringstream::in);
             s >> url;
             s >> result;
-            std::getline(s, line);
-            result += line;
+            if (std::getline(s, line))
+                result += line;
         }
         if (url.empty())
             continue;
