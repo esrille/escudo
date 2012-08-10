@@ -37,6 +37,7 @@ enum {
     HEADLESS,
     REPORT,
     UPDATE,
+    GENERATE,
 
     // exit status codes
     ES_PASS = 0,
@@ -303,7 +304,7 @@ int reduce(std::ostream& report, int option = 0)
     return count;
 }
 
-void map(std::ostream& report, int mode, int argc, char* argv[], const std::string& url, const std::string& userStyle, const std::string& testFonts, unsigned timeout)
+void map(std::ostream& report, int mode, int argc, char* argv[], const std::string& url, const std::string& userStyle, const std::string& testFonts, unsigned timeout, std::string result = "")
 {
     assert(forkCount < forkMax);
     pid_t pid = fork();
@@ -325,6 +326,9 @@ void map(std::ostream& report, int mode, int argc, char* argv[], const std::stri
         pid_t pid = -1;
         std::string output;
         switch (mode) {
+        case GENERATE:
+            evaluation = result;
+            // FALL THROUGH
         case UPDATE:
             if (evaluation[0] == '?')
                 break;
@@ -334,21 +338,28 @@ void map(std::ostream& report, int mode, int argc, char* argv[], const std::stri
             break;
         }
 
-        std::string result;
         if (0 < pid && output.empty())
             result = "fatal";
-        else if (mode == HEADLESS) {
-            if (evaluation != "?" && output != log)
-                result = "uncertain";
-            else
+        else {
+            switch (mode) {
+            case HEADLESS:
+                if (evaluation != "?" && output != log)
+                    result = "uncertain";
+                else
+                    result = evaluation;
+                break;
+            case UPDATE:
+            case GENERATE:
                 result = evaluation;
-        } else if (mode == UPDATE) {
-            result = evaluation;
-            if (result[0] != '?') {
-                if (!saveLog(path, url, result, output)) {
-                    std::cerr << "error: failed to open the report file\n";
-                    exit(EXIT_FAILURE);
+                if (result[0] != '?') {
+                    if (!saveLog(path, url, result, output)) {
+                        std::cerr << "error: failed to open the report file\n";
+                        exit(EXIT_FAILURE);
+                    }
                 }
+                break;
+            default:
+                break;
             }
         }
         if (0 < pid)
@@ -387,6 +398,9 @@ int main(int argc, char* argv[])
         case 'i':
             mode = INTERACTIVE;
             timeout = 0;
+            break;
+        case 'g':
+            mode = GENERATE;
             break;
         case 'r':
             mode = REPORT;
@@ -471,14 +485,20 @@ int main(int argc, char* argv[])
             undo = url;
             std::stringstream s(line, std::stringstream::in);
             s >> url;
+            s >> result;
+            std::getline(s, line);
+            result += line;
         }
         if (url.empty())
             continue;
+        if (result.empty())
+            result = "?";
 
         switch (mode) {
         case HEADLESS:
         case UPDATE:
-            map(report, mode, argc - argi, args, url, userStyle, testFonts, timeout);
+        case GENERATE:
+            map(report, mode, argc - argi, args, url, userStyle, testFonts, timeout, result);
             break;
         default:
             result = test(mode, argc - argi, args, url, userStyle, testFonts, timeout);
