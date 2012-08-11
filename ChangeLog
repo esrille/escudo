@@ -1,3 +1,7 @@
+2012-08-10 10:00  Shiki.Okasaka@gmail.com
+
+	* ChangeLog, configure, configure.ac: Set version to 0.2.2
+
 2012-08-10 09:08  Shiki.Okasaka@gmail.com
 
 	* src/harness.cpp: (harness) : Fix a bug.

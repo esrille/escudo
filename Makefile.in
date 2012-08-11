@@ -1644,7 +1644,7 @@ EXTRA_DIST = \
 	escort.spec.in \
 	escort.spec \
 	data/escort/about/index.html.in \
-	testdata/implementation-report-html4.data \
+	testlog/css2.1/20110323/implement-report-Escort-Fedora.data \
 	LICENSE \
 	NOTICE \
 	config.h \
