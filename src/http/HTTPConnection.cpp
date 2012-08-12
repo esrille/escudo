@@ -29,14 +29,23 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 using namespace http;
 
-HttpConnection::HttpConnection(const std::string& hostname, const std::string& port) :
+HttpConnection::HttpConnection(const std::string& protocol, const std::string& hostname, const std::string& port) :
     state(Closed),
     retryCount(0),
+    protocol(protocol),
     hostname(hostname),
     port(port),
     socket(HttpConnectionManager::getIOService()),
+    context(boost::asio::ssl::context::sslv23),
+    secureSocket(socket, context),
     current(0)
 {
+    if (protocol == "https:") {
+        context.set_options(boost::asio::ssl::context::no_sslv2);
+        context.set_default_verify_paths();
+        secureSocket.set_verify_mode(boost::asio::ssl::verify_peer);
+        secureSocket.set_verify_callback(boost::asio::ssl::rfc2818_verification(hostname));
+    }
 }
 
 void HttpConnection::sendRequest()
@@ -47,7 +56,7 @@ void HttpConnection::sendRequest()
     std::ostream stream(&request);
     stream << current->getRequestMessage().toString();
     stream << "\r\n";
-    boost::asio::async_write(socket, request, boost::bind(&HttpConnection::handleWriteRequest, this, boost::asio::placeholders::error));
+    asyncWrite(request, boost::bind(&HttpConnection::handleWriteRequest, this, boost::asio::placeholders::error));
 }
 
 void HttpConnection::done(HttpConnectionManager* manager, bool error)
@@ -121,12 +130,17 @@ void HttpConnection::handleConnect(const boost::system::error_code& err, boost::
         std::cerr << __func__ << ' ' << err << '\n';
 
     if (!err) {
-        state = Connected;
-        boost::asio::ip::tcp::no_delay option(true);
-        socket.set_option(option);
-        if (current) {
-            sendRequest();
-            boost::asio::async_read(socket, response, boost::asio::transfer_at_least(1), boost::bind(&HttpConnection::handleRead, this, boost::asio::placeholders::error));
+        if (protocol == "https:" && state == Resolved) {
+            state = Handshaking;
+            secureSocket.async_handshake(boost::asio::ssl::stream_base::client, boost::bind(&HttpConnection::handleHandshake, this, boost::asio::placeholders::error));
+        } else {
+            state = Connected;
+            boost::asio::ip::tcp::no_delay option(true);
+            socket.set_option(option);
+            if (current) {
+                sendRequest();
+                asyncRead(response, boost::asio::transfer_at_least(1), boost::bind(&HttpConnection::handleRead, this, boost::asio::placeholders::error));
+            }
         }
         return;
     }
@@ -136,6 +150,25 @@ void HttpConnection::handleConnect(const boost::system::error_code& err, boost::
         socket.async_connect(endpoint, boost::bind(&HttpConnection::handleConnect, this, boost::asio::placeholders::error, ++endpointIterator));
         return;
     }
+    HttpConnectionManager::getInstance().done(this, true);
+}
+
+void HttpConnection::handleHandshake(const boost::system::error_code& err)
+{
+    if (3 <= getLogLevel())
+        std::cerr << __func__ << ' ' << err << '\n';
+
+    if (!err) {
+        state = Connected;
+        boost::asio::ip::tcp::no_delay option(true);
+        socket.set_option(option);
+        if (current) {
+            sendRequest();
+            asyncRead(response, boost::asio::transfer_at_least(1), boost::bind(&HttpConnection::handleRead, this, boost::asio::placeholders::error));
+        }
+        return;
+    }
+    close();
     HttpConnectionManager::getInstance().done(this, true);
 }
 
@@ -205,7 +238,7 @@ void HttpConnection::readStatusLine(const boost::system::error_code& err)
         }
         line += std::string(start, response.size());
         response.consume(response.size());
-        boost::asio::async_read(socket, response, boost::asio::transfer_at_least(1), boost::bind(&HttpConnection::handleRead, this, boost::asio::placeholders::error));
+        asyncRead(response, boost::asio::transfer_at_least(1), boost::bind(&HttpConnection::handleRead, this, boost::asio::placeholders::error));
         return;
     }
     ++eol;
@@ -252,7 +285,7 @@ void HttpConnection::readHead(const boost::system::error_code& err)
             }
             line += std::string(start, response.size());
             response.consume(response.size());
-            boost::asio::async_read(socket, response, boost::asio::transfer_at_least(1), boost::bind(&HttpConnection::handleRead, this, boost::asio::placeholders::error));
+            asyncRead(response, boost::asio::transfer_at_least(1), boost::bind(&HttpConnection::handleRead, this, boost::asio::placeholders::error));
             return;
         }
         ++eol;
@@ -291,7 +324,7 @@ void HttpConnection::readHead(const boost::system::error_code& err)
         current->constructResponseFromCache();
         HttpConnectionManager::getInstance().done(this, false);
         if (!err)
-            boost::asio::async_read(socket, response, boost::asio::transfer_at_least(1), boost::bind(&HttpConnection::handleRead, this, boost::asio::placeholders::error));
+            asyncRead(response, boost::asio::transfer_at_least(1), boost::bind(&HttpConnection::handleRead, this, boost::asio::placeholders::error));
         return;
     default:
         break;
@@ -332,7 +365,7 @@ void HttpConnection::readContent(const boost::system::error_code& err)
             }
         }
         if (!err && !completed) {
-            boost::asio::async_read(socket, response, boost::asio::transfer_at_least(1), boost::bind(&HttpConnection::handleRead, this, boost::asio::placeholders::error));
+            asyncRead(response, boost::asio::transfer_at_least(1), boost::bind(&HttpConnection::handleRead, this, boost::asio::placeholders::error));
             return;
         }
         content.flush();
@@ -348,7 +381,7 @@ void HttpConnection::readContent(const boost::system::error_code& err)
     }
     HttpConnectionManager::getInstance().done(this, err);
     state = CloseWait;
-    boost::asio::async_read(socket, response, boost::asio::transfer_at_least(1), boost::bind(&HttpConnection::handleRead, this, boost::asio::placeholders::error));
+    asyncRead(response, boost::asio::transfer_at_least(1), boost::bind(&HttpConnection::handleRead, this, boost::asio::placeholders::error));
 }
 
 void HttpConnection::readChunk(const boost::system::error_code& err)
@@ -415,7 +448,7 @@ void HttpConnection::readChunk(const boost::system::error_code& err)
             }
         }
         if (!err) {
-            boost::asio::async_read(socket, response, boost::asio::transfer_at_least(1), boost::bind(&HttpConnection::handleRead, this, boost::asio::placeholders::error));
+            asyncRead(response, boost::asio::transfer_at_least(1), boost::bind(&HttpConnection::handleRead, this, boost::asio::placeholders::error));
             return;
         }
     }
@@ -437,7 +470,7 @@ void HttpConnection::readTrailer(const boost::system::error_code& err)
                         close();
                     else {
                         state = CloseWait;
-                        boost::asio::async_read(socket, response, boost::asio::transfer_at_least(1), boost::bind(&HttpConnection::handleRead, this, boost::asio::placeholders::error));
+                        asyncRead(response, boost::asio::transfer_at_least(1), boost::bind(&HttpConnection::handleRead, this, boost::asio::placeholders::error));
                     }
                     return;
                 }
@@ -445,7 +478,7 @@ void HttpConnection::readTrailer(const boost::system::error_code& err)
                 chunkCRLF = 0;
         }
         if (!err) {
-            boost::asio::async_read(socket, response, boost::asio::transfer_at_least(1), boost::bind(&HttpConnection::handleRead, this, boost::asio::placeholders::error));
+            asyncRead(response, boost::asio::transfer_at_least(1), boost::bind(&HttpConnection::handleRead, this, boost::asio::placeholders::error));
             return;
         }
     }
@@ -487,13 +520,13 @@ void HttpConnection::abort(HttpRequest* request)
     done(&HttpConnectionManager::getInstance(), true);
 }
 
-HttpConnection* HttpConnectionManager::getConnection(const std::string& hostname, const std::string& port)
+HttpConnection* HttpConnectionManager::getConnection(const std::string& protocol, const std::string& hostname, const std::string& port)
 {
     for (auto i = connections.begin(); i != connections.end(); ++i) {
-        if ((*i)->hostname == hostname && (*i)->port == port)
+        if ((*i)->protocol == protocol && (*i)->hostname == hostname && (*i)->port == port)
             return *i;
     }
-    HttpConnection* c = new(std::nothrow) HttpConnection(hostname, port);
+    HttpConnection* c = new(std::nothrow) HttpConnection(protocol, hostname, port);
     if (c)
         connections.push_back(c);
     return c;
@@ -504,9 +537,10 @@ void HttpConnectionManager::send(HttpRequest* request)
     std::lock_guard<std::recursive_mutex> lock(mutex);
 
     URI uri(request->getRequestMessage().getURL());
+    std::string protocol = uri.getProtocol();
     std::string hostname = uri.getHostname();
     std::string port = uri.getPort();
-    HttpConnection* conn = getConnection(hostname, port);
+    HttpConnection* conn = getConnection(protocol, hostname, port);
     if (!conn)
         return;
     conn->send(request);
@@ -519,9 +553,10 @@ void HttpConnectionManager::abort(HttpRequest* request)
     if (request->getReadyState() != HttpRequest::COMPLETE) {
         if (!request->cache || !request->cache->abort(request)) {
             URI uri(request->getRequestMessage().getURL());
+            std::string protocol = uri.getProtocol();
             std::string hostname = uri.getHostname();
             std::string port = uri.getPort();
-            HttpConnection* conn = getConnection(hostname, port);
+            HttpConnection* conn = getConnection(protocol, hostname, port);
             if (conn)
                 conn->abort(request);
         }

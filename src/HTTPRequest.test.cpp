@@ -23,6 +23,7 @@
 #include <boost/iostreams/stream.hpp>
 #include <boost/iostreams/device/file_descriptor.hpp>
 
+#include "Test.util.h"
 #include "utf.h"
 
 using namespace org::w3c::dom::bootstrap;
@@ -65,6 +66,8 @@ int test(std::u16string urlString)
 
 int main(int argc, char* argv[])
 {
+    initLogLevel(&argc, argv, 3);
+
     int result = 0;
     if (2 <= argc)
         return test(utfconv(argv[1]));

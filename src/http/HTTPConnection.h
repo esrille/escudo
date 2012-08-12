@@ -22,6 +22,7 @@
 #include <thread>
 
 #include <boost/asio.hpp>
+#include <boost/asio/ssl.hpp>
 
 #include "http/HTTPCache.h"
 
@@ -48,7 +49,7 @@ public:
     {
     }
 
-    HttpConnection* getConnection(const std::string& hostname, const std::string& port);
+    HttpConnection* getConnection(const std::string& protocol, const std::string& hostname, const std::string& port);
     void send(HttpRequest* request);
     void abort(HttpRequest* request);
     void done(HttpConnection* conn, bool error);
@@ -85,6 +86,7 @@ class HttpConnection
         Resolving,
         Resolved,
         Connected,
+        Handshaking,
         // RequestSent,
         ReadStatusLine,
         ReadHead,
@@ -100,6 +102,7 @@ class HttpConnection
     int retryCount;
     std::string line;  // line buffer
 
+    std::string protocol;
     std::string hostname;
     std::string port;
 
@@ -107,6 +110,9 @@ class HttpConnection
     boost::asio::ip::tcp::socket socket;
     boost::asio::streambuf request;
     boost::asio::streambuf response;
+
+    boost::asio::ssl::context context;
+    boost::asio::ssl::stream<boost::asio::ip::tcp::socket&> secureSocket;
 
     unsigned long long octetCount;
     unsigned long long contentLength;
@@ -122,6 +128,7 @@ class HttpConnection
 
     void handleResolve(const boost::system::error_code& err, boost::asio::ip::tcp::resolver::iterator endpointIterator);
     void handleConnect(const boost::system::error_code& err, boost::asio::ip::tcp::resolver::iterator endpointIterator);
+    void handleHandshake(const boost::system::error_code& err);
     void handleWriteRequest(const boost::system::error_code& err);
     void handleRead(const boost::system::error_code& err);
 
@@ -138,8 +145,24 @@ class HttpConnection
     void abort(HttpRequest* request);
     void done(HttpConnectionManager* manager, bool error);
 
+    template<typename CompletionCondition, typename ReadHandler>
+    void asyncRead(boost::asio::streambuf& buffers, CompletionCondition completionCondition, ReadHandler handler) {
+        if (protocol == "https:")
+            boost::asio::async_read(secureSocket, buffers, completionCondition, handler);
+        else
+            boost::asio::async_read(socket, buffers, completionCondition, handler);
+    }
+
+    template<typename WriteHandler>
+    void asyncWrite(boost::asio::streambuf& buffers, WriteHandler handler) {
+        if (protocol == "https:")
+            boost::asio::async_write(secureSocket, buffers, handler);
+        else
+            boost::asio::async_write(socket, buffers, handler);
+    }
+
 public:
-    HttpConnection(const std::string& hostname, const std::string& port);
+    HttpConnection(const std::string& protocol, const std::string& hostname, const std::string& port);
 };
 
 }}}}  // org::w3c::dom::bootstrap
