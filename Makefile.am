@@ -1263,7 +1263,7 @@ dist_aboutdata_DATA =  \
 	data/escort/about/escort_128.png
 
 clean-local:
-	rm -rf org css html $(generated_sources) $(generated_headers) $(generated_scanners) *.output
+	rm -rf $(generated_sources) $(generated_headers) $(generated_scanners) *.output
 
 dist-hook:
 	-rm -f $(distdir)/CSSGrammar.cc $(distdir)/CSSGrammar.h
