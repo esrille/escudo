@@ -17,11 +17,11 @@
 
 BASE_BIN_DIR=`dirname $0`
 BASE_DIR=`dirname $BASE_BIN_DIR`
-if [ -d "$BASE_DIR/libexec" ];
+if [ -d "$BASE_DIR/libexec/esrille" ];
 then
 BASE_LIBEXEC_DIR="$BASE_DIR/libexec/esrille/escort"
 else
-BASE_LIBEXEC_DIR="$BASE_DIR/lib/escort/esrille/escort"
+BASE_LIBEXEC_DIR="$BASE_DIR/lib/esrille/escort"
 fi
 BASE_DATA_DIR="$BASE_DIR/share/esrille/escort"
 PROFILE_DIR="$HOME/.esrille/escort"

@@ -28,6 +28,9 @@ AH_BOTTOM([#if 4 < __GNUC__ || __GNUC__ == 4 && 6 <= __GNUC_MINOR__
 #define HAVE_NULLPTR 1
 #endif])
 
+# check systems not following FHS (http://www.pathname.com/fhs)
+AM_CONDITIONAL([HAVE_LIBEXEC], [test -d /usr/libexec])
+
 # check for icu-config
 AC_PATH_PROG(icu_config, icu-config, no)
 if test "$icu_config" = "no"; then

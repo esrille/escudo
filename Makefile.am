@@ -1228,7 +1228,11 @@ Profile_test_SOURCES = src/Profile.test.cpp
 
 dist_bin_SCRIPTS = app/escort
 
+if HAVE_LIBEXEC
 esrillelibexecdir = $(libexecdir)/esrille
+else
+esrillelibexecdir = $(libdir)/esrille
+endif
 escortlibexecdir = $(esrillelibexecdir)/escort
 
 escortlibexec_PROGRAMS = escort

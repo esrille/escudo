@@ -594,6 +594,8 @@ freetype_config
 ICU_LIBS
 ICU_CPPFLAGS
 icu_config
+HAVE_LIBEXEC_FALSE
+HAVE_LIBEXEC_TRUE
 RANLIB
 am__fastdepCCAS_FALSE
 am__fastdepCCAS_TRUE
@@ -4037,6 +4039,16 @@ ac_config_files="$ac_config_files escort.spec Makefile data/Makefile data/16x16/
 
 
 
+# check systems not following FHS (http://www.pathname.com/fhs)
+ if test -d /usr/libexec; then
+  HAVE_LIBEXEC_TRUE=
+  HAVE_LIBEXEC_FALSE='#'
+else
+  HAVE_LIBEXEC_TRUE='#'
+  HAVE_LIBEXEC_FALSE=
+fi
+
+
 # check for icu-config
 # Extract the first word of "icu-config", so it can be a program name with args.
 set dummy icu-config; ac_word=$2
@@ -4682,6 +4694,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${am__fastdepCCAS_TRUE}" && test -z "${am__fastdepCCAS_FALSE}"; then
   as_fn_error $? "conditional \"am__fastdepCCAS\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_LIBEXEC_TRUE}" && test -z "${HAVE_LIBEXEC_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_LIBEXEC\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HAVE_LIBERATON_TRUE}" && test -z "${HAVE_LIBERATON_FALSE}"; then
