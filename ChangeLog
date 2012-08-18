@@ -1,3 +1,29 @@
+2012-08-15 11:23  Shiki.Okasaka@gmail.com
+
+	* app/escort: (BASE_LIBEXEC_DIR) : Fix for the systems which do not
+	  have 'libexec' directory.
+
+2012-08-14 08:09  Shiki.Okasaka@gmail.com
+
+	* Makefile.am, Makefile.in: (clean-local) : Leave 'org' to build in
+	  the source directory
+
+2012-08-12 06:42  Shiki.Okasaka@gmail.com
+
+	* Makefile.am, Makefile.in, escort.spec.in,
+	  src/HTTPRequest.test.cpp, src/http/HTTPConnection.cpp,
+	  src/http/HTTPConnection.h: (HttpConnection,
+	  HttpConnectionManager) : Support 'https:'
+	  (HTTPRequest.test) : Make the run level configurable
+	  (BuildRequires) : Add openssl-devel
+	  (LDADD) : Add libssl and libcrypto
+
+2012-08-11 05:29  Shiki.Okasaka@gmail.com
+
+	* ChangeLog, Makefile.am, Makefile.in,
+	  testlog/css2.1/20110323/implement-report-Escort-Fedora.data:
+	  (implement-report-Escort-Fedora.data) : Update
+
 2012-08-10 10:00  Shiki.Okasaka@gmail.com
 
 	* ChangeLog, configure, configure.ac: Set version to 0.2.2

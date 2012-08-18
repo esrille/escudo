@@ -62,8 +62,9 @@ DIST_COMMON = $(am__configure_deps) $(dist_aboutdata_DATA) \
 	$(dist_escortdata_DATA) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
 	$(srcdir)/escort.spec.in $(top_srcdir)/configure \
-	$(top_srcdir)/data/escort/about/index.html.in CSSGrammar.cc \
-	CSSGrammar.h ChangeLog depcomp install-sh missing ylwrap
+	$(top_srcdir)/data/escort/about/index.html.in \
+	$(top_srcdir)/debian/changelog.in CSSGrammar.cc CSSGrammar.h \
+	ChangeLog depcomp install-sh missing ylwrap
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -72,7 +73,8 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = escort.spec data/escort/about/index.html
+CONFIG_CLEAN_FILES = escort.spec debian/changelog \
+	data/escort/about/index.html
 CONFIG_CLEAN_VPATH_FILES =
 LIBRARIES = $(noinst_LIBRARIES)
 AR = ar
@@ -1644,6 +1646,14 @@ dist_aboutdata_DATA = \
 EXTRA_DIST = \
 	escort.spec.in \
 	escort.spec \
+	debian/changelog \
+	debian/changelog.in \
+	debian/compat \
+	debian/control \
+	debian/copyright \
+	debian/docs \
+	debian/rules \
+	debian/source/format \
 	data/escort/about/index.html.in \
 	testlog/css2.1/20110323/implement-report-Escort-Fedora.data \
 	LICENSE \
@@ -1748,6 +1758,8 @@ $(srcdir)/config.h.in:  $(am__configure_deps)
 distclean-hdr:
 	-rm -f config.h stamp-h1
 escort.spec: $(top_builddir)/config.status $(srcdir)/escort.spec.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+debian/changelog: $(top_builddir)/config.status $(top_srcdir)/debian/changelog.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 data/escort/about/index.html: $(top_builddir)/config.status $(top_srcdir)/data/escort/about/index.html.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@

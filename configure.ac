@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script
-AC_INIT([escort], [0.2.2])
+AC_INIT([escort], [0.2.3])
 AC_CONFIG_AUX_DIR(.)
 AM_INIT_AUTOMAKE([foreign no-define])
 AC_PROG_YACC
@@ -10,6 +10,7 @@ AC_PROG_RANLIB
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_FILES([
 escort.spec
+debian/changelog
 Makefile
 data/Makefile
 data/16x16/Makefile

@@ -1275,6 +1275,14 @@ dist-hook:
 EXTRA_DIST = \
 	escort.spec.in \
 	escort.spec \
+	debian/changelog \
+	debian/changelog.in \
+	debian/compat \
+	debian/control \
+	debian/copyright \  
+	debian/docs \
+	debian/rules \
+	debian/source/format \
 	data/escort/about/index.html.in \
 	testlog/css2.1/20110323/implement-report-Escort-Fedora.data \
 	LICENSE \
