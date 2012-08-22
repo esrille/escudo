@@ -308,7 +308,7 @@ public:
         return delay;
     }
     bool hasExpired(unsigned t) {
-        return (static_cast<int>(last + delay) - static_cast<int>(t)) <= 0;
+        return 0 < delay && (static_cast<int>(last + delay) - static_cast<int>(t)) <= 0;
     }
 
     void clip(float left, float top, float w, float h);
