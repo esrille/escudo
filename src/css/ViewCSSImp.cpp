@@ -625,7 +625,7 @@ BlockLevelBox* ViewCSSImp::layOut()
         boxTree->resolveXY(this, 0.0f, 0.0f, 0);
     }
 
-    // Lay out absolute boxes.
+    // Lay out absolutely positioned boxes.
     while (!absoluteList.empty()) {
         BlockLevelBox* box = absoluteList.front();
         absoluteList.pop_front();
