@@ -290,7 +290,11 @@ bool WindowImp::poll()
 void WindowImp::render(ViewCSSImp* parentView)
 {
     if (view) {
+        canvas.shutdown();
+        canvas.setup(width, height);
+        canvas.beginRender();
         view->render(parentView);
+        canvas.endRender();
 
         std::u16string title = view->getDocument().getTitle();
         if (!parent)
@@ -303,6 +307,7 @@ void WindowImp::render(ViewCSSImp* parentView)
             std::cout.flush();
         }
     }
+    canvas.render(width, height);
 }
 
 void WindowImp::mouse(int button, int up, int x, int y, int modifiers)

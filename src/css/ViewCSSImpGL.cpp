@@ -92,7 +92,10 @@ void ViewCSSImp::render(ViewCSSImp* parentView)
 {
     last = getTick();
     delay = 1000;
-    clipCount = parentView ? parentView->clipCount : 0;
+
+    // reset clipCount
+    clipCount = 0;
+    glStencilFunc(GL_EQUAL, 0, 0xFF);
 
     glPushMatrix();
     glScalef(zoom, zoom, zoom);
@@ -105,6 +108,9 @@ void ViewCSSImp::render(ViewCSSImp* parentView)
         Box::renderVerticalScrollBar(initialContainingBlock.width, initialContainingBlock.height, window->getScrollY(), renderHeight);
         Box::renderHorizontalScrollBar(initialContainingBlock.width, initialContainingBlock.height, window->getScrollX(), renderWidth);
     }
+
+    // restore clipCount
+    glStencilFunc(GL_EQUAL, parentView ? parentView->clipCount : 0, 0xFF);
 }
 
 void ViewCSSImp::renderCanvas(unsigned color)

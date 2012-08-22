@@ -47,8 +47,20 @@ void reshape(int w, int h)
 void display()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-    if (WindowImp* imp = static_cast<WindowImp*>(window.self()))
+    if (WindowImp* imp = static_cast<WindowImp*>(window.self())) {
         imp->render(0);
+#ifndef NDEBUG
+        GLint depth;
+        glGetIntegerv(GL_MODELVIEW_STACK_DEPTH, &depth);
+        assert(depth == 1);
+
+        GLfloat m[16];
+        glGetFloatv(GL_MODELVIEW_MATRIX, m);
+        float x = m[12];
+        float y = m[13];
+        assert(x == 0.0f && y == 0.0f);
+#endif
+    }
     glutSwapBuffers();  // This would block until the sync happens
 }
 
@@ -227,4 +239,3 @@ void init(int* argc, char* argv[])
         exit(EXIT_FAILURE);
     }
 }
-

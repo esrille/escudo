@@ -48,6 +48,7 @@
 
 #include <org/w3c/dom/css/CSSStyleSheet.h>
 
+#include "Canvas.h"
 #include "DocumentWindow.h"
 #include "ElementImp.h"
 #include "EventTargetImp.h"
@@ -167,6 +168,7 @@ class WindowImp : public ObjectMixin<WindowImp>
     unsigned short buttons;
 
     // for display
+    Canvas canvas;
     unsigned width;
     unsigned height;
     bool redisplay;  // set true to force redisplay
