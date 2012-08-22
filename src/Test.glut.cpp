@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <GL/glew.h>
 #include <GL/freeglut.h>
 
 #include "WindowImp.h"
@@ -185,6 +186,17 @@ void init(int* argc, char* argv[])
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_STENCIL);
     glutInitWindowSize(816, 1056);
     glutCreateWindow(argv[0]);
+
+    GLenum err = glewInit();
+    if (err != GLEW_OK) {
+        std::cout << "error: " << glewGetErrorString(err) << "\n";
+        exit(EXIT_FAILURE);
+    }
+    if (!GLEW_ARB_framebuffer_object) {
+        std::cout << "error: ARB_framebuffer_object extension is not supported by the installed OpenGL driver.\n";
+        exit(EXIT_FAILURE);
+    }
+
     glutReshapeFunc(reshape);
     glutDisplayFunc(display);
     glClearColor(1.0, 1.0, 1.0, 1.0);
@@ -206,12 +218,13 @@ void init(int* argc, char* argv[])
     glutTimerFunc(50, timer, 0);
     glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
 
+    glClearStencil(0x00);
+    glEnable(GL_STENCIL_TEST);
     GLint stencilBits;
     glGetIntegerv(GL_STENCIL_BITS, &stencilBits);
     if (stencilBits < 8) {
         std::cout << "error: The number of the OpenGL stencil bits needs to be greater than or equal to 8. Current: " << stencilBits << ".\n";
         exit(EXIT_FAILURE);
     }
-    glClearStencil(0x00);
-    glEnable(GL_STENCIL_TEST);
 }
+

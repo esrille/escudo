@@ -4,7 +4,7 @@ Priority: extra
 Maintainer: Esrille Inc. (0.2) <info@esrille.org>
 Build-Depends: debhelper (>= 8.0.0), autotools-dev, 
                bison, flex, re2c, esidl,
-               libicu-dev, libfreetype6-dev, freeglut3-dev, libxmu-dev,
+               libicu-dev, libglew-dev, libfreetype6-dev, freeglut3-dev, libxmu-dev,
                libgif-dev, libpng-dev, libjpeg-dev, libssl-dev,
                libboost1.48-dev, libboost-iostreams1.48-dev, libboost-system1.48-dev, libboost-regex1.48-dev,
                libmozjs-dev, libv8-dev,

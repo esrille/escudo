@@ -540,7 +540,10 @@ noinst_LIBRARIES = libeshtml5.a libesfontmanager.a libesjsapi.a libesv8api.a
 LDADD = libeshtml5.a libesfontmanager.a \
 	$(ICU_LIBS) $(FREETYPE_LIBS) \
 	-lboost_regex -lboost_system -lboost_iostreams \
-	-ljpeg -lpng -lgif -lglut -lGLU -lGL -lXext -lX11 -lXmu -lm -lrt -lssl -lcrypto
+	-ljpeg -lpng -lgif \
+	-lglut -lGLEW -lGLU -lGL -lXext -lX11 -lXmu \
+	-lssl -lcrypto \
+	-lm -lrt -lssl -lcrypto
 
 AM_CPPFLAGS = \
 	-std=gnu++0x \
@@ -623,6 +626,9 @@ libeshtml5_a_SOURCES = \
 	src/TextIterator.h \
 	src/U16InputStream.cpp \
 	src/U16InputStream.h \
+	src/Canvas.h \
+	src/CanvasGL.cpp \
+	src/CanvasGL.h \
 	src/BackgroundTask.cpp \
 	src/DocumentWindow.cpp \
 	src/DocumentWindow.h \
@@ -1139,6 +1145,7 @@ libeshtml5_a_SOURCES += \
 noinst_PROGRAMS = \
 	harness \
 	Any.test \
+	Canvas.test \
 	FontManager.test \
 	URL.test \
 	HTTPHeader.test \
@@ -1162,6 +1169,9 @@ noinst_PROGRAMS : $(LDADD) libesjsapi.a libesv8api.a
 
 js_LDADD = $(LDADD) libesjsapi.a
 v8_LDADD = $(LDADD) libesv8api.a -lv8
+
+Canvas_test_SOURCES = src/Canvas.test.cpp
+Canvas_test_LDADD = $(js_LDADD)
 
 harness_SOURCES = src/harness.cpp
 harness_LDADD = $(js_LDADD)
@@ -1279,7 +1289,7 @@ EXTRA_DIST = \
 	debian/changelog.in \
 	debian/compat \
 	debian/control \
-	debian/copyright \  
+	debian/copyright \
 	debian/docs \
 	debian/rules \
 	debian/source/format \

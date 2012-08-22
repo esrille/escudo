@@ -12,7 +12,9 @@ BuildRequires: desktop-file-utils
 BuildRequires: liberation-fonts-common liberation-mono-fonts liberation-sans-fonts liberation-serif-fonts
 BuildRequires: dejavu-fonts-common dejavu-sans-fonts dejavu-sans-mono-fonts dejavu-serif-fonts
 BuildRequires: ipa-gothic-fonts ipa-mincho-fonts ipa-pgothic-fonts ipa-pmincho-fonts gdouros-aegean-fonts
-BuildRequires: bison re2c libicu-devel freetype-devel freeglut-devel giflib-devel libpng-devel libjpeg-devel libXmu-devel openssl-devel
+BuildRequires: bison re2c libicu-devel openssl-devel
+BuildRequires: giflib-devel libpng-devel libjpeg-devel
+BuildRequires: freetype-devel freeglut-devel glew-devel libXmu-devel
 BuildRequires: boost-devel boost-iostreams boost-system boost-regex
 BuildRequires: js-devel v8-devel
 BuildRequires: esidl
