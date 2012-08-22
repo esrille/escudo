@@ -78,11 +78,8 @@ class ViewCSSImp
     float scrollHeight;
 
     // render
-    BlockLevelBoxPtr renderTree;    // A box tree ready to be rendered
-    float renderWidth;
-    float renderHeight;
-    Box* hoveredBox;
     unsigned clipCount;
+    Box* hoveredBox;
 
     // animation
     unsigned last;   // in 1/100 sec for GIF
@@ -118,7 +115,6 @@ public:
     BlockLevelBox* layOutBlockBoxes(Element element, BlockLevelBox* parentBox, CSSStyleDeclarationImp* parentStyle, CSSStyleDeclarationImp* style, bool asBlock = false);
     BlockLevelBox* layOutBlockBoxes();
     BlockLevelBox* layOut();
-    bool flip();
     BlockLevelBox* dump();
 
     void resolveXY(float left, float top);
@@ -254,13 +250,6 @@ public:
         return scrollHeight;
     }
 
-    float getRenderWidth() const {
-        return renderWidth;
-    }
-    float getRenderHeight() const {
-        return renderHeight;
-    }
-
     void setHovered(Node node);
     bool isHovered(Node node);
 
@@ -297,15 +286,15 @@ public:
         return boxTree.get();
     }
     void setFlags(unsigned f) {
-        if (renderTree)
-            renderTree->setFlags(f);
+        if (boxTree)
+            boxTree->setFlags(f);
     }
     unsigned getFlags() const {
-        return renderTree ? renderTree->getFlags() : 0;
+        return boxTree ? boxTree->getFlags() : 0;
     }
     void clearFlags() {
-        if (renderTree)
-            renderTree->clearFlags();
+        if (boxTree)
+            boxTree->clearFlags();
     }
 
     unsigned getLast() const {

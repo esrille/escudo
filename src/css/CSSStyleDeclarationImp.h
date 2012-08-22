@@ -236,9 +236,6 @@ private:
     StackingContext* stackingContext;
     FontTexture* fontTexture;
 
-    Box* renderBox;
-    Box* renderLastBox;  // for inline
-
     int propertyID;
     CSSParserExpr* expression;
     std::u16string priority;
@@ -465,16 +462,15 @@ public:
     void clearBox();
     void addBox(Box* box);
     void removeBox(Box* box);
-    void flip();
 
     Box* getBox() const {
-        return renderBox;
+        return box;
     }
     Box* getLastBox() const {
-        return renderLastBox;
+        return lastBox;
     }
     bool hasMultipleBoxes() const {
-        return renderBox && renderBox != renderLastBox;
+        return box && box != lastBox;
     }
 
     StackingContext* getStackingContext() const {

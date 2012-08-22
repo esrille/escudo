@@ -47,8 +47,6 @@ class StackingContext
     BlockLevelBox* clipBox;
 
     // render
-    Box* firstRenderBase;
-    Box* lastRenderBase;
     Box* firstFloat;
     Box* lastFloat;
     Box* currentFloat;
@@ -119,13 +117,6 @@ public:
     }
 
     bool resolveOffset(float& x, float &y);
-
-    void flip() {
-        firstRenderBase = firstBase;
-        lastRenderBase = lastBase;
-        for (auto i = getFirstChild(); i; i = i->getNextSibling())
-            i->flip();
-    }
 
     void render(ViewCSSImp* view);
 

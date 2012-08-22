@@ -53,6 +53,8 @@ WindowImp::WindowImp(WindowImp* parent, ElementImp* frameElement) :
     clickTarget(0),
     detail(0),
     buttons(0),
+    scrollWidth(0),
+    scrollHeight(0),
     width(816),     // US letter size, 96 DPI
     height(1056),
     redisplay(false),
@@ -126,13 +128,19 @@ void WindowImp::setZoom(float value)
 
 void WindowImp::updateView(ViewCSSImp* next)
 {
-    if (!window || !window->getDocument() || !next)
+    if (!next || view == next || !window || !window->getDocument())
         return;
-    delete view;
-    view = next;
 
+    unsigned flags = 0;
+    if (view) {
+        flags |= view->getFlags();
+        delete view;
+    }
+    view = next;
     if (viewFlags)
-        setFlags(viewFlags);
+        setFlags(flags | viewFlags);
+    scrollWidth = view->getScrollWidth();
+    scrollHeight = view->getScrollHeight();
     view->setZoom(zoom);
     detail = 0;
     redisplay = true;
@@ -249,25 +257,18 @@ bool WindowImp::poll()
             backgroundTask.wakeUp(BackgroundTask::Layout);
             break;
         case BackgroundTask::Done: {
-            unsigned flags = 0;
             ViewCSSImp* next = backgroundTask.getView();
-            if (view != next) {
-                if (next->flip()) {
-                    if (view)
-                        flags |= view->getFlags();
-                    updateView(next);
-                } else if (!view && next)
-                    updateView(next);
-            }
+            updateView(next);
             if (view) {
-                if (flags |= view->getFlags()) {
-                    view->flip();
+                if (unsigned flags = view->getFlags()) {
                     view->clearFlags();
-                    if (flags & Box::NEED_RESTYLING)
+                    if (flags & Box::NEED_RESTYLING) {
                         backgroundTask.wakeUp(BackgroundTask::Cascade);
-                    else if (flags & Box::NEED_REFLOW)
+                        view = 0;
+                    } else if (flags & Box::NEED_REFLOW) {
                         backgroundTask.wakeUp(BackgroundTask::Layout);
-                    if (flags & Box::NEED_REPAINT)
+                        view = 0;
+                    } else if (flags & Box::NEED_REPAINT)
                         redisplay = true;
                 }
             }
@@ -1727,10 +1728,10 @@ void WindowImp::scroll(int x, int y)
     if (!view)
         return;
 
-    float overflow = view->getRenderWidth() - width;
+    float overflow = getScrollWidth() - width;
     x = std::max(0, std::min(x, static_cast<int>(overflow)));
 
-    overflow = view->getRenderHeight() - height;
+    overflow = getScrollHeight() - height;
     y = std::max(0, std::min(y, static_cast<int>(overflow)));
 
     window->scroll(x, y);

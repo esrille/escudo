@@ -119,6 +119,7 @@ unsigned WindowImp::BackgroundTask::sleep()
 void WindowImp::BackgroundTask::wakeUp(unsigned flags)
 {
     std::lock_guard<std::mutex> lock(mutex);
+    xfered = false;
     this->flags |= flags;
     cond.notify_one();
 }
@@ -141,8 +142,11 @@ void WindowImp::BackgroundTask::restart()
 ViewCSSImp* WindowImp::BackgroundTask::getView()
 {
     assert(state == Done);
-    xfered = true;
-    return view;
+    if (!xfered) {
+        xfered = true;
+        return view;
+    }
+    return 0;
 }
 
 }}}}  // org::w3c::dom::bootstrap

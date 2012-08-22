@@ -169,6 +169,8 @@ class WindowImp : public ObjectMixin<WindowImp>
 
     // for display
     Canvas canvas;
+    float scrollWidth;
+    float scrollHeight;
     unsigned width;
     unsigned height;
     bool redisplay;  // set true to force redisplay
@@ -202,6 +204,13 @@ public:
     }
     void updateView(ViewCSSImp* next);
     void setDocumentWindow(const DocumentWindowPtr& window);
+
+    float getScrollWidth() const {
+        return scrollWidth;
+    }
+    float getScrollHeight() const {
+        return scrollHeight;
+    }
 
     DocumentWindowPtr activate();
 

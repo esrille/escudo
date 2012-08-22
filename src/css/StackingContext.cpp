@@ -90,8 +90,6 @@ StackingContext::StackingContext(bool auto_, int zIndex, CSSStyleDeclarationImp*
     firstBase(0),
     lastBase(0),
     clipBox(0),
-    firstRenderBase(0),
-    lastRenderBase(0),
     firstFloat(0),
     lastFloat(0),
     currentFloat(0)
@@ -183,7 +181,7 @@ void StackingContext::render(ViewCSSImp* view)
         view->clip(clipLeft, clipTop, clipWidth, clipHeight);
 
     currentFloat = firstFloat = lastFloat = 0;
-    for (Box* base = firstRenderBase; base; base = base->nextBase) {
+    for (Box* base = firstBase; base; base = base->nextBase) {
         glPushMatrix();
         BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(base);
         unsigned overflow = CSSOverflowValueImp::Visible;
@@ -260,19 +258,6 @@ void StackingContext::removeBox(Box* box)
                 p->nextBase = i->nextBase;
             if (lastBase == box)
                 lastBase = p;
-            break;
-        }
-    }
-
-    p = 0;
-    for (Box* i = firstRenderBase; i ; p = i, i = i->nextBase) {
-        if (i == box) {
-            if (!p)
-                firstRenderBase = i->nextBase;
-            else
-                p->nextBase = i->nextBase;
-            if (lastRenderBase == box)
-                lastRenderBase = p;
             break;
         }
     }

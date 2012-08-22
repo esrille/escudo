@@ -2051,12 +2051,6 @@ void CSSStyleDeclarationImp::removeBox(Box* b)
     }
 }
 
-void CSSStyleDeclarationImp::flip()
-{
-    renderBox = box;
-    renderLastBox = lastBox;
-}
-
 CSSStyleDeclarationImp* CSSStyleDeclarationImp::getPseudoElementStyle(int id) const
 {
     assert(0 <= id && id < CSSPseudoElementSelector::MaxPseudoElements);
@@ -3582,8 +3576,6 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp(int pseudoElementSelectorType) :
     lastBox(0),
     stackingContext(0),
     fontTexture(0),
-    renderBox(0),
-    renderLastBox(0),
     propertyID(Unknown),
     expression(0),
     pseudoElementSelectorType(pseudoElementSelectorType),
@@ -3621,8 +3613,6 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp(CSSStyleDeclarationImp* org) :
     lastBox(0),
     stackingContext(0),
     fontTexture(0),
-    renderBox(0),
-    renderLastBox(0),
     propertyID(Unknown),
     expression(0),
     pseudoElementSelectorType(org->pseudoElementSelectorType),

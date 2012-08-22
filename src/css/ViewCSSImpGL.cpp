@@ -104,9 +104,9 @@ void ViewCSSImp::render(ViewCSSImp* parentView)
         stackingContexts->render(this);
     glPopMatrix();
 
-    if (renderTree && overflow != CSSOverflowValueImp::Hidden) {
-        Box::renderVerticalScrollBar(initialContainingBlock.width, initialContainingBlock.height, window->getScrollY(), renderHeight);
-        Box::renderHorizontalScrollBar(initialContainingBlock.width, initialContainingBlock.height, window->getScrollX(), renderWidth);
+    if (boxTree && overflow != CSSOverflowValueImp::Hidden) {
+        Box::renderVerticalScrollBar(initialContainingBlock.width, initialContainingBlock.height, window->getScrollY(), scrollHeight);
+        Box::renderHorizontalScrollBar(initialContainingBlock.width, initialContainingBlock.height, window->getScrollX(), scrollWidth);
     }
 
     // restore clipCount
@@ -180,7 +180,7 @@ const int cursorMap[CSSCursorValueImp::CursorsMax] = {
 
 void ViewCSSImp::setHovered(Node node)
 {
-    assert(renderTree);
+    assert(boxTree);
     if (hovered == node)
         return;
     CSSStyleDeclarationImp* next = getStyle(Box::getContainingElement(node));
@@ -191,8 +191,8 @@ void ViewCSSImp::setHovered(Node node)
     if (next) {
         glutSetCursor(cursorMap[next->cursor.getValue()]);
         if (next->isAffectedByHover() || (curr && curr->isAffectedByHover())) {
-            renderTree->restyle(this);
-            renderTree->setFlags(Box::NEED_REPAINT | Box::NEED_REFLOW);
+            boxTree->restyle(this);
+            boxTree->setFlags(Box::NEED_REPAINT | Box::NEED_REFLOW);
         }
     }
 }

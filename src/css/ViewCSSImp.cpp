@@ -57,8 +57,6 @@ ViewCSSImp::ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyle
     quotingDepth(0),
     scrollWidth(0.0f),
     scrollHeight(0.0f),
-    renderWidth(0.0f),
-    renderHeight(0.0f),
     hoveredBox(0)
 {
     setMediumFontSize(16);
@@ -80,13 +78,13 @@ ViewCSSImp::~ViewCSSImp()
 
 Box* ViewCSSImp::boxFromPoint(int x, int y)
 {
-    if (!renderTree)
+    if (!boxTree)
         return 0;
     x += window->getScrollX();
     y += window->getScrollY();
-    if (Box* target = renderTree.get()->boxFromPoint(x, y))
+    if (Box* target = boxTree.get()->boxFromPoint(x, y))
         return target;
-    return renderTree.get();
+    return boxTree.get();
 }
 
 bool ViewCSSImp::isHovered(Node node)
@@ -101,8 +99,8 @@ bool ViewCSSImp::isHovered(Node node)
 
 void ViewCSSImp::handleMutation(events::Event event)
 {
-    if (renderTree)
-        renderTree->setFlags(1);
+    if (boxTree)
+        boxTree->setFlags(1);
 }
 
 void ViewCSSImp::findDeclarations(CSSRuleListImp::RuleSet& set, Element element, css::CSSRuleList list, unsigned importance)
@@ -643,34 +641,13 @@ BlockLevelBox* ViewCSSImp::layOut()
     return boxTree.get();
 }
 
-bool ViewCSSImp::flip()
-{
-    if (boxTree) {
-        for (auto i = map.begin(); i != map.end();) {
-            if (i->second) {
-                i->second->flip();
-                ++i;
-            }
-            else
-                i = map.erase(i);
-        }
-        stackingContexts->flip();
-        renderTree = boxTree;
-        renderWidth = scrollWidth;
-        renderHeight = scrollHeight;
-        boxTree = 0;
-        return true;
-    }
-    return false;
-}
-
 BlockLevelBox* ViewCSSImp::dump()
 {
     std::cout << "## render tree\n";
     // When the root element has display:none, no box is created at all.
-    if (renderTree) {
-        renderTree->dump();
-        return renderTree.get();
+    if (boxTree) {
+        boxTree->dump();
+        return boxTree.get();
     }
     return 0;
 }
