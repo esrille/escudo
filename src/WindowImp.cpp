@@ -154,10 +154,8 @@ void WindowImp::setDocumentWindow(const DocumentWindowPtr& window)
     delete view;
     view = 0;
     viewFlags = 0;
-    if (window) {
-        backgroundTask.restart();
-        backgroundTask.wakeUp(BackgroundTask::Cascade);
-    }
+    if (window)
+        backgroundTask.restart(BackgroundTask::Cascade);
     detail = 0;
     redisplay = true;
     setFavicon();

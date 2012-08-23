@@ -130,12 +130,12 @@ void WindowImp::BackgroundTask::abort()
     wakeUp(Abort);
 }
 
-void WindowImp::BackgroundTask::restart()
+void WindowImp::BackgroundTask::restart(unsigned flags)
 {
     // TODO: Cancel ongoing tasks.
     std::lock_guard<std::mutex> lock(mutex);
     this->flags &= ~Abort;
-    this->flags |= Restart;
+    this->flags |= Restart | flags;
     cond.notify_one();
 }
 

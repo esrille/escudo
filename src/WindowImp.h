@@ -139,7 +139,7 @@ class WindowImp : public ObjectMixin<WindowImp>
         unsigned sleep();
         void wakeUp(unsigned flags);
         void abort();
-        void restart();
+        void restart(unsigned flags = 0);
         ViewCSSImp* getView();
         int getState() const {
             return state;
