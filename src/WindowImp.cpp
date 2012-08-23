@@ -82,9 +82,11 @@ WindowImp::~WindowImp()
 
 void WindowImp::setSize(unsigned w, unsigned h)
 {
-    width = w;
-    height = h;
-    setFlags(Box::NEED_REFLOW);
+    if (width != w || height != h) {
+        width = w;
+        height = h;
+        setFlags(Box::NEED_REFLOW);
+    }
 }
 
 void WindowImp::setFlags(unsigned f)
