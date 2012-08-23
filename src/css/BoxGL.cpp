@@ -133,7 +133,7 @@ unsigned BoxImage::render(ViewCSSImp* view, float x, float y, float width, float
     glMatrixMode(GL_MODELVIEW);
 
     int frame = 0;
-    if (0 < frameCount) {
+    if (1 < frameCount) {
         unsigned delay = view->getDelay();
         frame = getCurrentFrame(getTick(), delay, start);
         view->setDelay(delay);
