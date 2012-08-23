@@ -57,7 +57,9 @@ ViewCSSImp::ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyle
     quotingDepth(0),
     scrollWidth(0.0f),
     scrollHeight(0.0f),
-    hoveredBox(0)
+    hoveredBox(0),
+    last(0),
+    delay(0)
 {
     setMediumFontSize(16);
     getDocument().addEventListener(u"DOMAttrModified", &mutationListener);
