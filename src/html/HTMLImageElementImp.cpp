@@ -76,7 +76,7 @@ void HTMLImageElementImp::notify()
         }
     }
     if (Box* box = getBox())
-        box->setFlags(2);
+        box->setFlags(Box::NEED_REFLOW);
     DocumentImp* document = getOwnerDocumentImp();
     document->decrementLoadEventDelayCount();
 }

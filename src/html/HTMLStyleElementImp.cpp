@@ -45,7 +45,7 @@ void HTMLStyleElementImp::eval()
             dumpStyleSheet(std::cerr, styleSheet.self());
 
         if (WindowImp* view = document->getDefaultWindow())
-            view->setFlags(1);
+            view->setFlags(Box::NEED_RESTYLING);
     }
 }
 
