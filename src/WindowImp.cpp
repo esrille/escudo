@@ -84,7 +84,7 @@ void WindowImp::setSize(unsigned w, unsigned h)
 {
     width = w;
     height = h;
-    setFlags(2);
+    setFlags(Box::NEED_REFLOW);
 }
 
 void WindowImp::setFlags(unsigned f)
@@ -190,7 +190,7 @@ bool WindowImp::poll()
         if (child->poll()) {
             redisplay |= true;
             if (view)
-                view->setFlags(4);
+                view->setFlags(Box::NEED_REPAINT);
         }
     }
 
