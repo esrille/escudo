@@ -265,7 +265,7 @@ public:
         if (value < 0.01f || 100.0f < value || zoom == value)
             return;
         zoom = value;
-        setFlags(2);
+        setFlags(Box::NEED_REFLOW);
     }
 
     CounterImpPtr getCounter(const std::u16string identifier);

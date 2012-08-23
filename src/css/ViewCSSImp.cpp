@@ -102,7 +102,7 @@ bool ViewCSSImp::isHovered(Node node)
 void ViewCSSImp::handleMutation(events::Event event)
 {
     if (boxTree)
-        boxTree->setFlags(1);
+        boxTree->setFlags(Box::NEED_RESTYLING);
 }
 
 void ViewCSSImp::findDeclarations(CSSRuleListImp::RuleSet& set, Element element, css::CSSRuleList list, unsigned importance)
