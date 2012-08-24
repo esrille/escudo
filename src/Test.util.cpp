@@ -189,11 +189,11 @@ unsigned recordTime(const char* msg, ...)
     if (msg) {
         va_list ap;
         va_start(ap, msg);
-        fprintf(stderr, "%02u:%02u:%02u.%06u: ",
-                tick.tv_sec / (60*60*60), tick.tv_sec / 60 % 60, tick.tv_sec % 60,
-                tick.tv_nsec / 1000);
-        vfprintf(stderr, msg, ap);
-        fprintf(stderr, "\n");
+        printf("%02u:%02u:%02u.%06u: ",
+               tick.tv_sec / (60*60*60), tick.tv_sec / 60 % 60, tick.tv_sec % 60,
+               tick.tv_nsec / 1000);
+        vprintf(msg, ap);
+        printf("\n");
         va_end(ap);
     }
     return tick.tv_sec * 100 + tick.tv_nsec / 10000000;
