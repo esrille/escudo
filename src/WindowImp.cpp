@@ -295,7 +295,7 @@ bool WindowImp::poll()
 
 void WindowImp::render(ViewCSSImp* parentView)
 {
-    recordTime("%*srender begin: %s (%s)", windowDepth * 2, "", utfconv(window->getDocument().getReadyState()).c_str(), view ? "render" : "canvas");
+    recordTime("%*srepaint begin: %s (%s)", windowDepth * 2, "", utfconv(window->getDocument().getReadyState()).c_str(), view ? "render" : "canvas");
     if (view) {
         canvas.shutdown();
         canvas.setup(width, height);
@@ -315,7 +315,7 @@ void WindowImp::render(ViewCSSImp* parentView)
         }
     }
     canvas.render(width, height);
-    recordTime("%*srender end", windowDepth * 2, "");
+    recordTime("%*srepaint end", windowDepth * 2, "");
 }
 
 void WindowImp::mouse(int button, int up, int x, int y, int modifiers)

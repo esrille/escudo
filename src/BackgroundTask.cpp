@@ -85,7 +85,9 @@ void WindowImp::BackgroundTask::operator()()
             view = new(std::nothrow) ViewCSSImp(window->getDocumentWindow(), getDOMImplementation()->getDefaultCSSStyleSheet(), getDOMImplementation()->getUserCSSStyleSheet());
             if (!view)
                 continue;
+            recordTime("%*srestyling begin", window->windowDepth * 2, "");
             view->cascade();
+            recordTime("%*srestyling end", window->windowDepth * 2, "");
             state = Cascaded;
             continue;
         }
@@ -97,7 +99,9 @@ void WindowImp::BackgroundTask::operator()()
             command &= ~Layout;
             state = Layouting;
             view->setSize(window->width, window->height);   // TODO: sync with mainloop
+            recordTime("%*sreflow begin", window->windowDepth * 2, "");
             view->layOut();
+            recordTime("%*sreflow end", window->windowDepth * 2, "");
             view->setFlags(Box::NEED_REPAINT);
         }
 
