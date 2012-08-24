@@ -179,6 +179,9 @@ class WindowImp : public ObjectMixin<WindowImp>
 
     bool faviconOverridable;
 
+    // for report
+    unsigned windowDepth;
+
     void mouse(const EventTask& task);
     void mouseMove(const EventTask& task);
     void keydown(const EventTask& task);

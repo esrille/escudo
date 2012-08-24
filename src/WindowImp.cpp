@@ -60,10 +60,13 @@ WindowImp::WindowImp(WindowImp* parent, ElementImp* frameElement) :
     redisplay(false),
     zoomable(true),
     zoom(1.0f),
-    faviconOverridable(false)
+    faviconOverridable(false),
+    windowDepth(0)
 {
-    if (parent)
+    if (parent) {
         parent->childWindows.push_back(this);
+        windowDepth = parent->windowDepth + 1;
+    }
 }
 
 WindowImp::~WindowImp()
@@ -204,8 +207,7 @@ bool WindowImp::poll()
         break;
     case HttpRequest::DONE:
         if (!window->getDocument()) {
-            if (2 <= getLogLevel())
-                recordTime("request done");
+            recordTime("%*shttp request done", windowDepth * 2, "");
             // TODO: Check header
 
             Document newDocument = getDOMImplementation()->createDocument(u"", u"", 0);
@@ -236,8 +238,7 @@ bool WindowImp::poll()
                 if (imp)
                     imp->setCharset(utfconv(htmlInputStream.getEncoding()));
                 NodeImp::evalTree(imp);
-                if (2 <= getLogLevel())
-                    recordTime("html parsed");
+                recordTime("%*shtml parsed", windowDepth * 2, "");
 
                 if (3 <= getLogLevel())
                     dumpTree(std::cerr, imp);
@@ -263,9 +264,11 @@ bool WindowImp::poll()
                 if (unsigned flags = view->getFlags()) {
                     view->clearFlags();
                     if (flags & Box::NEED_RESTYLING) {
+                        recordTime("%*strigger restyling", windowDepth * 2, "");
                         backgroundTask.wakeUp(BackgroundTask::Cascade);
                         view = 0;
                     } else if (flags & Box::NEED_REFLOW) {
+                        recordTime("%*strigger reflow", windowDepth * 2, "");
                         backgroundTask.wakeUp(BackgroundTask::Layout);
                         view = 0;
                     } else if (flags & Box::NEED_REPAINT)
@@ -285,11 +288,14 @@ bool WindowImp::poll()
     redisplay = false;
     if (!result && view)
         result = view->hasExpired(getTick());
+    if (result)
+        recordTime("%*strigger repaint", windowDepth * 2, "");
     return result;
 }
 
 void WindowImp::render(ViewCSSImp* parentView)
 {
+    recordTime("%*srender begin: %s (%s)", windowDepth * 2, "", utfconv(window->getDocument().getReadyState()).c_str(), view ? "render" : "canvas");
     if (view) {
         canvas.shutdown();
         canvas.setup(width, height);
@@ -309,6 +315,7 @@ void WindowImp::render(ViewCSSImp* parentView)
         }
     }
     canvas.render(width, height);
+    recordTime("%*srender end", windowDepth * 2, "");
 }
 
 void WindowImp::mouse(int button, int up, int x, int y, int modifiers)
@@ -351,8 +358,7 @@ void WindowImp::mouse(const EventTask& task)
     if (!view)
         return;
 
-    if (2 <= getLogLevel())
-        recordTime("mouse (%d, %d)", x, y);
+    recordTime("%*smouse (%d, %d)", windowDepth * 2, "", x, y);
 
     int shift = button;
     if (shift == 1)
