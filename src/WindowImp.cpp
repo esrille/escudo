@@ -307,7 +307,7 @@ void WindowImp::render(ViewCSSImp* parentView)
         if (!parent)
             setWindowTitle(utfconv(title).c_str());
 
-        if (1 <= getLogLevel() && backgroundTask.getState() == BackgroundTask::Done) {
+        if (2 <= getLogLevel() && backgroundTask.getState() == BackgroundTask::Done) {
             std::cout << "\n## " << window->getDocument().getReadyState() << '\n';
             view->dump();
             std::cout << "##\n";
