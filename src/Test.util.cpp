@@ -169,26 +169,34 @@ Document loadDocument(const char* html)
     return loadDocument(stream);
 }
 
-double recordTime(const char* msg, ...)
+unsigned recordTime(const char* msg, ...)
 {
+    static timespec epoc{ 0, 0 };
+
     if (logLevel == 0)
         return 0.0;
-
-    va_list ap;
-    va_start(ap, msg);
-    static double last = 0.0;
-    timespec spec;
-    clock_gettime(CLOCK_REALTIME, &spec);
-    double now = spec.tv_sec + (spec.tv_nsec / 1000000000.0);
-    double diff = now - last;
+    timespec tick;
+    clock_gettime(CLOCK_REALTIME, &tick);
+    if (epoc.tv_sec == 0 && epoc.tv_nsec == 0)
+        epoc = tick;
+    if (epoc.tv_nsec <= tick.tv_nsec)
+        tick.tv_nsec -= epoc.tv_nsec ;
+    else {
+        --tick.tv_sec;
+        tick.tv_nsec += 1000000000 - epoc.tv_nsec;
+    }
+    tick.tv_sec -= epoc.tv_sec;
     if (msg) {
-        fprintf(stderr, "%f: ", now - last);
+        va_list ap;
+        va_start(ap, msg);
+        fprintf(stderr, "%02u:%02u:%02u.%06u: ",
+                tick.tv_sec / (60*60*60), tick.tv_sec / 60 % 60, tick.tv_sec % 60,
+                tick.tv_nsec / 1000);
         vfprintf(stderr, msg, ap);
         fprintf(stderr, "\n");
+        va_end(ap);
     }
-    last = now;
-    va_end(ap);
-    return diff;
+    return tick.tv_sec * 100 + tick.tv_nsec / 10000000;
 }
 
 unsigned getTick()
