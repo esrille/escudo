@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+<head>
+<head>
+<meta charset="UTF-8">
+<title>Partial reflow test</title>
+<style type="text/css">
+.flow-root {
+  border: solid blue 2px;
+  position: relative;
+}
+.hidden {
+  overflow: hidden;
+}
+div {
+  border: solid lime 2px;
+  color: gray;
+}
+.abs {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 30%;
+  height: auto;
+  border: solid purple 2px;
+  color: black;
+}
+</style>
+<script type="text/javascript">
+function doTest() {
+  this.addEventListener('keydown', function(event) {
+    if (event.keyCode == 13) {
+      var span = document.createElement("span");
+      span.textContent = "Filler Text Filler Text Filler Text ";
+      var t = document.getElementById("t");
+      t.appendChild(span);
+    }
+  }, false);
+}
+</script>
+</head>
+<body onload="doTest()">
+<p>Press [Enter] to append a span element to the right bottom absolutely positioned box with a purple border line.</p>
+<div class='flow-root'>
+<div>
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text 
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text 
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text 
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text 
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text 
+</div>
+<div>
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text 
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text 
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text 
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text 
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text 
+</div>
+<div>
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text 
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text 
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text 
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text 
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text 
+</div>
+<div id='t' class='abs'>
+Filler Text Filler Text Filler Text 
+</div>
+</div>
+</body>
+</html>
