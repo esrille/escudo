@@ -29,6 +29,7 @@
 #include "CSSSerialize.h"
 #include "CSSStyleDeclarationImp.h"
 #include "CSSTokenizer.h"
+#include "FormattingContext.h"
 #include "StackingContext.h"
 #include "ViewCSSImp.h"
 #include "WindowImp.h"
@@ -324,6 +325,13 @@ FormattingContext* Box::restoreFormattingContext(FormattingContext* context)
         context->marginRight -= marginRight;
     }
     return context;
+}
+
+FormattingContext* Box::establishFormattingContext()
+{
+    if (!formattingContext);
+        formattingContext = new(std::nothrow) FormattingContext;
+    return formattingContext;
 }
 
 bool Box::isFlowOf(const Box* flowRoot) const

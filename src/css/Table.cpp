@@ -23,8 +23,9 @@
 #include <org/w3c/dom/html/HTMLTableRowElement.h>
 #include <org/w3c/dom/html/HTMLTableSectionElement.h>
 
-#include "ViewCSSImp.h"
 #include "CSSPropertyValueImp.h"
+#include "FormattingContext.h"
+#include "ViewCSSImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 

@@ -33,6 +33,7 @@
 #include "CSSSerialize.h"
 #include "CSSStyleDeclarationImp.h"
 #include "CSSTokenizer.h"
+#include "FormattingContext.h"
 #include "StackingContext.h"
 #include "ViewCSSImp.h"
 #include "WindowImp.h"

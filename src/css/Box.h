@@ -26,7 +26,6 @@
 
 #include <boost/intrusive_ptr.hpp>
 
-#include "FormattingContext.h"
 #include "http/HTTPRequest.h"
 #include "css/CSSStyleDeclarationImp.h"
 
@@ -354,11 +353,7 @@ public:
 
     FormattingContext* updateFormattingContext(FormattingContext* context);
     FormattingContext* restoreFormattingContext(FormattingContext* context);
-    FormattingContext* establishFormattingContext() {
-        if (!formattingContext);
-            formattingContext = new(std::nothrow) FormattingContext;
-        return formattingContext;
-    }
+    FormattingContext* establishFormattingContext();
     bool isFlowRoot() const {
         return formattingContext;
     }
@@ -653,8 +648,7 @@ typedef boost::intrusive_ptr<BlockLevelBox> BlockLevelBoxPtr;
 class LineBox : public Box
 {
     friend class BlockLevelBox;
-    friend void FormattingContext::appendInlineBox(ViewCSSImp* view, InlineLevelBox* inlineBox, CSSStyleDeclarationImp* activeStyle);
-    friend void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, bool linefeed);
+    friend class FormattingContext;
 
     float baseline;
     float underlinePosition;
