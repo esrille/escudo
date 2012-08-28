@@ -671,6 +671,7 @@ libeshtml5_a_SOURCES = \
 	src/css/Ico.cpp \
 	src/css/Ico.h \
 	src/css/FormattingContext.cpp \
+	src/css/FormattingContext.h \
 	src/css/LineBox.cpp \
 	src/css/StackingContext.cpp \
 	src/css/StackingContext.h \

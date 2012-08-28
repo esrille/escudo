@@ -1271,20 +1271,20 @@ libeshtml5_a_SOURCES = org/w3c/dom/ObjectArray.h src/Object.h \
 	src/html/HTMLTokenizer.h src/css/Bmp.cpp src/css/Bmp.h \
 	src/css/Box.cpp src/css/Box.h src/css/BoxGL.cpp \
 	src/css/BoxImage.cpp src/css/Ico.cpp src/css/Ico.h \
-	src/css/FormattingContext.cpp src/css/LineBox.cpp \
-	src/css/StackingContext.cpp src/css/StackingContext.h \
-	src/css/CSSColor.re src/css/CSSPropertyNames.re \
-	src/css/CSSPropertyValueImp.cpp src/css/CSSPropertyValueImp.h \
-	src/css/CSSSerialize.cpp src/css/CSSSerialize.h \
-	src/css/CSSGrammar.yy src/css/CSSSelector.cpp \
-	src/css/CSSSelector.h src/css/CSSTokenizer.h \
-	src/css/CSSTokenizer.re src/css/CSSParser.cpp \
-	src/css/CSSParser.h src/css/CSSValueParser.cpp \
-	src/css/CSSValueParser.h src/css/CSSInputStream.cpp \
-	src/css/CSSInputStream.h src/css/Replaced.cpp \
-	src/css/Table.cpp src/css/Table.h src/css/TableGL.cpp \
-	src/css/ViewCSSImp.cpp src/css/ViewCSSImp.h \
-	src/css/ViewCSSImpGL.cpp src/picojson.h \
+	src/css/FormattingContext.cpp src/css/FormattingContext.h \
+	src/css/LineBox.cpp src/css/StackingContext.cpp \
+	src/css/StackingContext.h src/css/CSSColor.re \
+	src/css/CSSPropertyNames.re src/css/CSSPropertyValueImp.cpp \
+	src/css/CSSPropertyValueImp.h src/css/CSSSerialize.cpp \
+	src/css/CSSSerialize.h src/css/CSSGrammar.yy \
+	src/css/CSSSelector.cpp src/css/CSSSelector.h \
+	src/css/CSSTokenizer.h src/css/CSSTokenizer.re \
+	src/css/CSSParser.cpp src/css/CSSParser.h \
+	src/css/CSSValueParser.cpp src/css/CSSValueParser.h \
+	src/css/CSSInputStream.cpp src/css/CSSInputStream.h \
+	src/css/Replaced.cpp src/css/Table.cpp src/css/Table.h \
+	src/css/TableGL.cpp src/css/ViewCSSImp.cpp \
+	src/css/ViewCSSImp.h src/css/ViewCSSImpGL.cpp src/picojson.h \
 	src/ApplicationCacheImp.cpp src/ApplicationCacheImp.h \
 	src/AttrImp.cpp src/AttrImp.h src/BarPropImp.cpp \
 	src/BarPropImp.h src/BeforeUnloadEventImp.cpp \

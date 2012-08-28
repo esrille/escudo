@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-#include "Box.h"
+#include "FormattingContext.h"
 
 #include <assert.h>
 
+#include "Box.h"
 #include "CSSPropertyValueImp.h"
 #include "CSSStyleDeclarationImp.h"
 #include "StackingContext.h"
