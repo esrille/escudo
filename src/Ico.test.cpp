@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-#include "css/Box.h"
 #include "css/Ico.h"
 
 #include <assert.h>
 #include <stdio.h>
 
 #include <iostream>
+
+#include "css/BoxImage.h"
 
 using namespace org::w3c::dom::bootstrap;
 

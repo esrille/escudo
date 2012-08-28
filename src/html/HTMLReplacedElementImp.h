@@ -24,7 +24,7 @@
 #include "HTMLElementImp.h"
 
 #include "http/HTTPRequest.h"
-#include "css/Box.h"
+#include "css/BoxImage.h"
 
 #include "Test.util.h"
 

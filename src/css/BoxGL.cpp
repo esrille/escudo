@@ -21,6 +21,7 @@
 
 #include <stdio.h>
 
+#include "BoxImage.h"
 #include "CSSStyleDeclarationImp.h"
 #include "StackingContext.h"
 #include "Table.h"

@@ -24,6 +24,7 @@
 #include "CSSStyleDeclarationImp.h"
 #include "ViewCSSImp.h"
 #include "Box.h"
+#include "BoxImage.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 

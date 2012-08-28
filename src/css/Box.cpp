@@ -25,6 +25,7 @@
 #include <org/w3c/dom/Element.h>
 #include <org/w3c/dom/Text.h>
 
+#include "BoxImage.h"
 #include "CSSSerialize.h"
 #include "CSSStyleDeclarationImp.h"
 #include "CSSTokenizer.h"

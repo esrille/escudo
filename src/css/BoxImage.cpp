@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "Box.h"
+#include "BoxImage.h"
 
 #include <gif_lib.h>
 #include <jpeglib.h>

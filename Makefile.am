@@ -668,6 +668,7 @@ libeshtml5_a_SOURCES = \
 	src/css/Box.h \
 	src/css/BoxGL.cpp \
 	src/css/BoxImage.cpp \
+	src/css/BoxImage.h \
 	src/css/Ico.cpp \
 	src/css/Ico.h \
 	src/css/FormattingContext.cpp \

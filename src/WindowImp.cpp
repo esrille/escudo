@@ -29,6 +29,7 @@
 #include "KeyboardEventImp.h"
 #include "MouseEventImp.h"
 #include "NodeImp.h"
+#include "css/BoxImage.h"
 #include "css/Ico.h"
 #include "css/ViewCSSImp.h"
 #include "html/HTMLParser.h"

@@ -23,6 +23,7 @@
 
 #include "DocumentImp.h"
 #include "WindowImp.h"
+#include "css/BoxImage.h"
 #include "css/CSSInputStream.h"
 #include "css/CSSParser.h"
 #include "css/CSSStyleSheetImp.h"

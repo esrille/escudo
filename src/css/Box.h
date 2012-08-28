@@ -40,6 +40,8 @@ class Element;
 namespace bootstrap {
 
 class Box;
+class BoxImage;
+class FormattingContext;
 class LineBox;
 class BlockLevelBox;
 class StackingContext;
@@ -65,59 +67,6 @@ public:
     float getHeight() const {
         return height;
     }
-};
-
-class BoxImage
-{
-public:
-    static const short Unavailable = 0;
-    static const short Sent = 1;
-    static const short PartiallyAvailable = 2;
-    static const short CompletelyAvailable = 3;
-    static const short Broken = 4;
-
-    static const unsigned RepeatS = 1;
-    static const unsigned RepeatT = 2;
-    static const unsigned Clamp = 4;
-
-private:
-    static const short Rendered = 1;
-
-    short state;
-    unsigned short flags;
-    unsigned char* pixels;  // in argb32 format
-    unsigned naturalWidth;
-    unsigned naturalHeight;
-    unsigned repeat;
-    unsigned format;
-    unsigned frameCount;
-    unsigned loop;
-    std::vector<uint16_t> delays;
-    unsigned total;
-
-public:
-    BoxImage(unsigned repeat = Clamp);
-    ~BoxImage();
-
-    void open(FILE* file);
-
-    short getState() const {
-        return state;
-    }
-    void setState(short value) {
-        state = value;
-    }
-    unsigned getNaturalWidth() const {
-        return naturalWidth;
-    }
-    unsigned getNaturalHeight() const {
-        return naturalHeight;
-    }
-    unsigned char* getPixels() const {
-        return pixels;
-    }
-    unsigned getCurrentFrame(unsigned t, unsigned& delay, unsigned start);
-    unsigned render(ViewCSSImp* view, float x, float y, float width, float height, float left, float top, unsigned start);
 };
 
 class Box : public ContainingBlock

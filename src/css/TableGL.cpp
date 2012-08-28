@@ -19,6 +19,7 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
+#include "BoxImage.h"
 #include "ViewCSSImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
