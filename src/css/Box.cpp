@@ -1119,7 +1119,6 @@ void BlockLevelBox::adjustCollapsedThroughMargins(FormattingContext* context)
         topBorderEdge = marginTop;
         if (hasClearance())
             moveUpCollapsedThroughMargins(context);
-        context->adjustRemainingFloatingBoxes(topBorderEdge);
     } else if (isCollapsableOutside()) {
         assert(topBorderEdge == 0.0f);
         context->fixMargin();

@@ -387,7 +387,6 @@ void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, boo
         if (!floatBox->inserted) {
             floatBox->inserted = true;
             lineBox->insertBefore(floatBox, lineBox->getFirstChild());
-            floatList.push_back(floatBox);
             parentBox->updateMCW(floatBox->mcw);
         }
     }
@@ -399,7 +398,6 @@ void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, boo
             if (!lineBox->rightBox)
                 lineBox->rightBox = floatBox;
             lineBox->appendChild(floatBox);
-            floatList.push_back(floatBox);
             parentBox->updateMCW(floatBox->mcw);
         }
     }
@@ -512,12 +510,6 @@ float FormattingContext::undoCollapseMargins()
 float FormattingContext::fixMargin()
 {
     return updateRemainingHeight(0.0f);
-}
-
-// TODO: Remove this function.
-void FormattingContext::adjustRemainingFloatingBoxes(float topBorderEdge)
-{
-    floatList.clear();
 }
 
 bool FormattingContext::isFirstCharacter(const std::u16string& text)

@@ -69,7 +69,6 @@ class FormattingContext
     float clearance;  // The clearance introduced by the previous collapsed through boxes.
 
     float usedMargin;
-    std::list<BlockLevelBox*> floatList;  // list of floating boxes just inserted inside the same block box.
 
     // Adjoining margins
     float positiveMargin;
@@ -147,8 +146,6 @@ public:
     void setClearance() {
         withClearance = true;
     }
-
-    void adjustRemainingFloatingBoxes(float topBorderEdge);
 
     //
     // Text
