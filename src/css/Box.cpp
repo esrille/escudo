@@ -308,11 +308,8 @@ FormattingContext* Box::updateFormattingContext(FormattingContext* context)
     if (isFlowRoot()) {
         assert(formattingContext);
         return formattingContext;
-    } else {
-        // adjust left and right blanks.
-        context->marginLeft += marginLeft;
-        context->marginRight += marginRight;
-    }
+    } else
+        context->updateBlanks(this);
     return context;
 }
 
@@ -320,10 +317,8 @@ FormattingContext* Box::restoreFormattingContext(FormattingContext* context)
 {
     if (isFlowRoot())
         return formattingContext;
-    else {
-        context->marginLeft -= marginLeft;
-        context->marginRight -= marginRight;
-    }
+    else
+        context->restoreBlanks(this);
     return context;
 }
 

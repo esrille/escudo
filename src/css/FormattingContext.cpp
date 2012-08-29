@@ -33,8 +33,8 @@ FormattingContext::FormattingContext() :
     x(0.0f),
     leftover(0.0f),
     prevChar(0),
-    marginLeft(0.0f),
-    marginRight(0.0f),
+    blankLeft(0.0f),
+    blankRight(0.0f),
     clearance(0.0f),
     usedMargin(0.0f),
     positiveMargin(0.0f),
@@ -46,17 +46,29 @@ FormattingContext::FormattingContext() :
 {
 }
 
+void FormattingContext::updateBlanks(Box* box)
+{
+    blankLeft += box->marginLeft;
+    blankRight += box->marginRight;
+}
+
+void FormattingContext::restoreBlanks(Box* box)
+{
+    blankLeft -= box->marginLeft;
+    blankRight -= box->marginRight;
+}
+
 float FormattingContext::getLeftoverForFloat(unsigned floatValue) const
 {
     // cf. floats-rule3-outside-left-001 and floats-rule3-outside-right-001.
     switch (floatValue) {
     case CSSFloatValueImp::Left:
-        if (!right.empty() && right.front()->edge < marginRight)
-            return leftover + marginRight - right.front()->edge;
+        if (!right.empty() && right.front()->edge < blankRight)
+            return leftover + blankRight - right.front()->edge;
         break;
     case CSSFloatValueImp::Right:
-        if (!left.empty() && left.front()->edge < marginLeft)
-            return leftover + marginLeft - left.front()->edge;
+        if (!left.empty() && left.front()->edge < blankLeft)
+            return leftover + blankLeft - left.front()->edge;
         break;
     default:
         break;
@@ -67,13 +79,13 @@ float FormattingContext::getLeftoverForFloat(unsigned floatValue) const
 float FormattingContext::getLeftEdge() const {
     if (left.empty())
         return 0.0f;
-    return std::max(0.0f, left.back()->edge - marginLeft);
+    return std::max(0.0f, left.back()->edge - blankLeft);
 }
 
 float FormattingContext::getRightEdge() const {
     if (right.empty())
         return 0.0f;
-    return std::max(0.0f, right.front()->edge - marginRight);
+    return std::max(0.0f, right.front()->edge - blankRight);
 }
 
 float FormattingContext::getLeftRemainingHeight() const {
@@ -98,8 +110,8 @@ LineBox* FormattingContext::addLineBox(ViewCSSImp* view, BlockLevelBox* parentBo
         parentBox->appendChild(lineBox);
 
         // Set marginLeft and marginRight to the current values. Note these
-        // margins do not contain the widths of the float boxes to be added
-        // below.
+        // margins do not contain the widths of the floating boxes to be
+        // added below.
         lineBox->marginLeft = getLeftEdge();
         lineBox->marginRight = getRightEdge();
 
@@ -407,14 +419,14 @@ void FormattingContext::addFloat(BlockLevelBox* floatBox, float totalWidth)
 {
     if (floatBox->style->float_.getValue() == CSSFloatValueImp::Left) {
         if (left.empty())
-            floatBox->edge = marginLeft + totalWidth;
+            floatBox->edge = blankLeft + totalWidth;
         else
             floatBox->edge = left.back()->edge + totalWidth;
         left.push_back(floatBox);
         x += totalWidth;
     } else {
         if (right.empty())
-            floatBox->edge = marginRight + totalWidth;
+            floatBox->edge = blankRight + totalWidth;
         else
             floatBox->edge = right.front()->edge + totalWidth;
         right.push_front(floatBox);

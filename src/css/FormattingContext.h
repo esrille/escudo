@@ -49,7 +49,6 @@ class WindowImp;
 
 class FormattingContext
 {
-    friend class Box;
     friend class BlockLevelBox;
 
     TextIterator textIterator;
@@ -61,11 +60,11 @@ class FormattingContext
     float x;
     float leftover;
     char16_t prevChar;
-    float marginLeft;
-    float marginRight;
-    std::list<BlockLevelBox*> left;   // active float boxes at the left side
-    std::list<BlockLevelBox*> right;  // active float boxes at the right side
-    std::list<Node> floatNodes;       // float boxes not layed out yet
+    float blankLeft;
+    float blankRight;
+    std::list<BlockLevelBox*> left;   // active floating boxes on the left side
+    std::list<BlockLevelBox*> right;  // active floating boxes on the right side
+    std::list<Node> floatNodes;       // floating boxes to be layed out
 
     float clearance;  // The clearance introduced by the previous collapsed through boxes.
 
@@ -85,6 +84,10 @@ class FormattingContext
 
 public:
     FormattingContext();
+
+    void updateBlanks(Box* box);
+    void restoreBlanks(Box* box);
+
     LineBox* addLineBox(ViewCSSImp* view, BlockLevelBox* parentBox);
     void addFloat(BlockLevelBox* floatBox, float totalWidth);
 
