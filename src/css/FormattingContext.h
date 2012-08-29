@@ -82,6 +82,9 @@ class FormattingContext
     float lineHeight;
     bool atLineHead;
 
+    void shiftDownLeft();
+    void shiftDownRight();
+
 public:
     FormattingContext();
 
@@ -97,12 +100,12 @@ public:
     float hasRight() const {
         return !right.empty();
     }
-    float getLeftoverForFloat(unsigned floatValue) const;
+    float getLeftoverForFloat(Box* block, unsigned floatValue) const;
     float getLeftEdge() const;
     float getRightEdge() const;
     float getLeftRemainingHeight() const;
     float getRightRemainingHeight() const;
-    float shiftDown(float width);
+    float shiftDown();
     bool shiftDownLineBox(ViewCSSImp* view);
     bool hasNewFloats() const;
     void appendInlineBox(ViewCSSImp* view, InlineLevelBox* inlineBox, CSSStyleDeclarationImp* activeStyle);

@@ -48,27 +48,37 @@ FormattingContext::FormattingContext() :
 
 void FormattingContext::updateBlanks(Box* box)
 {
-    blankLeft += box->marginLeft;
-    blankRight += box->marginRight;
+    blankLeft += box->getBlankLeft();
+    blankRight += box->getBlankRight();
 }
 
 void FormattingContext::restoreBlanks(Box* box)
 {
-    blankLeft -= box->marginLeft;
-    blankRight -= box->marginRight;
+    blankLeft -= box->getBlankLeft();
+    blankRight -= box->getBlankRight();
 }
 
-float FormattingContext::getLeftoverForFloat(unsigned floatValue) const
+float FormattingContext::getLeftoverForFloat(Box* block, unsigned floatValue) const
 {
     // cf. floats-rule3-outside-left-001 and floats-rule3-outside-right-001.
     switch (floatValue) {
     case CSSFloatValueImp::Left:
-        if (!right.empty() && right.front()->edge < blankRight)
-            return leftover + blankRight - right.front()->edge;
+        if (!right.empty() && right.front()->edge < blankRight) {
+            float max = leftover + blankRight - right.front()->edge;
+            float w;
+            for (w = leftover; w < max && block && block->borderRight == 0.0f; block = block->parentBox)
+                w = std::min(w + block->paddingRight + block->marginRight, max);
+            return w;
+        }
         break;
     case CSSFloatValueImp::Right:
-        if (!left.empty() && left.front()->edge < blankLeft)
-            return leftover + blankLeft - left.front()->edge;
+        if (!left.empty() && left.front()->edge < blankLeft) {
+            float max = leftover + blankLeft - left.front()->edge;
+            float w;
+            for (w = leftover; w < max && block && block->borderLeft == 0.0f; block = block->parentBox)
+                w = std::min(w + block->paddingLeft + block->marginLeft, max);
+            return w;
+        }
         break;
     default:
         break;
@@ -201,46 +211,46 @@ float FormattingContext::updateRemainingHeight(float h)
     return adjustRemainingHeight(h);
 }
 
-float FormattingContext::shiftDown(float width)
+void FormattingContext::shiftDownLeft()
+{
+    float w = getLeftEdge();
+    if (1 < left.size()) {
+        auto it = left.rbegin();
+        ++it;
+        w -= std::max(0.0f, (*it)->edge - blankLeft);
+    }
+    x -= w;
+    leftover += w;
+}
+
+void FormattingContext::shiftDownRight()
+{
+    float w = getRightEdge();
+    if (1 < right.size()) {
+        auto it = right.begin();
+        ++it;
+        w -= std::max(0.0f, (*it)->edge - blankRight);
+    }
+    leftover += w;
+}
+
+float FormattingContext::shiftDown()
 {
     float h = 0.0f;
     float w = 0.0f;
-    do {
-        float lh = getLeftRemainingHeight();
-        float rh = getRightRemainingHeight();
-        if (0.0f < lh && (lh < rh || rh <= 0.0f)) {
-            // Shift down to left
-            w = left.back()->getEffectiveTotalWidth();
-            x -= w;
-            leftover += w;
-            if (left.size() == 1) {
-                leftover += x;
-                x = 0.0f;
-            }
-            h += lh;
-        } else if (0.0f < rh && (rh < lh || lh <= 0.0f)) {
-            // Shift down to right
-            w = right.front()->getEffectiveTotalWidth();
-            leftover += w;
-            if (right.size() == 1)
-                leftover = width - x;
-            h += rh;
-        } else if (0.0f < lh) {
-            // Shift down to both
-            float l = left.back()->getEffectiveTotalWidth();
-            w = l + right.front()->getEffectiveTotalWidth();
-            x -= l;
-            leftover += w;
-            if (left.size() == 1) {
-                leftover += x;
-                x = 0.0f;
-            }
-            if (right.size() == 1)
-                leftover = width - x;
-            h += lh;
-        } else
-            break;
-    } while (w == 0.0f);
+    float lh = getLeftRemainingHeight();
+    float rh = getRightRemainingHeight();
+    if (0.0f < lh && (lh < rh || rh <= 0.0f)) {
+        shiftDownLeft();
+        h += lh;
+    } else if (0.0f < rh && (rh < lh || lh <= 0.0f)) {
+        shiftDownRight();
+        h += rh;
+    } else if (0.0f < lh) {
+        shiftDownLeft();
+        shiftDownRight();
+        h += lh;
+    }
     return h;
 }
 
@@ -249,7 +259,7 @@ float FormattingContext::shiftDown(float width)
 bool FormattingContext::shiftDownLineBox(ViewCSSImp* view)
 {
     assert(lineBox);
-    if (float h = shiftDown(lineBox->getParentBox()->width)) {
+    if (float h = shiftDown()) {
         updateRemainingHeight(h);
         if (lineBox->hasClearance())
             lineBox->clearance += h;
@@ -421,14 +431,14 @@ void FormattingContext::addFloat(BlockLevelBox* floatBox, float totalWidth)
         if (left.empty())
             floatBox->edge = blankLeft + totalWidth;
         else
-            floatBox->edge = left.back()->edge + totalWidth;
+            floatBox->edge = std::max(left.back()->edge, blankLeft) + totalWidth;
         left.push_back(floatBox);
         x += totalWidth;
     } else {
         if (right.empty())
             floatBox->edge = blankRight + totalWidth;
         else
-            floatBox->edge = right.front()->edge + totalWidth;
+            floatBox->edge = std::max(right.front()->edge, blankRight) + totalWidth;
         right.push_front(floatBox);
     }
     leftover -= totalWidth;
@@ -440,25 +450,27 @@ float FormattingContext::clear(unsigned value)
         return 0.0f;
     float h = NAN;
     if (value & 1) {  // clear left
+        float w = getLeftEdge();
         for (auto i = left.begin(); i != left.end(); ++i) {
-            float w = (*i)->getEffectiveTotalWidth();
-            x -= w;
-            leftover += w;
             if (isnan(h))
                 h = (*i)->remainingHeight;
             else
                 h = std::max(h, (*i)->remainingHeight);
         }
+        w -= getLeftEdge();
+        x -= w;
+        leftover += w;
     }
     if (value & 2) {  // clear right
+        float w = getRightEdge();
         for (auto i = right.begin(); i != right.end(); ++i) {
-            float w = (*i)->getEffectiveTotalWidth();
-            leftover += w;
             if (isnan(h))
                 h = (*i)->remainingHeight;
             else
                 h = std::max(h, (*i)->remainingHeight);
         }
+        w -= getRightEdge();
+        leftover += w;
     }
     if (isnan(h))
         h = 0.0f;

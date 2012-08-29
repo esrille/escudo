@@ -620,7 +620,7 @@ void BlockLevelBox::layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floa
             return;   // TODO error
     }
     float w = floatBox->getEffectiveTotalWidth();
-    float l = context->getLeftoverForFloat(floatBox->style->float_.getValue());
+    float l = context->getLeftoverForFloat(this, floatBox->style->float_.getValue());
     // If both w and l are zero, move this floating box to the next line;
     // cf. http://test.csswg.org/suites/css2.1/20110323/html4/stack-floats-003.htm
     if ((l < w || l == 0.0f && w == 0.0f) &&
@@ -797,8 +797,8 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
             clearance += context->clear(clear);
         } else {
             context->leftover = width - context->getLeftEdge() - context->getRightEdge();
-            while (context->getLeftoverForFloat(floatBox->style->float_.getValue()) < floatBox->getEffectiveTotalWidth()) {
-                float h = context->shiftDown(width);
+            while (context->getLeftoverForFloat(this, floatBox->style->float_.getValue()) < floatBox->getEffectiveTotalWidth()) {
+                float h = context->shiftDown();
                 if (h <= 0.0f)
                     break;
                 clearance += h;
