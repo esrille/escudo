@@ -20,7 +20,7 @@ div {
   right: 0;
   bottom: 0;
   width: 20px;
-  height: 20px;
+  height: 50%;
   background-color: green;
   border: none;
 }
@@ -29,15 +29,18 @@ div {
 function doTest() {
   this.addEventListener('keydown', function(event) {
     if (event.keyCode == 13) {
+      var span = document.createElement("span");
+      span.textContent = "Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text ";
       var t = document.getElementById("t");
-      t.lastChild.appendData("Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text ");
+      t.appendChild(span);
     }
   }, false);
 }
 </script>
 </head>
 <body onload="doTest()">
-<p>Press [Enter] to append a span element to the second paragraph.</p>
+<p>Press [Enter] to append a span element to the second paragraph.
+The height of the bottom right green box must always be a half the height of the blue box.</p>
 <div class='flow-root'>
 <div>
 Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text 
