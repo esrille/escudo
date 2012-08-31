@@ -577,8 +577,6 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
         return 0;
     if (currentBox->isFloat() || currentBox->isAbsolutelyPositioned()) {
         floatMap[element] = currentBox;
-        if (currentBox->isAbsolutelyPositioned())
-            absoluteList.push_front(currentBox);
         if (parentBox) {
             // Set currentBox->parentBox to parentBox for now so that the correct
             // containing block can be retrieved before currentBox will be
@@ -598,8 +596,6 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
 // Lay out a tree box block-level boxes
 BlockLevelBox* ViewCSSImp::layOutBlockBoxes()
 {
-    assert(absoluteList.empty());
-
     boxTree = 0;
     floatMap.clear();
     boxTree = layOutBlockBoxes(getDocument(), 0, 0);
@@ -625,16 +621,9 @@ BlockLevelBox* ViewCSSImp::layOut()
         boxTree->resolveXY(this, 0.0f, 0.0f, 0);
     }
 
-    // Lay out absolutely positioned boxes.
-    while (!absoluteList.empty()) {
-        BlockLevelBox* box = absoluteList.front();
-        absoluteList.pop_front();
-        box->layOutAbsolute(this);
-        box->resolveXY(this, box->x, box->y, box->clipBox);
-    }
-
     if (stackingContexts) {
         stackingContexts->addBase(boxTree.get());
+        stackingContexts->layOutAbsolute(this);
         if (3 <= getLogLevel()) {
             std::cout << "## stacking contexts\n";
             stackingContexts->dump();

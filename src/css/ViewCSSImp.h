@@ -71,7 +71,6 @@ class ViewCSSImp
     Node hovered;
     BlockLevelBoxPtr boxTree;       // A box tree under construction
     std::map<Node, BlockLevelBoxPtr> floatMap;
-    std::list<BlockLevelBox*> absoluteList;
     std::list<CounterImpPtr> counterList;
     int quotingDepth;
     float scrollWidth;

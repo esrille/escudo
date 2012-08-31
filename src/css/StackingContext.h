@@ -116,6 +116,8 @@ public:
         clipBox = box;
     }
 
+    void layOutAbsolute(ViewCSSImp* view);
+
     bool resolveOffset(float& x, float &y);
 
     void render(ViewCSSImp* view);

@@ -263,6 +263,20 @@ void StackingContext::removeBox(Box* box)
     }
 }
 
+void StackingContext::layOutAbsolute(ViewCSSImp* view)
+{
+    for (Box* base = firstBase; base; base = base->nextBase) {
+        BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(base);
+        if (!block || !block->isAbsolutelyPositioned())
+            continue;
+        block->layOutAbsolute(view);
+        block->resolveXY(view, block->x, block->y, block->clipBox);
+    }
+
+    for (StackingContext* childContext = getFirstChild(); childContext; childContext = childContext->getNextSibling())
+        childContext->layOutAbsolute(view);
+}
+
 void StackingContext::dump(std::string indent)
 {
     std::cout << indent << "z-index: " << zIndex << '\n';
