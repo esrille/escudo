@@ -289,7 +289,7 @@ void HTMLElementImp::setScrollTop(int y)
         overflow += child->getTotalHeight();
     overflow -= box->height;
     scrollTop = std::max(0, std::min(y, static_cast<int>(overflow)));
-    box->setFlags(Box::NEED_REFLOW);
+    box->setFlags(Box::NEED_REPAINT);
 }
 
 int HTMLElementImp::getScrollLeft()
@@ -307,7 +307,7 @@ void HTMLElementImp::setScrollLeft(int x)
         overflow = std::max(overflow, child->getTotalWidth());
     overflow -= box->width;
     scrollLeft = std::max(0, std::min(x, static_cast<int>(overflow)));
-    box->setFlags(Box::NEED_REFLOW);
+    box->setFlags(Box::NEED_REPAINT);
 }
 
 int HTMLElementImp::getScrollWidth()
