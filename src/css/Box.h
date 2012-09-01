@@ -27,7 +27,8 @@
 #include <boost/intrusive_ptr.hpp>
 
 #include "http/HTTPRequest.h"
-#include "css/CSSStyleDeclarationImp.h"
+#include "CSSStyleDeclarationImp.h"
+#include "FormattingContext.h"
 
 class FontGlyph;
 class FontTexture;
@@ -86,6 +87,8 @@ public:
     static const unsigned short NEED_RESTYLING = 1;
     static const unsigned short NEED_REFLOW = 2;
     static const unsigned short NEED_REPAINT = 4;
+    static const unsigned short NEED_RELOCATE = 8;
+    static const unsigned short NEED_CHILD_LAYOUT = 16;
 
 protected:
     Node node;
@@ -402,20 +405,13 @@ public:
 
     virtual void dump(std::string indent = "") = 0;
 
-    void setFlags(unsigned short f) {
-        flags |= f;
+    bool needLayout() const {
+        return flags & (NEED_REFLOW | NEED_RELOCATE | NEED_CHILD_LAYOUT);
     }
-    void clearFlags() {
-        flags = 0;
-        for (Box* i = firstChild; i; i = i->nextSibling)
-            i->clearFlags();
-    }
-    unsigned short getFlags() const {
-        unsigned short f = flags;
-        for (const Box* i = firstChild; i; i = i->nextSibling)
-            f |= i->getFlags();
-        return f;
-    }
+
+    void setFlags(unsigned short f);
+    void clearFlags(unsigned short f = 0xffff);
+    unsigned short gatherFlags() const;
 
     bool isInside(int u, int v) const {
         // TODO: InlineLevelBox needs to be treated differently.
@@ -474,6 +470,7 @@ typedef boost::intrusive_ptr<Box> BoxPtr;
 class BlockLevelBox : public Box
 {
     friend class FormattingContext;
+    friend class TableWrapperBox;
     friend Box* Box::removeChild(Box* item);
 
     unsigned textAlign;
@@ -500,6 +497,9 @@ class BlockLevelBox : public Box
 
     // for automatic table layout
     float mcw;
+
+    // for reflow
+    SavedFormattingContext savedFormattingContext;
 
     void getPsuedoStyles(ViewCSSImp* view, FormattingContext* context, CSSStyleDeclarationImp* style,
                          CSSStyleDeclarationPtr& firstLetterStyle, CSSStyleDeclarationPtr& firstLineStyle);

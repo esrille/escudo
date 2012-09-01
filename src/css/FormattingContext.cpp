@@ -58,6 +58,127 @@ void FormattingContext::restoreBlanks(Box* box)
     blankRight -= box->getBlankRight();
 }
 
+void FormattingContext::saveContext(SavedFormattingContext::MarginContext& context)
+{
+    context.clearance = clearance;
+    context.usedMargin = usedMargin;
+    context.positiveMargin = positiveMargin;
+    context.negativeMargin = negativeMargin;
+    context.previousMargin = previousMargin;
+    context.withClearance = withClearance;
+}
+
+void FormattingContext::restoreContext(const SavedFormattingContext::MarginContext& context)
+{
+    clearance = context.clearance;
+    usedMargin = context.usedMargin;
+    positiveMargin = context.positiveMargin;
+    negativeMargin = context.negativeMargin;
+    previousMargin = context.previousMargin;
+    withClearance = context.withClearance;
+}
+
+bool FormattingContext::hasChanged(const SavedFormattingContext::MarginContext& context)
+{
+    if (clearance != context.clearance ||
+        usedMargin != context.usedMargin ||
+        positiveMargin != context.positiveMargin ||
+        negativeMargin != context.negativeMargin ||
+        withClearance != context.withClearance)
+            return true;
+    if (isnan(previousMargin) && isnan(context.previousMargin))
+        return false;
+    return previousMargin != context.previousMargin;
+}
+
+void FormattingContext::saveContext(BlockLevelBox* block)
+{
+    block->savedFormattingContext.blankLeft = blankLeft;
+    block->savedFormattingContext.blankRight = blankRight;
+    block->savedFormattingContext.left.clear();
+    for (auto i = left.begin(); i != left.end(); ++i)
+        block->savedFormattingContext.left.emplace_back(*i, (*i)->remainingHeight);
+    block->savedFormattingContext.right.clear();
+    for (auto i = right.begin(); i != right.end(); ++i)
+        block->savedFormattingContext.right.emplace_back(*i, (*i)->remainingHeight);
+
+    block->savedFormattingContext.clearance = block->clearance;
+    block->savedFormattingContext.marginTop = block->marginTop;
+    block->savedFormattingContext.marginBottom = block->marginBottom;
+    saveContext(block->savedFormattingContext.marginContext);
+
+    block->savedFormattingContext.saved = true;
+}
+
+void FormattingContext::restoreContext(BlockLevelBox* block)
+{
+    assert(block->savedFormattingContext.saved);
+    blankLeft = block->savedFormattingContext.blankLeft;
+    blankRight = block->savedFormattingContext.blankRight;
+    left.clear();
+    for (auto i = block->savedFormattingContext.left.begin(); i != block->savedFormattingContext.left.end(); ++i) {
+        BlockLevelBox* floatingBox = i->floatingBox;
+        floatingBox->remainingHeight = i->remainingHeight;
+        left.push_back(floatingBox);
+    }
+    right.clear();
+    for (auto i = block->savedFormattingContext.right.begin(); i != block->savedFormattingContext.right.end(); ++i) {
+        BlockLevelBox* floatingBox = i->floatingBox;
+        floatingBox->remainingHeight = i->remainingHeight;
+        right.push_back(floatingBox);
+    }
+
+    block->clearance = block->savedFormattingContext.clearance;
+    block->marginTop = block->savedFormattingContext.marginTop;
+    block->marginBottom = block->savedFormattingContext.marginBottom;
+    restoreContext(block->savedFormattingContext.marginContext);
+
+    breakable = false;
+    isFirstLine = false;
+    lineBox = 0;
+    x = 0.0f;
+    leftover = 0.0f;
+    prevChar = 0;
+    baseline = 0.0f;
+    lineHeight = 0.0f;
+    atLineHead = true;
+}
+
+bool FormattingContext::hasChanged(const BlockLevelBox* block)
+{
+    if (!block->savedFormattingContext.saved)
+        return true;
+    if (blankLeft != block->savedFormattingContext.blankLeft || blankRight != block->savedFormattingContext.blankRight)
+        return true;
+    if (block->savedFormattingContext.left.size() != left.size())
+        return true;
+    if (block->savedFormattingContext.right.size() != right.size())
+        return true;
+    auto j = left.begin();
+    for (auto i = block->savedFormattingContext.left.begin(); i != block->savedFormattingContext.left.end(); ++i, ++j) {
+        BlockLevelBox* floatingBox = *j;
+        if (floatingBox != i->floatingBox || floatingBox->remainingHeight != i->remainingHeight)
+            return true;
+    }
+    auto k = right.begin();
+    for (auto i = block->savedFormattingContext.right.begin(); i != block->savedFormattingContext.right.end(); ++i, ++k) {
+        BlockLevelBox* floatingBox = *k;
+        if (floatingBox != i->floatingBox || floatingBox->remainingHeight != i->remainingHeight)
+            return true;
+    }
+
+    if (isnan(block->clearance) != isnan(block->savedFormattingContext.clearance))
+        return true;
+    if (!isnan(block->clearance) && block->clearance != block->savedFormattingContext.clearance ||
+        block->marginTop != block->savedFormattingContext.marginTop ||
+        block->marginBottom != block->savedFormattingContext.marginBottom)
+            return true;
+    if (hasChanged(block->savedFormattingContext.marginContext))
+        return true;
+
+    return false;
+}
+
 float FormattingContext::getLeftoverForFloat(Box* block, unsigned floatValue) const
 {
     // cf. floats-rule3-outside-left-001 and floats-rule3-outside-right-001.

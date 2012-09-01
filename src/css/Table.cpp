@@ -1449,6 +1449,8 @@ Reflow:
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
         h += child->getTotalHeight() + child->getClearance();
     height = std::max(height, h);
+
+    tableBox->flags &= ~(NEED_REFLOW | NEED_RELOCATE | NEED_CHILD_LAYOUT);
 }
 
 bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
@@ -1491,6 +1493,9 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
         }
         context = parentContext;
     }
+
+    flags &= ~(NEED_REFLOW | NEED_RELOCATE | NEED_CHILD_LAYOUT);
+
     return true;
 }
 
@@ -1556,6 +1561,8 @@ void TableWrapperBox::layOutAbsolute(ViewCSSImp* view)
 
     offsetH += left;
     offsetV += top;
+
+    flags &= ~(NEED_REFLOW | NEED_RELOCATE | NEED_CHILD_LAYOUT);
 }
 
 float TableWrapperBox::shrinkTo()

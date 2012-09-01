@@ -284,16 +284,16 @@ public:
     BlockLevelBox* getTree() const {
         return boxTree.get();
     }
-    void setFlags(unsigned f) {
+    void setFlags(unsigned short f) {
         if (boxTree)
             boxTree->setFlags(f);
     }
-    unsigned getFlags() const {
-        return boxTree ? boxTree->getFlags() : 0;
+    unsigned short gatherFlags() const {
+        return boxTree ? boxTree->gatherFlags() : 0;
     }
-    void clearFlags() {
+    void clearFlags(unsigned short f = 0xffff) {
         if (boxTree)
-            boxTree->clearFlags();
+            boxTree->clearFlags(f);
     }
 
     unsigned getLast() const {

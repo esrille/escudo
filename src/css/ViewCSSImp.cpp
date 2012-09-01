@@ -18,6 +18,7 @@
 
 #include <org/w3c/dom/Text.h>
 #include <org/w3c/dom/Comment.h>
+#include <org/w3c/dom/events/MutationEvent.h>
 #include <org/w3c/dom/html/HTMLDivElement.h>
 #include <org/w3c/dom/html/HTMLInputElement.h>
 #include <org/w3c/dom/html/HTMLLinkElement.h>
@@ -101,8 +102,40 @@ bool ViewCSSImp::isHovered(Node node)
 
 void ViewCSSImp::handleMutation(events::Event event)
 {
-    if (boxTree)
-        boxTree->setFlags(Box::NEED_RESTYLING);
+    if (!boxTree)
+        return;
+
+    events::MutationEvent mutation(interface_cast<events::MutationEvent>(event));
+    if (mutation.getType() == u"DOMCharacterDataModified") {
+        Node parentNode = interface_cast<Node>(mutation.getRelatedNode());
+        if (!Element::hasInstance(parentNode))
+            return;
+        Element element = interface_cast<Element>(parentNode);
+        while (element) {
+            CSSStyleDeclarationImp* style = getStyle(element);
+            if (!style)
+                return;
+            switch (style->display.getValue()) {
+            case CSSDisplayValueImp::Block:
+            case CSSDisplayValueImp::ListItem:
+            case CSSDisplayValueImp::Table:
+                if (Box* box = style->getBox()) {
+                    box->setFlags(Box::NEED_REFLOW);
+                    return;
+                }
+                element = element.getParentElement();
+                break;
+            // TODO: Support inline block and table later
+            // case CSSDisplayValueImp::InlineBlock:
+            // case CSSDisplayValueImp::InlineTable:
+            default:
+                element = element.getParentElement();
+                break;
+            }
+        }
+    }
+
+    boxTree->setFlags(Box::NEED_RESTYLING);
 }
 
 void ViewCSSImp::findDeclarations(CSSRuleListImp::RuleSet& set, Element element, css::CSSRuleList list, unsigned importance)
@@ -605,16 +638,19 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes()
 
 BlockLevelBox* ViewCSSImp::layOut()
 {
-    if (stackingContexts)
+    if (boxTree && (boxTree->flags & Box::NEED_REFLOW))
+        boxTree = 0;
+
+    if (!boxTree && stackingContexts)
         stackingContexts->clearBase();
 
     quotingDepth = 0;
     scrollWidth = 0.0f;
     scrollHeight = 0.0f;
 
-    layOutBlockBoxes();
-    if (!boxTree)
+    if (!boxTree && !layOutBlockBoxes())
         return 0;
+
     // Expand line boxes and inline-level boxes in each block-level box
     if (!boxTree->isAbsolutelyPositioned()) {
         boxTree->layOut(this, 0);
@@ -629,6 +665,9 @@ BlockLevelBox* ViewCSSImp::layOut()
             stackingContexts->dump();
         }
     }
+
+    unsigned f = boxTree->gatherFlags();
+
     return boxTree.get();
 }
 

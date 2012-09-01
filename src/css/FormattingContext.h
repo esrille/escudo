@@ -47,6 +47,49 @@ class StackingContext;
 class ViewCSSImp;
 class WindowImp;
 
+// SavedFormattingContext stores the initial FormattingContext state for
+// laying out a block-level box.
+struct SavedFormattingContext
+{
+    struct FloatingBoxContext {
+        BlockLevelBox* floatingBox;
+        float remainingHeight;
+
+        FloatingBoxContext(BlockLevelBox* floatingBox, float remainingHeight) :
+            floatingBox(floatingBox),
+            remainingHeight(remainingHeight)
+        {}
+    };
+
+    struct MarginContext {
+        float clearance;  // The clearance introduced by the previous collapsed through boxes.
+        float usedMargin;
+        // Adjoining margins
+        float positiveMargin;
+        float negativeMargin;
+        float previousMargin;
+        bool withClearance;
+    };
+
+    bool saved;
+
+    // Saved context for floating boxes
+    float blankLeft;
+    float blankRight;
+    std::list<FloatingBoxContext> left;
+    std::list<FloatingBoxContext> right;
+
+    // Saved context for margin collapse
+    float clearance;
+    float marginTop;
+    float marginBottom;
+    MarginContext marginContext;
+
+    SavedFormattingContext() :
+        saved(false)
+    {}
+};
+
 class FormattingContext
 {
     friend class BlockLevelBox;
@@ -60,16 +103,17 @@ class FormattingContext
     float x;
     float leftover;
     char16_t prevChar;
+
+    // Context for floating boxes
     float blankLeft;
     float blankRight;
     std::list<BlockLevelBox*> left;   // active floating boxes on the left side
     std::list<BlockLevelBox*> right;  // active floating boxes on the right side
     std::list<Node> floatNodes;       // floating boxes to be layed out
 
+    // Context for margin collapse
     float clearance;  // The clearance introduced by the previous collapsed through boxes.
-
     float usedMargin;
-
     // Adjoining margins
     float positiveMargin;
     float negativeMargin;
@@ -84,11 +128,19 @@ class FormattingContext
     void shiftDownLeft();
     void shiftDownRight();
 
+    void saveContext(SavedFormattingContext::MarginContext& context);
+    void restoreContext(const SavedFormattingContext::MarginContext& context);
+    bool hasChanged(const SavedFormattingContext::MarginContext& context);
+
 public:
     FormattingContext();
 
     void updateBlanks(Box* box);
     void restoreBlanks(Box* box);
+
+    void saveContext(BlockLevelBox* block);
+    void restoreContext(BlockLevelBox* block);
+    bool hasChanged(const BlockLevelBox* block);
 
     LineBox* addLineBox(ViewCSSImp* view, BlockLevelBox* parentBox);
     void addFloat(BlockLevelBox* floatBox, float totalWidth);

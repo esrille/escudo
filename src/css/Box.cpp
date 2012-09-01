@@ -346,6 +346,39 @@ void Box::resolveOffset(float& x, float &y)
     getStyle()->resolveOffset(x, y);
 }
 
+float Box::shrinkTo()
+{
+    return getTotalWidth();
+}
+
+void Box::setFlags(unsigned short f)
+{
+    flags |= f;
+    if (flags & (NEED_REFLOW | NEED_RELOCATE)) {
+        f = NEED_CHILD_LAYOUT;
+        for (Box* box = parentBox; box; box = box->parentBox) {
+            if ((box->flags & f) == f)
+                break;
+            box->flags |= f;
+        }
+    }
+}
+
+void Box::clearFlags(unsigned short f)
+{
+    flags &= ~f;
+    for (Box* i = firstChild; i; i = i->nextSibling)
+        i->clearFlags(f);
+}
+
+unsigned short Box::gatherFlags() const
+{
+    unsigned short f = flags;
+    for (const Box* i = firstChild; i; i = i->nextSibling)
+        f |= i->gatherFlags();
+    return f;
+}
+
 BlockLevelBox::BlockLevelBox(Node node, CSSStyleDeclarationImp* style) :
     Box(node),
     textAlign(CSSTextAlignValueImp::Default),
@@ -360,6 +393,7 @@ BlockLevelBox::BlockLevelBox(Node node, CSSStyleDeclarationImp* style) :
 {
     if (style)
         setStyle(style);
+    flags |= NEED_REFLOW | NEED_RELOCATE | NEED_CHILD_LAYOUT;
 }
 
 bool BlockLevelBox::isAbsolutelyPositioned() const
@@ -605,7 +639,7 @@ void BlockLevelBox::layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floa
     floatBox->layOut(view, context);
     floatBox->remainingHeight = floatBox->getTotalHeight();
     if (!context->floatNodes.empty()) {
-        // Floats are not allowed to reorder. Process this float box later in the other line box.
+        // Floats are not allowed to reorder. Process this floating box later in the other line box.
         context->floatNodes.push_back(node);
         return;
     }
@@ -729,6 +763,9 @@ void BlockLevelBox::layOutAnonymousInlineTable(ViewCSSImp* view, FormattingConte
 // Generate line boxes
 bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, float originalMargin)
 {
+    if (!(flags & (NEED_REFLOW | NEED_CHILD_LAYOUT)))
+        return true;
+
     bool keepConsumed = false;
     marginUsed = false;
     context->atLineHead = true;
@@ -826,12 +863,6 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
 void BlockLevelBox::shrinkToFit()
 {
     fit(shrinkTo());
-}
-
-// returns the minimum total width
-float Box::shrinkTo()
-{
-    return getTotalWidth();
 }
 
 float BlockLevelBox::shrinkTo()
@@ -1235,6 +1266,10 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     if (!style)
         return false;  // TODO error
 
+    float savedWidth = width;
+    float savedHeight = height;
+    float savedMcw = mcw;
+
     mcw = 0.0f;
     if (!isAnonymous()) {
         style->addBox(this);
@@ -1262,13 +1297,28 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     if (cell)
         cell->adjustWidth();
 
+     if (savedWidth != width)
+         flags |= NEED_REFLOW;
+
     visibility = style->visibility.getValue();
     textAlign = style->textAlign.getValue();
 
-    float before = collapseMarginTop(context);
-    if (isInFlow() && 0.0f < borderTop + paddingTop)
-        context->updateRemainingHeight(borderTop + paddingTop);
-
+    float before = NAN;
+    if (context) {
+        before = collapseMarginTop(context);
+        if (isInFlow() && 0.0f < borderTop + paddingTop)
+            context->updateRemainingHeight(borderTop + paddingTop);
+        if (!needLayout()) {
+#ifndef NDEBUG
+            if (3 <= getLogLevel())
+                std::cout << "BlockLevelBox::" << __func__ << ": skip reflow for '" << tag << "'\n";
+#endif
+            context->restoreContext(this);
+            height = savedHeight;
+            mcw = savedMcw;
+            return true;
+        }
+    }
     FormattingContext* parentContext = context;
     context = updateFormattingContext(context);
 
@@ -1286,29 +1336,31 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
                 return false;
         }
     }
-    layOutChildren(view, context);
 
-    if (!isAnonymous()) {
-        if ((style->width.isAuto() || style->marginLeft.isAuto() || style->marginRight.isAuto()) &&
-            (style->isInlineBlock() || style->isFloat() || style->display == CSSDisplayValueImp::TableCell || isReplacedElement(element)) &&
-            !intrinsic)
+    if (flags & (NEED_REFLOW | NEED_CHILD_LAYOUT)) {
+        layOutChildren(view, context);
+        if (!isAnonymous()) {
+            if ((style->width.isAuto() || style->marginLeft.isAuto() || style->marginRight.isAuto()) &&
+                (style->isInlineBlock() || style->isFloat() || style->display == CSSDisplayValueImp::TableCell || isReplacedElement(element)) &&
+                !intrinsic)
+                shrinkToFit();
+            applyMinMaxWidth(getTotalWidth());
+
+            if (!cell) {
+                mcw += borderLeft + borderRight;
+                if (!style->paddingLeft.isPercentage())
+                    mcw += style->paddingLeft.getPx();
+                if (!style->paddingRight.isPercentage())
+                    mcw += style->paddingRight.getPx();
+                if (!style->marginLeft.isPercentage() && !style->marginLeft.isAuto())
+                    mcw += style->marginLeft.getPx();
+                if (!style->marginRight.isPercentage() && !style->marginRight.isAuto())
+                    mcw += style->marginRight.getPx();
+            } else
+                mcw += getBlankLeft() + getBlankRight();
+        } else if (cell)
             shrinkToFit();
-        applyMinMaxWidth(getTotalWidth());
-
-        if (!cell) {
-            mcw += borderLeft + borderRight;
-            if (!style->paddingLeft.isPercentage())
-                mcw += style->paddingLeft.getPx();
-            if (!style->paddingRight.isPercentage())
-                mcw += style->paddingRight.getPx();
-            if (!style->marginLeft.isPercentage() && !style->marginLeft.isAuto())
-                mcw += style->marginLeft.getPx();
-            if (!style->marginRight.isPercentage() && !style->marginRight.isAuto())
-                mcw += style->marginRight.getPx();
-        } else
-            mcw += getBlankLeft() + getBlankRight();
-    } else if (cell)
-        shrinkToFit();
+    }
 
     // Collapse margins with the first and the last children before calculating the auto height.
     collapseMarginBottom(context);
@@ -1359,6 +1411,13 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     adjustCollapsedThroughMargins(context);
     if (isInFlow() && 0.0f < paddingBottom + borderBottom)
         context->updateRemainingHeight(paddingBottom + borderBottom);
+
+    if (context->hasChanged(this)) {
+        context->saveContext(this);
+        if (nextSibling)
+            nextSibling->flags |= NEED_REFLOW;
+    }
+    flags &= ~(NEED_REFLOW | NEED_RELOCATE | NEED_CHILD_LAYOUT);
 
     return true;
 }
@@ -1652,6 +1711,8 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
             offsetH = (list->x + list->getMarginLeft()) - x - getTotalWidth();
         }
     }
+
+    flags &= ~(NEED_REFLOW | NEED_RELOCATE | NEED_CHILD_LAYOUT);
 }
 
 void BlockLevelBox::resolveOffset(float& x, float &y)

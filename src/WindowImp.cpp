@@ -139,7 +139,7 @@ void WindowImp::updateView(ViewCSSImp* next)
 
     unsigned flags = 0;
     if (view) {
-        flags |= view->getFlags();
+        flags |= view->gatherFlags();
         delete view;
     }
     view = next;
@@ -262,8 +262,7 @@ bool WindowImp::poll()
             ViewCSSImp* next = backgroundTask.getView();
             updateView(next);
             if (view) {
-                if (unsigned flags = view->getFlags()) {
-                    view->clearFlags();
+                if (unsigned flags = view->gatherFlags()) {
                     if (flags & Box::NEED_RESTYLING) {
                         recordTime("%*strigger restyling", windowDepth * 2, "");
                         backgroundTask.wakeUp(BackgroundTask::Cascade);
@@ -273,6 +272,7 @@ bool WindowImp::poll()
                         backgroundTask.wakeUp(BackgroundTask::Layout);
                         view = 0;
                     } else if (flags & Box::NEED_REPAINT)
+                        view->clearFlags(Box::NEED_REPAINT);
                         redisplay = true;
                 }
             }
