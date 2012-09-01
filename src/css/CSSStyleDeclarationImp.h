@@ -227,7 +227,10 @@ private:
     std::bitset<PropertyCount> propertySet;
     std::bitset<PropertyCount> importantSet;
     std::bitset<PropertyCount> inheritSet;
+
     bool resolved;
+    float containingBlockWidth;
+    float containingBlockHeight;
 
     CSSStyleDeclarationImp* parentStyle;
     CSSStyleDeclarationImp* bodyStyle;

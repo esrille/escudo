@@ -1770,8 +1770,10 @@ void CSSStyleDeclarationImp::recompute(ViewCSSImp* view, CSSStyleDeclarationImp*
 // cf. CSSOM 7. Resolved Values
 void CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* containingBlock)
 {
-    if (resolved)
+    if (resolved && containingBlock->width == containingBlockWidth && containingBlock->height == containingBlockHeight)
         return;
+    containingBlockWidth = containingBlock->width;
+    containingBlockHeight = containingBlock->height;
 
     if (parentStyle) {
         // TODO: Refine
@@ -3570,6 +3572,8 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp(int pseudoElementSelectorType) :
     owner(0),
     parentRule(0),
     resolved(false),
+    containingBlockWidth(0.0f),
+    containingBlockHeight(0.0f),
     parentStyle(0),
     bodyStyle(0),
     box(0),
@@ -3607,6 +3611,8 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp(CSSStyleDeclarationImp* org) :
     owner(0),   // TODO: set later
     parentRule(0),
     resolved(false),
+    containingBlockWidth(0.0f),
+    containingBlockHeight(0.0f),
     parentStyle(0),
     bodyStyle(0),
     box(0),
