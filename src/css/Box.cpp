@@ -1605,6 +1605,9 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
         return;  // TODO error
     style->addBox(this);
 
+    float savedWidth = width;
+    float savedHeight = height;
+
     setContainingBlock(view);
     const ContainingBlock* containingBlock = &absoluteBlock;
 
@@ -1642,6 +1645,11 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
 
     FormattingContext* context = updateFormattingContext(context);
     assert(context);
+
+    if (width != savedWidth)
+        flags |= NEED_REFLOW;
+    else if (!(maskV & Height) && height != savedHeight)
+        flags |= NEED_REFLOW;
 
     if (layOutReplacedElement(view, this, element, style.get())) {
         maskH &= ~Width;
