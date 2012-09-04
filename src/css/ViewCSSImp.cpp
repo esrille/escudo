@@ -666,8 +666,6 @@ BlockLevelBox* ViewCSSImp::layOut()
         }
     }
 
-    unsigned f = boxTree->gatherFlags();
-
     return boxTree.get();
 }
 
