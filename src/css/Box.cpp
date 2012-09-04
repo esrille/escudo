@@ -1337,30 +1337,28 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         }
     }
 
-    if (flags & (NEED_REFLOW | NEED_CHILD_LAYOUT)) {
-        layOutChildren(view, context);
-        if (!isAnonymous()) {
-            if ((style->width.isAuto() || style->marginLeft.isAuto() || style->marginRight.isAuto()) &&
-                (style->isInlineBlock() || style->isFloat() || style->display == CSSDisplayValueImp::TableCell || isReplacedElement(element)) &&
-                !intrinsic)
-                shrinkToFit();
-            applyMinMaxWidth(getTotalWidth());
-
-            if (!cell) {
-                mcw += borderLeft + borderRight;
-                if (!style->paddingLeft.isPercentage())
-                    mcw += style->paddingLeft.getPx();
-                if (!style->paddingRight.isPercentage())
-                    mcw += style->paddingRight.getPx();
-                if (!style->marginLeft.isPercentage() && !style->marginLeft.isAuto())
-                    mcw += style->marginLeft.getPx();
-                if (!style->marginRight.isPercentage() && !style->marginRight.isAuto())
-                    mcw += style->marginRight.getPx();
-            } else
-                mcw += getBlankLeft() + getBlankRight();
-        } else if (cell)
+    layOutChildren(view, context);
+    if (!isAnonymous()) {
+        if ((style->width.isAuto() || style->marginLeft.isAuto() || style->marginRight.isAuto()) &&
+            (style->isInlineBlock() || style->isFloat() || style->display == CSSDisplayValueImp::TableCell || isReplacedElement(element)) &&
+            !intrinsic)
             shrinkToFit();
-    }
+        applyMinMaxWidth(getTotalWidth());
+
+        if (!cell) {
+            mcw += borderLeft + borderRight;
+            if (!style->paddingLeft.isPercentage())
+                mcw += style->paddingLeft.getPx();
+            if (!style->paddingRight.isPercentage())
+                mcw += style->paddingRight.getPx();
+            if (!style->marginLeft.isPercentage() && !style->marginLeft.isAuto())
+                mcw += style->marginLeft.getPx();
+            if (!style->marginRight.isPercentage() && !style->marginRight.isAuto())
+                mcw += style->marginRight.getPx();
+        } else
+            mcw += getBlankLeft() + getBlankRight();
+    } else if (cell)
+        shrinkToFit();
 
     // Collapse margins with the first and the last children before calculating the auto height.
     collapseMarginBottom(context);
