@@ -1660,12 +1660,21 @@ Document DocumentImp::loadBindingDocument(std::u16string documentURI)
     if (found != bindingDocuments.end())
         return found->second.getDocument();
 
-    html::Window window = new WindowImp(defaultView);
+    WindowImp* window = new WindowImp(defaultView);
     if (!window)
         return 0;
     bindingDocuments.insert(std::pair<std::u16string, html::Window>(documentURI, window));
-    window.open(documentURI, u"_self", u"", true);
-    return window.getDocument();
+    window->open(documentURI, u"_self", u"", true);
+    return window->getDocument();
+}
+
+bool DocumentImp::isBindingDocumentWindow(const WindowImp* window) const
+{
+    for (auto i = bindingDocuments.begin(); i != bindingDocuments.end(); ++i) {
+        if (i->second.self() == window)
+            return true;
+    }
+    return false;
 }
 
 // Node - override

@@ -189,12 +189,17 @@ bool WindowImp::poll()
         eventQueue.pop_front();
     }
 
+    DocumentImp* document = dynamic_cast<DocumentImp*>(window->getDocument().self());
     for (auto i = childWindows.begin(); i != childWindows.end(); ++i) {
         WindowImp* child = *i;
         if (child->poll()) {
             redisplay |= true;
-            if (view)
-                view->setFlags(Box::NEED_REPAINT);
+            if (view) {
+                if (document && document->isBindingDocumentWindow(child))
+                    view->setFlags(Box::NEED_RESTYLING);
+                else
+                    view->setFlags(Box::NEED_REPAINT);
+            }
         }
     }
 
@@ -207,7 +212,7 @@ bool WindowImp::poll()
     case HttpRequest::LOADING:
         break;
     case HttpRequest::DONE:
-        if (!window->getDocument()) {
+        if (!document) {
             recordTime("%*shttp request done", windowDepth * 2, "");
             // TODO: Check header
 
@@ -255,7 +260,7 @@ bool WindowImp::poll()
         }
         switch (backgroundTask.getState()) {
         case BackgroundTask::Cascaded:
-            HTMLElementImp::xblEnteredDocument(window->getDocument());
+            HTMLElementImp::xblEnteredDocument(document);
             backgroundTask.wakeUp(BackgroundTask::Layout);
             break;
         case BackgroundTask::Done: {

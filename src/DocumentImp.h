@@ -135,6 +135,8 @@ public:
     }
     unsigned decrementLoadEventDelayCount();
 
+    bool isBindingDocumentWindow(const WindowImp* window) const;
+
     // Node - override
     virtual unsigned short getNodeType();
     virtual Node appendChild(Node newChild) throw(DOMException);
