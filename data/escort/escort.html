@@ -105,13 +105,13 @@
 </implementation>
 </binding>
 <binding id="input-button">
-<template><div style='position: relative; top: 50%; margin-top: -0.5em;'></div></template>
+<template></template>
 <implementation>
   ({
     xblEnteredDocument: function() {
         this.boundElement.tabIndex = 0;
         var button = document.createTextNode(this.boundElement.value);
-        this.shadowTree.firstChild.appendChild(button);
+        this.shadowTree.appendChild(button);
     }
   })
 </implementation>
