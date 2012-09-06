@@ -63,7 +63,6 @@ class ViewCSSImp
     // cascade
     std::map<Element, CSSStyleDeclarationPtr> map;
     StackingContext* stackingContexts;
-    std::list<CSSStyleSheetImp*> styleSheets;
     std::list<Object*> hoverList;
     unsigned overflow;
 

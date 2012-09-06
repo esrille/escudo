@@ -154,43 +154,33 @@ void ViewCSSImp::resolveXY(float left, float top)
 
 void ViewCSSImp::cascade()
 {
-    Document document = getDocument();
+    DocumentImp* document = dynamic_cast<DocumentImp*>(getDocument().self());
+    if (!document)
+        return;
 
     map.clear();
     delete stackingContexts;
     stackingContexts = 0;
 
-    styleSheets.clear();
-    html::HTMLHeadElement head = document.getHead();
+    document->clearStyleSheets();
+    html::HTMLHeadElement head = document->getHead();
     if (head) {
         for (auto element = head.getFirstElementChild(); element; element = element.getNextElementSibling()) {
             if (html::HTMLStyleElement::hasInstance(element)) {
                 html::HTMLStyleElement styleElement = interface_cast<html::HTMLStyleElement>(element);
                 stylesheets::StyleSheet styleSheet = styleElement.getSheet();
-                if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(styleSheet.self()))
-                    styleSheets.push_back(sheet);
+                document->addStyleSheet(styleSheet);
             } else if (html::HTMLLinkElement::hasInstance(element)) {
                 html::HTMLLinkElement linkElement = interface_cast<html::HTMLLinkElement>(element);
                 stylesheets::StyleSheet styleSheet = linkElement.getSheet();
-                if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(styleSheet.self()))
-                    styleSheets.push_back(sheet);
+                document->addStyleSheet(styleSheet);
             }
         }
     }
 
     CSSAutoNumberingValueImp::CounterContext cc(this);
-    cascade(document, 0, &cc);
+    cascade(getDocument(), 0, &cc);
 
-    if (DocumentImp* imp = dynamic_cast<DocumentImp*>(document.self())) {
-        imp->clearStyleSheets();
-        if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(defaultStyleSheet.self()))
-            imp->addStyleSheet(sheet);
-        if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(userStyleSheet.self()))
-            imp->addStyleSheet(sheet);
-        for (auto i = styleSheets.begin(); i != styleSheets.end(); ++i)
-            imp->addStyleSheet(*i);
-    }
-    styleSheets.clear();
     if (3 <= getLogLevel())
         printComputedValues(document, this);
 }
@@ -225,8 +215,9 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle, CSSAuto
             }
         }
         unsigned importance = CSSRuleListImp::Author;
-        for (auto i = styleSheets.begin(); i != styleSheets.end(); ++i) {
-            CSSStyleSheetImp* sheet = *i;
+        stylesheets::StyleSheetList styleSheetList(getDocument().getStyleSheets());
+        for (unsigned i = 0; i < styleSheetList.getLength(); ++i) {
+            CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(styleSheetList.getElement(i).self());
             findDeclarations(style->ruleSet, element, sheet->getCssRules(), importance++);
             // TODO: Check overflow of importance
         }

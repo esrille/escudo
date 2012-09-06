@@ -118,7 +118,8 @@ public:
         styleSheets.clear();
     }
     void addStyleSheet(stylesheets::StyleSheet sheet) {
-        styleSheets.push_back(sheet);
+        if (sheet)
+            styleSheets.push_back(sheet);
     }
 
     void setURL(const std::u16string& url);
