@@ -540,13 +540,11 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
                 anonymousBox->insertInline(element);
         }
 
-        BlockLevelBox* childBox = 0;
         TableWrapperBox* tableWrapperBox = 0;
 
         ElementImp* imp = dynamic_cast<ElementImp*>(element.self());
         if (imp->marker) {
             if (BlockLevelBox* box = layOutBlockBoxes(imp->marker, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::Marker))) {
-                childBox = box;
                 if (tableWrapperBox && tableWrapperBox->isAnonymousTableObject())
                     tableWrapperBox->layOutBlockBoxes();
                 tableWrapperBox = dynamic_cast<TableWrapperBox*>(box);
@@ -562,7 +560,6 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
         }
         if (imp->before) {
             if (BlockLevelBox* box = layOutBlockBoxes(imp->before, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::Before))) {
-                childBox = box;
                 if (tableWrapperBox && tableWrapperBox->isAnonymousTableObject())
                     tableWrapperBox->layOutBlockBoxes();
                 tableWrapperBox = dynamic_cast<TableWrapperBox*>(box);
@@ -570,7 +567,6 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
         }
         for (Node child = shadow.getFirstChild(); child; child = child.getNextSibling()) {
             if (BlockLevelBox* box = layOutBlockBoxes(child, currentBox, style)) {
-                childBox = box;
                 if (tableWrapperBox && tableWrapperBox->isAnonymousTableObject())
                     tableWrapperBox->layOutBlockBoxes();
                 tableWrapperBox = dynamic_cast<TableWrapperBox*>(box);
@@ -578,7 +574,6 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
         }
         if (imp->after) {
             if (BlockLevelBox* box = layOutBlockBoxes(imp->after, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::After))) {
-                childBox = box;
                 if (tableWrapperBox && tableWrapperBox->isAnonymousTableObject())
                     tableWrapperBox->layOutBlockBoxes();
                 tableWrapperBox = dynamic_cast<TableWrapperBox*>(box);
