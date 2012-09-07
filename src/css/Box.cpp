@@ -354,7 +354,7 @@ float Box::shrinkTo()
 void Box::setFlags(unsigned short f)
 {
     flags |= f;
-    if (flags & (NEED_REFLOW | NEED_RELOCATE)) {
+    if (flags & (NEED_REFLOW | NEED_RELOCATE | NEED_CHILD_LAYOUT)) {
         f = NEED_CHILD_LAYOUT;
         for (Box* box = parentBox; box; box = box->parentBox) {
             if ((box->flags & f) == f)
