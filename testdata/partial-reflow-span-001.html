@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+<head>
+<head>
+<meta charset="UTF-8">
+<title>Partial reflow test</title>
+<style type="text/css">
+.flow-root {
+  border: solid blue 2px;
+  position: relative;
+}
+.hidden {
+  overflow: hidden;
+}
+div {
+  border: solid lime 2px;
+}
+.abs {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 20px;
+  height: auto;
+  background-color: green;
+  border: none;
+  color: yellow;
+}
+</style>
+<script type="text/javascript">
+function doTest() {
+  this.addEventListener('keydown', function(event) {
+    if (event.keyCode == 13) {
+      var span = document.createElement("span");
+      span.textContent = "Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text ";
+      var t = document.getElementById("t");
+      t.appendChild(span);
+    }
+  }, false);
+}
+</script>
+</head>
+<body onload="doTest()">
+<p>Press [Enter] to append a span element to the second paragraph.</p>
+<div class='flow-root'>
+<div>
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text 
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text 
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text 
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text 
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text 
+</div>
+<div id='t'>
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text 
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text 
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text 
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text 
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text 
+</div>
+<div>
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text 
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text 
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text 
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text 
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text 
+</div>
+<div class='abs'>A</div>
+</div>
+</body>
+</html>
