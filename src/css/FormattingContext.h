@@ -88,6 +88,10 @@ struct SavedFormattingContext
     SavedFormattingContext() :
         saved(false)
     {}
+
+    void reset() {
+        saved = false;
+    }
 };
 
 class FormattingContext
