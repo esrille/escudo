@@ -111,9 +111,9 @@ class FormattingContext
     // Context for floating boxes
     float blankLeft;
     float blankRight;
-    std::list<BlockLevelBox*> left;   // active floating boxes on the left side
-    std::list<BlockLevelBox*> right;  // active floating boxes on the right side
-    std::list<Node> floatNodes;       // floating boxes to be layed out
+    std::list<BlockLevelBox*> left;           // active floating boxes on the left side
+    std::list<BlockLevelBox*> right;          // active floating boxes on the right side
+    std::list<BlockLevelBox*> floatingBoxes;  // floating boxes to be added
 
     // Context for margin collapse
     float clearance;  // The clearance introduced by the previous collapsed through boxes.

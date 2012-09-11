@@ -150,16 +150,22 @@ void BlockLevelBox::getPsuedoStyles(ViewCSSImp* view, FormattingContext* context
 
 size_t BlockLevelBox::layOutFloatingFirstLetter(ViewCSSImp* view, FormattingContext* context, const std::u16string& data, CSSStyleDeclarationImp* firstLetterStyle)
 {
-    size_t length = getfirstLetterLength(data, 0);
     Document document = view->getDocument();
-    html::HTMLDivElement div = interface_cast<html::HTMLDivElement>(document.createElement(u"div"));
+    if (!floatingFirstLetter)
+        floatingFirstLetter = document.createElement(u"div");
+    else {
+        while (Node child = floatingFirstLetter.getFirstChild())
+            floatingFirstLetter.removeChild(child);
+    }
+    size_t length = getfirstLetterLength(data, 0);  // TODO: position?
     Text text = document.createTextNode(data.substr(0, length));
-    div.appendChild(text);
-    BlockLevelBox* floatingBox = view->createBlockLevelBox(div, this, firstLetterStyle, true, false);
+    floatingFirstLetter.appendChild(text);
+    BlockLevelBox* floatingBox = view->createBlockLevelBox(floatingFirstLetter, this, firstLetterStyle, true, false);
     floatingBox->insertInline(text);
-    view->addFloatBox(div, floatingBox, firstLetterStyle);
-    inlines.push_front(div);
-    layOutFloat(view, div, floatingBox, context);
+    addBlock(floatingFirstLetter, floatingBox);
+    view->addStyle(floatingFirstLetter, firstLetterStyle);
+    inlines.push_front(floatingFirstLetter);
+    layOutFloat(view, floatingFirstLetter, floatingBox, context);
     return length;
 }
 

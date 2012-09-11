@@ -268,26 +268,26 @@ LineBox* FormattingContext::addLineBox(ViewCSSImp* view, BlockLevelBox* parentBo
     return lineBox;
 }
 
-// if floatNodes is not empty, append float boxes as much as possible.
+// If floatingBoxes is not empty, append as much floating boxes as possible.
 void FormattingContext::tryAddFloat(ViewCSSImp* view)
 {
-    while (!floatNodes.empty()) {
-        BlockLevelBox* floatBox = view->getFloatBox(floatNodes.front());
-        unsigned clear = floatBox->style->clear.getValue();
+    while (!floatingBoxes.empty()) {
+        BlockLevelBox* floatingBox = floatingBoxes.front();
+        unsigned clear = floatingBox->style->clear.getValue();
         if ((clear & CSSClearValueImp::Left) && !left.empty() ||
             (clear & CSSClearValueImp::Right) && !right.empty()) {
             break;
         }
-        float w = floatBox->getEffectiveTotalWidth();
+        float w = floatingBox->getEffectiveTotalWidth();
         if (leftover < w) {
             if (left.empty() && right.empty() && !lineBox->hasChildBoxes()) {
-                addFloat(floatBox, w);
-                floatNodes.pop_front();
+                addFloat(floatingBox, w);
+                floatingBoxes.pop_front();
             }
             break;
         }
-        addFloat(floatBox, w);
-        floatNodes.pop_front();
+        addFloat(floatingBox, w);
+        floatingBoxes.pop_front();
     }
 }
 
@@ -394,7 +394,7 @@ bool FormattingContext::shiftDownLineBox(ViewCSSImp* view)
         x = lineBox->marginLeft;
         leftover = lineBox->getParentBox()->width - x - lineBox->marginRight;
 
-        // If there are floating boxes in floatNodes, try adding those first;
+        // If there are floating boxes in floatingBoxes, try adding those first;
         // cf. c414-flt-fit-001.
         tryAddFloat(view);
         x = getLeftEdge();
@@ -504,22 +504,22 @@ void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, boo
     }
 
     for (auto i = left.rbegin(); i != left.rend(); ++i) {
-        BlockLevelBox* floatBox = *i;
-        if (!floatBox->inserted) {
-            floatBox->inserted = true;
-            lineBox->insertBefore(floatBox, lineBox->getFirstChild());
-            parentBox->updateMCW(floatBox->mcw);
+        BlockLevelBox* floatingBox = *i;
+        if (!floatingBox->inserted) {
+            floatingBox->inserted = true;
+            lineBox->insertBefore(floatingBox, lineBox->getFirstChild());
+            parentBox->updateMCW(floatingBox->mcw);
         }
     }
     for (auto i = right.begin(); i != right.end(); ++i) {
-        BlockLevelBox* floatBox = *i;
-        if (!floatBox->inserted) {
-            floatBox->inserted = true;
+        BlockLevelBox* floatingBox = *i;
+        if (!floatingBox->inserted) {
+            floatingBox->inserted = true;
             // We would need a gap before the 1st right floating box to be added.
             if (!lineBox->rightBox)
-                lineBox->rightBox = floatBox;
-            lineBox->appendChild(floatBox);
-            parentBox->updateMCW(floatBox->mcw);
+                lineBox->rightBox = floatingBox;
+            lineBox->appendChild(floatingBox);
+            parentBox->updateMCW(floatingBox->mcw);
         }
     }
     float height = lineBox->getClearance() + lineBox->getTotalHeight();
@@ -544,21 +544,21 @@ void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, boo
     breakable = false;
 }
 
-void FormattingContext::addFloat(BlockLevelBox* floatBox, float totalWidth)
+void FormattingContext::addFloat(BlockLevelBox* floatingBox, float totalWidth)
 {
-    if (floatBox->style->float_.getValue() == CSSFloatValueImp::Left) {
+    if (floatingBox->style->float_.getValue() == CSSFloatValueImp::Left) {
         if (left.empty())
-            floatBox->edge = blankLeft + totalWidth;
+            floatingBox->edge = blankLeft + totalWidth;
         else
-            floatBox->edge = std::max(left.back()->edge, blankLeft) + totalWidth;
-        left.push_back(floatBox);
+            floatingBox->edge = std::max(left.back()->edge, blankLeft) + totalWidth;
+        left.push_back(floatingBox);
         x += totalWidth;
     } else {
         if (right.empty())
-            floatBox->edge = blankRight + totalWidth;
+            floatingBox->edge = blankRight + totalWidth;
         else
-            floatBox->edge = std::max(right.front()->edge, blankRight) + totalWidth;
-        right.push_front(floatBox);
+            floatingBox->edge = std::max(right.front()->edge, blankRight) + totalWidth;
+        right.push_front(floatingBox);
     }
     leftover -= totalWidth;
 }

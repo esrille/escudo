@@ -69,7 +69,6 @@ class ViewCSSImp
     // layout
     Node hovered;
     BlockLevelBoxPtr boxTree;       // A box tree under construction
-    std::map<Node, BlockLevelBoxPtr> floatMap;
     std::list<CounterImpPtr> counterList;
     int quotingDepth;
     float scrollWidth;
@@ -95,6 +94,10 @@ public:
     }
     DocumentWindowPtr getWindow() const {
         return window;
+    }
+
+    void addStyle(const Element element, CSSStyleDeclarationImp* style) {
+        map[element] = style;
     }
 
     void cascade();
@@ -148,19 +151,6 @@ public:
     void setDPI(unsigned size) {
         dpi = size;
         // TODO: update fontSizeTable, too?
-    }
-
-    void addFloatBox(Element element, BlockLevelBox* floatingBox, CSSStyleDeclarationImp* style) {
-        if (floatingBox) {
-            floatMap[element] = floatingBox;
-            map[element] = style;
-        }
-    }
-    BlockLevelBox* getFloatBox(Node node) {
-        auto i = floatMap.find(node);
-        if (i == floatMap.end())
-            return 0;
-        return i->second.get();
     }
 
     unsigned getMediumFontSize() const {

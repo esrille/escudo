@@ -595,8 +595,8 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
     if (!currentBox || currentBox == parentBox)
         return 0;
     if (currentBox->isFloat() || currentBox->isAbsolutelyPositioned()) {
-        floatMap[element] = currentBox;
         if (parentBox) {
+            parentBox->addBlock(element, currentBox);
             // Set currentBox->parentBox to parentBox for now so that the correct
             // containing block can be retrieved before currentBox will be
             // inserted in a lineBox of parentBox later
@@ -615,8 +615,6 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
 // Lay out a tree box block-level boxes
 BlockLevelBox* ViewCSSImp::layOutBlockBoxes()
 {
-    boxTree = 0;
-    floatMap.clear();
     boxTree = layOutBlockBoxes(getDocument(), 0, 0);
     clearCounters();
     return boxTree.get();

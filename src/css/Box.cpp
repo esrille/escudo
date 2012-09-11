@@ -387,6 +387,7 @@ BlockLevelBox::BlockLevelBox(Node node, CSSStyleDeclarationImp* style) :
     inserted(false),
     edge(0.0f),
     remainingHeight(0.0f),
+    floatingFirstLetter(0),
     defaultBaseline(0.0f),
     defaultLineHeight(0.0f),
     mcw(0.0f)
@@ -633,37 +634,37 @@ InlineLevelBox* BlockLevelBox::layOutInlineLevelBox(ViewCSSImp* view, Node node,
     return inlineLevelBox;
 }
 
-void BlockLevelBox::layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floatBox, FormattingContext* context)
+void BlockLevelBox::layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floatingBox, FormattingContext* context)
 {
-    assert(floatBox->style);
-    floatBox->layOut(view, context);
-    floatBox->remainingHeight = floatBox->getTotalHeight();
-    if (!context->floatNodes.empty()) {
+    assert(floatingBox->style);
+    floatingBox->layOut(view, context);
+    floatingBox->remainingHeight = floatingBox->getTotalHeight();
+    if (!context->floatingBoxes.empty()) {
         // Floats are not allowed to reorder. Process this floating box later in the other line box.
-        context->floatNodes.push_back(node);
+        context->floatingBoxes.push_back(floatingBox);
         return;
     }
-    unsigned clear = floatBox->style->clear.getValue();
+    unsigned clear = floatingBox->style->clear.getValue();
     if ((clear & CSSClearValueImp::Left) && context->getLeftEdge() ||
         (clear & CSSClearValueImp::Right) && context->getRightEdge()) {
-        context->floatNodes.push_back(node);
+        context->floatingBoxes.push_back(floatingBox);
         return;
     }
     if (!context->lineBox) {
         if (!context->addLineBox(view, this))
             return;   // TODO error
     }
-    float w = floatBox->getEffectiveTotalWidth();
-    float l = context->getLeftoverForFloat(this, floatBox->style->float_.getValue());
+    float w = floatingBox->getEffectiveTotalWidth();
+    float l = context->getLeftoverForFloat(this, floatingBox->style->float_.getValue());
     // If both w and l are zero, move this floating box to the next line;
     // cf. http://test.csswg.org/suites/css2.1/20110323/html4/stack-floats-003.htm
     if ((l < w || l == 0.0f && w == 0.0f) &&
         (context->lineBox->hasChildBoxes() || context->hasLeft() || context->hasRight())) {
         // Process this float box later in the other line box.
-        context->floatNodes.push_back(node);
+        context->floatingBoxes.push_back(floatingBox);
         return;
     }
-    context->addFloat(floatBox, w);
+    context->addFloat(floatingBox, w);
 }
 
 void BlockLevelBox::layOutAbsolute(ViewCSSImp* view, Node node, BlockLevelBox* absBox, FormattingContext* context)
@@ -779,7 +780,7 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
     bool collapsed = true;
     for (auto i = inlines.begin(); i != inlines.end(); ++i) {
         Node node = *i;
-        BlockLevelBox* block = view->getFloatBox(node);
+        BlockLevelBox* block = findBlock(node);
         if (block && block != this) {  // Check an empty absolutely positioned box; cf. bottom-applies-to-010.
             block->parentBox = this;
             context->useMargin(this);
@@ -825,16 +826,16 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
         context->nextLine(view, this, false);
 
     // Layout remaining floating boxes in context
-    while (!context->floatNodes.empty()) {
-        BlockLevelBox* floatBox = view->getFloatBox(context->floatNodes.front());
+    while (!context->floatingBoxes.empty()) {
+        BlockLevelBox* floatingBox = context->floatingBoxes.front();
         float clearance = 0.0f;
-        if (unsigned clear = floatBox->style->clear.getValue()) {
+        if (unsigned clear = floatingBox->style->clear.getValue()) {
             keepConsumed = true;
             clearance = -context->usedMargin;
             clearance += context->clear(clear);
         } else {
             context->leftover = width - context->getLeftEdge() - context->getRightEdge();
-            while (context->getLeftoverForFloat(this, floatBox->style->float_.getValue()) < floatBox->getEffectiveTotalWidth()) {
+            while (context->getLeftoverForFloat(this, floatingBox->style->float_.getValue()) < floatingBox->getEffectiveTotalWidth()) {
                 float h = context->shiftDown();
                 if (h <= 0.0f)
                     break;

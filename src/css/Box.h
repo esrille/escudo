@@ -465,6 +465,9 @@ public:
 
 typedef boost::intrusive_ptr<Box> BoxPtr;
 
+class BlockLevelBox;
+typedef boost::intrusive_ptr<BlockLevelBox> BlockLevelBoxPtr;
+
 // paragraph
 // ‘display’ of ‘block’, ‘list-item’, ‘table’, ‘table-*’ (i.e., all table boxes) or <template>.
 class BlockLevelBox : public Box
@@ -480,16 +483,19 @@ class BlockLevelBox : public Box
     float topBorderEdge;
     float consumed;
 
-    // for float box
+    // for a floating box
     bool inserted;  // set to true if inserted in a linebox.
     float edge;
     float remainingHeight;
 
-    // for abs boxes
+    // for an absolutely positioned box
     Retained<ContainingBlock> absoluteBlock;
 
-    // A block-level box may contain either line boxes or block-level boxes, but not both.
+    // A list of nodes to be formatted in line boxes; note if a block-level box contains
+    // block-level boxes, 'inlines' must be empty.
     std::list<Node> inlines;
+    Element floatingFirstLetter;
+    std::map<Node, BlockLevelBoxPtr> blockMap;  // inline blocks, floating boxes, absolutely positioned boxes, etc. held by line boxes
 
     // The default baseline and line-height for the line boxes.
     float defaultBaseline;
@@ -583,6 +589,19 @@ public:
         inlines.splice(inlines.begin(), box->inlines);
     }
 
+    void addBlock(const Node& node, BlockLevelBox* block) {
+        blockMap[node] = block;
+    }
+    BlockLevelBox* findBlock(const Node& node) {
+        BlockLevelBox* box = this;
+        do {
+            auto i = box->blockMap.find(node);
+            if (i != box->blockMap.end())
+                return i->second.get();
+        } while (box->isAnonymous() && (box = dynamic_cast<BlockLevelBox*>(box->getParentBox())));
+        return 0;
+    }
+
     virtual bool isAbsolutelyPositioned() const;
     virtual bool isFloat() const;
     bool isFixed() const;
@@ -640,8 +659,6 @@ public:
         return mcw;
     }
 };
-
-typedef boost::intrusive_ptr<BlockLevelBox> BlockLevelBoxPtr;
 
 // line of text
 // ‘display’ of ‘inline’, ‘inline-block’, ‘inline-table’ or ‘ruby’.
