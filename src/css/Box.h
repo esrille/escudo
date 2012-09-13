@@ -45,6 +45,7 @@ class FormattingContext;
 class LineBox;
 class BlockLevelBox;
 class StackingContext;
+class TableWrapperBox;
 class ViewCSSImp;
 class WindowImp;
 
@@ -472,6 +473,7 @@ typedef boost::intrusive_ptr<BlockLevelBox> BlockLevelBoxPtr;
 // ‘display’ of ‘block’, ‘list-item’, ‘table’, ‘table-*’ (i.e., all table boxes) or <template>.
 class BlockLevelBox : public Box
 {
+    friend class ViewCSSImp;
     friend class FormattingContext;
     friend class TableWrapperBox;
     friend Box* Box::removeChild(Box* item);
@@ -496,6 +498,7 @@ class BlockLevelBox : public Box
     std::list<Node> inlines;
     Element floatingFirstLetter;
     std::map<Node, BlockLevelBoxPtr> blockMap;  // inline blocks, floating boxes, absolutely positioned boxes, etc. held by line boxes
+    TableWrapperBox* anonymousTable;  // for ViewCSSImp::layOutBlockBoxes
 
     // The default baseline and line-height for the line boxes.
     float defaultBaseline;
@@ -518,11 +521,9 @@ class BlockLevelBox : public Box
                       FontGlyph*& glyph, std::u16string& transformed);
     bool layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
                     std::u16string data, Element element, CSSStyleDeclarationImp* style);
-    InlineLevelBox* layOutInlineLevelBox(ViewCSSImp* view, Node node, FormattingContext* context,
-                                         Element element, CSSStyleDeclarationImp* style);
+    void layOutInlineBlock(ViewCSSImp* view, Node node, BlockLevelBox* inlineBlock, FormattingContext* context);
     void layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floatBox, FormattingContext* context);
     void layOutAbsolute(ViewCSSImp* view, Node node, BlockLevelBox* absBox, FormattingContext* context);  // 1st pass
-    void layOutAnonymousInlineTable(ViewCSSImp* view, FormattingContext* context, std::list<Node>::iterator& i);
     bool layOutInline(ViewCSSImp* view, FormattingContext* context, float originalMargin = 0.0f);
     void layOutChildren(ViewCSSImp* view, FormattingContext* context);
 

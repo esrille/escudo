@@ -388,6 +388,7 @@ BlockLevelBox::BlockLevelBox(Node node, CSSStyleDeclarationImp* style) :
     edge(0.0f),
     remainingHeight(0.0f),
     floatingFirstLetter(0),
+    anonymousTable(0),
     defaultBaseline(0.0f),
     defaultLineHeight(0.0f),
     mcw(0.0f)
@@ -580,36 +581,29 @@ void BlockLevelBox::resolveMargin(ViewCSSImp* view, const ContainingBlock* conta
         height = 0.0f;
 }
 
-InlineLevelBox* BlockLevelBox::layOutInlineLevelBox(ViewCSSImp* view, Node node, FormattingContext* context,
-                                                    Element element, CSSStyleDeclarationImp* style)
+void BlockLevelBox::layOutInlineBlock(ViewCSSImp* view, Node node, BlockLevelBox* inlineBlock, FormattingContext* context)
 {
-    assert(element);
-    assert(style);
+    assert(inlineBlock->style);
+    inlineBlock->layOut(view, context);
+
+    InlineLevelBox* inlineLevelBox = new(std::nothrow) InlineLevelBox(node, inlineBlock->style.get());
+    if (!inlineLevelBox)
+        return;  // TODO error
 
     if (!context->lineBox) {
         if (!context->addLineBox(view, this))
-            return 0;  // TODO error
+            return;  // TODO error
     }
 
-    InlineLevelBox* inlineLevelBox = new(std::nothrow) InlineLevelBox(node, style);
-    if (!inlineLevelBox)
-        return 0;  // TODO error
-
-    inlineLevelBox->parentBox = context->lineBox;  // for getContainingBlock
     context->prevChar = 0;
-
-    BlockLevelBox* inlineBlock = view->layOutBlockBoxes(element, 0, style->parentStyle, style, true);
-    if (!inlineBlock)
-        return 0;  // TODO error
-    inlineBlock->establishFormattingContext();
+    inlineLevelBox->parentBox = context->lineBox;  // for getContainingBlock
     inlineLevelBox->appendChild(inlineBlock);
-    inlineBlock->layOut(view, context);
     inlineLevelBox->width = inlineBlock->getTotalWidth();
     inlineLevelBox->height = inlineBlock->getTotalHeight();
     if (inlineLevelBox->height == 0.0f)
         inlineLevelBox->width = 0.0f;
     inlineLevelBox->baseline = inlineLevelBox->height;
-    if (!style->overflow.isClipped()) {
+    if (!inlineBlock->style->overflow.isClipped()) {
         if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(inlineBlock))
             inlineLevelBox->baseline = table->getBaseline();
         else
@@ -619,7 +613,7 @@ InlineLevelBox* BlockLevelBox::layOutInlineLevelBox(ViewCSSImp* view, Node node,
         if (context->lineBox->hasChildBoxes() || context->hasNewFloats()) {
             context->nextLine(view, this, false);
             if (!context->addLineBox(view, this))
-                return 0;  // TODO error
+                return;  // TODO error
             continue;
         }
         if (!context->shiftDownLineBox(view))
@@ -628,10 +622,11 @@ InlineLevelBox* BlockLevelBox::layOutInlineLevelBox(ViewCSSImp* view, Node node,
 
     context->x += inlineLevelBox->getTotalWidth();
     context->leftover -= inlineLevelBox->getTotalWidth();
-    context->appendInlineBox(view, inlineLevelBox, style);
+    context->appendInlineBox(view, inlineLevelBox, inlineBlock->style.get());
 
-    style->addBox(inlineLevelBox);
-    return inlineLevelBox;
+    updateMCW(inlineLevelBox->getTotalWidth());
+
+    inlineBlock->style->addBox(inlineLevelBox);
 }
 
 void BlockLevelBox::layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floatingBox, FormattingContext* context)
@@ -678,89 +673,6 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view, Node node, BlockLevelBox* a
     context->lineBox->appendChild(absBox);
 }
 
-void BlockLevelBox::layOutAnonymousInlineTable(ViewCSSImp* view, FormattingContext* context, std::list<Node>::iterator& i)
-{
-    if (!context->lineBox) {
-        if (!context->addLineBox(view, this))
-            return;  // TODO error
-    }
-    InlineLevelBox* inlineLevelBox = new(std::nothrow) InlineLevelBox(node, 0);
-    if (!inlineLevelBox)
-        return;  // TODO error
-
-    inlineLevelBox->parentBox = context->lineBox;  // for getContainingBlock
-    context->prevChar = 0;
-
-    Element element = interface_cast<Element>(*i);
-    assert(element);
-    CSSStyleDeclarationImp* style = view->getStyle(element);
-    assert(style);
-    TableWrapperBox* table = new(std::nothrow) TableWrapperBox(view, element, style);
-    if (!table)
-        return;
-    bool done = false;
-    bool ws = false;
-    while (!done && ++i != inlines.end()) {
-        Node node = *i;
-        switch (node.getNodeType()) {
-        case Node::TEXT_NODE: {
-            std::u16string data = interface_cast<Text>(node).getData();
-            for (size_t j = 0; j < data.length(); ++j) {
-                if (!isSpace(data[j])) {
-                    done = true;
-                    if (ws)
-                        --i;
-                    break;
-                }
-            }
-            ws = true;
-            break;
-        }
-        case Node::ELEMENT_NODE:
-            element = interface_cast<Element>(node);
-            if (CSSStyleDeclarationImp* elementStyle = view->getStyle(element)) {
-                if (!elementStyle->display.isTableParts()) {
-                    done = true;
-                    if (ws)
-                        --i;
-                    break;
-                }
-            }
-            ws = false;
-            table->processTableChild(node, style);
-            break;
-        default:
-            done = true;
-            break;
-        }
-    }
-    --i;
-
-    inlineLevelBox->appendChild(table);
-    table->layOutBlockBoxes();
-    table->layOut(view, context);
-    inlineLevelBox->width = table->getTotalWidth();
-    inlineLevelBox->height = table->getTotalHeight();
-    inlineLevelBox->baseline = table->getBaseline();
-
-    while (context->leftover < inlineLevelBox->getTotalWidth()) {
-        if (context->lineBox->hasChildBoxes() || context->hasNewFloats()) {
-            context->nextLine(view, this, false);
-            if (!context->addLineBox(view, this))
-                return;  // TODO error
-            continue;
-        }
-        if (!context->shiftDownLineBox(view))
-            break;
-    }
-
-    context->x += inlineLevelBox->getTotalWidth();
-    context->leftover -= inlineLevelBox->getTotalWidth();
-    context->appendInlineBox(view, inlineLevelBox, style);
-
-    context->prevChar = 0;
-}
-
 // Generate line boxes
 bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, float originalMargin)
 {
@@ -790,6 +702,8 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
                 layOutFloat(view, node, block, context);
             } else if (block->isAbsolutelyPositioned())
                 layOutAbsolute(view, node, block, context);
+            else
+                layOutInlineBlock(view, node, block, context);
             collapsed = false;
         } else {
             CSSStyleDeclarationImp* style = 0;
@@ -805,21 +719,10 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
                 Text text = interface_cast<Text>(node);
                 if (layOutText(view, node, context, text.getData(), element, style))
                     collapsed = false;
-            } else if (style->display.isTableParts()) {
-                context->useMargin(this);
-                layOutAnonymousInlineTable(view, context, i);
-                // TODO: updateMCW
-                collapsed = false;
-            } else if ((!isReplacedElement(element) && style->display.isInline()) || style->display.isListItem()) {
+            } else {
                 // empty inline element
                 if (layOutText(view, node, context, u"", element, style))
                     collapsed = false;
-            } else {
-                context->useMargin(this);
-                // At this point, node is an inline block element or a replaced element.
-                if (InlineLevelBox* box = layOutInlineLevelBox(view, node, context, element, style))
-                    updateMCW(box->getTotalWidth());
-                collapsed = false;
             }
         }
     }
@@ -1003,8 +906,7 @@ float BlockLevelBox::collapseMarginTop(FormattingContext* context)
             }
         } else {
             BlockLevelBox* prev = dynamic_cast<BlockLevelBox*>(getPreviousSibling());
-            assert(prev);
-            if (prev->isCollapsableOutside()) {
+            if (prev && prev->isCollapsableOutside()) {
                 before = context->collapseMargins(prev->marginBottom);
                 prev->marginBottom = 0.0f;
                 if (prev->isCollapsedThrough())

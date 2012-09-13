@@ -445,14 +445,13 @@ BlockLevelBox* ViewCSSImp::createBlockLevelBox(Element element, BlockLevelBox* p
             else
                 block = new(std::nothrow) BlockLevelBox(element, style);
         } else {
-            if (parentBox) {
-                TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(parentBox->getLastChild());
-                if (table && table->isAnonymousTableObject()) {
-                    table->processTableChild(element, style);
-                    return 0;
-                }
+            if (parentBox && parentBox->anonymousTable) {
+                assert(parentBox->anonymousTable->isAnonymousTableObject());
+                parentBox->anonymousTable->processTableChild(element, style);
+                return 0;
             }
-            block = new(std::nothrow) TableWrapperBox(this, element, style);
+            parentBox->anonymousTable = new(std::nothrow) TableWrapperBox(this, element, style);
+            block = parentBox->anonymousTable;
         }
         newContext = true;
     } else
@@ -484,7 +483,6 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
     if (style->display.isNone())
         return 0;
     style->clearBox();
-    bool anonInlineTable = style->display.isTableParts() && parentStyle && parentStyle->display.isInlineLevel();
 
     Element shadow = element;
     if (HTMLElementImp* imp = dynamic_cast<HTMLElementImp*>(element.self())) {
@@ -493,32 +491,29 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
     }
 
     BlockLevelBox* currentBox = parentBox;
-    if (style->isFloat() || style->isAbsolutelyPositioned() || !parentBox) {
-        currentBox = createBlockLevelBox(element, parentBox, style, true, asBlock);
+    bool anonInlineTable = style->display.isTableParts() && parentStyle && parentStyle->display.isInlineLevel();
+    bool inlineReplace = isReplacedElement(element) && !style->isBlockLevel();
+    bool isFlowRoot = (!parentBox || anonInlineTable || inlineReplace) ? true : style->isFlowRoot();
+    if (!parentBox || anonInlineTable ||
+        style->isFloat() || style->isAbsolutelyPositioned() || style->isInlineBlock() ||
+        inlineReplace)
+    {
+        currentBox = createBlockLevelBox(element, parentBox, style, isFlowRoot, asBlock);
         if (!currentBox)
             return 0;  // TODO: error
         // Do not insert currentBox into parentBox. currentBox will be
         // inserted in a lineBox of parentBox later
-    } else if ((style->isBlockLevel() && !anonInlineTable) || asBlock) {
+    } else if (style->isBlockLevel() || asBlock) {
         if (parentBox->hasInline()) {
             BlockLevelBox* anon = parentBox->getAnonymousBox();
             if (!anon)
                 return 0;
             assert(!parentBox->hasInline());
         }
-        currentBox = createBlockLevelBox(element, parentBox, style, style->isFlowRoot(), asBlock);
+        currentBox = createBlockLevelBox(element, parentBox, style, isFlowRoot, asBlock);
         if (!currentBox)
             return 0;
         parentBox->appendChild(currentBox);
-    } else if (anonInlineTable || style->isInlineBlock() || isReplacedElement(element)) {
-        assert(currentBox);
-        if (!currentBox->hasChildBoxes())
-            currentBox->insertInline(element);
-        else if (BlockLevelBox* anonymousBox = currentBox->getAnonymousBox()) {
-            anonymousBox->insertInline(element);
-            return anonymousBox;
-        }
-        return currentBox;
     }
 
     if (!dynamic_cast<TableWrapperBox*>(currentBox)) {
@@ -529,15 +524,9 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
                 anonymousBox->insertInline(element);
         }
 
-        TableWrapperBox* tableWrapperBox = 0;
-
         ElementImp* imp = dynamic_cast<ElementImp*>(element.self());
         if (imp->marker) {
-            if (BlockLevelBox* box = layOutBlockBoxes(imp->marker, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::Marker))) {
-                if (tableWrapperBox && tableWrapperBox->isAnonymousTableObject())
-                    tableWrapperBox->layOutBlockBoxes();
-                tableWrapperBox = dynamic_cast<TableWrapperBox*>(box);
-            }
+            layOutBlockBoxes(imp->marker, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::Marker));
             // Deal with an empty list item; cf. list-alignment-001, acid2.
             // TODO: Find out where the exact behavior is defined in the specifications.
             if (style->height.isAuto() && !shadow.hasChildNodes() && !imp->before && !imp->after) {
@@ -547,29 +536,17 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
                     anonymousBox->insertInline(element);
             }
         }
-        if (imp->before) {
-            if (BlockLevelBox* box = layOutBlockBoxes(imp->before, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::Before))) {
-                if (tableWrapperBox && tableWrapperBox->isAnonymousTableObject())
-                    tableWrapperBox->layOutBlockBoxes();
-                tableWrapperBox = dynamic_cast<TableWrapperBox*>(box);
-            }
+        if (imp->before)
+            layOutBlockBoxes(imp->before, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::Before));
+        for (Node child = shadow.getFirstChild(); child; child = child.getNextSibling())
+            layOutBlockBoxes(child, currentBox, style);
+        if (imp->after)
+            layOutBlockBoxes(imp->after, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::After));
+
+        if (currentBox->anonymousTable && currentBox->anonymousTable->isAnonymousTableObject()) {
+            currentBox->anonymousTable->layOutBlockBoxes();
+            currentBox->anonymousTable = 0;
         }
-        for (Node child = shadow.getFirstChild(); child; child = child.getNextSibling()) {
-            if (BlockLevelBox* box = layOutBlockBoxes(child, currentBox, style)) {
-                if (tableWrapperBox && tableWrapperBox->isAnonymousTableObject())
-                    tableWrapperBox->layOutBlockBoxes();
-                tableWrapperBox = dynamic_cast<TableWrapperBox*>(box);
-            }
-        }
-        if (imp->after) {
-            if (BlockLevelBox* box = layOutBlockBoxes(imp->after, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::After))) {
-                if (tableWrapperBox && tableWrapperBox->isAnonymousTableObject())
-                    tableWrapperBox->layOutBlockBoxes();
-                tableWrapperBox = dynamic_cast<TableWrapperBox*>(box);
-            }
-        }
-        if (tableWrapperBox && tableWrapperBox->isAnonymousTableObject())
-            tableWrapperBox->layOutBlockBoxes();
 
         if (style->emptyInline & 2) {
             if (!currentBox->hasChildBoxes())
@@ -581,8 +558,13 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
 
     if (!currentBox || currentBox == parentBox)
         return 0;
-    if (currentBox->isFloat() || currentBox->isAbsolutelyPositioned()) {
-        if (parentBox) {
+    if (parentBox) {
+        if (parentBox->anonymousTable && currentBox != parentBox->anonymousTable) {
+            if (parentBox->anonymousTable->isAnonymousTableObject())
+                parentBox->anonymousTable->layOutBlockBoxes();
+            parentBox->anonymousTable = 0;
+        }
+        if (!currentBox->parentBox) {
             parentBox->addBlock(element, currentBox);
             // Set currentBox->parentBox to parentBox for now so that the correct
             // containing block can be retrieved before currentBox will be
