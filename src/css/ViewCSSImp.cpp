@@ -484,7 +484,6 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
     if (style->display.isNone())
         return 0;
     style->clearBox();
-    bool runIn = style->display.isRunIn() && parentBox;
     bool anonInlineTable = style->display.isTableParts() && parentStyle && parentStyle->display.isInlineLevel();
 
     Element shadow = element;
@@ -500,8 +499,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
             return 0;  // TODO: error
         // Do not insert currentBox into parentBox. currentBox will be
         // inserted in a lineBox of parentBox later
-    } else if ((style->isBlockLevel() && !anonInlineTable) || runIn || asBlock) {
-        // Create a temporary block-level box for the run-in box, too.
+    } else if ((style->isBlockLevel() && !anonInlineTable) || asBlock) {
         if (parentBox->hasInline()) {
             BlockLevelBox* anon = parentBox->getAnonymousBox();
             if (!anon)
@@ -580,17 +578,6 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
                 anonymousBox->insertInline(element);
         }
     }
-
-#if 0
-    // cf. http://www.w3.org/TR/2010/WD-CSS2-20101207/generate.html#before-after-content
-    if (runIn && !currentBox->hasChildBoxes() && siblingBox) {
-        assert(siblingBox->getBoxType() == Box::BLOCK_LEVEL_BOX);
-        siblingBox->spliceInline(currentBox);
-        parentBox->removeChild(currentBox);
-        delete currentBox;
-        currentBox = 0;
-    }
-#endif
 
     if (!currentBox || currentBox == parentBox)
         return 0;
