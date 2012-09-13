@@ -799,7 +799,8 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
             style = view->getStyle(element);
             if (!style)
                 continue;
-            style->resolve(view, this);
+            if (style->display.isInline())
+                style->resolve(view, this);
             if (node.getNodeType() == Node::TEXT_NODE) {
                 Text text = interface_cast<Text>(node);
                 if (layOutText(view, node, context, text.getData(), element, style))
