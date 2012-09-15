@@ -177,6 +177,14 @@ public:
     Box* insertBefore(Box* item, Box* after);
     Box* appendChild(Box* item);
 
+    void removeChildren() {
+        while (hasChildBoxes()) {
+            Box* child = getFirstChild();
+            removeChild(child);
+            child->release_();
+        }
+    }
+
     Box* getParentBox() const {
         return parentBox;
     }

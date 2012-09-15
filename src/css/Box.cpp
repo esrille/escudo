@@ -683,11 +683,7 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
     marginUsed = false;
     context->atLineHead = true;
 
-    while (hasChildBoxes()) {
-        Box* child = getFirstChild();
-        removeChild(child);
-        child->release_();
-    }
+    removeChildren();
 
     bool collapsed = true;
     for (auto i = inlines.begin(); i != inlines.end(); ++i) {
