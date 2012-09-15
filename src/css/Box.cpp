@@ -1690,6 +1690,8 @@ void BlockLevelBox::dump(std::string indent)
         std::cout << " [" << node.getNodeName() << ']';
         resolveOffset(relativeX, relativeY);
     }
+    if (3 <= getLogLevel())
+        std::cout << " [" << std::hex << flags << ']' << std::dec;
     std::cout << " (" << x + relativeX << ", " << y + relativeY << ") " <<
         "w:" << width << " h:" << height << ' ' <<
         "(" << relativeX << ", " << relativeY <<") ";

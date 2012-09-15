@@ -646,7 +646,10 @@ void LineBox::dump(std::string indent)
     float relativeX = 0.0f;
     float relativeY = 0.0f;
     resolveOffset(relativeX, relativeY);
-    std::cout << indent << "* line box (" << x + relativeX << ", " << y + relativeY << ") " <<
+    std::cout << indent << "* line box";
+    if (3 <= getLogLevel())
+        std::cout << " [" << std::hex << flags << ']' << std::dec;
+    std::cout << " (" << x + relativeX << ", " << y + relativeY << ") " <<
         "w:" << width << " h:" << height << " (" << relativeX << ", " << relativeY <<") ";
     if (hasClearance())
         std::cout << "c:" << clearance << ' ';
@@ -819,7 +822,10 @@ void InlineLevelBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLev
 
 void InlineLevelBox::dump(std::string indent)
 {
-    std::cout << indent << "* inline-level box (" << x << ", " << y << ") " <<
+    std::cout << indent << "* inline-level box";
+    if (3 <= getLogLevel())
+        std::cout << " [" << std::hex << flags << ']' << std::dec;
+    std::cout << " (" << x << ", " << y << ") " <<
         "w:" << width << " h:" << height << ' ' <<
         "m:" << marginTop << ':' << marginRight << ':' << marginBottom << ':' << marginLeft << ' ' <<
         "p:" << paddingTop << ':' <<  paddingRight << ':'<< paddingBottom<< ':' << paddingLeft << ' ' <<
