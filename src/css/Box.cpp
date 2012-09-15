@@ -95,6 +95,9 @@ Box::~Box()
         child->release_();
     }
 
+    if (style)
+        style->removeBox(this);
+
     // TODO: delete formattingContext
 }
 
@@ -115,8 +118,6 @@ Box* Box::removeChild(Box* item)
 
     if (auto block = dynamic_cast<BlockLevelBox*>(item))
         block->inserted = false;
-    if (item->style)
-        item->style->removeBox(item);
 
     return item;
 }
@@ -359,7 +360,8 @@ void Box::setFlags(unsigned short f)
         for (Box* box = parentBox; box; box = box->parentBox) {
             if ((box->flags & f) == f)
                 break;
-            box->flags |= f;
+            if (dynamic_cast<BlockLevelBox*>(box))
+                box->flags |= f;
         }
     }
 }
@@ -374,7 +376,7 @@ void Box::clearFlags(unsigned short f)
 unsigned short Box::gatherFlags() const
 {
     unsigned short f = flags;
-    for (const Box* i = firstChild; i; i = i->nextSibling)
+    for (auto i = firstChild; i; i = i->nextSibling)
         f |= i->gatherFlags();
     return f;
 }
@@ -584,7 +586,6 @@ void BlockLevelBox::resolveMargin(ViewCSSImp* view, const ContainingBlock* conta
 void BlockLevelBox::layOutInlineBlock(ViewCSSImp* view, Node node, BlockLevelBox* inlineBlock, FormattingContext* context)
 {
     assert(inlineBlock->style);
-    inlineBlock->layOut(view, context);
 
     InlineLevelBox* inlineLevelBox = new(std::nothrow) InlineLevelBox(node, inlineBlock->style.get());
     if (!inlineLevelBox)
@@ -632,7 +633,6 @@ void BlockLevelBox::layOutInlineBlock(ViewCSSImp* view, Node node, BlockLevelBox
 void BlockLevelBox::layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floatingBox, FormattingContext* context)
 {
     assert(floatingBox->style);
-    floatingBox->layOut(view, context);
     floatingBox->remainingHeight = floatingBox->getTotalHeight();
     if (!context->floatingBoxes.empty()) {
         // Floats are not allowed to reorder. Process this floating box later in the other line box.
@@ -676,7 +676,7 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view, Node node, BlockLevelBox* a
 // Generate line boxes
 bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, float originalMargin)
 {
-    if (!(flags & (NEED_REFLOW | NEED_CHILD_LAYOUT)))
+    if (!(flags & NEED_REFLOW))
         return true;
 
     bool keepConsumed = false;
@@ -1143,6 +1143,21 @@ void BlockLevelBox::applyMinMaxHeight(FormattingContext* context)
     }
 }
 
+void BlockLevelBox::layOutInlineBlocks(ViewCSSImp* view, FormattingContext* context)
+{
+    for (auto i = blockMap.begin(); i != blockMap.end(); ++i) {
+        BlockLevelBox* block = i->second.get();
+        if (!block->isAbsolutelyPositioned()) {
+            float savedWidth = block->getTotalWidth();
+            float savedHeight = block->getTotalHeight();
+            // TODO: Check block's baseline as well.
+            block->layOut(view, context);
+            if (savedWidth != block->getTotalWidth() || savedHeight != block->getTotalHeight())
+                flags |= NEED_REFLOW;
+        }
+    }
+}
+
 bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
 {
     const ContainingBlock* containingBlock = getContainingBlock(view);
@@ -1203,6 +1218,8 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
 
      if (savedWidth != width)
          flags |= NEED_REFLOW;
+
+    layOutInlineBlocks(view, context);
 
     visibility = style->visibility.getValue();
     textAlign = style->textAlign.getValue();
@@ -1554,6 +1571,8 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
         flags |= NEED_REFLOW;
     else if (!(maskV & Height) && height != savedHeight)
         flags |= NEED_REFLOW;
+
+    layOutInlineBlocks(view, context);
 
     if (layOutReplacedElement(view, this, element, style.get())) {
         maskH &= ~Width;

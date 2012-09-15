@@ -525,6 +525,7 @@ class BlockLevelBox : public Box
     void layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floatBox, FormattingContext* context);
     void layOutAbsolute(ViewCSSImp* view, Node node, BlockLevelBox* absBox, FormattingContext* context);  // 1st pass
     bool layOutInline(ViewCSSImp* view, FormattingContext* context, float originalMargin = 0.0f);
+    void layOutInlineBlocks(ViewCSSImp* view, FormattingContext* context);
     void layOutChildren(ViewCSSImp* view, FormattingContext* context);
 
     bool layOutReplacedElement(ViewCSSImp* view, Box* replaced, Element element, CSSStyleDeclarationImp* style);
