@@ -355,7 +355,7 @@ float Box::shrinkTo()
 void Box::setFlags(unsigned short f)
 {
     flags |= f;
-    if (flags & (NEED_REFLOW | NEED_RELOCATE | NEED_CHILD_LAYOUT)) {
+    if (flags & (NEED_REFLOW | NEED_CHILD_LAYOUT)) {
         f = NEED_CHILD_LAYOUT;
         for (Box* box = parentBox; box; box = box->parentBox) {
             if ((box->flags & f) == f)
@@ -397,7 +397,7 @@ BlockLevelBox::BlockLevelBox(Node node, CSSStyleDeclarationImp* style) :
 {
     if (style)
         setStyle(style);
-    flags |= NEED_REFLOW | NEED_RELOCATE | NEED_CHILD_LAYOUT;
+    flags |= NEED_REFLOW | NEED_CHILD_LAYOUT;
 }
 
 bool BlockLevelBox::isAbsolutelyPositioned() const
@@ -1336,7 +1336,7 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         if (nextSibling)
             nextSibling->flags |= NEED_REFLOW;
     }
-    flags &= ~(NEED_REFLOW | NEED_RELOCATE | NEED_CHILD_LAYOUT);
+    flags &= ~(NEED_REFLOW | NEED_CHILD_LAYOUT);
 
     return true;
 }
@@ -1641,7 +1641,7 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
         }
     }
 
-    flags &= ~(NEED_REFLOW | NEED_RELOCATE | NEED_CHILD_LAYOUT);
+    flags &= ~(NEED_REFLOW | NEED_CHILD_LAYOUT);
 }
 
 void BlockLevelBox::resolveOffset(float& x, float &y)

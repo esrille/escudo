@@ -88,8 +88,7 @@ public:
     static const unsigned short NEED_RESTYLING = 1;
     static const unsigned short NEED_REFLOW = 2;
     static const unsigned short NEED_REPAINT = 4;
-    static const unsigned short NEED_RELOCATE = 8;
-    static const unsigned short NEED_CHILD_LAYOUT = 16;
+    static const unsigned short NEED_CHILD_LAYOUT = 8;
 
 protected:
     Node node;
@@ -407,7 +406,7 @@ public:
     virtual void dump(std::string indent = "") = 0;
 
     bool needLayout() const {
-        return flags & (NEED_REFLOW | NEED_RELOCATE | NEED_CHILD_LAYOUT);
+        return flags & (NEED_REFLOW | NEED_CHILD_LAYOUT);
     }
 
     void setFlags(unsigned short f);
