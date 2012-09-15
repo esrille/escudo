@@ -85,7 +85,7 @@ public:
     static const unsigned short INLINE_LEVEL_BOX = 3;
 
     // flags
-    static const unsigned short NEED_RESTYLING = 1;
+    static const unsigned short NEED_SELECTOR_MATCHING = 1;
     static const unsigned short NEED_REFLOW = 2;
     static const unsigned short NEED_REPAINT = 4;
     static const unsigned short NEED_CHILD_LAYOUT = 8;

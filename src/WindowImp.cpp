@@ -196,7 +196,7 @@ bool WindowImp::poll()
             redisplay |= true;
             if (view) {
                 if (document && document->isBindingDocumentWindow(child))
-                    view->setFlags(Box::NEED_RESTYLING);
+                    view->setFlags(Box::NEED_SELECTOR_MATCHING);
                 else
                     view->setFlags(Box::NEED_REPAINT);
             }
@@ -268,7 +268,7 @@ bool WindowImp::poll()
             updateView(next);
             if (view) {
                 if (unsigned flags = view->gatherFlags()) {
-                    if (flags & Box::NEED_RESTYLING) {
+                    if (flags & Box::NEED_SELECTOR_MATCHING) {
                         recordTime("%*strigger restyling", windowDepth * 2, "");
                         backgroundTask.wakeUp(BackgroundTask::Cascade);
                         view = 0;
