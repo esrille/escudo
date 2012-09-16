@@ -154,35 +154,15 @@ void ViewCSSImp::resolveXY(float left, float top)
 
 void ViewCSSImp::cascade()
 {
-    DocumentImp* document = dynamic_cast<DocumentImp*>(getDocument().self());
-    if (!document)
-        return;
-
     map.clear();
     delete stackingContexts;
     stackingContexts = 0;
-
-    document->clearStyleSheets();
-    html::HTMLHeadElement head = document->getHead();
-    if (head) {
-        for (auto element = head.getFirstElementChild(); element; element = element.getNextElementSibling()) {
-            if (html::HTMLStyleElement::hasInstance(element)) {
-                html::HTMLStyleElement styleElement = interface_cast<html::HTMLStyleElement>(element);
-                stylesheets::StyleSheet styleSheet = styleElement.getSheet();
-                document->addStyleSheet(styleSheet);
-            } else if (html::HTMLLinkElement::hasInstance(element)) {
-                html::HTMLLinkElement linkElement = interface_cast<html::HTMLLinkElement>(element);
-                stylesheets::StyleSheet styleSheet = linkElement.getSheet();
-                document->addStyleSheet(styleSheet);
-            }
-        }
-    }
 
     CSSAutoNumberingValueImp::CounterContext cc(this);
     cascade(getDocument(), 0, &cc);
 
     if (3 <= getLogLevel())
-        printComputedValues(document, this);
+        printComputedValues(getDocument(), this);
 }
 
 void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle, CSSAutoNumberingValueImp::CounterContext* counterContext)

@@ -241,9 +241,9 @@ bool WindowImp::poll()
                 HTMLTokenizer tokenizer(&htmlInputStream);
                 HTMLParser parser(imp, &tokenizer);
                 parser.mainLoop();  // TODO: run thin in background
-                if (imp)
-                    imp->setCharset(utfconv(htmlInputStream.getEncoding()));
+                imp->setCharset(utfconv(htmlInputStream.getEncoding()));
                 NodeImp::evalTree(imp);
+                imp->resetStyleSheets();
                 recordTime("%*shtml parsed", windowDepth * 2, "");
 
                 if (3 <= getLogLevel())

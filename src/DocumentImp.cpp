@@ -146,6 +146,25 @@ void DocumentImp::setReadyState(const std::u16string& readyState)
     }
 }
 
+void DocumentImp::resetStyleSheets()
+{
+    clearStyleSheets();
+    html::HTMLHeadElement head = getHead();
+    if (!head)
+        return;
+    for (auto element = head.getFirstElementChild(); element; element = element.getNextElementSibling()) {
+        if (html::HTMLStyleElement::hasInstance(element)) {
+            html::HTMLStyleElement styleElement = interface_cast<html::HTMLStyleElement>(element);
+            stylesheets::StyleSheet styleSheet = styleElement.getSheet();
+            addStyleSheet(styleSheet);
+        } else if (html::HTMLLinkElement::hasInstance(element)) {
+            html::HTMLLinkElement linkElement = interface_cast<html::HTMLLinkElement>(element);
+            stylesheets::StyleSheet styleSheet = linkElement.getSheet();
+            addStyleSheet(styleSheet);
+        }
+    }
+}
+
 void DocumentImp::setURL(const std::u16string& url)
 {
     this->url = url;

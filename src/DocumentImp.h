@@ -121,6 +121,7 @@ public:
         if (sheet)
             styleSheets.push_back(sheet);
     }
+    void resetStyleSheets();
 
     void setURL(const std::u16string& url);
 

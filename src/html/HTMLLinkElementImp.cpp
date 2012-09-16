@@ -112,7 +112,7 @@ void HTMLLinkElementImp::linkStyleSheet()
         }
         if (3 <= getLogLevel())
             dumpStyleSheet(std::cerr, styleSheet.self());
-
+        document->resetStyleSheets();
         if (WindowImp* view = document->getDefaultWindow())
             view->setFlags(Box::NEED_SELECTOR_REMATCHING);
     }
