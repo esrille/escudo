@@ -81,14 +81,15 @@ void WindowImp::BackgroundTask::operator()()
         if (!view || (command & Cascade)) {
             command &= ~Cascade;
             state = Cascading;
+            recordTime("%*sselector matching begin", window->windowDepth * 2, "");
             deleteView();
             view = new(std::nothrow) ViewCSSImp(window->getDocumentWindow(), getDOMImplementation()->getDefaultCSSStyleSheet(), getDOMImplementation()->getUserCSSStyleSheet());
-            if (!view)
-                continue;
-            recordTime("%*srestyling begin", window->windowDepth * 2, "");
-            view->cascade();
-            recordTime("%*srestyling end", window->windowDepth * 2, "");
-            state = Cascaded;
+            if (view) {
+                view->cascade();
+                state = Cascaded;
+            } else
+                state = Init;
+            recordTime("%*sselector matching end", window->windowDepth * 2, "");
             continue;
         }
 

@@ -196,7 +196,7 @@ bool WindowImp::poll()
             redisplay |= true;
             if (view) {
                 if (document && document->isBindingDocumentWindow(child))
-                    view->setFlags(Box::NEED_SELECTOR_MATCHING);
+                    view->setFlags(Box::NEED_SELECTOR_REMATCHING);
                 else
                     view->setFlags(Box::NEED_REPAINT);
             }
@@ -254,7 +254,7 @@ bool WindowImp::poll()
                     imp->dispatchEvent(event);
                 }
                 imp->decrementLoadEventDelayCount();
-                backgroundTask.wakeUp(BackgroundTask::Cascade);
+                backgroundTask.restart(BackgroundTask::Cascade);
             }
             break;
         }
@@ -268,7 +268,11 @@ bool WindowImp::poll()
             updateView(next);
             if (view) {
                 if (unsigned flags = view->gatherFlags()) {
-                    if (flags & Box::NEED_SELECTOR_MATCHING) {
+                    if (flags & Box::NEED_SELECTOR_REMATCHING) {
+                        recordTime("%*strigger selector rematching", windowDepth * 2, "");
+                        backgroundTask.restart(BackgroundTask::Cascade);
+                        view = 0;
+                    } else if (flags & Box::NEED_SELECTOR_MATCHING) {
                         recordTime("%*strigger restyling", windowDepth * 2, "");
                         backgroundTask.wakeUp(BackgroundTask::Cascade);
                         view = 0;

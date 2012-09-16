@@ -114,7 +114,7 @@ void HTMLLinkElementImp::linkStyleSheet()
             dumpStyleSheet(std::cerr, styleSheet.self());
 
         if (WindowImp* view = document->getDefaultWindow())
-            view->setFlags(Box::NEED_SELECTOR_MATCHING);
+            view->setFlags(Box::NEED_SELECTOR_REMATCHING);
     }
     document->decrementLoadEventDelayCount();
 }

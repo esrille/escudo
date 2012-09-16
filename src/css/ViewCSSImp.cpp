@@ -135,7 +135,7 @@ void ViewCSSImp::handleMutation(events::Event event)
         }
     }
 
-    boxTree->setFlags(Box::NEED_SELECTOR_MATCHING);
+    boxTree->setFlags(Box::NEED_SELECTOR_REMATCHING);
 }
 
 void ViewCSSImp::findDeclarations(CSSRuleListImp::RuleSet& set, Element element, css::CSSRuleList list, unsigned importance)

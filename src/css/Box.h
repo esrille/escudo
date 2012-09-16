@@ -89,6 +89,7 @@ public:
     static const unsigned short NEED_REFLOW = 2;
     static const unsigned short NEED_REPAINT = 4;
     static const unsigned short NEED_CHILD_LAYOUT = 8;
+    static const unsigned short NEED_SELECTOR_REMATCHING = 16;
 
 protected:
     Node node;
