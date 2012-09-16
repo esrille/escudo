@@ -154,13 +154,9 @@ void ViewCSSImp::resolveXY(float left, float top)
 
 void ViewCSSImp::cascade()
 {
-    map.clear();
-    delete stackingContexts;
-    stackingContexts = 0;
-
     CSSAutoNumberingValueImp::CounterContext cc(this);
     cascade(getDocument(), 0, &cc);
-
+    clearFlags(Box::NEED_SELECTOR_MATCHING | Box::NEED_SELECTOR_REMATCHING);  // TODO: Refine
     if (3 <= getLogLevel())
         printComputedValues(getDocument(), this);
 }

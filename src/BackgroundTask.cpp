@@ -82,8 +82,8 @@ void WindowImp::BackgroundTask::operator()()
             command &= ~Cascade;
             state = Cascading;
             recordTime("%*sselector matching begin", window->windowDepth * 2, "");
-            deleteView();
-            view = new(std::nothrow) ViewCSSImp(window->getDocumentWindow(), getDOMImplementation()->getDefaultCSSStyleSheet(), getDOMImplementation()->getUserCSSStyleSheet());
+            if (!view)
+                view = new(std::nothrow) ViewCSSImp(window->getDocumentWindow(), getDOMImplementation()->getDefaultCSSStyleSheet(), getDOMImplementation()->getUserCSSStyleSheet());
             if (view) {
                 view->cascade();
                 state = Cascaded;
