@@ -141,7 +141,6 @@ protected:
     FormattingContext* formattingContext;
 
     unsigned short flags;
-    unsigned short state;
 
     WindowImp* childWindow;
 
