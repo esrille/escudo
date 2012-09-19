@@ -214,6 +214,10 @@ public:
         }
     };
 
+    enum flags {
+        Resolved = 1,
+    };
+
 private:
     static const size_t PropertyCount = MaxProperties;
     static const char16_t* PropertyNames[PropertyCount];
@@ -228,14 +232,15 @@ private:
     std::bitset<PropertyCount> importantSet;
     std::bitset<PropertyCount> inheritSet;
 
-    bool resolved;
     float containingBlockWidth;
     float containingBlockHeight;
 
     CSSStyleDeclarationImp* parentStyle;
     CSSStyleDeclarationImp* bodyStyle;
+
+    unsigned flags;
     Box* box;
-    Box* lastBox;  // for inline
+    Box* lastBox;   // for inline
     StackingContext* stackingContext;
     FontTexture* fontTexture;
 
@@ -385,6 +390,19 @@ public:
         this->parentRule = parentRule;
     }
 
+    unsigned getFlags() const {
+        return flags;
+    }
+    void clearFlags(unsigned f) {
+        flags &= ~f;
+    }
+    void setFlags(unsigned f) {
+        flags |= f;
+    }
+    bool isResolved() const {
+        return flags & Resolved;
+    }
+
     int appendProperty(std::u16string property, CSSParserExpr* expr, const std::u16string& prio = u"");
     int commitAppend();
     int cancelAppend();
@@ -421,7 +439,7 @@ public:
     void computeStackingContext(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle);
     void resolve(ViewCSSImp* view, const ContainingBlock* containingBlock);
     void unresolve() {
-        resolved = false;
+        clearFlags(Resolved);
     }
 
     bool resolveOffset(float& x, float &y);
