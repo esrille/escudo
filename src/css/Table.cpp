@@ -101,13 +101,13 @@ float CellBox::getBaseline() const
 
 float CellBox::adjustWidth()
 {
-    float w = isnanf(columnWidth) ? getTotalWidth() : columnWidth;
     TableWrapperBox* wrapper = dynamic_cast<TableWrapperBox*>(getParentBox()->getParentBox()->getParentBox());
     assert(wrapper);
     if (wrapper->getStyle()->borderCollapse.getValue() == CSSBorderCollapseValueImp::Collapse)
         collapseBorder(wrapper);
     else
         separateBorders(wrapper->getStyle(), wrapper->getColumnCount(), wrapper->getRowCount());
+    float w = isnanf(columnWidth) ? getTotalWidth() : columnWidth;
     width = w - getBlankLeft() - getBlankRight();
     if (fixedLayout || isnanf(columnWidth))
         return NAN;
