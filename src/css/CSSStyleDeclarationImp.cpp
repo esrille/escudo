@@ -1450,7 +1450,10 @@ void CSSStyleDeclarationImp::inheritProperties(const CSSStyleDeclarationImp* par
 void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle, Element element)
 {
     unresolve();  // This style needs to be resolved later.
-    clearBox();
+
+    // TODO: If the fundamental values like 'display' is changed, the box(es) associated with this
+    // style need to be revoked.
+    // clearBox();
 
     if (this == parentStyle)
         return;
@@ -1566,6 +1569,7 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     else
         textDecorationContext.update(this);
 
+    // TODO: reorganize the stacking context if the 'position' value has been changed
     if (!stackingContext)
         computeStackingContext(view, parentStyle);
 

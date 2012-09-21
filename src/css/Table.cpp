@@ -1450,7 +1450,7 @@ Reflow:
         h += child->getTotalHeight() + child->getClearance();
     height = std::max(height, h);
 
-    tableBox->flags &= ~(NEED_REFLOW | NEED_CHILD_LAYOUT);
+    tableBox->flags &= ~(NEED_EXPANSION | NEED_REFLOW | NEED_CHILD_LAYOUT);
 }
 
 bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)

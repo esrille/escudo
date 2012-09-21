@@ -82,6 +82,8 @@ class ViewCSSImp
     unsigned last;   // in 1/100 sec for GIF
     unsigned delay;  // in 1/100 sec for GIF
 
+    void removeElement(Element element);
+
     void handleMutation(events::Event event);
     void findDeclarations(CSSRuleListImp::RuleSet& set, Element element, css::CSSRuleList list, unsigned importance);
 
@@ -111,9 +113,9 @@ public:
     }
 
     BlockLevelBox* createBlockLevelBox(Element element,  BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, bool newContext, bool asBlock);
-    BlockLevelBox* layOutBlockBoxes(Node node, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style);
-    BlockLevelBox* layOutBlockBoxes(Text text, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style);
-    BlockLevelBox* layOutBlockBoxes(Element element, BlockLevelBox* parentBox, CSSStyleDeclarationImp* parentStyle, CSSStyleDeclarationImp* style, bool asBlock = false);
+    BlockLevelBox* layOutBlockBoxes(Node node, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, bool asBlock = false, BlockLevelBox* prevBox = 0);
+    BlockLevelBox* layOutBlockBoxes(Text text, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, BlockLevelBox* prevBox);
+    BlockLevelBox* layOutBlockBoxes(Element element, BlockLevelBox* parentBox, CSSStyleDeclarationImp* parentStyle, CSSStyleDeclarationImp* style, bool asBlock = false, BlockLevelBox* prevBox = 0);
     BlockLevelBox* layOutBlockBoxes();
     BlockLevelBox* layOut();
     BlockLevelBox* dump();

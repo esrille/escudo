@@ -118,6 +118,8 @@ Box* Box::removeChild(Box* item)
 
     if (auto block = dynamic_cast<BlockLevelBox*>(item))
         block->inserted = false;
+    else if (item->style)
+        item->style->removeBox(item);
 
     return item;
 }
@@ -355,14 +357,18 @@ float Box::shrinkTo()
 void Box::setFlags(unsigned short f)
 {
     flags |= f;
-    if (flags & (NEED_REFLOW | NEED_CHILD_LAYOUT)) {
-        f = NEED_CHILD_LAYOUT;
-        for (Box* box = parentBox; box; box = box->parentBox) {
-            if ((box->flags & f) == f)
-                break;
-            if (dynamic_cast<BlockLevelBox*>(box))
-                box->flags |= f;
-        }
+    f = 0;
+    if (flags & NEED_EXPANSION)
+        f |= NEED_CHILD_EXPANSION;
+    if (flags & (NEED_REFLOW | NEED_CHILD_LAYOUT))
+        f |= NEED_CHILD_LAYOUT;
+    if (!f)
+        return;
+    for (Box* box = parentBox; box; box = box->parentBox) {
+        if ((box->flags & f) == f)
+            break;
+        if (dynamic_cast<BlockLevelBox*>(box))
+            box->flags |= f;
     }
 }
 
@@ -397,7 +403,26 @@ BlockLevelBox::BlockLevelBox(Node node, CSSStyleDeclarationImp* style) :
 {
     if (style)
         setStyle(style);
-    flags |= NEED_REFLOW | NEED_CHILD_LAYOUT;
+    flags |= NEED_EXPANSION | NEED_REFLOW | NEED_CHILD_LAYOUT;
+}
+
+void BlockLevelBox::reset()
+{
+    setFlags(NEED_EXPANSION | NEED_REFLOW);
+    // TODO: check pseudo elements
+    if (!inlines.empty()) {
+        inlines.clear();
+        removeChildren();
+    } else {
+        Box* next;
+        for (Box* child = getFirstChild(); child; child = next) {
+            next = child->getNextSibling();
+            if (child->isAnonymous()) {
+                removeChild(child);
+                child->release_();
+            }
+        }
+    }
 }
 
 bool BlockLevelBox::isAbsolutelyPositioned() const
@@ -415,18 +440,27 @@ bool BlockLevelBox::isFixed() const
     return !isAnonymous() && style && style->position.getValue() == CSSPositionValueImp::Fixed;
 }
 
-BlockLevelBox* BlockLevelBox::getAnonymousBox()
+bool BlockLevelBox::hasAnonymousBox(Box* prev) const
+{
+    return prev && prev->isAnonymous();
+}
+
+BlockLevelBox* BlockLevelBox::getAnonymousBox(Box* prev)
 {
     BlockLevelBox* anonymousBox;
-    if (hasAnonymousBox()) {
-        anonymousBox = dynamic_cast<BlockLevelBox*>(lastChild);
+    if (hasAnonymousBox(prev)) {
+        anonymousBox = dynamic_cast<BlockLevelBox*>(prev);
         if (anonymousBox)
             return anonymousBox;
     }
     anonymousBox = new(std::nothrow) BlockLevelBox;
     if (anonymousBox) {
+        anonymousBox->flags &= ~NEED_EXPANSION;
         anonymousBox->spliceInline(this);
-        appendChild(anonymousBox);
+        if (!prev)
+            appendChild(anonymousBox);
+        else
+            insertBefore(anonymousBox, prev->getNextSibling());
     }
     return anonymousBox;
 }
@@ -626,8 +660,6 @@ void BlockLevelBox::layOutInlineBlock(ViewCSSImp* view, Node node, BlockLevelBox
     context->appendInlineBox(view, inlineLevelBox, inlineBlock->style.get());
 
     updateMCW(inlineLevelBox->getTotalWidth());
-
-    inlineBlock->style->addBox(inlineLevelBox);
 }
 
 void BlockLevelBox::layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floatingBox, FormattingContext* context)

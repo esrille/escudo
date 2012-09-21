@@ -162,9 +162,11 @@ size_t BlockLevelBox::layOutFloatingFirstLetter(ViewCSSImp* view, FormattingCont
     floatingFirstLetter.appendChild(text);
     BlockLevelBox* floatingBox = view->createBlockLevelBox(floatingFirstLetter, this, firstLetterStyle, true, false);
     floatingBox->insertInline(text);
+    floatingBox->flags &= ~(Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION);
     addBlock(floatingFirstLetter, floatingBox);
     view->addStyle(floatingFirstLetter, firstLetterStyle);
     inlines.push_front(floatingFirstLetter);
+    floatingBox->layOut(view, context);
     layOutFloat(view, floatingFirstLetter, floatingBox, context);
     return length;
 }

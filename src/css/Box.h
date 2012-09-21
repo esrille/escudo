@@ -86,10 +86,12 @@ public:
 
     // flags
     static const unsigned short NEED_SELECTOR_MATCHING = 1;
-    static const unsigned short NEED_REFLOW = 2;
-    static const unsigned short NEED_REPAINT = 4;
-    static const unsigned short NEED_CHILD_LAYOUT = 8;
-    static const unsigned short NEED_SELECTOR_REMATCHING = 16;
+    static const unsigned short NEED_EXPANSION = 2;
+    static const unsigned short NEED_CHILD_EXPANSION = 4;
+    static const unsigned short NEED_REFLOW = 8;
+    static const unsigned short NEED_REPAINT = 16;
+    static const unsigned short NEED_CHILD_LAYOUT = 32;
+    static const unsigned short NEED_SELECTOR_REMATCHING = 64;
 
 protected:
     Node node;
@@ -565,6 +567,7 @@ public:
     virtual unsigned getBoxType() const {
         return BLOCK_LEVEL_BOX;
     }
+    void reset();
 
     void shrinkToFit();
     virtual float shrinkTo();
@@ -610,6 +613,17 @@ public:
         } while (box->isAnonymous() && (box = dynamic_cast<BlockLevelBox*>(box->getParentBox())));
         return 0;
     }
+    bool removeBlock(const Node& node) {
+        BlockLevelBox* box = this;
+        do {
+            auto i = box->blockMap.find(node);
+            if (i != box->blockMap.end()) {
+                box->blockMap.erase(i);
+                return true;
+            }
+        } while (box->isAnonymous() && (box = dynamic_cast<BlockLevelBox*>(box->getParentBox())));
+        return false;
+    }
 
     virtual bool isAbsolutelyPositioned() const;
     virtual bool isFloat() const;
@@ -626,13 +640,11 @@ public:
     unsigned resolveAbsoluteHeight(const ContainingBlock* containingBlock, float& top, float& bottom, float r = NAN);
     unsigned applyAbsoluteMinMaxHeight(const ContainingBlock* containingBlock, float& top, float& bottom, unsigned autoMask);
 
-    // Gets the last, anonymous child box. Creates one if there's none even
+    bool hasAnonymousBox(Box* prev) const;
+    // Gets the anonymous child box. Creates one if there's none even
     // if there's no children; if so, the existing texts are moved to the
     // new anonymous box.
-    bool hasAnonymousBox() const {
-        return lastChild && lastChild->isAnonymous();
-    }
-    BlockLevelBox* getAnonymousBox();
+    BlockLevelBox* getAnonymousBox(Box* prev);
 
     bool isCollapsableInside() const;
     bool isCollapsableOutside() const;
