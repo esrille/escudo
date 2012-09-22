@@ -1604,6 +1604,8 @@ void TableWrapperBox::dump(std::string indent)
         std::cout << " [anonymous]";
     else
         std::cout << " [" << node.getNodeName() << ']';
+    if (3 <= getLogLevel())
+        std::cout << " [" << std::hex << flags << ']' << std::dec;
     std::cout << " (" << x << ", " << y << ") " <<
         "w:" << width << " h:" << height << ' ' <<
         "[" << xWidth << ", " << yHeight << "] " <<
