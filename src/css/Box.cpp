@@ -1247,8 +1247,6 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
      if (savedWidth != width)
          flags |= NEED_REFLOW;
 
-    layOutInlineBlocks(view, context);
-
     visibility = style->visibility.getValue();
     textAlign = style->textAlign.getValue();
 
@@ -1270,6 +1268,8 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     }
     FormattingContext* parentContext = context;
     context = updateFormattingContext(context);
+
+    layOutInlineBlocks(view, context);
 
     if (!layOutReplacedElement(view, this, element, style.get())) {
         if (!intrinsic && style->display.isInline() && isReplacedElement(element)) {
