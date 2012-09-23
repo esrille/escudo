@@ -256,6 +256,8 @@ void TableWrapperBox::layOutBlockBoxes()
         appendChild(i->get());
 
     isAnonymousTable = false;
+
+    clearFlags(NEED_EXPANSION);
 }
 
 bool TableWrapperBox::processTableChild(Node node, CSSStyleDeclarationImp* style)
