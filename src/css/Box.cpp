@@ -1171,7 +1171,7 @@ void BlockLevelBox::applyMinMaxHeight(FormattingContext* context)
     }
 }
 
-void BlockLevelBox::layOutInlineBlocks(ViewCSSImp* view, FormattingContext* context)
+void BlockLevelBox::layOutInlineBlocks(ViewCSSImp* view)
 {
     for (auto i = blockMap.begin(); i != blockMap.end(); ++i) {
         BlockLevelBox* block = i->second.get();
@@ -1179,7 +1179,7 @@ void BlockLevelBox::layOutInlineBlocks(ViewCSSImp* view, FormattingContext* cont
             float savedWidth = block->getTotalWidth();
             float savedHeight = block->getTotalHeight();
             // TODO: Check block's baseline as well.
-            block->layOut(view, context);
+            block->layOut(view, 0);
             if (savedWidth != block->getTotalWidth() || savedHeight != block->getTotalHeight())
                 flags |= NEED_REFLOW;
         }
@@ -1269,7 +1269,7 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     FormattingContext* parentContext = context;
     context = updateFormattingContext(context);
 
-    layOutInlineBlocks(view, context);
+    layOutInlineBlocks(view);
 
     if (!layOutReplacedElement(view, this, element, style.get())) {
         if (!intrinsic && style->display.isInline() && isReplacedElement(element)) {
@@ -1600,7 +1600,7 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
     else if (!(maskV & Height) && height != savedHeight)
         flags |= NEED_REFLOW;
 
-    layOutInlineBlocks(view, context);
+    layOutInlineBlocks(view);
 
     if (layOutReplacedElement(view, this, element, style.get())) {
         maskH &= ~Width;

@@ -1474,7 +1474,8 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
     resolveMargin(view, containingBlock);
     stackingContext = style->getStackingContext();
 
-    collapseMarginTop(context);
+    if (context)
+        collapseMarginTop(context);
     FormattingContext* parentContext = context;
     context = updateFormattingContext(context);
     if (isCollapsableOutside()) {
