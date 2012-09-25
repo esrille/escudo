@@ -2008,6 +2008,7 @@ bool CSSStyleDeclarationImp::isFlowRoot() const
     return float_.getValue() != CSSFloatValueImp::None ||
            overflow.getValue() != CSSOverflowValueImp::Visible ||
            display.isFlowRoot() ||
+           binding.isInlineBlock() ||
            position.getValue() != CSSPositionValueImp::Static && position.getValue() != CSSPositionValueImp::Relative;
            /* TODO || and more conditions... */
 }
