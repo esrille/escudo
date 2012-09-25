@@ -654,7 +654,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
             currentBox->flags &= ~(Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION);
             // FALL THROUGH
         default:
-            return currentBox;
+            return (!parentBox || !inlineBlock) ? currentBox : prevBox;
         }
     }
 
