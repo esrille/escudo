@@ -500,10 +500,16 @@ void BlockLevelBox::applyMinMaxWidth(float w)
         float maxWidth = style->maxWidth.getPx();
         if (maxWidth < width)
             resolveNormalWidth(w, maxWidth);
-    }
+        // cf. html4/max-width-applies-to-007.htm (note that strictly speaking, this test is invalid.)
+        if (!style->width.isAuto() && !style->width.isPercentage())
+            updateMCW(std::min(style->width.getPx(), maxWidth));
+    } else if (!style->width.isAuto() && !style->width.isPercentage())
+        updateMCW(style->width.getPx());
+
     float minWidth = style->minWidth.getPx();
     if (width < minWidth)
         resolveNormalWidth(w, minWidth);
+    updateMCW(minWidth);
 }
 
 // Calculate width
@@ -1220,8 +1226,6 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     mcw = 0.0f;
     if (!isAnonymous()) {
         style->addBox(this);
-        if (!style->width.isAuto() && !style->width.isPercentage())
-            mcw = style->width.getPx();
         style->resolve(view, containingBlock);
         resolveBackground(view);
         updatePadding();
