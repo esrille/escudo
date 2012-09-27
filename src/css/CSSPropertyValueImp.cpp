@@ -457,12 +457,6 @@ bool CSSAutoNumberingValueImp::CounterContext::hasCounter(const std::u16string& 
     return false;
 }
 
-void CSSAutoNumberingValueImp::CounterContext::update(CSSStyleDeclarationImp* style)
-{
-    if (!style->display.isNone())
-        style->updateCounters(view, this);
-}
-
 CSSAutoNumberingValueImp::CounterContext::~CounterContext()
 {
     if (!view)

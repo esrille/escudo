@@ -1770,6 +1770,14 @@ void CSSStyleDeclarationImp::recompute(ViewCSSImp* view, CSSStyleDeclarationImp*
     }
 }
 
+void CSSStyleDeclarationImp::updateCounters(ViewCSSImp* view, CSSAutoNumberingValueImp::CounterContext* context)
+{
+    if (!display.isNone()) {
+        counterReset.resetCounter(view, context);
+        counterIncrement.incrementCounter(view, context);
+    }
+}
+
 // calculate resolved values that requite containing block information for calucuration
 // cf. CSSOM 7. Resolved Values
 void CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* containingBlock)

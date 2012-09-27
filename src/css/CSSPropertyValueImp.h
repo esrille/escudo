@@ -538,7 +538,6 @@ public:
         void addCounter(CounterImp* counter) {
             counters.push_front(counter);
         }
-        void update(CSSStyleDeclarationImp* style);
     };
 
 

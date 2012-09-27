@@ -293,7 +293,8 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle, CSSAuto
 
             // Process pseudo elements:
             assert(counterContext);
-            counterContext->update(style);
+            style->updateCounters(this, counterContext);
+
             CSSAutoNumberingValueImp::CounterContext cc(this);
             CSSStyleDeclarationImp* markerStyle = checkMarker(style, element, &cc);
             ElementImp* imp = dynamic_cast<ElementImp*>(element.self());
@@ -307,7 +308,7 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle, CSSAuto
             if (!beforeStyle)
                 imp->before = 0;
             else {
-                cc.update(beforeStyle);
+                beforeStyle->updateCounters(this, &cc);
                 imp->before = beforeStyle->content.eval(this, element, &cc);
                 CSSAutoNumberingValueImp::CounterContext ccBefore(this);
                 checkMarker(beforeStyle, imp->before, &ccBefore);
@@ -325,7 +326,7 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle, CSSAuto
             if (!afterStyle)
                 imp->after = 0;
             else {
-                cc.update(afterStyle);
+                afterStyle->updateCounters(this, &cc);
                 imp->after = afterStyle->content.eval(this, element, &cc);
                 CSSAutoNumberingValueImp::CounterContext ccAfter(this);
                 checkMarker(afterStyle, imp->after, &ccAfter);
@@ -358,25 +359,25 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle, CSSAuto
             style = map[element].get();
             assert(style);
             assert(counterContext);
-            counterContext->update(style);
+            style->updateCounters(this, counterContext);
             CSSAutoNumberingValueImp::CounterContext cc(this);
             if (!style->display.isNone()) {
                 CSSStyleDeclarationImp* markerStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::Marker);
                 if (markerStyle && !markerStyle->display.isNone() && !markerStyle->content.isNone()) {
                     if (CounterImpPtr counter = getCounter(u"list-item"))
                         counter->increment(1);
-                    cc.update(markerStyle);
+                    markerStyle->updateCounters(this, &cc);
                 }
                 CSSStyleDeclarationImp* beforeStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::Before);
                 if (beforeStyle && !beforeStyle->display.isNone() && !beforeStyle->content.isNone())
-                    cc.update(beforeStyle);
+                    beforeStyle->updateCounters(this, &cc);
             }
             for (Node child = node.getFirstChild(); child; child = child.getNextSibling())
                 cascade(child, style, &cc);
             if (!style->display.isNone()) {
                 CSSStyleDeclarationImp* afterStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::After);
                 if (afterStyle && !afterStyle->display.isNone() && !afterStyle->content.isNone())
-                    cc.update(afterStyle);
+                    afterStyle->updateCounters(this, &cc);
             }
         }
     } else {
@@ -417,7 +418,7 @@ CSSStyleDeclarationImp* ViewCSSImp::checkMarker(CSSStyleDeclarationImp* style, E
         CounterImpPtr counter = getCounter(u"list-item");
         if (counter)
             counter->increment(1);
-        counterContext->update(markerStyle);
+        markerStyle->updateCounters(this, counterContext);
         imp->marker = markerStyle->content.eval(this, element, counterContext);
         assert(style->getPseudoElementStyle(CSSPseudoElementSelector::Marker));
     }
