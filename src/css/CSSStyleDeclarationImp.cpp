@@ -1770,12 +1770,28 @@ void CSSStyleDeclarationImp::recompute(ViewCSSImp* view, CSSStyleDeclarationImp*
     }
 }
 
-void CSSStyleDeclarationImp::updateCounters(ViewCSSImp* view, CSSAutoNumberingValueImp::CounterContext* context)
+bool CSSStyleDeclarationImp::updateCounters(ViewCSSImp* view, CSSAutoNumberingValueImp::CounterContext* context)
 {
-    if (!display.isNone()) {
-        counterReset.resetCounter(view, context);
-        counterIncrement.incrementCounter(view, context);
+    if (display.isNone())
+        return false;
+
+    bool updated(false);
+    if (getPseudoElementSelectorType() == CSSPseudoElementSelector::Marker) {
+        // Execute implicit 'counter-increment: list-item;'
+        if (CounterImpPtr counter = view->getCounter(u"list-item")) {
+            counter->increment(1);
+            updated = true;
+        }
     }
+    if (counterReset.hasCounter()) {
+        counterReset.resetCounter(view, context);
+        updated = true;
+    }
+    if (counterIncrement.hasCounter()) {
+        counterIncrement.incrementCounter(view, context);
+        updated = true;
+    }
+    return updated;
 }
 
 // calculate resolved values that requite containing block information for calucuration

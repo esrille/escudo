@@ -363,11 +363,8 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle, CSSAuto
             CSSAutoNumberingValueImp::CounterContext cc(this);
             if (!style->display.isNone()) {
                 CSSStyleDeclarationImp* markerStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::Marker);
-                if (markerStyle && !markerStyle->display.isNone() && !markerStyle->content.isNone()) {
-                    if (CounterImpPtr counter = getCounter(u"list-item"))
-                        counter->increment(1);
+                if (markerStyle && !markerStyle->display.isNone() && !markerStyle->content.isNone())
                     markerStyle->updateCounters(this, &cc);
-                }
                 CSSStyleDeclarationImp* beforeStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::Before);
                 if (beforeStyle && !beforeStyle->display.isNone() && !beforeStyle->content.isNone())
                     beforeStyle->updateCounters(this, &cc);
@@ -414,10 +411,6 @@ CSSStyleDeclarationImp* ViewCSSImp::checkMarker(CSSStyleDeclarationImp* style, E
             markerStyle = 0;
     }
     if (markerStyle) {
-        // Execute implicit 'counter-increment: list-item;'
-        CounterImpPtr counter = getCounter(u"list-item");
-        if (counter)
-            counter->increment(1);
         markerStyle->updateCounters(this, counterContext);
         imp->marker = markerStyle->content.eval(this, element, counterContext);
         assert(style->getPseudoElementStyle(CSSPseudoElementSelector::Marker));

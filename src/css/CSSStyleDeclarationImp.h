@@ -448,7 +448,7 @@ public:
     void respecifyImportant(const CSSStyleDeclarationImp* style);
     void recompute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle, Element element);
 
-    void updateCounters(ViewCSSImp* view, CSSAutoNumberingValueImp::CounterContext* context);
+    bool updateCounters(ViewCSSImp* view, CSSAutoNumberingValueImp::CounterContext* context);
 
     size_t processWhiteSpace(std::u16string& data, char16_t& prevChar);
     size_t processLineHeadWhiteSpace(const std::u16string& data, size_t position);
