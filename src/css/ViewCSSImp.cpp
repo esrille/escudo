@@ -359,22 +359,38 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle, CSSAuto
             style = map[element].get();
             assert(style);
             assert(counterContext);
+            ElementImp* imp = dynamic_cast<ElementImp*>(element.self());
+            assert(imp);
             style->updateCounters(this, counterContext);
             CSSAutoNumberingValueImp::CounterContext cc(this);
             if (!style->display.isNone()) {
                 CSSStyleDeclarationImp* markerStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::Marker);
-                if (markerStyle && !markerStyle->display.isNone() && !markerStyle->content.isNone())
+                if (markerStyle && !markerStyle->display.isNone() && !markerStyle->content.isNone()) {
                     markerStyle->updateCounters(this, &cc);
+                    std::u16string text = markerStyle->content.evalText(this, element, &cc);
+                    if (!text.empty() && text != static_cast<std::u16string>(imp->marker.getTextContent()))
+                        imp->marker.setTextContent(text);
+                }
                 CSSStyleDeclarationImp* beforeStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::Before);
-                if (beforeStyle && !beforeStyle->display.isNone() && !beforeStyle->content.isNone())
+                if (beforeStyle && !beforeStyle->display.isNone() && !beforeStyle->content.isNone()) {
                     beforeStyle->updateCounters(this, &cc);
+                    std::u16string text = beforeStyle->content.evalText(this, element, &cc);
+                    if (!text.empty() && text != static_cast<std::u16string>(imp->before.getTextContent()))
+                        imp->before.setTextContent(text);
+                    // TODO: support marker
+                }
             }
             for (Node child = node.getFirstChild(); child; child = child.getNextSibling())
                 cascade(child, style, &cc);
             if (!style->display.isNone()) {
                 CSSStyleDeclarationImp* afterStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::After);
-                if (afterStyle && !afterStyle->display.isNone() && !afterStyle->content.isNone())
+                if (afterStyle && !afterStyle->display.isNone() && !afterStyle->content.isNone()) {
                     afterStyle->updateCounters(this, &cc);
+                    std::u16string text = afterStyle->content.evalText(this, element, &cc);
+                    if (!text.empty() && text != static_cast<std::u16string>(imp->after.getTextContent()))
+                        imp->after.setTextContent(text);
+                    // TODO: support marker
+                }
             }
         }
     } else {

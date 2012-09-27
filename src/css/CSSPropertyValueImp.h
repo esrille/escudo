@@ -1230,6 +1230,7 @@ public:
     }
 
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
+    std::u16string evalText(ViewCSSImp* view, Element element, CounterContext* context);
     Element eval(ViewCSSImp* view, Element element, CounterContext* context);
 
     CSSContentValueImp(unsigned initial = Normal) :

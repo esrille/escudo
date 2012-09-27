@@ -1281,6 +1281,17 @@ std::u16string CSSContentValueImp::QuoteContent::eval(ViewCSSImp* view, Element 
     return u"";
 }
 
+std::u16string CSSContentValueImp::evalText(ViewCSSImp* view, Element element, CounterContext* context)
+{
+    if (!contents.empty() && dynamic_cast<URIContent*>(contents.front()))
+        return u"";
+
+    std::u16string data;
+    for (auto i = contents.begin(); i != contents.end(); ++i)
+        data += (*i)->eval(view, element, context);
+    return data;
+}
+
 Element CSSContentValueImp::eval(ViewCSSImp* view, Element element, CounterContext* context)
 {
     if (contents.empty())
