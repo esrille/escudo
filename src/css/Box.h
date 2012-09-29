@@ -424,7 +424,7 @@ public:
     unsigned short gatherFlags() const;
 
     bool isInside(int u, int v) const {
-        // TODO: InlineLevelBox needs to be treated differently.
+        // TODO: InlineBox needs to be treated differently.
         float l = x + marginLeft;
         if (u < l)
             return false;
@@ -748,7 +748,7 @@ public:
 typedef boost::intrusive_ptr<LineBox> LineBoxPtr;
 
 // words inside a line
-class InlineLevelBox : public Box
+class InlineBox : public Box
 {
     friend class BlockLevelBox;
     friend class FormattingContext;
@@ -769,14 +769,14 @@ class InlineLevelBox : public Box
     void renderEmptyBox(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle);
 
 public:
-    InlineLevelBox(Node node, CSSStyleDeclarationImp* style);
+    InlineBox(Node node, CSSStyleDeclarationImp* style);
 
     virtual unsigned getBoxType() const {
         return INLINE_LEVEL_BOX;
     }
 
     virtual const Box* towardViewPort(const Box* child, float& x, float& y) const {
-        // In the case of the inline-block, InlineLevelBox holds a block-level box
+        // In the case of the inline-block, InlineBox holds a block-level box
         // as its only child.
         return this;
     }
@@ -808,7 +808,7 @@ public:
     std::u16string getWrapText() const {
         return data.substr(wrap);
     }
-    InlineLevelBox* split();
+    InlineBox* split();
 
     // has non-zero margins, padding, or borders?
     bool hasHeight() const {
@@ -847,7 +847,7 @@ public:
     virtual void dump(std::string indent);
 };
 
-typedef boost::intrusive_ptr<InlineLevelBox> InlineLevelBoxPtr;
+typedef boost::intrusive_ptr<InlineBox> InlineBoxPtr;
 
 }}}}  // org::w3c::dom::bootstrap
 

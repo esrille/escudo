@@ -92,7 +92,7 @@ void BlockLevelBox::getPsuedoStyles(ViewCSSImp* view, FormattingContext* context
 {
     bool isFirstLetter = true;
     for (Box* i = context->lineBox->getFirstChild(); i; i = i->getNextSibling()) {
-        if (dynamic_cast<InlineLevelBox*>(i)) {
+        if (dynamic_cast<InlineBox*>(i)) {
             isFirstLetter = false;
             break;
         }
@@ -264,8 +264,8 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
     activeStyle = setActiveStyle(view, style, font, point);
 
     size_t position = 0;  // within data
-    InlineLevelBox* inlineBox = 0;
-    InlineLevelBox* wrapBox = 0;    // characters moved to the next line
+    InlineBox* inlineBox = 0;
+    InlineBox* wrapBox = 0;    // characters moved to the next line
     for (;;) {
         if (context->atLineHead && !wrapBox) {
             size_t next = style->processLineHeadWhiteSpace(data, position);
@@ -299,7 +299,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
 
         float nbl = 0.0f;
         if (wrapBox) {
-            for (InlineLevelBox* box = wrapBox; box; box = dynamic_cast<InlineLevelBox*>(box->getNextSibling()))
+            for (InlineBox* box = wrapBox; box; box = dynamic_cast<InlineBox*>(box->getNextSibling()))
                 nbl += box->getTotalWidth();
             context->x += nbl;
             context->leftover -= nbl;
@@ -310,7 +310,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
         }
 
         if (!inlineBox) {
-            inlineBox = new(std::nothrow) InlineLevelBox(text, activeStyle);
+            inlineBox = new(std::nothrow) InlineBox(text, activeStyle);
             if (!inlineBox)
                 return false;  // TODO error
             inlineBox->resolveWidth();
@@ -401,7 +401,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                             if (firstLineStyle) {
                                 // If the current line is the first line, the style applied to the wrap-box has to be changed.
                                 bool isFirstCharacter = true;
-                                for (InlineLevelBox* box = wrapBox; box; box = dynamic_cast<InlineLevelBox*>(box->getNextSibling())) {
+                                for (InlineBox* box = wrapBox; box; box = dynamic_cast<InlineBox*>(box->getNextSibling())) {
                                     Node node = box->getNode();
                                     CSSStyleDeclarationImp* wrapStyle = view->getStyle(interface_cast<Element>(node));
                                     if (!wrapStyle)
@@ -426,7 +426,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
                     if (context->shiftDownLineBox(view)) {
                         if (wrapBox) {
                             nbl = 0.0f;
-                            for (InlineLevelBox* box = wrapBox; box; box = dynamic_cast<InlineLevelBox*>(box->getNextSibling()))
+                            for (InlineBox* box = wrapBox; box; box = dynamic_cast<InlineBox*>(box->getNextSibling()))
                                 nbl += box->getTotalWidth();
                             context->x += nbl;
                             context->leftover -= nbl;
@@ -471,7 +471,7 @@ bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* c
         }
 
         while (wrapBox) {
-            InlineLevelBox* next = dynamic_cast<InlineLevelBox*>(wrapBox->getNextSibling());
+            InlineBox* next = dynamic_cast<InlineBox*>(wrapBox->getNextSibling());
             context->appendInlineBox(view, wrapBox, wrapBox->getStyle()); // TODO: leading, etc.
             wrapBox = next;
         }
@@ -521,7 +521,7 @@ bool LineBox::layOut(ViewCSSImp* view, FormattingContext* context)
     for (Box* box = getFirstChild(); box; box = box->getNextSibling()) {
         if (box->isAbsolutelyPositioned())
             continue;
-        if (InlineLevelBox* inlineBox = dynamic_cast<InlineLevelBox*>(box)) {
+        if (InlineBox* inlineBox = dynamic_cast<InlineBox*>(box)) {
             CSSStyleDeclarationImp* style = box->getStyle();
             if (style && style->display.isInlineLevel())
                 inlineBox->offsetV += style->verticalAlign.getOffset(view, style, this, inlineBox);
@@ -661,7 +661,7 @@ void LineBox::dump(std::string indent)
         child->dump(indent);
 }
 
-InlineLevelBox::InlineLevelBox(Node node, CSSStyleDeclarationImp* style) :
+InlineBox::InlineBox(Node node, CSSStyleDeclarationImp* style) :
     Box(node),
     font(0),
     point(0.0f),
@@ -677,7 +677,7 @@ InlineLevelBox::InlineLevelBox(Node node, CSSStyleDeclarationImp* style) :
     }
 }
 
-bool InlineLevelBox::isEmptyInlineAtFirst(CSSStyleDeclarationImp* style, Element& element, Node& node)
+bool InlineBox::isEmptyInlineAtFirst(CSSStyleDeclarationImp* style, Element& element, Node& node)
 {
     if (element != node)
         return (element.getFirstChild() == node) && !(style->getEmptyInline() & 1);
@@ -686,7 +686,7 @@ bool InlineLevelBox::isEmptyInlineAtFirst(CSSStyleDeclarationImp* style, Element
     return (emptyInline & 1) || emptyInline == 4;
 }
 
-bool InlineLevelBox::isEmptyInlineAtLast(CSSStyleDeclarationImp* style, Element& element, Node& node)
+bool InlineBox::isEmptyInlineAtLast(CSSStyleDeclarationImp* style, Element& element, Node& node)
 {
     if (element != node)
         return (element.getLastChild() == node) && !(style->getEmptyInline() & 2);
@@ -695,7 +695,7 @@ bool InlineLevelBox::isEmptyInlineAtLast(CSSStyleDeclarationImp* style, Element&
     return !(emptyInline & 1) && ((emptyInline & 2) || emptyInline == 4);
 }
 
-void InlineLevelBox::setData(FontTexture* font, float point, const std::u16string& data, size_t wrap, float wrapWidth)
+void InlineBox::setData(FontTexture* font, float point, const std::u16string& data, size_t wrap, float wrapWidth)
 {
     assert(data[0] != 0 || data.empty());
     this->font = font;
@@ -713,10 +713,10 @@ void InlineLevelBox::setData(FontTexture* font, float point, const std::u16strin
         this->wrap = this->data.length();
 }
 
-InlineLevelBox* InlineLevelBox::split()
+InlineBox* InlineBox::split()
 {
     assert(wrap < data.length());
-    InlineLevelBox* wrapBox = new(std::nothrow) InlineLevelBox(node, getStyle());
+    InlineBox* wrapBox = new(std::nothrow) InlineBox(node, getStyle());
     if (!wrapBox)
         return 0;
     wrapBox->marginTop = marginTop;
@@ -740,7 +740,7 @@ InlineLevelBox* InlineLevelBox::split()
     return wrapBox;
 }
 
-float InlineLevelBox::atEndOfLine()
+float InlineBox::atEndOfLine()
 {
     size_t length = data.length();
     if (length < 1)
@@ -763,21 +763,21 @@ float InlineLevelBox::atEndOfLine()
     return 0.0f;
 }
 
-float InlineLevelBox::getSub() const
+float InlineBox::getSub() const
 {
     if (!font)
         return 0.0f;
     return font->getSub(point);
 }
 
-float InlineLevelBox::getSuper() const
+float InlineBox::getSuper() const
 {
     if (!font)
         return 0.0f;
     return font->getSuper(point);
 }
 
-void InlineLevelBox::resolveWidth()
+void InlineBox::resolveWidth()
 {
     // The ‘width’ and ‘height’ properties do not apply.
     if (isInline()) {
@@ -798,7 +798,7 @@ void InlineLevelBox::resolveWidth()
 
 // To deal with nested inline elements in the document tree, resolveOffset
 // is repeatedly applied to this inline level box up to a non-inline element.
-void InlineLevelBox::resolveOffset(float& x, float &y)
+void InlineBox::resolveOffset(float& x, float &y)
 {
     CSSStyleDeclarationImp* s = getStyle();
     if (!font) {
@@ -811,7 +811,7 @@ void InlineLevelBox::resolveOffset(float& x, float &y)
     }
 }
 
-void InlineLevelBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip)
+void InlineBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip)
 {
     left += offsetH;
     top += offsetV + leading / 2.0f;
@@ -822,7 +822,7 @@ void InlineLevelBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLev
     clipBox = clip;
 }
 
-void InlineLevelBox::dump(std::string indent)
+void InlineBox::dump(std::string indent)
 {
     std::cout << indent << "* inline-level box";
     if (3 <= getLogLevel())

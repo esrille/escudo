@@ -163,7 +163,7 @@ public:
     float shiftDown();
     bool shiftDownLineBox(ViewCSSImp* view);
     bool hasNewFloats() const;
-    void appendInlineBox(ViewCSSImp* view, InlineLevelBox* inlineBox, CSSStyleDeclarationImp* activeStyle);
+    void appendInlineBox(ViewCSSImp* view, InlineBox* inlineBox, CSSStyleDeclarationImp* activeStyle);
     void dontWrap();
     void nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, bool linefeed);
     void tryAddFloat(ViewCSSImp* view);
@@ -214,7 +214,7 @@ public:
         return textIterator.next() ? *textIterator : textIterator.size();
     }
     bool isFirstCharacter(const std::u16string& text);
-    InlineLevelBox* getWrapBox(const std::u16string& text);
+    InlineBox* getWrapBox(const std::u16string& text);
 };
 
 }}}}  // org::w3c::dom::bootstrap

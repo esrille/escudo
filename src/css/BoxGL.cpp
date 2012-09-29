@@ -704,15 +704,15 @@ void LineBox::render(ViewCSSImp* view, StackingContext* stackingContext)
     }
 }
 
-void InlineLevelBox::renderMultipleBackground(ViewCSSImp* view)
+void InlineBox::renderMultipleBackground(ViewCSSImp* view)
 {
     Box* box;
-    InlineLevelBox* head;
-    InlineLevelBox* tail = this;
-    InlineLevelBox* lastBox = dynamic_cast<InlineLevelBox*>(style->getLastBox());
+    InlineBox* head;
+    InlineBox* tail = this;
+    InlineBox* lastBox = dynamic_cast<InlineBox*>(style->getLastBox());
     assert(lastBox);
     for (box = this; box && box != lastBox; box = box->getNextSibling()) {
-        if (InlineLevelBox* i = dynamic_cast<InlineLevelBox*>(box))
+        if (InlineBox* i = dynamic_cast<InlineBox*>(box))
             tail = i;
     }
 
@@ -756,7 +756,7 @@ void InlineLevelBox::renderMultipleBackground(ViewCSSImp* view)
             assert(lineBox);
             head = tail = 0;
             for (box = lineBox->getFirstChild(); box; box = box->getNextSibling()) {
-                if (InlineLevelBox* i = dynamic_cast<InlineLevelBox*>(box)) {
+                if (InlineBox* i = dynamic_cast<InlineBox*>(box)) {
                     if (!head)
                         head = i;
                     tail = i;
@@ -782,7 +782,7 @@ void InlineLevelBox::renderMultipleBackground(ViewCSSImp* view)
     }
 }
 
-void InlineLevelBox::renderEmptyBox(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle)
+void InlineBox::renderEmptyBox(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle)
 {
     parentStyle->resolve(view, getContainingBlock(view));
     LineBox* lineBox = dynamic_cast<LineBox*>(getParentBox());
@@ -799,12 +799,12 @@ void InlineLevelBox::renderEmptyBox(ViewCSSImp* view, CSSStyleDeclarationImp* pa
     top -= parentStyle->marginTop.getPx() + parentStyle->paddingTop.getPx() + parentStyle->borderTopWidth.getPx();
 
     Box* box;
-    InlineLevelBox* head;
-    InlineLevelBox* tail = this;
-    InlineLevelBox* lastBox = dynamic_cast<InlineLevelBox*>(parentStyle->getLastBox());
+    InlineBox* head;
+    InlineBox* tail = this;
+    InlineBox* lastBox = dynamic_cast<InlineBox*>(parentStyle->getLastBox());
     assert(lastBox);
     for (box = this; box && box != lastBox; box = box->getNextSibling()) {
-        if (InlineLevelBox* i = dynamic_cast<InlineLevelBox*>(box))
+        if (InlineBox* i = dynamic_cast<InlineBox*>(box))
             tail = i;
     }
 
@@ -850,7 +850,7 @@ void InlineLevelBox::renderEmptyBox(ViewCSSImp* view, CSSStyleDeclarationImp* pa
             assert(lineBox);
             head = tail = 0;
             for (box = lineBox->getFirstChild(); box; box = box->getNextSibling()) {
-                if (InlineLevelBox* i = dynamic_cast<InlineLevelBox*>(box)) {
+                if (InlineBox* i = dynamic_cast<InlineBox*>(box)) {
                     if (!head)
                         head = i;
                     tail = i;
@@ -880,7 +880,7 @@ void InlineLevelBox::renderEmptyBox(ViewCSSImp* view, CSSStyleDeclarationImp* pa
     }
 }
 
-void InlineLevelBox::render(ViewCSSImp* view, StackingContext* stackingContext)
+void InlineBox::render(ViewCSSImp* view, StackingContext* stackingContext)
 {
     assert(stackingContext);
 
@@ -969,7 +969,7 @@ void InlineLevelBox::render(ViewCSSImp* view, StackingContext* stackingContext)
     glPopMatrix();
 }
 
-void InlineLevelBox::renderText(ViewCSSImp* view, const std::u16string& data, float point)
+void InlineBox::renderText(ViewCSSImp* view, const std::u16string& data, float point)
 {
     CSSStyleDeclarationImp* activeStyle = getStyle();
     FontTexture* font = activeStyle->getFontTexture();
@@ -1021,7 +1021,7 @@ void InlineLevelBox::renderText(ViewCSSImp* view, const std::u16string& data, fl
     font->endRender();
 }
 
-void InlineLevelBox::renderOutline(ViewCSSImp* view)
+void InlineBox::renderOutline(ViewCSSImp* view)
 {
     if (isAnonymous())
         return;
@@ -1041,12 +1041,12 @@ void InlineLevelBox::renderOutline(ViewCSSImp* view)
 
     // TODO: Render the outline across several lines.
     Box* box;
-    InlineLevelBox* head;
-    InlineLevelBox* tail = this;
-    InlineLevelBox* lastBox = dynamic_cast<InlineLevelBox*>(style->getLastBox());
+    InlineBox* head;
+    InlineBox* tail = this;
+    InlineBox* lastBox = dynamic_cast<InlineBox*>(style->getLastBox());
     assert(lastBox);
     for (box = this; box && box != lastBox; box = box->getNextSibling()) {
-        if (InlineLevelBox* i = dynamic_cast<InlineLevelBox*>(box))
+        if (InlineBox* i = dynamic_cast<InlineBox*>(box))
             tail = i;
     }
 
@@ -1084,7 +1084,7 @@ void InlineLevelBox::renderOutline(ViewCSSImp* view)
             assert(lineBox);
             head = tail = 0;
             for (box = lineBox->getFirstChild(); box; box = box->getNextSibling()) {
-                if (InlineLevelBox* i = dynamic_cast<InlineLevelBox*>(box)) {
+                if (InlineBox* i = dynamic_cast<InlineBox*>(box)) {
                     if (!head)
                         head = i;
                     tail = i;

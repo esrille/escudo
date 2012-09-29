@@ -627,8 +627,8 @@ void BlockLevelBox::layOutInlineBlock(ViewCSSImp* view, Node node, BlockLevelBox
 {
     assert(inlineBlock->style);
 
-    InlineLevelBox* inlineLevelBox = new(std::nothrow) InlineLevelBox(node, inlineBlock->style.get());
-    if (!inlineLevelBox)
+    InlineBox* inlineBox = new(std::nothrow) InlineBox(node, inlineBlock->style.get());
+    if (!inlineBox)
         return;  // TODO error
 
     if (!context->lineBox) {
@@ -637,20 +637,20 @@ void BlockLevelBox::layOutInlineBlock(ViewCSSImp* view, Node node, BlockLevelBox
     }
 
     context->prevChar = 0;
-    inlineLevelBox->parentBox = context->lineBox;  // for getContainingBlock
-    inlineLevelBox->appendChild(inlineBlock);
-    inlineLevelBox->width = inlineBlock->getTotalWidth();
-    inlineLevelBox->height = inlineBlock->getTotalHeight();
-    if (inlineLevelBox->height == 0.0f)
-        inlineLevelBox->width = 0.0f;
-    inlineLevelBox->baseline = inlineLevelBox->height;
+    inlineBox->parentBox = context->lineBox;  // for getContainingBlock
+    inlineBox->appendChild(inlineBlock);
+    inlineBox->width = inlineBlock->getTotalWidth();
+    inlineBox->height = inlineBlock->getTotalHeight();
+    if (inlineBox->height == 0.0f)
+        inlineBox->width = 0.0f;
+    inlineBox->baseline = inlineBox->height;
     if (!inlineBlock->style->overflow.isClipped()) {
         if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(inlineBlock))
-            inlineLevelBox->baseline = table->getBaseline();
+            inlineBox->baseline = table->getBaseline();
         else
-            inlineLevelBox->baseline = inlineBlock->getBaseline();
+            inlineBox->baseline = inlineBlock->getBaseline();
     }
-    while (context->leftover < inlineLevelBox->getTotalWidth()) {
+    while (context->leftover < inlineBox->getTotalWidth()) {
         if (context->lineBox->hasChildBoxes() || context->hasNewFloats()) {
             context->nextLine(view, this, false);
             if (!context->addLineBox(view, this))
@@ -661,11 +661,11 @@ void BlockLevelBox::layOutInlineBlock(ViewCSSImp* view, Node node, BlockLevelBox
             break;
     }
 
-    context->x += inlineLevelBox->getTotalWidth();
-    context->leftover -= inlineLevelBox->getTotalWidth();
-    context->appendInlineBox(view, inlineLevelBox, inlineBlock->style.get());
+    context->x += inlineBox->getTotalWidth();
+    context->leftover -= inlineBox->getTotalWidth();
+    context->appendInlineBox(view, inlineBox, inlineBlock->style.get());
 
-    updateMCW(inlineLevelBox->getTotalWidth());
+    updateMCW(inlineBox->getTotalWidth());
 }
 
 void BlockLevelBox::layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floatingBox, FormattingContext* context)
@@ -898,7 +898,7 @@ bool BlockLevelBox::isCollapsedThrough() const
         if (lineBox->getTotalHeight() != 0.0f)
             return false;
         for (auto i = lineBox->getFirstChild(); i; i = i->getNextSibling()) {
-            if (dynamic_cast<InlineLevelBox*>(i))
+            if (dynamic_cast<InlineBox*>(i))
                 return false;
         }
     }
@@ -1678,7 +1678,7 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
 
 void BlockLevelBox::resolveOffset(float& x, float &y)
 {
-    if (dynamic_cast<InlineLevelBox*>(getParentBox()))  // inline block?
+    if (dynamic_cast<InlineBox*>(getParentBox()))  // inline block?
         return;
 
     // cf. http://test.csswg.org/suites/css2.1/20110323/html4/inline-box-002.htm

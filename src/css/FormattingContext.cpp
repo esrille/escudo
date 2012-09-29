@@ -419,7 +419,7 @@ bool FormattingContext::hasNewFloats() const
     return false;
 }
 
-void FormattingContext::appendInlineBox(ViewCSSImp* view, InlineLevelBox* inlineBox, CSSStyleDeclarationImp* activeStyle)
+void FormattingContext::appendInlineBox(ViewCSSImp* view, InlineBox* inlineBox, CSSStyleDeclarationImp* activeStyle)
 {
     assert(lineBox);
     baseline = lineBox->baseline;
@@ -474,7 +474,7 @@ void FormattingContext::appendInlineBox(ViewCSSImp* view, InlineLevelBox* inline
 void FormattingContext::dontWrap()
 {
     assert(lineBox);
-    if (InlineLevelBox* box = dynamic_cast<InlineLevelBox*>(lineBox->getLastChild())) {
+    if (InlineBox* box = dynamic_cast<InlineBox*>(lineBox->getLastChild())) {
         box->wrap = box->data.length();
         box->wrapWidth = box->width;
     }
@@ -490,10 +490,10 @@ void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, boo
     if (linefeed)
         dontWrap();
 
-    if (InlineLevelBox* inlineLevelBox = dynamic_cast<InlineLevelBox*>(lineBox->getLastChild())) {
-        float w = inlineLevelBox->atEndOfLine();
+    if (InlineBox* inlineBox = dynamic_cast<InlineBox*>(lineBox->getLastChild())) {
+        float w = inlineBox->atEndOfLine();
         if (w < 0.0f) {
-            if (inlineLevelBox->width <= 0.0f) {
+            if (inlineBox->width <= 0.0f) {
                 lineBox->baseline = baseline;
                 lineBox->height = lineHeight;
             }
@@ -640,7 +640,7 @@ bool FormattingContext::isFirstCharacter(const std::u16string& text)
     char32_t ch = nextChar(text, pos);
     if (!ch)
         return false;
-    InlineLevelBox* box = dynamic_cast<InlineLevelBox*>(lineBox->getLastChild());
+    InlineBox* box = dynamic_cast<InlineBox*>(lineBox->getLastChild());
     while (box && box->hasWrapBox()) {
         std::u16string wrapText = box->getWrapText();
         size_t wrapLength = wrapText.length();
@@ -658,15 +658,15 @@ bool FormattingContext::isFirstCharacter(const std::u16string& text)
             return u_ispunct(last);
         }
         result = false;
-        box = dynamic_cast<InlineLevelBox*>(box->getPreviousSibling());
+        box = dynamic_cast<InlineBox*>(box->getPreviousSibling());
     }
     return result;
 }
 
-InlineLevelBox* FormattingContext::getWrapBox(const std::u16string& text)
+InlineBox* FormattingContext::getWrapBox(const std::u16string& text)
 {
-    InlineLevelBox* wrapBox = 0;
-    InlineLevelBox* box = dynamic_cast<InlineLevelBox*>(lineBox->getLastChild());
+    InlineBox* wrapBox = 0;
+    InlineBox* box = dynamic_cast<InlineBox*>(lineBox->getLastChild());
     size_t pos = 0;
     char32_t ch = nextChar(text, pos);
     while (box && box->hasWrapBox()) {
@@ -681,7 +681,7 @@ InlineLevelBox* FormattingContext::getWrapBox(const std::u16string& text)
         wrapBox = box;
         if (0 < box->getWrap())
             break;
-        box = dynamic_cast<InlineLevelBox*>(box->getPreviousSibling());
+        box = dynamic_cast<InlineBox*>(box->getPreviousSibling());
         pos = 0;
         if (char32_t n = nextChar(wrapBox->getData(), pos))
             ch = n;
@@ -689,13 +689,13 @@ InlineLevelBox* FormattingContext::getWrapBox(const std::u16string& text)
     if (!wrapBox)
         return 0;
     if (0 < wrapBox->getWrap()) {
-        box = dynamic_cast<InlineLevelBox*>(wrapBox->getNextSibling());
+        box = dynamic_cast<InlineBox*>(wrapBox->getNextSibling());
         wrapBox = wrapBox->split();
         wrapBox->nextSibling = box;
     } else
         box = wrapBox;
     while (box) {
-        InlineLevelBox* next = dynamic_cast<InlineLevelBox*>(box->getNextSibling());
+        InlineBox* next = dynamic_cast<InlineBox*>(box->getNextSibling());
         box->getParentBox()->removeChild(box);
         box->nextSibling = next;
         box = next;

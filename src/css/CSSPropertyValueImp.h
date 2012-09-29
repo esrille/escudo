@@ -39,7 +39,7 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 class ContainingBlock;
 class BoxImage;
 class LineBox;
-class InlineLevelBox;
+class InlineBox;
 class CSSStyleDeclarationImp;
 class ViewCSSImp;
 
@@ -2370,7 +2370,7 @@ public:
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     float getOffset(ViewCSSImp* view, CSSStyleDeclarationImp* self, LineBox* line, FontTexture* font, float point, float leading) const;
-    float getOffset(ViewCSSImp* view, CSSStyleDeclarationImp* self, LineBox* line, InlineLevelBox* text) const;
+    float getOffset(ViewCSSImp* view, CSSStyleDeclarationImp* self, LineBox* line, InlineBox* text) const;
     unsigned getIndex() const {
         return value.getIndex();
     }
