@@ -109,7 +109,7 @@ void Box::applyReplacedMinMax(float w, float h)
     }
 }
 
-bool BlockLevelBox::layOutReplacedElement(ViewCSSImp* view, Box* replaced, Element element, CSSStyleDeclarationImp* style)
+bool Block::layOutReplacedElement(ViewCSSImp* view, Box* replaced, Element element, CSSStyleDeclarationImp* style)
 {
     float intrinsicWidth = -1.0f;
     float intrinsicHeight = -1.0f;

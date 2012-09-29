@@ -68,7 +68,7 @@ class ViewCSSImp
 
     // layout
     Node hovered;
-    BlockLevelBoxPtr boxTree;       // A box tree under construction
+    BlockPtr boxTree;       // A box tree under construction
     std::list<CounterImpPtr> counterList;
     int quotingDepth;
     float scrollWidth;
@@ -112,13 +112,13 @@ public:
         return 0;
     }
 
-    BlockLevelBox* createBlockLevelBox(Element element,  BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, bool newContext, bool asBlock);
-    BlockLevelBox* layOutBlockBoxes(Node node, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, bool asBlock = false, BlockLevelBox* prevBox = 0);
-    BlockLevelBox* layOutBlockBoxes(Text text, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, BlockLevelBox* prevBox);
-    BlockLevelBox* layOutBlockBoxes(Element element, BlockLevelBox* parentBox, CSSStyleDeclarationImp* parentStyle, CSSStyleDeclarationImp* style, bool asBlock = false, BlockLevelBox* prevBox = 0);
-    BlockLevelBox* layOutBlockBoxes();
-    BlockLevelBox* layOut();
-    BlockLevelBox* dump();
+    Block* createBlock(Element element,  Block* parentBox, CSSStyleDeclarationImp* style, bool newContext, bool asBlock);
+    Block* layOutBlockBoxes(Node node, Block* parentBox, CSSStyleDeclarationImp* style, bool asBlock = false, Block* prevBox = 0);
+    Block* layOutBlockBoxes(Text text, Block* parentBox, CSSStyleDeclarationImp* style, Block* prevBox);
+    Block* layOutBlockBoxes(Element element, Block* parentBox, CSSStyleDeclarationImp* parentStyle, CSSStyleDeclarationImp* style, bool asBlock = false, Block* prevBox = 0);
+    Block* layOutBlockBoxes();
+    Block* layOut();
+    Block* dump();
 
     void resolveXY(float left, float top);
     void render(ViewCSSImp* parentView);
@@ -272,7 +272,7 @@ public:
 
     CSSStyleDeclarationImp* getStyle(Element elt, Nullable<std::u16string> pseudoElt = Nullable<std::u16string>());
 
-    BlockLevelBox* getTree() const {
+    Block* getTree() const {
         return boxTree.get();
     }
     void setFlags(unsigned short f) {

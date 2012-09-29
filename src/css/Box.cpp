@@ -116,7 +116,7 @@ Box* Box::removeChild(Box* item)
     item->parentBox = item->previousSibling = item->nextSibling = 0;
     --childCount;
 
-    if (auto block = dynamic_cast<BlockLevelBox*>(item))
+    if (auto block = dynamic_cast<Block*>(item))
         block->inserted = false;
     else if (item->style)
         item->style->removeBox(item);
@@ -245,7 +245,7 @@ Element Box::getContainingElement(Node node)
     return 0;
 }
 
-const ContainingBlock* BlockLevelBox::getContainingBlock(ViewCSSImp* view) const
+const ContainingBlock* Block::getContainingBlock(ViewCSSImp* view) const
 {
     if (isAbsolutelyPositioned())
         return &absoluteBlock;
@@ -255,7 +255,7 @@ const ContainingBlock* BlockLevelBox::getContainingBlock(ViewCSSImp* view) const
 // We also calculate offsetH and offsetV here.
 // TODO: Maybe it's better to visit ancestors via the box tree rather than the node tree.
 //       cf. CSSContentValueImp::eval()
-void BlockLevelBox::setContainingBlock(ViewCSSImp* view)
+void Block::setContainingBlock(ViewCSSImp* view)
 {
     assert(isAbsolutelyPositioned());
     if (!isFixed()) {
@@ -272,7 +272,7 @@ void BlockLevelBox::setContainingBlock(ViewCSSImp* view)
                 offsetH = box->x + box->marginLeft + box->borderLeft - x;
                 offsetV = box->y + box->marginTop + box->borderTop - y;
                 clipBox = box->clipBox;
-                if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(box)) {
+                if (Block* block = dynamic_cast<Block*>(box)) {
                     offsetV += block->topBorderEdge;
                     absoluteBlock.width = box->getPaddingWidth();
                     absoluteBlock.height = box->getPaddingHeight();
@@ -367,7 +367,7 @@ void Box::setFlags(unsigned short f)
     for (Box* box = parentBox; box; box = box->parentBox) {
         if ((box->flags & f) == f)
             break;
-        if (dynamic_cast<BlockLevelBox*>(box))
+        if (dynamic_cast<Block*>(box))
             box->flags |= f;
     }
 }
@@ -387,7 +387,7 @@ unsigned short Box::gatherFlags() const
     return f;
 }
 
-BlockLevelBox::BlockLevelBox(Node node, CSSStyleDeclarationImp* style) :
+Block::Block(Node node, CSSStyleDeclarationImp* style) :
     Box(node),
     textAlign(CSSTextAlignValueImp::Default),
     topBorderEdge(0.0f),
@@ -406,7 +406,7 @@ BlockLevelBox::BlockLevelBox(Node node, CSSStyleDeclarationImp* style) :
     flags |= NEED_EXPANSION | NEED_REFLOW | NEED_CHILD_LAYOUT;
 }
 
-void BlockLevelBox::reset()
+void Block::reset()
 {
     setFlags(NEED_EXPANSION | NEED_REFLOW);
     // TODO: check pseudo elements
@@ -425,35 +425,35 @@ void BlockLevelBox::reset()
     }
 }
 
-bool BlockLevelBox::isAbsolutelyPositioned() const
+bool Block::isAbsolutelyPositioned() const
 {
     return !isAnonymous() && style && style->isAbsolutelyPositioned();
 }
 
-bool BlockLevelBox::isFloat() const
+bool Block::isFloat() const
 {
     return !isAnonymous() && style && style->isFloat();
 }
 
-bool BlockLevelBox::isFixed() const
+bool Block::isFixed() const
 {
     return !isAnonymous() && style && style->position.getValue() == CSSPositionValueImp::Fixed;
 }
 
-bool BlockLevelBox::hasAnonymousBox(Box* prev) const
+bool Block::hasAnonymousBox(Box* prev) const
 {
     return prev && prev->isAnonymous();
 }
 
-BlockLevelBox* BlockLevelBox::getAnonymousBox(Box* prev)
+Block* Block::getAnonymousBox(Box* prev)
 {
-    BlockLevelBox* anonymousBox;
+    Block* anonymousBox;
     if (hasAnonymousBox(prev)) {
-        anonymousBox = dynamic_cast<BlockLevelBox*>(prev);
+        anonymousBox = dynamic_cast<Block*>(prev);
         if (anonymousBox)
             return anonymousBox;
     }
-    anonymousBox = new(std::nothrow) BlockLevelBox;
+    anonymousBox = new(std::nothrow) Block;
     if (anonymousBox) {
         anonymousBox->flags &= ~NEED_EXPANSION;
         anonymousBox->spliceInline(this);
@@ -465,7 +465,7 @@ BlockLevelBox* BlockLevelBox::getAnonymousBox(Box* prev)
     return anonymousBox;
 }
 
-void BlockLevelBox::resolveBackground(ViewCSSImp* view)
+void Block::resolveBackground(ViewCSSImp* view)
 {
     assert(style);
     backgroundColor = style->backgroundColor.getARGB();
@@ -475,7 +475,7 @@ void BlockLevelBox::resolveBackground(ViewCSSImp* view)
         backgroundImage = request->getBoxImage(style->backgroundRepeat.getValue());
 }
 
-void BlockLevelBox::resolveBackgroundPosition(ViewCSSImp* view, const ContainingBlock* containingBlock)
+void Block::resolveBackgroundPosition(ViewCSSImp* view, const ContainingBlock* containingBlock)
 {
     assert(style);
     if (!backgroundImage || backgroundImage->getState() != BoxImage::CompletelyAvailable)
@@ -488,13 +488,13 @@ void BlockLevelBox::resolveBackgroundPosition(ViewCSSImp* view, const Containing
     backgroundTop = style->backgroundPosition.getTopPx();
 }
 
-void BlockLevelBox::resolveWidth(float w)
+void Block::resolveWidth(float w)
 {
     resolveNormalWidth(w);
     applyMinMaxWidth(w);
 }
 
-void BlockLevelBox::applyMinMaxWidth(float w)
+void Block::applyMinMaxWidth(float w)
 {
     if (!style->maxWidth.isNone()) {
         float maxWidth = style->maxWidth.getPx();
@@ -516,7 +516,7 @@ void BlockLevelBox::applyMinMaxWidth(float w)
 //
 // marginLeft + borderLeftWidth + paddingLeft + width + paddingRight + borderRightWidth + marginRight
 // == containingBlock->width (- scrollbar width, if any)
-void BlockLevelBox::resolveNormalWidth(float w, float r)
+void Block::resolveNormalWidth(float w, float r)
 {
     if (isAnonymous()) {
         if (!isnan(r))
@@ -593,7 +593,7 @@ void BlockLevelBox::resolveNormalWidth(float w, float r)
     }
 }
 
-void BlockLevelBox::resolveFloatWidth(float w, float r)
+void Block::resolveFloatWidth(float w, float r)
 {
     assert(style);
     marginLeft = style->marginLeft.isAuto() ? 0.0f : style->marginLeft.getPx();
@@ -606,7 +606,7 @@ void BlockLevelBox::resolveFloatWidth(float w, float r)
         width = w - getBlankLeft() - getBlankRight();
 }
 
-void BlockLevelBox::resolveMargin(ViewCSSImp* view, const ContainingBlock* containingBlock)
+void Block::resolveMargin(ViewCSSImp* view, const ContainingBlock* containingBlock)
 {
     resolveWidth(containingBlock->width);
     if (!style->marginTop.isAuto())
@@ -623,7 +623,7 @@ void BlockLevelBox::resolveMargin(ViewCSSImp* view, const ContainingBlock* conta
         height = 0.0f;
 }
 
-void BlockLevelBox::layOutInlineBlock(ViewCSSImp* view, Node node, BlockLevelBox* inlineBlock, FormattingContext* context)
+void Block::layOutInlineBlock(ViewCSSImp* view, Node node, Block* inlineBlock, FormattingContext* context)
 {
     assert(inlineBlock->style);
 
@@ -668,7 +668,7 @@ void BlockLevelBox::layOutInlineBlock(ViewCSSImp* view, Node node, BlockLevelBox
     updateMCW(inlineBox->getTotalWidth());
 }
 
-void BlockLevelBox::layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floatingBox, FormattingContext* context)
+void Block::layOutFloat(ViewCSSImp* view, Node node, Block* floatingBox, FormattingContext* context)
 {
     assert(floatingBox->style);
     floatingBox->remainingHeight = floatingBox->getTotalHeight();
@@ -700,7 +700,7 @@ void BlockLevelBox::layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floa
     context->addFloat(floatingBox, w);
 }
 
-void BlockLevelBox::layOutAbsolute(ViewCSSImp* view, Node node, BlockLevelBox* absBox, FormattingContext* context)
+void Block::layOutAbsolute(ViewCSSImp* view, Node node, Block* absBox, FormattingContext* context)
 {
     // Just insert this absolute box into a line box now.
     // Absolute boxes will be processed later in ViewCSSImp::layOut().
@@ -712,7 +712,7 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view, Node node, BlockLevelBox* a
 }
 
 // Generate line boxes
-bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, float originalMargin)
+bool Block::layOutInline(ViewCSSImp* view, FormattingContext* context, float originalMargin)
 {
     if (!(flags & NEED_REFLOW))
         return true;
@@ -726,7 +726,7 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
     bool collapsed = true;
     for (auto i = inlines.begin(); i != inlines.end(); ++i) {
         Node node = *i;
-        BlockLevelBox* block = findBlock(node);
+        Block* block = findBlock(node);
         if (block && block != this) {  // Check an empty absolutely positioned box; cf. bottom-applies-to-010.
             block->parentBox = this;
             context->useMargin(this);
@@ -765,7 +765,7 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
 
     // Layout remaining floating boxes in context
     while (!context->floatingBoxes.empty()) {
-        BlockLevelBox* floatingBox = context->floatingBoxes.front();
+        Block* floatingBox = context->floatingBoxes.front();
         float clearance = 0.0f;
         if (unsigned clear = floatingBox->style->clear.getValue()) {
             keepConsumed = true;
@@ -799,12 +799,12 @@ bool BlockLevelBox::layOutInline(ViewCSSImp* view, FormattingContext* context, f
 // TODO for a more complete implementation, see,
 //      http://groups.google.com/group/netscape.public.mozilla.layout/msg/0455a21b048ffac3?pli=1
 
-void BlockLevelBox::shrinkToFit()
+void Block::shrinkToFit()
 {
     fit(shrinkTo());
 }
 
-float BlockLevelBox::shrinkTo()
+float Block::shrinkTo()
 {
     int autoCount = 3;
     float min = 0.0f;
@@ -831,7 +831,7 @@ float BlockLevelBox::shrinkTo()
     return min;
 }
 
-void BlockLevelBox::fit(float w)
+void Block::fit(float w)
 {
     if (getBlockWidth() == w)
         return;
@@ -842,14 +842,14 @@ void BlockLevelBox::fit(float w)
         child->fit(width);
 }
 
-float BlockLevelBox::getBaseline(const Box* box) const
+float Block::getBaseline(const Box* box) const
 {
     float baseline = NAN;
     float h = box->getBlankTop();
     for (Box* i = box->getFirstChild(); i; i = i->getNextSibling()) {
         if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(i))
             baseline = h + table->getBaseline() + table->offsetV;
-        else if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(i)) {
+        else if (Block* block = dynamic_cast<Block*>(i)) {
             float x = getBaseline(block);
             if (!isnanf(x))
                 baseline = h + x + block->offsetV;
@@ -865,18 +865,18 @@ float BlockLevelBox::getBaseline(const Box* box) const
 }
 
 // TODO: We should calculate the baseline once and just return it.
-float BlockLevelBox::getBaseline() const
+float Block::getBaseline() const
 {
     float x = getBaseline(this);
     return isnanf(x) ? getTotalHeight() : x;
 }
 
-bool BlockLevelBox::isCollapsableInside() const
+bool Block::isCollapsableInside() const
 {
     return !isFlowRoot();
 }
 
-bool BlockLevelBox::isCollapsableOutside() const
+bool Block::isCollapsableOutside() const
 {
     if (!isInFlow())
         return false;
@@ -887,7 +887,7 @@ bool BlockLevelBox::isCollapsableOutside() const
     return true;
 }
 
-bool BlockLevelBox::isCollapsedThrough() const
+bool Block::isCollapsedThrough() const
 {
     if (height != 0.0f || isFlowRoot() ||
         borderTop != 0.0f || paddingTop != 0.0f || paddingBottom != 0.0f || borderBottom != 0.0f)
@@ -905,14 +905,14 @@ bool BlockLevelBox::isCollapsedThrough() const
     return true;
 }
 
-float BlockLevelBox::collapseMarginTop(FormattingContext* context)
+float Block::collapseMarginTop(FormattingContext* context)
 {
     if (!isCollapsableOutside()) {
         assert(!isAnonymous());
         if (isFloat() || isAbsolutelyPositioned() || !getParentBox())
             return NAN;
         assert(context);
-        BlockLevelBox* prev = dynamic_cast<BlockLevelBox*>(getPreviousSibling());
+        Block* prev = dynamic_cast<Block*>(getPreviousSibling());
         if (prev && prev->isCollapsableOutside())
             context->collapseMargins(prev->marginBottom);
         context->fixMargin();
@@ -932,14 +932,14 @@ float BlockLevelBox::collapseMarginTop(FormattingContext* context)
 
     float original = marginTop;
     float before = NAN;
-    if (BlockLevelBox* parent = dynamic_cast<BlockLevelBox*>(getParentBox())) {
+    if (Block* parent = dynamic_cast<Block*>(getParentBox())) {
         if (parent->getFirstChild() == this) {
             if (parent->isCollapsableInside() && parent->borderTop == 0 && parent->paddingTop == 0 && !hasClearance()) {
                 before = parent->marginTop;
                 parent->marginTop = 0.0f;
             }
         } else {
-            BlockLevelBox* prev = dynamic_cast<BlockLevelBox*>(getPreviousSibling());
+            Block* prev = dynamic_cast<Block*>(getPreviousSibling());
             if (prev && prev->isCollapsableOutside()) {
                 before = context->collapseMargins(prev->marginBottom);
                 prev->marginBottom = 0.0f;
@@ -956,7 +956,7 @@ float BlockLevelBox::collapseMarginTop(FormattingContext* context)
             clearValue = CSSFloatValueImp::Left | CSSFloatValueImp::Right;
 
         clearance = context->clear(clearValue);
-        BlockLevelBox* prev = dynamic_cast<BlockLevelBox*>(getPreviousSibling());
+        Block* prev = dynamic_cast<Block*>(getPreviousSibling());
         if (clearance == 0.0f)
             clearance = NAN;
         else if (prev && prev->isCollapsedThrough()) {
@@ -996,11 +996,11 @@ float BlockLevelBox::collapseMarginTop(FormattingContext* context)
     return before;
 }
 
-void BlockLevelBox::collapseMarginBottom(FormattingContext* context)
+void Block::collapseMarginBottom(FormattingContext* context)
 {
     float used = 0.0f;
 
-    BlockLevelBox* last = dynamic_cast<BlockLevelBox*>(getLastChild());
+    Block* last = dynamic_cast<Block*>(getLastChild());
     if (last && last->isCollapsableOutside()) {
         float lm = context->collapseMargins(last->marginBottom);
         if (last->isCollapsedThrough()) {
@@ -1028,7 +1028,7 @@ void BlockLevelBox::collapseMarginBottom(FormattingContext* context)
         }
     }
 
-    BlockLevelBox* first = dynamic_cast<BlockLevelBox*>(getFirstChild());
+    Block* first = dynamic_cast<Block*>(getFirstChild());
     if (first && first->isCollapsableOutside() && !first->hasClearance() && isCollapsableInside() && borderTop == 0 && paddingTop == 0) {
         if (hasClearance()) {
             // The following algorithm is deduced from the following tests:
@@ -1050,7 +1050,7 @@ void BlockLevelBox::collapseMarginBottom(FormattingContext* context)
             while (first && first->isCollapsedThrough()) {
                 // The top border edge must not be cleared if the next adjacent sibling has a clearance;
                 // cf. clear-001.
-                BlockLevelBox* next = dynamic_cast<BlockLevelBox*>(first->getNextSibling());
+                Block* next = dynamic_cast<Block*>(first->getNextSibling());
                 if (!next || (!next->hasClearance() && next->consumed <= 0.0f))
                     first->topBorderEdge = 0.0f;
                 else
@@ -1067,11 +1067,11 @@ void BlockLevelBox::collapseMarginBottom(FormattingContext* context)
     }
 }
 
-bool BlockLevelBox::undoCollapseMarginTop(FormattingContext* context, float before)
+bool Block::undoCollapseMarginTop(FormattingContext* context, float before)
 {
     if (isnan(before))
         return false;
-    if (BlockLevelBox* prev = dynamic_cast<BlockLevelBox*>(getPreviousSibling()))
+    if (Block* prev = dynamic_cast<Block*>(getPreviousSibling()))
         prev->marginBottom = context->undoCollapseMargins();
     else {
         Box* parent = getParentBox();
@@ -1082,7 +1082,7 @@ bool BlockLevelBox::undoCollapseMarginTop(FormattingContext* context, float befo
 }
 
 // Adjust marginTop of the 1st, collapsed through child box.
-void BlockLevelBox::adjustCollapsedThroughMargins(FormattingContext* context)
+void Block::adjustCollapsedThroughMargins(FormattingContext* context)
 {
     if (isCollapsedThrough()) {
         topBorderEdge = marginTop;
@@ -1095,18 +1095,18 @@ void BlockLevelBox::adjustCollapsedThroughMargins(FormattingContext* context)
     }
 }
 
-void BlockLevelBox::moveUpCollapsedThroughMargins(FormattingContext* context)
+void Block::moveUpCollapsedThroughMargins(FormattingContext* context)
 {
     assert(isCollapsableOutside());
     float m;
-    BlockLevelBox* from = this;
-    BlockLevelBox* curr = this;
-    BlockLevelBox* prev = dynamic_cast<BlockLevelBox*>(curr->getPreviousSibling());
+    Block* from = this;
+    Block* curr = this;
+    Block* prev = dynamic_cast<Block*>(curr->getPreviousSibling());
     if (hasClearance()) {
         if (!prev)
             return;
         from = curr = prev;
-        prev = dynamic_cast<BlockLevelBox*>(curr->getPreviousSibling());
+        prev = dynamic_cast<Block*>(curr->getPreviousSibling());
         if (from->hasClearance() || !from->isCollapsedThrough())
             return;
         m = curr->marginTop;
@@ -1117,9 +1117,9 @@ void BlockLevelBox::moveUpCollapsedThroughMargins(FormattingContext* context)
         curr->marginTop = consumed;
         m = curr->marginBottom - consumed;
         curr->topBorderEdge = 0.0f;
-        for (BlockLevelBox* last = dynamic_cast<BlockLevelBox*>(curr->getLastChild());
+        for (Block* last = dynamic_cast<Block*>(curr->getLastChild());
              last && last->isCollapsedThrough();
-             last = dynamic_cast<BlockLevelBox*>(last->getPreviousSibling())) {
+             last = dynamic_cast<Block*>(last->getPreviousSibling())) {
             last->topBorderEdge = 0.0f;
             if (last->hasClearance())
                 break;
@@ -1129,7 +1129,7 @@ void BlockLevelBox::moveUpCollapsedThroughMargins(FormattingContext* context)
     while (prev && prev->isCollapsedThrough() && !prev->hasClearance()) {
         prev->topBorderEdge -= m;
         curr = prev;
-        prev = dynamic_cast<BlockLevelBox*>(curr->getPreviousSibling());
+        prev = dynamic_cast<Block*>(curr->getPreviousSibling());
     }
     if (curr != from) {
         assert(curr->marginTop == 0.0f);
@@ -1146,7 +1146,7 @@ void BlockLevelBox::moveUpCollapsedThroughMargins(FormattingContext* context)
     }
 }
 
-void BlockLevelBox::layOutChildren(ViewCSSImp* view, FormattingContext* context)
+void Block::layOutChildren(ViewCSSImp* view, FormattingContext* context)
 {
     Box* next;
     for (Box* child = getFirstChild(); child; child = next) {
@@ -1159,7 +1159,7 @@ void BlockLevelBox::layOutChildren(ViewCSSImp* view, FormattingContext* context)
     }
 }
 
-void BlockLevelBox::applyMinMaxHeight(FormattingContext* context)
+void Block::applyMinMaxHeight(FormattingContext* context)
 {
     assert(!isAnonymous());
     if (!style->maxHeight.isNone()) {
@@ -1177,10 +1177,10 @@ void BlockLevelBox::applyMinMaxHeight(FormattingContext* context)
     }
 }
 
-void BlockLevelBox::layOutInlineBlocks(ViewCSSImp* view)
+void Block::layOutInlineBlocks(ViewCSSImp* view)
 {
     for (auto i = blockMap.begin(); i != blockMap.end(); ++i) {
-        BlockLevelBox* block = i->second.get();
+        Block* block = i->second.get();
         if (!block->isAbsolutelyPositioned()) {
             float savedWidth = block->getTotalWidth();
             float savedHeight = block->getTotalHeight();
@@ -1192,7 +1192,7 @@ void BlockLevelBox::layOutInlineBlocks(ViewCSSImp* view)
     }
 }
 
-bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
+bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
 {
     const ContainingBlock* containingBlock = getContainingBlock(view);
 
@@ -1262,7 +1262,7 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
         if (!needLayout()) {
 #ifndef NDEBUG
             if (3 <= getLogLevel())
-                std::cout << "BlockLevelBox::" << __func__ << ": skip reflow for '" << tag << "'\n";
+                std::cout << "Block::" << __func__ << ": skip reflow for '" << tag << "'\n";
 #endif
             context->restoreContext(this);
             height = savedHeight;
@@ -1373,7 +1373,7 @@ bool BlockLevelBox::layOut(ViewCSSImp* view, FormattingContext* context)
     return true;
 }
 
-unsigned BlockLevelBox::resolveAbsoluteWidth(const ContainingBlock* containingBlock, float& left, float& right, float r)
+unsigned Block::resolveAbsoluteWidth(const ContainingBlock* containingBlock, float& left, float& right, float r)
 {
     //
     // Calculate width
@@ -1447,7 +1447,7 @@ unsigned BlockLevelBox::resolveAbsoluteWidth(const ContainingBlock* containingBl
     return autoMask;
 }
 
-unsigned BlockLevelBox::applyAbsoluteMinMaxWidth(const ContainingBlock* containingBlock, float& left, float& right, unsigned autoMask)
+unsigned Block::applyAbsoluteMinMaxWidth(const ContainingBlock* containingBlock, float& left, float& right, unsigned autoMask)
 {
     if (!style->maxWidth.isNone()) {
         float maxWidth = style->maxWidth.getPx();
@@ -1460,7 +1460,7 @@ unsigned BlockLevelBox::applyAbsoluteMinMaxWidth(const ContainingBlock* containi
     return autoMask;
 }
 
-unsigned BlockLevelBox::resolveAbsoluteHeight(const ContainingBlock* containingBlock, float& top, float& bottom, float r)
+unsigned Block::resolveAbsoluteHeight(const ContainingBlock* containingBlock, float& top, float& bottom, float r)
 {
     //
     // Calculate height
@@ -1534,7 +1534,7 @@ unsigned BlockLevelBox::resolveAbsoluteHeight(const ContainingBlock* containingB
     return autoMask;
 }
 
-unsigned BlockLevelBox::applyAbsoluteMinMaxHeight(const ContainingBlock* containingBlock, float& top, float& bottom, unsigned autoMask)
+unsigned Block::applyAbsoluteMinMaxHeight(const ContainingBlock* containingBlock, float& top, float& bottom, unsigned autoMask)
 {
     if (!style->maxHeight.isNone()) {
         float maxHeight = style->maxHeight.getPx();
@@ -1547,7 +1547,7 @@ unsigned BlockLevelBox::applyAbsoluteMinMaxHeight(const ContainingBlock* contain
     return autoMask;
 }
 
-void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
+void Block::layOutAbsolute(ViewCSSImp* view)
 {
     assert(node);
     assert(isAbsolutelyPositioned());
@@ -1676,7 +1676,7 @@ void BlockLevelBox::layOutAbsolute(ViewCSSImp* view)
     flags &= ~(NEED_REFLOW | NEED_CHILD_LAYOUT);
 }
 
-void BlockLevelBox::resolveOffset(float& x, float &y)
+void Block::resolveOffset(float& x, float &y)
 {
     if (dynamic_cast<InlineBox*>(getParentBox()))  // inline block?
         return;
@@ -1696,7 +1696,7 @@ void BlockLevelBox::resolveOffset(float& x, float &y)
     s->resolveOffset(x, y);
 }
 
-void BlockLevelBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip)
+void Block::resolveXY(ViewCSSImp* view, float left, float top, Block* clip)
 {
     if (!isAnonymous() && style && style->float_.getValue() == CSSFloatValueImp::Right) {
         // cf. http://www.webstandards.org/action/acid2/guide/#row-10-11
@@ -1730,7 +1730,7 @@ void BlockLevelBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLeve
     view->updateScrollHeight(y + getBlockHeight());
 }
 
-void BlockLevelBox::dump(std::string indent)
+void Block::dump(std::string indent)
 {
     std::cout << indent << "* block-level box";
     float relativeX = 0.0f;

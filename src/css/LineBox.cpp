@@ -67,10 +67,10 @@ size_t getfirstLetterLength(const std::u16string& data, size_t position)
 
 }
 
-void BlockLevelBox::nextLine(ViewCSSImp* view, FormattingContext* context, CSSStyleDeclarationImp*& activeStyle,
-                             CSSStyleDeclarationPtr& firstLetterStyle, CSSStyleDeclarationPtr& firstLineStyle,
-                             CSSStyleDeclarationImp* style, bool linefeed,
-                             FontTexture*& font, float& point)
+void Block::nextLine(ViewCSSImp* view, FormattingContext* context, CSSStyleDeclarationImp*& activeStyle,
+                     CSSStyleDeclarationPtr& firstLetterStyle, CSSStyleDeclarationPtr& firstLineStyle,
+                     CSSStyleDeclarationImp* style, bool linefeed,
+                     FontTexture*& font, float& point)
 {
     if (firstLetterStyle) {
         firstLetterStyle = 0;
@@ -87,8 +87,8 @@ void BlockLevelBox::nextLine(ViewCSSImp* view, FormattingContext* context, CSSSt
     }
 }
 
-void BlockLevelBox::getPsuedoStyles(ViewCSSImp* view, FormattingContext* context, CSSStyleDeclarationImp* style,
-                                    CSSStyleDeclarationPtr& firstLetterStyle, CSSStyleDeclarationPtr& firstLineStyle)
+void Block::getPsuedoStyles(ViewCSSImp* view, FormattingContext* context, CSSStyleDeclarationImp* style,
+                            CSSStyleDeclarationPtr& firstLetterStyle, CSSStyleDeclarationPtr& firstLineStyle)
 {
     bool isFirstLetter = true;
     for (Box* i = context->lineBox->getFirstChild(); i; i = i->getNextSibling()) {
@@ -148,7 +148,7 @@ void BlockLevelBox::getPsuedoStyles(ViewCSSImp* view, FormattingContext* context
     }
 }
 
-size_t BlockLevelBox::layOutFloatingFirstLetter(ViewCSSImp* view, FormattingContext* context, const std::u16string& data, CSSStyleDeclarationImp* firstLetterStyle)
+size_t Block::layOutFloatingFirstLetter(ViewCSSImp* view, FormattingContext* context, const std::u16string& data, CSSStyleDeclarationImp* firstLetterStyle)
 {
     Document document = view->getDocument();
     if (!floatingFirstLetter)
@@ -160,7 +160,7 @@ size_t BlockLevelBox::layOutFloatingFirstLetter(ViewCSSImp* view, FormattingCont
     size_t length = getfirstLetterLength(data, 0);  // TODO: position?
     Text text = document.createTextNode(data.substr(0, length));
     floatingFirstLetter.appendChild(text);
-    BlockLevelBox* floatingBox = view->createBlockLevelBox(floatingFirstLetter, this, firstLetterStyle, true, false);
+    Block* floatingBox = view->createBlock(floatingFirstLetter, this, firstLetterStyle, true, false);
     floatingBox->insertInline(text);
     floatingBox->flags &= ~(Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION);
     addBlock(floatingFirstLetter, floatingBox);
@@ -171,7 +171,7 @@ size_t BlockLevelBox::layOutFloatingFirstLetter(ViewCSSImp* view, FormattingCont
     return length;
 }
 
-float BlockLevelBox::measureText(ViewCSSImp* view, CSSStyleDeclarationImp* activeStyle,
+float Block::measureText(ViewCSSImp* view, CSSStyleDeclarationImp* activeStyle,
                                  const char16_t* text, size_t length, float point, bool isFirstCharacter,
                                  FontGlyph*& glyph, std::u16string& transformed)
 {
@@ -232,8 +232,8 @@ float BlockLevelBox::measureText(ViewCSSImp* view, CSSStyleDeclarationImp* activ
     return width;
 }
 
-bool BlockLevelBox::layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
-                               std::u16string data, Element element, CSSStyleDeclarationImp* style)
+bool Block::layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
+                       std::u16string data, Element element, CSSStyleDeclarationImp* style)
 {
     assert(element);
     assert(style);
@@ -575,9 +575,9 @@ float LineBox::shrinkTo()
 void LineBox::fit(float w)
 {
     assert(parentBox);
-    assert(dynamic_cast<BlockLevelBox*>(parentBox));
+    assert(dynamic_cast<Block*>(parentBox));
     float leftover = std::max(0.0f, w - shrinkTo());
-    switch (dynamic_cast<BlockLevelBox*>(parentBox)->getTextAlign()) {
+    switch (dynamic_cast<Block*>(parentBox)->getTextAlign()) {
     case CSSTextAlignValueImp::Left:
     case CSSTextAlignValueImp::Default: // TODO: rtl
         leftGap = 0.0f;
@@ -595,7 +595,7 @@ void LineBox::fit(float w)
     }
 }
 
-void LineBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip)
+void LineBox::resolveXY(ViewCSSImp* view, float left, float top, Block* clip)
 {
     left += offsetH;
     top += offsetV + getClearance();
@@ -607,13 +607,13 @@ void LineBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* 
     float next = 0.0f;
     bool usedLeftGap = false;
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
-        BlockLevelBox* floatingBox = 0;
+        Block* floatingBox = 0;
         next = left;
         if (!child->isAbsolutelyPositioned()) {
             if (!child->isFloat())
                 next += child->getTotalWidth();
             else {
-                floatingBox = dynamic_cast<BlockLevelBox*>(child);
+                floatingBox = dynamic_cast<Block*>(child);
                 assert(floatingBox);
                 if (floatingBox == rightBox)
                     break;
@@ -631,7 +631,7 @@ void LineBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* 
     if (rightBox) {
         float right = x + getParentBox()->width;
         for (auto child = getLastChild(); child; child = child->getPreviousSibling()) {
-            BlockLevelBox* floatingBox = dynamic_cast<BlockLevelBox*>(child);
+            Block* floatingBox = dynamic_cast<Block*>(child);
             right -= floatingBox->getEffectiveTotalWidth();
             child->resolveXY(view, right, top, clip);
             if (floatingBox == rightBox)
@@ -811,7 +811,7 @@ void InlineBox::resolveOffset(float& x, float &y)
     }
 }
 
-void InlineBox::resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip)
+void InlineBox::resolveXY(ViewCSSImp* view, float left, float top, Block* clip)
 {
     left += offsetH;
     top += offsetV + leading / 2.0f;

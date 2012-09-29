@@ -26,7 +26,7 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class TableWrapperBox;
 
-class CellBox : public BlockLevelBox
+class CellBox : public Block
 {
     friend class TableWrapperBox;
 
@@ -102,9 +102,9 @@ public:
 
 typedef boost::intrusive_ptr<CellBox> CellBoxPtr;
 
-class TableWrapperBox : public BlockLevelBox
+class TableWrapperBox : public Block
 {
-    typedef BlockLevelBoxPtr Caption;
+    typedef BlockPtr Caption;
 
     typedef std::deque<CellBoxPtr> Row;
     typedef std::deque<Row> Grid;
@@ -155,7 +155,7 @@ class TableWrapperBox : public BlockLevelBox
     unsigned yHeight;
 
     Element table;
-    BlockLevelBox* tableBox;
+    Block* tableBox;
     std::vector<BorderValue> borderRows;
     std::vector<BorderValue> borderColumns;
 
@@ -206,7 +206,7 @@ class TableWrapperBox : public BlockLevelBox
     void computeTableBorders();
 
     void formCSSTable();
-    CellBox* processCell(Element current, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, CSSStyleDeclarationImp* rowStyle);
+    CellBox* processCell(Element current, Block* parentBox, CSSStyleDeclarationImp* style, CSSStyleDeclarationImp* rowStyle);
 
     void layOutFixed(ViewCSSImp* view, const ContainingBlock* containingBlock, bool collapsingModel);
     void layOutAuto(ViewCSSImp* view, const ContainingBlock* containingBlock);
@@ -231,7 +231,7 @@ public:
         return &borderColumns[(xWidth + 1) * y + x];
     }
 
-    bool isTableBox(const BlockLevelBox* box) const {
+    bool isTableBox(const Block* box) const {
         return tableBox && box == tableBox;
     }
 

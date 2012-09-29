@@ -132,7 +132,7 @@ StackingContext* StackingContext::addContext(bool auto_, int zIndex, CSSStyleDec
 
 void StackingContext::clip(StackingContext* s, float relativeX, float relativeY)
 {
-    for (BlockLevelBox* clip = s->clipBox; clip && clip != s->positioned->clipBox; clip = clip->clipBox) {
+    for (Block* clip = s->clipBox; clip && clip != s->positioned->clipBox; clip = clip->clipBox) {
         if (clip->stackingContext == s)
             continue;
         if (clip->style->overflow.getValue() != CSSOverflowValueImp::Visible) {  // TODO: check this
@@ -183,7 +183,7 @@ void StackingContext::render(ViewCSSImp* view)
     currentFloat = firstFloat = lastFloat = 0;
     for (Box* base = firstBase; base; base = base->nextBase) {
         glPushMatrix();
-        BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(base);
+        Block* block = dynamic_cast<Block*>(base);
         unsigned overflow = CSSOverflowValueImp::Visible;
         if (block)
             overflow = block->renderBegin(view);
@@ -266,7 +266,7 @@ void StackingContext::removeBox(Box* box)
 void StackingContext::layOutAbsolute(ViewCSSImp* view)
 {
     for (Box* base = firstBase; base; base = base->nextBase) {
-        BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(base);
+        Block* block = dynamic_cast<Block*>(base);
         if (!block || !block->isAbsolutelyPositioned())
             continue;
         block->layOutAbsolute(view);

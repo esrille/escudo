@@ -30,7 +30,7 @@
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 CellBox::CellBox(Element element, CSSStyleDeclarationImp* style):
-    BlockLevelBox(element, style),
+    Block(element, style),
     fixedLayout(false),
     col(0),
     row(0),
@@ -78,7 +78,7 @@ float CellBox::getBaseline(const Box* box) const
     for (Box* i = box->getFirstChild(); i; i = i->getNextSibling()) {
         if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(i))
             return baseline + table->getBaseline();
-        else if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(i)) {
+        else if (Block* block = dynamic_cast<Block*>(i)) {
             float x = getBaseline(block);
             if (!isnanf(x))
                 return baseline + x;
@@ -138,7 +138,7 @@ void CellBox::resolveWidth(float w)
         width = w;
         return;
     }
-    BlockLevelBox::resolveWidth(w);
+    Block::resolveWidth(w);
 }
 
 bool CellBox::isEmptyCell() const
@@ -164,12 +164,12 @@ void CellBox::renderNonInline(ViewCSSImp* view, StackingContext* stackingContext
     if (isEmptyCell())
         return;
     unsigned overflow = renderBegin(view);
-    BlockLevelBox::renderNonInline(view, stackingContext);
+    Block::renderNonInline(view, stackingContext);
     renderEnd(view, overflow, false);
 }
 
 TableWrapperBox::TableWrapperBox(ViewCSSImp* view, Element element, CSSStyleDeclarationImp* style) :
-    BlockLevelBox(element, style),
+    Block(element, style),
     view(view),
     xWidth(0),
     yHeight(0),
@@ -234,7 +234,7 @@ void TableWrapperBox::layOutBlockBoxes()
         appendChild(i->get());
 
     // Table box
-    tableBox = new(std::nothrow) BlockLevelBox(getNode(), getStyle());
+    tableBox = new(std::nothrow) Block(getNode(), getStyle());
     if (tableBox) {
         for (unsigned y = 0; y < yHeight; ++y) {
             LineBox* lineBox = new(std::nothrow) LineBox(0);
@@ -308,7 +308,7 @@ bool TableWrapperBox::processTableChild(Node node, CSSStyleDeclarationImp* style
     case CSSDisplayValueImp::TableCaption:
         // 'table-caption' doesn't seem to end the current row:
         // cf. table-caption-003.
-        if (BlockLevelBox* caption = view->layOutBlockBoxes(child, 0, childStyle->getParentStyle(), childStyle, true)) {
+        if (Block* caption = view->layOutBlockBoxes(child, 0, childStyle->getParentStyle(), childStyle, true)) {
             if (childStyle->captionSide.getValue() == CSSCaptionSideValueImp::Top)
                 topCaptions.push_back(caption);
             else
@@ -589,7 +589,7 @@ void TableWrapperBox::endRow()
     }
 }
 
-CellBox* TableWrapperBox::processCell(Element current, BlockLevelBox* parentBox, CSSStyleDeclarationImp* currentStyle, CSSStyleDeclarationImp* rowStyle)
+CellBox* TableWrapperBox::processCell(Element current, Block* parentBox, CSSStyleDeclarationImp* currentStyle, CSSStyleDeclarationImp* rowStyle)
 {
     if (yHeight == yCurrent) {
         appendRow();
@@ -1621,7 +1621,7 @@ void TableWrapperBox::dump(std::string indent)
         child->dump(indent);
 }
 
-bool BlockLevelBox::isTableBox() const
+bool Block::isTableBox() const
 {
     if (TableWrapperBox* wrapper = dynamic_cast<TableWrapperBox*>(getParentBox())) {
         if (wrapper->isTableBox(this))

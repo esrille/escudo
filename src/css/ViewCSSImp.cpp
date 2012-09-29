@@ -114,7 +114,7 @@ void updateInlines(CSSStyleDeclarationImp* style)
         case CSSDisplayValueImp::Table:
         case CSSDisplayValueImp::InlineBlock:
         case CSSDisplayValueImp::InlineTable:
-            if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(style->getBox())) {
+            if (Block* block = dynamic_cast<Block*>(style->getBox())) {
                 block->reset();
                 style = 0;
                 break;
@@ -134,15 +134,15 @@ void ViewCSSImp::removeElement(Element element)
     CSSStyleDeclarationImp* style = getStyle(element);
     if (!style)
         return;
-    BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(style->getBox());
+    Block* block = dynamic_cast<Block*>(style->getBox());
     if (!block)
         updateInlines(style);
     else {
-        BlockLevelBox* holder = dynamic_cast<BlockLevelBox*>(block->getParentBox());
+        Block* holder = dynamic_cast<Block*>(block->getParentBox());
         if (!holder)  // floating box, absolutely positioned box
-            holder = dynamic_cast<BlockLevelBox*>(block->getParentBox()->getParentBox());
+            holder = dynamic_cast<Block*>(block->getParentBox()->getParentBox());
         if (!holder)  // inline block
-            holder = dynamic_cast<BlockLevelBox*>(block->getParentBox()->getParentBox()->getParentBox());
+            holder = dynamic_cast<Block*>(block->getParentBox()->getParentBox()->getParentBox());
         assert(holder);
         if (holder->removeBlock(element))
             holder->reset();
@@ -436,9 +436,9 @@ CSSStyleDeclarationImp* ViewCSSImp::checkMarker(CSSStyleDeclarationImp* style, E
 
 // In this step, neither inline-level boxes nor line boxes are generated.
 // Those will be generated later by layOut().
-BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Node node, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, bool asBlock, BlockLevelBox* prevBox)
+Block* ViewCSSImp::layOutBlockBoxes(Node node, Block* parentBox, CSSStyleDeclarationImp* style, bool asBlock, Block* prevBox)
 {
-    BlockLevelBox* newBox = 0;
+    Block* newBox = 0;
     switch (node.getNodeType()) {
     case Node::TEXT_NODE:
         newBox = layOutBlockBoxes(interface_cast<Text>(node), parentBox, style, prevBox);
@@ -448,7 +448,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Node node, BlockLevelBox* parentBox,
         break;
     case Node::DOCUMENT_NODE:
         for (Node child = node.getFirstChild(); child; child = child.getNextSibling()) {
-            if (BlockLevelBox* box = layOutBlockBoxes(child, parentBox, style, false, newBox))
+            if (Block* box = layOutBlockBoxes(child, parentBox, style, false, newBox))
                 newBox = box;
         }
         break;
@@ -458,7 +458,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Node node, BlockLevelBox* parentBox,
     return newBox;
 }
 
-BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Text text, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, BlockLevelBox* prevBox)
+Block* ViewCSSImp::layOutBlockBoxes(Text text, Block* parentBox, CSSStyleDeclarationImp* style, Block* prevBox)
 {
     bool discardable = true;
     if (style->display.isInline()) {
@@ -497,17 +497,17 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Text text, BlockLevelBox* parentBox,
                 return 0;
         }
     }
-    if (BlockLevelBox* anonymousBox = parentBox->getAnonymousBox(prevBox)) {
+    if (Block* anonymousBox = parentBox->getAnonymousBox(prevBox)) {
         anonymousBox->insertInline(text);
         return anonymousBox;
     }
     return 0;
 }
 
-BlockLevelBox* ViewCSSImp::createBlockLevelBox(Element element, BlockLevelBox* parentBox, CSSStyleDeclarationImp* style, bool newContext, bool asBlock)
+Block* ViewCSSImp::createBlock(Element element, Block* parentBox, CSSStyleDeclarationImp* style, bool newContext, bool asBlock)
 {
     assert(style);
-    BlockLevelBox* block;
+    Block* block;
     if (style->display == CSSDisplayValueImp::Table || style->display == CSSDisplayValueImp::InlineTable) {
         block = new(std::nothrow) TableWrapperBox(this, element, style);
         newContext = true;
@@ -516,7 +516,7 @@ BlockLevelBox* ViewCSSImp::createBlockLevelBox(Element element, BlockLevelBox* p
             if (style->display == CSSDisplayValueImp::TableCell)
                 block = new(std::nothrow) CellBox(element, style);
             else
-                block = new(std::nothrow) BlockLevelBox(element, style);
+                block = new(std::nothrow) Block(element, style);
         } else {
             assert(parentBox);
             if (parentBox->anonymousTable) {
@@ -529,7 +529,7 @@ BlockLevelBox* ViewCSSImp::createBlockLevelBox(Element element, BlockLevelBox* p
         }
         newContext = true;
     } else
-        block = new(std::nothrow) BlockLevelBox(element, style);
+        block = new(std::nothrow) Block(element, style);
     if (!block)
         return 0;
     if (newContext)
@@ -548,13 +548,13 @@ BlockLevelBox* ViewCSSImp::createBlockLevelBox(Element element, BlockLevelBox* p
 
 namespace {
 
-BlockLevelBox* getCurrentBox(CSSStyleDeclarationImp* style, bool asBlock)
+Block* getCurrentBox(CSSStyleDeclarationImp* style, bool asBlock)
 {
     Box* box = style->getBox();
     if (!box)
         return 0;
     if (!style->display.isTableParts() || asBlock)
-        return dynamic_cast<BlockLevelBox*>(box);
+        return dynamic_cast<Block*>(box);
 
     // return the surrounding anonymous table wrapper box
     while (box && !dynamic_cast<TableWrapperBox*>(box))
@@ -565,7 +565,7 @@ BlockLevelBox* getCurrentBox(CSSStyleDeclarationImp* style, bool asBlock)
 
 }
 
-BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* parentBox, CSSStyleDeclarationImp* parentStyle, CSSStyleDeclarationImp* style, bool asBlock, BlockLevelBox* prevBox)
+Block* ViewCSSImp::layOutBlockBoxes(Element element, Block* parentBox, CSSStyleDeclarationImp* parentStyle, CSSStyleDeclarationImp* style, bool asBlock, Block* prevBox)
 {
 #ifndef NDEBUG
     std::u16string tag(interface_cast<html::HTMLElement>(element).getTagName());
@@ -586,7 +586,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
             shadow = imp->getShadowTree();
     }
 
-    BlockLevelBox* currentBox = parentBox;
+    Block* currentBox = parentBox;
     bool anonInlineTable = style->display.isTableParts() && parentStyle && parentStyle->display.isInlineLevel() && !asBlock;
     bool inlineReplace = isReplacedElement(element) && !style->isBlockLevel();
     bool isFlowRoot = (!parentBox || anonInlineTable || inlineReplace) ? true : style->isFlowRoot();
@@ -594,7 +594,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
     if (!parentBox || inlineBlock) {
         currentBox = getCurrentBox(style, asBlock);
         if (!currentBox)
-            currentBox = createBlockLevelBox(element, parentBox, style, isFlowRoot, asBlock);
+            currentBox = createBlock(element, parentBox, style, isFlowRoot, asBlock);
         if (!currentBox)
             return 0;
         // Do not insert currentBox into parentBox. currentBox will be
@@ -611,7 +611,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
                 else if (prevBox = parentBox->getAnonymousBox(prevBox))
                     prevBox->insertInline(element);
             } else {
-                prevBox = dynamic_cast<BlockLevelBox*>(currentBox->parentBox->parentBox);
+                prevBox = dynamic_cast<Block*>(currentBox->parentBox->parentBox);
                 if (prevBox == parentBox)
                     prevBox = 0;
                 else
@@ -621,7 +621,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
     } else if (style->isBlockLevel() || asBlock) {
         currentBox = getCurrentBox(style, asBlock);
         if (!currentBox) {
-            currentBox = createBlockLevelBox(element, parentBox, style, isFlowRoot, asBlock);
+            currentBox = createBlock(element, parentBox, style, isFlowRoot, asBlock);
             if (!currentBox)
                 return 0;
             if (parentBox) {
@@ -640,15 +640,15 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
     }
 
     if (currentBox && currentBox != parentBox) {
-        BlockLevelBox* prev = 0;
+        Block* prev = 0;
         switch (currentBox->flags & (Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION)) {
         case Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION:
         case Box::NEED_EXPANSION:
             break;
         case Box::NEED_CHILD_EXPANSION:
-            for (auto box = dynamic_cast<BlockLevelBox*>(currentBox->getFirstChild());
+            for (auto box = dynamic_cast<Block*>(currentBox->getFirstChild());
                  box;
-                 prev = box, box = dynamic_cast<BlockLevelBox*>(box->getNextSibling()))
+                 prev = box, box = dynamic_cast<Block*>(box->getNextSibling()))
             {
                 if (box->flags & (Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION)) {
                     if (box->getNode())
@@ -669,38 +669,38 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
     }
 
     if (!dynamic_cast<TableWrapperBox*>(currentBox)) {
-        BlockLevelBox* prev = (currentBox != parentBox) ? 0 : prevBox;
+        Block* prev = (currentBox != parentBox) ? 0 : prevBox;
         ElementImp* imp = dynamic_cast<ElementImp*>(element.self());
 
         if ((style->emptyInline & 1) || style->emptyInline == 4) {
             if (!currentBox->hasChildBoxes())
                 currentBox->insertInline(element);
-            else if (BlockLevelBox* anonymousBox = currentBox->getAnonymousBox(prev))
+            else if (Block* anonymousBox = currentBox->getAnonymousBox(prev))
                 anonymousBox->insertInline(element);
         }
 
         if (imp->marker) {
-            if (BlockLevelBox* box = layOutBlockBoxes(imp->marker, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::Marker)))
+            if (Block* box = layOutBlockBoxes(imp->marker, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::Marker)))
                 prev = box;
             // Deal with an empty list item; cf. list-alignment-001, acid2.
             // TODO: Find out where the exact behavior is defined in the specifications.
             if (style->height.isAuto() && !shadow.hasChildNodes() && !imp->before && !imp->after) {
                 if (!currentBox->hasChildBoxes())
                     currentBox->insertInline(element);
-                else if (BlockLevelBox* anonymousBox = currentBox->getAnonymousBox(prev))
+                else if (Block* anonymousBox = currentBox->getAnonymousBox(prev))
                     anonymousBox->insertInline(element);
             }
         }
         if (imp->before) {
-            if (BlockLevelBox* box = layOutBlockBoxes(imp->before, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::Before), false, prev))
+            if (Block* box = layOutBlockBoxes(imp->before, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::Before), false, prev))
                 prev = box;
         }
         for (Node child = shadow.getFirstChild(); child; child = child.getNextSibling()) {
-            if (BlockLevelBox* box = layOutBlockBoxes(child, currentBox, style, false, prev))
+            if (Block* box = layOutBlockBoxes(child, currentBox, style, false, prev))
                 prev = box;
         }
         if (imp->after) {
-            if (BlockLevelBox* box = layOutBlockBoxes(imp->after, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::After), false, prev))
+            if (Block* box = layOutBlockBoxes(imp->after, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::After), false, prev))
                 prev = box;
         }
 
@@ -712,7 +712,7 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
         if (style->emptyInline & 2) {
             if (!currentBox->hasChildBoxes())
                 currentBox->insertInline(element);
-            else if (BlockLevelBox* anonymousBox = currentBox->getAnonymousBox(prev))
+            else if (Block* anonymousBox = currentBox->getAnonymousBox(prev))
                 anonymousBox->insertInline(element);
         }
 
@@ -733,14 +733,14 @@ BlockLevelBox* ViewCSSImp::layOutBlockBoxes(Element element, BlockLevelBox* pare
 }
 
 // Lay out a tree box block-level boxes
-BlockLevelBox* ViewCSSImp::layOutBlockBoxes()
+Block* ViewCSSImp::layOutBlockBoxes()
 {
     boxTree = layOutBlockBoxes(getDocument(), 0, 0);
     clearCounters();
     return boxTree.get();
 }
 
-BlockLevelBox* ViewCSSImp::layOut()
+Block* ViewCSSImp::layOut()
 {
     quotingDepth = 0;
     scrollWidth = 0.0f;
@@ -767,7 +767,7 @@ BlockLevelBox* ViewCSSImp::layOut()
     return boxTree.get();
 }
 
-BlockLevelBox* ViewCSSImp::dump()
+Block* ViewCSSImp::dump()
 {
     std::cout << "## render tree\n";
     // When the root element has display:none, no box is created at all.

@@ -536,7 +536,7 @@ void Box::renderHorizontalScrollBar(float w, float h, float pos, float total)
     }
 }
 
-unsigned BlockLevelBox::renderBegin(ViewCSSImp* view, bool noBorder)
+unsigned Block::renderBegin(ViewCSSImp* view, bool noBorder)
 {
     unsigned overflow = CSSOverflowValueImp::Visible;
     glPushMatrix();
@@ -570,7 +570,7 @@ unsigned BlockLevelBox::renderBegin(ViewCSSImp* view, bool noBorder)
     return overflow;
 }
 
-void BlockLevelBox::renderEnd(ViewCSSImp* view, unsigned overflow, bool scrollBar)
+void Block::renderEnd(ViewCSSImp* view, unsigned overflow, bool scrollBar)
 {
     if (!isAnonymous() || isTableBox()) {
         if (style->parentStyle && overflow != CSSOverflowValueImp::Visible) {
@@ -611,14 +611,14 @@ void BlockLevelBox::renderEnd(ViewCSSImp* view, unsigned overflow, bool scrollBa
     glPopMatrix();
 }
 
-void BlockLevelBox::renderNonInline(ViewCSSImp* view, StackingContext* stackingContext)
+void Block::renderNonInline(ViewCSSImp* view, StackingContext* stackingContext)
 {
     if (childWindow)
         return;
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
         if (child->style && child->style->getStackingContext() != stackingContext)
             continue;
-        if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(child)) {
+        if (Block* block = dynamic_cast<Block*>(child)) {
             unsigned overflow = block->renderBegin(view);
             block->renderNonInline(view, stackingContext);
             block->renderEnd(view, overflow, false);
@@ -633,7 +633,7 @@ void BlockLevelBox::renderNonInline(ViewCSSImp* view, StackingContext* stackingC
     }
 }
 
-void BlockLevelBox::renderInline(ViewCSSImp* view, StackingContext* stackingContext)
+void Block::renderInline(ViewCSSImp* view, StackingContext* stackingContext)
 {
     if (childWindow) {
         glPushMatrix();
@@ -660,7 +660,7 @@ void BlockLevelBox::renderInline(ViewCSSImp* view, StackingContext* stackingCont
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
         if (child->style && child->style->getStackingContext() != stackingContext)
             continue;
-        if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(child)) {
+        if (Block* block = dynamic_cast<Block*>(child)) {
             unsigned overflow = block->renderBegin(view, true);
             block->renderInline(view, stackingContext);
             block->renderEnd(view, overflow);
@@ -673,7 +673,7 @@ void BlockLevelBox::renderInline(ViewCSSImp* view, StackingContext* stackingCont
         for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
             if (child->style && child->style->getStackingContext() != stackingContext)
                 continue;
-            if (BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(child)) {
+            if (Block* block = dynamic_cast<Block*>(child)) {
                 if (!block->isAnonymous() && 0.0f < block->getOutlineWidth()) {
                     unsigned overflow = block->renderBegin(view, true);
                     block->renderOutline(view, block->x, block->y + block->getTopBorderEdge());
@@ -687,7 +687,7 @@ void BlockLevelBox::renderInline(ViewCSSImp* view, StackingContext* stackingCont
         dynamic_cast<TableWrapperBox*>(getParentBox())->renderTableOutlines(view);
 }
 
-void BlockLevelBox::render(ViewCSSImp* view, StackingContext* stackingContext)
+void Block::render(ViewCSSImp* view, StackingContext* stackingContext)
 {
     unsigned overflow = renderBegin(view);
     renderNonInline(view, stackingContext);
@@ -740,9 +740,9 @@ void InlineBox::renderMultipleBackground(ViewCSSImp* view)
             if (!nextLine) {
                 // This is a line box in an anonymous block. The last box should be in
                 // one of the following anonymous block(s).
-                BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(lineBox->getParentBox());
+                Block* block = dynamic_cast<Block*>(lineBox->getParentBox());
                 assert(block);
-                while (block = dynamic_cast<BlockLevelBox*>(block->getNextSibling())) {
+                while (block = dynamic_cast<Block*>(block->getNextSibling())) {
                     if (block->isAnonymous()) {
                         nextLine = dynamic_cast<LineBox*>(block->getFirstChild());
                         if (nextLine)
@@ -834,9 +834,9 @@ void InlineBox::renderEmptyBox(ViewCSSImp* view, CSSStyleDeclarationImp* parentS
             if (!nextLine) {
                 // This is a line box in an anonymous block. The last box should be in
                 // one of the following anonymous block(s).
-                BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(lineBox->getParentBox());
+                Block* block = dynamic_cast<Block*>(lineBox->getParentBox());
                 assert(block);
-                while (block = dynamic_cast<BlockLevelBox*>(block->getNextSibling())) {
+                while (block = dynamic_cast<Block*>(block->getNextSibling())) {
                     if (block->isAnonymous()) {
                         nextLine = dynamic_cast<LineBox*>(block->getFirstChild());
                         if (nextLine)
@@ -1068,9 +1068,9 @@ void InlineBox::renderOutline(ViewCSSImp* view)
             if (!nextLine) {
                 // This is a line box in an anonymous block. The last box should be in
                 // one of the following anonymous block(s).
-                BlockLevelBox* block = dynamic_cast<BlockLevelBox*>(lineBox->getParentBox());
+                Block* block = dynamic_cast<Block*>(lineBox->getParentBox());
                 assert(block);
-                while (block = dynamic_cast<BlockLevelBox*>(block->getNextSibling())) {
+                while (block = dynamic_cast<Block*>(block->getNextSibling())) {
                     if (block->isAnonymous()) {
                         nextLine = dynamic_cast<LineBox*>(block->getFirstChild());
                         if (nextLine)

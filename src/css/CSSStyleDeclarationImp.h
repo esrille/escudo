@@ -59,7 +59,7 @@ class CSSStyleDeclarationImp : public ObjectMixin<CSSStyleDeclarationImp>
     friend class CSSPaddingShorthandImp;
     friend class ViewCSSImp;
 
-    friend class BlockLevelBox;
+    friend class Block;
 
 public:
     enum

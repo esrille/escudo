@@ -91,7 +91,7 @@ bool FormattingContext::hasChanged(const SavedFormattingContext::MarginContext& 
     return previousMargin != context.previousMargin;
 }
 
-void FormattingContext::saveContext(BlockLevelBox* block)
+void FormattingContext::saveContext(Block* block)
 {
     block->savedFormattingContext.blankLeft = blankLeft;
     block->savedFormattingContext.blankRight = blankRight;
@@ -110,20 +110,20 @@ void FormattingContext::saveContext(BlockLevelBox* block)
     block->savedFormattingContext.saved = true;
 }
 
-void FormattingContext::restoreContext(BlockLevelBox* block)
+void FormattingContext::restoreContext(Block* block)
 {
     assert(block->savedFormattingContext.saved);
     blankLeft = block->savedFormattingContext.blankLeft;
     blankRight = block->savedFormattingContext.blankRight;
     left.clear();
     for (auto i = block->savedFormattingContext.left.begin(); i != block->savedFormattingContext.left.end(); ++i) {
-        BlockLevelBox* floatingBox = i->floatingBox;
+        Block* floatingBox = i->floatingBox;
         floatingBox->remainingHeight = i->remainingHeight;
         left.push_back(floatingBox);
     }
     right.clear();
     for (auto i = block->savedFormattingContext.right.begin(); i != block->savedFormattingContext.right.end(); ++i) {
-        BlockLevelBox* floatingBox = i->floatingBox;
+        Block* floatingBox = i->floatingBox;
         floatingBox->remainingHeight = i->remainingHeight;
         right.push_back(floatingBox);
     }
@@ -144,7 +144,7 @@ void FormattingContext::restoreContext(BlockLevelBox* block)
     atLineHead = true;
 }
 
-bool FormattingContext::hasChanged(const BlockLevelBox* block)
+bool FormattingContext::hasChanged(const Block* block)
 {
     if (!block->savedFormattingContext.saved)
         return true;
@@ -156,13 +156,13 @@ bool FormattingContext::hasChanged(const BlockLevelBox* block)
         return true;
     auto j = left.begin();
     for (auto i = block->savedFormattingContext.left.begin(); i != block->savedFormattingContext.left.end(); ++i, ++j) {
-        BlockLevelBox* floatingBox = *j;
+        Block* floatingBox = *j;
         if (floatingBox != i->floatingBox || floatingBox->remainingHeight != i->remainingHeight)
             return true;
     }
     auto k = right.begin();
     for (auto i = block->savedFormattingContext.right.begin(); i != block->savedFormattingContext.right.end(); ++i, ++k) {
-        BlockLevelBox* floatingBox = *k;
+        Block* floatingBox = *k;
         if (floatingBox != i->floatingBox || floatingBox->remainingHeight != i->remainingHeight)
             return true;
     }
@@ -231,7 +231,7 @@ float FormattingContext::getRightRemainingHeight() const {
     return right.front()->remainingHeight;
 }
 
-LineBox* FormattingContext::addLineBox(ViewCSSImp* view, BlockLevelBox* parentBox) {
+LineBox* FormattingContext::addLineBox(ViewCSSImp* view, Block* parentBox) {
     assert(!lineBox);
     assert(parentBox);
     baseline = lineHeight = 0.0f;
@@ -272,7 +272,7 @@ LineBox* FormattingContext::addLineBox(ViewCSSImp* view, BlockLevelBox* parentBo
 void FormattingContext::tryAddFloat(ViewCSSImp* view)
 {
     while (!floatingBoxes.empty()) {
-        BlockLevelBox* floatingBox = floatingBoxes.front();
+        Block* floatingBox = floatingBoxes.front();
         unsigned clear = floatingBox->style->clear.getValue();
         if ((clear & CSSClearValueImp::Left) && !left.empty() ||
             (clear & CSSClearValueImp::Right) && !right.empty()) {
@@ -311,7 +311,7 @@ float FormattingContext::adjustRemainingHeight(float h)
     return consumed;
 }
 
-void FormattingContext::useMargin(BlockLevelBox* block)
+void FormattingContext::useMargin(Block* block)
 {
     if (block->marginUsed)
         return;
@@ -407,12 +407,12 @@ bool FormattingContext::shiftDownLineBox(ViewCSSImp* view)
 bool FormattingContext::hasNewFloats() const
 {
     if (!left.empty()) {
-        BlockLevelBox* box = left.back();
+        Block* box = left.back();
         if (!box->inserted)
             return true;
     }
     if (!right.empty()) {
-        BlockLevelBox* box = right.front();
+        Block* box = right.front();
         if (!box->inserted)
             return true;
     }
@@ -426,7 +426,7 @@ void FormattingContext::appendInlineBox(ViewCSSImp* view, InlineBox* inlineBox, 
     lineHeight = lineBox->height;
 
     if (lineBox->baseline == 0.0f && lineBox->height == 0.0f) {
-        BlockLevelBox* parentBox = dynamic_cast<BlockLevelBox*>(lineBox->getParentBox());
+        Block* parentBox = dynamic_cast<Block*>(lineBox->getParentBox());
         assert(parentBox);
         if (parentBox->defaultBaseline == 0.0f && parentBox->defaultLineHeight == 0.0f) {
             CSSStyleDeclarationImp* parentStyle = parentBox->getStyle();
@@ -482,7 +482,7 @@ void FormattingContext::dontWrap()
 
 // Complete the current lineBox by adding float boxes if any.
 // Then update remainingHeight.
-void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, bool linefeed)
+void FormattingContext::nextLine(ViewCSSImp* view, Block* parentBox, bool linefeed)
 {
     assert(lineBox);
     assert(lineBox == parentBox->lastChild);
@@ -504,7 +504,7 @@ void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, boo
     }
 
     for (auto i = left.rbegin(); i != left.rend(); ++i) {
-        BlockLevelBox* floatingBox = *i;
+        Block* floatingBox = *i;
         if (!floatingBox->inserted) {
             floatingBox->inserted = true;
             lineBox->insertBefore(floatingBox, lineBox->getFirstChild());
@@ -512,7 +512,7 @@ void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, boo
         }
     }
     for (auto i = right.begin(); i != right.end(); ++i) {
-        BlockLevelBox* floatingBox = *i;
+        Block* floatingBox = *i;
         if (!floatingBox->inserted) {
             floatingBox->inserted = true;
             // We would need a gap before the 1st right floating box to be added.
@@ -544,7 +544,7 @@ void FormattingContext::nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, boo
     breakable = false;
 }
 
-void FormattingContext::addFloat(BlockLevelBox* floatingBox, float totalWidth)
+void FormattingContext::addFloat(Block* floatingBox, float totalWidth)
 {
     if (floatingBox->style->float_.getValue() == CSSFloatValueImp::Left) {
         if (left.empty())

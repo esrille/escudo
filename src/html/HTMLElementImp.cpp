@@ -281,7 +281,7 @@ int HTMLElementImp::getScrollTop()
 
 void HTMLElementImp::setScrollTop(int y)
 {
-    BlockLevelBox* box = dynamic_cast<BlockLevelBox*>(getBox());
+    Block* box = dynamic_cast<Block*>(getBox());
     if (!box)
         return;
     float overflow = 0.0f;
@@ -299,7 +299,7 @@ int HTMLElementImp::getScrollLeft()
 
 void HTMLElementImp::setScrollLeft(int x)
 {
-    BlockLevelBox* box = dynamic_cast<BlockLevelBox*>(getBox());
+    Block* box = dynamic_cast<Block*>(getBox());
     if (!box)
         return;
     float overflow = 0.0f;

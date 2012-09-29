@@ -2044,7 +2044,7 @@ void CSSStyleDeclarationImp::clearBox()
 
 void CSSStyleDeclarationImp::addBox(Box* b)
 {
-    if (dynamic_cast<BlockLevelBox*>(b)) {
+    if (dynamic_cast<Block*>(b)) {
         if (isBlockLevel())
             box = lastBox = b;
     } else if (InlineBox* inlineBox = dynamic_cast<InlineBox*>(b)) {
@@ -2063,7 +2063,7 @@ void CSSStyleDeclarationImp::addBox(Box* b)
 
 void CSSStyleDeclarationImp::removeBox(Box* b)
 {
-    if (dynamic_cast<BlockLevelBox*>(b)) {
+    if (dynamic_cast<Block*>(b)) {
         if (isBlockLevel() && box == b)
             box = lastBox = 0;
     } else if (InlineBox* inlineBox = dynamic_cast<InlineBox*>(b)) {

@@ -43,7 +43,7 @@ class Box;
 class BoxImage;
 class FormattingContext;
 class LineBox;
-class BlockLevelBox;
+class Block;
 class StackingContext;
 class TableWrapperBox;
 class ViewCSSImp;
@@ -73,7 +73,7 @@ public:
 class Box : public ContainingBlock
 {
     friend class ViewCSSImp;
-    friend class BlockLevelBox;
+    friend class Block;
     friend class LineBox;
     friend class FormattingContext;
     friend class BoxImage;
@@ -130,7 +130,7 @@ protected:
 
     unsigned visibility;
 
-    BlockLevelBox* clipBox;
+    Block* clipBox;
 
     // background
     unsigned backgroundColor;
@@ -391,7 +391,7 @@ public:
     void applyReplacedMinMax(float w, float h);
 
     virtual void resolveOffset(float& x, float &y);
-    virtual void resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip) = 0;
+    virtual void resolveXY(ViewCSSImp* view, float left, float top, Block* clip) = 0;
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context) {
         return true;
     }
@@ -475,12 +475,12 @@ public:
 
 typedef boost::intrusive_ptr<Box> BoxPtr;
 
-class BlockLevelBox;
-typedef boost::intrusive_ptr<BlockLevelBox> BlockLevelBoxPtr;
+class Block;
+typedef boost::intrusive_ptr<Block> BlockPtr;
 
 // paragraph
 // ‘display’ of ‘block’, ‘list-item’, ‘table’, ‘table-*’ (i.e., all table boxes) or <template>.
-class BlockLevelBox : public Box
+class Block : public Box
 {
     friend class ViewCSSImp;
     friend class FormattingContext;
@@ -506,7 +506,7 @@ class BlockLevelBox : public Box
     // block-level boxes, 'inlines' must be empty.
     std::list<Node> inlines;
     Element floatingFirstLetter;
-    std::map<Node, BlockLevelBoxPtr> blockMap;  // inline blocks, floating boxes, absolutely positioned boxes, etc. held by line boxes
+    std::map<Node, BlockPtr> blockMap;  // inline blocks, floating boxes, absolutely positioned boxes, etc. held by line boxes
     TableWrapperBox* anonymousTable;  // for ViewCSSImp::layOutBlockBoxes
 
     // The default baseline and line-height for the line boxes.
@@ -530,9 +530,9 @@ class BlockLevelBox : public Box
                       FontGlyph*& glyph, std::u16string& transformed);
     bool layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
                     std::u16string data, Element element, CSSStyleDeclarationImp* style);
-    void layOutInlineBlock(ViewCSSImp* view, Node node, BlockLevelBox* inlineBlock, FormattingContext* context);
-    void layOutFloat(ViewCSSImp* view, Node node, BlockLevelBox* floatBox, FormattingContext* context);
-    void layOutAbsolute(ViewCSSImp* view, Node node, BlockLevelBox* absBox, FormattingContext* context);  // 1st pass
+    void layOutInlineBlock(ViewCSSImp* view, Node node, Block* inlineBlock, FormattingContext* context);
+    void layOutFloat(ViewCSSImp* view, Node node, Block* floatBox, FormattingContext* context);
+    void layOutAbsolute(ViewCSSImp* view, Node node, Block* absBox, FormattingContext* context);  // 1st pass
     bool layOutInline(ViewCSSImp* view, FormattingContext* context, float originalMargin = 0.0f);
     void layOutInlineBlocks(ViewCSSImp* view);
     void layOutChildren(ViewCSSImp* view, FormattingContext* context);
@@ -562,7 +562,7 @@ protected:
     void moveUpCollapsedThroughMargins(FormattingContext* context);
 
 public:
-    BlockLevelBox(Node node = 0, CSSStyleDeclarationImp* style = 0);
+    Block(Node node = 0, CSSStyleDeclarationImp* style = 0);
 
     virtual unsigned getBoxType() const {
         return BLOCK_LEVEL_BOX;
@@ -597,31 +597,31 @@ public:
     void insertInline(Node node) {
         inlines.push_back(node);
     }
-    void spliceInline(BlockLevelBox* box) {
+    void spliceInline(Block* box) {
         inlines.splice(inlines.begin(), box->inlines);
     }
 
-    void addBlock(const Node& node, BlockLevelBox* block) {
+    void addBlock(const Node& node, Block* block) {
         blockMap[node] = block;
     }
-    BlockLevelBox* findBlock(const Node& node) {
-        BlockLevelBox* box = this;
+    Block* findBlock(const Node& node) {
+        Block* box = this;
         do {
             auto i = box->blockMap.find(node);
             if (i != box->blockMap.end())
                 return i->second.get();
-        } while (box->isAnonymous() && (box = dynamic_cast<BlockLevelBox*>(box->getParentBox())));
+        } while (box->isAnonymous() && (box = dynamic_cast<Block*>(box->getParentBox())));
         return 0;
     }
     bool removeBlock(const Node& node) {
-        BlockLevelBox* box = this;
+        Block* box = this;
         do {
             auto i = box->blockMap.find(node);
             if (i != box->blockMap.end()) {
                 box->blockMap.erase(i);
                 return true;
             }
-        } while (box->isAnonymous() && (box = dynamic_cast<BlockLevelBox*>(box->getParentBox())));
+        } while (box->isAnonymous() && (box = dynamic_cast<Block*>(box->getParentBox())));
         return false;
     }
 
@@ -644,7 +644,7 @@ public:
     // Gets the anonymous child box. Creates one if there's none even
     // if there's no children; if so, the existing texts are moved to the
     // new anonymous box.
-    BlockLevelBox* getAnonymousBox(Box* prev);
+    Block* getAnonymousBox(Box* prev);
 
     bool isCollapsableInside() const;
     bool isCollapsableOutside() const;
@@ -662,7 +662,7 @@ public:
     }
 
     virtual void resolveOffset(float& x, float &y);
-    virtual void resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip);
+    virtual void resolveXY(ViewCSSImp* view, float left, float top, Block* clip);
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context);
     virtual void render(ViewCSSImp* view, StackingContext* stackingContext);
     virtual void dump(std::string indent = "");
@@ -685,7 +685,7 @@ public:
 // ‘display’ of ‘inline’, ‘inline-block’, ‘inline-table’ or ‘ruby’.
 class LineBox : public Box
 {
-    friend class BlockLevelBox;
+    friend class Block;
     friend class FormattingContext;
 
     float baseline;
@@ -696,7 +696,7 @@ class LineBox : public Box
 
     float leftGap;    // the gap between the first inline box and the last left floating box
     float rightGap;   // the gap between the last inline box and the 1st right floating box
-    BlockLevelBox* rightBox;  // the 1st right floating box
+    Block* rightBox;  // the 1st right floating box
 
 public:
     LineBox(CSSStyleDeclarationImp* style);
@@ -737,7 +737,7 @@ public:
         return height != 0.0f;  // TODO: Check whether this is correct.
     }
 
-    virtual void resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip);
+    virtual void resolveXY(ViewCSSImp* view, float left, float top, Block* clip);
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context);
     virtual void render(ViewCSSImp* view, StackingContext* stackingContext);
     virtual void dump(std::string indent);
@@ -750,7 +750,7 @@ typedef boost::intrusive_ptr<LineBox> LineBoxPtr;
 // words inside a line
 class InlineBox : public Box
 {
-    friend class BlockLevelBox;
+    friend class Block;
     friend class FormattingContext;
 
     FontTexture* font;
@@ -840,7 +840,7 @@ public:
     const std::u16string& getData() const {
         return data;
     }
-    virtual void resolveXY(ViewCSSImp* view, float left, float top, BlockLevelBox* clip);
+    virtual void resolveXY(ViewCSSImp* view, float left, float top, Block* clip);
     virtual void render(ViewCSSImp* view, StackingContext* stackingContext);
     void renderOutline(ViewCSSImp* view);
 

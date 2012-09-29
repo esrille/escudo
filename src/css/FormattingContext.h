@@ -42,7 +42,7 @@ namespace bootstrap {
 class Box;
 class ContainingBlock;
 class LineBox;
-class BlockLevelBox;
+class Block;
 class StackingContext;
 class ViewCSSImp;
 class WindowImp;
@@ -52,10 +52,10 @@ class WindowImp;
 struct SavedFormattingContext
 {
     struct FloatingBoxContext {
-        BlockLevelBox* floatingBox;
+        Block* floatingBox;
         float remainingHeight;
 
-        FloatingBoxContext(BlockLevelBox* floatingBox, float remainingHeight) :
+        FloatingBoxContext(Block* floatingBox, float remainingHeight) :
             floatingBox(floatingBox),
             remainingHeight(remainingHeight)
         {}
@@ -96,7 +96,7 @@ struct SavedFormattingContext
 
 class FormattingContext
 {
-    friend class BlockLevelBox;
+    friend class Block;
 
     TextIterator textIterator;
     size_t textLength;
@@ -111,9 +111,9 @@ class FormattingContext
     // Context for floating boxes
     float blankLeft;
     float blankRight;
-    std::list<BlockLevelBox*> left;           // active floating boxes on the left side
-    std::list<BlockLevelBox*> right;          // active floating boxes on the right side
-    std::list<BlockLevelBox*> floatingBoxes;  // floating boxes to be added
+    std::list<Block*> left;           // active floating boxes on the left side
+    std::list<Block*> right;          // active floating boxes on the right side
+    std::list<Block*> floatingBoxes;  // floating boxes to be added
 
     // Context for margin collapse
     float clearance;  // The clearance introduced by the previous collapsed through boxes.
@@ -142,12 +142,12 @@ public:
     void updateBlanks(Box* box);
     void restoreBlanks(Box* box);
 
-    void saveContext(BlockLevelBox* block);
-    void restoreContext(BlockLevelBox* block);
-    bool hasChanged(const BlockLevelBox* block);
+    void saveContext(Block* block);
+    void restoreContext(Block* block);
+    bool hasChanged(const Block* block);
 
-    LineBox* addLineBox(ViewCSSImp* view, BlockLevelBox* parentBox);
-    void addFloat(BlockLevelBox* floatBox, float totalWidth);
+    LineBox* addLineBox(ViewCSSImp* view, Block* parentBox);
+    void addFloat(Block* floatBox, float totalWidth);
 
     float hasLeft() const {
         return !left.empty();
@@ -165,12 +165,12 @@ public:
     bool hasNewFloats() const;
     void appendInlineBox(ViewCSSImp* view, InlineBox* inlineBox, CSSStyleDeclarationImp* activeStyle);
     void dontWrap();
-    void nextLine(ViewCSSImp* view, BlockLevelBox* parentBox, bool linefeed);
+    void nextLine(ViewCSSImp* view, Block* parentBox, bool linefeed);
     void tryAddFloat(ViewCSSImp* view);
     float adjustRemainingHeight(float height);
 
     // Use the positive margin stored in context to consume the remaining height of floating boxes.
-    void useMargin(BlockLevelBox* block);
+    void useMargin(Block* block);
 
     float updateRemainingHeight(float height);
     float clear(unsigned value);

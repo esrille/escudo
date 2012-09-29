@@ -22,7 +22,7 @@
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class Box;
-class BlockLevelBox;
+class Block;
 class ViewCSSImp;
 class CSSStyleDeclarationImp;
 
@@ -44,7 +44,7 @@ class StackingContext
     // inline element can generate multiple inline boxes.
     Box* firstBase;
     Box* lastBase;
-    BlockLevelBox* clipBox;
+    Block* clipBox;
 
     // render
     Box* firstFloat;
@@ -112,7 +112,7 @@ public:
 
     void removeBox(Box* box);
 
-    void setClipBox(BlockLevelBox* box) {
+    void setClipBox(Block* box) {
         clipBox = box;
     }
 
