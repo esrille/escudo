@@ -436,19 +436,19 @@ CSSStyleDeclarationImp* ViewCSSImp::checkMarker(CSSStyleDeclarationImp* style, E
 
 // In this step, neither inline-level boxes nor line boxes are generated.
 // Those will be generated later by layOut().
-Block* ViewCSSImp::layOutBlockBoxes(Node node, Block* parentBox, CSSStyleDeclarationImp* style, bool asBlock, Block* prevBox)
+Block* ViewCSSImp::constructBlock(Node node, Block* parentBox, CSSStyleDeclarationImp* style, bool asBlock, Block* prevBox)
 {
     Block* newBox = 0;
     switch (node.getNodeType()) {
     case Node::TEXT_NODE:
-        newBox = layOutBlockBoxes(interface_cast<Text>(node), parentBox, style, prevBox);
+        newBox = constructBlock(interface_cast<Text>(node), parentBox, style, prevBox);
         break;
     case Node::ELEMENT_NODE:
-        newBox = layOutBlockBoxes(interface_cast<Element>(node), parentBox, style, 0, asBlock, prevBox);
+        newBox = constructBlock(interface_cast<Element>(node), parentBox, style, 0, asBlock, prevBox);
         break;
     case Node::DOCUMENT_NODE:
         for (Node child = node.getFirstChild(); child; child = child.getNextSibling()) {
-            if (Block* box = layOutBlockBoxes(child, parentBox, style, false, newBox))
+            if (Block* box = constructBlock(child, parentBox, style, false, newBox))
                 newBox = box;
         }
         break;
@@ -458,7 +458,7 @@ Block* ViewCSSImp::layOutBlockBoxes(Node node, Block* parentBox, CSSStyleDeclara
     return newBox;
 }
 
-Block* ViewCSSImp::layOutBlockBoxes(Text text, Block* parentBox, CSSStyleDeclarationImp* style, Block* prevBox)
+Block* ViewCSSImp::constructBlock(Text text, Block* parentBox, CSSStyleDeclarationImp* style, Block* prevBox)
 {
     bool discardable = true;
     if (style->display.isInline()) {
@@ -565,7 +565,7 @@ Block* getCurrentBox(CSSStyleDeclarationImp* style, bool asBlock)
 
 }
 
-Block* ViewCSSImp::layOutBlockBoxes(Element element, Block* parentBox, CSSStyleDeclarationImp* parentStyle, CSSStyleDeclarationImp* style, bool asBlock, Block* prevBox)
+Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, CSSStyleDeclarationImp* parentStyle, CSSStyleDeclarationImp* style, bool asBlock, Block* prevBox)
 {
 #ifndef NDEBUG
     std::u16string tag(interface_cast<html::HTMLElement>(element).getTagName());
@@ -652,14 +652,14 @@ Block* ViewCSSImp::layOutBlockBoxes(Element element, Block* parentBox, CSSStyleD
             {
                 if (box->flags & (Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION)) {
                     if (box->getNode())
-                        layOutBlockBoxes(box->getNode(), currentBox, style, false, prev);
+                        constructBlock(box->getNode(), currentBox, style, false, prev);
                     else    // anonymous box
                         box->flags &= ~(Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION);
                 }
             }
             for (auto it = currentBox->blockMap.begin(); it != currentBox->blockMap.end(); ++it) {
                 if (it->second.get()->flags & (Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION))
-                    layOutBlockBoxes(it->first, currentBox, style);
+                    constructBlock(it->first, currentBox, style);
             }
             currentBox->flags &= ~(Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION);
             // FALL THROUGH
@@ -680,7 +680,7 @@ Block* ViewCSSImp::layOutBlockBoxes(Element element, Block* parentBox, CSSStyleD
         }
 
         if (imp->marker) {
-            if (Block* box = layOutBlockBoxes(imp->marker, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::Marker)))
+            if (Block* box = constructBlock(imp->marker, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::Marker)))
                 prev = box;
             // Deal with an empty list item; cf. list-alignment-001, acid2.
             // TODO: Find out where the exact behavior is defined in the specifications.
@@ -692,20 +692,20 @@ Block* ViewCSSImp::layOutBlockBoxes(Element element, Block* parentBox, CSSStyleD
             }
         }
         if (imp->before) {
-            if (Block* box = layOutBlockBoxes(imp->before, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::Before), false, prev))
+            if (Block* box = constructBlock(imp->before, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::Before), false, prev))
                 prev = box;
         }
         for (Node child = shadow.getFirstChild(); child; child = child.getNextSibling()) {
-            if (Block* box = layOutBlockBoxes(child, currentBox, style, false, prev))
+            if (Block* box = constructBlock(child, currentBox, style, false, prev))
                 prev = box;
         }
         if (imp->after) {
-            if (Block* box = layOutBlockBoxes(imp->after, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::After), false, prev))
+            if (Block* box = constructBlock(imp->after, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::After), false, prev))
                 prev = box;
         }
 
         if (currentBox->anonymousTable && currentBox->anonymousTable->isAnonymousTableObject()) {
-            currentBox->anonymousTable->layOutBlockBoxes();
+            currentBox->anonymousTable->constructBlocks();
             currentBox->anonymousTable = 0;
         }
 
@@ -726,16 +726,16 @@ Block* ViewCSSImp::layOutBlockBoxes(Element element, Block* parentBox, CSSStyleD
     currentBox->flags &= ~(Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION);
     if (parentBox && parentBox->anonymousTable && currentBox != parentBox->anonymousTable) {
         if (parentBox->anonymousTable->isAnonymousTableObject())
-            parentBox->anonymousTable->layOutBlockBoxes();
+            parentBox->anonymousTable->constructBlocks();
         parentBox->anonymousTable = 0;
     }
     return (!parentBox || !inlineBlock) ? currentBox : prevBox;
 }
 
-// Lay out a tree box block-level boxes
-Block* ViewCSSImp::layOutBlockBoxes()
+// Construct the render tree
+Block* ViewCSSImp::constructBlocks()
 {
-    boxTree = layOutBlockBoxes(getDocument(), 0, 0);
+    boxTree = constructBlock(getDocument(), 0, 0);
     clearCounters();
     return boxTree.get();
 }
@@ -746,7 +746,7 @@ Block* ViewCSSImp::layOut()
     scrollWidth = 0.0f;
     scrollHeight = 0.0f;
 
-    if (!layOutBlockBoxes())
+    if (!constructBlocks())
         return 0;
 
     // Expand line boxes and inline-level boxes in each block-level box

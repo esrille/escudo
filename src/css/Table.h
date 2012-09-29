@@ -220,7 +220,7 @@ public:
     TableWrapperBox(ViewCSSImp* view, Element element, CSSStyleDeclarationImp* style);
     ~TableWrapperBox();
 
-    void layOutBlockBoxes();
+    void constructBlocks();
 
     BorderValue* getRowBorderValue(unsigned x, unsigned y) {
         assert(x < xWidth);

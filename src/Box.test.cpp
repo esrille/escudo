@@ -106,7 +106,7 @@ int main(int argc, char** argv)
     view->cascade();
     view->setSize(8.5f * 96, 11.0f * 96);  // US letter size, 96 DPI
 
-    Box* boxTree = view->layOutBlockBoxes();
+    Box* boxTree = view->constructBlocks();
     if (!boxTree)
         return EXIT_FAILURE;
 

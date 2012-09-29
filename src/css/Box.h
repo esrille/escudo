@@ -507,7 +507,7 @@ class Block : public Box
     std::list<Node> inlines;
     Element floatingFirstLetter;
     std::map<Node, BlockPtr> blockMap;  // inline blocks, floating boxes, absolutely positioned boxes, etc. held by line boxes
-    TableWrapperBox* anonymousTable;  // for ViewCSSImp::layOutBlockBoxes
+    TableWrapperBox* anonymousTable;  // for ViewCSSImp::constructBlocks
 
     // The default baseline and line-height for the line boxes.
     float defaultBaseline;

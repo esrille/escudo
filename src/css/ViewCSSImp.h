@@ -113,10 +113,10 @@ public:
     }
 
     Block* createBlock(Element element,  Block* parentBox, CSSStyleDeclarationImp* style, bool newContext, bool asBlock);
-    Block* layOutBlockBoxes(Node node, Block* parentBox, CSSStyleDeclarationImp* style, bool asBlock = false, Block* prevBox = 0);
-    Block* layOutBlockBoxes(Text text, Block* parentBox, CSSStyleDeclarationImp* style, Block* prevBox);
-    Block* layOutBlockBoxes(Element element, Block* parentBox, CSSStyleDeclarationImp* parentStyle, CSSStyleDeclarationImp* style, bool asBlock = false, Block* prevBox = 0);
-    Block* layOutBlockBoxes();
+    Block* constructBlock(Node node, Block* parentBox, CSSStyleDeclarationImp* style, bool asBlock = false, Block* prevBox = 0);
+    Block* constructBlock(Text text, Block* parentBox, CSSStyleDeclarationImp* style, Block* prevBox);
+    Block* constructBlock(Element element, Block* parentBox, CSSStyleDeclarationImp* parentStyle, CSSStyleDeclarationImp* style, bool asBlock = false, Block* prevBox = 0);
+    Block* constructBlocks();
     Block* layOut();
     Block* dump();
 
