@@ -491,6 +491,8 @@ public:
         return box && box != lastBox;
     }
 
+    void updateInlines();
+
     StackingContext* getStackingContext() const {
         return stackingContext;
     }

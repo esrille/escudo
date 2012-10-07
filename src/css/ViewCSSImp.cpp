@@ -100,35 +100,6 @@ bool ViewCSSImp::isHovered(Node node)
     return false;
 }
 
-namespace {
-
-void updateInlines(CSSStyleDeclarationImp* style)
-{
-    while (style) {
-        switch (style->display.getValue()) {
-        // TODO:
-        // case CSSDisplayValueImp::None:
-        //     break;
-        case CSSDisplayValueImp::Block:
-        case CSSDisplayValueImp::ListItem:
-        case CSSDisplayValueImp::Table:
-        case CSSDisplayValueImp::InlineBlock:
-        case CSSDisplayValueImp::InlineTable:
-            if (Block* block = dynamic_cast<Block*>(style->getBox())) {
-                block->clearInlines();
-                style = 0;
-                break;
-            }
-            // FALL THROUGH
-        default:
-            style = style->getParentStyle();
-            break;
-        }
-    }
-}
-
-}
-
 void ViewCSSImp::removeElement(Element element)
 {
     CSSStyleDeclarationImp* style = getStyle(element);
@@ -136,7 +107,7 @@ void ViewCSSImp::removeElement(Element element)
         return;
     Block* block = dynamic_cast<Block*>(style->getBox());
     if (!block)
-        updateInlines(style);
+        style->updateInlines();
     else {
         Block* holder = dynamic_cast<Block*>(block->getParentBox());
         if (!holder)  // floating box, absolutely positioned box
@@ -152,6 +123,7 @@ void ViewCSSImp::removeElement(Element element)
             block->release_();
             holder->setFlags(Box::NEED_REFLOW);
         }
+        style->removeBox(block);
     }
     map.erase(element);
 }
@@ -165,8 +137,8 @@ void ViewCSSImp::handleMutation(events::Event event)
     if (mutation.getType() == u"DOMCharacterDataModified") {
         Node parentNode = interface_cast<Node>(mutation.getRelatedNode());
         if (Element::hasInstance(parentNode)) {
-            Element element = interface_cast<Element>(parentNode);
-            updateInlines(getStyle(element));
+            if (CSSStyleDeclarationImp* style = getStyle(interface_cast<Element>(parentNode)))
+                style->updateInlines();
         }
         return;
     } else if (mutation.getType() == u"DOMNodeInserted") {
@@ -176,9 +148,9 @@ void ViewCSSImp::handleMutation(events::Event event)
         Node target = interface_cast<Node>(event.getTarget());
         if (Element::hasInstance(target))
             setFlags(Box::NEED_SELECTOR_MATCHING);
-        else {
-            Element element = interface_cast<Element>(parentNode);
-            updateInlines(getStyle(element));
+        else if (Element::hasInstance(parentNode)) {
+            if (CSSStyleDeclarationImp* style = getStyle(interface_cast<Element>(parentNode)))
+                style->updateInlines();
         }
         return;
     } else if (mutation.getType() == u"DOMNodeRemoved") {
@@ -189,9 +161,9 @@ void ViewCSSImp::handleMutation(events::Event event)
         if (Element::hasInstance(target)) {
             removeElement(interface_cast<Element>(target));
             setFlags(Box::NEED_SELECTOR_MATCHING);
-        } else {
-            Element element = interface_cast<Element>(parentNode);
-            updateInlines(getStyle(element));
+        } else if (Element::hasInstance(parentNode)) {
+            if (CSSStyleDeclarationImp* style = getStyle(interface_cast<Element>(parentNode)))
+                style->updateInlines();
         }
         return;
     }
@@ -354,7 +326,7 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle, CSSAuto
                     }
                 }
             }
-            updateInlines(style);
+            style->updateInlines();
         } else {
             style = map[element].get();
             assert(style);

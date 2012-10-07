@@ -2082,6 +2082,31 @@ void CSSStyleDeclarationImp::removeBox(Box* b)
     }
 }
 
+void CSSStyleDeclarationImp::updateInlines()
+{
+    CSSStyleDeclarationImp* style = this;
+    do {
+        switch (style->display.getValue()) {
+        // TODO:
+        // case CSSDisplayValueImp::None:
+        //     break;
+        case CSSDisplayValueImp::Block:
+        case CSSDisplayValueImp::ListItem:
+        case CSSDisplayValueImp::Table:
+        case CSSDisplayValueImp::InlineBlock:
+        case CSSDisplayValueImp::InlineTable:
+            if (Block* block = dynamic_cast<Block*>(style->getBox())) {
+                block->clearInlines();
+                return;
+            }
+            // FALL THROUGH
+        default:
+            style = style->getParentStyle();
+            break;
+        }
+    } while (style);
+}
+
 CSSStyleDeclarationImp* CSSStyleDeclarationImp::getPseudoElementStyle(int id) const
 {
     assert(0 <= id && id < CSSPseudoElementSelector::MaxPseudoElements);
