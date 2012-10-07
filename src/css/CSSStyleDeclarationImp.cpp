@@ -2107,13 +2107,28 @@ void CSSStyleDeclarationImp::updateInlines()
     } while (style);
 }
 
-CSSStyleDeclarationImp* CSSStyleDeclarationImp::getPseudoElementStyle(int id) const
+CSSStyleDeclarationImp* CSSStyleDeclarationImp::getPseudoElementStyle(int id)
 {
     assert(0 <= id && id < CSSPseudoElementSelector::MaxPseudoElements);
+    if (id == CSSPseudoElementSelector::Marker) {
+        // Check marker
+        if (!display.isListItem())
+            return 0;
+        CSSStyleDeclarationImp* markerStyle = pseudoElements[id].get();
+        if (!markerStyle) {
+            if (markerStyle = createPseudoElementStyle(CSSPseudoElementSelector::Marker)) {
+                // Set the default marker style
+                markerStyle->setDisplay(u"inline-block");
+                markerStyle->setLetterSpacing(u"normal");
+                markerStyle->setWordSpacing(u"normal");
+                markerStyle->setFontFamily(u"sans-serif");
+            }
+        }
+    }
     return pseudoElements[id].get();
 }
 
-CSSStyleDeclarationImp* CSSStyleDeclarationImp::getPseudoElementStyle(const std::u16string& name) const
+CSSStyleDeclarationImp* CSSStyleDeclarationImp::getPseudoElementStyle(const std::u16string& name)
 {
     return getPseudoElementStyle(CSSPseudoElementSelector::getPseudoElementID(name));
 }

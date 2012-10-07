@@ -98,20 +98,24 @@ public:
         return window;
     }
 
-    void addStyle(const Element element, CSSStyleDeclarationImp* style) {
+    // Selector matching
+    void addStyle(const Element& element, CSSStyleDeclarationImp* style) {
         map[element] = style;
     }
-
     void cascade();
-    void cascade(Node node, CSSStyleDeclarationImp* parentStyle, CSSAutoNumberingValueImp::CounterContext* counterContext);
-    CSSStyleDeclarationImp* checkMarker(CSSStyleDeclarationImp* style, Element& element, CSSAutoNumberingValueImp::CounterContext* counterContext);
+    void cascade(Node node, CSSStyleDeclarationImp* parentStyle);
 
+    // Style recalculation
+    void calculateComputedStyles();
+    void calculateComputedStyle(Element element, CSSStyleDeclarationImp* parentStyle, CSSAutoNumberingValueImp::CounterContext* counterContext);
+    Element updatePseudoElement(CSSStyleDeclarationImp* style, int id, Element element, Element pseudoElement, CSSAutoNumberingValueImp::CounterContext* counterContext);
+
+    // Reflow
     HttpRequest* preload(const std::u16string& base, const std::u16string& url) {
         if (window)
             return window->preload(base, url);
         return 0;
     }
-
     Block* createBlock(Element element,  Block* parentBox, CSSStyleDeclarationImp* style, bool newContext, bool asBlock);
     Block* constructBlock(Node node, Block* parentBox, CSSStyleDeclarationImp* style, bool asBlock = false, Block* prevBox = 0);
     Block* constructBlock(Text text, Block* parentBox, CSSStyleDeclarationImp* style, Block* prevBox);
@@ -119,10 +123,13 @@ public:
     Block* constructBlocks();
     Block* layOut();
     Block* dump();
-
     void resolveXY(float left, float top);
+
+    // Repaint
     void render(ViewCSSImp* parentView);
     void renderCanvas(unsigned color);
+
+    // Misc.
 
     // For the containing block of the root element's top-level boxes, we need to explicitly specify the size of the box.
     void setSize(float w, float h) {

@@ -100,6 +100,9 @@ void WindowImp::BackgroundTask::operator()()
             command &= ~Layout;
             state = Layouting;
             view->setSize(window->width, window->height);   // TODO: sync with mainloop
+            recordTime("%*sstyle recalculation begin", window->windowDepth * 2, "");
+            view->calculateComputedStyles();
+            recordTime("%*sstyle recalculation end", window->windowDepth * 2, "");
             recordTime("%*sreflow begin", window->windowDepth * 2, "");
             view->layOut();
             recordTime("%*sreflow end", window->windowDepth * 2, "");

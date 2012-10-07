@@ -419,8 +419,8 @@ public:
     int getPseudoElementSelectorType() const {
         return pseudoElementSelectorType;
     }
-    CSSStyleDeclarationImp* getPseudoElementStyle(int id) const;
-    CSSStyleDeclarationImp* getPseudoElementStyle(const std::u16string& name) const;
+    CSSStyleDeclarationImp* getPseudoElementStyle(int id);
+    CSSStyleDeclarationImp* getPseudoElementStyle(const std::u16string& name);
     CSSStyleDeclarationImp* createPseudoElementStyle(int id);
 
     bool isAffectedByHover() const;

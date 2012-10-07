@@ -187,23 +187,23 @@ void ViewCSSImp::resolveXY(float left, float top)
 
 void ViewCSSImp::cascade()
 {
-    CSSAutoNumberingValueImp::CounterContext cc(this);
-    cascade(getDocument(), 0, &cc);
+    cascade(getDocument(), 0);
     clearFlags(Box::NEED_SELECTOR_MATCHING | Box::NEED_SELECTOR_REMATCHING);  // TODO: Refine
-    if (3 <= getLogLevel())
-        printComputedValues(getDocument(), this);
 }
 
-void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle, CSSAutoNumberingValueImp::CounterContext* counterContext)
+void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle)
 {
     CSSStyleDeclarationImp* style = 0;
     Element element((node.getNodeType() == Node::ELEMENT_NODE) ? interface_cast<Element>(node) : 0);
     if (element) {
-        if (map.find(element) == map.end()) {
+        if (map.find(element) != map.end()) {
+            style = map[element].get();
+            assert(style);
+        } else {
             style = new(std::nothrow) CSSStyleDeclarationImp;
             if (!style)
                 return;  // TODO: error
-            map[element] = style;
+            addStyle(element, style);
 
             CSSStyleDeclarationImp* elementDecl = 0;
             if (html::HTMLElement::hasInstance(element)) {
@@ -263,147 +263,113 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle, CSSAuto
                 }
             } // TODO: detach the shadow tree from element (if any)
 
-            // Process pseudo elements:
-            assert(counterContext);
-            style->updateCounters(this, counterContext);
-
-            CSSAutoNumberingValueImp::CounterContext cc(this);
-            CSSStyleDeclarationImp* markerStyle = checkMarker(style, element, &cc);
-            ElementImp* imp = dynamic_cast<ElementImp*>(element.self());
-            assert(imp);
-            CSSStyleDeclarationImp* beforeStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::Before);
-            if (beforeStyle) {
-                beforeStyle->compute(this, style, element);
-                if (style->display.isNone() || beforeStyle->display.isNone() || beforeStyle->content.isNone())
-                    beforeStyle = 0;
-            }
-            if (!beforeStyle)
-                imp->before = 0;
-            else {
-                beforeStyle->updateCounters(this, &cc);
-                imp->before = beforeStyle->content.eval(this, element, &cc);
-                CSSAutoNumberingValueImp::CounterContext ccBefore(this);
-                checkMarker(beforeStyle, imp->before, &ccBefore);
-            }
-
-            for (Node child = node.getFirstChild(); child; child = child.getNextSibling())
-                cascade(child, style, &cc);
-
-            CSSStyleDeclarationImp* afterStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::After);
-            if (afterStyle) {
-                afterStyle->compute(this, style, element);
-                if (style->display.isNone() || afterStyle->display.isNone() || afterStyle->content.isNone())
-                    afterStyle = 0;
-            }
-            if (!afterStyle)
-                imp->after = 0;
-            else {
-                afterStyle->updateCounters(this, &cc);
-                imp->after = afterStyle->content.eval(this, element, &cc);
-                CSSAutoNumberingValueImp::CounterContext ccAfter(this);
-                checkMarker(afterStyle, imp->after, &ccAfter);
-            }
-
-            style->emptyInline = 0;
-            if (style->display.isInline() && !isReplacedElement(element)) {
-                // Empty inline elements still have margins, padding, borders and a line height. cf. 10.8
-                if (!node.hasChildNodes() && !markerStyle && !beforeStyle && !afterStyle)
-                    style->emptyInline = 4;
-                else {
-                    if (markerStyle || beforeStyle)
-                        style->emptyInline = 1;
-                    else if (style->marginLeft.getPx() || style->borderLeftWidth.getPx() || style->paddingLeft.getPx()) {
-                        Node child = node.getFirstChild();
-                        if (child.getNodeType() != Node::TEXT_NODE)
-                            style->emptyInline = 1;
-                    }
-                    if (afterStyle)
-                        style->emptyInline |= 2;
-                    else if (style->marginRight.getPx() || style->borderRightWidth.getPx() || style->paddingRight.getPx()) {
-                        Node child = node.getLastChild();
-                        if (child.getNodeType() != Node::TEXT_NODE)
-                            style->emptyInline |= 2;
-                    }
-                }
-            }
-            style->updateInlines();
-        } else {
-            style = map[element].get();
-            assert(style);
-            assert(counterContext);
-            ElementImp* imp = dynamic_cast<ElementImp*>(element.self());
-            assert(imp);
-            style->updateCounters(this, counterContext);
-            CSSAutoNumberingValueImp::CounterContext cc(this);
-            if (!style->display.isNone()) {
-                CSSStyleDeclarationImp* markerStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::Marker);
-                if (markerStyle && !markerStyle->display.isNone() && !markerStyle->content.isNone()) {
-                    markerStyle->updateCounters(this, &cc);
-                    std::u16string text = markerStyle->content.evalText(this, element, &cc);
-                    if (!text.empty() && text != static_cast<std::u16string>(imp->marker.getTextContent()))
-                        imp->marker.setTextContent(text);
-                }
-                CSSStyleDeclarationImp* beforeStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::Before);
-                if (beforeStyle && !beforeStyle->display.isNone() && !beforeStyle->content.isNone()) {
-                    beforeStyle->updateCounters(this, &cc);
-                    std::u16string text = beforeStyle->content.evalText(this, element, &cc);
-                    if (!text.empty() && text != static_cast<std::u16string>(imp->before.getTextContent()))
-                        imp->before.setTextContent(text);
-                    // TODO: support marker
-                }
-            }
-            for (Node child = node.getFirstChild(); child; child = child.getNextSibling())
-                cascade(child, style, &cc);
-            if (!style->display.isNone()) {
-                CSSStyleDeclarationImp* afterStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::After);
-                if (afterStyle && !afterStyle->display.isNone() && !afterStyle->content.isNone()) {
-                    afterStyle->updateCounters(this, &cc);
-                    std::u16string text = afterStyle->content.evalText(this, element, &cc);
-                    if (!text.empty() && text != static_cast<std::u16string>(imp->after.getTextContent()))
-                        imp->after.setTextContent(text);
-                    // TODO: support marker
-                }
-            }
+            style->updateInlines(); // TODO ???
         }
-    } else {
-        for (Node child = node.getFirstChild(); child; child = child.getNextSibling())
-            cascade(child, style, counterContext);
     }
+    for (Node child = node.getFirstChild(); child; child = child.getNextSibling())
+        cascade(child, style);
 
     if (!parentStyle && style)
         overflow = style->overflow.getValue();
 }
 
-CSSStyleDeclarationImp* ViewCSSImp::checkMarker(CSSStyleDeclarationImp* style, Element& element, CSSAutoNumberingValueImp::CounterContext* counterContext)
+void ViewCSSImp::calculateComputedStyles()
 {
-    if (!style->display.isListItem() || style->display.isNone())
-        return 0;
-    ElementImp* imp = dynamic_cast<ElementImp*>(element.self());
+    CSSAutoNumberingValueImp::CounterContext counterContext(this);
+    for (Node child = getDocument().getFirstChild(); child; child = child.getNextSibling()) {
+        if (child.getNodeType() == Node::ELEMENT_NODE)
+            calculateComputedStyle(interface_cast<Element>(child), 0, &counterContext);
+    }
+    if (3 <= getLogLevel())
+        printComputedValues(getDocument(), this);
+}
+
+void ViewCSSImp::calculateComputedStyle(Element element, CSSStyleDeclarationImp* parentStyle, CSSAutoNumberingValueImp::CounterContext* counterContext)
+{
+    assert(counterContext);
+
+    CSSStyleDeclarationImp* style = map[element].get();
+    if (!style)
+        return;
+    style->compute(this, parentStyle, element);
+
+    Element shadow = element;
+    if (HTMLElementImp* imp = dynamic_cast<HTMLElementImp*>(element.self())) {
+        if (imp->getShadowTree())
+            shadow = imp->getShadowTree();
+    }
+
+    if (!style->display.isNone())
+        style->updateCounters(this, counterContext);
+
+    CSSAutoNumberingValueImp::CounterContext cc(this);
+    ElementImp* imp(dynamic_cast<ElementImp*>(shadow.self()));
     assert(imp);
-    imp->marker = 0;
-    CSSStyleDeclarationImp* markerStyle = style->getPseudoElementStyle(CSSPseudoElementSelector::Marker);
-    if (!markerStyle) {
-        // Generate the default markerStyle.
-        markerStyle = style->createPseudoElementStyle(CSSPseudoElementSelector::Marker);
-        if (markerStyle) {
-            // Set the default marker style
-            markerStyle->setDisplay(u"inline-block");
-            markerStyle->setLetterSpacing(u"normal");
-            markerStyle->setWordSpacing(u"normal");
-            markerStyle->setFontFamily(u"sans-serif");
+
+    if (!style->display.isNone()) {
+        imp->marker = updatePseudoElement(style, CSSPseudoElementSelector::Marker, shadow, imp->marker, &cc);
+        imp->before = updatePseudoElement(style, CSSPseudoElementSelector::Before, shadow, imp->before, &cc);
+    }
+    for (Node child = shadow.getFirstChild(); child; child = child.getNextSibling()) {
+        if (child.getNodeType() == Node::ELEMENT_NODE)
+            calculateComputedStyle(interface_cast<Element>(child), style, &cc);
+    }
+    if (!style->display.isNone())
+        imp->after = updatePseudoElement(style, CSSPseudoElementSelector::After, shadow, imp->after, &cc);
+
+    style->emptyInline = 0;
+    if (style->display.isInline() && !isReplacedElement(shadow)) {
+        // Empty inline elements still have margins, padding, borders and a line height. cf. 10.8
+        if (!shadow.hasChildNodes() && !imp->marker && !imp->before && !imp->after)
+            style->emptyInline = 4;
+        else {
+            if (imp->marker || imp->before)
+                style->emptyInline = 1;
+            else if (style->marginLeft.getPx() || style->borderLeftWidth.getPx() || style->paddingLeft.getPx()) {
+                Node child = shadow.getFirstChild();
+                if (child.getNodeType() != Node::TEXT_NODE)
+                    style->emptyInline = 1;
+            }
+            if (imp->after)
+                style->emptyInline |= 2;
+            else if (style->marginRight.getPx() || style->borderRightWidth.getPx() || style->paddingRight.getPx()) {
+                Node child = shadow.getLastChild();
+                if (child.getNodeType() != Node::TEXT_NODE)
+                    style->emptyInline |= 2;
+            }
         }
     }
-    if (markerStyle) {
-        markerStyle->compute(this, style, element);
-        if (markerStyle->display.isNone() || markerStyle->content.isNone())
-            markerStyle = 0;
+}
+
+Element ViewCSSImp::updatePseudoElement(CSSStyleDeclarationImp* style, int id, Element element, Element pseudoElement, CSSAutoNumberingValueImp::CounterContext* counterContext)
+{
+    assert(!style->display.isNone());
+    CSSStyleDeclarationImp* pseudoStyle = style->getPseudoElementStyle(id);
+    if (!pseudoStyle)
+        return 0;
+    pseudoStyle->compute(this, style, element);
+    if (pseudoStyle->display.isNone() || pseudoStyle->content.isNone())
+        return 0;
+
+    pseudoStyle->updateCounters(this, counterContext);
+
+    if (!pseudoElement)
+        pseudoElement = pseudoStyle->content.eval(this, element, counterContext);
+    else {
+        // TODO: what to do if content has been changed
+        std::u16string text = pseudoStyle->content.evalText(this, element, counterContext);
+        if (!text.empty() && text != static_cast<std::u16string>(pseudoElement.getTextContent()))
+            pseudoElement.setTextContent(text);
     }
-    if (markerStyle) {
-        markerStyle->updateCounters(this, counterContext);
-        imp->marker = markerStyle->content.eval(this, element, counterContext);
-        assert(style->getPseudoElementStyle(CSSPseudoElementSelector::Marker));
+
+    if (id != CSSPseudoElementSelector::Marker) {
+        CSSAutoNumberingValueImp::CounterContext ccMarker(this);
+        ElementImp* imp = dynamic_cast<ElementImp*>(pseudoElement.self());
+        assert(imp);
+        imp->marker = updatePseudoElement(pseudoStyle, CSSPseudoElementSelector::Marker, pseudoElement, imp->marker, &ccMarker);
     }
-    return markerStyle;
+
+    return pseudoElement;
 }
 
 // In this step, neither inline-level boxes nor line boxes are generated.
@@ -548,7 +514,6 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, CSSStyleDec
         style = map[element].get();
     if (!style)
         return 0;
-    style->compute(this, parentStyle, element);
     if (style->display.isNone())
         return 0;
 
