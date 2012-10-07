@@ -185,13 +185,13 @@ void ViewCSSImp::resolveXY(float left, float top)
         boxTree->resolveXY(this, left, top, 0);
 }
 
-void ViewCSSImp::cascade()
+void ViewCSSImp::constructComputedStyles()
 {
-    cascade(getDocument(), 0);
+    constructComputedStyle(getDocument(), 0);
     clearFlags(Box::NEED_SELECTOR_MATCHING | Box::NEED_SELECTOR_REMATCHING);  // TODO: Refine
 }
 
-void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle)
+void ViewCSSImp::constructComputedStyle(Node node, CSSStyleDeclarationImp* parentStyle)
 {
     CSSStyleDeclarationImp* style = 0;
     Element element((node.getNodeType() == Node::ELEMENT_NODE) ? interface_cast<Element>(node) : 0);
@@ -267,7 +267,7 @@ void ViewCSSImp::cascade(Node node, CSSStyleDeclarationImp* parentStyle)
         }
     }
     for (Node child = node.getFirstChild(); child; child = child.getNextSibling())
-        cascade(child, style);
+        constructComputedStyle(child, style);
 
     if (!parentStyle && style)
         overflow = style->overflow.getValue();

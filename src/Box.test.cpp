@@ -103,8 +103,9 @@ int main(int argc, char** argv)
     DocumentWindowPtr window = new(std::nothrow) DocumentWindow;
     window->setDocument(document);
     ViewCSSImp* view = new ViewCSSImp(window, defaultStyleSheet);
-    view->cascade();
     view->setSize(8.5f * 96, 11.0f * 96);  // US letter size, 96 DPI
+    view->constructComputedStyles();
+    view->calculateComputedStyles();
 
     Box* boxTree = view->constructBlocks();
     if (!boxTree)

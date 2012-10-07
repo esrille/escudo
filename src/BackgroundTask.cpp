@@ -85,7 +85,7 @@ void WindowImp::BackgroundTask::operator()()
             if (!view)
                 view = new(std::nothrow) ViewCSSImp(window->getDocumentWindow(), getDOMImplementation()->getDefaultCSSStyleSheet(), getDOMImplementation()->getUserCSSStyleSheet());
             if (view) {
-                view->cascade();
+                view->constructComputedStyles();
                 state = Cascaded;
             } else
                 state = Init;

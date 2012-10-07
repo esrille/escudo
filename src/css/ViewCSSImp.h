@@ -102,8 +102,8 @@ public:
     void addStyle(const Element& element, CSSStyleDeclarationImp* style) {
         map[element] = style;
     }
-    void cascade();
-    void cascade(Node node, CSSStyleDeclarationImp* parentStyle);
+    void constructComputedStyles();
+    void constructComputedStyle(Node node, CSSStyleDeclarationImp* parentStyle);
 
     // Style recalculation
     void calculateComputedStyles();

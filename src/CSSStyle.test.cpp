@@ -124,7 +124,8 @@ int main(int argc, char** argv)
     DocumentWindowPtr window = new(std::nothrow) DocumentWindow;
     window->setDocument(document);
     ViewCSSImp* view = new ViewCSSImp(window, defaultStyleSheet);
-    view->cascade();
+    view->constructComputedStyles();
+    view->calculateComputedStyles();
     printComputedValues(document, view);
 
     std::cout << "done.\n";
