@@ -406,7 +406,7 @@ Block::Block(Node node, CSSStyleDeclarationImp* style) :
     flags |= NEED_EXPANSION | NEED_REFLOW | NEED_CHILD_LAYOUT;
 }
 
-void Block::reset()
+void Block::clearInlines()
 {
     setFlags(NEED_EXPANSION | NEED_REFLOW);
     // TODO: check pseudo elements

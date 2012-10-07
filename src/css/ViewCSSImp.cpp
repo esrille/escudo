@@ -115,7 +115,7 @@ void updateInlines(CSSStyleDeclarationImp* style)
         case CSSDisplayValueImp::InlineBlock:
         case CSSDisplayValueImp::InlineTable:
             if (Block* block = dynamic_cast<Block*>(style->getBox())) {
-                block->reset();
+                block->clearInlines();
                 style = 0;
                 break;
             }
@@ -145,7 +145,7 @@ void ViewCSSImp::removeElement(Element element)
             holder = dynamic_cast<Block*>(block->getParentBox()->getParentBox()->getParentBox());
         assert(holder);
         if (holder->removeBlock(element))
-            holder->reset();
+            holder->clearInlines();
         else {
             assert(block->getParentBox() == holder);
             holder->removeChild(block);

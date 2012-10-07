@@ -567,7 +567,7 @@ public:
     virtual unsigned getBoxType() const {
         return BLOCK_LEVEL_BOX;
     }
-    void reset();
+    void clearInlines();
 
     void shrinkToFit();
     virtual float shrinkTo();
