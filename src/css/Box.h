@@ -419,6 +419,9 @@ public:
         return flags & (NEED_REFLOW | NEED_CHILD_LAYOUT);
     }
 
+    unsigned short getFlags() const {
+        return flags;
+    }
     void setFlags(unsigned short f);
     void clearFlags(unsigned short f = 0xffff);
     unsigned short gatherFlags() const;
