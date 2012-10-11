@@ -295,7 +295,7 @@ void ViewCSSImp::calculateComputedStyle(Element element, CSSStyleDeclarationImp*
 {
     assert(counterContext);
 
-    CSSStyleDeclarationImp* style = map[element].get();
+    CSSStyleDeclarationImp* style = getStyle(element, Nullable<std::u16string>());
     if (!style)
         return;
     style->compute(this, parentStyle, element);
@@ -518,7 +518,7 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, CSSStyleDec
 #endif
 
     if (!style)
-        style = map[element].get();
+        style = getStyle(element, Nullable<std::u16string>());
     if (!style)
         return 0;
     if (style->display.isNone())
@@ -559,7 +559,7 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, CSSStyleDec
                 if (prevBox == parentBox)
                     prevBox = 0;
                 else
-                    assert(prevBox->parentBox == parentBox);
+                    assert(!prevBox || prevBox->parentBox == parentBox);
             }
         }
     } else if (style->isBlockLevel() || asBlock) {
