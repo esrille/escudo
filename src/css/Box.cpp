@@ -461,6 +461,7 @@ Block* Block::getAnonymousBox(Box* prev)
             appendChild(anonymousBox);
         else
             insertBefore(anonymousBox, prev->getNextSibling());
+        setFlags(anonymousBox->flags);
     }
     return anonymousBox;
 }
