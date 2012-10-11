@@ -319,7 +319,7 @@ public:
     static bool evalNoWrap(HTMLElementImp* element);
     static bool evalValign(HTMLElementImp* element);
 
-    // xblEnteredDocument() should be called after view->cascade().
+    // xblEnteredDocument() should be called after view->constructComputedStyles().
     static void xblEnteredDocument(Node node);
 };
 
