@@ -22,7 +22,6 @@
 #include <org/w3c/dom/css/CSSStyleDeclaration.h>
 
 #include <map>
-#include <set>
 
 #include "DocumentWindow.h"
 #include "ElementImp.h"
@@ -99,9 +98,7 @@ public:
     }
 
     // Selector matching
-    void addStyle(const Element& element, CSSStyleDeclarationImp* style) {
-        map[element] = style;
-    }
+    void addStyle(const Element& element, CSSStyleDeclarationImp* style);
     void constructComputedStyles();
     void constructComputedStyle(Node node, CSSStyleDeclarationImp* parentStyle);
 

@@ -185,6 +185,13 @@ void ViewCSSImp::resolveXY(float left, float top)
         boxTree->resolveXY(this, left, top, 0);
 }
 
+void ViewCSSImp::addStyle(const Element& element, CSSStyleDeclarationImp* style)
+{
+    assert(element);
+    assert(style);
+    map[element] = style;
+}
+
 void ViewCSSImp::constructComputedStyles()
 {
     constructComputedStyle(getDocument(), 0);
