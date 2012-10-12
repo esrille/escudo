@@ -1330,6 +1330,20 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
     context = updateFormattingContext(context);
 
     layOutInlineBlocks(view);
+    if (hasInline() && !(flags & NEED_REFLOW)) {
+        // Only inline blocks have been marked NEED_REFLOW and no more reflow is necessary
+        // with this block.
+#ifndef NDEBUG
+            if (3 <= getLogLevel())
+                std::cout << "### Block::" << __func__ << ": skip reflow for '" << tag << "'\n";
+#endif
+        flags &= ~NEED_CHILD_LAYOUT;
+        context = restoreFormattingContext(context);
+        context->restoreContext(this);
+        height = savedHeight;
+        mcw = savedMcw;
+        return true;
+    }
 
     if (!layOutReplacedElement(view, this, element, style.get())) {
         if (!intrinsic && style->display.isInline() && isReplacedElement(element)) {
