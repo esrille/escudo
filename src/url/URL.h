@@ -148,6 +148,9 @@ public:
     bool operator ==(const URL& other) const {
         return url == other.url;
     }
+    bool operator !=(const URL& other) const {
+        return url != other.url;
+    }
 };
 
 }}}}  // org::w3c::dom::bootstrap

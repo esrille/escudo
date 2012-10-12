@@ -134,6 +134,7 @@ protected:
 
     // background
     unsigned backgroundColor;
+    HttpRequest* backgroundRequest;
     BoxImage* backgroundImage;
     float backgroundLeft;
     float backgroundTop;
@@ -540,6 +541,8 @@ class Block : public Box
     void applyMinMaxHeight(FormattingContext* context);
 
     float getBaseline(const Box* box) const;
+
+    void notifyBackground(Document document);
 
 protected:
     // resolveAbsoluteWidth's return values

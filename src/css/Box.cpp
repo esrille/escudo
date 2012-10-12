@@ -20,6 +20,8 @@
 #include <new>
 #include <iostream>
 
+#include <boost/bind.hpp>
+
 #include <Object.h>
 #include <org/w3c/dom/Document.h>
 #include <org/w3c/dom/Element.h>
@@ -29,6 +31,7 @@
 #include "CSSSerialize.h"
 #include "CSSStyleDeclarationImp.h"
 #include "CSSTokenizer.h"
+#include "DocumentImp.h"
 #include "FormattingContext.h"
 #include "StackingContext.h"
 #include "ViewCSSImp.h"
@@ -74,6 +77,7 @@ Box::Box(Node node) :
     visibility(CSSVisibilityValueImp::Visible),
     clipBox(0),
     backgroundColor(0x00000000),
+    backgroundRequest(0),
     backgroundImage(0),
     backgroundLeft(0.0f),
     backgroundTop(0.0f),
@@ -87,6 +91,8 @@ Box::Box(Node node) :
 
 Box::~Box()
 {
+    delete backgroundRequest;
+
     if (stackingContext)
         stackingContext->removeBox(this);
 
@@ -497,8 +503,32 @@ void Block::resolveBackground(ViewCSSImp* view)
     backgroundColor = style->backgroundColor.getARGB();
     if (style->backgroundImage.isNone())
         return;
-    if (HttpRequest* request = view->preload(view->getDocument().getDocumentURI(), style->backgroundImage.getValue()))
-        backgroundImage = request->getBoxImage(style->backgroundRepeat.getValue());
+    DocumentImp* document = dynamic_cast<DocumentImp*>(view->getDocument().self());
+    if (backgroundRequest && backgroundRequest->getRequestMessage().getURL() != URL(document->getDocumentURI(), style->backgroundImage.getValue())) {
+        delete backgroundRequest;   // TODO: check notifyBackground has been called
+        backgroundRequest = 0;
+    }
+    if (!backgroundRequest) {
+        backgroundRequest = new(std::nothrow) HttpRequest(document->getDocumentURI());
+        if (backgroundRequest) {
+            backgroundRequest->open(u"GET", style->backgroundImage.getValue());
+            backgroundRequest->setHanndler(boost::bind(&Block::notifyBackground, this, view->getDocument()));
+            document->incrementLoadEventDelayCount();
+            retain_();
+            backgroundRequest->send();
+        }
+    }
+    if (backgroundRequest)
+        backgroundImage = backgroundRequest->getBoxImage(style->backgroundRepeat.getValue());
+}
+
+void Block::notifyBackground(Document document)
+{
+    if (backgroundRequest->getStatus() == 200)
+        setFlags(NEED_REFLOW);
+    if (auto* imp = dynamic_cast<DocumentImp*>(document.self()))
+        imp->decrementLoadEventDelayCount();
+    release_();
 }
 
 void Block::resolveBackgroundPosition(ViewCSSImp* view, const ContainingBlock* containingBlock)
