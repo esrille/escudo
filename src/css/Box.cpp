@@ -159,6 +159,31 @@ Box* Box::appendChild(Box* item)
     return item;
 }
 
+void Box::removeChildren()
+{
+    while (hasChildBoxes()) {
+        Box* child = getFirstChild();
+        removeChild(child);
+        child->release_();
+    }
+}
+
+void Box::removeDescendants()
+{
+    while (hasChildBoxes()) {
+        Box* child = getFirstChild();
+        removeChild(child);
+        child->removeDescendants();
+        if (auto block = dynamic_cast<Block*>(child)) {
+            block->clearInlines();
+            block->clearBlocks();
+        }
+        if (child->style)
+            child->style->removeBox(child);
+        child->release_();
+    }
+}
+
 void Box::setStyle(CSSStyleDeclarationImp* style)
 {
     this->style = style;

@@ -179,13 +179,8 @@ public:
     Box* insertBefore(Box* item, Box* after);
     Box* appendChild(Box* item);
 
-    void removeChildren() {
-        while (hasChildBoxes()) {
-            Box* child = getFirstChild();
-            removeChild(child);
-            child->release_();
-        }
-    }
+    void removeChildren();
+    void removeDescendants();
 
     Box* getParentBox() const {
         return parentBox;
@@ -626,6 +621,9 @@ public:
             }
         } while (box->isAnonymous() && (box = dynamic_cast<Block*>(box->getParentBox())));
         return false;
+    }
+    void clearBlocks() {
+        blockMap.clear();
     }
 
     virtual bool isAbsolutelyPositioned() const;
