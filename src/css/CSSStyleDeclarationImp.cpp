@@ -2243,12 +2243,13 @@ void CSSStyleDeclarationImp::setProperty(int id, Nullable<std::u16string> value,
     if (expr) {
         setProperty(id, expr, prio);
         delete expr;
-        if (owner) {
+        if (owner && html::HTMLElement::hasInstance(owner)) {
             events::EventTarget target(owner);
             events::MutationEvent event = new(std::nothrow) MutationEventImp;
-            // TODO: prev, new
             event.initMutationEvent(u"DOMAttrModified",
-                                    true, false, this, u"", u"", getPropertyName(id), events::MutationEvent::MODIFICATION);
+                                    true, false, 0, // TODO: Attr node (obsolte)
+                                    u"", u"",       // TODO: prev, new
+                                    u"style", events::MutationEvent::MODIFICATION);
             target.dispatchEvent(event);
         }
     }
