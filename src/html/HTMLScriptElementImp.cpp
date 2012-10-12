@@ -89,7 +89,7 @@ bool HTMLScriptElementImp::prepare()
         request = new(std::nothrow) HttpRequest(document->getDocumentURI());
         if (request) {
             request->open(u"GET", src);
-            request->setHanndler(boost::bind(&HTMLScriptElementImp::notify, this));
+            request->setHandler(boost::bind(&HTMLScriptElementImp::notify, this));
             document->incrementLoadEventDelayCount();
             request->send();
         }

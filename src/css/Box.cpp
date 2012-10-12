@@ -512,7 +512,7 @@ void Block::resolveBackground(ViewCSSImp* view)
         backgroundRequest = new(std::nothrow) HttpRequest(document->getDocumentURI());
         if (backgroundRequest) {
             backgroundRequest->open(u"GET", style->backgroundImage.getValue());
-            backgroundRequest->setHanndler(boost::bind(&Block::notifyBackground, this, view->getDocument()));
+            backgroundRequest->setHandler(boost::bind(&Block::notifyBackground, this, view->getDocument()));
             document->incrementLoadEventDelayCount();
             retain_();
             backgroundRequest->send();

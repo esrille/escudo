@@ -79,7 +79,7 @@ HttpRequest* DocumentWindow::preload(const std::u16string& base, const std::u16s
     if (request) {
         cache.push_back(request);
         request->open(u"GET", urlString);
-        request->setHanndler(boost::bind(&DocumentWindow::notify, this));
+        request->setHandler(boost::bind(&DocumentWindow::notify, this));
         if (DocumentImp* imp = dynamic_cast<DocumentImp*>(document.self()))
             imp->incrementLoadEventDelayCount();
         request->send();

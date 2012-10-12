@@ -93,7 +93,7 @@ css::CSSStyleSheet CSSImportRuleImp::getStyleSheet()
         request = new(std::nothrow) HttpRequest(document->getDocumentURI());
         if (request) {
             request->open(u"GET", href);
-            request->setHanndler(boost::bind(&CSSImportRuleImp::notify, this));
+            request->setHandler(boost::bind(&CSSImportRuleImp::notify, this));
             document->incrementLoadEventDelayCount();
             request->send();
         }

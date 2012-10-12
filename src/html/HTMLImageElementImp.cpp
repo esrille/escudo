@@ -46,7 +46,7 @@ void HTMLImageElementImp::eval()
     request = new(std::nothrow) HttpRequest(document->getDocumentURI());
     if (request) {
         request->open(u"GET", getSrc());
-        request->setHanndler(boost::bind(&HTMLImageElementImp::notify, this));
+        request->setHandler(boost::bind(&HTMLImageElementImp::notify, this));
         document->incrementLoadEventDelayCount();
         request->send();
     } else
@@ -115,7 +115,7 @@ void HTMLImageElementImp::setSrc(std::u16string src)
         request = new(std::nothrow) HttpRequest(document->getDocumentURI());
     if (request) {
         request->open(u"GET", getSrc());
-        request->setHanndler(boost::bind(&HTMLImageElementImp::notify, this));
+        request->setHandler(boost::bind(&HTMLImageElementImp::notify, this));
         document->incrementLoadEventDelayCount();
         request->send();
     }

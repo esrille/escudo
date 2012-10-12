@@ -280,7 +280,7 @@ void HttpRequest::abort()
         return;
 
     // TODO: implement more details.
-    clearHanndler();
+    clearHandler();
     HttpConnectionManager& manager = HttpConnectionManager::getInstance();
     manager.abort(this);
     readyState = UNSENT;

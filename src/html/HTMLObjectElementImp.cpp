@@ -69,7 +69,7 @@ void HTMLObjectElementImp::eval()
     request = new(std::nothrow) HttpRequest(document->getDocumentURI());
     if (request) {
         request->open(u"GET", data);
-        request->setHanndler(boost::bind(&HTMLObjectElementImp::notify, this));
+        request->setHandler(boost::bind(&HTMLObjectElementImp::notify, this));
         document->incrementLoadEventDelayCount();
         request->send();
     } else

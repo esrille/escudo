@@ -75,7 +75,7 @@ void HTMLLinkElementImp::eval()
                 request = new(std::nothrow) HttpRequest(document->getDocumentURI());
                 if (request) {
                     request->open(u"GET", href);
-                    request->setHanndler(boost::bind(&HTMLLinkElementImp::linkStyleSheet, this));
+                    request->setHandler(boost::bind(&HTMLLinkElementImp::linkStyleSheet, this));
                     document->incrementLoadEventDelayCount();
                     request->send();
                 }
@@ -87,7 +87,7 @@ void HTMLLinkElementImp::eval()
         request = new(std::nothrow) HttpRequest(document->getDocumentURI());
         if (request) {
             request->open(u"GET", href);
-            request->setHanndler(boost::bind(&HTMLLinkElementImp::linkIcon, this));
+            request->setHandler(boost::bind(&HTMLLinkElementImp::linkIcon, this));
             document->incrementLoadEventDelayCount();
             request->send();
         }

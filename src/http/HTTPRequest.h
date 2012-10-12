@@ -77,10 +77,10 @@ public:
     std::fstream& getContent();
     std::FILE* openFile();
 
-    void setHanndler(boost::function<void (void)> f) {
+    void setHandler(boost::function<void (void)> f) {
         handler = f;
     }
-    void clearHanndler() {
+    void clearHandler() {
         handler.clear();
     }
 
