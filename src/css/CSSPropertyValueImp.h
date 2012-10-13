@@ -2361,6 +2361,12 @@ public:
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
         return value.getCssText(Options);
     }
+    bool operator==(const CSSVerticalAlignValueImp& align) const {
+        return value == align.value;
+    }
+    bool operator!=(const CSSVerticalAlignValueImp& align) const {
+        return value != align.value;
+    }
     void specify(const CSSVerticalAlignValueImp& specified) {
         value.specify(specified.value);
     }
