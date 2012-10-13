@@ -45,6 +45,73 @@ class Box;
 class StackingContext;
 class CSSStyleDeclarationImp;
 
+struct CSSStyleDeclarationBoard
+{
+    // property values                                         Block/  | need
+    //                                                         reFlow/ | Resolve
+    //                                                         rePaint |
+    CSSBorderCollapseValueImp borderCollapse;               // F
+    CSSBorderSpacingValueImp borderSpacing;                 // F
+    CSSBorderWidthValueImp borderTopWidth;                  // F
+    CSSBorderWidthValueImp borderRightWidth;                // F
+    CSSBorderWidthValueImp borderBottomWidth;               // F
+    CSSBorderWidthValueImp borderLeftWidth;                 // F
+    CSSAutoLengthValueImp bottom;                           // TBD       R
+    CSSCaptionSideValueImp captionSide;                     // B
+    CSSClearValueImp clear;                                 // F
+    CSSContentValueImp content;                             // B
+    CSSAutoNumberingValueImp counterIncrement;              // F
+    CSSAutoNumberingValueImp counterReset;                  // F
+    CSSDirectionValueImp direction;                         // F
+    CSSDisplayValueImp display;                             // B
+    CSSFloatValueImp float_;                                // B
+    CSSFontFamilyValueImp fontFamily;                       // F
+    CSSFontSizeValueImp fontSize;                           // F
+    CSSFontStyleValueImp fontStyle;                         // F
+    CSSFontVariantValueImp fontVariant;                     // F
+    CSSFontWeightValueImp fontWeight;                       // F
+    CSSAutoLengthValueImp height;                           // F         R
+    CSSAutoLengthValueImp left;                             // TBD       R
+    CSSLetterSpacingValueImp letterSpacing;                 // F
+    CSSLineHeightValueImp lineHeight;                       // F         R
+    CSSListStyleImageValueImp listStyleImage;               // B
+    CSSListStylePositionValueImp listStylePosition;         // B
+    CSSListStyleTypeValueImp listStyleType;                 // B
+    CSSAutoLengthValueImp marginTop;                        // F         R
+    CSSAutoLengthValueImp marginRight;                      // F         R
+    CSSAutoLengthValueImp marginBottom;                     // F         R
+    CSSAutoLengthValueImp marginLeft;                       // F         R
+    CSSNoneLengthValueImp maxHeight;                        // F         R
+    CSSNoneLengthValueImp maxWidth;                         // F         R
+    CSSNonNegativeValueImp minHeight;                       // F         R
+    CSSNonNegativeValueImp minWidth;                        // F         R
+    CSSOverflowValueImp overflow;                           // F
+    CSSNonNegativeValueImp paddingTop;                      // F         R
+    CSSNonNegativeValueImp paddingRight;                    // F         R
+    CSSNonNegativeValueImp paddingBottom;                   // F         R
+    CSSNonNegativeValueImp paddingLeft;                     // F         R
+    CSSPositionValueImp position;                           // B
+    CSSQuotesValueImp quotes;                               // F
+    CSSAutoLengthValueImp right;                            // TBD       R
+    CSSTableLayoutValueImp tableLayout;                     // F
+    CSSTextAlignValueImp textAlign;                         // F
+    CSSTextDecorationValueImp textDecoration;               // F
+    CSSNumericValueImp textIndent;                          // F         R
+    CSSTextTransformValueImp textTransform;                 // F
+    CSSAutoLengthValueImp top;                              // TBD       R
+    CSSUnicodeBidiValueImp unicodeBidi;                     // F
+    CSSVerticalAlignValueImp verticalAlign;                 // F         R
+    CSSWhiteSpaceValueImp whiteSpace;                       // F
+    CSSWordSpacingValueImp wordSpacing;                     // F
+    CSSAutoLengthValueImp width;                            // F         R
+    CSSZIndexValueImp zIndex;                               // B
+    CSSBindingValueImp binding;                             // B
+    HTMLAlignValueImp htmlAlign;                            // F         R
+
+    CSSStyleDeclarationBoard(CSSStyleDeclarationImp* style);
+    unsigned compare(CSSStyleDeclarationImp* style);
+};
+
 typedef boost::intrusive_ptr<CSSStyleDeclarationImp> CSSStyleDeclarationPtr;
 
 class CSSStyleDeclarationImp : public ObjectMixin<CSSStyleDeclarationImp>
@@ -267,111 +334,111 @@ private:
     void resetProperty(unsigned id);
 
 public:
-    // property values
-    CSSBackgroundAttachmentValueImp backgroundAttachment;
-    CSSColorValueImp backgroundColor;
-    CSSBackgroundImageValueImp backgroundImage;
-    CSSBackgroundPositionValueImp backgroundPosition;
-    CSSBackgroundRepeatValueImp backgroundRepeat;
-    CSSBackgroundShorthandImp background;
-    CSSBorderCollapseValueImp borderCollapse;
-    CSSBorderColorShorthandImp borderColor;
-    CSSBorderSpacingValueImp borderSpacing;
-    CSSBorderStyleShorthandImp borderStyle;
-    CSSBorderValueImp borderTop;
-    CSSBorderValueImp borderRight;
-    CSSBorderValueImp borderBottom;
-    CSSBorderValueImp borderLeft;
-    CSSBorderColorValueImp borderTopColor;
-    CSSBorderColorValueImp borderRightColor;
-    CSSBorderColorValueImp borderBottomColor;
-    CSSBorderColorValueImp borderLeftColor;
-    CSSBorderStyleValueImp borderTopStyle;
-    CSSBorderStyleValueImp borderRightStyle;
-    CSSBorderStyleValueImp borderBottomStyle;
-    CSSBorderStyleValueImp borderLeftStyle;
-    CSSBorderWidthValueImp borderTopWidth;
-    CSSBorderWidthValueImp borderRightWidth;
-    CSSBorderWidthValueImp borderBottomWidth;
-    CSSBorderWidthValueImp borderLeftWidth;
-    CSSBorderWidthShorthandImp borderWidth;
-    CSSBorderShorthandImp border;
-    CSSAutoLengthValueImp bottom;
-    CSSCaptionSideValueImp captionSide;
-    CSSClearValueImp clear;
+    // property values                                         Block/reFlow/rePaint
+    CSSBackgroundAttachmentValueImp backgroundAttachment;   // P
+    CSSColorValueImp backgroundColor;                       // P
+    CSSBackgroundImageValueImp backgroundImage;             // P
+    CSSBackgroundPositionValueImp backgroundPosition;       // P
+    CSSBackgroundRepeatValueImp backgroundRepeat;           // P
+    CSSBackgroundShorthandImp background;                   //
+    CSSBorderCollapseValueImp borderCollapse;               // F
+    CSSBorderColorShorthandImp borderColor;                 // P
+    CSSBorderSpacingValueImp borderSpacing;                 // F
+    CSSBorderStyleShorthandImp borderStyle;                 //
+    CSSBorderValueImp borderTop;                            //
+    CSSBorderValueImp borderRight;                          //
+    CSSBorderValueImp borderBottom;                         //
+    CSSBorderValueImp borderLeft;                           //
+    CSSBorderColorValueImp borderTopColor;                  // P
+    CSSBorderColorValueImp borderRightColor;                // P
+    CSSBorderColorValueImp borderBottomColor;               // P
+    CSSBorderColorValueImp borderLeftColor;                 // P
+    CSSBorderStyleValueImp borderTopStyle;                  // P
+    CSSBorderStyleValueImp borderRightStyle;                // P
+    CSSBorderStyleValueImp borderBottomStyle;               // P
+    CSSBorderStyleValueImp borderLeftStyle;                 // P
+    CSSBorderWidthValueImp borderTopWidth;                  // F
+    CSSBorderWidthValueImp borderRightWidth;                // F
+    CSSBorderWidthValueImp borderBottomWidth;               // F
+    CSSBorderWidthValueImp borderLeftWidth;                 // F
+    CSSBorderWidthShorthandImp borderWidth;                 //
+    CSSBorderShorthandImp border;                           //
+    CSSAutoLengthValueImp bottom;                           // TBD
+    CSSCaptionSideValueImp captionSide;                     // B
+    CSSClearValueImp clear;                                 // F
 
-    CSSColorValueImp color;
-    CSSContentValueImp content;
-    CSSAutoNumberingValueImp counterIncrement;
-    CSSAutoNumberingValueImp counterReset;
+    CSSColorValueImp color;                                 // P
+    CSSContentValueImp content;                             // B
+    CSSAutoNumberingValueImp counterIncrement;              // F
+    CSSAutoNumberingValueImp counterReset;                  // F
 
-    CSSCursorValueImp cursor;
-    CSSDirectionValueImp direction;
-    CSSDisplayValueImp display;
+    CSSCursorValueImp cursor;                               // P
+    CSSDirectionValueImp direction;                         // F
+    CSSDisplayValueImp display;                             // B
 
-    CSSEmptyCellsValueImp emptyCells;
-    CSSFloatValueImp float_;
-    CSSFontFamilyValueImp fontFamily;
-    CSSFontSizeValueImp fontSize;
-    CSSFontStyleValueImp fontStyle;
-    CSSFontVariantValueImp fontVariant;
-    CSSFontWeightValueImp fontWeight;
-    CSSFontShorthandImp font;
-    CSSAutoLengthValueImp height;
-    CSSAutoLengthValueImp left;
-    CSSLetterSpacingValueImp letterSpacing;
-    CSSLineHeightValueImp lineHeight;
-    CSSListStyleImageValueImp listStyleImage;
-    CSSListStylePositionValueImp listStylePosition;
-    CSSListStyleTypeValueImp listStyleType;
-    CSSListStyleShorthandImp listStyle;
-    CSSAutoLengthValueImp marginTop;
-    CSSAutoLengthValueImp marginRight;
-    CSSAutoLengthValueImp marginBottom;
-    CSSAutoLengthValueImp marginLeft;
-    CSSMarginShorthandImp margin;
-    CSSNoneLengthValueImp maxHeight;
-    CSSNoneLengthValueImp maxWidth;
-    CSSNonNegativeValueImp minHeight;
-    CSSNonNegativeValueImp minWidth;
+    CSSEmptyCellsValueImp emptyCells;                       // P
+    CSSFloatValueImp float_;                                // B
+    CSSFontFamilyValueImp fontFamily;                       // F
+    CSSFontSizeValueImp fontSize;                           // F
+    CSSFontStyleValueImp fontStyle;                         // F
+    CSSFontVariantValueImp fontVariant;                     // F
+    CSSFontWeightValueImp fontWeight;                       // F
+    CSSFontShorthandImp font;                               //
+    CSSAutoLengthValueImp height;                           // F
+    CSSAutoLengthValueImp left;                             // TBD
+    CSSLetterSpacingValueImp letterSpacing;                 // F
+    CSSLineHeightValueImp lineHeight;                       // F
+    CSSListStyleImageValueImp listStyleImage;               // B
+    CSSListStylePositionValueImp listStylePosition;         // B
+    CSSListStyleTypeValueImp listStyleType;                 // B
+    CSSListStyleShorthandImp listStyle;                     //
+    CSSAutoLengthValueImp marginTop;                        // F
+    CSSAutoLengthValueImp marginRight;                      // F
+    CSSAutoLengthValueImp marginBottom;                     // F
+    CSSAutoLengthValueImp marginLeft;                       // F
+    CSSMarginShorthandImp margin;                           //
+    CSSNoneLengthValueImp maxHeight;                        // F
+    CSSNoneLengthValueImp maxWidth;                         // F
+    CSSNonNegativeValueImp minHeight;                       // F
+    CSSNonNegativeValueImp minWidth;                        // F
 
-    CSSOutlineColorValueImp outlineColor;
-    CSSBorderStyleValueImp outlineStyle;
-    CSSBorderWidthValueImp outlineWidth;
-    CSSOutlineShorthandImp outline;
-    CSSOverflowValueImp overflow;
-    CSSNonNegativeValueImp paddingTop;
-    CSSNonNegativeValueImp paddingRight;
-    CSSNonNegativeValueImp paddingBottom;
-    CSSNonNegativeValueImp paddingLeft;
-    CSSPaddingShorthandImp padding;
-    CSSPageBreakValueImp pageBreakAfter;
-    CSSPageBreakValueImp pageBreakBefore;
-    CSSPageBreakValueImp pageBreakInside;
+    CSSOutlineColorValueImp outlineColor;                   // P
+    CSSBorderStyleValueImp outlineStyle;                    // P
+    CSSBorderWidthValueImp outlineWidth;                    // P
+    CSSOutlineShorthandImp outline;                         //
+    CSSOverflowValueImp overflow;                           // F
+    CSSNonNegativeValueImp paddingTop;                      // F
+    CSSNonNegativeValueImp paddingRight;                    // F
+    CSSNonNegativeValueImp paddingBottom;                   // F
+    CSSNonNegativeValueImp paddingLeft;                     // F
+    CSSPaddingShorthandImp padding;                         //
+    CSSPageBreakValueImp pageBreakAfter;                    // TBD
+    CSSPageBreakValueImp pageBreakBefore;                   // TBD
+    CSSPageBreakValueImp pageBreakInside;                   // TBD
 
-    CSSPositionValueImp position;
-    CSSQuotesValueImp quotes;
+    CSSPositionValueImp position;                           // B
+    CSSQuotesValueImp quotes;                               // F
 
-    CSSAutoLengthValueImp right;
+    CSSAutoLengthValueImp right;                            // TBD
 
-    CSSTableLayoutValueImp tableLayout;
-    CSSTextAlignValueImp textAlign;
-    CSSTextDecorationValueImp textDecoration;
-    CSSNumericValueImp textIndent;
-    CSSTextTransformValueImp textTransform;
-    CSSAutoLengthValueImp top;
-    CSSUnicodeBidiValueImp unicodeBidi;
-    CSSVerticalAlignValueImp verticalAlign;
-    CSSVisibilityValueImp visibility;
+    CSSTableLayoutValueImp tableLayout;                     // F
+    CSSTextAlignValueImp textAlign;                         // F
+    CSSTextDecorationValueImp textDecoration;               // F
+    CSSNumericValueImp textIndent;                          // F
+    CSSTextTransformValueImp textTransform;                 // F
+    CSSAutoLengthValueImp top;                              // TBD
+    CSSUnicodeBidiValueImp unicodeBidi;                     // F
+    CSSVerticalAlignValueImp verticalAlign;                 // F
+    CSSVisibilityValueImp visibility;                       // P
 
-    CSSWhiteSpaceValueImp whiteSpace;
-    CSSWordSpacingValueImp wordSpacing;
-    CSSAutoLengthValueImp width;
+    CSSWhiteSpaceValueImp whiteSpace;                       // F
+    CSSWordSpacingValueImp wordSpacing;                     // F
+    CSSAutoLengthValueImp width;                            // F
 
-    CSSZIndexValueImp zIndex;
-    CSSBindingValueImp binding;
+    CSSZIndexValueImp zIndex;                               // B
+    CSSBindingValueImp binding;                             // B
 
-    HTMLAlignValueImp htmlAlign;
+    HTMLAlignValueImp htmlAlign;                            // F
 
     TextDecorationContext textDecorationContext;
 

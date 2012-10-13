@@ -178,6 +178,187 @@ const char16_t* CSSStyleDeclarationImp::PropertyNames[PropertyCount] = {
     u"binding",
 };
 
+CSSStyleDeclarationBoard::CSSStyleDeclarationBoard(CSSStyleDeclarationImp* style) :
+    counterIncrement(1),
+    counterReset(0)
+{
+    borderCollapse.specify(style->borderCollapse);
+    borderSpacing.specify(style->borderSpacing);
+    borderTopWidth.specify(style->borderTopWidth);
+    borderRightWidth.specify(style->borderRightWidth);
+    borderBottomWidth.specify(style->borderBottomWidth);
+    borderLeftWidth.specify(style->borderLeftWidth);
+    bottom.specify(style->bottom);
+    captionSide.specify(style->captionSide);
+    clear.specify(style->clear);
+    content.specify(style->content);
+    counterIncrement.specify(style->counterIncrement);
+    counterReset.specify(style->counterReset);
+    direction.specify(style->direction);
+    display.specify(style->display);
+    float_.specify(style->float_);
+    fontFamily.specify(style->fontFamily);
+    fontSize.specify(style->fontSize);
+    fontStyle.specify(style->fontStyle);
+    fontVariant.specify(style->fontVariant);
+    fontWeight.specify(style->fontWeight);
+    height.specify(style->height);
+    left.specify(style->left);
+    letterSpacing.specify(style->letterSpacing);
+    lineHeight.specify(style->lineHeight);
+    listStyleImage.specify(style->listStyleImage);
+    listStylePosition.specify(style->listStylePosition);
+    listStyleType.specify(style->listStyleType);
+    marginTop.specify(style->marginTop);
+    marginRight.specify(style->marginRight);
+    marginBottom.specify(style->marginBottom);
+    marginLeft.specify(style->marginLeft);
+    maxHeight.specify(style->maxHeight);
+    maxWidth.specify(style->maxWidth);
+    minHeight.specify(style->minHeight);
+    minWidth.specify(style->minWidth);
+    overflow.specify(style->overflow);
+    paddingTop.specify(style->paddingTop);
+    paddingRight.specify(style->paddingRight);
+    paddingBottom.specify(style->paddingBottom);
+    paddingLeft.specify(style->paddingLeft);
+    position.specify(style->position);
+    quotes.specify(style->quotes);
+    right.specify(style->right);
+    tableLayout.specify(style->tableLayout);
+    textAlign.specify(style->textAlign);
+    textDecoration.specify(style->textDecoration);
+    textIndent.specify(style->textIndent);
+    textTransform.specify(style->textTransform);
+    top.specify(style->top);
+    unicodeBidi.specify(style->unicodeBidi);
+    verticalAlign.specify(style->verticalAlign);
+    whiteSpace.specify(style->whiteSpace);
+    wordSpacing.specify(style->wordSpacing);
+    width.specify(style->width);
+    zIndex.specify(style->zIndex);
+    binding.specify(style);
+    htmlAlign.specify(style->htmlAlign);
+}
+
+unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
+{
+    unsigned flags = 0;
+    //
+    // Checks for Box::NEED_EXPANSION
+    //
+    if (display.getValue() != style->display.getValue())
+        flags |= Box::NEED_EXPANSION;
+    if (float_.getValue() != style->float_.getValue())
+        flags |= Box::NEED_EXPANSION;
+    if (position.getValue() != style->position.getValue())
+        flags |= Box::NEED_EXPANSION;
+#if 0  // TODO: Check following properties
+    captionSide;
+    content;
+    listStyleImage;
+    listStylePosition;
+    listStyleType;
+    zIndex;
+    binding;
+#endif
+
+    //
+    // Checks for Box::NEED_REFLOW
+    //
+    // Note: in the following comparisons, the order of left and right sides do matter, which is not good design, though.
+    //
+    // Firstly, check properties that require style resolutions.
+    if (style->borderTopWidth != borderTopWidth)
+        flags |= Box::NEED_REFLOW;
+    if (style->borderRightWidth != borderRightWidth)
+        flags |= Box::NEED_REFLOW;
+    if (style->borderBottomWidth != borderBottomWidth)
+        flags |= Box::NEED_REFLOW;
+    if (style->borderLeftWidth != borderLeftWidth)
+        flags |= Box::NEED_REFLOW;
+
+    if (style->top != top)
+        flags |= Box::NEED_REFLOW;
+    if (style->right != right)
+        flags |= Box::NEED_REFLOW;
+    if (style->bottom != bottom)
+        flags |= Box::NEED_REFLOW;
+    if (style->left != left)
+        flags |= Box::NEED_REFLOW;
+
+    if (style->width != width)
+        flags |= Box::NEED_REFLOW;
+    if (style->height != height)
+        flags |= Box::NEED_REFLOW;
+
+    if (style->marginTop != marginTop)
+        flags |= Box::NEED_REFLOW;
+    if (style->marginRight != marginRight)
+        flags |= Box::NEED_REFLOW;
+    if (style->marginBottom != marginBottom)
+        flags |= Box::NEED_REFLOW;
+    if (style->marginLeft != marginLeft)
+        flags |= Box::NEED_REFLOW;
+
+    if (style->maxHeight != maxHeight)
+        flags |= Box::NEED_REFLOW;
+    if (style->maxWidth != maxWidth)
+        flags |= Box::NEED_REFLOW;
+
+    if (style->minHeight != minHeight)
+        flags |= Box::NEED_REFLOW;
+    if (style->minWidth != minWidth)
+        flags |= Box::NEED_REFLOW;
+
+    if (style->paddingTop != paddingTop)
+        flags |= Box::NEED_REFLOW;
+    if (style->paddingRight != paddingRight)
+        flags |= Box::NEED_REFLOW;
+    if (style->paddingBottom != paddingBottom)
+        flags |= Box::NEED_REFLOW;
+    if (style->paddingLeft != paddingLeft)
+        flags |= Box::NEED_REFLOW;
+
+    if (style->lineHeight != lineHeight)
+        flags |= Box::NEED_REFLOW;
+    if (style->textIndent != textIndent)
+        flags |= Box::NEED_REFLOW;
+    if (style->verticalAlign != verticalAlign)
+        flags |= Box::NEED_REFLOW;
+    if (style->htmlAlign != htmlAlign)
+        flags |= Box::NEED_REFLOW;
+
+    // Check if style needs to be resolved later.
+    if (flags & Box::NEED_REFLOW)
+        style->unresolve();  // This style needs to be resolved later.
+
+    // Secondly, check properties that do not require style resolutions.
+#if 0  // TODO: Check following properties
+    borderCollapse;
+    borderSpacing;
+    clear;
+    direction;
+    fontFamily;
+    fontSize;
+    fontStyle;
+    fontVariant;
+    fontWeight;
+    letterSpacing;
+    overflow;
+    quotes;
+    tableLayout;
+    textAlign;
+    textDecoration;
+    textTransform;
+    unicodeBidi;
+    whiteSpace;
+    wordSpacing;
+#endif
+
+    return flags;
+}
+
 CSSPropertyValueImp* CSSStyleDeclarationImp::getProperty(unsigned id)
 {
     switch (id) {
