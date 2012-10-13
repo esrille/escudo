@@ -176,18 +176,19 @@ void Box::removeChildren()
 
 void Box::removeDescendants()
 {
+    auto block = dynamic_cast<Block*>(this);
+    if (block)
+        block->clearBlocks();
     while (hasChildBoxes()) {
         Box* child = getFirstChild();
         removeChild(child);
         child->removeDescendants();
-        if (auto block = dynamic_cast<Block*>(child)) {
-            block->clearInlines();
-            block->clearBlocks();
-        }
-        if (child->style)
-            child->style->removeBox(child);
         child->release_();
     }
+    if (block)
+        block->clearInlines();
+    if (style)
+        style->removeBox(this);
 }
 
 void Box::setStyle(CSSStyleDeclarationImp* style)
