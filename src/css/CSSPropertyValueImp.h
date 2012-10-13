@@ -2610,7 +2610,7 @@ public:
             return u"url(" + CSSSerializeString(uri) + u')';
         return Options[value];
     }
-    void specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl);
+    void specify(const CSSStyleDeclarationImp* decl);
     CSSBindingValueImp(unsigned initial = None) :
         value(initial) {
     }

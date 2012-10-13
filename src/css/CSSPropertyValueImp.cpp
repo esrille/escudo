@@ -2047,7 +2047,7 @@ float CSSVerticalAlignValueImp::getOffset(ViewCSSImp* view, CSSStyleDeclarationI
     }
 }
 
-void CSSBindingValueImp::specify(CSSStyleDeclarationImp* self, const CSSStyleDeclarationImp* decl)
+void CSSBindingValueImp::specify(const CSSStyleDeclarationImp* decl)
 {
     value = decl->binding.value;
     uri = decl->resolveRelativeURL(decl->binding.uri);

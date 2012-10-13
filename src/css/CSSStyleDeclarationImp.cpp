@@ -24,8 +24,6 @@
 #include "MutationEventImp.h"
 #include "ViewCSSImp.h"
 
-#include <iostream>
-
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 using namespace css;
@@ -920,7 +918,7 @@ void CSSStyleDeclarationImp::specify(const CSSStyleDeclarationImp* decl, unsigne
         zIndex.specify(decl->zIndex);
         break;
     case Binding:
-        binding.specify(this, decl);
+        binding.specify(decl);
         break;
     case HtmlAlign:
         htmlAlign.specify(decl->htmlAlign);
