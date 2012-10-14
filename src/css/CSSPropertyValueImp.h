@@ -1135,6 +1135,7 @@ public:
         virtual std::u16string eval(ViewCSSImp* view, Element element, CounterContext* context) {
             return u"";
         }
+        virtual Content* clone() = 0;
     };
     struct StringContent : public Content {
         std::u16string value;
@@ -1147,6 +1148,9 @@ public:
         virtual std::u16string eval(ViewCSSImp* view, Element element, CounterContext* context) {
             return value;
         }
+        virtual StringContent* clone() {
+            return new(std::nothrow) StringContent(value);
+        }
     };
     struct URIContent : public Content {
         std::u16string value;
@@ -1155,6 +1159,9 @@ public:
         }
         virtual std::u16string getCssText() {
             return u"url(" + CSSSerializeString(value) + u')';
+        }
+        virtual URIContent* clone() {
+            return new(std::nothrow) URIContent(value);
         }
     };
     struct CounterContent : public Content {
@@ -1179,6 +1186,12 @@ public:
             return u"counter(" +  CSSSerializeIdentifier(identifier) + u", " + listStyleType.getCssText() + u')';
         }
         virtual std::u16string eval(ViewCSSImp* view, Element element, CounterContext* context);
+        virtual CounterContent* clone() {
+            if (nested)
+                return new(std::nothrow) CounterContent(identifier, string, listStyleType.getValue());
+            else
+                return new(std::nothrow) CounterContent(identifier, listStyleType.getValue());
+        }
     };
     struct AttrContent : public Content {
         std::u16string identifier;
@@ -1189,6 +1202,9 @@ public:
             return u"attr(" + CSSSerializeIdentifier(identifier) + u')';
         }
         virtual std::u16string eval(ViewCSSImp* view, Element element, CounterContext* context);
+        virtual AttrContent* clone() {
+            return new(std::nothrow) AttrContent(identifier);
+        }
     };
     struct QuoteContent : public Content {
         unsigned value;
@@ -1199,6 +1215,9 @@ public:
             return CSSContentValueImp::Options[value];
         }
         virtual std::u16string eval(ViewCSSImp* view, Element element, CounterContext* context);
+        virtual QuoteContent* clone() {
+            return new(std::nothrow) QuoteContent(value);
+        }
     };
 
     void clearContents() {
@@ -1231,11 +1250,7 @@ public:
     }
 
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl);
-    void specify(const CSSContentValueImp& specified) {
-        value = specified.value;
-        contents = specified.contents;
-    }
-
+    void specify(const CSSContentValueImp& specified);
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     std::u16string evalText(ViewCSSImp* view, Element element, CounterContext* context);
     Element eval(ViewCSSImp* view, Element element, CounterContext* context);

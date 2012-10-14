@@ -1177,6 +1177,16 @@ std::u16string CSSContentValueImp::getCssText(CSSStyleDeclarationImp* decl)
     return cssText;
 }
 
+void CSSContentValueImp::specify(const CSSContentValueImp& specified)
+{
+    reset();
+    value = specified.value;
+    for (auto i = specified.contents.begin(); i != specified.contents.end(); ++i) {
+        if (Content* clone = (*i)->clone())
+            contents.push_back(clone);
+    }
+}
+
 void CSSContentValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style)
 {
     switch (style->getPseudoElementSelectorType()) {
