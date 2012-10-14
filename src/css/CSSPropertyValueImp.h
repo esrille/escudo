@@ -520,6 +520,9 @@ public:
                 return CSSSerializeIdentifier(name);
             return CSSSerializeIdentifier(name) + u' ' + CSSSerializeInteger(number);
         }
+        Content* clone() {
+            return new(std::nothrow) Content(name, number);
+        }
     };
 
     struct CounterContext
@@ -563,7 +566,11 @@ public:
     virtual bool setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl);
     void specify(const CSSAutoNumberingValueImp& specified) {
-        contents = specified.contents;
+        reset();
+        for (auto i = specified.contents.begin(); i != specified.contents.end(); ++i) {
+            if (Content* clone = (*i)->clone())
+                contents.push_back(clone);
+        }
     }
     bool hasCounter() const {
         return !contents.empty();
