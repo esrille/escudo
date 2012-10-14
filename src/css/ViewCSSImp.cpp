@@ -45,6 +45,25 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
+namespace {
+
+Block* getCurrentBox(CSSStyleDeclarationImp* style, bool asBlock)
+{
+    Box* box = style->getBox();
+    if (!box)
+        return 0;
+    if (!style->display.isTableParts() || asBlock)
+        return dynamic_cast<Block*>(box);
+
+    // return the surrounding anonymous table wrapper box
+    while (box && !dynamic_cast<TableWrapperBox*>(box))
+        box = box->getParentBox();
+    assert(box);
+    return dynamic_cast<TableWrapperBox*>(box);
+}
+
+}
+
 ViewCSSImp::ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyleSheet, css::CSSStyleSheet userStyleSheet) :
     window(window),
     dpi(96),
@@ -102,30 +121,10 @@ bool ViewCSSImp::isHovered(Node node)
 
 void ViewCSSImp::removeElement(Element element)
 {
-    CSSStyleDeclarationImp* style = getStyle(element);
-    if (!style)
-        return;
-    Block* block = dynamic_cast<Block*>(style->getBox());
-    if (!block)
-        style->updateInlines();
-    else {
-        Block* holder = dynamic_cast<Block*>(block->getParentBox());
-        if (!holder)  // floating box, absolutely positioned box
-            holder = dynamic_cast<Block*>(block->getParentBox()->getParentBox());
-        if (!holder)  // inline block
-            holder = dynamic_cast<Block*>(block->getParentBox()->getParentBox()->getParentBox());
-        assert(holder);
-        if (holder->removeBlock(element))
-            holder->clearInlines();
-        else {
-            assert(block->getParentBox() == holder);
-            holder->removeChild(block);
-            block->release_();
-            holder->setFlags(Box::NEED_REFLOW);
-        }
-        style->removeBox(block);
+    if (CSSStyleDeclarationImp* style = getStyle(element)) {
+        style->revert();
+        map.erase(element);
     }
-    map.erase(element);
 }
 
 void ViewCSSImp::handleMutation(events::Event event)
@@ -166,6 +165,17 @@ void ViewCSSImp::handleMutation(events::Event event)
                 style->updateInlines();
         }
         return;
+    } else if (mutation.getType() == u"DOMAttrModified") {
+        if (mutation.getAttrName() == u"style") {
+            Node target = interface_cast<Node>(event.getTarget());
+            if (Element::hasInstance(target)) {
+                if (CSSStyleDeclarationImp* style = getStyle(interface_cast<Element>(target))) {
+                    style->requestReconstruct(Box::NEED_STYLE_RECALCULATION);
+                    style->clearFlags(CSSStyleDeclarationImp::Computed);
+                }
+            }
+            return;
+        }
     }
 
     boxTree->setFlags(Box::NEED_SELECTOR_REMATCHING);
@@ -242,8 +252,10 @@ void ViewCSSImp::constructComputedStyle(Node node, CSSStyleDeclarationImp* paren
             html::HTMLElement htmlElement(0);
             if (html::HTMLElement::hasInstance(element))
                 htmlElement = interface_cast<html::HTMLElement>(element);
-            if (parentStyle && htmlElement && htmlElement.getLocalName() == u"body")
+            if (parentStyle && htmlElement && htmlElement.getLocalName() == u"body") {
                 parentStyle->bodyStyle = style;
+                parentStyle->clearFlags(CSSStyleDeclarationImp::Computed);
+            }
 
             // Set style->affectedBits
             if (!hoverList.empty()) {
@@ -285,20 +297,44 @@ void ViewCSSImp::calculateComputedStyles()
     CSSAutoNumberingValueImp::CounterContext counterContext(this);
     for (Node child = getDocument().getFirstChild(); child; child = child.getNextSibling()) {
         if (child.getNodeType() == Node::ELEMENT_NODE)
-            calculateComputedStyle(interface_cast<Element>(child), 0, &counterContext);
+            calculateComputedStyle(interface_cast<Element>(child), 0, &counterContext, 0);
     }
+    clearFlags(Box::NEED_STYLE_RECALCULATION);  // TODO: Refine
     if (3 <= getLogLevel())
         printComputedValues(getDocument(), this);
 }
 
-void ViewCSSImp::calculateComputedStyle(Element element, CSSStyleDeclarationImp* parentStyle, CSSAutoNumberingValueImp::CounterContext* counterContext)
+void ViewCSSImp::calculateComputedStyle(Element element, CSSStyleDeclarationImp* parentStyle, CSSAutoNumberingValueImp::CounterContext* counterContext, unsigned flags)
 {
     assert(counterContext);
 
-    CSSStyleDeclarationImp* style = getStyle(element, Nullable<std::u16string>());
+#ifndef NDEBUG
+    std::u16string tag(interface_cast<html::HTMLElement>(element).getTagName());
+    std::u16string id(interface_cast<html::HTMLElement>(element).getId());
+#endif
+
+    CSSStyleDeclarationImp* style = getStyle(element);
     if (!style)
         return;
-    style->compute(this, parentStyle, element);
+    if (flags && (!parentStyle || parentStyle->bodyStyle != style))
+        style->clearFlags(flags);
+
+    // If the fundamental values such as 'display' are changed, the box(es) associated with the
+    // style need to be reverted.
+    if (!style->isComputed()) {
+        CSSStyleDeclarationBoard board(style);
+        style->compute(this, parentStyle, element);
+        unsigned comp = board.compare(style);
+        if (comp & Box::NEED_EXPANSION) {
+            Block* block = style->revert();
+            if (style->display.isInlineLevel() && block && !(block->getFlags() & Box::NEED_EXPANSION))
+                block->clearInlines();
+        } else if (comp & Box::NEED_REFLOW) {
+            if (Block* block = getCurrentBox(style, false))
+                block->setFlags(Box::NEED_REFLOW);
+        }
+        flags |= CSSStyleDeclarationImp::Computed;  // The child styles have to be recomputed.
+    }
 
     Element shadow = element;
     if (HTMLElementImp* imp = dynamic_cast<HTMLElementImp*>(element.self())) {
@@ -319,7 +355,7 @@ void ViewCSSImp::calculateComputedStyle(Element element, CSSStyleDeclarationImp*
     }
     for (Node child = shadow.getFirstChild(); child; child = child.getNextSibling()) {
         if (child.getNodeType() == Node::ELEMENT_NODE)
-            calculateComputedStyle(interface_cast<Element>(child), style, &cc);
+            calculateComputedStyle(interface_cast<Element>(child), style, &cc, flags);
     }
     if (!style->display.isNone())
         imp->after = updatePseudoElement(style, CSSPseudoElementSelector::After, shadow, imp->after, &cc);
@@ -491,25 +527,6 @@ Block* ViewCSSImp::createBlock(Element element, Block* parentBox, CSSStyleDeclar
     return block;
 }
 
-namespace {
-
-Block* getCurrentBox(CSSStyleDeclarationImp* style, bool asBlock)
-{
-    Box* box = style->getBox();
-    if (!box)
-        return 0;
-    if (!style->display.isTableParts() || asBlock)
-        return dynamic_cast<Block*>(box);
-
-    // return the surrounding anonymous table wrapper box
-    while (box && !dynamic_cast<TableWrapperBox*>(box))
-        box = box->getParentBox();
-    assert(box);
-    return dynamic_cast<TableWrapperBox*>(box);
-}
-
-}
-
 Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, CSSStyleDeclarationImp* parentStyle, CSSStyleDeclarationImp* style, bool asBlock, Block* prevBox)
 {
 #ifndef NDEBUG
@@ -518,7 +535,7 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, CSSStyleDec
 #endif
 
     if (!style)
-        style = getStyle(element, Nullable<std::u16string>());
+        style = getStyle(element);
     if (!style)
         return 0;
     if (style->display.isNone())
@@ -545,6 +562,7 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, CSSStyleDec
         // inserted in a lineBox of parentBox later
         if (parentBox) {
             if (!currentBox->parentBox) {
+                assert(currentBox->getStyle());
                 parentBox->addBlock(element, currentBox);
                 // Set currentBox->parentBox to parentBox for now so that the correct
                 // containing block can be retrieved before currentBox will be
@@ -588,6 +606,7 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, CSSStyleDec
         switch (currentBox->flags & (Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION)) {
         case Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION:
         case Box::NEED_EXPANSION:
+            assert(currentBox->inlines.empty());
             break;
         case Box::NEED_CHILD_EXPANSION:
             for (auto box = dynamic_cast<Block*>(currentBox->getFirstChild());

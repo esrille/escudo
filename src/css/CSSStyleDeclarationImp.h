@@ -42,6 +42,7 @@ class FontTexture;  // TODO: define namespace
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class Box;
+class Block;
 class StackingContext;
 class CSSStyleDeclarationImp;
 
@@ -282,7 +283,8 @@ public:
     };
 
     enum flags {
-        Resolved = 1,
+        Computed = 1,
+        Resolved = 2
     };
 
 private:
@@ -460,11 +462,12 @@ public:
     unsigned getFlags() const {
         return flags;
     }
-    void clearFlags(unsigned f) {
-        flags &= ~f;
-    }
+    void clearFlags(unsigned f);
     void setFlags(unsigned f) {
         flags |= f;
+    }
+    bool isComputed() const {
+        return flags & Computed;
     }
     bool isResolved() const {
         return flags & Resolved;
@@ -504,7 +507,7 @@ public:
 
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle, Element element);
     void computeStackingContext(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle);
-    void resolve(ViewCSSImp* view, const ContainingBlock* containingBlock);
+    unsigned resolve(ViewCSSImp* view, const ContainingBlock* containingBlock);
     void unresolve() {
         clearFlags(Resolved);
     }
@@ -558,7 +561,9 @@ public:
         return box && box != lastBox;
     }
 
-    void updateInlines();
+    Block* updateInlines();
+    Block* revert();
+    void requestReconstruct(unsigned short flags);
 
     StackingContext* getStackingContext() const {
         return stackingContext;

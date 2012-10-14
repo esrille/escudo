@@ -104,7 +104,7 @@ public:
 
     // Style recalculation
     void calculateComputedStyles();
-    void calculateComputedStyle(Element element, CSSStyleDeclarationImp* parentStyle, CSSAutoNumberingValueImp::CounterContext* counterContext);
+    void calculateComputedStyle(Element element, CSSStyleDeclarationImp* parentStyle, CSSAutoNumberingValueImp::CounterContext* counterContext, unsigned flags);
     Element updatePseudoElement(CSSStyleDeclarationImp* style, int id, Element element, Element pseudoElement, CSSAutoNumberingValueImp::CounterContext* counterContext);
 
     // Reflow

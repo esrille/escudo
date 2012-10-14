@@ -1497,7 +1497,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
         context = parentContext;
     }
 
-    flags &= ~(NEED_REFLOW | NEED_CHILD_LAYOUT);
+    flags &= ~(NEED_EXPANSION | NEED_REFLOW | NEED_CHILD_LAYOUT);
 
     return true;
 }

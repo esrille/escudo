@@ -1283,7 +1283,8 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
     mcw = 0.0f;
     if (!isAnonymous()) {
         style->addBox(this);
-        style->resolve(view, containingBlock);
+        if (style->resolve(view, containingBlock))
+            flags |= NEED_REFLOW;
         resolveBackground(view);
         updatePadding();
         updateBorderWidth();

@@ -276,7 +276,7 @@ bool WindowImp::poll()
                         recordTime("%*strigger restyling", windowDepth * 2, "");
                         backgroundTask.wakeUp(BackgroundTask::Cascade);
                         view = 0;
-                    } else if (flags & Box::NEED_REFLOW) {
+                    } else if (flags & (Box::NEED_STYLE_RECALCULATION | Box::NEED_EXPANSION | Box::NEED_REFLOW)) {
                         recordTime("%*strigger reflow", windowDepth * 2, "");
                         backgroundTask.wakeUp(BackgroundTask::Layout);
                         view = 0;

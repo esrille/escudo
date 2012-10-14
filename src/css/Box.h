@@ -86,12 +86,13 @@ public:
 
     // flags
     static const unsigned short NEED_SELECTOR_MATCHING = 1;
-    static const unsigned short NEED_EXPANSION = 2;
-    static const unsigned short NEED_CHILD_EXPANSION = 4;
-    static const unsigned short NEED_REFLOW = 8;
-    static const unsigned short NEED_REPAINT = 16;
-    static const unsigned short NEED_CHILD_LAYOUT = 32;
-    static const unsigned short NEED_SELECTOR_REMATCHING = 64;
+    static const unsigned short NEED_STYLE_RECALCULATION = 2;
+    static const unsigned short NEED_EXPANSION = 4;
+    static const unsigned short NEED_CHILD_EXPANSION = 8;
+    static const unsigned short NEED_REFLOW = 16;
+    static const unsigned short NEED_REPAINT = 32;
+    static const unsigned short NEED_CHILD_LAYOUT = 64;
+    static const unsigned short NEED_SELECTOR_REMATCHING = 128;
 
 protected:
     Node node;

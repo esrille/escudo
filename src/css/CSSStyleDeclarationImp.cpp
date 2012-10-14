@@ -1628,11 +1628,7 @@ void CSSStyleDeclarationImp::inheritProperties(const CSSStyleDeclarationImp* par
 
 void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle, Element element)
 {
-    unresolve();  // This style needs to be resolved later.
-
-    // TODO: If the fundamental values like 'display' is changed, the box(es) associated with this
-    // style need to be revoked.
-    // clearBox();
+    unresolve();
 
     if (this == parentStyle)
         return;
@@ -1756,9 +1752,12 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     // It will be computed layter by layout().
 
     if (bodyStyle) {
+        bodyStyle->clearFlags(CSSStyleDeclarationImp::Computed);
         bodyStyle->compute(view, this, view->getDocument().getBody());
-        if (overflow.getValue() == CSSOverflowValueImp::Visible)
+        if (overflow.getValue() == CSSOverflowValueImp::Visible) {
             overflow.specify(bodyStyle->overflow);
+            bodyStyle->overflow.setValue(CSSOverflowValueImp::Visible);
+        }
         if (backgroundColor.getARGB() == 0 && backgroundImage.isNone()) {
             background.specify(this, bodyStyle);
             bodyStyle->fontSize.compute(view, this);
@@ -1766,14 +1765,11 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
             // Note if the lengths are given by 'em' or 'ex', the referred font size is
             // the one of the 'body' style.
             backgroundPosition.compute(view, bodyStyle);
+            bodyStyle->background.reset(bodyStyle);
         }
-    } else if (parentStyle && parentStyle->bodyStyle == this) {
-        if (overflow.getValue() == parentStyle->overflow.getValue())
-            overflow.setValue(CSSOverflowValueImp::Visible);
-        if (backgroundColor.getARGB() == parentStyle->backgroundColor.getARGB() &&
-            backgroundImage.getValue() == parentStyle->backgroundImage.getValue())
-            background.reset(this);
     }
+
+    setFlags(Computed);
 }
 
 void CSSStyleDeclarationImp::computeStackingContext(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle)
@@ -1975,10 +1971,10 @@ bool CSSStyleDeclarationImp::updateCounters(ViewCSSImp* view, CSSAutoNumberingVa
 
 // calculate resolved values that requite containing block information for calucuration
 // cf. CSSOM 7. Resolved Values
-void CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* containingBlock)
+unsigned CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* containingBlock)
 {
     if (isResolved() && containingBlock->width == containingBlockWidth && containingBlock->height == containingBlockHeight)
-        return;
+        return 0;
     containingBlockWidth = containingBlock->width;
     containingBlockHeight = containingBlock->height;
 
@@ -2087,6 +2083,7 @@ void CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* co
     textIndent.resolve(view, this, containingBlock->width);
 
     setFlags(Resolved);
+    return Box::NEED_REFLOW;
 }
 
 // Calculate left, right, top, bottom for a 'relative' element.
@@ -2223,10 +2220,9 @@ void CSSStyleDeclarationImp::clearBox()
 
 void CSSStyleDeclarationImp::addBox(Box* b)
 {
-    if (dynamic_cast<Block*>(b)) {
-        if (isBlockLevel())
-            box = lastBox = b;
-    } else if (InlineBox* inlineBox = dynamic_cast<InlineBox*>(b)) {
+    if (dynamic_cast<Block*>(b))
+        box = lastBox = b;
+    else if (InlineBox* inlineBox = dynamic_cast<InlineBox*>(b)) {
         if (isBlockLevel())
             return;
         if (isInlineBlock() && inlineBox->getFont())
@@ -2242,26 +2238,20 @@ void CSSStyleDeclarationImp::addBox(Box* b)
 
 void CSSStyleDeclarationImp::removeBox(Box* b)
 {
-    if (dynamic_cast<Block*>(b)) {
-        if (isBlockLevel() && box == b)
-            box = lastBox = 0;
-    } else if (InlineBox* inlineBox = dynamic_cast<InlineBox*>(b)) {
-        if (isBlockLevel())
-            return;
-        if (isInlineBlock() && inlineBox->getFont())
-            return;
-        if (box == b && lastBox == b)
-            box = lastBox = 0;
-        if (box == b)
-            box = lastBox;
-        else if (lastBox == b)
-            lastBox = box;
-        if (parentStyle)
-            parentStyle->removeBox(b);
-    }
+    CSSStyleDeclarationImp* style = this;
+    do {
+        if (style->box == b && style->lastBox == b)
+            style->box = style->lastBox = 0;
+        else if (style->box == b)
+            style->box = style->lastBox;
+        else if (style->lastBox == b)
+            style->lastBox = style->box;
+        else
+            break;
+    } while (style = style->parentStyle);
 }
 
-void CSSStyleDeclarationImp::updateInlines()
+Block* CSSStyleDeclarationImp::updateInlines()
 {
     CSSStyleDeclarationImp* style = this;
     do {
@@ -2276,7 +2266,8 @@ void CSSStyleDeclarationImp::updateInlines()
         case CSSDisplayValueImp::InlineTable:
             if (Block* block = dynamic_cast<Block*>(style->getBox())) {
                 block->clearInlines();
-                return;
+                assert(!getBox());
+                return block;
             }
             // FALL THROUGH
         default:
@@ -2284,6 +2275,57 @@ void CSSStyleDeclarationImp::updateInlines()
             break;
         }
     } while (style);
+    return 0;
+}
+
+Block* CSSStyleDeclarationImp::revert()
+{
+    // TODO: Check stacking context
+    Block* block = dynamic_cast<Block*>(getBox());
+    if (!block)
+        return updateInlines();
+    Block* holder = dynamic_cast<Block*>(block->getParentBox());
+    if (!holder)  // floating box, absolutely positioned box
+        holder = dynamic_cast<Block*>(block->getParentBox()->getParentBox());
+    if (!holder)  // inline block
+        holder = dynamic_cast<Block*>(block->getParentBox()->getParentBox()->getParentBox());
+    assert(holder);
+    if (holder->removeBlock(block->getNode()))
+        holder->clearInlines();
+    else {
+        assert(block->getParentBox() == holder);
+        holder->removeChild(block);
+        block->removeDescendants();
+        block->release_();
+        holder->setFlags(Box::NEED_REFLOW);
+    }
+    clearBox();
+    return holder;
+}
+
+void CSSStyleDeclarationImp::requestReconstruct(unsigned short flags)
+{
+    for (CSSStyleDeclarationImp* style = this; style; style = style->getParentStyle()) {
+        if (Block* block = dynamic_cast<Block*>(style->getBox())) {
+            block->setFlags(flags);
+            return;
+        }
+    }
+}
+
+void CSSStyleDeclarationImp::clearFlags(unsigned f)
+{
+    flags &= ~f;
+    if (f & Computed) {
+        for (int id = 0; id < CSSPseudoElementSelector::MaxPseudoElements; ++id) {
+            if (CSSStyleDeclarationImp* pseudo = pseudoElements[id].get()) {
+                if (pseudo != this)
+                    pseudo->clearFlags(Computed);
+            }
+        }
+        if (parentStyle && parentStyle->bodyStyle == this)
+            parentStyle->clearFlags(Computed);
+    }
 }
 
 CSSStyleDeclarationImp* CSSStyleDeclarationImp::getPseudoElementStyle(int id)
