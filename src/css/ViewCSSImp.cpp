@@ -441,6 +441,9 @@ Block* ViewCSSImp::constructBlock(Node node, Block* parentBox, CSSStyleDeclarati
 
 Block* ViewCSSImp::constructBlock(Text text, Block* parentBox, CSSStyleDeclarationImp* style, Block* prevBox)
 {
+    if (!parentBox || !style)
+        return 0;
+
     bool discardable = true;
     if (style->display.isInline()) {
         Element element = interface_cast<Element>(text.getParentNode());
@@ -450,8 +453,6 @@ Block* ViewCSSImp::constructBlock(Text text, Block* parentBox, CSSStyleDeclarati
             discardable = false;
     }
 
-    if (!parentBox || !style)
-        return 0;
     if (!parentBox->hasChildBoxes()) {
         if (discardable && !parentBox->hasInline() && style->whiteSpace.isCollapsingSpace()) {
             std::u16string data = text.getData();
