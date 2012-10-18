@@ -499,7 +499,7 @@ Block* ViewCSSImp::createBlock(Element element, Block* parentBox, CSSStyleDeclar
             else
                 block = new(std::nothrow) Block(element, style);
         } else {
-            assert(parentBox);
+            assert(parentBox);  // cf. http://www.w3.org/TR/CSS21/visuren.html#dis-pos-flo
             if (parentBox->anonymousTable) {
                 assert(parentBox->anonymousTable->isAnonymousTableObject());
                 parentBox->anonymousTable->processTableChild(element, style);
