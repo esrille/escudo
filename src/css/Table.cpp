@@ -169,7 +169,7 @@ void CellBox::renderNonInline(ViewCSSImp* view, StackingContext* stackingContext
 }
 
 TableWrapperBox::TableWrapperBox(ViewCSSImp* view, Element element, CSSStyleDeclarationImp* style) :
-    Block(element, style),
+    Block(element, (style->display == CSSDisplayValueImp::Table || style->display == CSSDisplayValueImp::InlineTable) ? style : 0),
     view(view),
     xWidth(0),
     yHeight(0),
@@ -189,15 +189,14 @@ TableWrapperBox::TableWrapperBox(ViewCSSImp* view, Element element, CSSStyleDecl
     yTfootEnd(0)
 {
     isHtmlTable = html::HTMLTableElement::hasInstance(element);
-    if (isAnonymousTable) {
-        style = 0;
+    if (isAnonymousTable)
         processTableChild(element, style);
-        return;
+    else {
+        // TODO: Process pseudo elements
+        for (Node node = element.getFirstChild(); node; node = node.getNextSibling())
+            processTableChild(node, style);
+        constructBlocks();
     }
-    for (Node node = element.getFirstChild(); node; node = node.getNextSibling())
-        processTableChild(node, style);
-
-    constructBlocks();
 }
 
 TableWrapperBox::~TableWrapperBox()
