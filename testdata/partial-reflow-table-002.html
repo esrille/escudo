@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+<head>
+<meta charset="UTF-8">
+<title>Partial reflow test</title>
+<style type="text/css">
+table
+{
+    border-collapse: collapse;
+}
+td
+{
+    border: 2px solid black;
+    height: 3em;
+}
+</style>
+<script type="text/javascript">
+function doTest() {
+  this.addEventListener('keydown', function(event) {
+    if (event.keyCode == 13) {
+      var t = document.getElementById("t");
+      var r = t.rows[t.rows.length - 1];
+      r.parentNode.appendChild(r.cloneNode(true));
+    }
+  }, false);
+}
+</script>
+</head>
+<body onload="doTest()">
+<p>Press [Enter] to append a row.</p>
+<table id='t'>
+    <tr>
+	<td>Filler Text</td>
+	<td>Filler Text</td>
+	<td>Filler Text</td>
+    </tr>
+    <tr>
+	<td>Filler Text</td>
+	<td>Filler Text</td>
+	<td>Filler Text</td>
+    </tr>
+    <tr>
+	<td>Filler Text</td>
+	<td>Filler Text</td>
+	<td>Filler Text</td>
+    </tr>
+</table>
+</body>
+</html>

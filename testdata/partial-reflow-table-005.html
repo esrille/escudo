@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+<head>
+<meta charset="UTF-8">
+<title>Partial reflow test</title>
+<style type="text/css">
+table
+{
+    border-collapse: collapse;
+}
+td
+{
+    border: 2px solid black;
+    height: 3em;
+}
+</style>
+<script type="text/javascript">
+function doTest() {
+  this.addEventListener('keydown', function(event) {
+    if (event.keyCode == 13) {
+      var t = document.getElementById("t");
+      for (var i = 0; i < t.rows.length; ++i) {
+        var r = t.rows[i];
+        if (1 < r.cells.length)
+          var c = r.deleteCell(r.cells.length - 1);
+      }
+    }
+  }, false);
+}
+</script>
+</head>
+<body onload="doTest()">
+<p>Press [Enter] to delete a column.</p>
+<table id='t'>
+    <tr>
+	<td>Filler Text</td>
+	<td>Filler Text</td>
+	<td>Filler Text</td>
+    </tr>
+    <tr>
+	<td>Filler Text</td>
+	<td>Filler Text</td>
+	<td>Filler Text</td>
+    </tr>
+    <tr>
+	<td>Filler Text</td>
+	<td>Filler Text</td>
+	<td>Filler Text</td>
+    </tr>
+</table>
+</body>
+</html>
