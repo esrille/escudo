@@ -59,13 +59,15 @@ class ViewCSSImp
 
     Retained<EventListenerImp> mutationListener;
 
-    // cascade
+    // Selector matching
     std::map<Element, CSSStyleDeclarationPtr> map;
-    StackingContext* stackingContexts;
     std::list<Object*> hoverList;
     unsigned overflow;
 
-    // layout
+    // Style recalculation
+    StackingContext* stackingContexts;
+
+    // Reflow
     Node hovered;
     BlockPtr boxTree;       // A box tree under construction
     std::list<CounterImpPtr> counterList;
@@ -73,11 +75,11 @@ class ViewCSSImp
     float scrollWidth;
     float scrollHeight;
 
-    // render
+    // Repaint
     unsigned clipCount;
     Box* hoveredBox;
 
-    // animation
+    // Animation
     unsigned last;   // in 1/100 sec for GIF
     unsigned delay;  // in 1/100 sec for GIF
 
@@ -113,7 +115,7 @@ public:
             return window->preload(base, url);
         return 0;
     }
-    Block* createBlock(Element element,  Block* parentBox, CSSStyleDeclarationImp* style, bool newContext, bool asBlock);
+    Block* createBlock(Element element, Block* parentBox, CSSStyleDeclarationImp* style, bool newContext, bool asBlock);
     Block* constructBlock(Node node, Block* parentBox, CSSStyleDeclarationImp* style, bool asBlock = false, Block* prevBox = 0);
     Block* constructBlock(Text text, Block* parentBox, CSSStyleDeclarationImp* style, Block* prevBox);
     Block* constructBlock(Element element, Block* parentBox, CSSStyleDeclarationImp* parentStyle, CSSStyleDeclarationImp* style, bool asBlock = false, Block* prevBox = 0);
