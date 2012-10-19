@@ -43,9 +43,9 @@ public:
     void addItem(const std::u16string& name, Element element);
 
     // HTMLCollection
-    unsigned int getLength();
-    Element item(unsigned int index);
-    Object namedItem(std::u16string name);
+    virtual unsigned int getLength();
+    virtual Element item(unsigned int index);
+    virtual Object namedItem(std::u16string name);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

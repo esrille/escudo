@@ -22,12 +22,15 @@
 #endif
 
 #include <org/w3c/dom/html/HTMLTableElement.h>
-#include "HTMLElementImp.h"
 
-#include <org/w3c/dom/html/HTMLElement.h>
-#include <org/w3c/dom/html/HTMLCollection.h>
+#include <boost/intrusive_ptr.hpp>
+
 #include <org/w3c/dom/html/HTMLTableCaptionElement.h>
+#include <org/w3c/dom/html/HTMLTableRowElement.h>
 #include <org/w3c/dom/html/HTMLTableSectionElement.h>
+
+#include "HTMLCollectionImp.h"
+#include "HTMLElementImp.h"
 
 namespace org
 {
@@ -37,19 +40,37 @@ namespace dom
 {
 namespace bootstrap
 {
+
 class HTMLTableElementImp : public ObjectMixin<HTMLTableElementImp, HTMLElementImp>
 {
+    // HTMLCollection for rows
+    class Rows : public HTMLCollectionImp
+    {
+        boost::intrusive_ptr<HTMLTableElementImp> table;
+    public:
+        Rows(HTMLTableElementImp* table);
+
+        // HTMLCollection
+        virtual unsigned int getLength();
+        virtual Element item(unsigned int index);
+        virtual Object namedItem(std::u16string name) {
+            return 0;
+        }
+    };
+
 public:
     HTMLTableElementImp(DocumentImp* ownerDocument) :
         ObjectMixin(ownerDocument, u"table")
-    {
-    }
+    {}
     HTMLTableElementImp(HTMLTableElementImp* org, bool deep) :
         ObjectMixin(org, deep)
-    {
-    }
+    {}
 
     virtual void eval();
+
+    // Utilities for Rows
+    unsigned int getRowCount();
+    html::HTMLTableRowElement getRow(unsigned int index);
 
     // HTMLTableElement
     html::HTMLTableCaptionElement getCaption();
@@ -90,12 +111,10 @@ public:
     std::u16string getWidth();
     void setWidth(std::u16string width);
     // Object
-    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
-    {
+    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
         return html::HTMLTableElement::dispatch(this, selector, id, argc, argv);
     }
-    static const char* const getMetaData()
-    {
+    static const char* const getMetaData() {
         return html::HTMLTableElement::getMetaData();
     }
 };

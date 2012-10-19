@@ -17,6 +17,8 @@
 #include "HTMLTableElementImp.h"
 
 #include "HTMLTableCaptionElementImp.h"
+#include "HTMLTableRowElementImp.h"
+#include "HTMLTableSectionElementImp.h"
 
 namespace org
 {
@@ -26,6 +28,29 @@ namespace dom
 {
 namespace bootstrap
 {
+
+//
+// Rows
+//
+
+
+HTMLTableElementImp::Rows::Rows(HTMLTableElementImp* table) :
+    table(table)
+{}
+
+unsigned int HTMLTableElementImp::Rows::getLength()
+{
+    return table->getRowCount();
+}
+
+Element HTMLTableElementImp::Rows::item(unsigned int index)
+{
+    return table->getRow(index);
+}
+
+//
+// HTMLTableElementImp
+//
 
 void HTMLTableElementImp::eval()
 {
@@ -55,6 +80,82 @@ void HTMLTableElementImp::eval()
         }
     }
 }
+
+unsigned int HTMLTableElementImp::getRowCount()
+{
+    // TODO: Better to keep the result
+    unsigned int count = 0;
+    for (Element child = getFirstElementChild(); child; child = child.getNextElementSibling()) {
+        if (HTMLTableRowElementImp* row = dynamic_cast<HTMLTableRowElementImp*>(child.self()))
+            ++count;
+        else if (HTMLTableSectionElementImp* section = dynamic_cast<HTMLTableSectionElementImp*>(child.self())) {
+            for (Element child = section->getFirstElementChild(); child; child = child.getNextElementSibling()) {
+                if (HTMLTableRowElementImp* row = dynamic_cast<HTMLTableRowElementImp*>(child.self()))
+                    ++count;
+            }
+        }
+    }
+    return count;
+}
+
+html::HTMLTableRowElement HTMLTableElementImp::getRow(unsigned int index)
+{
+    unsigned int count = 0;
+
+    // thead
+    for (Element child = getFirstElementChild(); child; child = child.getNextElementSibling()) {
+        if (HTMLTableSectionElementImp* section = dynamic_cast<HTMLTableSectionElementImp*>(child.self())) {
+            if (section->getTagName() == u"thead") {
+                for (Element child = section->getFirstElementChild(); child; child = child.getNextElementSibling()) {
+                    if (HTMLTableRowElementImp* row = dynamic_cast<HTMLTableRowElementImp*>(child.self())) {
+                        if (count == index)
+                            return row;
+                        ++count;
+                    }
+                }
+            }
+        }
+    }
+
+    for (Element child = getFirstElementChild(); child; child = child.getNextElementSibling()) {
+        if (HTMLTableRowElementImp* row = dynamic_cast<HTMLTableRowElementImp*>(child.self())) {
+            if (count == index)
+                return row;
+            ++count;
+        } else if (HTMLTableSectionElementImp* section = dynamic_cast<HTMLTableSectionElementImp*>(child.self())) {
+            if (section->getTagName() == u"tbody") {
+                for (Element child = section->getFirstElementChild(); child; child = child.getNextElementSibling()) {
+                    if (HTMLTableRowElementImp* row = dynamic_cast<HTMLTableRowElementImp*>(child.self())) {
+                        if (count == index)
+                            return row;
+                        ++count;
+                    }
+                }
+            }
+        }
+    }
+
+    // tfoot
+    for (Element child = getFirstElementChild(); child; child = child.getNextElementSibling()) {
+        if (HTMLTableSectionElementImp* section = dynamic_cast<HTMLTableSectionElementImp*>(child.self())) {
+            if (section->getTagName() == u"tfoot") {
+                for (Element child = section->getFirstElementChild(); child; child = child.getNextElementSibling()) {
+                    if (HTMLTableRowElementImp* row = dynamic_cast<HTMLTableRowElementImp*>(child.self())) {
+                        if (count == index)
+                            return row;
+                        ++count;
+                    }
+                }
+            }
+        }
+    }
+
+    return 0;
+}
+
+//
+// HTMLTableElement
+//
 
 html::HTMLTableCaptionElement HTMLTableElementImp::getCaption()
 {
@@ -139,8 +240,7 @@ html::HTMLElement HTMLTableElementImp::createTBody()
 
 html::HTMLCollection HTMLTableElementImp::getRows()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return new(std::nothrow) Rows(this);
 }
 
 html::HTMLElement HTMLTableElementImp::insertRow()
