@@ -1081,6 +1081,10 @@ void TableWrapperBox::layOutTableBox(ViewCSSImp* view, FormattingContext* contex
     tableBox->setPosition(CSSPositionValueImp::Static);
     bool anon = style->display != CSSDisplayValueImp::Table && style->display != CSSDisplayValueImp::InlineTable;
     float hs = 0.0f;
+    tableBox->backgroundColor = 0x00000000;
+    // TODO: process backgroundImage
+    tableBox->paddingTop = tableBox->paddingRight = tableBox->paddingBottom = tableBox->paddingLeft = 0.0f;
+    tableBox->borderTop = tableBox->borderRight = tableBox->borderBottom = tableBox->borderLeft = 0.0f;
     if (!anon) {
         tableBox->resolveBackground(view);
         if (!collapsingModel) {
