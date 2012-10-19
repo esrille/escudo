@@ -85,14 +85,14 @@ public:
     static const unsigned short INLINE_LEVEL_BOX = 3;
 
     // flags
-    static const unsigned short NEED_SELECTOR_MATCHING = 1;
-    static const unsigned short NEED_STYLE_RECALCULATION = 2;
-    static const unsigned short NEED_EXPANSION = 4;
-    static const unsigned short NEED_CHILD_EXPANSION = 8;
-    static const unsigned short NEED_REFLOW = 16;
-    static const unsigned short NEED_REPAINT = 32;
-    static const unsigned short NEED_CHILD_LAYOUT = 64;
-    static const unsigned short NEED_SELECTOR_REMATCHING = 128;
+    static const unsigned short NEED_SELECTOR_MATCHING = 0x01;
+    static const unsigned short NEED_STYLE_RECALCULATION = 0x02;
+    static const unsigned short NEED_EXPANSION = 0x04;
+    static const unsigned short NEED_CHILD_EXPANSION = 0x08;
+    static const unsigned short NEED_REFLOW = 0x10;
+    static const unsigned short NEED_CHILD_LAYOUT = 0x20;
+    static const unsigned short NEED_REPAINT = 0x40;
+    static const unsigned short NEED_SELECTOR_REMATCHING = 0x80;
 
 protected:
     Node node;
