@@ -259,6 +259,41 @@ void TableWrapperBox::constructBlocks()
     clearFlags(NEED_EXPANSION);
 }
 
+void TableWrapperBox::clearGrid()
+{
+    // TODO: Except for blockMap, initialize data members for the upcoming block reconstruction.
+}
+
+void TableWrapperBox::reconstructBlocks(ViewCSSImp* view)
+{
+    Block* prev = 0;
+    for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
+        if (child->getFlags() & (Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION)) {
+            if (child != tableBox) {
+                assert(child->getNode());
+                view->constructBlock(child->getNode(), this, getStyle(), true, prev);
+            } else {
+                for (unsigned y = 0; y < yHeight; ++y) {
+                    for (unsigned x = 0; x < xWidth; ++x) {
+                        CellBox* cellBox = grid[y][x].get();
+                        if (!cellBox || cellBox->isSpanned(x, y))
+                            continue;
+                        if (cellBox->flags & (Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION)) {
+                            assert(cellBox->getNode());
+                            view->constructBlock(cellBox->getNode(), tableBox, tableBox->getStyle(), true);
+                            cellBox->columnWidth = NAN;
+                        }
+                    }
+                }
+            }
+            child->clearFlags(Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION); // TODO: Refine
+        }
+        prev = dynamic_cast<Block*>(child);
+        assert(prev);
+    }
+    flags &= ~(Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION);
+}
+
 bool TableWrapperBox::processTableChild(Node node, CSSStyleDeclarationImp* style)
 {
     unsigned display = CSSDisplayValueImp::None;

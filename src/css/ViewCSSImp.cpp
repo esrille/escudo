@@ -563,7 +563,6 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, CSSStyleDec
         // inserted in a lineBox of parentBox later
         if (parentBox) {
             if (!currentBox->parentBox) {
-                assert(currentBox->getStyle());
                 parentBox->addBlock(element, currentBox);
                 // Set currentBox->parentBox to parentBox for now so that the correct
                 // containing block can be retrieved before currentBox will be
@@ -602,37 +601,48 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, CSSStyleDec
         }
     }
 
-    if (currentBox && currentBox != parentBox) {
-        Block* prev = 0;
+    if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(currentBox)) {
         switch (currentBox->flags & (Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION)) {
         case Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION:
         case Box::NEED_EXPANSION:
-            assert(currentBox->inlines.empty());
             break;
         case Box::NEED_CHILD_EXPANSION:
-            for (auto box = dynamic_cast<Block*>(currentBox->getFirstChild());
-                 box;
-                 prev = box, box = dynamic_cast<Block*>(box->getNextSibling()))
-            {
-                if (box->flags & (Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION)) {
-                    if (box->getNode())
-                        constructBlock(box->getNode(), currentBox, style, false, prev);
-                    else    // anonymous box
-                        box->flags &= ~(Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION);
-                }
-            }
-            for (auto it = currentBox->blockMap.begin(); it != currentBox->blockMap.end(); ++it) {
-                if (it->second.get()->flags & (Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION))
-                    constructBlock(it->first, currentBox, style);
-            }
-            currentBox->flags &= ~(Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION);
+            table->reconstructBlocks(this);
             // FALL THROUGH
         default:
             return (!parentBox || !inlineBlock) ? currentBox : prevBox;
         }
-    }
+    } else {
+        if (currentBox && currentBox != parentBox) {
+            Block* prev = 0;
+            switch (currentBox->flags & (Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION)) {
+            case Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION:
+            case Box::NEED_EXPANSION:
+                assert(currentBox->inlines.empty());
+                break;
+            case Box::NEED_CHILD_EXPANSION:
+                for (auto box = dynamic_cast<Block*>(currentBox->getFirstChild());
+                    box;
+                    prev = box, box = dynamic_cast<Block*>(box->getNextSibling()))
+                {
+                    if (box->flags & (Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION)) {
+                        if (box->getNode())
+                            constructBlock(box->getNode(), currentBox, style, false, prev);
+                        else    // anonymous box
+                            box->flags &= ~(Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION);
+                    }
+                }
+                for (auto it = currentBox->blockMap.begin(); it != currentBox->blockMap.end(); ++it) {
+                    if (it->second.get()->flags & (Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION))
+                        constructBlock(it->first, currentBox, style);
+                }
+                currentBox->flags &= ~(Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION);
+                // FALL THROUGH
+            default:
+                return (!parentBox || !inlineBlock) ? currentBox : prevBox;
+            }
+        }
 
-    if (!dynamic_cast<TableWrapperBox*>(currentBox)) {
         Block* prev = (currentBox != parentBox) ? 0 : prevBox;
         ElementImp* imp = dynamic_cast<ElementImp*>(element.self());
 

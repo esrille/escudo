@@ -22,6 +22,7 @@
 #include "StackingContext.h"
 #include "CSSValueParser.h"
 #include "MutationEventImp.h"
+#include "Table.h"
 #include "ViewCSSImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
@@ -2256,25 +2257,38 @@ Block* CSSStyleDeclarationImp::updateInlines()
     CSSStyleDeclarationImp* style = this;
     do {
         switch (style->display.getValue()) {
-        // TODO:
-        // case CSSDisplayValueImp::None:
-        //     break;
+        case CSSDisplayValueImp::None:
+        case CSSDisplayValueImp::TableColumnGroup:
+        case CSSDisplayValueImp::TableColumn:
+            return 0;
+        case CSSDisplayValueImp::Table:
+        case CSSDisplayValueImp::InlineTable:
+            if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(style->getBox())) {
+                table->clearGrid();
+                return table;
+            }
+            break;
         case CSSDisplayValueImp::Block:
         case CSSDisplayValueImp::ListItem:
-        case CSSDisplayValueImp::Table:
         case CSSDisplayValueImp::InlineBlock:
-        case CSSDisplayValueImp::InlineTable:
+        case CSSDisplayValueImp::TableCell:
+        case CSSDisplayValueImp::TableCaption:
             if (Block* block = dynamic_cast<Block*>(style->getBox())) {
                 block->clearInlines();
-                assert(!getBox());
                 return block;
             }
-            // FALL THROUGH
+            break;
+        case CSSDisplayValueImp::TableRowGroup:
+        case CSSDisplayValueImp::TableHeaderGroup:
+        case CSSDisplayValueImp::TableFooterGroup:
+        case CSSDisplayValueImp::TableRow:
+            // These styles do not have corresponding boxes; so look up for the containing
+            // table wrapper box and clear its grid.
+            break;
         default:
-            style = style->getParentStyle();
             break;
         }
-    } while (style);
+    } while (style = style->getParentStyle());
     return 0;
 }
 

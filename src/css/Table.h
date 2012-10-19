@@ -221,6 +221,8 @@ public:
     ~TableWrapperBox();
 
     void constructBlocks();
+    void clearGrid();
+    void reconstructBlocks(ViewCSSImp* view);
 
     BorderValue* getRowBorderValue(unsigned x, unsigned y) {
         assert(x < xWidth);
