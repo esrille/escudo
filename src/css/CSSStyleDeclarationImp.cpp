@@ -2295,7 +2295,6 @@ Block* CSSStyleDeclarationImp::updateInlines()
 Block* CSSStyleDeclarationImp::revert()
 {
     // TODO: Check stacking context
-    // TODO: Check table parts
     Block* block = dynamic_cast<Block*>(getBox());
     if (!block)
         return updateInlines();
@@ -2305,6 +2304,11 @@ Block* CSSStyleDeclarationImp::revert()
     if (!holder)  // inline block
         holder = dynamic_cast<Block*>(block->getParentBox()->getParentBox()->getParentBox());
     assert(holder);
+    if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(holder->getParentBox())) {
+        assert(table);
+        table->setFlags(Box::NEED_EXPANSION | Box::NEED_REFLOW);
+        return table;
+    }
     if (holder->removeBlock(block->getNode()))
         holder->clearInlines();
     else {
