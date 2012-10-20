@@ -73,8 +73,7 @@ public:
     int getRowIndex();
     int getSectionRowIndex();
     html::HTMLCollection getCells();
-    html::HTMLElement insertCell();
-    html::HTMLElement insertCell(int index);
+    html::HTMLElement insertCell(int index = -1);
     void deleteCell(int index);
     // HTMLTableRowElement-33
     std::u16string getAlign();

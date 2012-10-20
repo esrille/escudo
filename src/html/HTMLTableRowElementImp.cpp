@@ -17,6 +17,7 @@
 #include "HTMLTableRowElementImp.h"
 
 #include "HTMLTableCellElementImp.h"
+#include "HTMLTableDataCellElementImp.h"
 
 namespace org
 {
@@ -71,7 +72,6 @@ unsigned int HTMLTableRowElementImp::getCellCount()
 html::HTMLTableCellElement HTMLTableRowElementImp::getCell(unsigned int index)
 {
     unsigned int count = 0;
-
     for (Element child = getFirstElementChild(); child; child = child.getNextElementSibling()) {
         if (HTMLTableCellElementImp* cell = dynamic_cast<HTMLTableCellElementImp*>(child.self())) {
             if (count == index)
@@ -99,16 +99,28 @@ html::HTMLCollection HTMLTableRowElementImp::getCells()
     return new(std::nothrow) Cells(this);
 }
 
-html::HTMLElement HTMLTableRowElementImp::insertCell()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
 html::HTMLElement HTMLTableRowElementImp::insertCell(int index)
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    if (index < -1)
+        return 0;   // TODO: throw an IndexSizeError exception
+    unsigned int count = 0;
+    for (Element child = getFirstElementChild(); child; child = child.getNextElementSibling()) {
+        if (HTMLTableCellElementImp* cell = dynamic_cast<HTMLTableCellElementImp*>(child.self())) {
+            if (count == index) {
+                html::HTMLTableDataCellElement td = new(std::nothrow) HTMLTableDataCellElementImp(getOwnerDocumentImp());
+                if (td)
+                    insertBefore(td, cell);
+                return td;
+            }
+            ++count;
+        }
+    }
+    if (count < index)
+        return 0;   // TODO: throw an IndexSizeError exception
+    html::HTMLTableDataCellElement td = new(std::nothrow) HTMLTableDataCellElementImp(getOwnerDocumentImp());
+    if (td)
+        appendChild(td);
+    return td;
 }
 
 void HTMLTableRowElementImp::deleteCell(int index)
