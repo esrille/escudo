@@ -33,7 +33,6 @@ namespace bootstrap
 // Rows
 //
 
-
 HTMLTableElementImp::Rows::Rows(HTMLTableElementImp* table) :
     table(table)
 {}

@@ -16,6 +16,8 @@
 
 #include "HTMLTableRowElementImp.h"
 
+#include "HTMLTableCellElementImp.h"
+
 namespace org
 {
 namespace w3c
@@ -25,12 +27,59 @@ namespace dom
 namespace bootstrap
 {
 
+//
+// Cells
+//
+
+HTMLTableRowElementImp::Cells::Cells(HTMLTableRowElementImp* row) :
+    row(row)
+{}
+
+unsigned int HTMLTableRowElementImp::Cells::getLength()
+{
+    return row->getCellCount();
+}
+
+Element HTMLTableRowElementImp::Cells::item(unsigned int index)
+{
+    return row->getCell(index);
+}
+
+//
+// HTMLTableRowElementImp
+//
+
 void HTMLTableRowElementImp::eval()
 {
     HTMLElementImp::eval();
     HTMLElementImp::evalBackground(this);
     HTMLElementImp::evalBgcolor(this);
     HTMLElementImp::evalValign(this);
+}
+
+unsigned int HTMLTableRowElementImp::getCellCount()
+{
+    // TODO: Better to keep the result
+    unsigned int count = 0;
+    for (Element child = getFirstElementChild(); child; child = child.getNextElementSibling()) {
+        if (HTMLTableCellElementImp* cell = dynamic_cast<HTMLTableCellElementImp*>(child.self()))
+            ++count;
+    }
+    return count;
+}
+
+html::HTMLTableCellElement HTMLTableRowElementImp::getCell(unsigned int index)
+{
+    unsigned int count = 0;
+
+    for (Element child = getFirstElementChild(); child; child = child.getNextElementSibling()) {
+        if (HTMLTableCellElementImp* cell = dynamic_cast<HTMLTableCellElementImp*>(child.self())) {
+            if (count == index)
+                return cell;
+            ++count;
+        }
+    }
+    return 0;
 }
 
 int HTMLTableRowElementImp::getRowIndex()
@@ -47,8 +96,7 @@ int HTMLTableRowElementImp::getSectionRowIndex()
 
 html::HTMLCollection HTMLTableRowElementImp::getCells()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return new(std::nothrow) Cells(this);
 }
 
 html::HTMLElement HTMLTableRowElementImp::insertCell()

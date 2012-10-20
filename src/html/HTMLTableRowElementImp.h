@@ -22,10 +22,13 @@
 #endif
 
 #include <org/w3c/dom/html/HTMLTableRowElement.h>
-#include "HTMLElementImp.h"
 
-#include <org/w3c/dom/html/HTMLElement.h>
-#include <org/w3c/dom/html/HTMLCollection.h>
+#include <boost/intrusive_ptr.hpp>
+
+#include <org/w3c/dom/html/HTMLTableCellElement.h>
+
+#include "HTMLCollectionImp.h"
+#include "HTMLElementImp.h"
 
 namespace org
 {
@@ -37,8 +40,34 @@ namespace bootstrap
 {
 class HTMLTableRowElementImp : public ObjectMixin<HTMLTableRowElementImp, HTMLElementImp>
 {
+    // HTMLCollection for cells
+    class Cells : public HTMLCollectionImp
+    {
+        boost::intrusive_ptr<HTMLTableRowElementImp> row;
+    public:
+        Cells(HTMLTableRowElementImp* row);
+
+        // HTMLCollection
+        virtual unsigned int getLength();
+        virtual Element item(unsigned int index);
+        virtual Object namedItem(std::u16string name) {
+            return 0;
+        }
+    };
+
 public:
-    void eval();
+    HTMLTableRowElementImp(DocumentImp* ownerDocument) :
+        ObjectMixin(ownerDocument, u"tr")
+    {}
+    HTMLTableRowElementImp(HTMLTableRowElementImp* org, bool deep) :
+        ObjectMixin(org, deep)
+    {}
+
+    virtual void eval();
+
+    // Utilities for Rows
+    unsigned int getCellCount();
+    html::HTMLTableCellElement getCell(unsigned int index);
 
     // HTMLTableRowElement
     int getRowIndex();
@@ -59,19 +88,11 @@ public:
     std::u16string getVAlign();
     void setVAlign(std::u16string vAlign);
     // Object
-    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
-    {
+    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
         return html::HTMLTableRowElement::dispatch(this, selector, id, argc, argv);
     }
-    static const char* const getMetaData()
-    {
+    static const char* const getMetaData() {
         return html::HTMLTableRowElement::getMetaData();
-    }
-    HTMLTableRowElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"tr") {
-    }
-    HTMLTableRowElementImp(HTMLTableRowElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
     }
 };
 
