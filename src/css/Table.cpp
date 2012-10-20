@@ -171,9 +171,9 @@ void CellBox::renderNonInline(ViewCSSImp* view, StackingContext* stackingContext
 TableWrapperBox::TableWrapperBox(ViewCSSImp* view, Element element, CSSStyleDeclarationImp* style) :
     Block(element, (style->display == CSSDisplayValueImp::Table || style->display == CSSDisplayValueImp::InlineTable) ? style : 0),
     view(view),
+    table(element),
     xWidth(0),
     yHeight(0),
-    table(element),
     tableBox(0),
     isAnonymousTable(style->display != CSSDisplayValueImp::Table && style->display != CSSDisplayValueImp::InlineTable),
     inRow(false),
@@ -191,12 +191,6 @@ TableWrapperBox::TableWrapperBox(ViewCSSImp* view, Element element, CSSStyleDecl
     isHtmlTable = html::HTMLTableElement::hasInstance(element);
     if (isAnonymousTable)
         processTableChild(element, style);
-    else {
-        // TODO: Process pseudo elements
-        for (Node node = element.getFirstChild(); node; node = node.getNextSibling())
-            processTableChild(node, style);
-        constructBlocks();
-    }
 }
 
 TableWrapperBox::~TableWrapperBox()
@@ -262,6 +256,49 @@ void TableWrapperBox::constructBlocks()
 void TableWrapperBox::clearGrid()
 {
     // TODO: Except for blockMap, initialize data members for the upcoming block reconstruction.
+    removeChildren();
+
+    topCaptions.clear();
+    bottomCaptions.clear();
+
+    rows.clear();
+    rowGroups.clear();
+    columns.clear();
+    columnGroups.clear();
+
+    grid.clear();
+    xWidth = 0;
+    yHeight = 0;
+
+    tableBox = 0;
+    borderRows.clear();
+    borderColumns.clear();
+
+    widths.clear();
+    fixedWidths.clear();
+    percentages.clear();
+    heights.clear();
+    baselines.clear();
+    rowImages.clear();
+    rowGroupImages.clear();
+    columnImages.clear();
+    columnGroupImages.clear();
+
+    isAnonymousTable = !style || (style->display != CSSDisplayValueImp::Table && style->display != CSSDisplayValueImp::InlineTable);
+
+    // CSS table model
+    inRow = false;
+    xCurrent = 0;
+    yCurrent = 0;
+    anonymousCell = 0;
+    anonymousTable = 0;
+    pendingTheadElement = 0;
+    yTheadBegin = 0;
+    yTheadEnd = 0;
+    pendingTfootElement = 0;
+    yTfootBegin = 0;
+    yTfootEnd = 0;
+
 }
 
 void TableWrapperBox::reconstructBlocks(ViewCSSImp* view)

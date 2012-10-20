@@ -602,9 +602,18 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, CSSStyleDec
     }
 
     if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(currentBox)) {
-        switch (currentBox->flags & (Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION)) {
+        switch (table->getFlags() & (Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION)) {
         case Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION:
         case Box::NEED_EXPANSION:
+            table->clearGrid();
+            if (table->isAnonymousTableObject()) {
+                table->processTableChild(element, style);
+            } else {
+                // TODO: Process pseudo elements
+                for (Node node = element.getFirstChild(); node; node = node.getNextSibling())
+                    table->processTableChild(node, style);
+                table->constructBlocks();
+            }
             break;
         case Box::NEED_CHILD_EXPANSION:
             table->reconstructBlocks(this);

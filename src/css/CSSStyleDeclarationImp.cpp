@@ -2264,7 +2264,7 @@ Block* CSSStyleDeclarationImp::updateInlines()
         case CSSDisplayValueImp::Table:
         case CSSDisplayValueImp::InlineTable:
             if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(style->getBox())) {
-                table->clearGrid();
+                table->setFlags(Box::NEED_EXPANSION | Box::NEED_REFLOW);
                 return table;
             }
             break;
@@ -2295,6 +2295,7 @@ Block* CSSStyleDeclarationImp::updateInlines()
 Block* CSSStyleDeclarationImp::revert()
 {
     // TODO: Check stacking context
+    // TODO: Check table parts
     Block* block = dynamic_cast<Block*>(getBox());
     if (!block)
         return updateInlines();

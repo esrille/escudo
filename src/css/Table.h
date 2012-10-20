@@ -141,6 +141,7 @@ class TableWrapperBox : public Block
     };
 
     ViewCSSImp* view;
+    Element table;
 
     std::deque<Caption> topCaptions;
     std::deque<Caption> bottomCaptions;
@@ -154,7 +155,6 @@ class TableWrapperBox : public Block
     unsigned xWidth;
     unsigned yHeight;
 
-    Element table;
     Block* tableBox;
     std::vector<BorderValue> borderRows;
     std::vector<BorderValue> borderColumns;
