@@ -125,7 +125,19 @@ html::HTMLElement HTMLTableRowElementImp::insertCell(int index)
 
 void HTMLTableRowElementImp::deleteCell(int index)
 {
-    // TODO: implement me!
+    if (index < 0)
+        return;     // TODO: throw an IndexSizeError exception
+    unsigned int count = 0;
+    for (Element child = getFirstElementChild(); child; child = child.getNextElementSibling()) {
+        if (HTMLTableCellElementImp* cell = dynamic_cast<HTMLTableCellElementImp*>(child.self())) {
+            if (count == index) {
+                removeChild(child);
+                return;
+            }
+            ++count;
+        }
+    }
+    // TODO: throw an IndexSizeError exception
 }
 
 std::u16string HTMLTableRowElementImp::getAlign()
