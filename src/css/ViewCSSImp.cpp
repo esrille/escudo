@@ -47,12 +47,12 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 namespace {
 
-Block* getCurrentBox(CSSStyleDeclarationImp* style, bool asBlock)
+Block* getCurrentBox(CSSStyleDeclarationImp* style, bool asTablePart)
 {
     Box* box = style->getBox();
     if (!box)
         return 0;
-    if (!style->display.isTableParts() || asBlock)
+    if (!style->display.isTableParts() || asTablePart)
         return dynamic_cast<Block*>(box);
 
     // return the surrounding anonymous table wrapper box
@@ -417,7 +417,7 @@ Element ViewCSSImp::updatePseudoElement(CSSStyleDeclarationImp* style, int id, E
 
 // In this step, neither inline-level boxes nor line boxes are generated.
 // Those will be generated later by layOut().
-Block* ViewCSSImp::constructBlock(Node node, Block* parentBox, CSSStyleDeclarationImp* style, Block* prevBox, bool asBlock)
+Block* ViewCSSImp::constructBlock(Node node, Block* parentBox, CSSStyleDeclarationImp* style, Block* prevBox, bool asTablePart)
 {
     Block* newBox = 0;
     switch (node.getNodeType()) {
@@ -425,7 +425,7 @@ Block* ViewCSSImp::constructBlock(Node node, Block* parentBox, CSSStyleDeclarati
         newBox = constructBlock(interface_cast<Text>(node), parentBox, style, prevBox);
         break;
     case Node::ELEMENT_NODE:
-        newBox = constructBlock(interface_cast<Element>(node), parentBox, style, 0, prevBox, asBlock);
+        newBox = constructBlock(interface_cast<Element>(node), parentBox, style, 0, prevBox, asTablePart);
         break;
     case Node::DOCUMENT_NODE:
         for (Node child = node.getFirstChild(); child; child = child.getNextSibling()) {
@@ -486,7 +486,7 @@ Block* ViewCSSImp::constructBlock(Text text, Block* parentBox, CSSStyleDeclarati
     return 0;
 }
 
-Block* ViewCSSImp::createBlock(Element element, Block* parentBox, CSSStyleDeclarationImp* style, bool newContext, bool asBlock)
+Block* ViewCSSImp::createBlock(Element element, Block* parentBox, CSSStyleDeclarationImp* style, bool newContext, bool asTablePart)
 {
     assert(style);
     Block* block;
@@ -494,7 +494,7 @@ Block* ViewCSSImp::createBlock(Element element, Block* parentBox, CSSStyleDeclar
         block = new(std::nothrow) TableWrapperBox(this, element, style);
         newContext = true;
     } else if (style->display.isTableParts()) {
-        if (asBlock) {
+        if (asTablePart) {
             if (style->display == CSSDisplayValueImp::TableCell)
                 block = new(std::nothrow) CellBox(element, style);
             else
@@ -528,7 +528,7 @@ Block* ViewCSSImp::createBlock(Element element, Block* parentBox, CSSStyleDeclar
     return block;
 }
 
-Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, CSSStyleDeclarationImp* parentStyle, CSSStyleDeclarationImp* style, Block* prevBox, bool asBlock)
+Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, CSSStyleDeclarationImp* parentStyle, CSSStyleDeclarationImp* style, Block* prevBox, bool asTablePart)
 {
 #ifndef NDEBUG
     std::u16string tag(interface_cast<html::HTMLElement>(element).getTagName());
@@ -549,14 +549,14 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, CSSStyleDec
     }
 
     Block* currentBox = parentBox;
-    bool anonInlineTable = style->display.isTableParts() && parentStyle && parentStyle->display.isInlineLevel() && !asBlock;
+    bool anonInlineTable = style->display.isTableParts() && parentStyle && parentStyle->display.isInlineLevel() && !asTablePart;
     bool inlineReplace = isReplacedElement(element) && !style->isBlockLevel();
     bool isFlowRoot = (!parentBox || anonInlineTable || inlineReplace) ? true : style->isFlowRoot();
     bool inlineBlock = anonInlineTable || style->isFloat() || style->isAbsolutelyPositioned() || style->isInlineBlock() || inlineReplace;
     if (!parentBox || inlineBlock) {
-        currentBox = getCurrentBox(style, asBlock);
+        currentBox = getCurrentBox(style, asTablePart);
         if (!currentBox)
-            currentBox = createBlock(element, parentBox, style, isFlowRoot, asBlock);
+            currentBox = createBlock(element, parentBox, style, isFlowRoot, asTablePart);
         if (!currentBox)
             return 0;
         // Do not insert currentBox into parentBox. currentBox will be
@@ -580,10 +580,10 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, CSSStyleDec
                     assert(!prevBox || prevBox->parentBox == parentBox);
             }
         }
-    } else if (style->isBlockLevel() || asBlock) {
-        currentBox = getCurrentBox(style, asBlock);
+    } else if (style->isBlockLevel() || asTablePart) {
+        currentBox = getCurrentBox(style, asTablePart);
         if (!currentBox) {
-            currentBox = createBlock(element, parentBox, style, isFlowRoot, asBlock);
+            currentBox = createBlock(element, parentBox, style, isFlowRoot, asTablePart);
             if (!currentBox)
                 return 0;
             if (parentBox) {
