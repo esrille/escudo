@@ -160,7 +160,7 @@ size_t Block::layOutFloatingFirstLetter(ViewCSSImp* view, FormattingContext* con
     size_t length = getfirstLetterLength(data, 0);  // TODO: position?
     Text text = document.createTextNode(data.substr(0, length));
     floatingFirstLetter.appendChild(text);
-    Block* floatingBox = view->createBlock(floatingFirstLetter, this, firstLetterStyle, true, false);
+    Block* floatingBox = view->createBlock(floatingFirstLetter, this, firstLetterStyle, true);
     floatingBox->insertInline(text);
     floatingBox->flags &= ~(Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION);
     addBlock(floatingFirstLetter, floatingBox);

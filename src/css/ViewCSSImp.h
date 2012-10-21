@@ -115,10 +115,10 @@ public:
             return window->preload(base, url);
         return 0;
     }
-    Block* createBlock(Element element, Block* parentBox, CSSStyleDeclarationImp* style, bool newContext, bool asBlock);
-    Block* constructBlock(Node node, Block* parentBox, CSSStyleDeclarationImp* style, bool asBlock = false, Block* prevBox = 0);
+    Block* createBlock(Element element, Block* parentBox, CSSStyleDeclarationImp* style, bool newContext, bool asBlock = false);
+    Block* constructBlock(Node node, Block* parentBox, CSSStyleDeclarationImp* style, Block* prevBox, bool asBlock = false);
     Block* constructBlock(Text text, Block* parentBox, CSSStyleDeclarationImp* style, Block* prevBox);
-    Block* constructBlock(Element element, Block* parentBox, CSSStyleDeclarationImp* parentStyle, CSSStyleDeclarationImp* style, bool asBlock = false, Block* prevBox = 0);
+    Block* constructBlock(Element element, Block* parentBox, CSSStyleDeclarationImp* parentStyle, CSSStyleDeclarationImp* style, Block* prevBox, bool asBlock = false);
     Block* constructBlocks();
     Block* layOut();
     Block* dump();

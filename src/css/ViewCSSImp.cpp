@@ -417,7 +417,7 @@ Element ViewCSSImp::updatePseudoElement(CSSStyleDeclarationImp* style, int id, E
 
 // In this step, neither inline-level boxes nor line boxes are generated.
 // Those will be generated later by layOut().
-Block* ViewCSSImp::constructBlock(Node node, Block* parentBox, CSSStyleDeclarationImp* style, bool asBlock, Block* prevBox)
+Block* ViewCSSImp::constructBlock(Node node, Block* parentBox, CSSStyleDeclarationImp* style, Block* prevBox, bool asBlock)
 {
     Block* newBox = 0;
     switch (node.getNodeType()) {
@@ -425,11 +425,11 @@ Block* ViewCSSImp::constructBlock(Node node, Block* parentBox, CSSStyleDeclarati
         newBox = constructBlock(interface_cast<Text>(node), parentBox, style, prevBox);
         break;
     case Node::ELEMENT_NODE:
-        newBox = constructBlock(interface_cast<Element>(node), parentBox, style, 0, asBlock, prevBox);
+        newBox = constructBlock(interface_cast<Element>(node), parentBox, style, 0, prevBox, asBlock);
         break;
     case Node::DOCUMENT_NODE:
         for (Node child = node.getFirstChild(); child; child = child.getNextSibling()) {
-            if (Block* box = constructBlock(child, parentBox, style, false, newBox))
+            if (Block* box = constructBlock(child, parentBox, style, newBox))
                 newBox = box;
         }
         break;
@@ -528,7 +528,7 @@ Block* ViewCSSImp::createBlock(Element element, Block* parentBox, CSSStyleDeclar
     return block;
 }
 
-Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, CSSStyleDeclarationImp* parentStyle, CSSStyleDeclarationImp* style, bool asBlock, Block* prevBox)
+Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, CSSStyleDeclarationImp* parentStyle, CSSStyleDeclarationImp* style, Block* prevBox, bool asBlock)
 {
 #ifndef NDEBUG
     std::u16string tag(interface_cast<html::HTMLElement>(element).getTagName());
@@ -636,14 +636,14 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, CSSStyleDec
                 {
                     if (box->flags & (Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION)) {
                         if (box->getNode())
-                            constructBlock(box->getNode(), currentBox, style, false, prev);
+                            constructBlock(box->getNode(), currentBox, style, prev);
                         else    // anonymous box
                             box->flags &= ~(Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION);
                     }
                 }
                 for (auto it = currentBox->blockMap.begin(); it != currentBox->blockMap.end(); ++it) {
                     if (it->second.get()->flags & (Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION))
-                        constructBlock(it->first, currentBox, style);
+                        constructBlock(it->first, currentBox, style, 0);
                 }
                 currentBox->flags &= ~(Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION);
                 // FALL THROUGH
@@ -663,7 +663,7 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, CSSStyleDec
         }
 
         if (imp->marker) {
-            if (Block* box = constructBlock(imp->marker, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::Marker)))
+            if (Block* box = constructBlock(imp->marker, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::Marker), prev))
                 prev = box;
             // Deal with an empty list item; cf. list-alignment-001, acid2.
             // TODO: Find out where the exact behavior is defined in the specifications.
@@ -675,15 +675,15 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, CSSStyleDec
             }
         }
         if (imp->before) {
-            if (Block* box = constructBlock(imp->before, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::Before), false, prev))
+            if (Block* box = constructBlock(imp->before, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::Before), prev))
                 prev = box;
         }
         for (Node child = shadow.getFirstChild(); child; child = child.getNextSibling()) {
-            if (Block* box = constructBlock(child, currentBox, style, false, prev))
+            if (Block* box = constructBlock(child, currentBox, style, prev))
                 prev = box;
         }
         if (imp->after) {
-            if (Block* box = constructBlock(imp->after, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::After), false, prev))
+            if (Block* box = constructBlock(imp->after, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::After), prev))
                 prev = box;
         }
 
@@ -718,7 +718,7 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, CSSStyleDec
 // Construct the render tree
 Block* ViewCSSImp::constructBlocks()
 {
-    boxTree = constructBlock(getDocument(), 0, 0);
+    boxTree = constructBlock(getDocument(), 0, 0, 0);
     clearCounters();
     return boxTree.get();
 }
