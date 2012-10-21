@@ -330,7 +330,7 @@ void ViewCSSImp::calculateComputedStyle(Element element, CSSStyleDeclarationImp*
             if (style->display.isInlineLevel() && block && !(block->getFlags() & Box::NEED_EXPANSION))
                 block->clearInlines();
         } else if (comp & Box::NEED_REFLOW) {
-            if (Block* block = getCurrentBox(style, false))
+            if (Block* block = getCurrentBox(style, true))
                 block->setFlags(Box::NEED_REFLOW);
         }
         flags |= CSSStyleDeclarationImp::Computed;  // The child styles have to be recomputed.
@@ -580,10 +580,17 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, CSSStyleDec
                     assert(!prevBox || prevBox->parentBox == parentBox);
             }
         }
-    } else if (style->isBlockLevel() || asTablePart) {
-        currentBox = getCurrentBox(style, asTablePart);
+    } else if (asTablePart) {
+        currentBox = getCurrentBox(style, true);
         if (!currentBox) {
-            currentBox = createBlock(element, parentBox, style, isFlowRoot, asTablePart);
+            currentBox = createBlock(element, 0, style, isFlowRoot, true);
+            if (!currentBox)
+                return 0;
+        }
+    } else if (style->isBlockLevel()) {
+        currentBox = getCurrentBox(style, false);
+        if (!currentBox) {
+            currentBox = createBlock(element, parentBox, style, isFlowRoot);
             if (!currentBox)
                 return 0;
             if (parentBox) {

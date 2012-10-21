@@ -308,7 +308,7 @@ void TableWrapperBox::reconstructBlocks(ViewCSSImp* view)
         if (child->getFlags() & (Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION)) {
             if (child != tableBox) {
                 assert(child->getNode());
-                view->constructBlock(child->getNode(), this, getStyle(), prev, true);
+                view->constructBlock(child->getNode(), 0, getStyle(), prev, true);
             } else {
                 for (unsigned y = 0; y < yHeight; ++y) {
                     for (unsigned x = 0; x < xWidth; ++x) {
@@ -317,7 +317,7 @@ void TableWrapperBox::reconstructBlocks(ViewCSSImp* view)
                             continue;
                         if (cellBox->flags & (Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION)) {
                             assert(cellBox->getNode());
-                            view->constructBlock(cellBox->getNode(), tableBox, tableBox->getStyle(), 0, true);
+                            view->constructBlock(cellBox->getNode(), 0, tableBox->getStyle(), 0, true);
                             cellBox->columnWidth = NAN;
                         }
                     }
