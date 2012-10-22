@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+<head>
+<meta charset="UTF-8">
+<title>Partial reflow test</title>
+<style type="text/css">
+table
+{
+    border-collapse: collapse;
+}
+td
+{
+    border: 2px solid black;
+    height: 3em;
+}
+div 
+{
+    border: solid lime 2px;
+}
+</style>
+<script type="text/javascript">
+function doTest() {
+  this.addEventListener('keydown', function(event) {
+    if (event.keyCode == 13) {
+      var t = document.getElementById("t");
+      t.lastChild.appendData(" Filler Text");
+    }
+  }, false);
+}
+</script>
+</head>
+<body onload="doTest()">
+<p>Press [Enter] to append text data to the second block box in the inner cell.</p>
+<table>
+    <tr>
+	<td>Filler Text</td>
+	<td>Filler Text</td>
+	<td>Filler Text</td>
+    </tr>
+    <tr>
+	<td>Filler Text</td>
+	<td>
+	    <div>Filler Text</div>
+	    <div id='t'>Filler Text</div>
+	    <div>Filler Text</div>
+	</td>
+	<td>Filler Text</td>
+    </tr>
+    <tr>
+	<td>Filler Text</td>
+	<td>Filler Text</td>
+	<td>Filler Text</td>
+    </tr>
+</table>
+</body>
+</html>
