@@ -307,8 +307,9 @@ Block* TableWrapperBox::constructTablePart(Node node)
     return view->constructBlock(node, 0, 0, 0, true);
 }
 
-void TableWrapperBox::reconstructBlocks(ViewCSSImp* view)
+void TableWrapperBox::reconstructBlocks()
 {
+    assert(view);
     for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
         if (child->getFlags() & (Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION)) {
             if (child != tableBox) {

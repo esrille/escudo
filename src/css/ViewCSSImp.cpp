@@ -623,7 +623,7 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, CSSStyleDec
             }
             break;
         case Box::NEED_CHILD_EXPANSION:
-            table->reconstructBlocks(this);
+            table->reconstructBlocks();
             // FALL THROUGH
         default:
             return (!parentBox || !inlineBlock) ? currentBox : prevBox;

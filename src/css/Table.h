@@ -224,7 +224,7 @@ public:
 
     void constructBlocks();
     void clearGrid();
-    void reconstructBlocks(ViewCSSImp* view);
+    void reconstructBlocks();
 
     BorderValue* getRowBorderValue(unsigned x, unsigned y) {
         assert(x < xWidth);
