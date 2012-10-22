@@ -185,6 +185,8 @@ class TableWrapperBox : public Block
     unsigned yTfootBegin;
     unsigned yTfootEnd;
 
+    Block* constructTablePart(Node node);
+
     unsigned appendRow();
     unsigned appendColumn();
 

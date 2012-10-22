@@ -301,14 +301,19 @@ void TableWrapperBox::clearGrid()
 
 }
 
+Block* TableWrapperBox::constructTablePart(Node node)
+{
+    assert(view);
+    return view->constructBlock(node, 0, 0, 0, true);
+}
+
 void TableWrapperBox::reconstructBlocks(ViewCSSImp* view)
 {
-    Block* prev = 0;
     for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
         if (child->getFlags() & (Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION)) {
             if (child != tableBox) {
                 assert(child->getNode());
-                view->constructBlock(child->getNode(), 0, getStyle(), prev, true);
+                constructTablePart(child->getNode());
             } else {
                 for (unsigned y = 0; y < yHeight; ++y) {
                     for (unsigned x = 0; x < xWidth; ++x) {
@@ -316,8 +321,9 @@ void TableWrapperBox::reconstructBlocks(ViewCSSImp* view)
                         if (!cellBox || cellBox->isSpanned(x, y))
                             continue;
                         if (cellBox->flags & (Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION)) {
+                            // TODO: deal with an anonymous cell
                             assert(cellBox->getNode());
-                            view->constructBlock(cellBox->getNode(), 0, tableBox->getStyle(), 0, true);
+                            constructTablePart(cellBox->getNode());
                             cellBox->columnWidth = NAN;
                         }
                     }
@@ -325,8 +331,6 @@ void TableWrapperBox::reconstructBlocks(ViewCSSImp* view)
             }
             child->clearFlags(Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION); // TODO: Refine
         }
-        prev = dynamic_cast<Block*>(child);
-        assert(prev);
     }
     flags &= ~(Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION);
 }
@@ -379,7 +383,7 @@ bool TableWrapperBox::processTableChild(Node node, CSSStyleDeclarationImp* style
     case CSSDisplayValueImp::TableCaption:
         // 'table-caption' doesn't seem to end the current row:
         // cf. table-caption-003.
-        if (Block* caption = view->constructBlock(child, 0, childStyle->getParentStyle(), childStyle, 0, true)) {
+        if (Block* caption = constructTablePart(child)) {
             if (childStyle->captionSide.getValue() == CSSCaptionSideValueImp::Top)
                 topCaptions.push_back(caption);
             else
@@ -686,7 +690,7 @@ CellBox* TableWrapperBox::processCell(Element current, Block* parentBox, CSSStyl
         appendRow();
     CellBox* cellBox = 0;
     if (current)
-        cellBox = static_cast<CellBox*>(view->constructBlock(current, 0, currentStyle->getParentStyle(), currentStyle, 0, true));
+        cellBox = static_cast<CellBox*>(constructTablePart(current));
     else {
         cellBox = new(std::nothrow) CellBox(0, 0);  // TODO: use parentStyle?
         if (cellBox)

@@ -549,7 +549,7 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, CSSStyleDec
     }
 
     Block* currentBox = parentBox;
-    bool anonInlineTable = style->display.isTableParts() && parentStyle && parentStyle->display.isInlineLevel() && !asTablePart;
+    bool anonInlineTable = !asTablePart && style->display.isTableParts() && parentStyle && parentStyle->display.isInlineLevel();
     bool inlineReplace = isReplacedElement(element) && !style->isBlockLevel();
     bool isFlowRoot = (!parentBox || anonInlineTable || inlineReplace) ? true : style->isFlowRoot();
     bool inlineBlock = anonInlineTable || style->isFloat() || style->isAbsolutelyPositioned() || style->isInlineBlock() || inlineReplace;
