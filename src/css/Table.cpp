@@ -304,7 +304,41 @@ void TableWrapperBox::clearGrid()
 Block* TableWrapperBox::constructTablePart(Node node)
 {
     assert(view);
-    return view->constructBlock(node, 0, 0, 0, true);
+    Block* part = view->constructBlock(node, 0, 0, 0, true);
+    if (part && style)  // Do not support the incremental reflow with an anonymous table
+        addBlock(node, part);
+    return part;
+}
+
+void TableWrapperBox::revertTablePart(Node node)
+{
+    if (Element::hasInstance(node)) {
+        Element element(interface_cast<Element>(node));
+        CSSStyleDeclarationImp* style = view->getStyle(element);
+        if (style) {
+            switch (style->display.getValue()) {
+            case CSSDisplayValueImp::TableRowGroup:
+            case CSSDisplayValueImp::TableHeaderGroup:
+            case CSSDisplayValueImp::TableFooterGroup:
+                for (Element i = element.getFirstElementChild(); i; i = i.getNextElementSibling()) {
+                    CSSStyleDeclarationImp* s = view->getStyle(i);
+                    if (s && s->display.getValue() == CSSDisplayValueImp::TableRow) {
+                        for (Element j = i.getFirstElementChild(); j; j = j.getNextElementSibling())
+                            removeBlock(j);
+                    }
+                }
+                break;
+            case CSSDisplayValueImp::TableRow:
+                for (Element i = element.getFirstElementChild(); i; i = i.getNextElementSibling())
+                    removeBlock(i);
+                break;
+            default:
+                break;
+            }
+        }
+    }
+    removeBlock(node);
+    setFlags(Box::NEED_EXPANSION | Box::NEED_REFLOW);
 }
 
 void TableWrapperBox::reconstructBlocks()

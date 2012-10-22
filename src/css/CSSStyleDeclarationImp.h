@@ -561,8 +561,8 @@ public:
         return box && box != lastBox;
     }
 
-    Block* updateInlines();
-    Block* revert();
+    Block* updateInlines(Element element);
+    Block* revert(Element element);
     void requestReconstruct(unsigned short flags);
 
     StackingContext* getStackingContext() const {

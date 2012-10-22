@@ -224,6 +224,7 @@ public:
 
     void constructBlocks();
     void clearGrid();
+    void revertTablePart(Node node);
     void reconstructBlocks();
 
     BorderValue* getRowBorderValue(unsigned x, unsigned y) {

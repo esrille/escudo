@@ -2252,7 +2252,7 @@ void CSSStyleDeclarationImp::removeBox(Box* b)
     } while (style = style->parentStyle);
 }
 
-Block* CSSStyleDeclarationImp::updateInlines()
+Block* CSSStyleDeclarationImp::updateInlines(Element element)
 {
     CSSStyleDeclarationImp* style = this;
     do {
@@ -2264,7 +2264,7 @@ Block* CSSStyleDeclarationImp::updateInlines()
         case CSSDisplayValueImp::Table:
         case CSSDisplayValueImp::InlineTable:
             if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(style->getBox())) {
-                table->setFlags(Box::NEED_EXPANSION | Box::NEED_REFLOW);
+                table->revertTablePart(element);
                 return table;
             }
             break;
@@ -2292,21 +2292,23 @@ Block* CSSStyleDeclarationImp::updateInlines()
     return 0;
 }
 
-Block* CSSStyleDeclarationImp::revert()
+Block* CSSStyleDeclarationImp::revert(Element element)
 {
     // TODO: Check stacking context
     Block* block = dynamic_cast<Block*>(getBox());
     if (!block)
-        return updateInlines();
+        return updateInlines(element);
     Block* holder = dynamic_cast<Block*>(block->getParentBox());
     if (!holder)  // floating box, absolutely positioned box
         holder = dynamic_cast<Block*>(block->getParentBox()->getParentBox());
     if (!holder)  // inline block
         holder = dynamic_cast<Block*>(block->getParentBox()->getParentBox()->getParentBox());
     assert(holder);
-    if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(holder->getParentBox())) {
-        assert(table);
-        table->setFlags(Box::NEED_EXPANSION | Box::NEED_REFLOW);
+    TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(holder);
+    if (!table)
+        table = dynamic_cast<TableWrapperBox*>(holder->getParentBox());
+    if (table) {
+        table->revertTablePart(block->getNode());
         return table;
     }
     if (holder->removeBlock(block->getNode()))

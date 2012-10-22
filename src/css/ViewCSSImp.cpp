@@ -122,7 +122,7 @@ bool ViewCSSImp::isHovered(Node node)
 void ViewCSSImp::removeElement(Element element)
 {
     if (CSSStyleDeclarationImp* style = getStyle(element)) {
-        style->revert();
+        style->revert(element);
         map.erase(element);
     }
 }
@@ -136,8 +136,9 @@ void ViewCSSImp::handleMutation(events::Event event)
     if (mutation.getType() == u"DOMCharacterDataModified") {
         Node parentNode = interface_cast<Node>(mutation.getRelatedNode());
         if (Element::hasInstance(parentNode)) {
-            if (CSSStyleDeclarationImp* style = getStyle(interface_cast<Element>(parentNode)))
-                style->updateInlines();
+            Element element(interface_cast<Element>(parentNode));
+            if (CSSStyleDeclarationImp* style = getStyle(element))
+                style->updateInlines(element);
         }
         return;
     } else if (mutation.getType() == u"DOMNodeInserted") {
@@ -148,8 +149,9 @@ void ViewCSSImp::handleMutation(events::Event event)
         if (Element::hasInstance(target))
             setFlags(Box::NEED_SELECTOR_MATCHING);
         else if (Element::hasInstance(parentNode)) {
-            if (CSSStyleDeclarationImp* style = getStyle(interface_cast<Element>(parentNode)))
-                style->updateInlines();
+            Element element(interface_cast<Element>(parentNode));
+            if (CSSStyleDeclarationImp* style = getStyle(element))
+                style->updateInlines(element);
         }
         return;
     } else if (mutation.getType() == u"DOMNodeRemoved") {
@@ -161,8 +163,9 @@ void ViewCSSImp::handleMutation(events::Event event)
             removeElement(interface_cast<Element>(target));
             setFlags(Box::NEED_SELECTOR_MATCHING);
         } else if (Element::hasInstance(parentNode)) {
-            if (CSSStyleDeclarationImp* style = getStyle(interface_cast<Element>(parentNode)))
-                style->updateInlines();
+            Element element(interface_cast<Element>(parentNode));
+            if (CSSStyleDeclarationImp* style = getStyle(element))
+                style->updateInlines(element);
         }
         return;
     } else if (mutation.getType() == u"DOMAttrModified") {
@@ -282,7 +285,7 @@ void ViewCSSImp::constructComputedStyle(Node node, CSSStyleDeclarationImp* paren
                 }
             } // TODO: detach the shadow tree from element (if any)
 
-            style->updateInlines(); // TODO ???
+            style->updateInlines(element); // TODO ???
         }
     }
     for (Node child = node.getFirstChild(); child; child = child.getNextSibling())
@@ -326,7 +329,7 @@ void ViewCSSImp::calculateComputedStyle(Element element, CSSStyleDeclarationImp*
         style->compute(this, parentStyle, element);
         unsigned comp = board.compare(style);
         if (comp & Box::NEED_EXPANSION) {
-            Block* block = style->revert();
+            Block* block = style->revert(element);
             if (style->display.isInlineLevel() && block && !(block->getFlags() & Box::NEED_EXPANSION))
                 block->clearInlines();
         } else if (comp & Box::NEED_REFLOW) {
@@ -553,10 +556,17 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, CSSStyleDec
     bool inlineReplace = isReplacedElement(element) && !style->isBlockLevel();
     bool isFlowRoot = (!parentBox || anonInlineTable || inlineReplace) ? true : style->isFlowRoot();
     bool inlineBlock = anonInlineTable || style->isFloat() || style->isAbsolutelyPositioned() || style->isInlineBlock() || inlineReplace;
-    if (!parentBox || inlineBlock) {
-        currentBox = getCurrentBox(style, asTablePart);
+    if (asTablePart) {
+        currentBox = getCurrentBox(style, true);
+        if (!currentBox) {
+            currentBox = createBlock(element, 0, style, isFlowRoot, true);
+            if (!currentBox)
+                return 0;
+        }
+    } else if (!parentBox || inlineBlock) {
+        currentBox = getCurrentBox(style, false);
         if (!currentBox)
-            currentBox = createBlock(element, parentBox, style, isFlowRoot, asTablePart);
+            currentBox = createBlock(element, parentBox, style, isFlowRoot, false);
         if (!currentBox)
             return 0;
         // Do not insert currentBox into parentBox. currentBox will be
@@ -579,13 +589,6 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, CSSStyleDec
                 else
                     assert(!prevBox || prevBox->parentBox == parentBox);
             }
-        }
-    } else if (asTablePart) {
-        currentBox = getCurrentBox(style, true);
-        if (!currentBox) {
-            currentBox = createBlock(element, 0, style, isFlowRoot, true);
-            if (!currentBox)
-                return 0;
         }
     } else if (style->isBlockLevel()) {
         currentBox = getCurrentBox(style, false);
