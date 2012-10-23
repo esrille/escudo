@@ -212,8 +212,10 @@ void Box::restyle(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle)
 
 void Box::unresolveStyle()
 {
-    if (CSSStyleDeclarationImp* style = getStyle())
-        style->unresolve();
+    if (!isAnonymous()) {
+        if (CSSStyleDeclarationImp* style = getStyle())
+            style->unresolve();
+    }
     for (Box* i = firstChild; i; i = i->nextSibling)
         i->unresolveStyle();
 }
