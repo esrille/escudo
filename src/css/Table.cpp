@@ -1595,6 +1595,8 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
     if (isCollapsableOutside()) {
         if (context != parentContext) {
             context->inheritMarginContext(parentContext);
+            // The top margin of the table caption is not collapsed with top margin of the table.
+            // cf. html4/table-anonymous-block-011.htm
             context->fixMargin();
         }
     }
