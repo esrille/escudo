@@ -513,6 +513,10 @@ public:
     }
 
     bool resolveOffset(float& x, float &y);
+    void setContainingBlockSize(float w, float h) {
+        containingBlockWidth = w;
+        containingBlockHeight = h;
+    }
 
     void respecify(const CSSStyleDeclarationImp* style);
     void respecifyImportant(const CSSStyleDeclarationImp* style);

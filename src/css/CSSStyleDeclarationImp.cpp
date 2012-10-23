@@ -1976,8 +1976,7 @@ unsigned CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock
 {
     if (isResolved() && containingBlock->width == containingBlockWidth && containingBlock->height == containingBlockHeight)
         return 0;
-    containingBlockWidth = containingBlock->width;
-    containingBlockHeight = containingBlock->height;
+    setContainingBlockSize(containingBlock->width, containingBlock->height);
 
     if (parentStyle) {
         // TODO: Refine
