@@ -169,16 +169,14 @@ void ViewCSSImp::handleMutation(events::Event event)
         }
         return;
     } else if (mutation.getType() == u"DOMAttrModified") {
-        if (mutation.getAttrName() == u"style") {
-            Node target = interface_cast<Node>(event.getTarget());
-            if (Element::hasInstance(target)) {
-                if (CSSStyleDeclarationImp* style = getStyle(interface_cast<Element>(target))) {
-                    style->requestReconstruct(Box::NEED_STYLE_RECALCULATION);
-                    style->clearFlags(CSSStyleDeclarationImp::Computed);
-                }
+        Node target = interface_cast<Node>(event.getTarget());
+        if (Element::hasInstance(target)) {
+            if (CSSStyleDeclarationImp* style = getStyle(interface_cast<Element>(target))) {
+                style->requestReconstruct(Box::NEED_STYLE_RECALCULATION);
+                style->clearFlags(CSSStyleDeclarationImp::Computed);
             }
-            return;
         }
+        return;
     }
 
     boxTree->setFlags(Box::NEED_SELECTOR_REMATCHING);
