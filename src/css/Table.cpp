@@ -110,7 +110,7 @@ float CellBox::adjustWidth()
     float w = isnanf(columnWidth) ? getTotalWidth() : columnWidth;
     width = w - getBlankLeft() - getBlankRight();
     if (fixedLayout || isnanf(columnWidth))
-        return NAN;
+        return columnWidth;
 
     width = columnWidth - getBlankLeft() - getBlankRight();
     for (Box* i = getFirstChild(); i; i = i->getNextSibling())

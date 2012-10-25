@@ -1304,9 +1304,10 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
         stackingContext = style->getStackingContext();
     }
 
+    float cw(NAN);
     CellBox* cell = dynamic_cast<CellBox*>(this);
     if (cell)
-        cell->adjustWidth();
+        cw = cell->adjustWidth();
 
      if (savedWidth != width)
          flags |= NEED_REFLOW;
@@ -1369,7 +1370,7 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
     layOutChildren(view, context);
     if (!isAnonymous()) {
         if ((style->width.isAuto() || style->marginLeft.isAuto() || style->marginRight.isAuto()) &&
-            (style->isInlineBlock() || style->isFloat() || style->display == CSSDisplayValueImp::TableCell || isReplacedElement(element)) &&
+            (style->isInlineBlock() || style->isFloat() || (cell && isnan(cw)) || isReplacedElement(element)) &&
             !intrinsic)
             shrinkToFit();
         applyMinMaxWidth(getTotalWidth());
@@ -1384,7 +1385,7 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
                 mcw += style->marginLeft.getPx();
             if (!style->marginRight.isPercentage() && !style->marginRight.isAuto())
                 mcw += style->marginRight.getPx();
-        } else
+        } else if (isnan(cw))
             mcw += getBlankLeft() + getBlankRight();
     } else if (cell)
         shrinkToFit();
