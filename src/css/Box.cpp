@@ -1345,8 +1345,10 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
         context = restoreFormattingContext(context);
         height = savedHeight;
         mcw = savedMcw;
-        context->restoreContext(this);
-        return true;
+        if (context) {
+            context->restoreContext(this);
+            return true;
+        }
     }
 
     if (!layOutReplacedElement(view, this, element, style.get())) {
