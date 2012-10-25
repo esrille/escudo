@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+<head>
+<head>
+<meta charset="UTF-8">
+<title>Partial reflow test</title>
+<style type="text/css">
+body {
+  margin: 3px 0;
+}
+span {
+  color: gray;
+}
+#t {
+  color: black;
+}
+</style>
+<script type="text/javascript">
+function doTest() {
+  this.addEventListener('keydown', function(event) {
+    if (event.keyCode == 13) {
+      var t = document.getElementById("t");
+      t.lastChild.appendData(" Filler Text");
+    }
+  }, false);
+}
+</script>
+</head>
+<body onload='doTest()'>
+<div>
+  <div style='margin-bottom: 10px'>
+    <span>Filler Text</span>
+  </div>
+  <div style='border-top: 1px solid lime; width: 100%; position: absolute'></div>
+  <div style='height: 1px'></div>
+  <div id='t'>Filler Text</div>
+</div>
+</body>
+</html>
