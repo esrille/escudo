@@ -1324,9 +1324,9 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
             if (3 <= getLogLevel())
                 std::cout << "Block::" << __func__ << ": skip reflow for '" << tag << "'\n";
 #endif
-            context->restoreContext(this);
             height = savedHeight;
             mcw = savedMcw;
+            context->restoreContext(this);
             return true;
         }
     }
@@ -1343,9 +1343,9 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
 #endif
         flags &= ~NEED_CHILD_LAYOUT;
         context = restoreFormattingContext(context);
-        context->restoreContext(this);
         height = savedHeight;
         mcw = savedMcw;
+        context->restoreContext(this);
         return true;
     }
 
@@ -1433,9 +1433,6 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
         context = parentContext;
     }
 
-    adjustCollapsedThroughMargins(context);
-    if (isInFlow() && 0.0f < paddingBottom + borderBottom)
-        context->updateRemainingHeight(paddingBottom + borderBottom);
 
     if (context->hasChanged(this)) {
         context->saveContext(this);
@@ -1443,6 +1440,10 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
             nextSibling->flags |= NEED_REFLOW;
     }
     flags &= ~(NEED_REFLOW | NEED_CHILD_LAYOUT);
+
+    adjustCollapsedThroughMargins(context);
+    if (isInFlow() && 0.0f < paddingBottom + borderBottom)
+        context->updateRemainingHeight(paddingBottom + borderBottom);
 
     return true;
 }

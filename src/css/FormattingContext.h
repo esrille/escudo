@@ -83,6 +83,8 @@ struct SavedFormattingContext
     float clearance;
     float marginTop;
     float marginBottom;
+    float topBorderEdge;
+    float consumed;
     MarginContext marginContext;
 
     SavedFormattingContext() :

@@ -105,6 +105,8 @@ void FormattingContext::saveContext(Block* block)
     block->savedFormattingContext.clearance = block->clearance;
     block->savedFormattingContext.marginTop = block->marginTop;
     block->savedFormattingContext.marginBottom = block->marginBottom;
+    block->savedFormattingContext.topBorderEdge = block->topBorderEdge;
+    block->savedFormattingContext.consumed = block->consumed;
     saveContext(block->savedFormattingContext.marginContext);
 
     block->savedFormattingContext.saved = true;
@@ -131,6 +133,8 @@ void FormattingContext::restoreContext(Block* block)
     block->clearance = block->savedFormattingContext.clearance;
     block->marginTop = block->savedFormattingContext.marginTop;
     block->marginBottom = block->savedFormattingContext.marginBottom;
+    block->topBorderEdge = block->savedFormattingContext.topBorderEdge;
+    block->consumed = block->savedFormattingContext.consumed;
     restoreContext(block->savedFormattingContext.marginContext);
 
     breakable = false;
@@ -142,6 +146,10 @@ void FormattingContext::restoreContext(Block* block)
     baseline = 0.0f;
     lineHeight = 0.0f;
     atLineHead = true;
+
+    block->adjustCollapsedThroughMargins(this);
+    if (block->isInFlow() && 0.0f < block->paddingBottom + block->borderBottom)
+        updateRemainingHeight(block->paddingBottom + block->borderBottom);
 }
 
 bool FormattingContext::hasChanged(const Block* block)
@@ -171,7 +179,9 @@ bool FormattingContext::hasChanged(const Block* block)
         return true;
     if (!isnan(block->clearance) && block->clearance != block->savedFormattingContext.clearance ||
         block->marginTop != block->savedFormattingContext.marginTop ||
-        block->marginBottom != block->savedFormattingContext.marginBottom)
+        block->marginBottom != block->savedFormattingContext.marginBottom ||
+        block->topBorderEdge != block->savedFormattingContext.topBorderEdge ||
+        block->consumed != block->savedFormattingContext.consumed)
             return true;
     if (hasChanged(block->savedFormattingContext.marginContext))
         return true;
