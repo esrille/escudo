@@ -457,19 +457,13 @@ ElementImp::ElementImp(DocumentImp* ownerDocument, const std::u16string& localNa
     ObjectMixin(ownerDocument),
     namespaceURI(namespaceURI),
     prefix(prefix),
-    localName(localName),
-    marker(0),
-    before(0),
-    after(0)
+    localName(localName)
 {
     nodeName = getTagName();
 }
 
 ElementImp::ElementImp(ElementImp* org, bool deep) :
-    ObjectMixin(org, deep),
-    marker(0),
-    before(0),
-    after(0)
+    ObjectMixin(org, deep)
 {
     namespaceURI = org->namespaceURI;
     prefix = org->prefix;
@@ -478,9 +472,6 @@ ElementImp::ElementImp(ElementImp* org, bool deep) :
         if (Attr attr = new(std::nothrow) AttrImp(*dynamic_cast<AttrImp*>((*i).self())))
             attributes.push_back(attr);
     }
-    marker = interface_cast<Element>(org->marker.cloneNode(deep));
-    before = interface_cast<Element>(org->before.cloneNode(deep));
-    after = interface_cast<Element>(org->after.cloneNode(deep));
 }
 
 }}}}  // org::w3c::dom::bootstrap

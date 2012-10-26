@@ -44,11 +44,6 @@ private:
     std::u16string prefix;
     std::u16string localName;
 
-    // CSS pseudo-elements
-    Element marker;
-    Element before;
-    Element after;
-
 public:
     ElementImp(DocumentImp* ownerDocument, const std::u16string& localName, std::u16string namespaceURI, std::u16string prefix = u"");
     ElementImp(ElementImp* org, bool deep);

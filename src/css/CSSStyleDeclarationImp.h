@@ -320,6 +320,11 @@ private:
     int pseudoElementSelectorType;
     CSSStyleDeclarationPtr pseudoElements[CSSPseudoElementSelector::MaxPseudoElements];
 
+    // pseudo-elements
+    Element marker;
+    Element before;
+    Element after;
+
     int emptyInline;    // 0: none, 1: first, 2: last, 3: both, 4: empty
 
     void initialize();

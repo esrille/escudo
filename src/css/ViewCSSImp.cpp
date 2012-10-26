@@ -284,6 +284,7 @@ void ViewCSSImp::constructComputedStyle(Node node, CSSStyleDeclarationImp* paren
             } // TODO: detach the shadow tree from element (if any)
 
             style->updateInlines(element); // TODO ???
+            style->marker = style->before = style->after = 0;
         }
     }
     for (Node child = node.getFirstChild(); child; child = child.getNextSibling())
@@ -351,30 +352,30 @@ void ViewCSSImp::calculateComputedStyle(Element element, CSSStyleDeclarationImp*
     assert(imp);
 
     if (!style->display.isNone()) {
-        imp->marker = updatePseudoElement(style, CSSPseudoElementSelector::Marker, shadow, imp->marker, &cc);
-        imp->before = updatePseudoElement(style, CSSPseudoElementSelector::Before, shadow, imp->before, &cc);
+        style->marker = updatePseudoElement(style, CSSPseudoElementSelector::Marker, shadow, style->marker, &cc);
+        style->before = updatePseudoElement(style, CSSPseudoElementSelector::Before, shadow, style->before, &cc);
     }
     for (Node child = shadow.getFirstChild(); child; child = child.getNextSibling()) {
         if (child.getNodeType() == Node::ELEMENT_NODE)
             calculateComputedStyle(interface_cast<Element>(child), style, &cc, flags);
     }
     if (!style->display.isNone())
-        imp->after = updatePseudoElement(style, CSSPseudoElementSelector::After, shadow, imp->after, &cc);
+        style->after = updatePseudoElement(style, CSSPseudoElementSelector::After, shadow, style->after, &cc);
 
     style->emptyInline = 0;
     if (style->display.isInline() && !isReplacedElement(shadow)) {
         // Empty inline elements still have margins, padding, borders and a line height. cf. 10.8
-        if (!shadow.hasChildNodes() && !imp->marker && !imp->before && !imp->after)
+        if (!shadow.hasChildNodes() && !style->marker && !style->before && !style->after)
             style->emptyInline = 4;
         else {
-            if (imp->marker || imp->before)
+            if (style->marker || style->before)
                 style->emptyInline = 1;
             else if (style->marginLeft.getPx() || style->borderLeftWidth.getPx() || style->paddingLeft.getPx()) {
                 Node child = shadow.getFirstChild();
                 if (child.getNodeType() != Node::TEXT_NODE)
                     style->emptyInline = 1;
             }
-            if (imp->after)
+            if (style->after)
                 style->emptyInline |= 2;
             else if (style->marginRight.getPx() || style->borderRightWidth.getPx() || style->paddingRight.getPx()) {
                 Node child = shadow.getLastChild();
@@ -408,9 +409,7 @@ Element ViewCSSImp::updatePseudoElement(CSSStyleDeclarationImp* style, int id, E
 
     if (id != CSSPseudoElementSelector::Marker) {
         CSSAutoNumberingValueImp::CounterContext ccMarker(this);
-        ElementImp* imp = dynamic_cast<ElementImp*>(pseudoElement.self());
-        assert(imp);
-        imp->marker = updatePseudoElement(pseudoStyle, CSSPseudoElementSelector::Marker, pseudoElement, imp->marker, &ccMarker);
+        pseudoStyle->marker = updatePseudoElement(pseudoStyle, CSSPseudoElementSelector::Marker, pseudoElement, pseudoStyle->marker, &ccMarker);
     }
 
     return pseudoElement;
@@ -670,28 +669,28 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, CSSStyleDec
                 anonymousBox->insertInline(element);
         }
 
-        if (imp->marker) {
-            if (Block* box = constructBlock(imp->marker, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::Marker), prev))
+        if (style->marker) {
+            if (Block* box = constructBlock(style->marker, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::Marker), prev))
                 prev = box;
             // Deal with an empty list item; cf. list-alignment-001, acid2.
             // TODO: Find out where the exact behavior is defined in the specifications.
-            if (style->height.isAuto() && !shadow.hasChildNodes() && !imp->before && !imp->after) {
+            if (style->height.isAuto() && !shadow.hasChildNodes() && !style->before && !style->after) {
                 if (!currentBox->hasChildBoxes())
                     currentBox->insertInline(element);
                 else if (Block* anonymousBox = currentBox->getAnonymousBox(prev))
                     anonymousBox->insertInline(element);
             }
         }
-        if (imp->before) {
-            if (Block* box = constructBlock(imp->before, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::Before), prev))
+        if (style->before) {
+            if (Block* box = constructBlock(style->before, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::Before), prev))
                 prev = box;
         }
         for (Node child = shadow.getFirstChild(); child; child = child.getNextSibling()) {
             if (Block* box = constructBlock(child, currentBox, style, prev))
                 prev = box;
         }
-        if (imp->after) {
-            if (Block* box = constructBlock(imp->after, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::After), prev))
+        if (style->after) {
+            if (Block* box = constructBlock(style->after, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::After), prev))
                 prev = box;
         }
 
@@ -792,11 +791,11 @@ CSSStyleDeclarationImp* ViewCSSImp::getStyle(Element elt, Nullable<std::u16strin
             if (i != map.end()) {
                 CSSStyleDeclarationImp* style = i->second.get();
                 assert(style);
-                if (parent->marker == elt)
+                if (style->marker == elt)
                     return style->getPseudoElementStyle(CSSPseudoElementSelector::Marker);
-                if (parent->before == elt)
+                if (style->before == elt)
                     return style->getPseudoElementStyle(CSSPseudoElementSelector::Before);
-                if (parent->after == elt)
+                if (style->after == elt)
                     return style->getPseudoElementStyle(CSSPseudoElementSelector::After);
                 return 0;
             } else if (auto grandParent = dynamic_cast<ElementImp*>(parent->getParentElement().self())) {
@@ -804,9 +803,9 @@ CSSStyleDeclarationImp* ViewCSSImp::getStyle(Element elt, Nullable<std::u16strin
                 if (i != map.end()) {
                     CSSStyleDeclarationImp* style = i->second.get();
                     assert(style);
-                    if (grandParent->before.self() == parent)
+                    if (style->before.self() == parent)
                         return style->getPseudoElementStyle(CSSPseudoElementSelector::Before)->getPseudoElementStyle(CSSPseudoElementSelector::Marker);
-                    if (grandParent->after.self() == parent)
+                    if (style->after.self() == parent)
                         return style->getPseudoElementStyle(CSSPseudoElementSelector::After)->getPseudoElementStyle(CSSPseudoElementSelector::Marker);
                     return 0;
                 }
