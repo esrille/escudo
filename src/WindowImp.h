@@ -193,12 +193,13 @@ public:
 
     static css::CSSStyleSheet defaultStyleSheet;
 
-
     ViewCSSImp* getView() const {
         return view;
     }
     void setSize(unsigned w, unsigned h);
     void setFlags(unsigned f);
+
+    bool isBindingDocumentWindow() const;
 
     bool poll();
     void render(ViewCSSImp* parentView);

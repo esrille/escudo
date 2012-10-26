@@ -165,6 +165,14 @@ void WindowImp::setDocumentWindow(const DocumentWindowPtr& window)
     setFavicon();
 }
 
+bool WindowImp::isBindingDocumentWindow() const
+{
+    if (!parent)
+        return false;
+    DocumentImp* document = dynamic_cast<DocumentImp*>(parent->getDocument().self());
+    return document->isBindingDocumentWindow(this);
+}
+
 bool WindowImp::poll()
 {
     while (backgroundTask.getState() == BackgroundTask::Done && !eventQueue.empty()) {

@@ -75,6 +75,13 @@ void WindowImp::BackgroundTask::operator()()
             state = Init;
         }
 
+        // A binding document does not need a view.
+        if (window->isBindingDocumentWindow()) {
+            command &= ~(Cascade | Layout);
+            state = Done;
+            continue;
+        }
+
         //
         // Cascade
         //
