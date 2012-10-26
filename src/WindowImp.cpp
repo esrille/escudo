@@ -280,9 +280,10 @@ bool WindowImp::poll()
                         recordTime("%*strigger reflow", windowDepth * 2, "");
                         backgroundTask.wakeUp(BackgroundTask::Layout);
                         view = 0;
-                    } else if (flags & Box::NEED_REPAINT)
+                    } else if (flags & Box::NEED_REPAINT) {
                         view->clearFlags(Box::NEED_REPAINT);
                         redisplay = true;
+                    }
                 }
             }
             break;
@@ -310,12 +311,13 @@ void WindowImp::render(ViewCSSImp* parentView)
         canvas.shutdown();
         canvas.setup(width, height);
         canvas.beginRender();
-        view->render(parentView);
+        view->render(parentView ? parentView->getClipCount() : 0);
         canvas.endRender();
 
-        std::u16string title = view->getDocument().getTitle();
-        if (!parent)
+        if (!parent) {
+            std::u16string title = view->getDocument().getTitle();
             setWindowTitle(utfconv(title).c_str());
+        }
 
         if (2 <= getLogLevel() && backgroundTask.getState() == BackgroundTask::Done) {
             std::cout << "\n## " << window->getDocument().getReadyState() << '\n';

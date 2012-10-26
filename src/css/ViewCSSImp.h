@@ -125,7 +125,7 @@ public:
     void resolveXY(float left, float top);
 
     // Repaint
-    void render(ViewCSSImp* parentView);
+    void render(unsigned clipCount);
     void renderCanvas(unsigned color);
 
     // Misc.
@@ -244,6 +244,10 @@ public:
     float updateScrollHeight(float h) {
         scrollHeight = std::max(scrollHeight, h);
         return scrollHeight;
+    }
+
+    unsigned getClipCount() const {
+        return clipCount;
     }
 
     void setHovered(Node node);

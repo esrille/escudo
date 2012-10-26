@@ -88,7 +88,7 @@ FontTexture* ViewCSSImp::selectAltFont(CSSStyleDeclarationImp* style, FontTextur
     return 0;
 }
 
-void ViewCSSImp::render(ViewCSSImp* parentView)
+void ViewCSSImp::render(unsigned parentClipCount)
 {
     last = getTick();
     delay = 1000;
@@ -110,7 +110,7 @@ void ViewCSSImp::render(ViewCSSImp* parentView)
     }
 
     // restore clipCount
-    glStencilFunc(GL_EQUAL, parentView ? parentView->clipCount : 0, 0xFF);
+    glStencilFunc(GL_EQUAL, parentClipCount, 0xFF);
 }
 
 void ViewCSSImp::renderCanvas(unsigned color)
