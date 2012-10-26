@@ -175,6 +175,18 @@ bool WindowImp::isBindingDocumentWindow() const
 
 bool WindowImp::poll()
 {
+    DocumentImp* document = dynamic_cast<DocumentImp*>(window->getDocument().self());
+
+    // Update the canvas before processing events.
+    if (request.getReadyState() == HttpRequest::DONE && document && backgroundTask.getState() == BackgroundTask::Done) {
+        ViewCSSImp* next = backgroundTask.getView();
+        updateView(next);
+        if (view && (view->gatherFlags() & Box::NEED_REPAINT)) {
+            redisplay = true;
+            render(0);
+        }
+    }
+
     while (backgroundTask.getState() == BackgroundTask::Done && !eventQueue.empty()) {
         const EventTask task = eventQueue.front();
         switch (task.type) {
@@ -197,7 +209,6 @@ bool WindowImp::poll()
         eventQueue.pop_front();
     }
 
-    DocumentImp* document = dynamic_cast<DocumentImp*>(window->getDocument().self());
     for (auto i = childWindows.begin(); i != childWindows.end(); ++i) {
         WindowImp* child = *i;
         if (child->poll()) {
@@ -288,10 +299,8 @@ bool WindowImp::poll()
                         recordTime("%*strigger reflow", windowDepth * 2, "");
                         backgroundTask.wakeUp(BackgroundTask::Layout);
                         view = 0;
-                    } else if (flags & Box::NEED_REPAINT) {
-                        view->clearFlags(Box::NEED_REPAINT);
+                    } else if (flags & Box::NEED_REPAINT)
                         redisplay = true;
-                    }
                 }
             }
             break;
@@ -305,8 +314,10 @@ bool WindowImp::poll()
     }
     bool result = redisplay;
     redisplay = false;
-    if (!result && view)
-        result = view->hasExpired(getTick());
+    if (!result && view && view->hasExpired(getTick())) {
+        view->setFlags(Box::NEED_REPAINT);
+        result = true;
+    }
     if (result)
         recordTime("%*strigger repaint", windowDepth * 2, "");
     return result;
@@ -315,7 +326,8 @@ bool WindowImp::poll()
 void WindowImp::render(ViewCSSImp* parentView)
 {
     recordTime("%*srepaint begin: %s (%s)", windowDepth * 2, "", utfconv(window->getDocument().getReadyState()).c_str(), view ? "render" : "canvas");
-    if (view) {
+    if (view && (view->gatherFlags() & Box::NEED_REPAINT)) {
+        view->clearFlags(Box::NEED_REPAINT);
         canvas.shutdown();
         canvas.setup(width, height);
         canvas.beginRender();
