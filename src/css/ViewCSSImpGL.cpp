@@ -91,7 +91,6 @@ FontTexture* ViewCSSImp::selectAltFont(CSSStyleDeclarationImp* style, FontTextur
 void ViewCSSImp::render(unsigned parentClipCount)
 {
     last = getTick();
-    delay = 1000;
 
     // reset clipCount
     clipCount = 0;

@@ -304,11 +304,18 @@ public:
         return delay;
     }
     unsigned setDelay(unsigned value) {
-        delay = std::min(delay, value);
+        if (delay == 0)
+            delay = value;
+        else
+            delay = std::min(delay, value);
         return delay;
     }
     bool hasExpired(unsigned t) {
-        return 0 < delay && (static_cast<int>(last + delay) - static_cast<int>(t)) <= 0;
+        if (0 < delay && (static_cast<int>(last + delay) - static_cast<int>(t)) <= 0) {
+            delay = 0;
+            return true;
+        }
+        return false;
     }
 
     void clip(float left, float top, float w, float h);
