@@ -292,30 +292,31 @@ private:
     static const char16_t* PropertyNames[PropertyCount];
     static const unsigned paintProperties[];
 
-    CSSRuleListImp::RuleSet ruleSet;
-    unsigned affectedBits;  // 1u << CSSPseudoClassSelector::Hover, etc.
-
     Object* owner;
     mutable css::CSSRule parentRule;
     std::bitset<PropertyCount> propertySet;
     std::bitset<PropertyCount> importantSet;
     std::bitset<PropertyCount> inheritSet;
 
-    float containingBlockWidth;
-    float containingBlockHeight;
-
-    CSSStyleDeclarationImp* parentStyle;
-    CSSStyleDeclarationImp* bodyStyle;
-
-    unsigned flags;
-    Box* box;
-    Box* lastBox;   // for inline
-    StackingContext* stackingContext;
-    FontTexture* fontTexture;
-
+    //
+    // Data members for parsing a CSS text
+    //
     int propertyID;
     CSSParserExpr* expression;
     std::u16string priority;
+
+    //
+    // Data members for the computed style
+    //
+    unsigned flags;
+
+    CSSRuleListImp::RuleSet ruleSet;
+    unsigned affectedBits;  // 1u << CSSPseudoClassSelector::Hover, etc.
+    CSSStyleDeclarationImp* parentStyle;
+    CSSStyleDeclarationImp* bodyStyle;
+    int emptyInline;    // 0: none, 1: first, 2: last, 3: both, 4: empty
+    StackingContext* stackingContext;
+    FontTexture* fontTexture;
 
     int pseudoElementSelectorType;
     CSSStyleDeclarationPtr pseudoElements[CSSPseudoElementSelector::MaxPseudoElements];
@@ -325,7 +326,10 @@ private:
     Element before;
     Element after;
 
-    int emptyInline;    // 0: none, 1: first, 2: last, 3: both, 4: empty
+    float containingBlockWidth;
+    float containingBlockHeight;
+    Box* box;
+    Box* lastBox;   // for inline
 
     void initialize();
 
