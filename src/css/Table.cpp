@@ -1281,10 +1281,9 @@ void TableWrapperBox::layOutTableBox(ViewCSSImp* view, FormattingContext* contex
     int pass = 0;
 Reflow:
     for (unsigned y = 0; y < yHeight; ++y) {
-        float minHeight = 0.0f;
-        if (rows[y] && !rows[y]->height.isAuto())
-            minHeight = rows[y]->height.getPx();
         heights[y] = baselines[y] = 0.0f;
+        if (rows[y] && !rows[y]->height.isAuto())
+            heights[y] = rows[y]->height.getPx();
         bool noBaseline = true;
         for (unsigned x = 0; x < xWidth; ++x) {
             CellBox* cellBox = grid[y][x].get();
@@ -1305,13 +1304,12 @@ Reflow:
             cellBox->layOut(view, 0);
             cellBox->intrinsicHeight = cellBox->getTotalHeight();
             // Process 'height' as the minimum height.
-            float d = minHeight;
             CSSStyleDeclarationImp* cellStyle = cellBox->isAnonymous() ? 0 : cellBox->getStyle();
-            if (cellStyle && !cellStyle->height.isAuto())
-                d = std::max(minHeight, cellStyle->height.getPx());
-            d -= cellBox->intrinsicHeight;
-            if (0.0f < d)
-                cellBox->height += d;
+            if (cellBox->getRowSpan() == 1) {
+                heights[y] = std::max(heights[y], cellBox->getTotalHeight());
+                if (cellStyle && !cellStyle->height.isAuto())
+                    heights[y] = std::max(heights[y], cellStyle->height.getPx() + cellBox->getBlankTop() + cellBox->getBlankBottom());
+            }
             if (!fixedLayout && cellBox->getColSpan() == 1) {
                 if (cellStyle) {
                     if (cellStyle->width.isPercentage()) {
@@ -1325,8 +1323,6 @@ Reflow:
                     fixedWidths[x] = std::max(fixedWidths[x], ceilf(cellBox->getTotalWidth()));
                 widths[x] = std::max(widths[x], cellBox->getMCW());
             }
-            if (cellBox->getRowSpan() == 1)
-                heights[y] = std::max(heights[y], cellBox->getTotalHeight());
             if (cellBox->getVerticalAlign() == CSSVerticalAlignValueImp::Baseline) {
                 baselines[y] = std::max(baselines[y], cellBox->getBaseline());
                 noBaseline = false;
@@ -1383,6 +1379,18 @@ Reflow:
                 float sum = 0.0f;
                 for (unsigned r = 0; r < span; ++r)
                     sum += heights[y + r];
+
+                CSSStyleDeclarationImp* cellStyle = cellBox->isAnonymous() ? 0 : cellBox->getStyle();
+                if (cellStyle && !cellStyle->height.isAuto()) {
+                    float h = cellStyle->height.getPx() + cellBox->getBlankTop() + cellBox->getBlankBottom();
+                    if (sum < h) {
+                        float diff = (h - sum) / span;
+                        for (unsigned r = 0; r < span; ++r)
+                            heights[y + r] += diff;
+                        sum = h;
+                    }
+                }
+
                 float d = 0.0f;
                 if (cellBox->getVerticalAlign() == CSSVerticalAlignValueImp::Baseline)
                     d = baselines[y] - cellBox->getBaseline();

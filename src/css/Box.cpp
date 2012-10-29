@@ -1393,9 +1393,9 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
     // Collapse margins with the first and the last children before calculating the auto height.
     collapseMarginBottom(context);
 
+    // Note the table cell's 'height' property does not increase the height of the cell box.
+    // cf. http://www.w3.org/TR/CSS21/tables.html#height-layout
     float h = 0.0f;
-    if (cell)
-        h = height;
     if ((style->height.isAuto() && !intrinsic) || isAnonymous() || cell) {
         float totalClearance = 0.0f;
         height = 0.0f;
@@ -1410,8 +1410,6 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
         if (height != 0.0f || !dynamic_cast<LineBox*>(getFirstChild()))
             height += totalClearance;
     }
-    if (cell)
-        height = std::max(height, h);
     if (!isAnonymous()) {
         applyMinMaxHeight(context);
         // TODO: If min-height was applied, we might need to undo collapseMarginBottom().
