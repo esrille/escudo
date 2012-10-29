@@ -1622,6 +1622,8 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
     style = view->getStyle(table);
     if (!style)
         return false;  // TODO error
+    if (style->resolve(view, containingBlock))
+        flags |= NEED_REFLOW;
 
     if (!(getFlags() & NEED_REFLOW)) {
         layOutTableParts();
@@ -1658,7 +1660,6 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
 
     bool collapsingModel = resolveBorderConflict();
     bool fixedLayout = (style->tableLayout.getValue() == CSSTableLayoutValueImp::Fixed) && !style->width.isAuto();
-    style->resolve(view, containingBlock);
 
     // The computed values of properties 'position', 'float', 'margin-*', 'top', 'right', 'bottom',
     // and 'left' on the table element are used on the table wrapper box and not the table box;
