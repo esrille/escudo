@@ -88,6 +88,8 @@ class StackingContext
         return auto_;
     }
 
+    void insertContext(StackingContext* item);
+
     void clip(StackingContext* s, float relativeX, float relativeY);
 
 public:
@@ -117,6 +119,8 @@ public:
         return addContext(false, zIndex, style);
     }
     StackingContext* addContext(bool auto_, int zIndex, CSSStyleDeclarationImp* style);
+
+    void setZIndex(bool auto_, int index = 0);
 
     void clearBase() {
         firstBase = lastBase = 0;

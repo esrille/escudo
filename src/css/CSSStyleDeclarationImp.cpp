@@ -1634,6 +1634,8 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     if (this == parentStyle)
         return;
 
+    bool wasPositioned = isPositioned();
+
     html::HTMLElement htmlElement(0);
     if (html::HTMLElement::hasInstance(element))
         htmlElement = interface_cast<html::HTMLElement>(element);
@@ -1745,9 +1747,7 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     else
         textDecorationContext.update(this);
 
-    // TODO: reorganize the stacking context if the 'position' value has been changed
-    if (!stackingContext)
-        computeStackingContext(view, parentStyle);
+    computeStackingContext(view, parentStyle, wasPositioned);
 
     // Note the parent style of a pseudo element style is not always the corresponding element's style.
     // It will be computed layter by layout().
@@ -1773,17 +1773,27 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     setFlags(Computed);
 }
 
-void CSSStyleDeclarationImp::computeStackingContext(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle)
+void CSSStyleDeclarationImp::computeStackingContext(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle, bool wasPositioned)
 {
+    // Reorganize the stacking context if the 'position' value has been changed
+    if (wasPositioned ^ isPositioned())
+        stackingContext = 0;
+
     if (!parentStyle) {
-        assert(view->getStackingContexts() == 0);
-        view->setStackingContexts(new(std::nothrow) StackingContext(false, zIndex.getValue(), this));
-        stackingContext = view->getStackingContexts();
+        if (view->getStackingContexts() == 0) {
+            view->setStackingContexts(new(std::nothrow) StackingContext(false, zIndex.getValue(), this));
+            stackingContext = view->getStackingContexts();
+        }
     } else if (isPositioned()) {
-        if (zIndex.isAuto())
-            stackingContext = parentStyle->stackingContext->getAuto(this);
-        else
-            stackingContext = parentStyle->stackingContext->addContext(zIndex.getValue(), this);
+        if (!stackingContext) {
+            if (zIndex.isAuto())
+                stackingContext = parentStyle->stackingContext->getAuto(this);
+            else
+                stackingContext = parentStyle->stackingContext->addContext(zIndex.getValue(), this);
+        } else {
+            // Update z-index
+            stackingContext->setZIndex(zIndex.isAuto(), zIndex.getValue());
+        }
     } else
         stackingContext = parentStyle->stackingContext;
 }

@@ -515,7 +515,7 @@ public:
     void inheritProperties(const CSSStyleDeclarationImp* parentStyle);
 
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle, Element element);
-    void computeStackingContext(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle);
+    void computeStackingContext(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle, bool wasPositioned);
     unsigned resolve(ViewCSSImp* view, const ContainingBlock* containingBlock);
     void unresolve() {
         clearFlags(Resolved);

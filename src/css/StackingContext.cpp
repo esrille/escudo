@@ -109,26 +109,43 @@ StackingContext::~StackingContext()
 
 StackingContext* StackingContext::addContext(bool auto_, int zIndex, CSSStyleDeclarationImp* style)
 {
-    if (isAuto()) {
-        StackingContext* item = parent->addContext(auto_, zIndex, style);
-        if (item)
-            item->positioned = this;
-        return item;
-    }
+    StackingContext* item = new(std::nothrow) StackingContext(auto_, zIndex, style);
+    if (item)
+        insertContext(item);
+    return item;
+}
 
+void StackingContext::insertContext(StackingContext* item)
+{
+    assert(item);
+    if (isAuto()) {
+        parent->insertContext(item);
+        item->positioned = this;
+        return;
+    }
+    // TODO: Preserve the order in the DOM tree
     StackingContext* after = 0;
     for (auto i = getFirstChild(); i; i = i->getNextSibling()) {
-        if (zIndex < i->zIndex) {
+        if (item->zIndex < i->zIndex) {
             after = i;
             break;
         }
     }
-    StackingContext* item = new(std::nothrow) StackingContext(auto_, zIndex, style);
-    if (item) {
-        insertBefore(item, after);
-        item->positioned = this;
+    insertBefore(item, after);
+    item->positioned = this;
+}
+
+void StackingContext::setZIndex(bool auto_, int index)
+{
+    if (isAuto() == auto_ && zIndex == index)
+        return;
+    this->auto_ = auto_;
+    zIndex = index;
+    if (parent) {
+        parent->removeChild(this);
+        positioned->insertContext(this);
+        // TODO: Reorganize child contexts, too!
     }
-    return item;
 }
 
 void StackingContext::clip(StackingContext* s, float relativeX, float relativeY)
