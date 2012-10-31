@@ -307,7 +307,7 @@ JSBool NativeClass::getter(JSContext* cx, JSObject* obj, jsid id, jsval* vp)
         NativeClass* nc = static_cast<NativeClass*>(native->getStaticPrivate());
         while (nc->protoRank != R)
             nc = nc->proto;
-        uint32_t hash = nc->getHash(JSID_TO_INT(id));
+        uint32_t hash = nc->getHash(JSID_TO_INT(id) & 0xff);
         Any result = native->message_(hash, 0, Object::GETTER_, 0);
         JS_SET_RVAL(cx, vp, convert(cx, result));
         return JS_TRUE;
@@ -323,7 +323,7 @@ JSBool NativeClass::setter(JSContext* cx, JSObject* obj, jsid id, JSBool strict,
         NativeClass* nc = static_cast<NativeClass*>(native->getStaticPrivate());
         while (nc->protoRank != R)
             nc = nc->proto;
-        uint32_t hash = nc->getHash(JSID_TO_INT(id));
+        uint32_t hash = nc->getHash(JSID_TO_INT(id) & 0xff);
         Any argument = convert(cx, *vp);
         Any result = native->message_(hash, 0, Object::SETTER_, &argument);
         JS_SET_RVAL(cx, vp, convert(cx, result));
@@ -575,6 +575,7 @@ NativeClass::NativeClass(JSContext* cx, JSObject* global, const char* metadata, 
         case Reflect::kAttribute:
             hashTable.get()[propertyNumber] = one_at_a_time(prop.getName().c_str(), prop.getName().length());
             pps->name = heap;
+            assert(propertyNumber < 256);
             pps->tinyid = propertyNumber++;
             pps->flags = JSPROP_ENUMERATE | JSPROP_PERMANENT | JSPROP_SHARED;
             if (prop.isReadOnly())
