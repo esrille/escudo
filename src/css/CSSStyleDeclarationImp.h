@@ -36,6 +36,7 @@
 #include "CSSSelector.h"
 #include "CSSRuleImp.h"
 #include "CSSRuleListImp.h"
+#include "StackingContext.h"
 
 class FontTexture;  // TODO: define namespace
 
@@ -43,7 +44,6 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class Box;
 class Block;
-class StackingContext;
 class CSSStyleDeclarationImp;
 
 struct CSSStyleDeclarationBoard
@@ -315,7 +315,7 @@ private:
     CSSStyleDeclarationImp* parentStyle;
     CSSStyleDeclarationImp* bodyStyle;
     int emptyInline;    // 0: none, 1: first, 2: last, 3: both, 4: empty
-    StackingContext* stackingContext;
+    StackingContextPtr stackingContext;
     FontTexture* fontTexture;
 
     int pseudoElementSelectorType;
@@ -579,7 +579,7 @@ public:
     void requestReconstruct(unsigned short flags);
 
     StackingContext* getStackingContext() const {
-        return stackingContext;
+        return stackingContext.get();
     }
 
     FontTexture* getFontTexture() const {

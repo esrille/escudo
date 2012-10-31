@@ -29,6 +29,7 @@
 #include "http/HTTPRequest.h"
 #include "CSSStyleDeclarationImp.h"
 #include "FormattingContext.h"
+#include "StackingContext.h"
 
 class FontGlyph;
 class FontTexture;
@@ -44,7 +45,6 @@ class BoxImage;
 class FormattingContext;
 class LineBox;
 class Block;
-class StackingContext;
 class TableWrapperBox;
 class ViewCSSImp;
 class WindowImp;
@@ -121,7 +121,7 @@ protected:
     float offsetH;
     float offsetV;
 
-    StackingContext* stackingContext;
+    StackingContextPtr stackingContext;
     Box* nextBase;
 
     bool intrinsic;  // do not change width and height

@@ -94,8 +94,6 @@ ViewCSSImp::~ViewCSSImp()
     getDocument().removeEventListener(u"DOMCharacterDataModified", &mutationListener);
     getDocument().removeEventListener(u"DOMNodeInserted", &mutationListener);
     getDocument().removeEventListener(u"DOMNodeRemoved", &mutationListener);
-
-    delete stackingContexts;
 }
 
 Box* ViewCSSImp::boxFromPoint(int x, int y)

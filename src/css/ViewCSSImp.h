@@ -65,7 +65,7 @@ class ViewCSSImp
     unsigned overflow;
 
     // Style recalculation
-    StackingContext* stackingContexts;
+    StackingContextPtr stackingContexts;
 
     // Reflow
     Node hovered;
@@ -147,7 +147,7 @@ public:
     }
 
     StackingContext* getStackingContexts() const {
-        return stackingContexts;
+        return stackingContexts.get();
     }
     void setStackingContexts(StackingContext* contexts) {
         stackingContexts = contexts;
