@@ -83,7 +83,7 @@ class ViewCSSImp
     unsigned last;   // in 1/100 sec for GIF
     unsigned delay;  // in 1/100 sec for GIF
 
-    void removeElement(Element element);
+    void removeComputedStyle(Element element);
 
     void handleMutation(events::Event event);
     void findDeclarations(CSSRuleListImp::RuleSet& set, Element element, css::CSSRuleList list, unsigned importance);

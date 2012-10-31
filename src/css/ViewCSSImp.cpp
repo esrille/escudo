@@ -119,7 +119,7 @@ bool ViewCSSImp::isHovered(Node node)
     return false;
 }
 
-void ViewCSSImp::removeElement(Element element)
+void ViewCSSImp::removeComputedStyle(Element element)
 {
     if (CSSStyleDeclarationImp* style = getStyle(element)) {
         style->revert(element);
@@ -160,7 +160,7 @@ void ViewCSSImp::handleMutation(events::Event event)
             return;
         Node target = interface_cast<Node>(event.getTarget());
         if (Element::hasInstance(target)) {
-            removeElement(interface_cast<Element>(target));
+            removeComputedStyle(interface_cast<Element>(target));
             setFlags(Box::NEED_SELECTOR_MATCHING);
         } else if (Element::hasInstance(parentNode)) {
             Element element(interface_cast<Element>(parentNode));
