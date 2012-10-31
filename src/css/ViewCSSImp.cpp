@@ -285,6 +285,8 @@ void ViewCSSImp::constructComputedStyle(Node node, CSSStyleDeclarationImp* paren
 
             style->updateInlines(element); // TODO ???
             style->marker = style->before = style->after = 0;
+
+            style->clearFlags(CSSStyleDeclarationImp::Computed);    // TODO: Only styles of children need to be recomputed
         }
     }
     for (Node child = node.getFirstChild(); child; child = child.getNextSibling())
