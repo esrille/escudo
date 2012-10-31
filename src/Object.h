@@ -140,7 +140,7 @@ public:
     }
     virtual unsigned int retain_() {
         return ++count;
-    };
+    }
     virtual unsigned int release_() {
         if (0 < count)
             --count;
@@ -149,7 +149,7 @@ public:
             return 0;
         }
         return count;
-    };
+    }
     ObjectImp() :
         Object(this),
         count(0),
