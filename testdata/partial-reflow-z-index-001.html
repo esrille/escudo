@@ -1,0 +1,51 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Partial reflow test</title>
+<style type="text/css">
+.abs {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+}
+.blue {
+  background-color: blue;
+  left: 10px;
+  top: 10px;
+  z-index: 1;
+}
+.orange {
+  background-color: orange;
+  left: 60px;
+  top: 60px;
+  z-index: 2;
+}
+</style>
+<script type="text/javascript">
+function doTest() {
+  this.addEventListener('keydown', function(event) {
+    if (event.keyCode == 13) {
+      var t = document.getElementById("t");
+      var s = getComputedStyle(t);
+      if (s.zIndex == '2')
+          t.style.zIndex = '-1';
+      else
+          t.style.zIndex = '2';
+    }
+  }, false);
+}
+</script>
+</head>
+<body onload="doTest()">
+<p>Press [Enter] to switch back and forth between '2' and '-1' with the 'z-index' property of the orange block.</p>
+<div style='position: relative'>
+<div class='abs blue'>
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text 
+</div>
+<div id='t' class='abs orange'>
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text 
+</div>
+</div>
+</body>
+</html>
