@@ -17,7 +17,10 @@
 #ifndef ES_CSSSTACKINGCONTEXT_H
 #define ES_CSSSTACKINGCONTEXT_H
 
+#include <atomic>
 #include <string>
+
+#include <boost/intrusive_ptr.hpp>
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -28,6 +31,8 @@ class CSSStyleDeclarationImp;
 
 class StackingContext
 {
+    std::atomic_uint count;
+
     CSSStyleDeclarationImp* style;
     bool auto_;
     int zIndex;
@@ -89,6 +94,22 @@ public:
     StackingContext(bool auto_, int zIndex, CSSStyleDeclarationImp* style);
     ~StackingContext();
 
+    unsigned int count_() const {
+        return count;
+    }
+    unsigned int retain_() {
+        return ++count;
+    }
+    unsigned int release_() {
+        if (0 < count)
+            --count;
+        if (count == 0) {
+            delete this;
+            return 0;
+        }
+        return count;
+    }
+
     StackingContext* getAuto(CSSStyleDeclarationImp* style) {
         return addContext(true, 0, style);
     }
@@ -124,6 +145,18 @@ public:
 
     void dump(std::string indent = "");
 };
+
+inline void intrusive_ptr_add_ref(StackingContext* context)
+{
+    context->retain_();
+}
+
+inline void intrusive_ptr_release(StackingContext* context)
+{
+    context->release_();
+}
+
+typedef boost::intrusive_ptr<StackingContext> StackingContextPtr;
 
 }}}}  // org::w3c::dom::bootstrap
 

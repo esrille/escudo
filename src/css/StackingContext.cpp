@@ -77,6 +77,7 @@ StackingContext* StackingContext::appendChild(StackingContext* item)
 }
 
 StackingContext::StackingContext(bool auto_, int zIndex, CSSStyleDeclarationImp* style) :
+    count(0),
     style(style),
     auto_(auto_),
     zIndex(zIndex),
