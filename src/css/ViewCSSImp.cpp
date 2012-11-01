@@ -366,16 +366,13 @@ void ViewCSSImp::calculateComputedStyle(Element element, CSSStyleDeclarationImp*
     ElementImp* imp(dynamic_cast<ElementImp*>(shadow.self()));
     assert(imp);
 
-    if (!style->display.isNone()) {
-        style->marker = updatePseudoElement(style, CSSPseudoElementSelector::Marker, shadow, style->marker, &cc);
-        style->before = updatePseudoElement(style, CSSPseudoElementSelector::Before, shadow, style->before, &cc);
-    }
+    style->marker = updatePseudoElement(style, CSSPseudoElementSelector::Marker, shadow, style->marker, &cc);
+    style->before = updatePseudoElement(style, CSSPseudoElementSelector::Before, shadow, style->before, &cc);
     for (Node child = shadow.getFirstChild(); child; child = child.getNextSibling()) {
         if (child.getNodeType() == Node::ELEMENT_NODE)
             calculateComputedStyle(interface_cast<Element>(child), style, &cc, flags);
     }
-    if (!style->display.isNone())
-        style->after = updatePseudoElement(style, CSSPseudoElementSelector::After, shadow, style->after, &cc);
+    style->after = updatePseudoElement(style, CSSPseudoElementSelector::After, shadow, style->after, &cc);
 
     style->emptyInline = 0;
     if (style->display.isInline() && !isReplacedElement(shadow)) {
@@ -403,7 +400,8 @@ void ViewCSSImp::calculateComputedStyle(Element element, CSSStyleDeclarationImp*
 
 Element ViewCSSImp::updatePseudoElement(CSSStyleDeclarationImp* style, int id, Element element, Element pseudoElement, CSSAutoNumberingValueImp::CounterContext* counterContext)
 {
-    assert(!style->display.isNone());
+    if (style->display.isNone())
+        return 0;
     CSSStyleDeclarationImp* pseudoStyle = style->getPseudoElementStyle(id);
     if (!pseudoStyle)
         return 0;
