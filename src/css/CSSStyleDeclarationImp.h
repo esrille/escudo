@@ -283,8 +283,9 @@ public:
     };
 
     enum flags {
-        Computed = 1,
-        Resolved = 2
+        Computed = 0x01,
+        Resolved = 0x02,
+        NeedSelectorMatching = 0x8000000
     };
 
 private:
@@ -459,6 +460,9 @@ public:
     CSSStyleDeclarationImp(int pseudoElementSelectorType = CSSPseudoElementSelector::NonPseudo);
     CSSStyleDeclarationImp(CSSStyleDeclarationImp* org);  // for cloneNode()
     ~CSSStyleDeclarationImp();
+
+    void resetComputedStyle();
+    void restoreComputedValues(CSSStyleDeclarationBoard& board);
 
     void setOwner(Object* owner) {
         this->owner = owner;

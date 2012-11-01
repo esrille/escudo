@@ -172,12 +172,17 @@ void ViewCSSImp::handleMutation(events::Event event)
             if (CSSStyleDeclarationImp* style = getStyle(interface_cast<Element>(target))) {
                 style->requestReconstruct(Box::NEED_STYLE_RECALCULATION);
                 style->clearFlags(CSSStyleDeclarationImp::Computed);
+                if (mutation.getAttrName() != u"style") {
+                    // Request a selector re-matching for the element
+                    style->setFlags(CSSStyleDeclarationImp::NeedSelectorMatching);
+                    setFlags(Box::NEED_SELECTOR_MATCHING);
+                }
             }
         }
         return;
     }
 
-    boxTree->setFlags(Box::NEED_SELECTOR_REMATCHING);
+    setFlags(Box::NEED_SELECTOR_REMATCHING);
 }
 
 void ViewCSSImp::findDeclarations(CSSRuleListImp::RuleSet& set, Element element, css::CSSRuleList list, unsigned importance)
@@ -207,6 +212,73 @@ void ViewCSSImp::constructComputedStyles()
     clearFlags(Box::NEED_SELECTOR_MATCHING | Box::NEED_SELECTOR_REMATCHING);  // TODO: Refine
 }
 
+Element ViewCSSImp::updateStyleRules(Element element, CSSStyleDeclarationImp* style, CSSStyleDeclarationImp* parentStyle)
+{
+    CSSStyleDeclarationImp* elementDecl(0);
+    html::HTMLElement htmlElement(0);
+    if (html::HTMLElement::hasInstance(element)) {
+        htmlElement = interface_cast<html::HTMLElement>(element);
+        elementDecl = dynamic_cast<CSSStyleDeclarationImp*>(htmlElement.getStyle().self());
+    }
+
+    if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(defaultStyleSheet.self()))
+        findDeclarations(style->ruleSet, element, sheet->getCssRules(), CSSRuleListImp::UserAgent);
+    if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(userStyleSheet.self()))
+        findDeclarations(style->ruleSet, element, sheet->getCssRules(), CSSRuleListImp::User);
+    if (elementDecl) {
+        CSSStyleDeclarationImp* nonCSS = elementDecl->getPseudoElementStyle(CSSPseudoElementSelector::NonCSS);
+        if (nonCSS) {
+            // TODO: emplace() seems to be not ready yet with libstdc++.
+            CSSRuleListImp::PrioritizedRule rule(CSSRuleListImp::User, nonCSS);
+            style->ruleSet.insert(rule);
+        }
+    }
+    unsigned importance = CSSRuleListImp::Author;
+    stylesheets::StyleSheetList styleSheetList(getDocument().getStyleSheets());
+    for (unsigned i = 0; i < styleSheetList.getLength(); ++i) {
+        CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(styleSheetList.getElement(i).self());
+        findDeclarations(style->ruleSet, element, sheet->getCssRules(), importance++);
+        // TODO: Check overflow of importance
+    }
+
+    style->compute(this, parentStyle, element);
+    if (parentStyle && htmlElement && htmlElement.getLocalName() == u"body") {
+        parentStyle->bodyStyle = style;
+        parentStyle->clearFlags(CSSStyleDeclarationImp::Computed);
+    }
+
+    // Set style->affectedBits
+    if (!hoverList.empty()) {
+        style->affectedBits |= 1u << CSSPseudoClassSelector::Hover;
+        for (auto i = hoverList.begin(); i != hoverList.end(); ++i) {
+            if (*i != element.self()) {
+                Element e(*i);
+                if (CSSStyleDeclarationImp* s = getStyle(e))
+                    s->affectedBits |= 1u << CSSPseudoClassSelector::Hover;
+            }
+        }
+        hoverList.clear();
+    }
+
+    // Expand binding
+    html::HTMLTemplateElement shadowTree(0);
+    if (style->binding.getValue() != CSSBindingValueImp::None) {
+        if (HTMLElementImp* imp = dynamic_cast<HTMLElementImp*>(element.self())) {
+            imp->generateShadowContent(style);
+            if (shadowTree = imp->getShadowTree()) {
+                if (auto imp = dynamic_cast<HTMLTemplateElementImp*>(shadowTree.self()))
+                    imp->setHost(element);
+            }
+        }
+    } // TODO: detach the shadow tree from element (if any)
+
+    style->updateInlines(element); // TODO ???
+
+    style->clearFlags(CSSStyleDeclarationImp::Computed);    // TODO: Only styles of children need to be recomputed
+
+    return shadowTree ? shadowTree : element;
+}
+
 void ViewCSSImp::constructComputedStyle(Node node, CSSStyleDeclarationImp* parentStyle)
 {
     CSSStyleDeclarationImp* style = 0;
@@ -215,76 +287,19 @@ void ViewCSSImp::constructComputedStyle(Node node, CSSStyleDeclarationImp* paren
         if (map.find(element) != map.end()) {
             style = map[element].get();
             assert(style);
+            if (style->getFlags() & CSSStyleDeclarationImp::NeedSelectorMatching) {
+                style->clearFlags(CSSStyleDeclarationImp::NeedSelectorMatching);
+                CSSStyleDeclarationBoard board(style);
+                style->resetComputedStyle();
+                node = updateStyleRules(element, style, parentStyle);
+                style->restoreComputedValues(board);
+            }
         } else {
             style = new(std::nothrow) CSSStyleDeclarationImp;
             if (!style)
                 return;  // TODO: error
             addStyle(element, style);
-
-            CSSStyleDeclarationImp* elementDecl = 0;
-            if (html::HTMLElement::hasInstance(element)) {
-                html::HTMLElement htmlElement = interface_cast<html::HTMLElement>(element);
-                elementDecl = dynamic_cast<CSSStyleDeclarationImp*>(htmlElement.getStyle().self());
-            }
-
-            if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(defaultStyleSheet.self()))
-                findDeclarations(style->ruleSet, element, sheet->getCssRules(), CSSRuleListImp::UserAgent);
-            if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(userStyleSheet.self()))
-                findDeclarations(style->ruleSet, element, sheet->getCssRules(), CSSRuleListImp::User);
-            if (elementDecl) {
-                CSSStyleDeclarationImp* nonCSS = elementDecl->getPseudoElementStyle(CSSPseudoElementSelector::NonCSS);
-                if (nonCSS) {
-                    // TODO: emplace() seems to be not ready yet with libstdc++.
-                    CSSRuleListImp::PrioritizedRule rule(CSSRuleListImp::User, nonCSS);
-                    style->ruleSet.insert(rule);
-                }
-            }
-            unsigned importance = CSSRuleListImp::Author;
-            stylesheets::StyleSheetList styleSheetList(getDocument().getStyleSheets());
-            for (unsigned i = 0; i < styleSheetList.getLength(); ++i) {
-                CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(styleSheetList.getElement(i).self());
-                findDeclarations(style->ruleSet, element, sheet->getCssRules(), importance++);
-                // TODO: Check overflow of importance
-            }
-
-            style->compute(this, parentStyle, element);
-            html::HTMLElement htmlElement(0);
-            if (html::HTMLElement::hasInstance(element))
-                htmlElement = interface_cast<html::HTMLElement>(element);
-            if (parentStyle && htmlElement && htmlElement.getLocalName() == u"body") {
-                parentStyle->bodyStyle = style;
-                parentStyle->clearFlags(CSSStyleDeclarationImp::Computed);
-            }
-
-            // Set style->affectedBits
-            if (!hoverList.empty()) {
-                style->affectedBits |= 1u << CSSPseudoClassSelector::Hover;
-                for (auto i = hoverList.begin(); i != hoverList.end(); ++i) {
-                    if (*i != element.self()) {
-                        Element e(*i);
-                        if (CSSStyleDeclarationImp* s = getStyle(e))
-                            s->affectedBits |= 1u << CSSPseudoClassSelector::Hover;
-                    }
-                }
-                hoverList.clear();
-            }
-
-            // Expand binding
-            if (style->binding.getValue() != CSSBindingValueImp::None) {
-                if (HTMLElementImp* imp = dynamic_cast<HTMLElementImp*>(element.self())) {
-                    imp->generateShadowContent(style);
-                    if (html::HTMLTemplateElement shadowTree = imp->getShadowTree()) {
-                        if (auto imp = dynamic_cast<HTMLTemplateElementImp*>(shadowTree.self()))
-                            imp->setHost(element);
-                        node = shadowTree;
-                    }
-                }
-            } // TODO: detach the shadow tree from element (if any)
-
-            style->updateInlines(element); // TODO ???
-            style->marker = style->before = style->after = 0;
-
-            style->clearFlags(CSSStyleDeclarationImp::Computed);    // TODO: Only styles of children need to be recomputed
+            node = updateStyleRules(element, style, parentStyle);
         }
     }
     for (Node child = node.getFirstChild(); child; child = child.getNextSibling())

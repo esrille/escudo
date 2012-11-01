@@ -242,6 +242,70 @@ CSSStyleDeclarationBoard::CSSStyleDeclarationBoard(CSSStyleDeclarationImp* style
     htmlAlign.specify(style->htmlAlign);
 }
 
+void CSSStyleDeclarationImp::restoreComputedValues(CSSStyleDeclarationBoard& board)
+{
+    borderCollapse.specify(board.borderCollapse);
+    borderSpacing.specify(board.borderSpacing);
+    borderTopWidth.specify(board.borderTopWidth);
+    borderRightWidth.specify(board.borderRightWidth);
+    borderBottomWidth.specify(board.borderBottomWidth);
+    borderLeftWidth.specify(board.borderLeftWidth);
+    bottom.specify(board.bottom);
+    captionSide.specify(board.captionSide);
+    clear.specify(board.clear);
+    content.specify(board.content);
+    counterIncrement.specify(board.counterIncrement);
+    counterReset.specify(board.counterReset);
+    direction.specify(board.direction);
+    display.specify(board.display);
+    float_.specify(board.float_);
+    fontFamily.specify(board.fontFamily);
+    fontSize.specify(board.fontSize);
+    fontStyle.specify(board.fontStyle);
+    fontVariant.specify(board.fontVariant);
+    fontWeight.specify(board.fontWeight);
+    height.specify(board.height);
+    left.specify(board.left);
+    letterSpacing.specify(board.letterSpacing);
+    lineHeight.specify(board.lineHeight);
+    listStyleImage.specify(board.listStyleImage);
+    listStylePosition.specify(board.listStylePosition);
+    listStyleType.specify(board.listStyleType);
+    marginTop.specify(board.marginTop);
+    marginRight.specify(board.marginRight);
+    marginBottom.specify(board.marginBottom);
+    marginLeft.specify(board.marginLeft);
+    maxHeight.specify(board.maxHeight);
+    maxWidth.specify(board.maxWidth);
+    minHeight.specify(board.minHeight);
+    minWidth.specify(board.minWidth);
+    overflow.specify(board.overflow);
+    paddingTop.specify(board.paddingTop);
+    paddingRight.specify(board.paddingRight);
+    paddingBottom.specify(board.paddingBottom);
+    paddingLeft.specify(board.paddingLeft);
+    position.specify(board.position);
+    quotes.specify(board.quotes);
+    right.specify(board.right);
+    tableLayout.specify(board.tableLayout);
+    textAlign.specify(board.textAlign);
+    textDecoration.specify(board.textDecoration);
+    textIndent.specify(board.textIndent);
+    textTransform.specify(board.textTransform);
+    top.specify(board.top);
+    unicodeBidi.specify(board.unicodeBidi);
+    verticalAlign.specify(board.verticalAlign);
+    whiteSpace.specify(board.whiteSpace);
+    wordSpacing.specify(board.wordSpacing);
+    width.specify(board.width);
+    zIndex.specify(board.zIndex);
+    if (board.binding.getValue() ==CSSBindingValueImp::None)
+        binding.setValue();
+    else
+        binding.setURL(board.binding.getURL());
+    htmlAlign.specify(board.htmlAlign);
+}
+
 unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
 {
     unsigned flags = 0;
@@ -3891,6 +3955,17 @@ void CSSStyleDeclarationImp::initialize()
         overflow.setValue();
         background.reset(this);
     }
+}
+
+void CSSStyleDeclarationImp::resetComputedStyle()
+{
+    ruleSet.clear();
+    affectedBits = 0;
+    for (int i = CSSPseudoElementSelector::NonCSS; i < CSSPseudoElementSelector::MaxPseudoElements; ++i)
+        pseudoElements[i] = 0;
+    marker = before = after = 0;
+    for (unsigned id = Unknown + 1; id < MaxProperties; ++id)
+        reset(id);
 }
 
 CSSStyleDeclarationImp::CSSStyleDeclarationImp(int pseudoElementSelectorType) :
