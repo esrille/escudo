@@ -2303,16 +2303,21 @@ Block* CSSStyleDeclarationImp::updateInlines(Element element)
 
 Block* CSSStyleDeclarationImp::revert(Element element)
 {
-    // TODO: Check stacking context
     Block* block = dynamic_cast<Block*>(getBox());
     if (!block)
         return updateInlines(element);
-    Block* holder = dynamic_cast<Block*>(block->getParentBox());
-    if (!holder)  // floating box, absolutely positioned box
-        holder = dynamic_cast<Block*>(block->getParentBox()->getParentBox());
-    if (!holder)  // inline block
-        holder = dynamic_cast<Block*>(block->getParentBox()->getParentBox()->getParentBox());
-    assert(holder);
+
+    if (stackingContext)
+        stackingContext->removeBox(block);
+
+    Block* holder = 0;
+    for (Box* parent = block->getParentBox(); parent; parent = parent->getParentBox()) {
+        if (holder = dynamic_cast<Block*>(parent))
+            break;
+    }
+    if (!holder)
+        return 0;
+
     TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(holder);
     if (!table)
         table = dynamic_cast<TableWrapperBox*>(holder->getParentBox());
