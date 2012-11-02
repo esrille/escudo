@@ -17,7 +17,7 @@ function doTest() {
     if (event.keyCode == 13) {
       var t = document.getElementById("t");
       var s = getComputedStyle(t);
-      if (s.wordSpacing == 'normal')
+      if (s.wordSpacing == '0px')
           t.style.wordSpacing = '4em';
       else
           t.style.wordSpacing = 'normal';
