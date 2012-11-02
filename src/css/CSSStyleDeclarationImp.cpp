@@ -1704,9 +1704,11 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     if (html::HTMLElement::hasInstance(element))
         htmlElement = interface_cast<html::HTMLElement>(element);
 
-    // TODO: find a way to skip the following cascading operation when there's no change in the decorations.
     if (getPseudoElementSelectorType() == CSSPseudoElementSelector::NonPseudo) {
         initialize();
+        // TODO: Do the same for pseudo elements:
+        for (unsigned i = 1; i < MaxProperties; ++i)
+            reset(i);
         CSSStyleDeclarationImp* elementDecl(0);
         if (htmlElement)
             elementDecl = dynamic_cast<CSSStyleDeclarationImp*>(htmlElement.getStyle().self());
@@ -3964,8 +3966,6 @@ void CSSStyleDeclarationImp::resetComputedStyle()
     for (int i = CSSPseudoElementSelector::NonCSS; i < CSSPseudoElementSelector::MaxPseudoElements; ++i)
         pseudoElements[i] = 0;
     marker = before = after = 0;
-    for (unsigned id = Unknown + 1; id < MaxProperties; ++id)
-        reset(id);
 }
 
 CSSStyleDeclarationImp::CSSStyleDeclarationImp(int pseudoElementSelectorType) :
