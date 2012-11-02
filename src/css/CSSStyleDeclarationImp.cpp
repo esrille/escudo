@@ -2335,7 +2335,9 @@ Block* CSSStyleDeclarationImp::updateInlines(Element element)
         case CSSDisplayValueImp::None:
         case CSSDisplayValueImp::TableColumnGroup:
         case CSSDisplayValueImp::TableColumn:
-            return 0;
+            if (!style->getBox())
+                return 0;
+            break;
         case CSSDisplayValueImp::Table:
         case CSSDisplayValueImp::InlineTable:
             if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(style->getBox())) {
