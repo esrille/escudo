@@ -399,6 +399,12 @@ unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
         style->unresolve();  // This style needs to be resolved later.
 
     // Secondly, check properties that do not require style resolutions.
+    if (style->letterSpacing != letterSpacing)
+        flags |= Box::NEED_REFLOW;
+    if (style->whiteSpace != whiteSpace)
+        flags |= Box::NEED_REFLOW;
+    if (style->wordSpacing != wordSpacing)
+        flags |= Box::NEED_REFLOW;
 #if 0  // TODO: Check following properties
     borderCollapse;
     borderSpacing;
@@ -409,7 +415,6 @@ unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
     fontStyle;
     fontVariant;
     fontWeight;
-    letterSpacing;
     overflow;
     quotes;
     tableLayout;
@@ -417,8 +422,6 @@ unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
     textDecoration;
     textTransform;
     unicodeBidi;
-    whiteSpace;
-    wordSpacing;
 #endif
 
     return flags;

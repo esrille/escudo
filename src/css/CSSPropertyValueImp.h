@@ -2487,6 +2487,12 @@ public:
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
         return Options[value];
     }
+    bool operator==(const CSSWhiteSpaceValueImp& ws) const {
+        return value == ws.value;
+    }
+    bool operator!=(const CSSWhiteSpaceValueImp& ws) const {
+        return value != ws.value;
+    }
     void specify(const CSSWhiteSpaceValueImp& specified) {
         value = specified.value;
     }
