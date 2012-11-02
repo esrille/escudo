@@ -2468,13 +2468,14 @@ CSSStyleDeclarationImp* CSSStyleDeclarationImp::createPseudoElementStyle(int id)
     return style;
 }
 
-bool CSSStyleDeclarationImp::isAffectedByHover() const
+CSSStyleDeclarationImp* CSSStyleDeclarationImp::getAffectedByHover() const
 {
+    const CSSStyleDeclarationImp* affected = 0;
     for (const CSSStyleDeclarationImp* style = this; style; style = style->parentStyle) {
         if (style->affectedBits & (1u << CSSPseudoClassSelector::Hover))
-            return true;
+            affected = style;
     }
-    return false;
+    return const_cast<CSSStyleDeclarationImp*>(affected);
 }
 
 std::u16string CSSStyleDeclarationImp::resolveRelativeURL(const std::u16string& url) const

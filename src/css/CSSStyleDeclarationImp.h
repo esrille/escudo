@@ -506,7 +506,7 @@ public:
     CSSStyleDeclarationImp* getPseudoElementStyle(const std::u16string& name);
     CSSStyleDeclarationImp* createPseudoElementStyle(int id);
 
-    bool isAffectedByHover() const;
+    CSSStyleDeclarationImp* getAffectedByHover() const;
 
     void specifyWithoutInherited(const CSSStyleDeclarationImp* style);
     void specify(const CSSStyleDeclarationImp* style);

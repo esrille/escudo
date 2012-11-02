@@ -189,9 +189,14 @@ void ViewCSSImp::setHovered(Node node)
 
     if (next) {
         glutSetCursor(cursorMap[next->cursor.getValue()]);
-        if (next->isAffectedByHover() || (curr && curr->isAffectedByHover())) {
-            boxTree->restyle(this);
-            boxTree->setFlags(Box::NEED_REPAINT | Box::NEED_REFLOW);
+        CSSStyleDeclarationImp* affected;
+        if (curr && (affected = curr->getAffectedByHover())) {
+            affected->requestReconstruct(Box::NEED_STYLE_RECALCULATION);
+            affected->clearFlags(CSSStyleDeclarationImp::Computed);
+        }
+        if (affected = next->getAffectedByHover()) {
+            affected->requestReconstruct(Box::NEED_STYLE_RECALCULATION);
+            affected->clearFlags(CSSStyleDeclarationImp::Computed);
         }
     }
 }
