@@ -533,7 +533,6 @@ public:
 
     void respecify(const CSSStyleDeclarationImp* style);
     void respecifyImportant(const CSSStyleDeclarationImp* style);
-    void recompute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle, Element element);
 
     bool updateCounters(ViewCSSImp* view, CSSAutoNumberingValueImp::CounterContext* context);
 

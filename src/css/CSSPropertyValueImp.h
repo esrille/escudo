@@ -159,14 +159,14 @@ public:
         number = value.number;
         if (!isnan(value.resolved))
             resolved = value.resolved;
-        // otherwise, keep the current resolved value for recompute().
+        // otherwise, keep the current resolved value.
     }
     void inherit(const CSSNumericValue& value) {
         if (isnan(value.resolved)) {
             unit = value.unit;
             index = value.index;
             number = value.number;
-            // Keep the current resolved value for recompute().
+            // Keep the current resolved value.
         } else {
             unit = css::CSSPrimitiveValue::CSS_PX;
             index = -1;

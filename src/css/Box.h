@@ -337,7 +337,6 @@ public:
         return style.get();
     }
     void setStyle(CSSStyleDeclarationImp* style);
-    void restyle(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle = 0);
     void unresolveStyle();
 
     bool isStatic() const {
