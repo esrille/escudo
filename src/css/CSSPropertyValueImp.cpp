@@ -233,6 +233,10 @@ const char16_t* CSSListStyleTypeValueImp::Options[] = {
     u"upper-alpha"
 };
 
+const char16_t* CSSNormalLengthValueImp::Options[] = {
+    u"normal",
+};
+
 const char16_t* CSSOverflowValueImp::Options[] = {
     u"visible",
     u"hidden",

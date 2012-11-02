@@ -70,16 +70,15 @@ public:
         resolved(NAN)
     {}
     std::u16string getCssText(const char16_t* options[] = 0, unsigned short resolvedUnit = css::CSSPrimitiveValue::CSS_PX) const {
-        if (unit == CSSParserTerm::CSS_TERM_INDEX)
-            return options[index];
         if (!isnan(resolved)) {
             std::u16string cssText = CSSSerializeNumber(resolved);
-            if (resolved != 0.0f)
-                cssText += Units[resolvedUnit - css::CSSPrimitiveValue::CSS_PERCENTAGE];
+            cssText += Units[resolvedUnit - css::CSSPrimitiveValue::CSS_PERCENTAGE];
             return cssText;
         }
+        if (unit == CSSParserTerm::CSS_TERM_INDEX)
+            return options[index];
         std::u16string cssText = CSSSerializeNumber(number);
-        if (number != 0.0f && css::CSSPrimitiveValue::CSS_PERCENTAGE <= unit && unit <= css::CSSPrimitiveValue::CSS_KHZ)
+        if (css::CSSPrimitiveValue::CSS_PERCENTAGE <= unit && unit <= css::CSSPrimitiveValue::CSS_KHZ)
             cssText += Units[unit - css::CSSPrimitiveValue::CSS_PERCENTAGE];
         return cssText;
     }
@@ -441,6 +440,9 @@ class CSSNormalLengthValueImp : public CSSPropertyValueImp
 protected:
     CSSNumericValue length;
 public:
+    enum {
+         Normal
+    };
     CSSNormalLengthValueImp& setValue(float number, unsigned short unit) {
         length.setValue(number, unit);
         return *this;
@@ -449,16 +451,14 @@ public:
         if (term)
             length.setValue(term);
         else
-            length.setIndex(0);
+            length.setIndex(Normal);
         return *this;
     }
     bool isNormal() const {
-        return length.getIndex() == 0;
+        return length.getIndex() == Normal;
     }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
-        if (isNormal())
-            return u"normal";
-        return length.getCssText();
+        return length.getCssText(Options);
     }
     bool operator==(const CSSNormalLengthValueImp& value) {
         return length == value.length;
@@ -477,11 +477,12 @@ public:
         return length.getPx();
     }
     CSSNormalLengthValueImp() :
-        length(0) {
-    }
+        length(Normal)
+    {}
     CSSNormalLengthValueImp(float number, unsigned short unit) :
-        length(number, unit) {
-    }
+        length(number, unit)
+    {}
+    static const char16_t* Options[];
 };
 
 class CSSLetterSpacingValueImp : public CSSNormalLengthValueImp
