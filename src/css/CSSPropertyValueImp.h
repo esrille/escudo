@@ -72,7 +72,8 @@ public:
     std::u16string getCssText(const char16_t* options[] = 0, unsigned short resolvedUnit = css::CSSPrimitiveValue::CSS_PX) const {
         if (!isnan(resolved)) {
             std::u16string cssText = CSSSerializeNumber(resolved);
-            cssText += Units[resolvedUnit - css::CSSPrimitiveValue::CSS_PERCENTAGE];
+            if (css::CSSPrimitiveValue::CSS_PERCENTAGE <= resolvedUnit && resolvedUnit <= css::CSSPrimitiveValue::CSS_KHZ)
+                cssText += Units[resolvedUnit - css::CSSPrimitiveValue::CSS_PERCENTAGE];
             return cssText;
         }
         if (unit == CSSParserTerm::CSS_TERM_INDEX)
