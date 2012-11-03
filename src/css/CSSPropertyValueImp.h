@@ -1702,6 +1702,12 @@ public:
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
         return size.getCssText(Options);
     }
+    bool operator==(const CSSFontSizeValueImp& fontSize) {
+        return size == fontSize.size;
+    }
+    bool operator!=(const CSSFontSizeValueImp& fontSize) {
+        return size != fontSize.size;
+    }
     void specify(const CSSFontSizeValueImp& specified) {
         size.specify(specified.size);
     }
@@ -1737,6 +1743,12 @@ public:
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
         return Options[value];
     }
+    bool operator==(const CSSFontStyleValueImp& fontStyle) {
+        return value == fontStyle.value;
+    }
+    bool operator!=(const CSSFontStyleValueImp& fontStyle) {
+        return value != fontStyle.value;
+    }
     void specify(const CSSFontStyleValueImp& specified) {
         value = specified.value;
     }
@@ -1769,6 +1781,12 @@ public:
     }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
         return Options[value];
+    }
+    bool operator==(const CSSFontVariantValueImp& fontVariant) {
+        return value == fontVariant.value;
+    }
+    bool operator!=(const CSSFontVariantValueImp& fontVariant) {
+        return value != fontVariant.value;
     }
     void specify(const CSSFontVariantValueImp& specified) {
         value = specified.value;
@@ -1808,6 +1826,12 @@ public:
     }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
         return value.getCssText(Options, css::CSSPrimitiveValue::CSS_NUMBER);
+    }
+    bool operator==(const CSSFontWeightValueImp& fontWeight) {
+        return value == fontWeight.value;
+    }
+    bool operator!=(const CSSFontWeightValueImp& fontWeight) {
+        return value != fontWeight.value;
     }
     void specify(const CSSFontWeightValueImp& specified) {
         value.specify(specified.value);

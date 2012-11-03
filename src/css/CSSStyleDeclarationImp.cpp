@@ -401,6 +401,14 @@ unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
     // Secondly, check properties that do not require style resolutions.
     if (style->fontFamily != fontFamily)
         flags |= Box::NEED_REFLOW;
+    if (style->fontSize != fontSize)
+        flags |= Box::NEED_REFLOW;
+    if (style->fontStyle != fontStyle)
+        flags |= Box::NEED_REFLOW;
+    if (style->fontVariant != fontVariant)
+        flags |= Box::NEED_REFLOW;
+    if (style->fontWeight != fontWeight)
+        flags |= Box::NEED_REFLOW;
     if (style->letterSpacing != letterSpacing)
         flags |= Box::NEED_REFLOW;
     if (style->whiteSpace != whiteSpace)
@@ -412,10 +420,6 @@ unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
     borderSpacing;
     clear;
     direction;
-    fontSize;
-    fontStyle;
-    fontVariant;
-    fontWeight;
     overflow;
     quotes;
     tableLayout;
