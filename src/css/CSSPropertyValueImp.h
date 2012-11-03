@@ -1912,9 +1912,7 @@ public:
     void specify(const CSSLineHeightValueImp& specified) {
         value.specify(specified.value);
     }
-    void inherit(const CSSLineHeightValueImp& parent) {
-        value.inherit(parent.value);
-    }
+    void inherit(const CSSLineHeightValueImp& parent);
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     float getPx() const {

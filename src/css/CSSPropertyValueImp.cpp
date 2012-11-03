@@ -1645,7 +1645,21 @@ void CSSFontShorthandImp::reset(CSSStyleDeclarationImp* self)
     self->fontFamily.reset();
 }
 
-void CSSLineHeightValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style) {
+void CSSLineHeightValueImp::inherit(const CSSLineHeightValueImp& parent)
+{
+    switch (value.unit) {
+    case CSSParserTerm::CSS_TERM_INDEX:
+    case css::CSSPrimitiveValue::CSS_NUMBER:
+        value.specify(parent.value);
+        break;
+    default:
+        value.inherit(parent.value);
+        break;
+    }
+}
+
+void CSSLineHeightValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style)
+{
     switch (value.unit) {
     case CSSParserTerm::CSS_TERM_INDEX:
     case css::CSSPrimitiveValue::CSS_NUMBER:
@@ -1657,7 +1671,8 @@ void CSSLineHeightValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* st
     }
 }
 
-void CSSLineHeightValueImp::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style) {
+void CSSLineHeightValueImp::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style)
+{
     float w;
     switch (value.isNegative() ? CSSParserTerm::CSS_TERM_INDEX : value.unit) {
     case CSSParserTerm::CSS_TERM_INDEX:
