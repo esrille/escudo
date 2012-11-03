@@ -1641,6 +1641,21 @@ public:
     std::deque<CSSParserTerm*>::iterator setValue(std::deque<CSSParserTerm*>& stack, std::deque<CSSParserTerm*>::iterator i);
     virtual bool setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl);
+    bool operator==(const CSSFontFamilyValueImp& value) {
+        if (generic != value.generic)
+            return false;
+        if (familyNames.size() != value.familyNames.size())
+            return false;
+        auto j = value.familyNames.begin();
+        for (auto i = familyNames.begin(); i != familyNames.end(); ++i, ++j) {
+            if (*i != *j)
+                return false;
+        }
+        return true;
+    }
+    bool operator!=(const CSSFontFamilyValueImp& value) {
+        return !(*this == value);
+    }
     void specify(const CSSFontFamilyValueImp& specified) {
         generic = specified.generic;
         familyNames = specified.familyNames;
