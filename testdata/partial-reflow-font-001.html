@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Partial reflow test</title>
+<style type="text/css">
+div {
+  border: solid lime 2px;
+}
+#t {
+  font-family: sans-serif;
+  font-size: 24px;
+}
+</style>
+<script type="text/javascript">
+function doTest() {
+  this.addEventListener('keydown', function(event) {
+    if (event.keyCode == 13) {
+      var t = document.getElementById("t");
+      var s = getComputedStyle(t);
+      if (s.fontFamily == 'sans-serif')
+          t.style.fontFamily = 'serif';
+      else
+          t.style.fontFamily = 'sans-serif';
+    }
+  }, false);
+}
+</script>
+</head>
+<body onload="doTest()">
+<p>Press [Enter] to change the 'font-family' property of the box below:</p>
+<div id='t'>
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text  
+</div>
+</div>
+</body>
+</html>
