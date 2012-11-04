@@ -1,0 +1,93 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Partial reflow test</title>
+<style type="text/css">
+#container {
+  border: solid lime 2px;
+  color: gray;
+}
+.left {
+  float: left;
+  width: 20%;
+  border: solid cyan 2px;
+  color: black;
+}
+.right {
+  float: right;
+  width: 20%;
+  border: solid cyan 2px;
+  color: black;
+}
+</style>
+<script type="text/javascript">
+function doTest() {
+  this.addEventListener('keydown', function(event) {
+    if (event.keyCode == 13) {
+      var t = document.getElementById("t");
+      var s = getComputedStyle(t);
+      if (s.clear == 'left')
+          t.style.clear = 'right';
+      else if (s.clear== 'right')
+          t.style.clear = 'both';
+      else if (s.clear == 'both')
+          t.style.clear = 'none';
+      else
+          t.style.clear = 'left';
+    }
+  }, false);
+}
+</script>
+</head>
+<body onload="doTest()">
+<p>Press [Enter] to toggle the 'clear' property of the box below:</p>
+<div id='container'>
+<div class='left'>
+Filler Text Filler Text 
+Filler Text Filler Text 
+Filler Text Filler Text 
+</div>
+<div class='right'>
+Filler Text Filler Text 
+Filler Text Filler Text 
+Filler Text Filler Text 
+Filler Text Filler Text 
+Filler Text Filler Text 
+Filler Text Filler Text 
+</div>
+<div id='t'>
+Filler Text Filler Text 
+Filler Text Filler Text 
+Filler Text Filler Text 
+Filler Text Filler Text 
+Filler Text Filler Text 
+Filler Text Filler Text 
+Filler Text Filler Text 
+Filler Text Filler Text 
+Filler Text Filler Text 
+Filler Text Filler Text 
+Filler Text Filler Text 
+Filler Text Filler Text 
+Filler Text Filler Text 
+Filler Text Filler Text 
+Filler Text Filler Text 
+Filler Text Filler Text 
+Filler Text Filler Text 
+Filler Text Filler Text 
+Filler Text Filler Text 
+Filler Text Filler Text 
+Filler Text Filler Text 
+Filler Text Filler Text 
+Filler Text Filler Text 
+Filler Text Filler Text 
+Filler Text Filler Text 
+Filler Text Filler Text 
+Filler Text Filler Text 
+Filler Text Filler Text 
+Filler Text Filler Text 
+Filler Text Filler Text 
+</span>
+</div>
+</body>
+</html>
