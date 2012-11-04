@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Partial reflow test</title>
+<style type="text/css">
+div {
+  border: solid lime 2px;
+  width: 100%;
+}
+#t {
+  font-size: 24px;
+}
+</style>
+<script type="text/javascript">
+function doTest() {
+  this.addEventListener('keydown', function(event) {
+    if (event.keyCode == 13) {
+      var t = document.getElementById("t");
+      var s = getComputedStyle(t);
+      if (s.textAlign == 'center')
+          t.style.textAlign = 'right';
+      else if (s.textAlign == 'right')
+          t.style.textAlign = 'left';
+      else
+          t.style.textAlign = 'center';
+    }
+  }, false);
+}
+</script>
+</head>
+<body onload="doTest()">
+<p>Press [Enter] to toggle the 'text-align' property of the box below:</p>
+<div id='t'>
+Filler Text Filler Text<br>
+Filler Text Filler Text<br>
+Filler Text Filler Text<br>
+</div>
+</div>
+</body>
+</html>

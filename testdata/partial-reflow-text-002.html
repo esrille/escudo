@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Partial reflow test</title>
+<style type="text/css">
+div {
+  border: solid lime 2px;
+}
+#t {
+  font-size: 24px;
+}
+</style>
+<script type="text/javascript">
+function doTest() {
+  this.addEventListener('keydown', function(event) {
+    if (event.keyCode == 13) {
+      var t = document.getElementById("t");
+      var s = getComputedStyle(t);
+      if (s.textDecoration == 'underline')
+          t.style.textDecoration = 'overline';
+      else if (s.textDecoration == 'overline')
+          t.style.textDecoration = 'line-through';
+      else if (s.textDecoration == 'line-through')
+          t.style.textDecoration = 'none';
+      else
+          t.style.textDecoration = 'underline';
+    }
+  }, false);
+}
+</script>
+</head>
+<body onload="doTest()">
+<p>Press [Enter] to toggle the 'text-decoration' property of the box below:</p>
+<div id='t'>
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text
+</div>
+</div>
+</body>
+</html>

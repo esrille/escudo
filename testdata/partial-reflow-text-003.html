@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Partial reflow test</title>
+<style type="text/css">
+div {
+  border: solid lime 2px;
+}
+#t {
+  font-size: 24px;
+}
+</style>
+<script type="text/javascript">
+function doTest() {
+  this.addEventListener('keydown', function(event) {
+    if (event.keyCode == 13) {
+      var t = document.getElementById("t");
+      var s = getComputedStyle(t);
+      if (s.textTransform == 'capitalize')
+          t.style.textTransform = 'uppercase';
+      else if (s.textTransform == 'uppercase')
+          t.style.textTransform = 'lowercase';
+      else if (s.textTransform == 'lowercase')
+          t.style.textTransform = 'none';
+      else
+          t.style.textTransform = 'capitalize';
+    }
+  }, false);
+}
+</script>
+</head>
+<body onload="doTest()">
+<p>Press [Enter] to toggle the 'text-transform' property of the box below:</p>
+<div id='t'>
+Filler Text FILLER TEXT filler text
+</div>
+</div>
+</body>
+</html>
