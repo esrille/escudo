@@ -69,18 +69,21 @@ public:
         number(number),
         resolved(NAN)
     {}
-    std::u16string getCssText(const char16_t* options[] = 0, unsigned short resolvedUnit = css::CSSPrimitiveValue::CSS_PX) const {
-        if (!isnan(resolved)) {
-            std::u16string cssText = CSSSerializeNumber(resolved);
-            if (css::CSSPrimitiveValue::CSS_PERCENTAGE <= resolvedUnit && resolvedUnit <= css::CSSPrimitiveValue::CSS_KHZ)
-                cssText += Units[resolvedUnit - css::CSSPrimitiveValue::CSS_PERCENTAGE];
-            return cssText;
-        }
+    std::u16string getCssText(const char16_t* options[] = 0) const {
         if (unit == CSSParserTerm::CSS_TERM_INDEX)
             return options[index];
         std::u16string cssText = CSSSerializeNumber(number);
         if (css::CSSPrimitiveValue::CSS_PERCENTAGE <= unit && unit <= css::CSSPrimitiveValue::CSS_KHZ)
             cssText += Units[unit - css::CSSPrimitiveValue::CSS_PERCENTAGE];
+        return cssText;
+    }
+    // cf. http://dvcs.w3.org/hg/csswg/raw-file/tip/cssom/Overview.html#resolved-values
+    std::u16string getResolvedCssText(const char16_t* options[] = 0, unsigned short resolvedUnit = css::CSSPrimitiveValue::CSS_PX) const {
+        if (isnan(resolved))
+            return getCssText(options);
+        std::u16string cssText = CSSSerializeNumber(resolved);
+        if (css::CSSPrimitiveValue::CSS_PERCENTAGE <= resolvedUnit && resolvedUnit <= css::CSSPrimitiveValue::CSS_KHZ)
+            cssText += Units[resolvedUnit - css::CSSPrimitiveValue::CSS_PERCENTAGE];
         return cssText;
     }
     CSSNumericValue& setValue(CSSParserTerm* term) {
@@ -295,9 +298,6 @@ public:
     CSSNonNegativeValueImp& setValue(CSSParserTerm* term) {
         value.setValue(term);
         return *this;
-    }
-    virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
-        return value.getCssText();
     }
     bool operator==(const CSSNonNegativeValueImp& n) {
         return value == n.value;
@@ -1825,7 +1825,7 @@ public:
         return *this;
     }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
-        return value.getCssText(Options, css::CSSPrimitiveValue::CSS_NUMBER);
+        return value.getResolvedCssText(Options, css::CSSPrimitiveValue::CSS_NUMBER);
     }
     bool operator==(const CSSFontWeightValueImp& fontWeight) {
         return value == fontWeight.value;
