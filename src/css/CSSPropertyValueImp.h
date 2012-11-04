@@ -131,20 +131,14 @@ public:
     bool isPercentage() const {
         return unit == css::CSSPrimitiveValue::CSS_PERCENTAGE;
     }
+    // Compare as two specified values
     bool operator==(const CSSNumericValue& value) const {
-        if (unit == CSSParserTerm::CSS_TERM_INDEX && index == value.index)
-            return true;
-        if (!isnan(resolved) && resolved == value.resolved)
-            return true;
-        if (number == value.number) {
-            if (unit == value.unit)
-                return true;
-            if (number == 0.0f &&
-                css::CSSPrimitiveValue::CSS_PERCENTAGE <= unit && unit <= css::CSSPrimitiveValue::CSS_KHZ &&
-                css::CSSPrimitiveValue::CSS_PERCENTAGE <= value.unit && value.unit <= css::CSSPrimitiveValue::CSS_KHZ)
-                return true;
-        }
-        return false;
+        if (unit != value.unit)
+            return false;
+        if (unit == CSSParserTerm::CSS_TERM_INDEX)
+            return (index == value.index);
+        else
+            return (number == value.number);
     }
     bool operator!=(const CSSNumericValue& value) const {
         return !(*this == value);
