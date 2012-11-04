@@ -1057,6 +1057,12 @@ public:
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
         return Options[value];
     }
+    bool operator==(const CSSClearValueImp& clear) const {
+        return value == clear.value;
+    }
+    bool operator!=(const CSSClearValueImp& clear) const {
+        return value != clear.value;
+    }
     void specify(const CSSClearValueImp& specified) {
         value = specified.value;
     }
