@@ -411,6 +411,14 @@ unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
         flags |= Box::NEED_REFLOW;
     if (style->letterSpacing != letterSpacing)
         flags |= Box::NEED_REFLOW;
+    if (style->textAlign != textAlign)
+        flags |= Box::NEED_REFLOW;
+    if (style->textDecoration != textDecoration)
+        flags |= Box::NEED_REFLOW;
+    if (style->textTransform != textTransform)
+        flags |= Box::NEED_REFLOW;
+    if (style->unicodeBidi != unicodeBidi)
+        flags |= Box::NEED_REFLOW;
     if (style->whiteSpace != whiteSpace)
         flags |= Box::NEED_REFLOW;
     if (style->wordSpacing != wordSpacing)
@@ -423,10 +431,6 @@ unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
     overflow;
     quotes;
     tableLayout;
-    textAlign;
-    textDecoration;
-    textTransform;
-    unicodeBidi;
 #endif
 
     return flags;

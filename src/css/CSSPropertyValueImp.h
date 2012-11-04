@@ -2277,6 +2277,12 @@ public:
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
         return Options[value];
     }
+    bool operator==(const CSSTextAlignValueImp& textAlign) const {
+        return value == textAlign.value;
+    }
+    bool operator!=(const CSSTextAlignValueImp& textAlign) const {
+        return value != textAlign.value;
+    }
     void specify(const CSSTextAlignValueImp& specified) {
         value = specified.value;
     }
@@ -2325,6 +2331,12 @@ public:
         }
         return cssText;
     }
+    bool operator==(const CSSTextDecorationValueImp& textDecoration) const {
+        return value == textDecoration.value;
+    }
+    bool operator!=(const CSSTextDecorationValueImp& textDecoration) const {
+        return value != textDecoration.value;
+    }
     void specify(const CSSTextDecorationValueImp& specified) {
         value = specified.value;
     }
@@ -2357,6 +2369,12 @@ public:
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
         return Options[value];
     }
+    bool operator==(const CSSTextTransformValueImp& textTransform) const {
+        return value == textTransform.value;
+    }
+    bool operator!=(const CSSTextTransformValueImp& textTransform) const {
+        return value != textTransform.value;
+    }
     void specify(const CSSTextTransformValueImp& specified) {
         value = specified.value;
     }
@@ -2384,6 +2402,12 @@ public:
     }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
         return Options[value];
+    }
+    bool operator==(const CSSUnicodeBidiValueImp& bidi) const {
+        return value == bidi.value;
+    }
+    bool operator!=(const CSSUnicodeBidiValueImp& bidi) const {
+        return value != bidi.value;
     }
     void specify(const CSSUnicodeBidiValueImp& specified) {
         value = specified.value;
