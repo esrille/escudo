@@ -317,8 +317,6 @@ void ViewCSSImp::calculateComputedStyles()
             calculateComputedStyle(interface_cast<Element>(child), 0, &counterContext, 0);
     }
     clearFlags(Box::NEED_STYLE_RECALCULATION);  // TODO: Refine
-    if (3 <= getLogLevel())
-        printComputedValues(getDocument(), this);
 }
 
 void ViewCSSImp::calculateComputedStyle(Element element, CSSStyleDeclarationImp* parentStyle, CSSAutoNumberingValueImp::CounterContext* counterContext, unsigned flags)
@@ -763,7 +761,11 @@ Block* ViewCSSImp::layOut()
     if (stackingContexts) {
         stackingContexts->addBase(boxTree.get());
         stackingContexts->layOutAbsolute(this);
-        if (3 <= getLogLevel()) {
+    }
+
+    if (3 <= getLogLevel()) {
+        printComputedValues(getDocument(), this);
+        if (stackingContexts) {
             std::cout << "## stacking contexts\n";
             stackingContexts->dump();
         }
