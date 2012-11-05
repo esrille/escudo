@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Partial reflow test</title>
+<style type="text/css">
+div {
+  border: solid lime thin;
+  width: 200px;
+  height: 200px;
+}
+#t {
+  font-size: 24px;
+  margin: 30px;
+}
+</style>
+<script type="text/javascript">
+function doTest() {
+  this.addEventListener('keydown', function(event) {
+    if (event.keyCode == 13) {
+      var t = document.getElementById("t");
+      var s = getComputedStyle(t);
+      if (s.overflow == 'hidden')
+          t.style.overflow = 'visible';
+      else 
+          t.style.overflow = 'hidden';
+    }
+  }, false);
+}
+</script>
+</head>
+<body onload="doTest()">
+<p>Press [Enter] to toggle the 'overflow' property of the box below:</p>
+<div id='t'>
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text
+</div>
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text
+</div>
+</body>
+</html>
