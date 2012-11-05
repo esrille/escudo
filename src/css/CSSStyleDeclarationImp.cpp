@@ -429,7 +429,6 @@ unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
     borderCollapse;
     borderSpacing;
     direction;
-    overflow;
     quotes;
     tableLayout;
 #endif

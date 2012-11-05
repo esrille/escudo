@@ -2065,6 +2065,12 @@ public:
     bool canScroll() const {
         return canScroll(value);
     }
+    bool operator==(const CSSOverflowValueImp& overflow) {
+        return value == overflow.value;
+    }
+    bool operator!=(const CSSOverflowValueImp& overflow) {
+        return value != overflow.value;
+    }
     void specify(const CSSOverflowValueImp& specified) {
         value = specified.value;
     }
