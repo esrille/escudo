@@ -87,10 +87,10 @@ struct CSSStyleDeclarationBoard
     CSSNonNegativeValueImp minHeight;                       // F         R
     CSSNonNegativeValueImp minWidth;                        // F         R
     CSSOverflowValueImp overflow;                           // F
-    CSSNonNegativeValueImp paddingTop;                      // F         R
-    CSSNonNegativeValueImp paddingRight;                    // F         R
-    CSSNonNegativeValueImp paddingBottom;                   // F         R
-    CSSNonNegativeValueImp paddingLeft;                     // F         R
+    CSSPaddingWidthValueImp paddingTop;                     // F         R
+    CSSPaddingWidthValueImp paddingRight;                   // F         R
+    CSSPaddingWidthValueImp paddingBottom;                  // F         R
+    CSSPaddingWidthValueImp paddingLeft;                    // F         R
     CSSPositionValueImp position;                           // B
     CSSQuotesValueImp quotes;                               // F
     CSSAutoLengthValueImp right;                            // TBD       R
@@ -419,10 +419,10 @@ public:
     CSSBorderWidthValueImp outlineWidth;                    // P
     CSSOutlineShorthandImp outline;                         //
     CSSOverflowValueImp overflow;                           // F
-    CSSNonNegativeValueImp paddingTop;                      // F
-    CSSNonNegativeValueImp paddingRight;                    // F
-    CSSNonNegativeValueImp paddingBottom;                   // F
-    CSSNonNegativeValueImp paddingLeft;                     // F
+    CSSPaddingWidthValueImp paddingTop;                     // F
+    CSSPaddingWidthValueImp paddingRight;                   // F
+    CSSPaddingWidthValueImp paddingBottom;                  // F
+    CSSPaddingWidthValueImp paddingLeft;                    // F
     CSSPaddingShorthandImp padding;                         //
     CSSPageBreakValueImp pageBreakAfter;                    // TBD
     CSSPageBreakValueImp pageBreakBefore;                   // TBD

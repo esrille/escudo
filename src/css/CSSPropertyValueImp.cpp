@@ -49,6 +49,10 @@ const char16_t* CSSNumericValue::Units[] = {
     u"kHz"
 };
 
+const char16_t* CSSAutoLengthValueImp::Options[] = {
+    u"auto",
+};
+
 const char16_t* CSSBackgroundAttachmentValueImp::Options[] = {
     u"scroll",
     u"fixed"
@@ -208,6 +212,10 @@ const char16_t* CSSFontShorthandImp::Options[] = {
     u"message-box",
     u"small-caption"
     u"status-bar"
+};
+
+const char16_t* CSSLineHeightValueImp::Options[] = {
+    u"normal",
 };
 
 const char16_t* CSSListStylePositionValueImp::Options[] = {

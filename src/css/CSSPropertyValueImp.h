@@ -69,7 +69,13 @@ public:
         number(number),
         resolved(NAN)
     {}
-    std::u16string getCssText(const char16_t* options[] = 0) const {
+    std::u16string getCssText(const char16_t* options[] = 0, unsigned short resolvedUnit = css::CSSPrimitiveValue::CSS_PX) const {
+        if (isPercentage())
+            return getSpecifiedCssText(options);
+        else
+            return getResolvedCssText(options, resolvedUnit);
+    }
+    std::u16string getSpecifiedCssText(const char16_t* options[] = 0) const {
         if (unit == CSSParserTerm::CSS_TERM_INDEX)
             return options[index];
         std::u16string cssText = CSSSerializeNumber(number);
@@ -80,7 +86,7 @@ public:
     // cf. http://dvcs.w3.org/hg/csswg/raw-file/tip/cssom/Overview.html#resolved-values
     std::u16string getResolvedCssText(const char16_t* options[] = 0, unsigned short resolvedUnit = css::CSSPrimitiveValue::CSS_PX) const {
         if (isnan(resolved))
-            return getCssText(options);
+            return getSpecifiedCssText(options);
         std::u16string cssText = CSSSerializeNumber(resolved);
         if (css::CSSPrimitiveValue::CSS_PERCENTAGE <= resolvedUnit && resolvedUnit <= css::CSSPrimitiveValue::CSS_KHZ)
             cssText += Units[resolvedUnit - css::CSSPrimitiveValue::CSS_PERCENTAGE];
@@ -305,11 +311,39 @@ public:
     void inherit(const CSSNonNegativeValueImp& parent) {
         value.inherit(parent.value);
     }
-    float getPx() const {
-        return value.getPx();
-    }
     CSSNonNegativeValueImp(float number = 0.0f, unsigned short unit = css::CSSPrimitiveValue::CSS_NUMBER) :
         CSSNumericValueImp(number, unit) {
+    }
+};
+
+class CSSPaddingWidthValueImp : public CSSNonNegativeValueImp
+{
+public:
+    CSSPaddingWidthValueImp& setValue(float number = 0.0f, unsigned short unit = css::CSSPrimitiveValue::CSS_NUMBER) {
+        value.setValue(number, unit);
+        return *this;
+    }
+    CSSPaddingWidthValueImp& setValue(CSSParserTerm* term) {
+        value.setValue(term);
+        return *this;
+    }
+    virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
+        return value.getResolvedCssText();
+    }
+    bool operator==(const CSSPaddingWidthValueImp& n) {
+        return value == n.value;
+    }
+    bool operator!=(const CSSPaddingWidthValueImp& n) {
+        return value != n.value;
+    }
+    void specify(const CSSPaddingWidthValueImp& specified) {
+        value.specify(specified.value);
+    }
+    void inherit(const CSSPaddingWidthValueImp& parent) {
+        value.inherit(parent.value);
+    }
+    CSSPaddingWidthValueImp(float number = 0.0f, unsigned short unit = css::CSSPrimitiveValue::CSS_NUMBER) :
+        CSSNonNegativeValueImp(number, unit) {
     }
 };
 
@@ -319,6 +353,9 @@ class CSSAutoLengthValueImp : public CSSPropertyValueImp
 protected:
     CSSNumericValue length;
 public:
+    enum {
+        Auto,
+    };
     CSSAutoLengthValueImp& setValue(float number, unsigned short unit) {
         length.setValue(number, unit);
         return *this;
@@ -327,11 +364,11 @@ public:
         if (term)
             length.setValue(term);
         else
-            length.setIndex(0);
+            length.setIndex(Auto);
         return *this;
     }
     bool isAuto() const {
-        return length.getIndex() == 0;
+        return length.getIndex() == Auto;
     }
     bool isPercentage() const {
         return length.isPercentage();
@@ -341,9 +378,7 @@ public:
         return length.number;
     }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
-        if (isAuto())
-            return u"auto";
-        return length.getCssText();
+        return length.getResolvedCssText(Options);
     }
     bool operator==(const CSSAutoLengthValueImp& value) {
         return length == value.length;
@@ -368,6 +403,7 @@ public:
     CSSAutoLengthValueImp(float number, unsigned short unit) :
         length(number, unit) {
     }
+    static const char16_t* Options[];
 };
 
 // <length>, <percentage>, none
@@ -1700,7 +1736,7 @@ public:
         return *this;
     }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
-        return size.getCssText(Options);
+        return size.getResolvedCssText(Options);
     }
     bool operator==(const CSSFontSizeValueImp& fontSize) {
         return size == fontSize.size;
@@ -1899,9 +1935,7 @@ public:
         return value.getIndex() == Normal;
     }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
-        if (isNormal())
-            return u"normal";
-        return value.getCssText();
+        return value.getResolvedCssText(Options);
     }
     bool operator==(const CSSLineHeightValueImp& lineHeight) {
         return value == lineHeight.value;
@@ -1921,6 +1955,7 @@ public:
     CSSLineHeightValueImp() :
         value(Normal)
     {}
+    static const char16_t* Options[];
 };
 
 class CSSListStyleImageValueImp : public CSSPropertyValueImp
@@ -2444,7 +2479,10 @@ public:
         return *this;
     }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
-        return value.getCssText(Options);
+        if (value.isIndex())
+            return value.getSpecifiedCssText(Options);
+        else
+            return value.getResolvedCssText(Options);
     }
     bool operator==(const CSSVerticalAlignValueImp& align) const {
         return value == align.value;
