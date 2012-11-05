@@ -1367,6 +1367,12 @@ public:
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
         return Options[value];
     }
+    bool operator==(const CSSDirectionValueImp& direction) {
+        return value == direction.value;
+    }
+    bool operator!=(const CSSDirectionValueImp& direction) {
+        return value != direction.value;
+    }
     void specify(const CSSDirectionValueImp& specified) {
         value = specified.value;
     }

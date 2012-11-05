@@ -401,6 +401,8 @@ unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
     // Secondly, check properties that do not require style resolutions.
     if (style->clear != clear)
         flags |= Box::NEED_REFLOW;
+    if (style->direction != direction)
+        flags |= Box::NEED_REFLOW;
     if (style->fontFamily != fontFamily)
         flags |= Box::NEED_REFLOW;
     if (style->fontSize != fontSize)
@@ -428,7 +430,6 @@ unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
 #if 0  // TODO: Check following properties
     borderCollapse;
     borderSpacing;
-    direction;
     quotes;
     tableLayout;
 #endif
