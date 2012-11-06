@@ -1478,7 +1478,8 @@ std::u16string CSSFontFamilyValueImp::getCssText(CSSStyleDeclarationImp* decl)
     return cssText;
 }
 
-void CSSFontSizeValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle) {
+void CSSFontSizeValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle)
+{
     float w;
     float parentSize = parentStyle ? parentStyle->fontSize.getPx() : view->getMediumFontSize();
     unsigned i;
