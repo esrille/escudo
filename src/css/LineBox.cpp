@@ -479,7 +479,7 @@ bool Block::layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
         if (inlineBox->hasHeight()) {
             // Switch height from 'line-height' to the content height.
             inlineBox->height = font->getLineHeight(point);
-            inlineBox->leading = std::max(activeStyle->lineHeight.getPx(), getStyle()->lineHeight.getPx()) - inlineBox->height;
+            inlineBox->leading = activeStyle->lineHeight.getPx() - inlineBox->height;
             lineBox->underlinePosition = std::max(lineBox->underlinePosition, font->getUnderlinePosition(point));
             lineBox->underlineThickness = std::max(lineBox->underlineThickness, font->getUnderlineThickness(point));
             lineBox->lineThroughPosition = std::max(lineBox->lineThroughPosition, font->getLineThroughPosition(point));
