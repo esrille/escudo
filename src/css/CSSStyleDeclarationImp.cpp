@@ -29,35 +29,6 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 using namespace css;
 
-const unsigned CSSStyleDeclarationImp::paintProperties[] = {
-    Color,  // Color must be processed firstly.
-    BackgroundColor,
-#if 0   // TOOD, Support these layter
-    BackgroundAttachment,
-    BackgroundImage,
-    BackgroundPosition,
-    BackgroundRepeat,
-#endif
-    BorderTopColor,
-    BorderRightColor,
-    BorderBottomColor,
-    BorderLeftColor,
-    BorderTopStyle,
-    BorderRightStyle,
-    BorderBottomStyle,
-    BorderLeftStyle,
-    OutlineColor,
-    OutlineStyle,
-    OutlineWidth,
-    Visibility,
-    // for relative positioning:
-    Top,
-    Right,
-    Bottom,
-    Left,
-    Unknown,
-};
-
 const char16_t* CSSStyleDeclarationImp::PropertyNames[PropertyCount] = {
     u"",
     u"azimuth",
@@ -1875,33 +1846,6 @@ void CSSStyleDeclarationImp::computeStackingContext(ViewCSSImp* view, CSSStyleDe
         }
     } else
         stackingContext = parentStyle->stackingContext;
-}
-
-void CSSStyleDeclarationImp::respecify(const CSSStyleDeclarationImp* decl, const std::bitset<PropertyCount>& set)
-{
-    for (const unsigned* id = paintProperties; *id != Unknown; ++id) {
-        if (!set.test(*id))
-            continue;
-        if (decl->inheritSet.test(*id))
-            setInherit(*id);
-        else {
-            resetInherit(*id);
-            specify(decl, *id);
-        }
-        propertySet.set(*id);  // Note computed values do not have any important bit set.
-    }
-}
-
-void CSSStyleDeclarationImp::respecify(const CSSStyleDeclarationImp* style)
-{
-    if (style)
-        respecify(style, style->propertySet);
-}
-
-void CSSStyleDeclarationImp::respecifyImportant(const CSSStyleDeclarationImp* style)
-{
-    if (style)
-        respecify(style, style->importantSet);
 }
 
 bool CSSStyleDeclarationImp::updateCounters(ViewCSSImp* view, CSSAutoNumberingValueImp::CounterContext* context)

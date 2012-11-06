@@ -291,7 +291,6 @@ public:
 private:
     static const size_t PropertyCount = MaxProperties;
     static const char16_t* PropertyNames[PropertyCount];
-    static const unsigned paintProperties[];
 
     Object* owner;
     mutable css::CSSRule parentRule;
@@ -336,7 +335,6 @@ private:
 
     void specify(const CSSStyleDeclarationImp* decl, unsigned id);
     void specify(const CSSStyleDeclarationImp* decl, const std::bitset<PropertyCount>& set);
-    void respecify(const CSSStyleDeclarationImp* decl, const std::bitset<PropertyCount>& set);
 
     void setInherit(unsigned id);
     void resetInherit(unsigned id);
@@ -530,9 +528,6 @@ public:
         containingBlockWidth = w;
         containingBlockHeight = h;
     }
-
-    void respecify(const CSSStyleDeclarationImp* style);
-    void respecifyImportant(const CSSStyleDeclarationImp* style);
 
     bool updateCounters(ViewCSSImp* view, CSSAutoNumberingValueImp::CounterContext* context);
 
