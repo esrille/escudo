@@ -348,7 +348,8 @@ void ViewCSSImp::calculateComputedStyle(Element element, CSSStyleDeclarationImp*
             if (Block* block = getCurrentBox(style, true)) {
                 block->defaultBaseline = block->defaultLineHeight = 0.0f;
                 block->setFlags(Box::NEED_REFLOW);
-            }
+            } else
+                style->updateInlines(element);
         }
         flags |= CSSStyleDeclarationImp::Computed;  // The child styles have to be recomputed.
     }
