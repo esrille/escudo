@@ -350,7 +350,8 @@ void ViewCSSImp::calculateComputedStyle(Element element, CSSStyleDeclarationImp*
                 block->setFlags(Box::NEED_REFLOW);
             } else
                 style->updateInlines(element);
-        }
+        } else if (Block* block = getCurrentBox(style, true))
+            block->resolveBackground(this);
         flags |= CSSStyleDeclarationImp::Computed;  // The child styles have to be recomputed.
     }
 
