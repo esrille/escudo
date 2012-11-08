@@ -109,6 +109,10 @@ public:
 
     void clear();
     void update(const HttpResponseMessage& response);
+    void updateStatus(const HttpResponseMessage& response) {
+        status = response.status;
+        statusText = response.statusText;
+    }
 };
 
 

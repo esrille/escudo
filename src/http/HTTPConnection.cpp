@@ -321,10 +321,11 @@ void HttpConnection::readHead(const boost::system::error_code& err)
     // TODO: handle every status code
     switch (responseMessage.getStatus()) {
     case 304:   // Not Modified
-        current->constructResponseFromCache();
         HttpConnectionManager::getInstance().done(this, false);
-        if (!err)
+        if (!err) {
+            state = CloseWait;
             asyncRead(response, boost::asio::transfer_at_least(1), boost::bind(&HttpConnection::handleRead, this, boost::asio::placeholders::error));
+        }
         return;
     default:
         break;

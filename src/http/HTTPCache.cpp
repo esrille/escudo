@@ -38,9 +38,18 @@ void HttpCache::notify(HttpRequest* request, bool error)
     else {
         response.update(request->getResponseMessage());
         // TODO: deal with partial...
-        int fd = request->getContentDescriptor();
-        if (0 <= fd)
-            fdContent = dup(fd);
+        switch (request->getResponseMessage().getStatus()) {
+        case 304:   // Not Modified
+            request->constructResponseFromCache(false);
+            break;
+        default: {
+            int fd = request->getContentDescriptor();
+            if (0 <= fd)
+                fdContent = dup(fd);
+            break;
+        }
+        }
+
     }
 
     while (!requests.empty()) {

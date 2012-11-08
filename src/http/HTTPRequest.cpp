@@ -145,9 +145,12 @@ void HttpRequest::setRequestHeader(const std::u16string& header, const std::u16s
 
 bool HttpRequest::constructResponseFromCache(bool sync)
 {
+    assert(cache);
     readyState = DONE;
     errorFlag = false;
+
     response.update(cache->getResponseMessage());
+    response.updateStatus(cache->getResponseMessage());
 
     // TODO: deal with partial...
     int fd = cache->getContentDescriptor();
