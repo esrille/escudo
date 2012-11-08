@@ -5,7 +5,7 @@
 <title>Partial reflow test</title>
 <style type="text/css">
 div {
-  border: solid lime 2px;
+  border: solid lime thin;
 }
 #t {
   font-size: 24px;
@@ -22,6 +22,8 @@ function doTest() {
       else if (s.textIndent == '100px')
           t.style.textIndent = '50%';
       else if (s.textIndent == '50%')
+          t.style.textIndent = '12cm';
+      else if (s.textIndent != '0px')
           t.style.textIndent = '0px';
     }
   }, false);
