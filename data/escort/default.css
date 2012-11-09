@@ -154,3 +154,4 @@ time[datetime] { binding: time; }
 
 /* misc. */
 iframe { overflow: auto; }
+noscript { display: none; }

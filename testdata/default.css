@@ -84,11 +84,11 @@ wbr:before	{ content: "\200B" }
 nobr wbr	{ white-space: normal; }
 
 /* CSS 3 Lists */
-ol, ul { 
-	counter-reset: list-item; 
-	padding-left: 40px; 
+ol, ul {
+	counter-reset: list-item;
+	padding-left: 40px;
 }
-li::marker { 
+li::marker {
 	display: inline-block;
 	margin-right: 1em;
 	text-align: end;
@@ -135,3 +135,4 @@ time[datetime] { binding: time; }
 
 /* misc. */
 iframe { overflow: auto; }
+noscript { display: none; }
