@@ -482,7 +482,7 @@ Block* Block::getAnonymousBox(Box* prev)
         anonymousBox->flags &= ~NEED_EXPANSION;
         anonymousBox->spliceInline(this);
         if (!prev)
-            appendChild(anonymousBox);
+            insertBefore(anonymousBox, firstChild);
         else
             insertBefore(anonymousBox, prev->getNextSibling());
         setFlags(anonymousBox->flags);
