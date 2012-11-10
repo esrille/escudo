@@ -1422,10 +1422,10 @@ public:
         return Options[value];
     }
     bool operator==(const CSSDisplayValueImp& display) const {
-        return value == display.value;
+        return original == display.original;
     }
     bool operator!=(const CSSDisplayValueImp& display) const {
-        return value != display.value;
+        return original != display.original;
     }
     void specify(const CSSDisplayValueImp& specified) {
         original = specified.original;

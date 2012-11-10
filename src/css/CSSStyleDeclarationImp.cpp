@@ -284,11 +284,11 @@ unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
     // Checks for Box::NEED_EXPANSION
     //
     // Note zIndex is checked inside CSSStyleDeclarationImp::compute().
-    if (display.getValue() != style->display.getValue())
+    if (style->display != display)
         flags |= Box::NEED_EXPANSION;
-    if (float_.getValue() != style->float_.getValue())
+    if (style->float_ != float_)
         flags |= Box::NEED_EXPANSION;
-    if (position.getValue() != style->position.getValue())
+    if (style->position != position)
         flags |= Box::NEED_EXPANSION;
 #if 0  // TODO: Check following properties
     captionSide;
