@@ -20,12 +20,16 @@
 
 #include <org/w3c/dom/events/MouseEvent.h>
 
+#include "CommentImp.h"
 #include "DOMImplementationImp.h"
 #include "DocumentTypeImp.h"
-#include "CommentImp.h"
 #include "ElementImp.h"
-#include "css/CSSSerialize.h"
+#include "EventImp.h"
+#include "NodeListImp.h"
+#include "ObjectArrayImp.h"
 #include "TextImp.h"
+#include "WindowImp.h"
+#include "css/CSSSerialize.h"
 #include "html/HTMLAnchorElementImp.h"
 #include "html/HTMLAreaElementImp.h"
 #include "html/HTMLAudioElementImp.h"
@@ -91,10 +95,6 @@
 #include "html/HTMLUListElementImp.h"
 #include "html/HTMLUnknownElementImp.h"
 #include "html/HTMLVideoElementImp.h"
-#include "WindowImp.h"
-#include "ObjectArrayImp.h"
-
-#include "EventImp.h"
 
 #include "Test.util.h"
 
@@ -246,8 +246,21 @@ Element DocumentImp::getDocumentElement()
 
 NodeList DocumentImp::getElementsByTagName(std::u16string qualifiedName)
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    NodeListImp* nodeList = new(std::nothrow) NodeListImp;
+    if (!nodeList)
+        return 0;
+
+    if (qualifiedName == u"*") {
+        for (ElementImp* e = dynamic_cast<ElementImp*>(getDocumentElement().self()); e; e = e->getNextElement())
+            nodeList->addItem(e);
+    } else {
+        // TODO: Support non HTML document
+        for (ElementImp* e = dynamic_cast<ElementImp*>(getDocumentElement().self()); e; e = e->getNextElement()) {
+            if (e->getLocalName() == qualifiedName)
+                nodeList->addItem(e);
+        }
+    }
+    return nodeList;
 }
 
 NodeList DocumentImp::getElementsByTagNameNS(std::u16string _namespace, std::u16string localName)
