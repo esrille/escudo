@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,34 +15,7 @@
  */
 
 #include "NodeListImp.h"
-#include "NodeImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
-
-Node NodeListImp::item(unsigned int index)
-{
-    // TODO: a more faster version might be necessary.
-    if (NodeImp* imp = dynamic_cast<NodeImp*>(node.self())) {
-        if (imp->getChildCount() <= index)
-            return 0;
-        NodeImp* item;
-        for (item = imp->firstChild; 0 < index && item; --index)
-            item = item->nextSibling;
-        return item;
-    }
-    return 0;
-}
-
-unsigned int NodeListImp::getLength()
-{
-    if (NodeImp* imp = dynamic_cast<NodeImp*>(node.self()))
-        return imp->getChildCount();
-    return 0;
-}
-
-NodeListImp::NodeListImp(Node node) :
-    node(node)
-{
-}
 
 }}}}  // org::w3c::dom::bootstrap

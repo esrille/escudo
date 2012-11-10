@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,13 @@
 #ifndef NODELIST_IMP_H
 #define NODELIST_IMP_H
 
-#include <Object.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <org/w3c/dom/NodeList.h>
+
+#include <deque>
 
 #include <org/w3c/dom/Node.h>
 
@@ -26,15 +31,25 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class NodeListImp : public ObjectMixin<NodeListImp>
 {
-    Node node;
-    // TODO: add more constraints for getElementsByTagName(), etc.
+    std::deque<Node> list;
 
 public:
-    NodeListImp(Node node);
+    NodeListImp() {}
+
+    void addItem(Node node) {
+        list.push_back(node);
+    }
 
     // NodeList
-    virtual Node item(unsigned int index);
-    virtual unsigned int getLength();
+    virtual Node item(unsigned int index) {
+        if (getLength() <= index)
+            return 0;
+        else
+            return list[index];
+    }
+    virtual unsigned int getLength() {
+        return list.size();
+    }
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

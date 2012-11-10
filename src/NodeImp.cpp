@@ -122,7 +122,12 @@ bool NodeImp::hasChildNodes()
 
 NodeList NodeImp::getChildNodes()
 {
-    return new(std::nothrow) NodeListImp(this);
+    NodeListImp* nodeList = new(std::nothrow) NodeListImp;
+    if (nodeList) {
+        for (NodeImp* node = firstChild; node; node = node->nextSibling)
+            nodeList->addItem(node);
+    }
+    return nodeList;
 }
 
 Node NodeImp::getFirstChild()
