@@ -616,7 +616,7 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, CSSStyleDec
                     assert(!parentBox->hasInline());
                 }
                 if (!prevBox)
-                    parentBox->appendChild(currentBox);
+                    parentBox->insertBefore(currentBox, parentBox->getFirstChild());
                 else
                     parentBox->insertBefore(currentBox, prevBox->getNextSibling());
             }
