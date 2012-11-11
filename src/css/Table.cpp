@@ -305,8 +305,11 @@ Block* TableWrapperBox::constructTablePart(Node node)
 {
     assert(view);
     Block* part = view->constructBlock(node, 0, 0, 0, true);
-    if (part && style)  // Do not support the incremental reflow with an anonymous table
-        addBlock(node, part);
+    if (part) {
+        part->stackingContext = stackingContext;
+        if (style)  // Do not support the incremental reflow with an anonymous table
+            addBlock(node, part);
+    }
     return part;
 }
 
@@ -729,8 +732,10 @@ CellBox* TableWrapperBox::processCell(Element current, Block* parentBox, CSSStyl
         cellBox = static_cast<CellBox*>(constructTablePart(current));
     else {
         cellBox = new(std::nothrow) CellBox(0, 0);  // TODO: use parentStyle?
-        if (cellBox)
+        if (cellBox) {
+            cellBox->stackingContext = stackingContext;
             cellBox->establishFormattingContext();
+        }
     }
     if (cellBox) {
         cellBox->setPosition(xCurrent, yCurrent);

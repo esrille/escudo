@@ -233,6 +233,10 @@ void StackingContext::render(ViewCSSImp* view)
 
 void StackingContext::addBase(Box* box)
 {
+#ifndef NDEBUG
+    for (Box* i = firstBase; i; i = i->nextBase)
+        assert(box != i);
+#endif
     if (!firstBase)
         firstBase = lastBase = box;
     else {
@@ -251,6 +255,11 @@ void StackingContext::addBox(Box* box, Box* parentBox)
 
 void StackingContext::addFloat(Box* box)
 {
+#ifndef NDEBUG
+    for (Box* i = firstFloat; i; i = i->nextBase) {
+        assert(box != i);
+    }
+#endif
     if (currentFloat) {
         box->nextBase = currentFloat->nextBase;
         currentFloat->nextBase = box;

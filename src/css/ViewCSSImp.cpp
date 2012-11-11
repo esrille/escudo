@@ -761,7 +761,8 @@ Block* ViewCSSImp::layOut()
     }
 
     if (stackingContexts) {
-        stackingContexts->addBase(boxTree.get());
+        if (!stackingContexts->getBase())
+            stackingContexts->addBase(boxTree.get());
         stackingContexts->layOutAbsolute(this);
     }
 
