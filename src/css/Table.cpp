@@ -238,6 +238,7 @@ void TableWrapperBox::constructBlocks()
                 CellBox* cellBox = grid[y][x].get();
                 if (!cellBox || cellBox->isSpanned(x, y))
                     continue;
+                cellBox->columnWidth = NAN;
                 lineBox->appendChild(cellBox);
             }
         }

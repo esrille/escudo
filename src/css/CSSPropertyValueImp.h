@@ -881,6 +881,12 @@ public:
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
         return Options[value];
     }
+    bool operator==(const CSSBorderCollapseValueImp& borderCollapse) const {
+        return value == borderCollapse.value;
+    }
+    bool operator!=(const CSSBorderCollapseValueImp& borderCollapse) const {
+        return value != borderCollapse.value;
+    }
     void specify(const CSSBorderCollapseValueImp& specified) {
         value = specified.value;
     }
