@@ -288,9 +288,10 @@ unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
     if (style->display.getValue() == CSSDisplayValueImp::ListItem) {
         if (style->listStyleType != listStyleType)
             flags |= Box::NEED_EXPANSION;
+        if (style->listStylePosition != listStylePosition)
+            flags |= Box::NEED_EXPANSION;
 #if 0  // TODO: Check following properties
         listStyleImage;
-        listStylePosition;
 #endif
         if (flags & Box::NEED_EXPANSION)
             style->pseudoElements[CSSPseudoElementSelector::Marker] = 0;

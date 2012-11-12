@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Partial reflow test</title>
+<style type="text/css">
+</style>
+<script type="text/javascript">
+function doTest() {
+  this.addEventListener('keydown', function(event) {
+    if (event.keyCode == 13) {
+      var t = document.getElementById("t");
+      var s = getComputedStyle(t);
+      if (s.listStylePosition == 'inside')
+          t.style.listStylePosition = 'outside';
+      else if (s.listStylePosition == 'outside')
+          t.style.listStylePosition = 'inside';
+    }
+  }, false);
+}
+</script>
+</head>
+<body onload="doTest()">
+<p>Press [Enter] to toggle the 'list-style-position' property of the table below:</p>
+<ol id='t'>
+<li>1</li>
+<li>2</li>
+<li>3</li>
+</ol>
+</body>
+</html>

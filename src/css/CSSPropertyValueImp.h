@@ -2036,6 +2036,12 @@ public:
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
         return Options[value];
     }
+    bool operator==(const CSSListStylePositionValueImp& position) const {
+        return value == position.value;
+    }
+    bool operator!=(const CSSListStylePositionValueImp& position) const {
+        return value != position.value;
+    }
     void specify(const CSSListStylePositionValueImp& specified) {
         value = specified.value;
     }
