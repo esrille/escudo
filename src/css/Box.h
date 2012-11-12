@@ -94,6 +94,8 @@ public:
     static const unsigned short NEED_REPAINT = 0x40;
     static const unsigned short NEED_SELECTOR_REMATCHING = 0x80;
 
+    static const unsigned short NEED_TABLE_REFLOW = 0x8000;
+
 protected:
     Node node;
     Box* parentBox;

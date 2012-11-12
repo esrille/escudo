@@ -251,6 +251,7 @@ void TableWrapperBox::constructBlocks()
     isAnonymousTable = false;
 
     clearFlags(NEED_EXPANSION);
+    setFlags(NEED_REFLOW);
 }
 
 void TableWrapperBox::clearGrid()
@@ -298,7 +299,6 @@ void TableWrapperBox::clearGrid()
     pendingTfootElement = 0;
     yTfootBegin = 0;
     yTfootEnd = 0;
-
 }
 
 Block* TableWrapperBox::constructTablePart(Node node)

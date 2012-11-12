@@ -291,7 +291,6 @@ unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
     if (style->position != position)
         flags |= Box::NEED_EXPANSION;
 #if 0  // TODO: Check following properties
-    captionSide;
     content;
     listStyleImage;
     listStylePosition;
@@ -404,6 +403,10 @@ unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
     quotes;
     tableLayout;
 #endif
+
+    // Table related properties
+    if (style->captionSide != captionSide && style->display.getValue() == CSSDisplayValueImp::TableCaption)
+        flags |= Box::NEED_TABLE_REFLOW;
 
     return flags;
 }

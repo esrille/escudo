@@ -1061,6 +1061,12 @@ public:
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
         return Options[value];
     }
+    bool operator==(const CSSCaptionSideValueImp& captionSide) const {
+        return value == captionSide.value;
+    }
+    bool operator!=(const CSSCaptionSideValueImp& captionSide) const {
+        return value != captionSide.value;
+    }
     void specify(const CSSCaptionSideValueImp& specified) {
         value = specified.value;
     }

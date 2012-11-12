@@ -340,7 +340,14 @@ void ViewCSSImp::calculateComputedStyle(Element element, CSSStyleDeclarationImp*
         CSSStyleDeclarationBoard board(style);
         style->compute(this, parentStyle, element);
         unsigned comp = board.compare(style);
-        if (comp & Box::NEED_EXPANSION) {
+        if (comp & Box::NEED_TABLE_REFLOW) {
+            for (Box* box = getCurrentBox(style, true); box; box = box->getParentBox()) {
+                if (dynamic_cast<TableWrapperBox*>(box)) {
+                    box->setFlags(Box::NEED_EXPANSION);
+                    break;
+                }
+            }
+        } else if (comp & Box::NEED_EXPANSION) {
             Block* block = style->revert(element);
             if (style->display.isInlineLevel() && block && !(block->getFlags() & Box::NEED_EXPANSION))
                 block->clearInlines();
