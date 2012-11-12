@@ -27,6 +27,7 @@ namespace bootstrap
 
 void HTMLOListElementImp::eval()
 {
+    HTMLElementImp::eval();
     Nullable<std::u16string> attr = getAttribute(u"start");
     if (attr.hasValue()) {
         getStyle().setProperty(u"counter-reset", u"list-item " + attr.value(), u"non-css");
