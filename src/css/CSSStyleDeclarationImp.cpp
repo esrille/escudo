@@ -398,16 +398,21 @@ unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
     if (style->wordSpacing != wordSpacing)
         flags |= Box::NEED_REFLOW;
 #if 0  // TODO: Check following properties
-    borderSpacing;
     quotes;
     tableLayout;
 #endif
 
     // Table related properties
-    if (style->captionSide != captionSide && style->display.getValue() == CSSDisplayValueImp::TableCaption)
-        flags |= Box::NEED_TABLE_REFLOW;
-    if (style->borderCollapse != borderCollapse && (style->display.getValue() == CSSDisplayValueImp::Table || style->display.getValue() == CSSDisplayValueImp::InlineTable))
-        flags |= Box::NEED_TABLE_REFLOW;
+    if (style->display.getValue() == CSSDisplayValueImp::Table || style->display.getValue() == CSSDisplayValueImp::InlineTable) {
+        if (style->borderCollapse != borderCollapse)
+            flags |= Box::NEED_TABLE_REFLOW;
+        if (style->borderSpacing != borderSpacing)
+            flags |= Box::NEED_TABLE_REFLOW;
+    }
+    if (style->display.getValue() == CSSDisplayValueImp::TableCaption) {
+        if (style->captionSide != captionSide)
+            flags |= Box::NEED_TABLE_REFLOW;
+    }
 
     return flags;
 }

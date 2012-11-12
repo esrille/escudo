@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Partial reflow test</title>
+<style type="text/css">
+table
+{
+    border-collapse: separate;
+    border-spacing: 20px 20px;
+}
+td
+{
+    border: 2px solid black;
+    height: 3em;
+}
+div
+{
+    border: solid lime 2px;
+    width: 20em;
+}
+</style>
+<script type="text/javascript">
+function doTest() {
+  this.addEventListener('keydown', function(event) {
+    if (event.keyCode == 13) {
+      var t = document.getElementById("t");
+      var s = getComputedStyle(t);
+      if (s.borderSpacing == '20px 20px')
+          t.style.borderSpacing = '10px 10px';
+      else if (s.borderSpacing == '10px 10px')
+          t.style.borderSpacing = '20px 20px';
+    }
+  }, false);
+}
+</script>
+</head>
+<body onload="doTest()">
+<p>Press [Enter] to toggle the 'border-spacing' property of the table below:</p>
+<table id='t'>
+    <caption>Caption</caption>
+    <tr>
+	<td>Filler Text</td>
+	<td>Filler Text</td>
+	<td>Filler Text</td>
+    </tr>
+    <tr>
+	<td>Filler Text</td>
+	<td>Filler Text</td>
+	<td>Filler Text</td>
+    </tr>
+</table>
+</body>
+</html>

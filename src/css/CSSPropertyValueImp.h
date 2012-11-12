@@ -839,9 +839,13 @@ public:
         return true;
     }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
-        if (horizontal == vertical)
-            return horizontal.getCssText();
         return horizontal.getCssText() + u' ' + vertical.getCssText();
+    }
+    bool operator==(const CSSBorderSpacingValueImp& borderSpacing) const {
+        return horizontal == borderSpacing.horizontal && vertical == borderSpacing.vertical;
+    }
+    bool operator!=(const CSSBorderSpacingValueImp& borderSpacing) const {
+        return horizontal != borderSpacing.horizontal || vertical != borderSpacing.vertical;
     }
     void specify(const CSSBorderSpacingValueImp& specified) {
         horizontal.specify(specified.horizontal);
