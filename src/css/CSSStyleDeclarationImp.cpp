@@ -284,6 +284,18 @@ unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
     // Checks for Box::NEED_EXPANSION
     //
     // Note zIndex is checked inside CSSStyleDeclarationImp::compute().
+
+    if (style->display.getValue() == CSSDisplayValueImp::ListItem) {
+        if (style->listStyleType != listStyleType)
+            flags |= Box::NEED_EXPANSION;
+#if 0  // TODO: Check following properties
+        listStyleImage;
+        listStylePosition;
+#endif
+        if (flags & Box::NEED_EXPANSION)
+            style->pseudoElements[CSSPseudoElementSelector::Marker] = 0;
+    }
+
     if (style->display != display)
         flags |= Box::NEED_EXPANSION;
     if (style->float_ != float_)
@@ -292,9 +304,6 @@ unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
         flags |= Box::NEED_EXPANSION;
 #if 0  // TODO: Check following properties
     content;
-    listStyleImage;
-    listStylePosition;
-    listStyleType;
     binding;
 #endif
 

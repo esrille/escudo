@@ -349,8 +349,12 @@ void ViewCSSImp::calculateComputedStyle(Element element, CSSStyleDeclarationImp*
             }
         } else if (comp & Box::NEED_EXPANSION) {
             Block* block = style->revert(element);
-            if (style->display.isInlineLevel() && block && !(block->getFlags() & Box::NEED_EXPANSION))
-                block->clearInlines();
+            if (block) {
+                if (style->display.isInlineLevel() && !(block->getFlags() & Box::NEED_EXPANSION))
+                    block->clearInlines();
+                else if (!style->display.isNone())
+                    block->setFlags(Box::NEED_EXPANSION);
+            }
         } else if (comp & Box::NEED_REFLOW) {
             if (Block* block = getCurrentBox(style, true)) {
                 block->defaultBaseline = block->defaultLineHeight = 0.0f;
