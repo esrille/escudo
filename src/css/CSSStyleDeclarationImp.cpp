@@ -399,7 +399,6 @@ unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
         flags |= Box::NEED_REFLOW;
 #if 0  // TODO: Check following properties
     quotes;
-    tableLayout;
 #endif
 
     // Table related properties
@@ -407,6 +406,8 @@ unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
         if (style->borderCollapse != borderCollapse)
             flags |= Box::NEED_TABLE_REFLOW;
         if (style->borderSpacing != borderSpacing)
+            flags |= Box::NEED_TABLE_REFLOW;
+        if (style->tableLayout != tableLayout)
             flags |= Box::NEED_TABLE_REFLOW;
     }
     if (style->display.getValue() == CSSDisplayValueImp::TableCaption) {

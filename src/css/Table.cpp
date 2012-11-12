@@ -239,6 +239,7 @@ void TableWrapperBox::constructBlocks()
                 if (!cellBox || cellBox->isSpanned(x, y))
                     continue;
                 cellBox->columnWidth = NAN;
+                cellBox->fixedLayout = false;
                 lineBox->appendChild(cellBox);
             }
         }

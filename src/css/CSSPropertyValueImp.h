@@ -2307,6 +2307,12 @@ public:
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) {
         return Options[value];
     }
+    bool operator==(const CSSTableLayoutValueImp& tableLayout) const {
+        return value == tableLayout.value;
+    }
+    bool operator!=(const CSSTableLayoutValueImp& tableLayout) const {
+        return value != tableLayout.value;
+    }
     void specify(const CSSTableLayoutValueImp& specified) {
         value = specified.value;
     }

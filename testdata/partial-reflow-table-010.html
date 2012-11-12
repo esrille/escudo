@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Partial reflow test</title>
+<style type="text/css">
+table
+{
+    border-collapse: collapse;
+    table-layout: auto;
+    width: 320px;
+}
+td
+{
+    border: 2px solid black;
+    height: 3em;
+}
+</style>
+<script type="text/javascript">
+function doTest() {
+  this.addEventListener('keydown', function(event) {
+    if (event.keyCode == 13) {
+      var t = document.getElementById("t");
+      var s = getComputedStyle(t);
+      if (s.tableLayout == 'auto')
+          t.style.tableLayout = 'fixed';
+      else if (s.tableLayout == 'fixed')
+          t.style.tableLayout = 'auto';
+    }
+  }, false);
+}
+</script>
+</head>
+<body onload="doTest()">
+<p>Press [Enter] to toggle the 'table-layout' property of the table below:</p>
+<table id='t'>
+    <caption>Caption</caption>
+    <tr>
+	<td>Filler Text</td>
+	<td>Filler Text</td>
+	<td>Filler Text</td>
+    </tr>
+    <tr>
+	<td>Filler Text</td>
+	<td>Filler Text Filler Text</td>
+	<td>Filler Text</td>
+    </tr>
+</table>
+</body>
+</html>
