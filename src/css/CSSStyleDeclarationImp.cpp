@@ -305,7 +305,6 @@ unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
     if (style->position != position)
         flags |= Box::NEED_EXPANSION;
 #if 0  // TODO: Check following properties
-    content;
     binding;
 #endif
 
