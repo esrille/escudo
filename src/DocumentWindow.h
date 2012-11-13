@@ -21,9 +21,9 @@
 #include "config.h"
 #endif
 
-#include <org/w3c/dom/Document.h>
-
 #include <boost/intrusive_ptr.hpp>
+
+#include <org/w3c/dom/Document.h>
 
 #include "EventListenerImp.h"
 #include "EventTargetImp.h"

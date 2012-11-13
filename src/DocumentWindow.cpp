@@ -72,7 +72,7 @@ HttpRequest* DocumentWindow::preload(const std::u16string& base, const std::u16s
     for (auto i = cache.begin(); i != cache.end(); ++i) {
         HttpRequest* request = *i;
         if (request->getRequestMessage().getURL() == url)
-            return request ;
+            return request;
     }
 
     HttpRequest* request = new(std::nothrow) HttpRequest(base);
