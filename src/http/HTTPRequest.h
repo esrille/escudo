@@ -19,6 +19,7 @@
 
 #include <fstream>
 #include <cstdio>
+#include <deque>
 #include <boost/function.hpp>
 
 #include "http/HTTPRequestMessage.h"
@@ -58,6 +59,8 @@ private:
     HttpCache* cache;
     boost::function<void (void)> handler;
 
+    std::deque<boost::function<void (void)>> callbackList;
+
     BoxImage* boxImage;
 
 public:
@@ -77,12 +80,10 @@ public:
     std::fstream& getContent();
     std::FILE* openFile();
 
-    void setHandler(boost::function<void (void)> f) {
-        handler = f;
-    }
-    void clearHandler() {
-        handler.clear();
-    }
+    void setHandler(boost::function<void (void)> f);
+    void clearHandler();
+    unsigned addCallback(boost::function<void (void)> f, unsigned id = static_cast<unsigned>(-1));
+    void clearCallback(unsigned id);
 
     bool complete(bool error);
     void notify();

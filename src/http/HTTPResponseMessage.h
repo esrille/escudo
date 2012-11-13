@@ -64,6 +64,9 @@ public:
         return contentType;
     }
 
+    unsigned setStatus(unsigned short code) {
+        status = code;
+    }
     unsigned short getStatus() const {
         return status;
     }

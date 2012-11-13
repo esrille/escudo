@@ -16,8 +16,9 @@
 
 #include "CSSPropertyValueImp.h"
 
-#include <org/w3c/dom/Element.h>
+#include <boost/bind.hpp>
 
+#include <org/w3c/dom/Element.h>
 #include <org/w3c/dom/html/HTMLImageElement.h>
 
 #include "CounterImp.h"
@@ -1105,6 +1106,7 @@ void CSSBorderShorthandImp::specify(CSSStyleDeclarationImp* self, const CSSStyle
 bool CSSContentValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser)
 {
     reset();
+    original = None;
     std::deque<CSSParserTerm*>& stack = parser->getStack();
     for (auto i = stack.begin(); i != stack.end(); ++i) {
         CSSParserTerm* term = *i;
@@ -1149,7 +1151,7 @@ bool CSSContentValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* 
             switch (index) {
             case Normal:
             case None:
-                value = index;
+                original = value = index;
                 return true;
             case OpenQuote:
             case CloseQuote:
@@ -1192,6 +1194,7 @@ std::u16string CSSContentValueImp::getCssText(CSSStyleDeclarationImp* decl)
 void CSSContentValueImp::specify(const CSSContentValueImp& specified)
 {
     reset();
+    original = specified.original;
     value = specified.value;
     for (auto i = specified.contents.begin(); i != specified.contents.end(); ++i) {
         if (Content* clone = (*i)->clone())
@@ -1204,16 +1207,17 @@ void CSSContentValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style
     switch (style->getPseudoElementSelectorType()) {
     case CSSPseudoElementSelector::Before:
     case CSSPseudoElementSelector::After:
-        if (isNormal()) {
+        if (wasNormal()) {
             value = None;
             clearContents();
         }
         break;
     case CSSPseudoElementSelector::Marker:
-        if (isNormal()) {
+        if (wasNormal()) {
             value = None;
             clearContents();
-            if (!style->listStyleImage.isNone()) {
+            // If the image is not valid, use the 'list-style-type' instead.
+            if (style->listStyleImage.hasImage()) {
                 if (URIContent* content = new(std::nothrow) URIContent(style->listStyleImage.getValue()))
                     contents.push_back(content);
             } else {
@@ -1318,7 +1322,6 @@ Element CSSContentValueImp::eval(ViewCSSImp* view, Element element, CounterConte
         return 0;
 
     if (URIContent* content = dynamic_cast<URIContent*>(contents.front())) {
-        // TODO: if the image is not valid, use the 'list-style-type' instead.
         html::HTMLImageElement img = interface_cast<html::HTMLImageElement>(view->getDocument().createElement(u"img"));
         if (img) {
             img.setSrc(content->value);
@@ -1695,6 +1698,27 @@ void CSSLineHeightValueImp::resolve(ViewCSSImp* view, CSSStyleDeclarationImp* st
         return;
     }
     value.setPx(w);
+}
+
+void CSSListStyleImageValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* self)
+{
+    if (isNone() || self->getPseudoElementSelectorType() != CSSPseudoElementSelector::Marker || !self->content.wasNormal())
+        return;
+    if (view->getDocument()) {
+        request = view->preload(view->getDocument().getDocumentURI(), getValue());
+        if (request)
+            requestID = request->addCallback(boost::bind(&CSSListStyleImageValueImp::notify, this, self), requestID);
+    }
+}
+
+void CSSListStyleImageValueImp::notify(CSSStyleDeclarationImp* self)
+{
+    assert(request);
+    if (status != request->getStatus()) {
+        status = request->getStatus();
+        self->requestReconstruct(Box::NEED_STYLE_RECALCULATION);
+        self->clearFlags(CSSStyleDeclarationImp::Computed);
+    }
 }
 
 void CSSListStylePositionValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* style)

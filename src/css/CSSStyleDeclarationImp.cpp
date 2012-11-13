@@ -1804,8 +1804,9 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
 
     borderSpacing.compute(view, this);
 
-    content.compute(view, this);
+    listStyleImage.compute(view, this);
     listStylePosition.compute(view, this);
+    content.compute(view, this);
 
     textIndent.compute(view, this);
     letterSpacing.compute(view, this);

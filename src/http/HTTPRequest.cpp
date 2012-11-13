@@ -74,6 +74,45 @@ std::fstream& HttpRequest::getContent()
     return content;
 }
 
+void HttpRequest::setHandler(boost::function<void (void)> f)
+{
+    handler = f;
+}
+
+void HttpRequest::clearHandler()
+{
+    handler.clear();
+    for (auto i = callbackList.begin(); i != callbackList.end(); ++i) {
+        if (*i) {
+            (*i)();
+            *i = 0;
+        }
+    }
+}
+
+unsigned HttpRequest::addCallback(boost::function<void (void)> f, unsigned id)
+{
+    if (f) {
+        if (readyState == DONE) {
+            f();
+            return static_cast<unsigned>(-1);
+        }
+        if (id < callbackList.size()) {
+            callbackList[id] = f;
+            return id;
+        }
+        callbackList.push_back(f);
+        return callbackList.size() - 1;
+    }
+    return static_cast<unsigned>(-1);
+}
+
+void HttpRequest::clearCallback(unsigned id)
+{
+    if (id < callbackList.size())
+        callbackList[id] = 0;
+}
+
 // Return true to put this request in the completed list.
 bool HttpRequest::complete(bool error)
 {
@@ -110,9 +149,10 @@ bool HttpRequest::complete(bool error)
                 break;
             }
         }
-    }
-    readyState = handler ? COMPLETE : DONE;
-    return handler;
+    } else
+        response.setStatus(404);
+    readyState = (handler || !callbackList.empty()) ? COMPLETE : DONE;
+    return readyState == COMPLETE;
 }
 
 void HttpRequest::notify()
@@ -121,6 +161,12 @@ void HttpRequest::notify()
     if (handler) {
         handler();
         handler.clear();
+    }
+    for (auto i = callbackList.begin(); i != callbackList.end(); ++i) {
+        if (*i) {
+            (*i)();
+            *i = 0;
+        }
     }
 }
 

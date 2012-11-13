@@ -31,6 +31,7 @@
 
 #include "CSSValueParser.h"
 #include "CSSSerialize.h"
+#include "http/HTTPRequest.h"
 
 class FontTexture;
 
@@ -1283,6 +1284,7 @@ public:
     }
 
 protected:
+    unsigned original;
     unsigned value;  // Normal or None; ignore this value if contents is not empty.
     std::list<Content*> contents;
 
@@ -1291,7 +1293,7 @@ public:
         clearContents();
     }
     void reset() {
-        value = Normal;
+        original = value = Normal;
         clearContents();
     }
     virtual bool setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
@@ -1302,6 +1304,9 @@ public:
     bool isNormal() const {
         return contents.empty() && value == Normal;
     }
+    bool wasNormal() const {
+        return original == Normal;
+    }
 
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl);
     void specify(const CSSContentValueImp& specified);
@@ -1310,6 +1315,7 @@ public:
     Element eval(ViewCSSImp* view, Element element, CounterContext* context);
 
     CSSContentValueImp(unsigned initial = Normal) :
+        original(initial),
         value(initial)
     {
     }
@@ -1983,6 +1989,12 @@ public:
 class CSSListStyleImageValueImp : public CSSPropertyValueImp
 {
     std::u16string uri;
+    HttpRequest* request;
+    unsigned requestID;
+    unsigned status;
+
+    void notify(CSSStyleDeclarationImp* self);
+
 public:
     enum {
         None
@@ -2017,7 +2029,18 @@ public:
     void specify(const CSSListStyleImageValueImp& specified) {
         uri = specified.uri;
     }
-    CSSListStyleImageValueImp() {
+    void compute(ViewCSSImp* view, CSSStyleDeclarationImp* self);
+    bool hasImage() const {
+        return status == 200;   // TODO: check content as well
+    }
+    CSSListStyleImageValueImp() :
+        request(0),
+        requestID(static_cast<unsigned>(-1)),
+        status(0)
+    {}
+     ~CSSListStyleImageValueImp() {
+        if (request)
+            request->clearCallback(requestID);
     }
 };
 
