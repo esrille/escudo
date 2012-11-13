@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Partial reflow test</title>
+<style type="text/css">
+q:before { content: open-quote }
+q:after  { content: close-quote }
+</style>
+<script type="text/javascript">
+var cnt = 0;
+function doTest() {
+  this.addEventListener('keydown', function(event) {
+    if (event.keyCode == 13) {
+      var t = document.getElementById('t');
+      var s = getComputedStyle(t);
+      if (cnt++ % 2)
+          t.style.quotes = "'\"' '\"' '\\'' '\\''";
+      else
+          t.style.quotes = "'«' '»' '\"' '\"'";
+    }
+  }, false);
+}
+</script>
+</head>
+<body onload="doTest()">
+<p>Press [Enter] to toggle the 'quotes' property of the box below:</p>
+<div id='t'>
+<div>
+<q>Filler Text <q>Filler Text</q> Filler Text.</q>
+</div>
+</div>
+</body>
+</html>

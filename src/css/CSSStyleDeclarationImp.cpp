@@ -294,7 +294,7 @@ unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
             flags |= Box::NEED_EXPANSION;
         if (flags & Box::NEED_EXPANSION) {
             style->marker = 0;
-            style->pseudoElements[CSSPseudoElementSelector::Marker] = 0;
+            style->pseudoElements[CSSPseudoElementSelector::Marker] = 0;    // TODO: this is not always right thing to do
         }
     }
 
@@ -395,6 +395,8 @@ unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
         flags |= Box::NEED_REFLOW;
     if (style->letterSpacing != letterSpacing)
         flags |= Box::NEED_REFLOW;
+    if (style->quotes != quotes)
+        flags |= Box::NEED_REFLOW;
     if (style->textAlign != textAlign)
         flags |= Box::NEED_REFLOW;
     if (style->textDecoration != textDecoration)
@@ -407,9 +409,6 @@ unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
         flags |= Box::NEED_REFLOW;
     if (style->wordSpacing != wordSpacing)
         flags |= Box::NEED_REFLOW;
-#if 0  // TODO: Check following properties
-    quotes;
-#endif
 
     // Table related properties
     if (style->display.getValue() == CSSDisplayValueImp::Table || style->display.getValue() == CSSDisplayValueImp::InlineTable) {

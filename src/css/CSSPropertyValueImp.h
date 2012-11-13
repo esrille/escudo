@@ -2308,6 +2308,19 @@ public:
     void reset();
     virtual bool setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) const;
+    bool operator==(const CSSQuotesValueImp& value) const {
+        if (quotes.size() != value.quotes.size())
+            return false;
+        auto j = value.quotes.begin();
+        for (auto i = quotes.begin(); i != quotes.end(); ++i) {
+            if (i->first != j->first || i->second != j->second)
+                return false;
+        }
+        return true;
+    }
+    bool operator!=(const CSSQuotesValueImp& value) const {
+        return !(*this == value);
+    }
     void specify(const CSSQuotesValueImp& specified);
     std::u16string getOpenQuote(int depth) const {
         if (depth < 0 || quotes.size() == 0)
