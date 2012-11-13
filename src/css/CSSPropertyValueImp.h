@@ -2008,6 +2008,12 @@ public:
             return u"none";
         return u"url(" + CSSSerializeString(uri) + u')';
     }
+    bool operator==(const CSSListStyleImageValueImp& image) const {
+        return uri == image.uri;
+    }
+    bool operator!=(const CSSListStyleImageValueImp& image) const {
+        return uri != image.uri;
+    }
     void specify(const CSSListStyleImageValueImp& specified) {
         uri = specified.uri;
     }

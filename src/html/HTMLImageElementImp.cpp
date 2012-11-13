@@ -77,6 +77,10 @@ void HTMLImageElementImp::notify()
     }
     if (Box* box = getBox())
         box->setFlags(Box::NEED_REFLOW);
+    else if (HTMLElementImp* parent = dynamic_cast<HTMLElementImp*>(getParentElement().self())) {
+        if (Box* box = parent->getBox())
+            box->setFlags(Box::NEED_REFLOW);
+    }
     DocumentImp* document = getOwnerDocumentImp();
     document->decrementLoadEventDelayCount();
 }

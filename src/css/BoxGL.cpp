@@ -645,6 +645,8 @@ void Block::renderInline(ViewCSSImp* view, StackingContext* stackingContext)
 
     if (HTMLReplacedElementImp* replaced = dynamic_cast<HTMLReplacedElementImp*>(getNode().self())) {
         if (BoxImage* image = replaced->getImage()) {
+            if (!intrinsic && image->getState() == BoxImage::CompletelyAvailable)
+                setFlags(NEED_REFLOW);
             if (isVisible()) {
                 glPushMatrix();
                 glTranslatef(x + getBlankLeft(), y + getBlankTop(), 0.0f);

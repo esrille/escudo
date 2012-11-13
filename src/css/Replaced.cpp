@@ -118,8 +118,10 @@ bool Block::layOutReplacedElement(ViewCSSImp* view, Box* replaced, Element eleme
         HTMLReplacedElementImp* replaced = dynamic_cast<HTMLReplacedElementImp*>(element.self());
         if (!replaced)
             return false;
-        if (!replaced->getIntrinsicSize(intrinsicWidth, intrinsicHeight))
+        if (!replaced->getIntrinsicSize(intrinsicWidth, intrinsicHeight)) {
+            width = height = 0.0f;
             return false;
+        }
     } else if (tag != u"iframe")
         return false;
 

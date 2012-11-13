@@ -69,14 +69,10 @@ public:
     }
 
     bool getIntrinsicSize(float& w, float& h) const {
-        if (!active)
+        if (!active || !image)
             return false;
-        if (!image)
-            w = h = 0.0f;
-        else {
-            w = image->getNaturalWidth();
-            h = image->getNaturalHeight();
-        }
+        w = image->getNaturalWidth();
+        h = image->getNaturalHeight();
         return true;
     }
     BoxImage* getImage() const {

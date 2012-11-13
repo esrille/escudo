@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Partial reflow test</title>
+<style type="text/css">
+ul {
+  list-style-image: url("blue15x15.png");
+  list-style-type: none;
+}
+</style>
+<script type="text/javascript">
+function doTest() {
+  this.addEventListener('keydown', function(event) {
+    if (event.keyCode == 13) {
+      var t = document.getElementById("t");
+      var s = getComputedStyle(t);
+      if (s.listStyleImage == 'url("red15x15.png")')
+          t.style.listStyleImage = 'url("blue15x15.png")';
+      else if (s.listStyleImage == 'url("blue15x15.png")')
+          t.style.listStyleImage = 'url("red15x15.png")';
+    }
+  }, false);
+}
+</script>
+</head>
+<body onload="doTest()">
+<p>Press [Enter] to toggle the 'list-style-image' property of the list below:</p>
+<ul id='t'>
+<li>1</li>
+<li>2</li>
+<li>3</li>
+</ul>
+</body>
+</html>
