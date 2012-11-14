@@ -388,7 +388,7 @@ public:
     void resolveReplacedWidth(float intrinsicWidth, float intrinsicHeight);
     void applyReplacedMinMax(float w, float h);
 
-    virtual void resolveOffset(float& x, float &y);
+    virtual void resolveRelativeOffset(float& x, float &y);
     virtual void resolveXY(ViewCSSImp* view, float left, float top, Block* clip) = 0;
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context) {
         return true;
@@ -667,7 +667,7 @@ public:
         return mcw;
     }
 
-    virtual void resolveOffset(float& x, float &y);
+    virtual void resolveRelativeOffset(float& x, float &y);
     virtual void resolveXY(ViewCSSImp* view, float left, float top, Block* clip);
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context);
     virtual void render(ViewCSSImp* view, StackingContext* stackingContext);
@@ -841,7 +841,7 @@ public:
     float getSuper() const;
 
     void resolveWidth();
-    virtual void resolveOffset(float& x, float &y);
+    virtual void resolveRelativeOffset(float& x, float &y);
     void setData(FontTexture* font, float point, const std::u16string& data, size_t wrap, float wrapWidth);
     const std::u16string& getData() const {
         return data;

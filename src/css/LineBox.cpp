@@ -647,7 +647,7 @@ void LineBox::dump(std::string indent)
 {
     float relativeX = 0.0f;
     float relativeY = 0.0f;
-    resolveOffset(relativeX, relativeY);
+    resolveRelativeOffset(relativeX, relativeY);
     std::cout << indent << "* line box";
     if (3 <= getLogLevel())
         std::cout << " [" << std::hex << flags << ']' << std::dec;
@@ -796,17 +796,17 @@ void InlineBox::resolveWidth()
     }
 }
 
-// To deal with nested inline elements in the document tree, resolveOffset
+// To deal with nested inline elements in the document tree, resolveRelativeOffset
 // is repeatedly applied to this inline level box up to a non-inline element.
-void InlineBox::resolveOffset(float& x, float &y)
+void InlineBox::resolveRelativeOffset(float& x, float &y)
 {
     CSSStyleDeclarationImp* s = getStyle();
     if (!font) {
-        Box::resolveOffset(x, y);
+        Box::resolveRelativeOffset(x, y);
         s = s->getParentStyle();
     }
     while (s && s->display.isInline()) {
-        s->resolveOffset(x, y);
+        s->resolveRelativeOffset(x, y);
         s = s->getParentStyle();
     }
 }

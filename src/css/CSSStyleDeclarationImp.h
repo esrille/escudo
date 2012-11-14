@@ -525,7 +525,7 @@ public:
         clearFlags(Resolved);
     }
 
-    bool resolveOffset(float& x, float &y);
+    bool resolveRelativeOffset(float& x, float &y);
     void setContainingBlockSize(float w, float h) {
         containingBlockWidth = w;
         containingBlockHeight = h;

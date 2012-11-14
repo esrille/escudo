@@ -366,11 +366,11 @@ bool Box::isFlowOf(const Box* flowRoot) const
     return false;
 }
 
-void Box::resolveOffset(float& x, float &y)
+void Box::resolveRelativeOffset(float& x, float &y)
 {
     if (isAnonymous() || !isRelative())
         return;
-    getStyle()->resolveOffset(x, y);
+    getStyle()->resolveRelativeOffset(x, y);
 }
 
 float Box::shrinkTo()
@@ -1742,13 +1742,13 @@ void Block::layOutAbsolute(ViewCSSImp* view)
     flags &= ~(NEED_REFLOW | NEED_CHILD_LAYOUT);
 }
 
-void Block::resolveOffset(float& x, float &y)
+void Block::resolveRelativeOffset(float& x, float &y)
 {
     if (dynamic_cast<InlineBox*>(getParentBox()))  // inline block?
         return;
 
     // cf. http://test.csswg.org/suites/css2.1/20110323/html4/inline-box-002.htm
-    Box::resolveOffset(x, y);
+    Box::resolveRelativeOffset(x, y);
     if (isAnonymous())
         return;
     CSSStyleDeclarationImp* s = getStyle();
@@ -1759,7 +1759,7 @@ void Block::resolveOffset(float& x, float &y)
         return;
     if (!s->display.isInline())
         return;
-    s->resolveOffset(x, y);
+    s->resolveRelativeOffset(x, y);
 }
 
 void Block::resolveXY(ViewCSSImp* view, float left, float top, Block* clip)
@@ -1805,7 +1805,7 @@ void Block::dump(std::string indent)
         std::cout << " [anonymous]";
     else {
         std::cout << " [" << node.getNodeName() << ']';
-        resolveOffset(relativeX, relativeY);
+        resolveRelativeOffset(relativeX, relativeY);
     }
     if (3 <= getLogLevel())
         std::cout << " [" << std::hex << flags << ']' << std::dec;

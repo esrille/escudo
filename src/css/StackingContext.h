@@ -143,7 +143,7 @@ public:
 
     void layOutAbsolute(ViewCSSImp* view);
 
-    bool resolveOffset(float& x, float &y);
+    bool resolveRelativeOffset(float& x, float &y);
 
     void render(ViewCSSImp* view);
 

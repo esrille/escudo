@@ -2008,7 +2008,7 @@ unsigned CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock
 
 // Calculate left, right, top, bottom for a 'relative' element.
 // TODO: rtl
-bool CSSStyleDeclarationImp::resolveOffset(float& x, float &y)
+bool CSSStyleDeclarationImp::resolveRelativeOffset(float& x, float &y)
 {
     if (position.getValue() != CSSPositionValueImp::Relative)
         return false;
