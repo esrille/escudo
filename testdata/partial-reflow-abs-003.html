@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Partial reflow test</title>
+<style type="text/css">
+.abs {
+  position: absolute;
+  left: 10%;
+  top: 10%;
+  width: 30%;
+  height: 30%;
+  border: solid purple 2px;
+  color: black;
+}
+</style>
+<script type="text/javascript">
+var cnt = 0;
+function doTest() {
+  this.addEventListener('keydown', function(event) {
+    if (event.keyCode == 13) {
+      var t = document.getElementById("t");
+      switch (cnt++ % 4) {
+      case 0:
+        t.style.left = '60%';
+        t.style.top = '10%';
+        break;
+      case 1:
+        t.style.left = '60%';
+        t.style.top = '60%';
+        break;
+      case 2:
+        t.style.left = '10%';
+        t.style.top = '60%';
+        break;
+      case 3:
+        t.style.left = '10%';
+        t.style.top = '10%';
+        break;
+      }
+    }
+  }, false);
+}
+</script>
+</head>
+<body onload="doTest()">
+<p>Press [Enter] to move the absolutely positioned box with a purple border line.</p>
+<div>
+<div id='t' class='abs'>
+Filler Text<br>
+Filler Text<br>
+Filler Text 
+</div>
+</div>
+</body>
+</html>
