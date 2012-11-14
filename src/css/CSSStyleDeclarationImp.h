@@ -526,9 +526,17 @@ public:
     }
 
     bool resolveRelativeOffset(float& x, float &y);
-    void setContainingBlockSize(float w, float h) {
-        containingBlockWidth = w;
-        containingBlockHeight = h;
+    bool setContainingBlockSize(float w, float h) {
+        bool result = true;
+        if (containingBlockWidth != w) {
+            containingBlockWidth = w;
+            result = false;
+        }
+        if (containingBlockHeight != h) {
+            containingBlockHeight = h;
+            result = false;
+        }
+        return result;
     }
 
     bool updateCounters(ViewCSSImp* view, CSSAutoNumberingValueImp::CounterContext* context);

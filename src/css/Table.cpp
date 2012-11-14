@@ -1584,7 +1584,7 @@ Reflow:
         h += child->getTotalHeight() + child->getClearance();
     height = std::max(height, h);
 
-    tableBox->flags &= ~(NEED_EXPANSION | NEED_REFLOW | NEED_CHILD_LAYOUT);
+    tableBox->flags &= ~(NEED_EXPANSION | NEED_REFLOW | NEED_CHILD_REFLOW);
 }
 
 void TableWrapperBox::layOutTableParts()
@@ -1617,7 +1617,7 @@ void TableWrapperBox::layOutTableParts()
                 flags |= NEED_REFLOW;
         }
     }
-    tableBox->flags &= ~NEED_CHILD_LAYOUT;
+    tableBox->flags &= ~NEED_CHILD_REFLOW;
 }
 
 void TableWrapperBox::resetCellBoxWidths()
@@ -1640,32 +1640,44 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
     style = view->getStyle(table);
     if (!style)
         return false;  // TODO error
-    if (style->resolve(view, containingBlock))
-        flags |= NEED_REFLOW;
+
+    float savedWidth = width;
+    float savedHeight = height;
+    // TODO: Check anonymous table
+    flags |= style->resolve(view, containingBlock);
+
+    // The computed values of properties 'position', 'float', 'margin-*', 'top', 'right', 'bottom',
+    // and 'left' on the table element are used on the table wrapper box and not the table box;
+    backgroundColor = getParentBox() ? 0x00000000 : style->backgroundColor.getARGB();
+    paddingTop = paddingRight = paddingBottom = paddingLeft = 0.0f;
+    borderTop = borderRight = borderBottom = borderLeft = 0.0f;
+    resolveMargin(view, containingBlock);
+    stackingContext = style->getStackingContext();
+
+    visibility = style->visibility.getValue();
+    textAlign = style->textAlign.getValue();
+
+    if (context)
+        collapseMarginTop(context);
+    context = updateFormattingContext(context);
+    if (isCollapsableOutside()) {
+        context->inheritMarginContext(parentContext);
+        // The top margin of the table caption is not collapsed with top margin of the table.
+        // cf. html4/table-anonymous-block-011.htm
+        context->fixMargin();
+    }
 
     if (!(getFlags() & NEED_REFLOW)) {
-        layOutTableParts();
+        if (flags & NEED_CHILD_REFLOW)
+            layOutTableParts();
         if (!(flags & NEED_REFLOW)) {
             // Only inline blocks have been marked NEED_REFLOW and no more reflow is necessary
             // with this block.
 #ifndef NDEBUG
             if (3 <= getLogLevel())
-                std::cout << "Block::" << __func__ << ": skip full reflow for table\n";
+                std::cout << "Block::" << __func__ << ": skip table reflow\n";
 #endif
-            flags &= ~NEED_CHILD_LAYOUT;
-
-            float savedWidth = width;
-            float savedHeight = height;
-            resolveMargin(view, containingBlock);
-            if (context)
-                collapseMarginTop(context);
-            context = updateFormattingContext(context);
-            if (isCollapsableOutside()) {
-                context->inheritMarginContext(parentContext);
-                // The top margin of the table caption is not collapsed with top margin of the table.
-                // cf. html4/table-anonymous-block-011.htm
-                context->fixMargin();
-            }
+            flags &= ~(NEED_CHILD_REFLOW | NEED_REPOSITION);
             width = savedWidth;
             height = savedHeight;
             context = restoreFormattingContext(context);
@@ -1678,25 +1690,6 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
 
     bool collapsingModel = resolveBorderConflict();
     bool fixedLayout = (style->tableLayout.getValue() == CSSTableLayoutValueImp::Fixed) && !style->width.isAuto();
-
-    // The computed values of properties 'position', 'float', 'margin-*', 'top', 'right', 'bottom',
-    // and 'left' on the table element are used on the table wrapper box and not the table box;
-    backgroundColor = getParentBox() ? 0x00000000 : style->backgroundColor.getARGB();
-    paddingTop = paddingRight = paddingBottom = paddingLeft = 0.0f;
-    borderTop = borderRight = borderBottom = borderLeft = 0.0f;
-    resolveMargin(view, containingBlock);
-    stackingContext = style->getStackingContext();
-
-    if (context)
-        collapseMarginTop(context);
-    context = updateFormattingContext(context);
-    if (isCollapsableOutside()) {
-        assert(context != parentContext);
-        context->inheritMarginContext(parentContext);
-        // The top margin of the table caption is not collapsed with top margin of the table.
-        // cf. html4/table-anonymous-block-011.htm
-        context->fixMargin();
-    }
 
     resetCellBoxWidths();
     layOutTableBox(view, context, containingBlock, collapsingModel, fixedLayout);
@@ -1716,7 +1709,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
         if (nextSibling)
             nextSibling->setFlags(NEED_REFLOW);
     }
-    flags &= ~(NEED_REFLOW | NEED_CHILD_LAYOUT);
+    flags &= ~(NEED_REFLOW | NEED_CHILD_REFLOW | NEED_REPOSITION);
 
     return true;
 }
@@ -1724,38 +1717,23 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
 void TableWrapperBox::layOutAbsolute(ViewCSSImp* view)
 {
     assert(isAbsolutelyPositioned());
-
-    if (!(getFlags() & NEED_REFLOW)) {
-        layOutTableParts();
-        if (!(flags & NEED_REFLOW)) {
-            // Only inline blocks have been marked NEED_REFLOW and no more reflow is necessary
-            // with this block.
-#ifndef NDEBUG
-            if (3 <= getLogLevel())
-                std::cout << "Block::" << __func__ << ": skip full reflow for table\n";
-#endif
-            flags &= ~NEED_CHILD_LAYOUT;
-            return;
-        }
-    }
-
     style = view->getStyle(table);
     if (!style)
         return;
 
+    float savedWidth = width;
+    float savedHeight = height;
+
     setContainingBlock(view);
     const ContainingBlock* containingBlock = getContainingBlock(view);
-
-    bool collapsingModel = resolveBorderConflict();
-    bool fixedLayout = (style->tableLayout.getValue() == CSSTableLayoutValueImp::Fixed) && !style->width.isAuto();
-    style->resolve(view, containingBlock);
+    flags |= style->resolve(view, containingBlock);
+    visibility = style->visibility.getValue();
 
     // The computed values of properties 'position', 'float', 'margin-*', 'top', 'right', 'bottom',
     // and 'left' on the table element are used on the table wrapper box and not the table box;
     backgroundColor = getParentBox() ? 0x00000000 : style->backgroundColor.getARGB();
     paddingTop = paddingRight = paddingBottom = paddingLeft = 0.0f;
     borderTop = borderRight = borderBottom = borderLeft = 0.0f;
-    resolveMargin(view, containingBlock);
     stackingContext = style->getStackingContext();
 
     float left;
@@ -1782,10 +1760,40 @@ void TableWrapperBox::layOutAbsolute(ViewCSSImp* view)
         }
     }
 
+    if (!(flags & NEED_REFLOW)) {
+        if (flags & NEED_CHILD_REFLOW)
+            layOutTableParts();
+        if (!(flags & NEED_REFLOW)) {
+            // Only inline blocks have been marked NEED_REFLOW and no more reflow is necessary
+            // with this block.
+            width = savedWidth;
+            if (maskH & Left)
+                left = containingBlock->width - getTotalWidth() - right;
+            maskH = applyAbsoluteMinMaxWidth(containingBlock, left, right, maskH);
+
+            float before = height;
+            height = savedHeight;
+            if (maskV == (Top | Height))
+                top += before - height;
+            maskV = applyAbsoluteMinMaxHeight(containingBlock, top, bottom, maskV);
+
+    #ifndef NDEBUG
+            if (3 <= getLogLevel())
+                std::cout << "Block::" << __func__ << ": skip table reflow\n";
+    #endif
+            layOutAbsoluteEnd(left, top);
+            return;
+        }
+    }
+
+    bool collapsingModel = resolveBorderConflict();
+    bool fixedLayout = (style->tableLayout.getValue() == CSSTableLayoutValueImp::Fixed) && !style->width.isAuto();
+
     FormattingContext* context = updateFormattingContext(context);
     assert(context);
 
     float before = height;
+    resetCellBoxWidths();
     layOutTableBox(view, context, containingBlock, collapsingModel, fixedLayout);
 
     if (maskH == (Left | Width))
@@ -1795,11 +1803,7 @@ void TableWrapperBox::layOutAbsolute(ViewCSSImp* view)
 
     restoreFormattingContext(context);
     adjustCollapsedThroughMargins(context);
-
-    offsetH += left;
-    offsetV += top;
-
-    flags &= ~(NEED_REFLOW | NEED_CHILD_LAYOUT);
+    layOutAbsoluteEnd(left, top);
 }
 
 float TableWrapperBox::shrinkTo()

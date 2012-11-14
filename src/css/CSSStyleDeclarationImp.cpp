@@ -321,14 +321,16 @@ unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
     if (style->borderLeftWidth != borderLeftWidth)
         flags |= Box::NEED_REFLOW;
 
-    if (style->top != top)
-        flags |= Box::NEED_REFLOW;
-    if (style->right != right)
-        flags |= Box::NEED_REFLOW;
-    if (style->bottom != bottom)
-        flags |= Box::NEED_REFLOW;
-    if (style->left != left)
-        flags |= Box::NEED_REFLOW;
+    if (style->position.isPositioned()) {
+        if (style->top != top)
+            flags |= Box::NEED_REPOSITION;
+        if (style->right != right)
+            flags |= Box::NEED_REPOSITION;
+        if (style->bottom != bottom)
+            flags |= Box::NEED_REPOSITION;
+        if (style->left != left)
+            flags |= Box::NEED_REPOSITION;
+    }
 
     if (style->width != width)
         flags |= Box::NEED_REFLOW;
@@ -373,7 +375,7 @@ unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
         flags |= Box::NEED_REFLOW;
 
     // Check if style needs to be resolved later.
-    if (flags & Box::NEED_REFLOW)
+    if (flags & (Box::NEED_REFLOW | Box::NEED_REPOSITION))
         style->unresolve();  // This style needs to be resolved later.
 
     // Secondly, check properties that do not require style resolutions.
@@ -1894,9 +1896,12 @@ bool CSSStyleDeclarationImp::updateCounters(ViewCSSImp* view, CSSAutoNumberingVa
 // cf. CSSOM 7. Resolved Values
 unsigned CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* containingBlock)
 {
-    if (isResolved() && containingBlock->width == containingBlockWidth && containingBlock->height == containingBlockHeight)
-        return 0;
-    setContainingBlockSize(containingBlock->width, containingBlock->height);
+    unsigned result = 0;
+
+    if (!setContainingBlockSize(containingBlock->width, containingBlock->height))
+        result = Box::NEED_REFLOW;
+    else if (isResolved())
+        return result;
 
     if (parentStyle) {
         // TODO: Refine
@@ -2003,7 +2008,7 @@ unsigned CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock
     textIndent.resolve(view, this, containingBlock->width);
 
     setFlags(Resolved);
-    return Box::NEED_REFLOW;
+    return result;
 }
 
 // Calculate left, right, top, bottom for a 'relative' element.

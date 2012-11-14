@@ -90,9 +90,10 @@ public:
     static const unsigned short NEED_EXPANSION = 0x04;
     static const unsigned short NEED_CHILD_EXPANSION = 0x08;
     static const unsigned short NEED_REFLOW = 0x10;
-    static const unsigned short NEED_CHILD_LAYOUT = 0x20;
-    static const unsigned short NEED_REPAINT = 0x40;
-    static const unsigned short NEED_SELECTOR_REMATCHING = 0x80;
+    static const unsigned short NEED_CHILD_REFLOW = 0x20;
+    static const unsigned short NEED_REPOSITION = 0x40;
+    static const unsigned short NEED_REPAINT = 0x80;
+    static const unsigned short NEED_SELECTOR_REMATCHING = 0x100;
 
     static const unsigned short NEED_TABLE_REFLOW = 0x8000;
 
@@ -414,7 +415,7 @@ public:
     virtual void dump(std::string indent = "") = 0;
 
     bool needLayout() const {
-        return flags & (NEED_REFLOW | NEED_CHILD_LAYOUT);
+        return flags & (NEED_REFLOW | NEED_CHILD_REFLOW);
     }
 
     unsigned short getFlags() const {
@@ -674,6 +675,7 @@ public:
     virtual void dump(std::string indent = "");
 
     virtual void layOutAbsolute(ViewCSSImp* view);  // 2nd pass
+    void layOutAbsoluteEnd(float left, float top);
 
     unsigned renderBegin(ViewCSSImp* view, bool noBorder = false);
     void renderEnd(ViewCSSImp* view, unsigned overflow, bool scrollBar = true);

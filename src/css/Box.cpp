@@ -384,8 +384,8 @@ void Box::setFlags(unsigned short f)
     f = 0;
     if (flags & NEED_EXPANSION)
         f |= NEED_CHILD_EXPANSION;
-    if (flags & (NEED_REFLOW | NEED_CHILD_LAYOUT))
-        f |= NEED_CHILD_LAYOUT;
+    if (flags & (NEED_REFLOW | NEED_CHILD_REFLOW))
+        f |= NEED_CHILD_REFLOW;
     if (!f)
         return;
     for (Box* box = parentBox; box; box = box->parentBox) {
@@ -427,7 +427,7 @@ Block::Block(Node node, CSSStyleDeclarationImp* style) :
 {
     if (style)
         setStyle(style);
-    flags |= NEED_EXPANSION | NEED_REFLOW | NEED_CHILD_LAYOUT;
+    flags |= NEED_EXPANSION | NEED_REFLOW | NEED_CHILD_REFLOW;
 }
 
 void Block::clearInlines()
@@ -1275,8 +1275,7 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
     mcw = 0.0f;
     if (!isAnonymous()) {
         style->addBox(this);
-        if (style->resolve(view, containingBlock))
-            flags |= NEED_REFLOW;
+        flags |= style->resolve(view, containingBlock);
         resolveBackground(view);
         updatePadding();
         updateBorderWidth();
@@ -1330,9 +1329,9 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
         // with this block.
 #ifndef NDEBUG
             if (3 <= getLogLevel())
-                std::cout << "### Block::" << __func__ << ": skip reflow for '" << tag << "'\n";
+                std::cout << "Block::" << __func__ << ": skip reflow for '" << tag << "'\n";
 #endif
-        flags &= ~NEED_CHILD_LAYOUT;
+        flags &= ~(NEED_CHILD_REFLOW | NEED_REPOSITION);
         context = restoreFormattingContext(context);
         height = savedHeight;
         mcw = savedMcw;
@@ -1430,7 +1429,7 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
         if (nextSibling)
             nextSibling->flags |= NEED_REFLOW;
     }
-    flags &= ~(NEED_REFLOW | NEED_CHILD_LAYOUT);
+    flags &= ~(NEED_REFLOW | NEED_CHILD_REFLOW | NEED_REPOSITION);
 
     adjustCollapsedThroughMargins(context);
     if (isInFlow() && 0.0f < paddingBottom + borderBottom)
@@ -1624,14 +1623,17 @@ void Block::layOutAbsolute(ViewCSSImp* view)
         return;  // TODO error
     style->addBox(this);
 
+#ifndef NDEBUG
+    std::u16string tag = interface_cast<html::HTMLElement>(element).getTagName();
+#endif
+
     float savedWidth = width;
     float savedHeight = height;
+    FormattingContext* context;
 
     setContainingBlock(view);
     const ContainingBlock* containingBlock = &absoluteBlock;
-
-    style->resolve(view, containingBlock);
-
+    flags |= style->resolve(view, containingBlock);
     visibility = style->visibility.getValue();
 
     resolveBackground(view);
@@ -1662,7 +1664,34 @@ void Block::layOutAbsolute(ViewCSSImp* view)
         }
     }
 
-    FormattingContext* context = updateFormattingContext(context);
+    if ((flags & (NEED_REFLOW | NEED_CHILD_REFLOW | NEED_REPOSITION)) == NEED_REPOSITION) {
+        if (maskH & Width) {
+            width = savedWidth;
+            if (maskH & Left)
+                left = containingBlock->width - getTotalWidth() - right;
+            maskH = applyAbsoluteMinMaxWidth(containingBlock, left, right, maskH);
+        }
+        if (savedWidth == width) {
+            if (maskV & Height) {
+                float before = height;
+                height = savedHeight;
+                if (maskV == (Top | Height))
+                    top += before - height;
+                maskV = applyAbsoluteMinMaxHeight(containingBlock, top, bottom, maskV);
+            }
+            if (savedHeight == height) {
+#ifndef NDEBUG
+                if (3 <= getLogLevel())
+                    std::cout << "Block::" << __func__ << ": skip reflow for '" << tag << "'\n";
+#endif
+                layOutAbsoluteEnd(left, top);
+                return;
+            }
+        }
+        flags |= NEED_REFLOW;
+    }
+
+    context = updateFormattingContext(context);
     assert(context);
 
     if (width != savedWidth)
@@ -1716,7 +1745,11 @@ void Block::layOutAbsolute(ViewCSSImp* view)
 
     restoreFormattingContext(context);
     adjustCollapsedThroughMargins(context);
+    layOutAbsoluteEnd(left, top);
+}
 
+void Block::layOutAbsoluteEnd(float left, float top)
+{
     offsetH += left;
     offsetV += top;
 
@@ -1739,7 +1772,7 @@ void Block::layOutAbsolute(ViewCSSImp* view)
         }
     }
 
-    flags &= ~(NEED_REFLOW | NEED_CHILD_LAYOUT);
+    flags &= ~(NEED_REFLOW | NEED_CHILD_REFLOW | NEED_REPOSITION);
 }
 
 void Block::resolveRelativeOffset(float& x, float &y)

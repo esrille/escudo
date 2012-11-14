@@ -2280,6 +2280,11 @@ public:
     unsigned getValue() const {
         return value;
     }
+
+    bool isPositioned() const {
+        return value != Static;
+    }
+
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) const {
         return Options[value];
     }
