@@ -1742,9 +1742,17 @@ void CSSListStylePositionValueImp::compute(ViewCSSImp* view, CSSStyleDeclaration
     if (style->getPseudoElementSelectorType() != CSSPseudoElementSelector::Marker)
         return;
 
-    if (value == Outside) {
+    switch (value) {
+    case Inside:
+        style->display.setValue(CSSDisplayValueImp::InlineBlock);
+        style->position.setValue(CSSPositionValueImp::Static);
+        break;
+    case Outside:
         style->display.setValue(CSSDisplayValueImp::Block);
         style->position.setValue(CSSPositionValueImp::Absolute);
+        break;
+    default:
+        break;
     }
 }
 

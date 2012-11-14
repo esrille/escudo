@@ -292,10 +292,8 @@ unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
             flags |= Box::NEED_EXPANSION;
         if (style->listStylePosition != listStylePosition)
             flags |= Box::NEED_EXPANSION;
-        if (flags & Box::NEED_EXPANSION) {
+        if (flags & Box::NEED_EXPANSION)
             style->marker = 0;
-            style->pseudoElements[CSSPseudoElementSelector::Marker] = 0;    // TODO: this is not always right thing to do
-        }
     }
 
     if (style->display != display)
