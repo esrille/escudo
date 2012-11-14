@@ -238,8 +238,7 @@ void TableWrapperBox::constructBlocks()
                 CellBox* cellBox = grid[y][x].get();
                 if (!cellBox || cellBox->isSpanned(x, y))
                     continue;
-                cellBox->columnWidth = NAN;
-                cellBox->fixedLayout = false;
+                cellBox->resetWidth();
                 lineBox->appendChild(cellBox);
             }
         }
@@ -364,7 +363,7 @@ void TableWrapperBox::reconstructBlocks()
                             // TODO: deal with an anonymous cell
                             assert(cellBox->getNode());
                             if (cellBox->flags & Box::NEED_EXPANSION)
-                                cellBox->columnWidth = NAN;
+                                cellBox->resetWidth();
                             constructTablePart(cellBox->getNode());
                         }
                     }
@@ -1621,6 +1620,18 @@ void TableWrapperBox::layOutTableParts()
     tableBox->flags &= ~NEED_CHILD_LAYOUT;
 }
 
+void TableWrapperBox::resetCellBoxWidths()
+{
+    for (unsigned y = 0; y < yHeight; ++y) {
+        for (unsigned x = 0; x < xWidth; ++x) {
+            CellBox* cellBox = grid[y][x].get();
+            if (!cellBox || cellBox->isSpanned(x, y))
+                continue;
+            cellBox->resetWidth();
+        }
+    }
+}
+
 bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
 {
     FormattingContext* parentContext = context;
@@ -1687,6 +1698,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
         context->fixMargin();
     }
 
+    resetCellBoxWidths();
     layOutTableBox(view, context, containingBlock, collapsingModel, fixedLayout);
 
     restoreFormattingContext(context);

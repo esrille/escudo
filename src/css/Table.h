@@ -93,6 +93,10 @@ public:
         return columnWidth;
     }
     float adjustWidth();
+    void resetWidth() {
+        columnWidth = NAN;
+        fixedLayout = false;
+    }
 
     virtual float shrinkTo();
     virtual void resolveWidth(float w);
@@ -215,6 +219,7 @@ class TableWrapperBox : public Block
     void layOutAutoColgroup(ViewCSSImp* view, const ContainingBlock* containingBlock);
     void layOutTableBox(ViewCSSImp* view, FormattingContext* context, const ContainingBlock* containingBlock, bool collapsingModel, bool fixedLayout);
     void layOutTableParts();
+    void resetCellBoxWidths();
 
     void renderBackground(ViewCSSImp* view, CSSStyleDeclarationImp* style, float x, float y, float left, float top, float right, float bottom, float width, float height, unsigned backgroundColor, BoxImage* backgroundImage);
     void renderLayers(ViewCSSImp* view);
