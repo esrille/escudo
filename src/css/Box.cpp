@@ -1624,7 +1624,8 @@ void Block::layOutAbsolute(ViewCSSImp* view)
     style->addBox(this);
 
 #ifndef NDEBUG
-    std::u16string tag = interface_cast<html::HTMLElement>(element).getTagName();
+    std::u16string tag(interface_cast<html::HTMLElement>(element).getTagName());
+    std::u16string id(interface_cast<html::HTMLElement>(element).getId());
 #endif
 
     float savedWidth = width;
