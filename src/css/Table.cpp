@@ -188,6 +188,8 @@ TableWrapperBox::TableWrapperBox(ViewCSSImp* view, Element element, CSSStyleDecl
     yTfootBegin(0),
     yTfootEnd(0)
 {
+    if (!stackingContext)
+        stackingContext = style->getStackingContext();
     isHtmlTable = html::HTMLTableElement::hasInstance(element);
     if (isAnonymousTable)
         processTableChild(element, style);
