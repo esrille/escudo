@@ -34,6 +34,7 @@ class StackingContext
     std::atomic_uint count;
 
     CSSStyleDeclarationImp* style;
+    bool needStaticPosition;
     bool auto_;
     int zIndex;
     StackingContext* parent;

@@ -79,6 +79,7 @@ StackingContext* StackingContext::appendChild(StackingContext* item)
 StackingContext::StackingContext(bool auto_, int zIndex, CSSStyleDeclarationImp* style) :
     count(0),
     style(style),
+    needStaticPosition(false),
     auto_(auto_),
     zIndex(zIndex),
     parent(0),
@@ -312,9 +313,22 @@ void StackingContext::layOutAbsolute(ViewCSSImp* view)
         block->layOutAbsolute(view);
         block->resolveXY(view, block->x, block->y, block->clipBox);
     }
+    needStaticPosition = false;
 
     for (StackingContext* childContext = getFirstChild(); childContext; childContext = childContext->getNextSibling())
-        childContext->layOutAbsolute(view);
+        childContext->needStaticPosition = true;
+    bool repeat;
+    do {
+        repeat = false;
+        for (StackingContext* childContext = getFirstChild(); childContext; childContext = childContext->getNextSibling()) {
+            if (childContext->needStaticPosition) {
+                if (!childContext->positioned->needStaticPosition)
+                    childContext->layOutAbsolute(view);
+                else
+                    repeat = true;
+            }
+        }
+    } while (repeat);
 }
 
 void StackingContext::dump(std::string indent)
