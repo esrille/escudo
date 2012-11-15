@@ -1,0 +1,85 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Partial reflow test</title>
+<style type="text/css">
+.abs {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+}
+#purple {
+  background-color: purple;
+  left: 250px;
+  top: 50px;
+  z-index: auto;
+}
+#blue {
+  background-color: blue;
+  left: -50px;
+  top: 75px;
+  z-index: -2;
+}
+#green {
+  background-color: green;
+  left: 400px;
+  top: 100px;
+  z-index: 1;
+}
+#orange {
+  background-color: orange;
+  left: 250px;
+  top: 200px;
+  z-index: -1;
+}
+#yellow {
+  background-color: yellow;
+  left: 100px;
+  top: -20px;
+  z-index: auto;
+}
+#red {
+  background-color: red;
+  left: -120px;
+  top: -20px;
+  z-index: -3;
+}
+</style>
+<script type="text/javascript">
+function doTest() {
+  this.addEventListener('keydown', function(event) {
+    if (event.keyCode == 13) {
+      var t = document.getElementById("purple");
+      var s = getComputedStyle(t);
+      if (s.zIndex == '2')
+          t.style.zIndex = 'auto';
+      else
+          t.style.zIndex = '2';
+    }
+  }, false);
+}
+</script>
+</head>
+<body onload="doTest()">
+<p>Press [Enter] to switch back and forth between '2' and 'auto' with the 'z-index' property of the purple block.<br>
+The colors should be in the following two orders from top to bottom:<br>
+<ul>
+<li>green - yellow - purple - orange - blue - red
+<li>yellow - blue - red - purple - green - orange
+<ul>
+</p>
+<div style='position: relative'>
+<div class='abs' id='purple'>
+  <div class='abs' id='blue'></div>
+  <div class='abs' id='yellow'>
+    <div class='abs' id='red'></div>
+  </div>
+</div>
+<div class='abs' id='green'>
+</div>
+<div class='abs' id='orange'>
+</div>
+</div>
+</body>
+</html>

@@ -136,16 +136,40 @@ void StackingContext::insertContext(StackingContext* item)
     item->positioned = this;
 }
 
+void StackingContext::reparent(StackingContext* target)
+{
+    auto child = parent->getFirstChild();
+    while (child) {
+        auto next = child->getNextSibling();
+        if (child->positioned == target) {
+            parent->removeChild(child);
+            target->insertContext(child);
+            if (child->isAuto())
+                reparent(child);
+        }
+        child = next;
+    }
+}
+
 void StackingContext::setZIndex(bool auto_, int index)
 {
     if (isAuto() == auto_ && zIndex == index)
         return;
+    bool updateChildren = (this->auto_ != auto_);
     this->auto_ = auto_;
     zIndex = index;
     if (parent) {
         parent->removeChild(this);
         positioned->insertContext(this);
-        // TODO: Reorganize child contexts, too!
+        if (updateChildren) {
+            if (isAuto()) {
+                while (StackingContext* child = getFirstChild()) {
+                    removeChild(child);
+                    child->positioned->insertContext(child);
+                }
+            } else
+                reparent(this);
+        }
     }
 }
 

@@ -90,6 +90,7 @@ class StackingContext
     }
 
     void insertContext(StackingContext* item);
+    void reparent(StackingContext* target);
 
     void clip(StackingContext* s, float relativeX, float relativeY);
 
