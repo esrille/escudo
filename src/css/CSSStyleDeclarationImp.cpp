@@ -321,7 +321,7 @@ unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
     if (style->borderLeftWidth != borderLeftWidth)
         flags |= Box::NEED_REFLOW;
 
-    if (style->position.isPositioned()) {
+    if (style->position.isPositioned() && !style->position.isRelative()) {
         if (style->top != top)
             flags |= Box::NEED_REPOSITION;
         if (style->right != right)

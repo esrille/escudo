@@ -175,12 +175,23 @@ void StackingContext::clip(StackingContext* s, float relativeX, float relativeY)
     }
 }
 
-bool StackingContext::resolveRelativeOffset(float& x, float &y)
+bool StackingContext::resolveRelativeOffset(ViewCSSImp* view, float& x, float &y)
 {
     bool result = false;
     for (StackingContext* s = this; s != parent; s = s->positioned) {
         assert(s->style);
-        result |= s->style->resolveRelativeOffset(x, y);
+        CSSStyleDeclarationImp* style = s->style;
+        if (!style->isResolved()) {
+            if (Box* b = style->getBox()) {
+                if (auto c = b->getContainingBlock(view)) {
+                    style->left.resolve(view, style, c->width);
+                    style->right.resolve(view, style, c->width);
+                    style->top.resolve(view, style, c->height);
+                    style->bottom.resolve(view, style, c->height);
+                }
+            }
+        }
+        result |= style->resolveRelativeOffset(x, y);
         clip(s, x, y);
     }
     return result;
@@ -193,7 +204,7 @@ void StackingContext::render(ViewCSSImp* view)
     glPushMatrix();
     float relativeX = 0.0f;
     float relativeY = 0.0f;
-    if (resolveRelativeOffset(relativeX, relativeY))
+    if (resolveRelativeOffset(view, relativeX, relativeY))
         glTranslatef(relativeX, relativeY, 0.0f);
     if (clipWidth != HUGE_VALF && clipHeight != HUGE_VALF)
         view->clip(clipLeft, clipTop, clipWidth, clipHeight);
