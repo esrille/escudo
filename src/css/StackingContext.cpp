@@ -319,7 +319,12 @@ void StackingContext::layOutAbsolute(ViewCSSImp* view)
 
 void StackingContext::dump(std::string indent)
 {
-    std::cout << indent << "z-index: " << zIndex << '\n';
+    std::cout << indent << "z-index: ";
+    if (isAuto())
+        std::cout << "auto";
+    else
+        std::cout << zIndex;
+    std::cout << '\n';
     indent += "  ";
     for (auto child = getFirstChild(); child; child = child->getNextSibling())
         child->dump(indent);
