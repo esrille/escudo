@@ -236,6 +236,8 @@ void StackingContext::addBase(Box* box)
 #ifndef NDEBUG
     for (Box* i = firstBase; i; i = i->nextBase)
         assert(box != i);
+    if (dynamic_cast<Block*>(box))
+        assert(!firstBase);
 #endif
     if (!firstBase)
         firstBase = lastBase = box;
