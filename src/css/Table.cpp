@@ -251,7 +251,7 @@ void TableWrapperBox::constructBlocks()
 
     isAnonymousTable = false;
 
-    clearFlags(NEED_EXPANSION);
+    clearFlags(NEED_EXPANSION | Box::NEED_CHILD_EXPANSION);
     setFlags(NEED_REFLOW);
 }
 
