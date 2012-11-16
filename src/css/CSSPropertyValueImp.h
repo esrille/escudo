@@ -129,6 +129,21 @@ public:
             return index;
         return -1;
     }
+    bool isLength() const {
+        switch (unit) {
+        case css::CSSPrimitiveValue::CSS_EMS:
+        case css::CSSPrimitiveValue::CSS_EXS:
+        case css::CSSPrimitiveValue::CSS_PX:
+        case css::CSSPrimitiveValue::CSS_CM:
+        case css::CSSPrimitiveValue::CSS_MM:
+        case css::CSSPrimitiveValue::CSS_IN:
+        case css::CSSPrimitiveValue::CSS_PT:
+        case css::CSSPrimitiveValue::CSS_PC:
+            return true;
+        default:
+            return false;
+        }
+    }
     CSSNumericValue& setIndex(short value) {
         unit = CSSParserTerm::CSS_TERM_INDEX;
         index = value;
@@ -166,16 +181,20 @@ public:
         // otherwise, keep the current resolved value.
     }
     void inherit(const CSSNumericValue& value) {
-        if (isnan(value.resolved)) {
-            unit = value.unit;
-            index = value.index;
-            number = value.number;
-            // Keep the current resolved value.
-        } else {
+        if (isnan(value.resolved))
+            specify(value);
+        else {
             unit = css::CSSPrimitiveValue::CSS_PX;
             index = -1;
             resolved = number = value.resolved;
         }
+    }
+    void inheritLength(const CSSNumericValue& value) {
+        if (value.isLength())
+            inherit(value);
+        else
+            specify(value);
+
     }
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize);
@@ -274,7 +293,7 @@ public:
         value.specify(specified.value);
     }
     void inherit(const CSSNumericValueImp& parent) {
-        value.inherit(parent.value);
+        value.inheritLength(parent.value);
     }
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize);
@@ -310,7 +329,7 @@ public:
         value.specify(specified.value);
     }
     void inherit(const CSSNonNegativeValueImp& parent) {
-        value.inherit(parent.value);
+        value.inheritLength(parent.value);
     }
     CSSNonNegativeValueImp(float number = 0.0f, unsigned short unit = css::CSSPrimitiveValue::CSS_NUMBER) :
         CSSNumericValueImp(number, unit) {
@@ -341,7 +360,7 @@ public:
         value.specify(specified.value);
     }
     void inherit(const CSSPaddingWidthValueImp& parent) {
-        value.inherit(parent.value);
+        value.inheritLength(parent.value);
     }
     CSSPaddingWidthValueImp(float number = 0.0f, unsigned short unit = css::CSSPrimitiveValue::CSS_NUMBER) :
         CSSNonNegativeValueImp(number, unit) {
@@ -391,7 +410,7 @@ public:
         length.specify(specified.length);
     }
     void inherit(const CSSAutoLengthValueImp& parent) {
-        length.inherit(parent.length);
+        length.inheritLength(parent.length);
     }
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize);
@@ -451,7 +470,7 @@ public:
         length.specify(specified.length);
     }
     void inherit(const CSSNoneLengthValueImp& parent) {
-        length.inherit(parent.length);
+        length.inheritLength(parent.length);
     }
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize);
@@ -502,7 +521,7 @@ public:
         length.specify(specified.length);
     }
     void inherit(const CSSNormalLengthValueImp& parent) {
-        length.inherit(parent.length);
+        length.inheritLength(parent.length);
     }
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     float getPx() const {
@@ -534,6 +553,9 @@ public:
         CSSNormalLengthValueImp(number, unit)
     {}
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
+    void inherit(const CSSWordSpacingValueImp& parent) {
+        length.inherit(parent.length);
+    }
 };
 
 class CounterImp;
@@ -710,8 +732,8 @@ public:
         vertical.specify(specified.vertical);
     }
     void inherit(const CSSBackgroundPositionValueImp& parent) {
-        horizontal.inherit(parent.horizontal);
-        vertical.inherit(parent.vertical);
+        horizontal.inheritLength(parent.horizontal);
+        vertical.inheritLength(parent.vertical);
     }
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     void resolve(ViewCSSImp* view, BoxImage* image, CSSStyleDeclarationImp* style, float width, float height);
@@ -851,6 +873,10 @@ public:
     void specify(const CSSBorderSpacingValueImp& specified) {
         horizontal.specify(specified.horizontal);
         vertical.specify(specified.vertical);
+    }
+    void inherit(const CSSBorderSpacingValueImp& parent) {
+        horizontal.inheritLength(parent.horizontal);
+        vertical.inheritLength(parent.vertical);
     }
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     float getHorizontalSpacing() const {
@@ -2588,7 +2614,10 @@ public:
         value.specify(specified.value);
     }
     void inherit(const CSSVerticalAlignValueImp& parent) {
-        value.inherit(parent.value);
+        if (value.isPercentage() || value.isLength())
+            value.inherit(parent.value);
+        else
+            value.specify(parent.value);
     }
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style);
