@@ -624,7 +624,7 @@ void Block::renderNonInline(ViewCSSImp* view, StackingContext* stackingContext)
             block->renderEnd(view, overflow, false);
         } else if (LineBox* lineBox = dynamic_cast<LineBox*>(child)) {
             for (auto box = lineBox->getFirstChild(); box; box = box->getNextSibling()) {
-                if (!box->isAnonymous() && box->style->isFloat())
+                if (!box->isAnonymous() && box->style->isFloat() && !box->isPositioned())
                     stackingContext->addFloat(box);
                 else if (CellBox* cellBox = dynamic_cast<CellBox*>(box))
                     cellBox->renderNonInline(view, stackingContext);

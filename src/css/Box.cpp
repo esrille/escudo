@@ -71,6 +71,7 @@ Box::Box(Node node) :
     offsetV(0.0f),
     stackingContext(0),
     nextBase(0),
+    nextFloat(0),
     intrinsic(false),
     x(0.0f),
     y(0.0f),

@@ -234,31 +234,45 @@ void StackingContext::render(ViewCSSImp* view)
     if (clipWidth != HUGE_VALF && clipHeight != HUGE_VALF)
         view->clip(clipLeft, clipTop, clipWidth, clipHeight);
 
-    currentFloat = firstFloat = lastFloat = 0;
-    for (Box* base = firstBase; base; base = base->nextBase) {
-        glPushMatrix();
-        Block* block = dynamic_cast<Block*>(base);
-        unsigned overflow = CSSOverflowValueImp::Visible;
-        if (block)
-            overflow = block->renderBegin(view);
-        StackingContext* childContext = getFirstChild();
-        for (; childContext && childContext->zIndex < 0; childContext = childContext->getNextSibling())
-            childContext->render(view);
-        if (block)
-            block->renderNonInline(view, this);
-        else
-            base->render(view, this);
-        for (currentFloat = firstFloat; currentFloat; currentFloat = currentFloat->nextBase)
-            currentFloat->render(view, this);
-        if (block)
-            block->renderInline(view, this);
-        for (; childContext; childContext = childContext->getNextSibling())
-            childContext->render(view);
-        if (block) {
-            if (0.0f < block->getOutlineWidth())
-                block->renderOutline(view, block->x, block->y + block->getTopBorderEdge());
-            block->renderEnd(view, overflow);
+    if (firstBase) {
+        currentFloat = firstFloat = lastFloat = 0;
+        for (Box* base = firstBase; base; base = base->nextBase) {
+            glPushMatrix();
+            Block* block = dynamic_cast<Block*>(base);
+            unsigned overflow = CSSOverflowValueImp::Visible;
+            if (block) {
+                overflow = block->renderBegin(view);
+            }
+
+            StackingContext* childContext = getFirstChild();
+            for (; childContext && childContext->zIndex < 0; childContext = childContext->getNextSibling()) {
+                childContext->render(view);
+            }
+
+            if (block)
+                block->renderNonInline(view, this);
+            else
+                base->render(view, this);
+            for (currentFloat = firstFloat; currentFloat; currentFloat = currentFloat->nextFloat)
+                currentFloat->render(view, this);
+            if (block)
+                block->renderInline(view, this);
+
+            for (; childContext; childContext = childContext->getNextSibling()) {
+                    childContext->render(view);
+            }
+
+            if (block) {
+                if (0.0f < block->getOutlineWidth())
+                    block->renderOutline(view, block->x, block->y + block->getTopBorderEdge());
+                block->renderEnd(view, overflow);
+            }
+            glPopMatrix();
         }
+    } else {
+        glPushMatrix();
+        for (StackingContext* childContext = getFirstChild(); childContext; childContext = childContext->getNextSibling())
+            childContext->render(view);
         glPopMatrix();
     }
 
@@ -272,8 +286,6 @@ void StackingContext::addBase(Box* box)
 #ifndef NDEBUG
     for (Box* i = firstBase; i; i = i->nextBase)
         assert(box != i);
-    if (dynamic_cast<Block*>(box))
-        assert(!firstBase);
 #endif
     if (!firstBase)
         firstBase = lastBase = box;
@@ -294,22 +306,22 @@ void StackingContext::addBox(Box* box, Box* parentBox)
 void StackingContext::addFloat(Box* box)
 {
 #ifndef NDEBUG
-    for (Box* i = firstFloat; i; i = i->nextBase) {
+    for (Box* i = firstFloat; i; i = i->nextFloat) {
         assert(box != i);
     }
 #endif
     if (currentFloat) {
-        box->nextBase = currentFloat->nextBase;
-        currentFloat->nextBase = box;
+        box->nextFloat = currentFloat->nextFloat;
+        currentFloat->nextFloat = box;
         return;
     }
     if (!firstFloat)
         firstFloat = lastFloat = box;
     else {
-        lastFloat->nextBase = box;
+        lastFloat->nextFloat = box;
         lastFloat = box;
     }
-    box->nextBase = 0;
+    box->nextFloat = 0;
 }
 
 void StackingContext::removeBox(Box* box)

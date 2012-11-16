@@ -126,6 +126,7 @@ protected:
 
     StackingContextPtr stackingContext;
     Box* nextBase;
+    Box* nextFloat;
 
     bool intrinsic;  // do not change width and height
 
