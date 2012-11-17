@@ -314,9 +314,15 @@ bool CSSPseudoClassSelector::match(Element& element, ViewCSSImp* view, bool dyna
 
 bool CSSLangPseudoClassSelector::match(Element& element, ViewCSSImp* view, bool dynamic)
 {
-    std::u16string attr = interface_cast<html::HTMLElement>(element).getLang();
-    toLower(attr);
-    return dashMatch(attr, lang);
+    std::u16string attr;
+    for (Element e = element; e; e = e.getParentElement()) {
+        attr = interface_cast<html::HTMLElement>(e).getLang();
+        if (!attr.empty()) {
+            toLower(attr);
+            return dashMatch(attr, lang);
+        }
+    }
+    return false;
 }
 
 bool CSSPrimarySelector::isValid() const
