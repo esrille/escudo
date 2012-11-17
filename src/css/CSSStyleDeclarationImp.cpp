@@ -1764,8 +1764,6 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     fontTexture = view->selectFont(this);
     lineHeight.compute(view, this);
     verticalAlign.compute(view, this);
-    if (position.getValue() == CSSPositionValueImp::Static)
-        left = right = top = bottom.setValue();  // set to 'auto'
 
     width.compute(view, this);
     height.compute(view, this);
@@ -1773,10 +1771,12 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     minWidth.compute(view, this);
     minHeight.compute(view, this);
 
-    top.compute(view, this);
-    right.compute(view, this);
-    bottom.compute(view, this);
-    left.compute(view, this);
+    if (position.isPositioned()) {
+        top.compute(view, this);
+        right.compute(view, this);
+        bottom.compute(view, this);
+        left.compute(view, this);
+    }
 
     marginTop.compute(view, this);
     marginRight.compute(view, this);
