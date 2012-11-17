@@ -36,7 +36,6 @@ CellBox::CellBox(Element element, CSSStyleDeclarationImp* style):
     row(0),
     colSpan(1),
     rowSpan(1),
-    verticalAlign(CSSVerticalAlignValueImp::Middle),
     intrinsicHeight(0.0f),
     columnWidth(NAN)
 {
@@ -1341,11 +1340,9 @@ Reflow:
             CellBox* cellBox = grid[y][x].get();
             if (!cellBox || cellBox->isSpanned(x, y) || cellBox->getRowSpan() != 1)
                 continue;
-            if (cellBox->getVerticalAlign() == CSSVerticalAlignValueImp::Baseline) {
-                float d = baselines[y] - cellBox->getBaseline();
-                if (0.0f < d)
-                    heights[y] = std::max(heights[y], d + cellBox->intrinsicHeight);
-            } else if (noBaseline) {
+            if (cellBox->getVerticalAlign() == CSSVerticalAlignValueImp::Baseline)
+                heights[y] = std::max(heights[y], (baselines[y] - cellBox->getBaseline()) + cellBox->intrinsicHeight);
+            else if (noBaseline) {
                 switch (cellBox->getVerticalAlign()) {
                 case CSSVerticalAlignValueImp::Top:
                     baselines[y] = std::max(baselines[y], cellBox->intrinsicHeight - cellBox->getBlankBottom());
