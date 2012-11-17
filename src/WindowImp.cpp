@@ -338,13 +338,12 @@ void WindowImp::render(ViewCSSImp* parentView)
             std::u16string title = view->getDocument().getTitle();
             setWindowTitle(utfconv(title).c_str());
         }
-
-        if (2 <= getLogLevel() && backgroundTask.getState() == BackgroundTask::Done && !view->gatherFlags()) {
-            std::cout << "\n## " << window->getDocument().getReadyState() << '\n';
-            view->dump();
-            std::cout << "##\n";
-            std::cout.flush();
-        }
+    }
+    if (view && 2 <= getLogLevel() && backgroundTask.getState() == BackgroundTask::Done && !view->gatherFlags()) {
+        std::cout << "\n## " << window->getDocument().getReadyState() << '\n';
+        view->dump();
+        std::cout << "##\n";
+        std::cout.flush();
     }
     canvas.render(width, height);
     recordTime("%*srepaint end", windowDepth * 2, "");
