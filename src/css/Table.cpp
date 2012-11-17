@@ -1471,11 +1471,18 @@ Reflow:
                 }
                 if (fixed < xWidth) {
                     w = r / (xWidth - fixed);
+                    r = 0.0f;
                     for (unsigned x = 0; x < xWidth; ++x) {
                         if (0.0f < widths[x])
                             widths[x] += w;
                     }
                 }
+            }
+            if (0.0f < r) {
+                w = r / xWidth;
+                r = 0.0f;
+                for (unsigned x = 0; x < xWidth; ++x)
+                    widths[x] += w;
             }
         }
         if (++pass == 1) {
