@@ -1839,7 +1839,8 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
             // Note if the lengths are given by 'em' or 'ex', the referred font size is
             // the one of the 'body' style.
             backgroundPosition.compute(view, bodyStyle);
-            bodyStyle->background.reset(bodyStyle);
+            bodyStyle->backgroundColor.setValue(CSSColorValueImp::Transparent);
+            bodyStyle->backgroundImage.setValue();
         }
     }
 
