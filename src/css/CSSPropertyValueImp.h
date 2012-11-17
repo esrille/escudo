@@ -2614,7 +2614,7 @@ public:
         value.specify(specified.value);
     }
     void inherit(const CSSVerticalAlignValueImp& parent) {
-        if (value.isPercentage() || value.isLength())
+        if (parent.value.isPercentage() || parent.value.isLength())
             value.inherit(parent.value);
         else
             value.specify(parent.value);

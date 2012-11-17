@@ -1673,7 +1673,7 @@ void CSSFontShorthandImp::reset(CSSStyleDeclarationImp* self)
 
 void CSSLineHeightValueImp::inherit(const CSSLineHeightValueImp& parent)
 {
-    switch (value.unit) {
+    switch (parent.value.unit) {
     case CSSParserTerm::CSS_TERM_INDEX:
     case css::CSSPrimitiveValue::CSS_NUMBER:
         value.specify(parent.value);
