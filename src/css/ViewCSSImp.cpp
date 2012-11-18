@@ -496,6 +496,11 @@ Block* ViewCSSImp::constructBlock(Text text, Block* parentBox, CSSStyleDeclarati
         if (table && table->isAnonymousTableObject()) {
             if (table->processTableChild(text, style))
                 return 0;
+            else {
+                assert(parentBox->anonymousTable == table);
+                table->constructBlocks();
+                parentBox->anonymousTable = 0;
+            }
         }
     }
     if (discardable && !style->display.isInline() && !parentBox->hasAnonymousBox(prevBox)) {
