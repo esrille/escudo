@@ -1377,6 +1377,14 @@ Reflow:
                         for (unsigned c = 0; c < span; ++c)
                             widths[x + c] += diff;
                     }
+                    sum = 0.0f;
+                    for (unsigned c = 0; c < span; ++c)
+                        sum += fixedWidths[x + c];
+                    if (sum < cellBox->getTotalWidth()) {
+                        float diff = (cellBox->getTotalWidth() - sum) / span;
+                        for (unsigned c = 0; c < span; ++c)
+                            fixedWidths[x + c] += diff;
+                    }
                 }
             }
             unsigned span = cellBox->getRowSpan();
