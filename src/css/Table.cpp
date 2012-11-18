@@ -1215,6 +1215,11 @@ void TableWrapperBox::layOutTableBox(ViewCSSImp* view, FormattingContext* contex
     // Note 'width' needs to be preserved since it is used as the width of
     // the containing block of cells.
     tableBox->width = width;
+    if (style->width.isAuto()) {    // cf. html4/separated-border-model-004.htm
+        tableBox->width -= tableBox->getBlankLeft() + tableBox->getBlankRight();
+        if (tableBox->width < 0.0f)
+            tableBox->width = 0.0f;
+    }
     tableBox->height = height;
     if (anon || style->height.isAuto())
         height = tableBox->height = 0.0f;
