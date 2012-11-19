@@ -103,7 +103,7 @@ void ViewCSSImp::render(unsigned parentClipCount)
         stackingContexts->render(this);
     glPopMatrix();
 
-    if (boxTree && overflow != CSSOverflowValueImp::Hidden) {
+    if (boxTree && canScroll()) {
         Box::renderVerticalScrollBar(initialContainingBlock.width, initialContainingBlock.height, window->getScrollY(), scrollHeight);
         Box::renderHorizontalScrollBar(initialContainingBlock.width, initialContainingBlock.height, window->getScrollX(), scrollWidth);
     }

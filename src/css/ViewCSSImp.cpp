@@ -304,9 +304,6 @@ void ViewCSSImp::constructComputedStyle(Node node, CSSStyleDeclarationImp* paren
     }
     for (Node child = node.getFirstChild(); child; child = child.getNextSibling())
         constructComputedStyle(child, style);
-
-    if (!parentStyle && style)
-        overflow = style->overflow.getValue();
 }
 
 void ViewCSSImp::calculateComputedStyles()
@@ -367,6 +364,8 @@ void ViewCSSImp::calculateComputedStyle(Element element, CSSStyleDeclarationImp*
             // else 'position' is relative
         } else if (Block* block = getCurrentBox(style, true))
             block->resolveBackground(this);
+        if (!parentStyle)
+            overflow = style->overflow.getValue();
         flags |= CSSStyleDeclarationImp::Computed;  // The child styles have to be recomputed.
     }
 
