@@ -175,29 +175,29 @@ void StackingContext::setZIndex(bool auto_, int index)
 
 void StackingContext::clip(StackingContext* s, float relativeX, float relativeY)
 {
+    float scrollLeft = 0.0f;
+    float scrollTop = 0.0f;
     for (Block* clip = s->clipBox; clip && clip != s->positioned->clipBox; clip = clip->clipBox) {
         if (clip->stackingContext == s)
             continue;
         if (clip->style->overflow.getValue() != CSSOverflowValueImp::Visible) {  // TODO: check this
             Element element = interface_cast<Element>(clip->node);
-            glTranslatef(-element.getScrollLeft(), -element.getScrollTop(), 0.0f);
-            if (clip != s->clipBox) {
-                clipLeft -= element.getScrollLeft();
-                clipTop -= element.getScrollTop();
-            }
+            scrollLeft += element.getScrollLeft();
+            scrollTop += element.getScrollTop();
         }
         if (clipWidth == HUGE_VALF) {
-            clipLeft = clip->x + clip->marginLeft + clip->borderLeft - relativeX;
-            clipTop = clip->y + clip->marginTop + clip->borderTop - relativeY;
+            clipLeft = scrollLeft + clip->x + clip->marginLeft + clip->borderLeft - relativeX;
+            clipTop = scrollTop + clip->y + clip->marginTop + clip->borderTop - relativeY;
             clipWidth = clip->getPaddingWidth();
             clipHeight = clip->getPaddingHeight();
         } else {
             Box::unionRect(clipLeft, clipTop, clipWidth, clipHeight,
-                           clip->x + clip->marginLeft + clip->borderLeft - relativeX,
-                           clip->y + clip->marginTop + clip->borderTop - relativeY,
+                           scrollLeft + clip->x + clip->marginLeft + clip->borderLeft - relativeX,
+                           scrollTop + clip->y + clip->marginTop + clip->borderTop - relativeY,
                            clip->getPaddingWidth(), clip->getPaddingHeight());
         }
     }
+    glTranslatef(-scrollLeft, -scrollTop, 0.0f);
 }
 
 bool StackingContext::resolveRelativeOffset(ViewCSSImp* view, float& x, float &y)
