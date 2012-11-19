@@ -1828,10 +1828,8 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     if (bodyStyle) {
         bodyStyle->clearFlags(CSSStyleDeclarationImp::Computed);
         bodyStyle->compute(view, this, view->getDocument().getBody());
-        if (overflow.getValue() == CSSOverflowValueImp::Visible) {
-            overflow.specify(bodyStyle->overflow);
-            bodyStyle->overflow.setValue(CSSOverflowValueImp::Visible);
-        }
+        if (overflow.getValue() == CSSOverflowValueImp::Visible)
+            overflow.swap(bodyStyle->overflow);
         if (backgroundColor.getARGB() == 0 && backgroundImage.isNone()) {
             background.specify(this, bodyStyle);
             bodyStyle->fontSize.compute(view, this);

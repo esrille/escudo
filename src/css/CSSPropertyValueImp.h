@@ -2125,6 +2125,7 @@ public:
 
 class CSSOverflowValueImp : public CSSPropertyValueImp
 {
+    unsigned original;
     unsigned value;
 public:
     enum {
@@ -2134,7 +2135,7 @@ public:
         Auto
     };
     CSSOverflowValueImp& setValue(unsigned value = Visible) {
-        this->value = value;
+        original = this->value = value;
         return *this;
     }
     CSSOverflowValueImp& setValue(CSSParserTerm* term) {
@@ -2142,6 +2143,9 @@ public:
     }
     unsigned getValue() const {
         return value;
+    }
+    unsigned getOriginalValue() const {
+        return original;
     }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) const {
         return Options[value];
@@ -2153,17 +2157,22 @@ public:
         return canScroll(value);
     }
     bool operator==(const CSSOverflowValueImp& overflow) {
-        return value == overflow.value;
+        return original == overflow.original;
     }
     bool operator!=(const CSSOverflowValueImp& overflow) {
-        return value != overflow.value;
+        return original != overflow.original;
     }
     void specify(const CSSOverflowValueImp& specified) {
-        value = specified.value;
+        original = value = specified.original;
+    }
+    void swap(CSSOverflowValueImp& body) {
+        value = body.original;
+        body.value = CSSOverflowValueImp::Visible;
     }
     CSSOverflowValueImp(unsigned initial = Visible) :
-        value(initial) {
-    }
+        original(initial),
+        value(initial)
+    {}
     static const char16_t* Options[];
 
     static bool canScroll(unsigned value) {
