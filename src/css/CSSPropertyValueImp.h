@@ -1480,8 +1480,7 @@ public:
         return original != display.original;
     }
     void specify(const CSSDisplayValueImp& specified) {
-        original = specified.original;
-        value = specified.original;
+        original = value = specified.original;
     }
     void compute(CSSStyleDeclarationImp* decl, Element element);
     CSSDisplayValueImp(unsigned initial = Inline) :
