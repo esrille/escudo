@@ -180,23 +180,23 @@ void StackingContext::clip(StackingContext* s, float relativeX, float relativeY)
     for (Block* clip = s->clipBox; clip && clip != s->positioned->clipBox; clip = clip->clipBox) {
         if (clip->stackingContext == s)
             continue;
-        if (clip->style->overflow.getValue() != CSSOverflowValueImp::Visible) {  // TODO: check this
-            Element element = interface_cast<Element>(clip->node);
-            scrollLeft += element.getScrollLeft();
-            scrollTop += element.getScrollTop();
-        }
+        Element element = interface_cast<Element>(clip->node);
+        scrollLeft += element.getScrollLeft();
+        scrollTop += element.getScrollTop();
         if (clipWidth == HUGE_VALF) {
-            clipLeft = scrollLeft + clip->x + clip->marginLeft + clip->borderLeft - relativeX;
-            clipTop = scrollTop + clip->y + clip->marginTop + clip->borderTop - relativeY;
+            clipLeft = scrollLeft + clip->x + clip->marginLeft + clip->borderLeft;
+            clipTop = scrollTop + clip->y + clip->marginTop + clip->borderTop;
             clipWidth = clip->getPaddingWidth();
             clipHeight = clip->getPaddingHeight();
         } else {
             Box::unionRect(clipLeft, clipTop, clipWidth, clipHeight,
-                           scrollLeft + clip->x + clip->marginLeft + clip->borderLeft - relativeX,
-                           scrollTop + clip->y + clip->marginTop + clip->borderTop - relativeY,
+                           scrollLeft + clip->x + clip->marginLeft + clip->borderLeft,
+                           scrollTop + clip->y + clip->marginTop + clip->borderTop,
                            clip->getPaddingWidth(), clip->getPaddingHeight());
         }
     }
+    clipLeft -= relativeX;
+    clipTop -= relativeY;
     glTranslatef(-scrollLeft, -scrollTop, 0.0f);
 }
 
@@ -220,6 +220,29 @@ bool StackingContext::resolveRelativeOffset(ViewCSSImp* view, float& x, float &y
         clip(s, x, y);
     }
     return result;
+}
+
+void StackingContext::renderFloats(ViewCSSImp* view, Box* last, Box* current)
+{
+    if (current && current == currentFloat)
+        return;
+    if (!last)
+        currentFloat = firstFloat;
+    else if (last->nextFloat)
+        currentFloat = last->nextFloat;
+    else
+        return;
+    while (currentFloat) {
+        currentFloat->render(view, this);;
+        currentFloat = currentFloat->nextFloat;
+    }
+    if (!last)
+        firstFloat = lastFloat = 0;
+    else {
+        last->nextFloat = 0;
+        lastFloat = last;
+    }
+    currentFloat = 0;
 }
 
 void StackingContext::render(ViewCSSImp* view)
@@ -249,14 +272,12 @@ void StackingContext::render(ViewCSSImp* view)
                 childContext->render(view);
             }
 
-            if (block)
+            if (block) {
                 block->renderNonInline(view, this);
-            else
-                base->render(view, this);
-            for (currentFloat = firstFloat; currentFloat; currentFloat = currentFloat->nextFloat)
-                currentFloat->render(view, this);
-            if (block)
+                renderFloats(view, 0, 0);
                 block->renderInline(view, this);
+            } else
+                base->render(view, this);
 
             for (; childContext; childContext = childContext->getNextSibling()) {
                     childContext->render(view);

@@ -135,6 +135,10 @@ public:
     }
     void addBase(Box* box);
     void addBox(Box* box, Box* parentBox);
+
+    Box* getLastFloat() const {
+        return lastFloat;
+    }
     void addFloat(Box* box);
 
     void removeBox(Box* box);
@@ -147,6 +151,7 @@ public:
 
     bool resolveRelativeOffset(ViewCSSImp* view, float& x, float &y);
 
+    void renderFloats(ViewCSSImp* view, Box* last, Box* current);
     void render(ViewCSSImp* view);
 
     void dump(std::string indent = "");

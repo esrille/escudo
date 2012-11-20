@@ -615,6 +615,11 @@ void Block::renderNonInline(ViewCSSImp* view, StackingContext* stackingContext)
 {
     if (childWindow)
         return;
+
+    Box* last = 0;
+    if (isClipped())
+        last = stackingContext->getLastFloat();
+
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
         if (child->style && child->style->getStackingContext() != stackingContext)
             continue;
@@ -631,6 +636,9 @@ void Block::renderNonInline(ViewCSSImp* view, StackingContext* stackingContext)
             }
         }
     }
+
+    if (isClipped())
+        stackingContext->renderFloats(view, last, this);
 }
 
 void Block::renderInline(ViewCSSImp* view, StackingContext* stackingContext)
