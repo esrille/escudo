@@ -259,6 +259,8 @@ void StackingContext::render(ViewCSSImp* view)
 
     if (firstBase) {
         currentFloat = firstFloat = lastFloat = 0;
+        GLfloat mtx[16];
+        glGetFloatv(GL_MODELVIEW_MATRIX, mtx);
         for (Box* base = firstBase; base; base = base->nextBase) {
             glPushMatrix();
             Block* block = dynamic_cast<Block*>(base);
@@ -267,15 +269,13 @@ void StackingContext::render(ViewCSSImp* view)
                 overflow = block->renderBegin(view);
             }
 
-            GLfloat mtx[16];
-            glGetFloatv(GL_MODELVIEW_MATRIX, mtx);
-            glPopMatrix();
             glPushMatrix();
+            glLoadMatrixf(mtx);
             StackingContext* childContext = getFirstChild();
             for (; childContext && childContext->zIndex < 0; childContext = childContext->getNextSibling()) {
                 childContext->render(view);
             }
-            glLoadMatrixf(mtx);
+            glPopMatrix();
 
             if (block) {
                 block->renderNonInline(view, this);
@@ -284,12 +284,12 @@ void StackingContext::render(ViewCSSImp* view)
             } else
                 base->render(view, this);
 
-            glPopMatrix();
             glPushMatrix();
+            glLoadMatrixf(mtx);
             for (; childContext; childContext = childContext->getNextSibling()) {
                     childContext->render(view);
             }
-            glLoadMatrixf(mtx);
+            glPopMatrix();
 
             if (block) {
                 if (0.0f < block->getOutlineWidth())
