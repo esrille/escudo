@@ -1,5 +1,5 @@
-# Escort 0.2.2 (r2923) Fedora Linux 17
-# Escort/0.2.2
+# Escort 0.2.3 (r3186) Fedora Linux 17
+# Escort/0.2.3
 # http://test.csswg.org/suites/css2.1/20110323/
 # See http://wiki.csswg.org/test/implementation-report for instructions
 testname    result  comment
@@ -124,7 +124,7 @@ html4/abspos-019.htm	pass
 html4/abspos-020.htm	pass
 html4/abspos-022.htm	pass
 html4/abspos-023.htm	pass
-html4/abspos-024.htm	fail
+html4/abspos-024.htm	fail (rtl)
 html4/abspos-025.htm	pass
 html4/abspos-026.htm	pass
 html4/abspos-027.htm	pass
@@ -193,7 +193,7 @@ html4/after-content-display-002.htm	pass
 html4/after-content-display-003.htm	pass
 html4/after-content-display-005.htm	pass
 html4/after-content-display-006.htm	pass
-html4/after-content-display-007.htm	fail
+html4/after-content-display-007.htm	pass
 html4/after-content-display-008.htm	pass
 html4/after-content-display-009.htm	pass
 html4/after-content-display-010.htm	pass
@@ -219,7 +219,7 @@ html4/allowed-page-breaks-006.htm	skip
 html4/allowed-page-breaks-007a.htm	skip
 html4/allowed-page-breaks-007b.htm	skip
 html4/anonymous-box-generation-001.htm	pass
-html4/anonymous-boxes-001.htm	fail (check)
+html4/anonymous-boxes-001.htm	pass
 html4/anonymous-boxes-inheritance-001.htm	pass
 html4/anonymous-inline-whitespace-001.htm	pass
 html4/at-charset-001.htm	pass
@@ -1041,7 +1041,7 @@ html4/background-repeat-001.htm	pass
 html4/background-repeat-002.htm	pass
 html4/background-repeat-003.htm	pass
 html4/background-repeat-004.htm	pass
-html4/background-repeat-005.htm	fail (check)
+html4/background-repeat-005.htm	pass
 html4/background-repeat-applies-to-001.htm	pass
 html4/background-repeat-applies-to-002.htm	pass
 html4/background-repeat-applies-to-003.htm	pass
@@ -1077,7 +1077,7 @@ html4/background-root-017.htm	pass
 html4/background-root-018.htm	pass
 html4/background-root-019.htm	pass
 html4/background-root-020.htm	pass
-html4/background-root-023.htm	fail (check)
+html4/background-root-023.htm	pass
 html4/background-root-024.htm	pass
 html4/background-root-101.htm	fail
 html4/background-root-102.htm	fail
@@ -1106,7 +1106,7 @@ html4/before-content-display-002.htm	pass
 html4/before-content-display-003.htm	pass
 html4/before-content-display-005.htm	pass
 html4/before-content-display-006.htm	pass
-html4/before-content-display-007.htm	fail (check)
+html4/before-content-display-007.htm	pass
 html4/before-content-display-008.htm	pass
 html4/before-content-display-009.htm	pass
 html4/before-content-display-010.htm	pass
@@ -1307,7 +1307,7 @@ html4/block-in-inline-nested-001.htm	pass
 html4/block-in-inline-nested-002.htm	pass
 html4/block-in-inline-percents-001.htm	pass
 html4/block-in-inline-relpos-001.htm	pass
-html4/block-in-inline-relpos-002.htm	fail (check)
+html4/block-in-inline-relpos-002.htm	pass
 html4/block-in-inline-remove-000.htm	pass
 html4/block-in-inline-remove-001.htm	pass
 html4/block-in-inline-remove-002.htm	pass
@@ -1714,7 +1714,7 @@ html4/border-collapse-applies-to-011.htm	pass
 html4/border-collapse-applies-to-012.htm	pass
 html4/border-collapse-applies-to-013.htm	pass
 html4/border-collapse-applies-to-014.htm	pass
-html4/border-collapse-applies-to-015.htm	fail (check)
+html4/border-collapse-applies-to-015.htm	pass
 html4/border-collapse-applies-to-016.htm	pass
 html4/border-collapse-applies-to-017.htm	pass
 html4/border-collapse-dynamic-cell-001.htm	pass
@@ -3328,8 +3328,8 @@ html4/c532-bgcolor-000.htm	pass
 html4/c532-bgcolor-001.htm	pass
 html4/c533-bgimage-000.htm	pass
 html4/c533-bgimage-001.htm	pass
-html4/c534-bgre-000.htm	fail (check)
-html4/c534-bgre-001.htm	fail (check)
+html4/c534-bgre-000.htm	pass
+html4/c534-bgre-001.htm	pass
 html4/c534-bgreps-000.htm	pass
 html4/c534-bgreps-001.htm	pass
 html4/c534-bgreps-002.htm	pass
@@ -3339,7 +3339,7 @@ html4/c534-bgreps-005.htm	pass
 html4/c535-bg-fixd-000.htm	pass
 html4/c536-bgpos-000.htm	pass
 html4/c536-bgpos-001.htm	pass
-html4/c537-bgfxps-000.htm	fail (check)
+html4/c537-bgfxps-000.htm	pass
 html4/c541-word-sp-000.htm	pass
 html4/c541-word-sp-001.htm	pass
 html4/c542-letter-sp-000.htm	pass
@@ -3500,7 +3500,7 @@ html4/c566-list-stl-001.htm	pass
 html4/c61-ex-len-000.htm	pass
 html4/c61-rel-len-000.htm	pass
 html4/c62-percent-000.htm	pass
-html4/c63-color-000.htm	fail
+html4/c63-color-000.htm	pass
 html4/c64-uri-000.htm	fail
 html4/c71-fwd-parsing-000.htm	pass
 html4/c71-fwd-parsing-001.htm	pass
@@ -3630,9 +3630,9 @@ html4/clear-applies-to-007.htm	fail
 html4/clear-applies-to-008.htm	pass
 html4/clear-applies-to-009.htm	pass
 html4/clear-applies-to-010.htm	pass
-html4/clear-applies-to-012.htm	fail
+html4/clear-applies-to-012.htm	pass
 html4/clear-applies-to-013.htm	pass
-html4/clear-applies-to-014.htm	fail
+html4/clear-applies-to-014.htm	pass
 html4/clear-applies-to-015.htm	fail
 html4/clear-clearance-calculation-001.htm	pass
 html4/clear-clearance-calculation-002.htm	pass
@@ -4301,7 +4301,7 @@ html4/counter-reset-applies-to-014.htm	pass
 html4/counter-reset-applies-to-015.htm	pass
 html4/counter-reset-display-001.htm	pass
 html4/counter-reset-increment-001.htm	pass
-html4/counter-reset-increment-002.htm	fail
+html4/counter-reset-increment-002.htm	pass
 html4/counter-reset-multiple-001.htm	pass
 html4/counter-reset-not-generated-001.htm	pass
 html4/counter-reset-sibling-001.htm	pass
@@ -4486,8 +4486,8 @@ html4/dynamic-pseudo-classes-002.htm	fail
 html4/dynamic-pseudo-classes-003.htm	fail
 html4/dynamic-sibling-combinator-001.htm	pass
 html4/dynamic-top-change-001.htm	pass
-html4/dynamic-top-change-002.htm	fail
-html4/dynamic-top-change-003.htm	fail (check)
+html4/dynamic-top-change-002.htm	pass
+html4/dynamic-top-change-003.htm	pass
 html4/dynamic-top-change-004.htm	pass
 html4/dynamic-top-change-005.htm	pass
 html4/dynamic-top-change-005a.htm	pass
@@ -4580,10 +4580,10 @@ html4/first-letter-dynamic-003a.htm	pass
 html4/first-letter-dynamic-003b.htm	pass
 html4/first-letter-inherit-001.htm	pass
 html4/first-letter-nested-001.htm	pass
-html4/first-letter-nested-002.htm	fail
-html4/first-letter-nested-003.htm	fail
-html4/first-letter-nested-004.htm	fail
-html4/first-letter-nested-005.htm	fail
+html4/first-letter-nested-002.htm	pass
+html4/first-letter-nested-003.htm	pass
+html4/first-letter-nested-004.htm	pass
+html4/first-letter-nested-005.htm	pass
 html4/first-letter-nested-006.htm	pass
 html4/first-letter-nested-007.htm	pass
 html4/first-letter-punctuation-001.htm	pass
@@ -4995,7 +4995,7 @@ html4/first-letter-punctuation-412.htm	pass
 html4/first-letter-quote-001.htm	pass
 html4/first-letter-quote-002.htm	pass
 html4/first-letter-quote-003.htm	pass
-html4/first-letter-quote-004.htm	fail
+html4/first-letter-quote-004.htm	pass
 html4/first-letter-quote-005.htm	pass
 html4/first-letter-quote-006.htm	pass
 html4/first-letter-selector-000.htm	pass
@@ -5219,8 +5219,8 @@ html4/floats-153.htm	pass
 html4/floats-154.htm	pass
 html4/floats-bfc-001.htm	pass
 html4/floats-bfc-002.htm	fail
-html4/floats-placement-vertical-001a.htm	fail (check)
-html4/floats-placement-vertical-001b.htm	fail (check)
+html4/floats-placement-vertical-001a.htm	fail (rtl)
+html4/floats-placement-vertical-001b.htm	fail (rtl)
 html4/floats-placement-vertical-001c.htm	fail (rtl)
 html4/floats-placement-vertical-003.htm	pass
 html4/floats-placement-vertical-004.htm	pass
@@ -5838,11 +5838,11 @@ html4/inline-replaced-width-013.htm	pass
 html4/inline-replaced-width-014.htm	pass
 html4/inline-replaced-width-015.htm	pass
 html4/inline-table-001.htm	pass
-html4/inline-table-002a.htm	fail
+html4/inline-table-002a.htm	pass
 html4/inline-table-002b.htm	pass
-html4/inline-table-003.htm	fail
+html4/inline-table-003.htm	pass
 html4/inline-table-height-001.htm	pass
-html4/inline-table-height-002.htm	fail (virtical align)
+html4/inline-table-height-002.htm	pass
 html4/inline-table-valign-001.htm	fail (border)
 html4/inline-table-width-001a.htm	pass
 html4/inline-table-width-001b.htm	pass
@@ -5875,7 +5875,7 @@ html4/invalid-decl-at-rule-001.htm	pass
 html4/invalid-decl-at-rule-002.htm	pass
 html4/keywords-000.htm	pass
 html4/keywords-001.htm	pass
-html4/lang-pseudoclass-001.htm	fail (check)
+html4/lang-pseudoclass-001.htm	pass
 html4/lang-selector-001.htm	pass
 html4/lang-selector-002.htm	pass
 html4/lang-selector-003.htm	pass
@@ -6154,7 +6154,7 @@ html4/list-style-applies-to-015.htm	pass
 html4/list-style-image-001.htm	pass
 html4/list-style-image-002.htm	pass
 html4/list-style-image-003.htm	pass
-html4/list-style-image-004.htm	fail
+html4/list-style-image-004.htm	pass
 html4/list-style-image-005.htm	pass
 html4/list-style-image-006.htm	fail (rtl)
 html4/list-style-image-applies-to-001.htm	pass
@@ -6171,7 +6171,7 @@ html4/list-style-image-applies-to-012.htm	pass
 html4/list-style-image-applies-to-013.htm	pass
 html4/list-style-image-applies-to-014.htm	pass
 html4/list-style-image-applies-to-015.htm	pass
-html4/list-style-image-available-001.htm	fail
+html4/list-style-image-available-001.htm	pass
 html4/list-style-none-001.htm	pass
 html4/list-style-position-001.htm	pass
 html4/list-style-position-002.htm	pass
@@ -6842,7 +6842,7 @@ html4/max-width-applies-to-003.htm	pass
 html4/max-width-applies-to-004.htm	pass
 html4/max-width-applies-to-005.htm	invalid
 html4/max-width-applies-to-006.htm	invalid
-html4/max-width-applies-to-007.htm	fail (check)
+html4/max-width-applies-to-007.htm	pass (invalid)
 html4/max-width-applies-to-008.htm	pass
 html4/max-width-applies-to-009.htm	pass
 html4/max-width-applies-to-010.htm	pass
@@ -7387,10 +7387,10 @@ html4/outline-width-applies-to-014.htm	pass
 html4/outline-width-applies-to-015.htm	pass
 html4/overflow-001.htm	pass
 html4/overflow-002.htm	pass
-html4/overflow-003.htm	fail (check)
-html4/overflow-004.htm	fail (check)
-html4/overflow-005.htm	fail (check)
-html4/overflow-006.htm	fail (check)
+html4/overflow-003.htm	pass
+html4/overflow-004.htm	pass
+html4/overflow-005.htm	pass
+html4/overflow-006.htm	pass
 html4/overflow-007.htm	pass
 html4/overflow-008.htm	pass
 html4/overflow-ancestors-001.htm	pass
@@ -7408,7 +7408,7 @@ html4/overflow-applies-to-012.htm	pass
 html4/overflow-applies-to-013.htm	pass
 html4/overflow-applies-to-014.htm	pass
 html4/overflow-applies-to-015.htm	pass
-html4/overflow-html-body-001.htm	fail (check)
+html4/overflow-html-body-001.htm	pass
 html4/overflow-parent-001.htm	pass
 html4/overflow-print-001.htm	skip
 html4/overflow-root-001.htm	pass
@@ -7991,7 +7991,7 @@ html4/relpos-calcs-006.htm	fail
 html4/relpos-calcs-007.htm	pass
 html4/replaced-elements-001.htm	fail
 html4/replaced-intrinsic-001.htm	fail (svg)
-html4/replaced-intrinsic-002.htm	pass
+html4/replaced-intrinsic-002.htm	fail (svg)
 html4/replaced-intrinsic-003.htm	fail (svg)
 html4/replaced-intrinsic-004.htm	fail (svg)
 html4/replaced-intrinsic-005.htm	fail (svg)
@@ -8130,7 +8130,7 @@ html4/table-anonymous-block-011.htm	pass
 html4/table-anonymous-block-012.htm	pass
 html4/table-anonymous-block-013.htm	pass
 html4/table-anonymous-block-014.htm	pass
-html4/table-anonymous-block-015.htm	fail (check)
+html4/table-anonymous-block-015.htm	fail (see 9.5)
 html4/table-anonymous-block-016.htm	pass
 html4/table-anonymous-block-017.htm	pass
 html4/table-anonymous-block-018.htm	pass
@@ -8218,10 +8218,10 @@ html4/table-anonymous-objects-085.htm	pass
 html4/table-anonymous-objects-086.htm	pass
 html4/table-anonymous-objects-087.htm	pass
 html4/table-anonymous-objects-088.htm	pass
-html4/table-anonymous-objects-089.htm	fail (check)
-html4/table-anonymous-objects-090.htm	fail (check)
-html4/table-anonymous-objects-091.htm	fail (check)
-html4/table-anonymous-objects-092.htm	fail (check)
+html4/table-anonymous-objects-089.htm	pass (when no wrap)
+html4/table-anonymous-objects-090.htm	pass (when no wrap)
+html4/table-anonymous-objects-091.htm	pass (when no wrap)
+html4/table-anonymous-objects-092.htm	pass (when no wrap)
 html4/table-anonymous-objects-093.htm	pass
 html4/table-anonymous-objects-094.htm	pass
 html4/table-anonymous-objects-095.htm	pass
@@ -8396,7 +8396,7 @@ html4/table-height-algorithm-008.htm	pass
 html4/table-height-algorithm-009.htm	pass
 html4/table-height-algorithm-010.htm	pass
 html4/table-height-algorithm-011.htm	pass
-html4/table-height-algorithm-012.htm	fail (check)
+html4/table-height-algorithm-012.htm	pass
 html4/table-height-algorithm-013.htm	pass
 html4/table-height-algorithm-014.htm	pass
 html4/table-height-algorithm-015.htm	pass
@@ -8458,7 +8458,7 @@ html4/table-layout-initial-001.htm	fail
 html4/table-layout-property-001.htm	pass
 html4/table-layout-property-002.htm	pass
 html4/table-margin-001.htm	pass
-html4/table-margin-002.htm	fail (check)
+html4/table-margin-002.htm	pass
 html4/table-margin-003.htm	fail
 html4/table-margin-004.htm	pass
 html4/table-organization-001.htm	pass
@@ -8466,8 +8466,8 @@ html4/table-organization-002.htm	pass
 html4/table-percent-width-001.htm	fail
 html4/table-row-001.htm	pass
 html4/table-row-group-001.htm	pass
-html4/table-valign-001.htm	fail (check)
-html4/table-valign-002.htm	fail (check)
+html4/table-valign-001.htm	pass
+html4/table-valign-002.htm	pass
 html4/table-vertical-align-baseline-001.htm	pass
 html4/table-vertical-align-baseline-002.htm	pass
 html4/table-vertical-align-baseline-003.htm	pass
@@ -8497,7 +8497,7 @@ html4/table-visual-layout-019.htm	pass
 html4/table-visual-layout-020.htm	pass
 html4/table-visual-layout-021.htm	pass
 html4/table-visual-layout-022.htm	pass
-html4/table-visual-layout-023.htm	fail (position)
+html4/table-visual-layout-023.htm	pass
 html4/tables-001.htm	pass
 html4/tables-002.htm	pass
 html4/tables-003.htm	pass
@@ -9010,7 +9010,7 @@ html4/vertical-align-applies-to-003.htm	pass
 html4/vertical-align-applies-to-004.htm	pass
 html4/vertical-align-applies-to-005.htm	pass
 html4/vertical-align-applies-to-006.htm	pass
-html4/vertical-align-applies-to-007.htm	fail (check)
+html4/vertical-align-applies-to-007.htm	pass
 html4/vertical-align-applies-to-008.htm	pass
 html4/vertical-align-applies-to-009.htm	pass
 html4/vertical-align-applies-to-010.htm	pass
@@ -9350,7 +9350,7 @@ html4/z-index-008.htm	pass
 html4/z-index-009.htm	pass
 html4/z-index-010.htm	pass
 html4/z-index-011.htm	pass
-html4/z-index-012.htm	fail
+html4/z-index-012.htm	fail (optional)
 html4/z-index-013.htm	pass
 html4/z-index-014.htm	pass
 html4/z-index-015.htm	pass
@@ -9382,7 +9382,7 @@ html4/z-index-applies-to-012.htm	pass
 html4/z-index-applies-to-013.htm	pass
 html4/z-index-applies-to-014.htm	pass
 html4/z-index-applies-to-015.htm	pass
-html4/z-index-dynamic-001.htm	fail
+html4/z-index-dynamic-001.htm	pass
 html4/z-index-stack-001.htm	pass
 html4/z-index-stack-002.htm	pass
 html4/z-index-stack-003.htm	pass
