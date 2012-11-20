@@ -173,7 +173,7 @@ void StackingContext::setZIndex(bool auto_, int index)
     }
 }
 
-void StackingContext::clip(StackingContext* s, float relativeX, float relativeY)
+void StackingContext::clip(StackingContext* s)
 {
     float scrollLeft = 0.0f;
     float scrollTop = 0.0f;
@@ -195,8 +195,6 @@ void StackingContext::clip(StackingContext* s, float relativeX, float relativeY)
                            clip->getPaddingWidth(), clip->getPaddingHeight());
         }
     }
-    clipLeft -= relativeX;
-    clipTop -= relativeY;
     glTranslatef(-scrollLeft, -scrollTop, 0.0f);
 }
 
@@ -217,7 +215,9 @@ bool StackingContext::resolveRelativeOffset(ViewCSSImp* view, float& x, float &y
             }
         }
         result |= style->resolveRelativeOffset(x, y);
-        clip(s, x, y);
+        clip(s);
+        clipLeft -= x;
+        clipTop -= y;
     }
     return result;
 }
