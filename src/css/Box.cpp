@@ -1226,6 +1226,18 @@ void Block::layOutInlineBlocks(ViewCSSImp* view)
             float savedHeight = block->getTotalHeight();
             // TODO: Check block's baseline as well.
             block->layOut(view, 0);
+            if (block->isAnonymous() || (dynamic_cast<TableWrapperBox*>(block) &&
+                                         (block->style->display != CSSDisplayValueImp::Table &&
+                                          block->style->display != CSSDisplayValueImp::InlineTable)))
+            {
+                block->marginLeft = 0.0f;
+                block->marginRight = 0.0f;
+            } else {
+                if (block->style->marginLeft.isAuto())
+                    block->marginLeft = 0.0f;
+                if (block->style->marginRight.isAuto())
+                    block->marginRight = 0.0f;
+            }
             if (savedWidth != block->getTotalWidth() || savedHeight != block->getTotalHeight())
                 flags |= NEED_REFLOW;
         }
