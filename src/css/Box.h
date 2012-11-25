@@ -639,6 +639,9 @@ public:
     bool isClipped() const {
         return !isAnonymous() && style && style->overflow.isClipped();
     }
+    bool canScroll() const {
+        return !isAnonymous() && style && style->overflow.canScroll();
+    }
 
     virtual const ContainingBlock* getContainingBlock(ViewCSSImp* view) const;
     void setContainingBlock(ViewCSSImp* view);

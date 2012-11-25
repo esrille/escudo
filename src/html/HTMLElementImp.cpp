@@ -100,8 +100,11 @@ void HTMLElementImp::handleMouseMove(events::Event event)
     events::MouseEvent mouse = interface_cast<events::MouseEvent>(event);
     unsigned short buttons = mouse.getButtons();
     if (buttons & 1) {
-        setScrollTop(getScrollTop() + moveY - mouse.getScreenY());
-        setScrollLeft(getScrollLeft() + moveX - mouse.getScreenX());
+        Block* block = dynamic_cast<Block*>(getBox());
+        if (block && block->canScroll()) {
+            setScrollTop(getScrollTop() + moveY - mouse.getScreenY());
+            setScrollLeft(getScrollLeft() + moveX - mouse.getScreenX());
+        }
     }
     moveX = mouse.getScreenX();
     moveY = mouse.getScreenY();
