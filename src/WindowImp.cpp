@@ -145,8 +145,6 @@ void WindowImp::updateView(ViewCSSImp* next)
     view = next;
     if (viewFlags)
         setFlags(flags | viewFlags);
-    scrollWidth = view->getScrollWidth();
-    scrollHeight = view->getScrollHeight();
     view->setZoom(zoom);
     detail = 0;
     redisplay = true;
@@ -332,6 +330,8 @@ void WindowImp::render(ViewCSSImp* parentView)
         canvas.setup(width, height);
         canvas.beginRender();
         view->render(parentView ? parentView->getClipCount() : 0);
+        scrollWidth = view->getScrollWidth();
+        scrollHeight = view->getScrollHeight();
         canvas.endRender();
 
         if (!parent) {

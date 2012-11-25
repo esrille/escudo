@@ -270,6 +270,62 @@ Element Box::getContainingElement(Node node)
     return 0;
 }
 
+void Box::updateScrollSize()
+{
+    assert(stackingContext);
+    if (clipBox) {
+        float s = x + stackingContext->getRelativeX();
+        float t = y + stackingContext->getRelativeY();
+        // TODO: rtl
+        // Use the computed right-margin and bottom-margin values for calculating the block width
+        float w = marginLeft + getBorderWidth();
+        float h = marginTop + getBorderHeight();
+        if (!isAnonymous() && style) {
+            if (!style->marginRight.isAuto())
+                w += std::max(0.0f, style->marginRight.getPx());
+            if (!style->marginBottom.isAuto())
+                h += std::max(0.0f, std::min(marginBottom, style->marginBottom.getPx()));  // in case the margin is collapsed
+        }
+        clipBox->updateScrollWidth(s + w);
+        clipBox->updateScrollHeight(t + h);
+    }
+}
+
+void Box::resetScrollSize()
+{
+    assert(stackingContext);
+    if (clipBox) {
+        clipBox->resetScrollWidth();
+        clipBox->resetScrollHeight();
+    }
+}
+
+void Block::updateScrollWidth(float r)
+{
+    assert(stackingContext);
+    float w = r - (x + getBlankLeft() + stackingContext->getRelativeX());
+    if (scrollWidth < w)
+        scrollWidth = w;
+}
+
+void Block::updateScrollHeight(float b)
+{
+    assert(stackingContext);
+    float h = b - (y + getBlankTop() + stackingContext->getRelativeY());
+    if (scrollHeight < h)
+        scrollHeight = h;
+}
+
+void Block::resetScrollWidth()
+{
+    scrollWidth = 0;
+}
+
+void Block::resetScrollHeight()
+{
+    scrollHeight = 0;
+}
+
 const ContainingBlock* Block::getContainingBlock(ViewCSSImp* view) const
 {
     if (isAbsolutelyPositioned())
@@ -424,7 +480,9 @@ Block::Block(Node node, CSSStyleDeclarationImp* style) :
     anonymousTable(0),
     defaultBaseline(0.0f),
     defaultLineHeight(0.0f),
-    mcw(0.0f)
+    mcw(0.0f),
+    scrollWidth(0.0f),
+    scrollHeight(0.0f)
 {
     if (style)
         setStyle(style);
@@ -1815,7 +1873,7 @@ void Block::resolveXY(ViewCSSImp* view, float left, float top, Block* clip)
     left += getBlankLeft();
     top += getBlankTop() + topBorderEdge;
 
-    if (isClipped())
+    if (isClipped() || !parentBox)
         clip = this;
     if (isPositioned()) {
         assert(getStyle());
@@ -1828,9 +1886,6 @@ void Block::resolveXY(ViewCSSImp* view, float left, float top, Block* clip)
             top += child->getTotalHeight() + child->getClearance();
         }
     }
-
-    view->updateScrollWidth(x + getBlockWidth());
-    view->updateScrollHeight(y + getBlockHeight());
 }
 
 void Block::dump(std::string indent)
@@ -1849,6 +1904,8 @@ void Block::dump(std::string indent)
     std::cout << " (" << x + relativeX << ", " << y + relativeY << ") " <<
         "w:" << width << " h:" << height << ' ' <<
         "(" << relativeX << ", " << relativeY <<") ";
+    if ((width < scrollWidth || height < scrollHeight) && (parentBox || scrollWidth != 816 || scrollHeight != 1056)) // TODO: Use some constants
+        std::cout << "sw:" << scrollWidth << " sh:" << scrollHeight << ' ';
     if (hasClearance())
         std::cout << "c:" << clearance << ' ';
     if (isCollapsedThrough())

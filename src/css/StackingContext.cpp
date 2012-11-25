@@ -94,7 +94,9 @@ StackingContext::StackingContext(bool auto_, int zIndex, CSSStyleDeclarationImp*
     clipBox(0),
     firstFloat(0),
     lastFloat(0),
-    currentFloat(0)
+    currentFloat(0),
+    relativeX(0.0f),
+    relativeY(0.0f)
 {
 }
 
@@ -173,34 +175,17 @@ void StackingContext::setZIndex(bool auto_, int index)
     }
 }
 
-void StackingContext::clip(StackingContext* s)
+void StackingContext::resetScrollSize()
 {
-    float scrollLeft = 0.0f;
-    float scrollTop = 0.0f;
-    for (Block* clip = s->clipBox; clip && clip != s->positioned->clipBox; clip = clip->clipBox) {
-        if (clip->stackingContext == s)
-            continue;
-        Element element = interface_cast<Element>(clip->node);
-        scrollLeft += element.getScrollLeft();
-        scrollTop += element.getScrollTop();
-        if (clipWidth == HUGE_VALF) {
-            clipLeft = scrollLeft + clip->x + clip->marginLeft + clip->borderLeft;
-            clipTop = scrollTop + clip->y + clip->marginTop + clip->borderTop;
-            clipWidth = clip->getPaddingWidth();
-            clipHeight = clip->getPaddingHeight();
-        } else {
-            Box::unionRect(clipLeft, clipTop, clipWidth, clipHeight,
-                           scrollLeft + clip->x + clip->marginLeft + clip->borderLeft,
-                           scrollTop + clip->y + clip->marginTop + clip->borderTop,
-                           clip->getPaddingWidth(), clip->getPaddingHeight());
-        }
-    }
-    glTranslatef(-scrollLeft, -scrollTop, 0.0f);
+    for (Box* base = firstBase; base; base = base->nextBase)
+        base->resetScrollSize();
+    for (StackingContext* childContext = getFirstChild(); childContext; childContext = childContext->getNextSibling())
+        childContext->resetScrollSize();
 }
 
-bool StackingContext::resolveRelativeOffset(ViewCSSImp* view, float& x, float &y)
+void StackingContext::resolveScrollSize(ViewCSSImp* view)
 {
-    bool result = false;
+    relativeX = relativeY = 0.0f;
     for (StackingContext* s = this; s != parent; s = s->positioned) {
         assert(s->style);
         CSSStyleDeclarationImp* style = s->style;
@@ -214,12 +199,109 @@ bool StackingContext::resolveRelativeOffset(ViewCSSImp* view, float& x, float &y
                 }
             }
         }
-        result |= style->resolveRelativeOffset(x, y);
-        clip(s);
-        clipLeft -= x;
-        clipTop -= y;
+        style->resolveRelativeOffset(relativeX, relativeY);
     }
-    return result;
+    if (parent) {
+        relativeX += parent->relativeX;
+        relativeY += parent->relativeY;
+    }
+    for (Box* base = firstBase; base; base = base->nextBase)
+        base->updateScrollSize();
+    for (StackingContext* childContext = getFirstChild(); childContext; childContext = childContext->getNextSibling())
+        childContext->resolveScrollSize(view);
+}
+
+void StackingContext::updateClipBox(StackingContext* s)
+{
+    float scrollLeft = 0.0f;
+    float scrollTop = 0.0f;
+    for (Block* clip = s->clipBox; clip && clip != s->positioned->clipBox; clip = clip->clipBox) {
+        if (clip->stackingContext == s || !clip->getParentBox())
+            continue;
+        Element element = interface_cast<Element>(clip->node);
+        scrollLeft += element.getScrollLeft();
+        scrollTop += element.getScrollTop();
+        if (clipWidth == HUGE_VALF) {
+            clipLeft = scrollLeft + clip->x + clip->marginLeft + clip->borderLeft + clip->stackingContext->relativeX;
+            clipTop = scrollTop + clip->y + clip->marginTop + clip->borderTop + clip->stackingContext->relativeY;
+            clipWidth = clip->getPaddingWidth();
+            clipHeight = clip->getPaddingHeight();
+        } else {
+            Box::unionRect(clipLeft, clipTop, clipWidth, clipHeight,
+                           scrollLeft + clip->x + clip->marginLeft + clip->borderLeft + clip->stackingContext->relativeX,
+                           scrollTop + clip->y + clip->marginTop + clip->borderTop + clip->stackingContext->relativeY,
+                           clip->getPaddingWidth(), clip->getPaddingHeight());
+        }
+    }
+    glTranslatef(-scrollLeft, -scrollTop, 0.0f);
+}
+
+bool StackingContext::hasClipBox()
+{
+    clipLeft = clipTop = 0.0f;
+    clipWidth = clipHeight = HUGE_VALF;
+    for (StackingContext* s = this; s != parent; s = s->positioned)
+        updateClipBox(s);
+    return clipWidth != HUGE_VALF && clipHeight != HUGE_VALF;
+}
+
+void StackingContext::render(ViewCSSImp* view)
+{
+    glPushMatrix();
+    if (hasClipBox())
+        view->clip(clipLeft, clipTop, clipWidth, clipHeight);
+    if (parent)
+        glTranslatef(relativeX - parent->relativeX, relativeY - parent->relativeY, 0.0f);
+    else
+        glTranslatef(relativeX, relativeY, 0.0f);
+    if (firstBase) {
+        currentFloat = firstFloat = lastFloat = 0;
+        GLfloat mtx[16];
+        glGetFloatv(GL_MODELVIEW_MATRIX, mtx);
+        for (Box* base = firstBase; base; base = base->nextBase) {
+            glPushMatrix();
+            Block* block = dynamic_cast<Block*>(base);
+            unsigned overflow = CSSOverflowValueImp::Visible;
+            if (block)
+                overflow = block->renderBegin(view);
+
+            glPushMatrix();
+            glLoadMatrixf(mtx);
+            StackingContext* childContext = getFirstChild();
+            for (; childContext && childContext->zIndex < 0; childContext = childContext->getNextSibling())
+                childContext->render(view);
+            glPopMatrix();
+
+            if (block) {
+                block->renderNonInline(view, this);
+                renderFloats(view, 0, 0);
+                block->renderInline(view, this);
+            } else
+                base->render(view, this);
+
+            glPushMatrix();
+            glLoadMatrixf(mtx);
+            for (; childContext; childContext = childContext->getNextSibling())
+                childContext->render(view);
+            glPopMatrix();
+
+            if (block) {
+                if (0.0f < block->getOutlineWidth())
+                    block->renderOutline(view, block->x, block->y + block->getTopBorderEdge());
+                block->renderEnd(view, overflow);
+            }
+            glPopMatrix();
+        }
+    } else {
+        glPushMatrix();
+        for (StackingContext* childContext = getFirstChild(); childContext; childContext = childContext->getNextSibling())
+            childContext->render(view);
+        glPopMatrix();
+    }
+
+    if (clipWidth != HUGE_VALF && clipHeight != HUGE_VALF)
+        view->unclip(clipLeft, clipTop, clipWidth, clipHeight);
+    glPopMatrix();
 }
 
 void StackingContext::renderFloats(ViewCSSImp* view, Box* last, Box* current)
@@ -243,71 +325,6 @@ void StackingContext::renderFloats(ViewCSSImp* view, Box* last, Box* current)
         lastFloat = last;
     }
     currentFloat = 0;
-}
-
-void StackingContext::render(ViewCSSImp* view)
-{
-    clipLeft = clipTop = 0.0f;
-    clipWidth = clipHeight = HUGE_VALF;
-    glPushMatrix();
-    float relativeX = 0.0f;
-    float relativeY = 0.0f;
-    if (resolveRelativeOffset(view, relativeX, relativeY))
-        glTranslatef(relativeX, relativeY, 0.0f);
-    if (clipWidth != HUGE_VALF && clipHeight != HUGE_VALF)
-        view->clip(clipLeft, clipTop, clipWidth, clipHeight);
-
-    if (firstBase) {
-        currentFloat = firstFloat = lastFloat = 0;
-        GLfloat mtx[16];
-        glGetFloatv(GL_MODELVIEW_MATRIX, mtx);
-        for (Box* base = firstBase; base; base = base->nextBase) {
-            glPushMatrix();
-            Block* block = dynamic_cast<Block*>(base);
-            unsigned overflow = CSSOverflowValueImp::Visible;
-            if (block) {
-                overflow = block->renderBegin(view);
-            }
-
-            glPushMatrix();
-            glLoadMatrixf(mtx);
-            StackingContext* childContext = getFirstChild();
-            for (; childContext && childContext->zIndex < 0; childContext = childContext->getNextSibling()) {
-                childContext->render(view);
-            }
-            glPopMatrix();
-
-            if (block) {
-                block->renderNonInline(view, this);
-                renderFloats(view, 0, 0);
-                block->renderInline(view, this);
-            } else
-                base->render(view, this);
-
-            glPushMatrix();
-            glLoadMatrixf(mtx);
-            for (; childContext; childContext = childContext->getNextSibling()) {
-                    childContext->render(view);
-            }
-            glPopMatrix();
-
-            if (block) {
-                if (0.0f < block->getOutlineWidth())
-                    block->renderOutline(view, block->x, block->y + block->getTopBorderEdge());
-                block->renderEnd(view, overflow);
-            }
-            glPopMatrix();
-        }
-    } else {
-        glPushMatrix();
-        for (StackingContext* childContext = getFirstChild(); childContext; childContext = childContext->getNextSibling())
-            childContext->render(view);
-        glPopMatrix();
-    }
-
-    if (clipWidth != HUGE_VALF && clipHeight != HUGE_VALF)
-        view->unclip(clipLeft, clipTop, clipWidth, clipHeight);
-    glPopMatrix();
 }
 
 void StackingContext::addBase(Box* box)
@@ -376,7 +393,7 @@ void StackingContext::layOutAbsolute(ViewCSSImp* view)
         if (!block || !block->isAbsolutelyPositioned())
             continue;
         block->layOutAbsolute(view);
-        block->resolveXY(view, block->x, block->y, block->clipBox);
+        block->resolveXY(view, block->x, block->y, block->clipBox ? block->clipBox : ((view->getTree() == block) ? 0 : view->getTree()));
     }
     needStaticPosition = false;
 

@@ -449,6 +449,9 @@ public:
         return isInside(x, y) ? this : 0;
     }
 
+    void updateScrollSize();
+    void resetScrollSize();
+
     static void renderVerticalScrollBar(float w, float h, float pos, float total);
     static void renderHorizontalScrollBar(float w, float h, float pos, float total);
     static void unionRect(float& l, float& t, float& w, float& h,
@@ -521,6 +524,8 @@ class Block : public Box
 
     // for reflow
     SavedFormattingContext savedFormattingContext;
+    float scrollWidth;
+    float scrollHeight;
 
     void getPsuedoStyles(ViewCSSImp* view, FormattingContext* context, CSSStyleDeclarationImp* style,
                          CSSStyleDeclarationPtr& firstLetterStyle, CSSStyleDeclarationPtr& firstLineStyle);
@@ -689,6 +694,17 @@ public:
         mcw = std::max(w, mcw);
         return mcw;
     }
+
+    float getScrollWidth() const {
+        return scrollWidth;
+    }
+    float getScrollHeight() const {
+        return scrollHeight;
+    }
+    void updateScrollWidth(float r);
+    void updateScrollHeight(float b);
+    void resetScrollWidth();
+    void resetScrollHeight();
 };
 
 // line of text

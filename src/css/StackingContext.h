@@ -57,6 +57,9 @@ class StackingContext
     Box* lastFloat;
     Box* currentFloat;
 
+    float relativeX;
+    float relativeY;
+
     float clipLeft;
     float clipTop;
     float clipWidth;
@@ -92,7 +95,7 @@ class StackingContext
     void insertContext(StackingContext* item);
     void reparent(StackingContext* target);
 
-    void clip(StackingContext* s);
+    void updateClipBox(StackingContext* s);
 
 public:
     StackingContext(bool auto_, int zIndex, CSSStyleDeclarationImp* style);
@@ -149,10 +152,20 @@ public:
 
     void layOutAbsolute(ViewCSSImp* view);
 
-    bool resolveRelativeOffset(ViewCSSImp* view, float& x, float &y);
-
     void renderFloats(ViewCSSImp* view, Box* last, Box* current);
+
+    void resetScrollSize();
+    void resolveScrollSize(ViewCSSImp* view);
+
+    bool hasClipBox();
     void render(ViewCSSImp* view);
+
+    float getRelativeX() const {
+        return relativeX;
+    }
+    float getRelativeY() const {
+        return relativeY;
+    }
 
     void dump(std::string indent = "");
 };

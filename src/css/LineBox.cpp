@@ -638,9 +638,6 @@ void LineBox::resolveXY(ViewCSSImp* view, float left, float top, Block* clip)
                 break;
         }
     }
-
-    view->updateScrollWidth(x + getTotalWidth());
-    view->updateScrollHeight(x + getTotalHeight());
 }
 
 void LineBox::dump(std::string indent)

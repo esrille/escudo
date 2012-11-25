@@ -99,13 +99,28 @@ void ViewCSSImp::render(unsigned parentClipCount)
     glPushMatrix();
     glScalef(zoom, zoom, zoom);
     glTranslatef(-window->getScrollX(), -window->getScrollY(), 0.0f);
-    if (stackingContexts)
+    if (stackingContexts) {
+        stackingContexts->resetScrollSize();
+        if (boxTree) {
+            boxTree->scrollWidth = getInitialContainingBlock()->getWidth();
+            boxTree->scrollHeight = getInitialContainingBlock()->getHeight();
+        }
+        stackingContexts->resolveScrollSize(this);
         stackingContexts->render(this);
+    }
     glPopMatrix();
 
-    if (boxTree && canScroll()) {
-        Box::renderVerticalScrollBar(initialContainingBlock.width, initialContainingBlock.height, window->getScrollY(), scrollHeight);
-        Box::renderHorizontalScrollBar(initialContainingBlock.width, initialContainingBlock.height, window->getScrollX(), scrollWidth);
+    if (boxTree) {
+        float s = boxTree->x + boxTree->stackingContext->getRelativeX();
+        float t = boxTree->y + boxTree->stackingContext->getRelativeY();
+        boxTree->scrollWidth = std::max(boxTree->scrollWidth, s + boxTree->getBlockWidth());
+        boxTree->scrollHeight = std::max(boxTree->scrollHeight, t + boxTree->getBlockHeight());
+        updateScrollWidth(boxTree->getScrollWidth());
+        updateScrollHeight(boxTree->getScrollHeight());
+        if (canScroll()) {
+            Box::renderVerticalScrollBar(initialContainingBlock.width, initialContainingBlock.height, window->getScrollY(), scrollHeight);
+            Box::renderHorizontalScrollBar(initialContainingBlock.width, initialContainingBlock.height, window->getScrollX(), scrollWidth);
+        }
     }
 
     // restore clipCount

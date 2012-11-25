@@ -539,6 +539,9 @@ void Box::renderHorizontalScrollBar(float w, float h, float pos, float total)
 unsigned Block::renderBegin(ViewCSSImp* view, bool noBorder)
 {
     unsigned overflow = CSSOverflowValueImp::Visible;
+    scrollWidth = std::max(width, scrollWidth);
+    scrollHeight = std::max(height, scrollHeight);
+    updateScrollSize();
     glPushMatrix();
     if (!isAnonymous() || isTableBox()) {
         float scrollX = 0.0f;
@@ -588,22 +591,14 @@ void Block::renderEnd(ViewCSSImp* view, unsigned overflow, bool scrollBar)
             float h = getPaddingHeight();
             view->unclip(left, top, w, h);
 
-            if (scrollBar && overflow != CSSOverflowValueImp::Hidden) {
+            if (scrollBar && overflow != CSSOverflowValueImp::Hidden && isVisible()) {
                 glPushMatrix();
-                    glTranslatef(x + marginLeft + borderLeft, y + marginTop + borderTop, 0.0f);
-                    float w = getPaddingWidth();
-                    float h = getPaddingHeight();
-                    Element element = interface_cast<Element>(node);
-                    float tw = 0.0f;
-                    float th = 0.0f;
-                    for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
-                        th += child->getTotalHeight() + child->getClearance();
-                        tw = std::max(tw, child->getTotalWidth());
-                    }
-                    if (isVisible()) {
-                        renderVerticalScrollBar(w, h, element.getScrollTop(), th);
-                        renderHorizontalScrollBar(w, h, element.getScrollLeft(), tw);
-                    }
+                glTranslatef(x + marginLeft + borderLeft, y + marginTop + borderTop, 0.0f);
+                float w = getPaddingWidth();
+                float h = getPaddingHeight();
+                Element element = interface_cast<Element>(node);
+                renderVerticalScrollBar(w, h, element.getScrollTop(), scrollHeight);
+                renderHorizontalScrollBar(w, h, element.getScrollLeft(), scrollWidth);
                 glPopMatrix();
             }
         }
@@ -893,6 +888,7 @@ void InlineBox::renderEmptyBox(ViewCSSImp* view, CSSStyleDeclarationImp* parentS
 void InlineBox::render(ViewCSSImp* view, StackingContext* stackingContext)
 {
     assert(stackingContext);
+    updateScrollSize();
 
     glPushMatrix();
 

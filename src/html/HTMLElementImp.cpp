@@ -284,15 +284,12 @@ int HTMLElementImp::getScrollTop()
 
 void HTMLElementImp::setScrollTop(int y)
 {
-    Block* box = dynamic_cast<Block*>(getBox());
-    if (!box)
+    Block* block = dynamic_cast<Block*>(getBox());
+    if (!block)
         return;
-    float overflow = 0.0f;
-    for (Box* child = box->getFirstChild(); child; child = child->getNextSibling())
-        overflow += child->getTotalHeight();
-    overflow -= box->height;
+    float overflow = block->getScrollHeight() - block->height;
     scrollTop = std::max(0, std::min(y, static_cast<int>(overflow)));
-    box->setFlags(Box::NEED_REPAINT);
+    block->setFlags(Box::NEED_REPAINT);
 }
 
 int HTMLElementImp::getScrollLeft()
@@ -302,28 +299,25 @@ int HTMLElementImp::getScrollLeft()
 
 void HTMLElementImp::setScrollLeft(int x)
 {
-    Block* box = dynamic_cast<Block*>(getBox());
-    if (!box)
+    Block* block = dynamic_cast<Block*>(getBox());
+    if (!block)
         return;
-    float overflow = 0.0f;
-    for (Box* child = box->getFirstChild(); child; child = child->getNextSibling())
-        overflow = std::max(overflow, child->getTotalWidth());
-    overflow -= box->width;
+    float overflow = block->getScrollWidth() - block->width;
     scrollLeft = std::max(0, std::min(x, static_cast<int>(overflow)));
-    box->setFlags(Box::NEED_REPAINT);
+    block->setFlags(Box::NEED_REPAINT);
 }
 
 int HTMLElementImp::getScrollWidth()
 {
-    if (Box* box = getBox())
-        return box->getPaddingWidth();
+    if (Block* block = dynamic_cast<Block*>(getBox()))
+        return block->getScrollWidth();
     return 0;
 }
 
 int HTMLElementImp::getScrollHeight()
 {
-    if (Box* box = getBox())
-        return box->getPaddingHeight();
+    if (Block* block = dynamic_cast<Block*>(getBox()))
+        return block->getScrollHeight();
     return 0;
 }
 
