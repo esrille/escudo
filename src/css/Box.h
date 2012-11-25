@@ -442,6 +442,11 @@ public:
     }
 
     Box* boxFromPoint(int x, int y) {
+        // TODO: Check z-index and relative offset
+        if (Element element = interface_cast<Element>(node)) {
+            x += element.getScrollLeft();
+            y += element.getScrollTop();
+        }
         for (Box* box = getFirstChild(); box; box = box->getNextSibling()) {
             if (Box* target = box->boxFromPoint(x, y))
                 return target;

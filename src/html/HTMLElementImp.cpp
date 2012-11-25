@@ -104,6 +104,7 @@ void HTMLElementImp::handleMouseMove(events::Event event)
         if (block && block->canScroll()) {
             setScrollTop(getScrollTop() + moveY - mouse.getScreenY());
             setScrollLeft(getScrollLeft() + moveX - mouse.getScreenX());
+            event.preventDefault();
         }
     }
     moveX = mouse.getScreenX();
