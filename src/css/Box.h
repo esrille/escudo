@@ -358,6 +358,9 @@ public:
     bool isPositioned() const {
         return !isStatic();
     }
+    bool isAbsolutelyPositioned() const {
+        return isPositioned() && !isRelative();
+    }
     void setPosition(unsigned value) {
         position = value;
     }
@@ -377,9 +380,6 @@ public:
         return !isFloat() && !isAbsolutelyPositioned() && getParentBox();
     }
 
-    virtual bool isAbsolutelyPositioned() const {
-        return false;
-    }
     virtual bool isFloat() const {
         return false;
     }
@@ -633,9 +633,7 @@ public:
         blockMap.clear();
     }
 
-    virtual bool isAbsolutelyPositioned() const;
     virtual bool isFloat() const;
-    bool isFixed() const;
     bool isClipped() const {
         return !isAnonymous() && style && style->overflow.isClipped();
     }

@@ -450,19 +450,9 @@ void Block::clearInlines()
     }
 }
 
-bool Block::isAbsolutelyPositioned() const
-{
-    return !isAnonymous() && style && style->isAbsolutelyPositioned();
-}
-
 bool Block::isFloat() const
 {
     return !isAnonymous() && style && style->isFloat();
-}
-
-bool Block::isFixed() const
-{
-    return !isAnonymous() && style && style->position.getValue() == CSSPositionValueImp::Fixed;
 }
 
 bool Block::hasAnonymousBox(Box* prev) const
