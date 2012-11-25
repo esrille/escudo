@@ -557,11 +557,10 @@ public:
         return float_.getValue() != CSSFloatValueImp::None;
     }
     bool isAbsolutelyPositioned() const {
-        return position.getValue() == CSSPositionValueImp::Absolute ||
-               position.getValue() == CSSPositionValueImp::Fixed;
+        return position.isPositioned() && !position.isRelative();
     }
     bool isPositioned() const {
-        return position.getValue() != CSSPositionValueImp::Static;
+        return position.isPositioned();
     }
 
     CSSStyleDeclarationImp* getParentStyle() const {
