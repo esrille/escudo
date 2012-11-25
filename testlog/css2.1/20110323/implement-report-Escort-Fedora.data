@@ -1,4 +1,4 @@
-# Escort 0.2.3 (r3186) Fedora Linux 17
+# Escort 0.2.3 (r3192) Fedora Linux 17
 # Escort/0.2.3
 # http://test.csswg.org/suites/css2.1/20110323/
 # See http://wiki.csswg.org/test/implementation-report for instructions
@@ -7888,8 +7888,8 @@ html4/position-relative-016.htm	pass
 html4/position-relative-017.htm	pass
 html4/position-relative-018.htm	pass
 html4/position-relative-019.htm	pass
-html4/position-relative-020.htm	fail
-html4/position-relative-021.htm	fail
+html4/position-relative-020.htm	pass
+html4/position-relative-021.htm	pass
 html4/position-relative-027.htm	pass
 html4/position-relative-028.htm	pass
 html4/position-relative-029.htm	pass
