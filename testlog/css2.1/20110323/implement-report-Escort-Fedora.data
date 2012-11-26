@@ -1,4 +1,4 @@
-# Escort 0.2.3 (r3192) Fedora Linux 17
+# Escort 0.2.3 (r3197) Fedora Linux 17
 # Escort/0.2.3
 # http://test.csswg.org/suites/css2.1/20110323/
 # See http://wiki.csswg.org/test/implementation-report for instructions
@@ -703,8 +703,8 @@ html4/background-attachment-003.htm	pass
 html4/background-attachment-004.htm	pass
 html4/background-attachment-005.htm	pass
 html4/background-attachment-006.htm	pass
-html4/background-attachment-007.htm	fail
-html4/background-attachment-008.htm	fail
+html4/background-attachment-007.htm	pass
+html4/background-attachment-008.htm	pass
 html4/background-attachment-009.htm	pass
 html4/background-attachment-010.htm	na
 html4/background-attachment-applies-to-001.htm	fail
@@ -7897,9 +7897,9 @@ html4/position-relative-030.htm	pass
 html4/position-relative-031.htm	pass
 html4/position-relative-032.htm	pass
 html4/position-relative-033.htm	pass
-html4/position-relative-034.htm	fail
+html4/position-relative-034.htm	pass
 html4/position-relative-035.htm	pass
-html4/position-relative-036.htm	fail
+html4/position-relative-036.htm	pass
 html4/position-relative-037.htm	pass
 html4/position-relative-038.htm	fail (rtl)
 html4/position-relative-nested-001.htm	pass
