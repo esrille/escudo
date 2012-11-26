@@ -347,7 +347,7 @@ void Block::setContainingBlock(ViewCSSImp* view)
                 continue;
             if (style->position.getValue() != CSSPositionValueImp::Static) {
                 // Now we need to find the corresponding box for this ancestor.
-                Box* box = style->box;
+                Box* box = style->getBox();
                 if (!box)   // cf. html4/tables-001
                     continue;
                 offsetH = box->x + box->marginLeft + box->borderLeft - x;
@@ -368,7 +368,7 @@ void Block::setContainingBlock(ViewCSSImp* view)
                         Box* p = box->getParentBox();
                         float t = box->y - box->paddingTop;
                         float l = box->x - box->paddingLeft;
-                        box = style->lastBox;
+                        box = style->getLastBox();
                         assert(box);
                         float b = box->y + box->height + box->paddingBottom;
                         float r = box->x + box->width + box->paddingRight;
@@ -1877,7 +1877,7 @@ void Block::resolveXY(ViewCSSImp* view, float left, float top, Block* clip)
         clip = this;
     if (isPositioned()) {
         assert(getStyle());
-        getStyle()->stackingContext->setClipBox(clipBox);
+        getStyle()->getStackingContext()->setClipBox(clipBox);
     }
 
     if (!childWindow) {

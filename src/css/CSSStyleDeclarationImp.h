@@ -127,8 +127,6 @@ class CSSStyleDeclarationImp : public ObjectMixin<CSSStyleDeclarationImp>
     friend class CSSPaddingShorthandImp;
     friend class ViewCSSImp;
 
-    friend class Block;
-
     friend unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style);
 
 public:

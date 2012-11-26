@@ -546,14 +546,14 @@ unsigned Block::renderBegin(ViewCSSImp* view, bool noBorder)
     if (!isAnonymous() || isTableBox()) {
         float scrollX = 0.0f;
         float scrollY = 0.0f;
-        if (isFixed() && style->parentStyle) {
+        if (isFixed() && style->getParentStyle()) {
             scrollX = view->getWindow()->getScrollX();
             scrollY = view->getWindow()->getScrollY();
             glTranslatef(scrollX, scrollY, 0.0f);
         }
         if (!noBorder && isVisible())
             renderBorder(view, x, y);
-        if (style->parentStyle) {
+        if (style->getParentStyle()) {
             overflow = style->overflow.getValue();
             if (overflow != CSSOverflowValueImp::Visible) {
                 float left = x + marginLeft + borderLeft + scrollX;
@@ -576,12 +576,12 @@ unsigned Block::renderBegin(ViewCSSImp* view, bool noBorder)
 void Block::renderEnd(ViewCSSImp* view, unsigned overflow, bool scrollBar)
 {
     if (!isAnonymous() || isTableBox()) {
-        if (style->parentStyle && overflow != CSSOverflowValueImp::Visible) {
+        if (style->getParentStyle() && overflow != CSSOverflowValueImp::Visible) {
             glPopMatrix();
 
             float scrollX = 0.0f;
             float scrollY = 0.0f;
-            if (isFixed() && style->parentStyle) {
+            if (isFixed() && style->getParentStyle()) {
                 scrollX = view->getWindow()->getScrollX();
                 scrollY = view->getWindow()->getScrollY();
             }
