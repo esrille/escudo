@@ -648,7 +648,8 @@ public:
         return !isAnonymous() && style && style->overflow.isClipped();
     }
     bool canScroll() const {
-        return !isAnonymous() && style && style->overflow.canScroll();
+        // Note the root box is scrolled by the viewport.
+        return parentBox && !isAnonymous() && style && style->overflow.canScroll();
     }
 
     virtual const ContainingBlock* getContainingBlock(ViewCSSImp* view) const;
