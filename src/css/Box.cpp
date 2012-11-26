@@ -1873,7 +1873,7 @@ void Block::resolveXY(ViewCSSImp* view, float left, float top, Block* clip)
     left += getBlankLeft();
     top += getBlankTop() + topBorderEdge;
 
-    if (isClipped() || !parentBox)
+    if (isClipped())
         clip = this;
     if (isPositioned()) {
         assert(getStyle());

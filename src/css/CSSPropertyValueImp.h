@@ -2164,9 +2164,11 @@ public:
     void specify(const CSSOverflowValueImp& specified) {
         original = value = specified.original;
     }
-    void swap(CSSOverflowValueImp& body) {
+    void useBodyValue(CSSOverflowValueImp& body) {
         value = body.original;
         body.value = CSSOverflowValueImp::Visible;
+        if (value == Visible)   // cf. http://www.w3.org/TR/CSS21/visufx.html#propdef-overflow
+            value = Auto;
     }
     CSSOverflowValueImp(unsigned initial = Visible) :
         original(initial),
