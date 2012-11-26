@@ -443,7 +443,8 @@ public:
 
     Box* boxFromPoint(int x, int y) {
         // TODO: Check z-index and relative offset
-        if (Element element = interface_cast<Element>(node)) {
+        if (!isAnonymous() && Element::hasInstance(node)) {
+            Element element = interface_cast<Element>(node);
             x += element.getScrollLeft();
             y += element.getScrollTop();
         }
