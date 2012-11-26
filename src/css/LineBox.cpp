@@ -817,6 +817,11 @@ void InlineBox::resolveXY(ViewCSSImp* view, float left, float top, Block* clip)
     x = left;
     y = top;
     clipBox = clip;
+
+    if (isPositioned()) {
+        assert(getStyle());
+        getStyle()->getStackingContext()->setClipBox(clipBox);
+    }
 }
 
 void InlineBox::dump(std::string indent)
