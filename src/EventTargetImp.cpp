@@ -116,10 +116,6 @@ bool EventTargetImp::dispatchEvent(events::Event evt)
             document->activate();
 
         std::list<EventTargetImp*> eventPath;
-        if (document && event->getType() != u"load") {
-            if (WindowImp* view = document->getDefaultWindow())
-                eventPath.push_front(view->getDocumentWindow().get());
-        }
         for (NodeImp* ancestor = node->parentNode; ancestor; ancestor = ancestor->parentNode) {
             if (auto shadowTree = dynamic_cast<HTMLTemplateElementImp*>(ancestor)) {
                 if (NodeImp* host = dynamic_cast<NodeImp*>(shadowTree->getHost().self())) {
@@ -130,12 +126,18 @@ bool EventTargetImp::dispatchEvent(events::Event evt)
                         // To repaint the window, we still need to notify the bound document
                         // of the event.
                         // TODO: Support nesting of bound elements.
-                        eventPath.push_back(ancestor->getOwnerDocumentImp());
+                        eventPath.push_front(ancestor->getOwnerDocumentImp());
                         break;
                     }
                 }
             }
             eventPath.push_front(ancestor);
+        }
+
+        // cf. http://www.whatwg.org/specs/web-apps/current-work/multipage/webappapis.html#events-and-the-window-object
+        if (document && event->getType() != u"load") {
+            if (WindowImp* view = document->getDefaultWindow())
+                eventPath.push_front(view->getDocumentWindow().get());
         }
 
         event->setEventPhase(events::Event::CAPTURING_PHASE);

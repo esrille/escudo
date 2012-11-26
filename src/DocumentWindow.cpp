@@ -101,6 +101,8 @@ void DocumentWindow::scroll(int x, int y)
 
 void DocumentWindow::handleClick(events::Event event)
 {
+    if (event.getDefaultPrevented())
+        return;
     html::Window defaultView = document.getDefaultView();
     if (!defaultView)
         return;
@@ -139,6 +141,8 @@ void DocumentWindow::handleClick(events::Event event)
 
 void DocumentWindow::handleMouseMove(events::Event event)
 {
+    if (event.getDefaultPrevented())
+        return;
     html::Window defaultView = document.getDefaultView();
     if (!defaultView)
         return;
