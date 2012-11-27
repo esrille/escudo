@@ -134,5 +134,5 @@ time[datetime] { binding: time; }
 }
 
 /* misc. */
-iframe { overflow: auto; }
+iframe { overflow: hidden; }
 noscript { display: none; }
