@@ -80,9 +80,7 @@ void Canvas::Impl::beginRender()
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
-    glLoadIdentity();
-    GLint d = viewportHeight - height;
-    glOrtho(x, width, height, y - d, -1000.0, 1.0);
+    glTranslatef(x, viewportHeight - height, 0.0f);
 
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
