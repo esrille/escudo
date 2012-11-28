@@ -109,7 +109,7 @@ void Box::applyReplacedMinMax(float w, float h)
     }
 }
 
-bool Block::layOutReplacedElement(ViewCSSImp* view, Box* replaced, Element element, CSSStyleDeclarationImp* style)
+bool Block::layOutReplacedElement(ViewCSSImp* view, Element element, CSSStyleDeclarationImp* style)
 {
     float intrinsicWidth = -1.0f;
     float intrinsicHeight = -1.0f;
@@ -125,14 +125,14 @@ bool Block::layOutReplacedElement(ViewCSSImp* view, Box* replaced, Element eleme
     } else if (tag != u"iframe")
         return false;
 
-    replaced->resolveReplacedWidth(intrinsicWidth, intrinsicHeight);
+    resolveReplacedWidth(intrinsicWidth, intrinsicHeight);
 
     if (tag == u"iframe") {
         html::HTMLIFrameElement iframe = interface_cast<html::HTMLIFrameElement>(element);
         html::Window contentWindow = iframe.getContentWindow();
         if (WindowImp* imp = dynamic_cast<WindowImp*>(contentWindow.self())) {
-            imp->setSize(replaced->width, replaced->height);
-            replaced->childWindow = imp;
+            imp->setSize(width, height);
+            childWindow = imp;
         }
     }
 

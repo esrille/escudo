@@ -551,7 +551,7 @@ class Block : public Box
     void layOutInlineBlocks(ViewCSSImp* view);
     void layOutChildren(ViewCSSImp* view, FormattingContext* context);
 
-    bool layOutReplacedElement(ViewCSSImp* view, Box* replaced, Element element, CSSStyleDeclarationImp* style);
+    bool layOutReplacedElement(ViewCSSImp* view, Element element, CSSStyleDeclarationImp* style);
 
     void applyMinMaxHeight(FormattingContext* context);
 

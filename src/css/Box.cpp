@@ -1402,7 +1402,7 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
         }
     }
 
-    if (!layOutReplacedElement(view, this, element, style.get())) {
+    if (!layOutReplacedElement(view, element, style.get())) {
         if (!intrinsic && style->display.isInline() && isReplacedElement(element)) {
             // An object fallback has occurred for an inline, replaced element.
             // It is now treated as an inline element, and hence 'width' and 'height'
@@ -1763,7 +1763,7 @@ void Block::layOutAbsolute(ViewCSSImp* view)
 
     layOutInlineBlocks(view);
 
-    if (layOutReplacedElement(view, this, element, style.get())) {
+    if (layOutReplacedElement(view, element, style.get())) {
         maskH &= ~Width;
         maskV &= ~Height;
         // TODO: more conditions...
