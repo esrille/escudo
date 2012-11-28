@@ -105,7 +105,7 @@ Box::~Box()
     if (style)
         style->removeBox(this);
 
-    // TODO: delete formattingContext
+    delete formattingContext;
 }
 
 Box* Box::removeChild(Box* item)
