@@ -539,8 +539,6 @@ void Box::renderHorizontalScrollBar(float w, float h, float pos, float total)
 unsigned Block::renderBegin(ViewCSSImp* view, bool noBorder)
 {
     unsigned overflow = CSSOverflowValueImp::Visible;
-    scrollWidth = std::max(width, scrollWidth);
-    scrollHeight = std::max(height, scrollHeight);
     updateScrollSize();
     glPushMatrix();
     if (!isAnonymous() || isTableBox()) {
