@@ -310,23 +310,26 @@ void StackingContext::renderFloats(ViewCSSImp* view, Box* last, Box* current)
 {
     if (current && current == currentFloat)
         return;
-    if (!last)
+
+    Box* saved = currentFloat;
+    if (!current || !last)
         currentFloat = firstFloat;
     else if (last->nextFloat)
         currentFloat = last->nextFloat;
     else
         return;
     while (currentFloat) {
-        currentFloat->render(view, this);;
+        currentFloat->render(view, this);
+        assert(currentFloat);
         currentFloat = currentFloat->nextFloat;
     }
-    if (!last)
+    if (!current || !last)
         firstFloat = lastFloat = 0;
     else {
         last->nextFloat = 0;
         lastFloat = last;
     }
-    currentFloat = 0;
+    currentFloat = saved;
 }
 
 void StackingContext::addBase(Box* box)
