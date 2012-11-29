@@ -3,13 +3,13 @@ Section: web
 Priority: extra
 Maintainer: Esrille Inc. (0.2) <info@esrille.org>
 Build-Depends: debhelper (>= 8.0.0), autotools-dev, 
-               bison, flex, re2c, esidl,
-               libicu-dev, libglew-dev, libfreetype6-dev, freeglut3-dev, libxmu-dev,
-               libgif-dev, libpng-dev, libjpeg-dev, libssl-dev,
-               libboost1.48-dev, libboost-iostreams1.48-dev, libboost-system1.48-dev, libboost-regex1.48-dev,
-               libmozjs-dev, libv8-dev,
-               fonts-liberation, ttf-dejavu-core,
-               fonts-takao-mincho, fonts-takao-gothic, ttf-ancient-fonts
+	bison, flex, re2c, esidl,
+	libicu-dev, libglew-dev, libfreetype6-dev, freeglut3-dev, libxmu-dev,
+	libgif-dev, libpng-dev, libjpeg-dev, libssl-dev,
+	libboost-dev, libboost-iostreams-dev, libboost-system-dev, libboost-regex-dev,
+	libmozjs-dev, libv8-dev,
+	fonts-liberation, ttf-dejavu-core,
+	fonts-takao-mincho, fonts-takao-gothic, ttf-ancient-fonts
 Standards-Version: 3.9.2
 Homepage: http://code.google.com/p/es-operating-system/
 # Vcs-Svn: http://es-operating-system.googlecode.com/svn/trunk/escort
@@ -18,8 +18,8 @@ Homepage: http://code.google.com/p/es-operating-system/
 Package: escort
 Architecture: any
 Depends: ${shlibs:Depends},${misc:Depends},
-         fonts-liberation, ttf-dejavu-core,
-         fonts-takao-mincho, fonts-takao-gothic, ttf-ancient-fonts
+	fonts-liberation, ttf-dejavu-core,
+	fonts-takao-mincho, fonts-takao-gothic, ttf-ancient-fonts
 Description: Escort Web Browser
  Escort web browser is a new web browser which is currently under the
  development as one of the ES operating system projects. Escort has a
