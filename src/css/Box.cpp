@@ -1296,8 +1296,14 @@ void Block::layOutInlineBlocks(ViewCSSImp* view)
                 if (block->style->marginRight.isAuto())
                     block->marginRight = 0.0f;
             }
-            if (savedWidth != block->getTotalWidth() || savedHeight != block->getTotalHeight())
+            if (savedWidth != block->getTotalWidth() || savedHeight != block->getTotalHeight()) {
                 flags |= NEED_REFLOW;
+                // Set NEED_REFLOW to anonymous boxes between 'block' and 'this'.
+                for (Box* ancestor = block->parentBox; ancestor && ancestor != this; ancestor = ancestor->parentBox) {
+                    if (dynamic_cast<Block*>(ancestor))
+                        ancestor->flags |= NEED_REFLOW;
+                }
+            }
         }
     }
 }
@@ -1385,7 +1391,7 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
     context = updateFormattingContext(context);
 
     layOutInlineBlocks(view);
-    if (hasInline() && !(flags & NEED_REFLOW)) {
+    if (hasInline() && !(flags & NEED_REFLOW) && !isAnonymous()) {
         // Only inline blocks have been marked NEED_REFLOW and no more reflow is necessary
         // with this block.
 #ifndef NDEBUG
