@@ -98,8 +98,18 @@ void HTMLObjectElementImp::notify()
         }
     }
     // TODO: fire 'load' or 'error' event
-    if (Box* box = getBox())
+    if (Box* box = getBox()) {
         box->setFlags(Box::NEED_REFLOW);
+        Box* ancestor = box->getParentBox();
+        if (ancestor && !dynamic_cast<Block*>(ancestor)) {
+            // Update inline image
+            ancestor = ancestor->getParentBox();
+            while (ancestor && !dynamic_cast<Block*>(ancestor))
+                ancestor = ancestor->getParentBox();
+            if (ancestor)
+                ancestor->setFlags(Box::NEED_REFLOW);
+        }
+    }
     DocumentImp* document = getOwnerDocumentImp();
     document->decrementLoadEventDelayCount();
 }
