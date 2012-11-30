@@ -1,3 +1,2036 @@
+2012-11-30 09:48  Shiki.Okasaka@gmail.com
+
+	* Makefile.in, aclocal.m4: Update
+
+2012-11-30 09:40  Shiki.Okasaka@gmail.com
+
+	* testlog/css2.1/20110323/implement-report-Escort-Fedora.data:
+	  (implement-report-Escort-Fedora.data) : Update using r3221
+
+2012-11-30 08:51  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, testdata/partial-reflow-float-004.html:
+	  (Block::layOut) : Fix a bug introduced in r3217
+	  partial-reflow-float-004.html : New
+
+2012-11-30 06:04  Shiki.Okasaka@gmail.com
+
+	* src/css/LineBox.cpp, testdata/margin-collapse-002.html:
+	  (LineBox::resolveXY) : Fix a bug; cf. margin-collapse-002.html
+	  margin-collapse-002.html : New
+
+2012-11-30 05:55  Shiki.Okasaka@gmail.com
+
+	* testlog/css2.1/20110323/implement-report-Escort-Fedora.data:
+	  (implement-report-Escort-Fedora.data) : Update using r3218
+
+2012-11-30 05:49  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.h, src/css/FormattingContext.cpp,
+	  src/css/FormattingContext.h, testdata/margin-collapse-001.html:
+	  (FormattingContext::adjustRemainingHeight,
+	  FormattingContext::useMargin) : Fix bugs; cf.
+	  margin-collapse-001.html
+	  Box.h (getPaddingTop, getPaddingRight, getPaddingBottom,
+	  getPaddingLeft) : New
+	  margin-collapse-001.html : New
+
+2012-11-29 15:10  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, testdata/partial-reflow-float-003.html:
+	  (Block::layOutInlineBlocks) : Fix a bug
+	  partial-reflow-float-003.html : New
+
+2012-11-29 10:03  Shiki.Okasaka@gmail.com
+
+	* src/html/HTMLImageElementImp.cpp,
+	  src/html/HTMLObjectElementImp.cpp: (HTMLImageElementImp::notify,
+	  HTMLObjectElementImp::notify) : Fix a bug
+
+2012-11-29 04:24  Shiki.Okasaka@gmail.com
+
+	* debian/control: (Build-Depends) : Update for Ubuntu 12.10 quantal
+
+2012-11-28 07:42  Shiki.Okasaka@gmail.com
+
+	* testlog/css2.1/20110323/implement-report-Escort-Fedora.data:
+	  (implement-report-Escort-Fedora.data) : Update using r3212
+
+2012-11-28 07:26  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp: (Box::~Box) : Refine
+
+2012-11-28 07:24  Shiki.Okasaka@gmail.com
+
+	* src/css/StackingContext.cpp: (StackingContext::renderFloats) :
+	  Fix a bug
+
+2012-11-28 07:14  Shiki.Okasaka@gmail.com
+
+	* src/css/StackingContext.cpp: (StackingContext::render) : Fix bugs
+
+2012-11-28 01:26  Shiki.Okasaka@gmail.com
+
+	* testlog/css2.1/20110323/implement-report-Escort-Fedora.data:
+	  (implement-report-Escort-Fedora.data) : Update using r3208
+
+2012-11-28 01:07  Shiki.Okasaka@gmail.com
+
+	* data/escort/escort.html: (body) : No scrolling mechanism is
+	  needed for the top-level browser window even if its toolbar is
+	  partly outside the window
+
+2012-11-28 01:07  Shiki.Okasaka@gmail.com
+
+	* src/css/BoxGL.cpp: (Block::renderBegin) : Fix a bug
+
+2012-11-28 01:05  Shiki.Okasaka@gmail.com
+
+	* debian/control: debian/control : Revert to r2934
+
+2012-11-28 00:57  Shiki.Okasaka@gmail.com
+
+	* debian/control, src/css/Box.cpp, src/css/Box.h,
+	  src/css/Replaced.cpp,
+	  testlog/css2.1/20110323/implement-report-Escort-Fedora.data:
+	  (Block::layOutReplacedElement) : Refine; all callers changed
+
+2012-11-27 11:01  Shiki.Okasaka@gmail.com
+
+	* data/escort/default.css, testdata/default.css: (iframe) : The
+	  scrolling mechanism is provided by the child window
+
+2012-11-27 10:59  Shiki.Okasaka@gmail.com
+
+	* src/CanvasGL.cpp: (Canvas::Impl::beginRender) : Fix a bug
+
+2012-11-26 07:41  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.h: (Box::boxFromPoint) : Fix a bug
+
+2012-11-26 07:12  Shiki.Okasaka@gmail.com
+
+	* src/DocumentWindow.cpp, src/EventTargetImp.cpp:
+	  (EventTargetImp::dispatchEvent) : Fix a bug
+	  (DocumentWindow::handleClick, DocumentWindow::handleMouseMove) :
+	  Fix a bug
+
+2012-11-26 04:05  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/CSSPropertyValueImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp:
+	  (CSSOverflowValueImp::useBodyValue) : Refine and rename from
+	  swap; all callers changed
+	  (Block::resolveXY) : Refine now that the root box is always
+	  clipped
+
+2012-11-26 03:58  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.h: (Block::canScroll) : Fix a bug
+
+2012-11-26 03:22  Shiki.Okasaka@gmail.com
+
+	* testlog/css2.1/20110323/implement-report-Escort-Fedora.data:
+	  (implement-report-Escort-Fedora.data) : Update using r3197
+
+2012-11-26 03:18  Shiki.Okasaka@gmail.com
+
+	* src/css/LineBox.cpp: (InlineBox::resolveXY) : Update the stacking
+	  context of a positioned inline box; cf.
+	  html4/position-relative-034.htm
+
+2012-11-26 03:13  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/BoxGL.cpp,
+	  src/css/CSSStyleDeclarationImp.h: (CSSStyleDeclarationImp) : Make
+	  Block not a friend class
+
+2012-11-25 19:35  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.h, src/html/HTMLElementImp.cpp:
+	  (HTMLElementImp::handleMouseMove) : Fix a bug; cf.
+	  html4/background-attachment-007.htm
+	  (Box::boxFromPoint) : Fix a bug
+
+2012-11-25 18:38  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-float-001.html:
+	  partial-reflow-float-001.html : Refine
+
+2012-11-25 18:35  Shiki.Okasaka@gmail.com
+
+	* testlog/css2.1/20110323/implement-report-Escort-Fedora.data:
+	  (implement-report-Escort-Fedora.data) : Update using r3192
+
+2012-11-25 18:13  Shiki.Okasaka@gmail.com
+
+	* src/WindowImp.cpp, src/css/Box.cpp, src/css/Box.h,
+	  src/css/BoxGL.cpp, src/css/LineBox.cpp,
+	  src/css/StackingContext.cpp, src/css/StackingContext.h,
+	  src/css/ViewCSSImpGL.cpp, src/html/HTMLElementImp.cpp:
+	  (ViewCSSImp::render) : Resolve scroll sizes of the clip boxes and
+	  the viewport
+	  (Block::renderBegin, InlineBox::render) : Update the scroll size
+	  of the clip box
+	  (Box::updateScrollSize, Box::resetScrollSize) : New
+	  (Block::getScrollWidth, Block::getScrollHeight,
+	  Block::updateScrollWidth, Block::updateScrollHeight,
+	  Block::resetScrollWidth, Block::resetScrollHeight) : New
+	  (Block::renderEnd, LineBox::resolveXY) : Refine
+	  (StackingContext::resetScrollSize,
+	  StackingContext::resolveScrollSize,
+	  StackingContext::updateClipBox, StackingContext::hasClipBox) :
+	  New based on clip, resolveRelativeOffset
+	  (StackingContext::render) : Refine
+	  (Block::resolveXY, StackingContext::layOutAbsolute) : Clip every
+	  other the element box by the root box
+	  (HTMLElementImp::setScrollTop, HTMLElementImp::setScrollLeft,
+	  HTMLElementImp::getScrollWidth, HTMLElementImp::getScrollHeight)
+	  : Refine
+	  (WindowImp::updateView, WindowImp::render) : Refine; note the
+	  scroll size of the viewport is now updated by ViewCSSImp::render
+	  (Block::dump) : Dump scroll size
+
+2012-11-25 17:54  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp: (Block::layOutInlineBlocks) : Fix a bug; cf.
+	  html4/table-layout-applies-to-001.htm
+
+2012-11-25 17:50  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/Box.h: (Box::isAbsolutelyPositioned) :
+	  Refine
+	  (Block::isFixed) : Remove
+
+2012-11-25 17:46  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSStyleDeclarationImp.h:
+	  (CSSStyleDeclarationImp::isAbsolutelyPositioned,
+	  CSSStyleDeclarationImp::isPositioned) : Refine
+
+2012-11-25 17:42  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.h, src/html/HTMLElementImp.cpp:
+	  (HTMLElementImp::handleMouseMove) : Fix a bug; cf.
+	  html4/table-margin-001.htm
+	  (Block::canScroll) : New
+
+2012-11-20 10:58  Shiki.Okasaka@gmail.com
+
+	* testlog/css2.1/20110323/implement-report-Escort-Fedora.data:
+	  (implement-report-Escort-Fedora.data) : Update using r3186
+
+2012-11-20 10:39  Shiki.Okasaka@gmail.com
+
+	* src/css/StackingContext.cpp: (StackingContext::render) : Fix a
+	  bug
+
+2012-11-20 10:38  Shiki.Okasaka@gmail.com
+
+	* src/css/StackingContext.cpp, src/css/StackingContext.h:
+	  (StackingContext::clip) : Refine
+
+2012-11-20 09:56  Shiki.Okasaka@gmail.com
+
+	* src/css/StackingContext.cpp: (StackingContext::render) : Fix a
+	  bug
+
+2012-11-20 09:21  Shiki.Okasaka@gmail.com
+
+	* src/css/BoxGL.cpp, src/css/StackingContext.cpp,
+	  src/css/StackingContext.h: (Block::renderNonInline) : Render
+	  non-positioned floats if this block is clipped; cf.
+	  html4/overflow-006.htm
+	  (StackingContext::renderFloats, StackingContext::getLastFloat) :
+	  New
+	  (StackingContext::render, StackingContext::clip) : Refine
+
+2012-11-19 15:28  Shiki.Okasaka@gmail.com
+
+	* src/css/ViewCSSImp.cpp, src/css/ViewCSSImpGL.cpp:
+	  (ViewCSSImp::constructComputedStyle,
+	  ViewCSSImp::calculateComputedStyles) : Fix bugs; cf.
+	  html4/overflow-html-body-001.htm
+	  (ViewCSSImp::render) : Refine
+
+2012-11-19 11:54  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.h: (CSSDisplayValueImp::specify) :
+	  Clean up
+
+2012-11-19 11:52  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp:
+	  (CSSStyleDeclarationImp::compute) : Fix to keep the original
+	  'overflow' value of the body element; cf. html4/overflow-005.htm
+	  (CSSOverflowValueImp::swap) : New
+
+2012-11-19 11:45  Shiki.Okasaka@gmail.com
+
+	* src/css/StackingContext.cpp: (StackingContext::clip) : Fix a bug;
+	  cf. html4/overflow-003.htm
+
+2012-11-18 14:26  Shiki.Okasaka@gmail.com
+
+	* src/css/Table.cpp: (TableWrapperBox::layOutTableBox) : Fix a bug;
+	  cf. html4/table-margin-002.htm
+
+2012-11-18 13:48  Shiki.Okasaka@gmail.com
+
+	* src/css/Table.cpp: (TableWrapperBox::layOutTableBox) : Fix a bug;
+	  cf. html4/table-height-algorithm-012.htm
+
+2012-11-18 13:19  Shiki.Okasaka@gmail.com
+
+	* src/css/ViewCSSImp.cpp: (ViewCSSImp::constructBlock) : Fix a bug;
+	  cf. html4/table-anonymous-objects-155.htm
+
+2012-11-17 17:18  Shiki.Okasaka@gmail.com
+
+	* src/css/Table.cpp: (CellBox::CellBox) : Fix a bug; the initial
+	  value of the vertical-align property must be baseline; cf.
+	  html4/before-content-display-007.htm
+	  (TableWrapperBox::layOutTableBox) : Refine
+
+2012-11-17 09:35  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.cpp, src/css/CSSPropertyValueImp.h:
+	  (CSSLineHeightValueImp::inherit) : Fix a bug; cf.
+	  html4/c548-ln-ht-003.htm
+	  (CSSVerticalAlignValueImp::inherit) : Fix a bug
+
+2012-11-17 08:59  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSStyleDeclarationImp.cpp:
+	  (CSSStyleDeclarationImp::compute) : Fix a bug; cf.
+	  html4/dynamic-top-change-003.htm
+
+2012-11-17 08:24  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSSelector.cpp: (CSSLangPseudoClassSelector::match) :
+	  Fix a bug; cf. html4/lang-pseudoclass-001.htm
+
+2012-11-17 07:00  Shiki.Okasaka@gmail.com
+
+	* src/css/Table.cpp: (TableWrapperBox::layOutTableBox) : Fix the
+	  automatic table layout algorithm; cf.
+	  html4/border-collapse-applies-to-015.htm
+
+2012-11-17 06:00  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSStyleDeclarationImp.cpp:
+	  (CSSStyleDeclarationImp::compute) : Fix a bug; cf.
+	  html4/background-repeat-005.htm
+
+2012-11-17 05:07  Shiki.Okasaka@gmail.com
+
+	* src/WindowImp.cpp: (WindowImp::render) : Refine for harness to
+	  support 'html4/root-box-003.htm' which does not create a render
+	  tree
+
+2012-11-16 12:04  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/Box.h, src/css/BoxGL.cpp,
+	  src/css/StackingContext.cpp: Fix issues detected by
+	  html4/block-in-inline-relpos-002.htm
+	  
+	  (Block::renderNonInline) : Fix a bug; note positioned floats are
+	  rendered as the base layers of the corresponding stacking
+	  contexts
+	  (Box::nextFloat) : New; note a float can be a base in a stacking
+	  context
+	  (StackingContext::render, StackingContext::addFloat) : Use
+	  Box::nextFloat
+	  (StackingContext::addBase) : Remove the wrong assertion
+
+2012-11-16 01:19  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp: (CSSNumericValue::isLength,
+	  CSSNumericValue::inheritLength) : New
+	  (CSSNumericValue::inherit) : Refine
+	  (CSSNumericValueImp::inherit) : Fix a bug
+	  (CSSNonNegativeValueImp::inherit) : Fix a bug
+	  (CSSPaddingWidthValueImp::inherit) : Fix a bug
+	  (CSSAutoLengthValueImp::inherit) : Fix a bug
+	  (CSSNoneLengthValueImp::inherit) : Fix a bug
+	  (CSSNormalLengthValueImp::inherit,
+	  CSSWordSpacingValueImp::inherit) : Fix a bug
+	  (CSSBackgroundPositionValueImp::inherit) : Fix a bug
+	  (CSSBorderSpacingValueImp::inhefit,
+	  CSSStyleDeclarationImp::inherit) : Fix a bug
+	  (CSSVerticalAlignValueImp::inhefit) : Fix a bug
+
+2012-11-15 11:09  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-z-index-003.html:
+	  partial-reflow-z-index-003.html : Update the description
+
+2012-11-15 10:05  Shiki.Okasaka@gmail.com
+
+	* src/css/StackingContext.cpp, src/css/StackingContext.h,
+	  testdata/partial-reflow-z-index-002.html,
+	  testdata/partial-reflow-z-index-003.html:
+	  (StackingContext::setZIndex) : Deal with changing z-index value
+	  from auto to number and vice versa
+	  (StackingContext::reparent) : New
+	  partial-reflow-z-index-002.html, partial-reflow-z-index-003.html
+	  : New
+
+2012-11-15 10:00  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp: (Block::layOutAbsolute) : Add debug support code
+
+2012-11-15 08:44  Shiki.Okasaka@gmail.com
+
+	* src/css/StackingContext.cpp, src/css/StackingContext.h:
+	  (StackingContext::layOutAbsolute) : Fix a bug; note the position
+	  of an absolutely positioned box that is in an auto stacking
+	  context cannot be determined until that of the auto stacking
+	  context has been determined
+
+2012-11-15 08:19  Shiki.Okasaka@gmail.com
+
+	* src/css/StackingContext.cpp: (StackingContext::dump) : Print
+	  'auto' rather than zero for each stacking context with z-index
+	  value 'auto'
+
+2012-11-15 03:53  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp, src/css/StackingContext.cpp,
+	  src/css/StackingContext.h,
+	  testdata/partial-reflow-relative-001.html,
+	  testdata/partial-reflow-relative-002.html:
+	  (StackingContext::render, StackingContext::resolveRelativeOffset,
+	  CSSStyleDeclarationBoard::compare) : Reposition relatively
+	  positioned elements by repaint only
+	  (CSSPositionValueImp::isRelative) : New
+	  partial-reflow-relative-001.html,
+	  partial-reflow-relative-002.html : New
+
+2012-11-15 01:34  Shiki.Okasaka@gmail.com
+
+	* src/css/Table.cpp: (TableWrapperBox::layOut,
+	  TableWrapperBox::layOutAbsolute) : Clean up
+
+2012-11-15 01:11  Shiki.Okasaka@gmail.com
+
+	* src/css/StackingContext.cpp: (StackingContext::addBase) : Add a
+	  runtime check
+
+2012-11-15 00:57  Shiki.Okasaka@gmail.com
+
+	* src/css/Table.cpp: (TableWrapperBox::TableWrapperBox) : Fix a bug
+
+2012-11-15 00:55  Shiki.Okasaka@gmail.com
+
+	* src/css/Table.cpp: (TableWrapperBox::constructBlocks) : Fix a bug
+
+2012-11-14 23:37  Shiki.Okasaka@gmail.com
+
+	* src/css/StackingContext.cpp: StackingContext.cpp : Clean up
+
+2012-11-14 11:37  Shiki.Okasaka@gmail.com
+
+	* src/WindowImp.cpp, src/css/Box.cpp, src/css/Box.h,
+	  src/css/CSSPropertyValueImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp,
+	  src/css/CSSStyleDeclarationImp.h, src/css/Table.cpp,
+	  src/css/ViewCSSImp.cpp, testdata/partial-reflow-abs-003.html,
+	  testdata/partial-reflow-abs-004.html,
+	  testdata/partial-reflow-abs-005.html: (Box::NEED_REPOSITION) :New
+	  for indicating a positioned box that is moved
+	  (ViewCSSImp::calculateComputedStyle) : Support
+	  Box::NEED_REPOSITION
+	  (Block::layOutAbsolute, TableWrapperBox::layOutAbsolute) :
+	  Support Box::NEED_REPOSITION
+	  (Block::layOutAbsoluteEnd) : New
+	  (Block::layOut, TableWrapperBox::layOut) : Refine
+	  (CSSStyleDeclarationBoard::compare) : Support
+	  Box::NEED_REPOSITION
+	  (CSSStyleDeclarationImp::resolve,
+	  CSSStyleDeclarationImp::setContainingBlockSize) : Refine
+	  (CSSPositionValueImp::isPositioned) : New
+	  (Box::NEED_CHILD_REFLOW) : Rename from NEED_CHILD_LAYOUT
+	  partial-reflow-abs-003.html, partial-reflow-abs-004.html : Refine
+	  partial-reflow-abs-005.html : New
+
+2012-11-14 07:48  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/Box.h,
+	  src/css/CSSStyleDeclarationImp.cpp,
+	  src/css/CSSStyleDeclarationImp.h, src/css/LineBox.cpp,
+	  src/css/StackingContext.cpp, src/css/StackingContext.h:
+	  (resolveRelativeOffset) : Rename from resolveOffset
+
+2012-11-14 05:35  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-abs-003.html,
+	  testdata/partial-reflow-abs-004.html:
+	  partial-reflow-abs-003.html, partial-reflow-abs-004.html : New
+
+2012-11-14 04:42  Shiki.Okasaka@gmail.com
+
+	* src/css/Table.cpp, src/css/Table.h: (TableWrapperBox::layOut) :
+	  Fix a bug
+	  (CellBox::resetWidth, TableWrapperBox::resetCellBoxWidths) : New
+	  (TableWrapperBox::constructBlocks,
+	  TableWrapperBox::reconstructBlocks) : Refine
+
+2012-11-14 04:03  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.cpp,
+	  src/css/CSSStyleDeclarationImp.cpp:
+	  (CSSListStylePositionValueImp::compute,
+	  CSSStyleDeclarationBoard::compare) : Fix bugs
+
+2012-11-13 14:39  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp,
+	  testdata/partial-reflow-quotes-001.html: (CSSQuotesValueImp) :
+	  Support == and !=
+	  (CSSStyleDeclarationBoard::compare) : Check quotes
+	  partial-reflow-quotes-001.html : New
+
+2012-11-13 10:35  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.cpp, src/css/CSSPropertyValueImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp:
+	  (CSSPropertyValueImp::getCssText) : Make this const fuction; all
+	  subclasses changed
+	  (CSSContentValueImp) : Support == and !=
+
+2012-11-13 08:14  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.cpp, src/css/CSSPropertyValueImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp, src/http/HTTPRequest.cpp,
+	  src/http/HTTPRequest.h, src/http/HTTPResponseMessage.h,
+	  testdata/partial-reflow-list-003.html: (CSSContentValueImp) :
+	  Refine to use the 'list-style-type' if the specified list style
+	  image is not valid
+	  (CSSListStyleImageValueImp) : Refine to preload the list style
+	  image
+	  (HttpRequest::addCallback, HttpRequest::clearCallback) : New to
+	  support multiple callbacks
+	  (HttpRequest::clearHandler, HttpRequest::complete,
+	  HttpRequest::notify) : Refine
+	  (HttpResponseMessage::setStatus) : New
+	  (doTest) : Test 404
+
+2012-11-13 06:25  Shiki.Okasaka@gmail.com
+
+	* src/DocumentWindow.cpp, src/DocumentWindow.h: (DocumentWindow) :
+	  Clean up
+
+2012-11-13 03:41  Shiki.Okasaka@gmail.com
+
+	* src/css/BoxGL.cpp, src/css/CSSPropertyValueImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp, src/css/Replaced.cpp,
+	  src/html/HTMLImageElementImp.cpp,
+	  src/html/HTMLReplacedElementImp.h, testdata/blue15x15.png,
+	  testdata/partial-reflow-list-003.html, testdata/red15x15.png:
+	  (CSSListStyleImageValueImp) : Support == and !=
+	  (CSSStyleDeclarationBoard::compare) : Check listStyleType
+	  (Block::renderInline) : Check image that has been loaded just
+	  before the repaint, and trigger another reflow
+	  (Block::layOutReplacedElement,
+	  HTMLReplacedElementImp::getIntrinsicSize) : Refine for
+	  renderInline()
+	  (HTMLImageElementImp::notify) : Support img that is created as a
+	  part of the pseudo element
+	  partial-reflow-list-003.html : New
+
+2012-11-12 09:44  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-list-001.html,
+	  testdata/partial-reflow-list-002.html: (p) : Fix descriptions
+
+2012-11-12 09:07  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp,
+	  testdata/partial-reflow-list-002.html:
+	  (CSSListStylePositionValueImp) : Support == and !=
+	  (CSSStyleDeclarationBoard::compare) : Check listStylePosition
+	  partial-reflow-list-002.html : New
+
+2012-11-12 08:45  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSStyleDeclarationImp.cpp,
+	  src/css/CSSStyleDeclarationImp.h, src/css/ViewCSSImp.cpp,
+	  testdata/partial-reflow-list-001.html:
+	  (CSSStyleDeclarationBoard::compare) : Check listStyleType
+	  (ViewCSSImp::calculateComputedStyle) : Fix a bug
+	  partial-reflow-list-001.html : New
+
+2012-11-12 08:11  Shiki.Okasaka@gmail.com
+
+	* src/html/HTMLOListElementImp.cpp: (HTMLOListElementImp::eval) :
+	  Fix a bug
+
+2012-11-12 05:21  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp, src/css/Table.cpp,
+	  testdata/partial-reflow-table-010.html: (CSSTableLayoutValueImp)
+	  : Support == and !=
+	  (CSSStyleDeclarationBoard::compare) : Check tableLayout
+	  (TableWrapperBox::constructBlocks) : Fix a bug
+	  partial-reflow-table-010.html : New
+
+2012-11-12 04:53  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp,
+	  testdata/partial-reflow-table-009.html:
+	  (CSSBorderSpacingValueImp) : Support == and !=
+	  (CSSBorderSpacingValueImp::getCssText) : Fix a bug
+	  (CSSStyleDeclarationBoard::compare) : Refine and check
+	  borderSpacing
+	  partial-reflow-table-009.html : New
+
+2012-11-12 04:52  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp, src/css/Table.cpp:
+	  (CSSBorderCollapseValueImp) : Support == and !=
+	  (CSSStyleDeclarationBoard::compare) : Check borderCollapse
+	  (TableWrapperBox::constructBlocks) : Fix a bug
+
+2012-11-12 04:22  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.h, src/css/CSSPropertyValueImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp, src/css/Table.cpp,
+	  src/css/ViewCSSImp.cpp: (Box::NEED_TABLE_REFLOW) : New
+	  (CSSCaptionSideValueImp) : Support == and !=
+	  (CSSStyleDeclarationBoard::compare) : Check captionSide
+	  (TableWrapperBox::constructBlocks) : Fix a bug
+	  (ViewCSSImp::calculateComputedStyle) : Support NEED_TABLE_REFLOW
+
+2012-11-12 04:14  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-table-007.html,
+	  testdata/partial-reflow-table-008.html: New
+
+2012-11-11 09:12  Shiki.Okasaka@gmail.com
+
+	* src/css/StackingContext.cpp, src/css/Table.cpp,
+	  src/css/ViewCSSImp.cpp: (TableWrapperBox::constructTablePart,
+	  TableWrapperBox::processCell) : Set the stacking context to each
+	  table part
+	  (StackingContext::addBase, StackingContext::addFloat) : Add
+	  runtime checks
+	  (ViewCSSImp::layOut) : Refine
+
+2012-11-10 12:47  Shiki.Okasaka@gmail.com
+
+	* src/DocumentImp.cpp: (DocumentImp::getElementsByTagName) : Add
+	  more details
+
+2012-11-10 12:45  Shiki.Okasaka@gmail.com
+
+	* src/NodeImp.cpp, src/NodeListImp.cpp, src/NodeListImp.h:
+	  (NodeListImp, NodeImp::getChildNodes) : Refine
+
+2012-11-10 07:54  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp: (CSSDisplayValueImp) : Fix ==
+	  and != to use the original values for comparison
+	  (CSSStyleDeclarationBoard::compare) : Fix bugs
+
+2012-11-10 04:34  Shiki.Okasaka@gmail.com
+
+	* src/css/ViewCSSImp.cpp: (ViewCSSImp::constructBlock) : Fix a bug
+
+2012-11-09 09:36  Shiki.Okasaka@gmail.com
+
+	* data/escort/default.css, testdata/default.css: (noscript) : Set
+	  display: none; by default
+
+2012-11-09 09:14  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp: (Block::getAnonymousBox) : Fix a bug
+
+2012-11-09 01:16  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.cpp: (CSSContentValueImp::compute) :
+	  Fix a bug. When the ‘list-style-type' is ‘none’, the ‘::marker’
+	  pseudoelement must have no default contents including the
+	  ‘list-item’ counter; cf.
+	  http://www.w3.org/TR/css3-lists/#marker-content,
+	  http://test.csswg.org/suites/css2.1/20110323/html4/counter-reset-increment-002.htm
+
+2012-11-08 09:38  Shiki.Okasaka@gmail.com
+
+	* src/http/HTTPCache.cpp, src/http/HTTPConnection.cpp,
+	  src/http/HTTPRequest.cpp, src/http/HTTPResponseMessage.h:
+	  (HttpCache::notify) : Process 304 Not Modified
+	  (HttpConnection::readHead) : Fix a bug
+	  (HttpRequest::constructResponseFromCache) : Fix a bug
+	  (HttpResponseMessage::updateStatus) : New
+
+2012-11-08 06:44  Shiki.Okasaka@gmail.com
+
+	* src/css/ViewCSSImp.cpp: (ViewCSSImp::calculateComputedStyle) :
+	  Update the background image without doing reflow
+
+2012-11-08 05:21  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-text-004.html: Refine
+
+2012-11-08 05:21  Shiki.Okasaka@gmail.com
+
+	* src/css/ViewCSSImp.cpp: (ViewCSSImp::calculateComputedStyle) :
+	  Fix a bug; cf. partial-reflow-font-007.html
+
+2012-11-08 05:18  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-font-007.html: New
+
+2012-11-08 03:27  Shiki.Okasaka@gmail.com
+
+	* src/WindowImp.cpp: (WindowImp::render) : Do not dump the render
+	  tree if there are remaining tasks with the view at the log level
+	  two
+
+2012-11-06 05:45  Shiki.Okasaka@gmail.com
+
+	* src/css/LineBox.cpp: (Block::layOutText) : Fix a bug
+
+2012-11-06 04:16  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.cpp: (CSSFontSizeValueImp::compute) :
+	  Clean up
+
+2012-11-06 03:43  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSStyleDeclarationImp.cpp,
+	  src/css/CSSStyleDeclarationImp.h:
+	  (CSSStyleDeclarationImp::respecify) : Remove
+
+2012-11-05 15:29  Shiki.Okasaka@gmail.com
+
+	* src/css/ViewCSSImp.cpp: (ViewCSSImp::layOut,
+	  ViewCSSImp::calculateComputedStyles) : dump computed values after
+	  the reflow is completed to see used values at the log level 3
+
+2012-11-05 15:25  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp:
+	  (CSSStyleDeclarationBoard::compare) : Check direction
+	  (CSSDirectionValueImp) : Support == and !=
+
+2012-11-05 15:20  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp:
+	  (CSSStyleDeclarationBoard::compare) : Clean up; note 'overflow'
+	  is processed by repaint
+	  (CSSOverflowValueImp) : Support == and !=
+
+2012-11-05 15:15  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-overflow-001.html: New
+
+2012-11-05 08:59  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.cpp, src/css/CSSPropertyValueImp.h,
+	  src/css/CSSStyleDeclarationImp.h: (CSSNumericValue::getCssText) :
+	  for <percentage>, return the specified value by default
+	  (CSSNumericValue::getSpecifiedCssText) : New
+	  (CSSNumericValue::getResolvedCssText) : Refine
+	  (CSSNonNegativeValueImp) : Refine
+	  (CSSPaddingWidthValueImp) : New; the resolved value is the used
+	  value unless 'display' is none
+	  (CSSAutoLengthValueImp::getCssText) : Refine; the resolved value
+	  is the used value unless 'display' is none
+	  (CSSLineHeightValueImp::getCssText) : Refine; the resolved value
+	  is the used value.
+	  (CSSFontSizeValueImp::getCssText,
+	  CSSVerticalAlignValueImp::getCssText) : Refine
+	  (CSSStyleDeclarationBoard, CSSStyleDeclarationImp) : Use
+	  CSSPaddingWidthValueImp for padding widths
+
+2012-11-04 09:36  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp:
+	  (CSSStyleDeclarationBoard::compare) : Check clear
+	  (CSSClearValueImp) : Support == and !=
+
+2012-11-04 09:32  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-clear-001.html: New
+
+2012-11-04 09:15  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.h: (CSSNumericValue::operator==) :
+	  Fix a bug
+
+2012-11-04 08:38  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp:
+	  (CSSStyleDeclarationBoard::compare) : Check textAlign,
+	  textDecoration, textTransform, and unicodeBidi
+	  (CSSTextAlignValueImp) : Support == and !=
+	  (CSSTextDecorationValueImp) : Support == and !=
+	  (CSSTextTransformValueImp) : Support == and !=
+	  (CSSUnicodeBidiValueImp) : Support == and !=
+
+2012-11-04 07:44  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.h:
+	  (CSSNumericValue::getResolvedCssText) : New
+	  (CSSFontWeightValueImp::getCssText) : Refine
+
+2012-11-04 03:59  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-text-001.html,
+	  testdata/partial-reflow-text-002.html,
+	  testdata/partial-reflow-text-003.html,
+	  testdata/partial-reflow-text-004.html: New
+
+2012-11-03 23:19  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.cpp, src/css/CSSPropertyValueImp.h,
+	  src/css/ViewCSSImp.cpp: (CSSLineHeightValueImp::inherit) : Fix a
+	  bug; cf. partial-reflow-font-003.html
+	  (ViewCSSImp::calculateComputedStyle) : Fix a bug
+
+2012-11-03 11:57  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp:
+	  SSStyleDeclarationBoard::compare) : Check fontSize, fontStyle,
+	  fontVariant, and fontWeight; note changing fontSize does not work
+	  correctly at this point
+	  (CSSFontSizeValueImp) : Support == and !=
+	  (CSSFontStyleValueImp) : Support == and !=
+	  (CSSFontVariantValueImp) : Support == and !=
+	  (CSSFontWeightValueImp) : Support == and !=
+
+2012-11-03 11:32  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-font-003.html,
+	  testdata/partial-reflow-font-004.html,
+	  testdata/partial-reflow-font-005.html,
+	  testdata/partial-reflow-font-006.html: New
+
+2012-11-03 11:29  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.h: (CSSNumericValue::getCssText) :
+	  Fix a bug
+
+2012-11-03 10:10  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp:
+	  (CSSStyleDeclarationBoard::compare) : Check fontFamily
+	  (CSSFontFamilyValueImp) : Support == and !=
+
+2012-11-03 10:06  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-font-001.html,
+	  testdata/partial-reflow-font-002.html: New
+
+2012-11-02 14:34  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.cpp, src/css/CSSPropertyValueImp.h:
+	  (CSSNumericValue::getCssText) : Fix a bug; a length of zero
+	  should be represented as '0px'
+	  (CSSNormalLengthValueImp) : Refine
+
+2012-11-02 12:01  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-word-spacing-001.html: (script) : Fix a
+	  bug
+
+2012-11-02 11:23  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp:
+	  (CSSStyleDeclarationBoard::compare) : Check letterSpacing,
+	  whiteSpace, and wordSpacing
+	  (CSSWhiteSpaceValueImp) : Support == and !=
+
+2012-11-02 09:58  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-letter-spacing-001.html,
+	  testdata/partial-reflow-white-space-001.html,
+	  testdata/partial-reflow-word-spacing-001.html: New
+
+2012-11-02 07:48  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/Box.h, src/css/CSSPropertyValueImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp,
+	  src/css/CSSStyleDeclarationImp.h: (Box::restyle) : Remove
+	  (CSSStyleDeclarationImp::recompute) : Remove
+
+2012-11-02 07:42  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSStyleDeclarationImp.cpp,
+	  src/css/CSSStyleDeclarationImp.h, src/css/ViewCSSImpGL.cpp:
+	  (ViewCSSImp::setHovered) : Use the incremental reflow instead of
+	  the style re-computation for activating the hover styles
+	  (CSSStyleDeclarationImp::getAffectedByHover) : Refine to return
+	  the top most affected computed style (renamed from
+	  isAffectedByHover)
+
+2012-11-02 07:36  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSStyleDeclarationImp.cpp:
+	  (CSSStyleDeclarationImp::updateInlines) : updateInlines can be
+	  called *after* display value has been changed; review the code
+	  again later
+
+2012-11-02 07:32  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSStyleDeclarationImp.cpp:
+	  (CSSStyleDeclarationImp::compute) : Fix a bug; add another TODO
+	  item
+	  (CSSStyleDeclarationImp::resetComputedStyle) : Refine
+
+2012-11-01 14:32  Shiki.Okasaka@gmail.com
+
+	* src/css/ViewCSSImp.cpp: (ViewCSSImp::calculateComputedStyle) :
+	  Fix bugs around processing pseudo elements when display value is
+	  none
+	  (ViewCSSImp::updatePseudoElement) : Refine
+
+2012-11-01 07:07  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSStyleDeclarationImp.cpp,
+	  src/css/CSSStyleDeclarationImp.h, src/css/ViewCSSImp.cpp,
+	  src/css/ViewCSSImp.h: (ViewCSSImp::handleMutation) : Trigger a
+	  selector re-matching for the element whose attribute other than
+	  'style' is changed
+	  (ViewCSSImp::updateStyleRules) : New
+	  (CSSStyleDeclarationImp::NeedSelectorMatching) : New
+	  (ViewCSSImp::constructComputedStyle) : Execute the selector
+	  matching again if 'NeedSelectorMatching' is set to the computed
+	  style
+	  (CSSStyleDeclarationImp::restoreComputedValues,
+	  CSSStyleDeclarationImp::resetComputedStyle) : New
+
+2012-11-01 01:23  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSStyleDeclarationImp.cpp:
+	  (CSSStyleDeclarationImp::revert) : Fix bugs
+
+2012-11-01 00:48  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSStyleDeclarationImp.cpp:
+	  (CSSStyleDeclarationBoard::compare) : Clean up
+
+2012-10-31 15:39  Shiki.Okasaka@gmail.com
+
+	* src/js/bridge.cpp: (NativeClass::getter, NativeClass::setter) :
+	  Treat negative tinyids as unsigned values
+	  (NativeClass::NativeClass) : Check tinyid overflow
+
+2012-10-31 10:44  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSStyleDeclarationImp.cpp,
+	  src/css/CSSStyleDeclarationImp.h, src/css/StackingContext.cpp,
+	  src/css/StackingContext.h: (CSSStyleDeclarationImp::compute) :
+	  Reorganize the stacking context if the 'position' value has been
+	  changed
+	  (CSSStyleDeclarationImp::computeStackingContext) : Support the
+	  dynamic modification of the stacking context tree
+	  (StackingContext::setZIndex, StackingContext::insertContext) :
+	  New; note there are two more TODO items
+	  (StackingContext::addContext) : Refine
+
+2012-10-31 09:46  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.h, src/css/CSSStyleDeclarationImp.h,
+	  src/css/ViewCSSImp.cpp, src/css/ViewCSSImp.h: (Box, ViewCSSImp,
+	  CSSStyleDeclarationImp) : Refine memory management of
+	  'StackingContext'
+
+2012-10-31 09:29  Shiki.Okasaka@gmail.com
+
+	* src/css/StackingContext.cpp, src/css/StackingContext.h:
+	  (StackingContextPtr) : New
+
+2012-10-31 09:24  Shiki.Okasaka@gmail.com
+
+	* src/WindowImp.cpp: (WindowImp::poll) : Fix a bug
+
+2012-10-31 07:21  Shiki.Okasaka@gmail.com
+
+	* src/css/ViewCSSImp.cpp: (ViewCSSImp::constructComputedStyle) :
+	  Fix a bug and add a TODO item
+
+2012-10-31 06:47  Shiki.Okasaka@gmail.com
+
+	* src/css/ViewCSSImp.cpp, src/css/ViewCSSImp.h:
+	  (ViewCSSImp::removeComputedStyle) : Rename from removeElement
+
+2012-10-31 06:29  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-class-001.html,
+	  testdata/partial-reflow-z-index-001.html: New
+
+2012-10-31 06:27  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-abs-001.html,
+	  testdata/partial-reflow-abs-002.html,
+	  testdata/partial-reflow-basic-001.html,
+	  testdata/partial-reflow-basic-002.html,
+	  testdata/partial-reflow-basic-003.html,
+	  testdata/partial-reflow-basic-004.html,
+	  testdata/partial-reflow-block-001.html,
+	  testdata/partial-reflow-block-002.html,
+	  testdata/partial-reflow-collapse-through-001.html,
+	  testdata/partial-reflow-float-001.html,
+	  testdata/partial-reflow-float-002.html,
+	  testdata/partial-reflow-remove-001.html,
+	  testdata/partial-reflow-remove-002.html,
+	  testdata/partial-reflow-remove-003.html,
+	  testdata/partial-reflow-remove-004.html,
+	  testdata/partial-reflow-remove-005.html,
+	  testdata/partial-reflow-span-001.html,
+	  testdata/partial-reflow-style-001.html,
+	  testdata/partial-reflow-style-002.html,
+	  testdata/partial-reflow-style-003.html,
+	  testdata/partial-reflow-style-004.html,
+	  testdata/partial-reflow-table-001.html,
+	  testdata/partial-reflow-table-002.html,
+	  testdata/partial-reflow-table-003.html,
+	  testdata/partial-reflow-table-004.html,
+	  testdata/partial-reflow-table-005.html,
+	  testdata/partial-reflow-table-006.html: Clean up
+
+2012-10-31 04:35  Shiki.Okasaka@gmail.com
+
+	* src/Object.h: (ObjectImp) : Clean up
+
+2012-10-29 15:25  Shiki.Okasaka@gmail.com
+
+	* src/css/Table.cpp: (TableWrapperBox::layOut) : Fix a bug
+
+2012-10-29 04:28  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/Table.cpp: (Block::layOut,
+	  TableWrapperBox::layOutTableBox) : Fix bugs; note the table
+	  cell's 'height' property does not increase the height of the cell
+	  box.
+
+2012-10-27 06:36  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSStyleDeclarationImp.cpp,
+	  src/css/CSSStyleDeclarationImp.h: (CSSStyleDeclarationImp) :
+	  Clean up
+
+2012-10-26 21:52  Shiki.Okasaka@gmail.com
+
+	* src/ElementImp.cpp, src/ElementImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp,
+	  src/css/CSSStyleDeclarationImp.h, src/css/ViewCSSImp.cpp:
+	  (CSSStyleDeclarationImp::marker, CSSStyleDeclarationImp::before,
+	  CSSStyleDeclarationImp::after) : Keep pseudo elements in the
+	  computed style
+	  (ElementImp::marker, ElementImp::before, ElementImp::after) :
+	  Remove
+	  (ViewCSSImp::constructComputedStyle) : Reset pseudo elements
+	  (ViewCSSImp::calculateComputedStyle,
+	  ViewCSSImp::updatePseudoElement, ViewCSSImp::constructBlock,
+	  ViewCSSImp::getStyle) : Refine
+
+2012-10-26 06:19  Shiki.Okasaka@gmail.com
+
+	* src/WindowImp.cpp: (WindowImp::poll) : Update the canvas before
+	  processing events
+	  (WindowImp::poll, WindowImp::render) : Use the Box::NEED_REPAINT
+	  flag to minimize the number of the canvas repaints
+
+2012-10-26 06:05  Shiki.Okasaka@gmail.com
+
+	* src/BackgroundTask.cpp, src/WindowImp.cpp, src/WindowImp.h:
+	  (WindowImp::BackgroundTask::operator()) : Do not create a view
+	  for a binding document
+	  (WindowImp::isBindingDocumentWindow) : New
+
+2012-10-26 05:53  Shiki.Okasaka@gmail.com
+
+	* src/css/ViewCSSImp.h, src/css/ViewCSSImpGL.cpp:
+	  (ViewCSSImp::render, ViewCSSImp::setDelay,
+	  ViewCSSImp::hasExpired) : Fix the animation timer
+
+2012-10-26 03:22  Shiki.Okasaka@gmail.com
+
+	* src/WindowImp.cpp, src/css/ViewCSSImp.h,
+	  src/css/ViewCSSImpGL.cpp: (WindowImp::poll) : Fix a bug
+	  (ViewCSSImp::render, WindowImp::render) : Refine
+	  (ViewCSSImp::getClipCount) : New
+
+2012-10-25 09:14  Shiki.Okasaka@gmail.com
+
+	* src/css/Table.cpp, src/css/Table.h: (TableWrapperBox::layOut,
+	  TableWrapperBox::layOutAbsolute) : Refine to improve the table
+	  reflow performance when the sizes of cells do not change
+	  (TableWrapperBox::layOutTableParts) : New
+	  (TableWrapperBox::layOutTableBox) : Set the containg block size
+	  of each cell style to the resolved table box size
+	  (TableWrapperBox::reconstructBlocks) : Keep columnWidth if
+	  there's a chance that it doesn't change
+
+2012-10-25 08:54  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/Table.cpp: (Block::layOut) : Fix not to
+	  update cell's MCW if the column width has been determined
+	  (CellBox::adjustWidth) : Refine for Block::layOut
+
+2012-10-25 07:12  Shiki.Okasaka@gmail.com
+
+	* src/css/ViewCSSImp.cpp: (ViewCSSImp::handleMutation) : Attribute
+	  modifications should not trigger selector rematching
+
+2012-10-25 06:26  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-table-006.html: (div) : Set a wider width
+	  to see when the grid size does not change
+
+2012-10-25 06:21  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp: (Block::layOut) : Fix a bug
+
+2012-10-25 04:22  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-collapse-through-001.html: New
+
+2012-10-25 04:20  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/FormattingContext.cpp,
+	  src/css/FormattingContext.h: (FormattingContext::saveContext,
+	  FormattingContext::restoreContext) : Save and restore the
+	  formatting context before adjusting the collapsed through margins
+	  (FormattingContext::hasChanged, Block::layOut) : Refine
+	  (testdata/partial-reflow-collapse-through-001.html) : Test-case
+
+2012-10-23 09:09  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSStyleDeclarationImp.cpp,
+	  src/css/CSSStyleDeclarationImp.h:
+	  (CSSStyleDeclarationImp::setContainingBlockSize) : New
+
+2012-10-23 04:55  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp: (Box::unresolveStyle) : Fix a bug
+
+2012-10-23 03:45  Shiki.Okasaka@gmail.com
+
+	* src/css/Table.cpp: (TableWrapperBox::layOut) : Add a comment
+
+2012-10-22 02:38  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-table-006.html: New
+
+2012-10-22 02:21  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSStyleDeclarationImp.cpp,
+	  src/css/CSSStyleDeclarationImp.h, src/css/Table.cpp,
+	  src/css/Table.h, src/css/ViewCSSImp.cpp:
+	  (TableWrapperBox::constructTablePart,
+	  TableWrapperBox::revertTablePart) : Retain table parts in
+	  blockMap
+	  (CSSStyleDeclarationImp::updateInlines,
+	  CSSStyleDeclarationImp::revert) : Refine for TableWrapperBox; all
+	  callers changed
+	  (ViewCSSImp::constructBlock) : Refine
+
+2012-10-22 02:19  Shiki.Okasaka@gmail.com
+
+	* src/css/Table.cpp, src/css/Table.h, src/css/ViewCSSImp.cpp:
+	  (TableWrapperBox::reconstructBlocks) : Refine
+
+2012-10-22 02:18  Shiki.Okasaka@gmail.com
+
+	* src/css/Table.cpp, src/css/Table.h, src/css/ViewCSSImp.cpp:
+	  (TableWrapperBox::constructTablePart) : New; all callers changed
+	  (ViewCSSImp::constructBlock) : Refine for constructTablePart()
+
+2012-10-21 04:57  Shiki.Okasaka@gmail.com
+
+	* src/css/Table.cpp, src/css/ViewCSSImp.cpp:
+	  (ViewCSSImp::constructBlock) : Refine to process table parts
+	  separately
+	  (TableWrapperBox::reconstructBlocks,
+	  ViewCSSImp::calculateComputedStyle) : Fix bugs
+
+2012-10-21 04:36  Shiki.Okasaka@gmail.com
+
+	* src/css/ViewCSSImp.cpp, src/css/ViewCSSImp.h:
+	  (ViewCSSImp::createBlock, ViewCSSImp::constructBlock) : Rename
+	  the last argument to asTablePart from asBlock
+
+2012-10-21 04:22  Shiki.Okasaka@gmail.com
+
+	* src/css/LineBox.cpp, src/css/Table.cpp, src/css/ViewCSSImp.cpp,
+	  src/css/ViewCSSImp.h: (ViewCSSImp::createBlock,
+	  ViewCSSImp::constructBlock) : Take asBlock as the last argument;
+	  all callers changed
+
+2012-10-20 09:54  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSStyleDeclarationImp.cpp:
+	  (CSSStyleDeclarationImp::revert) : Check table parts
+
+2012-10-20 09:49  Shiki.Okasaka@gmail.com
+
+	* src/html/HTMLTableRowElementImp.cpp:
+	  (HTMLTableRowElementImp::deleteCell) : Add more details
+
+2012-10-20 08:35  Shiki.Okasaka@gmail.com
+
+	* src/html/HTMLTableRowElementImp.cpp,
+	  src/html/HTMLTableRowElementImp.h:
+	  (HTMLTableRowElementImp::insertCell) : Add more details
+
+2012-10-20 08:20  Shiki.Okasaka@gmail.com
+
+	* src/html/HTMLTableElementImp.cpp,
+	  src/html/HTMLTableRowElementImp.cpp,
+	  src/html/HTMLTableRowElementImp.h:
+	  (HTMLTableRowElementImp::getCells) : Add details
+	  (HTMLTableRowElementImp::Cells,
+	  HTMLTableRowElementImp::getCellCount,
+	  HTMLTableRowElementImp::getCell) : New for representing 'cells'
+	  attribute of the HTMLTableRowElement
+
+2012-10-20 07:16  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSStyleDeclarationImp.cpp, src/css/Table.cpp,
+	  src/css/Table.h, src/css/ViewCSSImp.cpp:
+	  (TableWrapperBox::TableWrapperBox) : Refine to process table
+	  parts in ViewCSSImp::constructBlock
+	  (TableWrapperBox::clearGrid) : Add some details
+	  (ViewCSSImp::constructBlock) : Process table parts to support
+	  incremental reflow
+	  (CSSStyleDeclarationImp::updateInlines) : Refine for table parts
+	  (CSSStyleDeclarationImp::revert) : Add a TODO item
+
+2012-10-19 12:58  Shiki.Okasaka@gmail.com
+
+	* src/html/HTMLCollectionImp.h: (HTMLCollectionImp) : Update the
+	  comment
+
+2012-10-19 12:09  Shiki.Okasaka@gmail.com
+
+	* src/html/HTMLCollectionImp.h,
+	  src/html/HTMLPropertiesCollectionImp.cpp,
+	  src/html/HTMLPropertiesCollectionImp.h,
+	  src/html/HTMLTableElementImp.cpp, src/html/HTMLTableElementImp.h:
+	  (HTMLTableElementImp::getRows) : Add details
+	  (HTMLCollectionImp) : Make this class extendable
+	  (HTMLPropertiesCollectionImp) : Workaround the C++ covariant
+	  return type issues; TBD
+	  (HTMLTableElementImp::Rows, HTMLTableElementImp::getRowCount,
+	  HTMLTableElementImp::getRow) : New for representing 'rows'
+	  attribute of the HTMLTableElement
+
+2012-10-19 05:36  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSStyleDeclarationImp.cpp, src/css/Table.cpp,
+	  src/css/Table.h, src/css/ViewCSSImp.cpp:
+	  (CSSStyleDeclarationImp::updateInlines) : Refine and support
+	  table parts
+	  (ViewCSSImp::constructBlock) : Support reconstruction of table
+	  parts
+	  (TableWrapperBox::reconstructBlocks) : New
+	  (TableWrapperBox::clearGrid) : New
+
+2012-10-19 04:37  Shiki.Okasaka@gmail.com
+
+	* src/css/Table.cpp: (TableWrapperBox::layOutTableBox) : Reset
+	  padding and border widths
+
+2012-10-19 04:15  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.h: (Box) : Renumber NEED_* flags
+
+2012-10-18 11:38  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-table-001.html,
+	  testdata/partial-reflow-table-002.html,
+	  testdata/partial-reflow-table-003.html,
+	  testdata/partial-reflow-table-004.html,
+	  testdata/partial-reflow-table-005.html: New
+
+2012-10-18 07:16  Shiki.Okasaka@gmail.com
+
+	* src/css/Table.cpp: (TableWrapperBox::TableWrapperBox) : Clean up
+
+2012-10-18 06:19  Shiki.Okasaka@gmail.com
+
+	* src/css/ViewCSSImp.cpp: (ViewCSSImp::constructBlock) : Refine
+
+2012-10-18 03:43  Shiki.Okasaka@gmail.com
+
+	* src/css/ViewCSSImp.cpp: (ViewCSSImp::createBlock) : Add a comment
+
+2012-10-18 03:34  Shiki.Okasaka@gmail.com
+
+	* src/css/ViewCSSImp.cpp, src/css/ViewCSSImp.h: (ViewCSSImp) :
+	  Clean up
+
+2012-10-14 06:34  Shiki.Okasaka@gmail.com
+
+	* src/WindowImp.cpp, src/css/Box.cpp, src/css/Box.h,
+	  src/css/CSSStyleDeclarationImp.cpp,
+	  src/css/CSSStyleDeclarationImp.h, src/css/Table.cpp,
+	  src/css/ViewCSSImp.cpp, src/css/ViewCSSImp.h:
+	  (Box::NEED_STYLE_RECALCULATION) : New
+	  (CSSStyleDeclarationImp::Computed,
+	  CSSStyleDeclarationImp::isComputed) : New
+	  (WindowImp::poll) : Check Box::NEED_STYLE_RECALCULATION
+	  (ViewCSSImp::handleMutation) : Process DOMAttrModified for the
+	  style attribute of an element; set Box::NEED_STYLE_RECALCULATION
+	  and clear CSSStyleDeclarationImp::Computed
+	  (ViewCSSImp::constructComputedStyle) : Refine bodyStyle
+	  processing
+	  (ViewCSSImp::calculateComputedStyle) : Check style modifications
+	  and manipulate the render tree accordingly; skip style->compute
+	  if possible
+	  (ViewCSSImp::calculateComputedStyles) : Refine
+	  (ViewCSSImp::constructBlock) : Add assertions
+	  (ViewCSSImp::removeElement) : Refine
+	  (CSSStyleDeclarationImp::compute) : Set Computed; refine
+	  bodyStyle processing
+	  (CSSStyleDeclarationImp::resolve) : Return a layout hint
+	  (CSSStyleDeclarationImp::addBox,
+	  CSSStyleDeclarationImp::removeBox) : Fix bugs
+	  (CSSStyleDeclarationImp::revert,
+	  CSSStyleDeclarationImp::requestReconstruct) : New
+	  (CSSStyleDeclarationImp::updateInlines) : Refine
+	  (CSSStyleDeclarationImp::clearFlags) : If Computed is cleared, do
+	  the same for its pseudo element styleSheets; if bodyStyle is
+	  marked to be recomputed, mark the root style as well
+	  (Block::layOut) : Use the layout hint returned by
+	  style->resolve()
+
+2012-10-14 04:40  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.cpp, src/css/CSSPropertyValueImp.h:
+	  (CSSContentValueImp::specify) : Fix bugs
+
+2012-10-14 04:22  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.h:
+	  (CSSAutoNumberingValueImp::specify) : Fix bugs
+
+2012-10-13 11:19  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSStyleDeclarationImp.cpp,
+	  src/css/CSSStyleDeclarationImp.h: (CSSStyleDeclarationBoard) :
+	  New
+
+2012-10-13 11:11  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp: (Box::removeDescendants) : Refine
+
+2012-10-13 09:03  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.cpp, src/css/CSSPropertyValueImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp: (CSSBindingValueImp::specify)
+	  : Refine
+
+2012-10-13 08:58  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.h:
+	  (CSSVerticalAlignValueImp::operator==,
+	  CSSVerticalAlignValueImp::operator!=) : New
+
+2012-10-12 13:04  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-style-004.html: New
+
+2012-10-12 10:10  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSStyleDeclarationImp.cpp:
+	  (CSSStyleDeclarationImp::setProperty) : Fix a bug
+
+2012-10-12 09:58  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp: (Block::layOut) : Fix a bug
+
+2012-10-12 07:30  Shiki.Okasaka@gmail.com
+
+	* src/DocumentWindow.cpp, src/css/Box.cpp,
+	  src/css/CSSImportRuleImp.cpp, src/html/HTMLImageElementImp.cpp,
+	  src/html/HTMLLinkElementImp.cpp,
+	  src/html/HTMLObjectElementImp.cpp,
+	  src/html/HTMLScriptElementImp.cpp, src/http/HTTPRequest.cpp,
+	  src/http/HTTPRequest.h: (setHandler, clearHandler) : Fix spelling
+
+2012-10-12 07:21  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/Box.h, src/url/URL.h:
+	  (Block::resolveBackground) : Use the dedicated HttpRequest for
+	  supporting the incremental reflow of the background images
+	  (Block::notifyBackground) : New
+	  (URL::operator!=) : New
+
+2012-10-12 03:11  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/Box.h: (Box::removeDescendants,
+	  Block::clearBlocks) : New
+
+2012-10-11 12:04  Shiki.Okasaka@gmail.com
+
+	* src/css/ViewCSSImp.cpp: (ViewCSSImp::calculateComputedStyle,
+	  ViewCSSImp::constructBlock) : Fix bugs
+
+2012-10-11 11:59  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp: (Block::getAnonymousBox) : Fix a bug
+
+2012-10-11 11:56  Shiki.Okasaka@gmail.com
+
+	* src/css/ViewCSSImp.cpp, src/css/ViewCSSImp.h: Add assertions
+
+2012-10-11 11:51  Shiki.Okasaka@gmail.com
+
+	* src/html/HTMLElementImp.h: (HTMLElementImp) : Update the comment
+
+2012-10-08 09:37  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-style-001.html,
+	  testdata/partial-reflow-style-002.html,
+	  testdata/partial-reflow-style-003.html: New
+
+2012-10-08 09:35  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.h: (Box::getFlags) : New
+
+2012-10-07 12:29  Shiki.Okasaka@gmail.com
+
+	* src/BackgroundTask.cpp, src/Box.test.cpp, src/CSSStyle.test.cpp,
+	  src/css/ViewCSSImp.cpp, src/css/ViewCSSImp.h:
+	  (ViewCSSImp::constructComputedStyles,
+	  ViewCSSImp::constructComputedStyle) : Rename from cascade; all
+	  callers changed
+
+2012-10-07 09:34  Shiki.Okasaka@gmail.com
+
+	* src/BackgroundTask.cpp, src/css/CSSStyleDeclarationImp.cpp,
+	  src/css/CSSStyleDeclarationImp.h, src/css/ViewCSSImp.cpp,
+	  src/css/ViewCSSImp.h: (ViewCSSImp::calculateComputedStyles,
+	  ViewCSSImp::calculateComputedStyle) : New for style recalculation
+	  (ViewCSSImp::updatePseudoElement) : New
+	  (CSSStyleDeclarationImp::getPseudoElementStyle) : Generate the
+	  default marker style if necessary
+	  (ViewCSSImp::cascade, ViewCSSImp::constructBlock,
+	  WindowImp::BackgroundTask::operator()) : Refine
+
+2012-10-07 02:56  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSStyleDeclarationImp.cpp,
+	  src/css/CSSStyleDeclarationImp.h, src/css/ViewCSSImp.cpp:
+	  (CSSStyleDeclarationImp::updateInlines) : New
+	  (ViewCSSImp::handleMutation) : Refine
+
+2012-10-07 02:55  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/Box.h, src/css/ViewCSSImp.cpp:
+	  (Block::clearInlines) : Rename from reset
+
+2012-09-29 03:17  Shiki.Okasaka@gmail.com
+
+	* src/Box.test.cpp, src/css/Box.h, src/css/Table.cpp,
+	  src/css/Table.h, src/css/ViewCSSImp.cpp, src/css/ViewCSSImp.h:
+	  (ViewCSSImp::constructBlocks, ViewCSSImp::constructBlock,
+	  TableWrapperBox::constructBlocks) : Renamed from
+	  layOutBlockBoxes; all callers changed
+
+2012-09-29 03:15  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/Box.h, src/css/BoxGL.cpp,
+	  src/css/CSSStyleDeclarationImp.cpp,
+	  src/css/CSSStyleDeclarationImp.h, src/css/FormattingContext.cpp,
+	  src/css/FormattingContext.h, src/css/LineBox.cpp,
+	  src/css/Replaced.cpp, src/css/StackingContext.cpp,
+	  src/css/StackingContext.h, src/css/Table.cpp, src/css/Table.h,
+	  src/css/ViewCSSImp.cpp, src/css/ViewCSSImp.h,
+	  src/html/HTMLElementImp.cpp: (Block) : Rename from BlockLevelBox
+
+2012-09-29 03:10  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/Box.h, src/css/BoxGL.cpp,
+	  src/css/CSSPropertyValueImp.cpp, src/css/CSSPropertyValueImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp,
+	  src/css/FormattingContext.cpp, src/css/FormattingContext.h,
+	  src/css/LineBox.cpp: (InlineBox) : Rename from InlineLevelBox
+
+2012-09-27 07:53  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.cpp, src/css/CSSPropertyValueImp.h,
+	  src/css/ViewCSSImp.cpp: (ViewCSSImp::cascade) : Check counter
+	  contents during incremental selector matching
+	  (CSSContentValueImp::evalText) : New
+
+2012-09-27 07:42  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-remove-005.html: New
+
+2012-09-27 07:38  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSStyleDeclarationImp.cpp,
+	  src/css/CSSStyleDeclarationImp.h, src/css/ViewCSSImp.cpp:
+	  (CSSStyleDeclarationImp::updateCounters) : Execute implicit
+	  'counter-increment: list-item' with the marker style
+
+2012-09-27 05:28  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.cpp, src/css/CSSPropertyValueImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp,
+	  src/css/CSSStyleDeclarationImp.h, src/css/ViewCSSImp.cpp:
+	  (CSSAutoNumberingValueImp::CounterContext::update) : Remove; use
+	  CSSStyleDeclarationImp::updateCounters instead and all callers
+	  changed
+	  (CSSStyleDeclarationImp::updateCounters) : Refine
+
+2012-09-26 05:04  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp: (BlockLevelBox::applyMinMaxWidth,
+	  BlockLevelBox::layOut) : Refine; cf.
+	  html4/max-width-applies-to-007.htm
+
+2012-09-25 12:05  Shiki.Okasaka@gmail.com
+
+	* src/css/ViewCSSImp.cpp: (ViewCSSImp::layOutBlockBoxes) : Fix a
+	  bug; cf. html4/abspos-010.htm
+
+2012-09-25 09:42  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/Box.h, src/css/Table.cpp:
+	  (BlockLevelBox::layOutInlineBlocks) : Fix a bug; all callers
+	  changed.
+	  (TableWrapperBox::layOut) : Fix a bug
+
+2012-09-25 09:40  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSStyleDeclarationImp.cpp:
+	  (CSSStyleDeclarationImp::isFlowRoot) : Fix a bug; cf.
+	  html4/blocks-026.htm
+
+2012-09-23 08:28  Shiki.Okasaka@gmail.com
+
+	* src/css/Table.cpp: (TableWrapperBox::layOutBlockBoxes) : Fix a
+	  bug
+
+2012-09-22 12:28  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp: (BlockLevelBox::layOut) : Fix a bug
+
+2012-09-22 12:27  Shiki.Okasaka@gmail.com
+
+	* src/css/Table.cpp: (TableWrapperBox::dump) : Dump flags if the
+	  log level is greater than two
+
+2012-09-21 06:10  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/Box.h,
+	  src/css/CSSStyleDeclarationImp.cpp, src/css/LineBox.cpp,
+	  src/css/Table.cpp, src/css/ViewCSSImp.cpp, src/css/ViewCSSImp.h:
+	  (ViewCSSImp::handleMutation) : Process 'DOMNodeInserted' and
+	  'DOMNodeRemoved'
+	  (ViewCSSImp::cascade) : Update the style map incrementally
+	  (ViewCSSImp::layOutBlockBoxes, ViewCSSImp::createBlockLevelBox) :
+	  Expand block level boxes incrementally
+	  (ViewCSSImp::layOut) : Refine
+	  (ViewCSSImp::removeElement) : New
+	  (CSSStyleDeclarationImp::compute) : Refine; add TODO items
+	  (Box::NEED_EXPANSION, Box::NEED_CHILD_EXPANSION) : New
+	  (Box::setFlags, Box::removeChild) : Refine
+	  (BlockLevelBox::BlockLevelBox, BlockLevelBox::hasAnonymousBox,
+	  BlockLevelBox::getAnonymousBox) : Refine
+	  (BlockLevelBox::reset, BlockLevelBox::removeBlock) : New
+	  (BlockLevelBox::layOutFloatingFirstLetter) : Refine; cf.
+	  html4/first-letter-selector-010.htm
+	  (BlockLevelBox::layOutInlineBlock) : Fix a bug
+	  (TableWrapperBox::layOutTableBox) : Refine
+
+2012-09-20 17:08  Shiki.Okasaka@gmail.com
+
+	* src/css/Table.cpp: (CellBox::adjustWidth) : Fix a bug
+
+2012-09-19 07:18  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-basic-004.html,
+	  testdata/partial-reflow-remove-001.html,
+	  testdata/partial-reflow-remove-002.html,
+	  testdata/partial-reflow-remove-003.html,
+	  testdata/partial-reflow-remove-004.html: New
+
+2012-09-19 07:17  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-block-001.html: Refine
+
+2012-09-19 05:05  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.h: (Box::state) : Remove
+
+2012-09-19 05:04  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSStyleDeclarationImp.cpp,
+	  src/css/CSSStyleDeclarationImp.h: (CSSStyleDeclarationImp::flags,
+	  CSSStyleDeclarationImp::getFlags,
+	  CSSStyleDeclarationImp::clearFlags,
+	  CSSStyleDeclarationImp::setFlags,
+	  CSSStyleDeclarationImp::isResolved) : New
+	  (CSSStyleDeclarationImp::resolved) : Remove
+
+2012-09-16 04:36  Shiki.Okasaka@gmail.com
+
+	* src/BackgroundTask.cpp, src/css/ViewCSSImp.cpp:
+	  (WindowImp::BackgroundTask::operator()) : On Cascade, we do not
+	  have to delete view. Note to delete view, use Restart
+	  (ViewCSSImp::cascade) : Refine
+
+2012-09-16 04:23  Shiki.Okasaka@gmail.com
+
+	* src/DocumentImp.cpp, src/DocumentImp.h, src/WindowImp.cpp,
+	  src/css/ViewCSSImp.cpp, src/html/HTMLLinkElementImp.cpp:
+	  (DocumentImp::resetStyleSheets) : New
+	  (ViewCSSImp::cascade) : Refine; now we can assume the style sheet
+	  list of the document is properly set upon call
+	  (HTMLLinkElementImp::linkStyleSheet) : Update the style sheet
+	  list of the document
+	  (WindowImp::poll) : Refine to initialize the style sheet list of
+	  the document
+
+2012-09-16 04:14  Shiki.Okasaka@gmail.com
+
+	* src/BackgroundTask.cpp, src/WindowImp.cpp, src/css/Box.h,
+	  src/css/ViewCSSImp.cpp, src/html/HTMLLinkElementImp.cpp,
+	  src/html/HTMLStyleElementImp.cpp: (Box::NEED_SELECTOR_REMATCHING)
+	  : New
+	  (HTMLLinkElementImp::linkStyleSheet, HTMLStyleElementImp::eval,
+	  ViewCSSImp::handleMutation) : Use NEED_SELECTOR_REMATCHING
+	  (WindowImp::poll) : Support NEED_SELECTOR_REMATCHING
+	  (WindowImp::BackgroundTask::operator()) : Fix a bug
+
+2012-09-15 08:52  Shiki.Okasaka@gmail.com
+
+	* src/WindowImp.cpp, src/css/Box.h, src/css/ViewCSSImp.cpp,
+	  src/html/HTMLLinkElementImp.cpp,
+	  src/html/HTMLStyleElementImp.cpp: (Box::NEED_SELECTOR_MATCHING) :
+	  Rename from NEED_RESTYLING
+
+2012-09-15 08:41  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/Box.h: (Box::removeChildren) : New
+
+2012-09-15 08:34  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/Box.h, src/css/Table.cpp: (Box) : Remove
+	  NEED_RELOCATE
+
+2012-09-15 07:58  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/Box.h: (BlockLevelBox::layOut,
+	  BlockLevelBox::layOutAbsolute) : Lay out inline blocks in the box
+	  before other inline level boxes
+	  (BlockLevelBox::layOutInlineBlocks) : New
+	  (Box::~Box, Box::removeChild) : Fix bugs; note a style can keep
+	  pointing to a box not inserted in the render tree
+	  (BlockLevelBox::layOutInlineBlock, BlockLevelBox::layOutFloat) :
+	  Do not call layOut for the block as it is now called at the
+	  containing block level
+	  (BlockLevelBox::layOutInline) : Refine
+	  (Box::setFlags) : Do not set NEED_CHILD_LAYOUT to non-block boxes
+
+2012-09-15 06:49  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/LineBox.cpp: (BlockLevelBox::dump,
+	  LineBox::dump, InlineLevelBox::dump) : Dump flags if the log
+	  level is greater than two
+
+2012-09-13 09:18  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/Box.h, src/css/ViewCSSImp.cpp:
+	  (ViewCSSImp::layOutBlockBoxes, ViewCSSImp::createBlockLevelBox,
+	  BlockLevelBox::layOutInline, BlockLevelBox::collapseMarginTop) :
+	  Keep inline block, inline table, etc., in blockMap of
+	  BlockLevelBox
+	  (BlockLevelBox::layOutInlineBlock) : New
+	  (BlockLevelBox::layOutInlineLevelBox,
+	  BlockLevelBox::layOutAnonymousInlineTable) : Remove
+
+2012-09-13 08:33  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp: (BlockLevelBox::layOutInline) : Fix a bug
+
+2012-09-13 08:33  Shiki.Okasaka@gmail.com
+
+	* src/css/ViewCSSImp.cpp: (ViewCSSImp::layOutBlockBoxes) : Remove
+	  run-in related code for now
+
+2012-09-11 04:41  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/Box.h, src/css/FormattingContext.cpp,
+	  src/css/FormattingContext.h, src/css/LineBox.cpp,
+	  src/css/ViewCSSImp.cpp, src/css/ViewCSSImp.h:
+	  (BlockLevelBox::blockMap, BlockLevelBox::floatingFirstLetter) :
+	  Keep block boxes stored in line boxes in each block rather than
+	  in view-css
+	  (ViewCSSImp::layOutBlockBoxes, BlockLevelBox::layOutFloat,
+	  BlockLevelBox::layOutFloatingFirstLetter) : Refine
+	  (FormattingContext::floatingBoxes,
+	  FormattingContext::tryAddFloat, FormattingContext::nextLine,
+	  FormattingContext::addFloat) : Refine
+	  (BlockLevelBox::addBlock, BlockLevelBox::findBlock,
+	  ViewCSSImp::addStyle) : New
+	  (ViewCSSImp::floatMap, ViewCSSImp::addFloatBox ,
+	  ViewCSSImp::getFloatBox) : Remove
+
+2012-09-11 04:39  Shiki.Okasaka@gmail.com
+
+	* src/css/FormattingContext.h: (SavedFormattingContext::reset) :
+	  New
+
+2012-09-09 03:20  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-abs-002.html: New
+
+2012-09-07 05:27  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-span-001.html: New
+
+2012-09-07 04:49  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp: (Box::setFlags) : Fix a bug
+
+2012-09-06 05:37  Shiki.Okasaka@gmail.com
+
+	* src/DocumentImp.h, src/css/ViewCSSImp.cpp, src/css/ViewCSSImp.h:
+	  (ViewCSSImp::cascade) : Refine using the styleSheets attribute of
+	  the document.
+	  (DocumentImp::addStyleSheet) : Refine
+
+2012-09-06 05:32  Shiki.Okasaka@gmail.com
+
+	* src/css/ViewCSSImp.cpp: (ViewCSSImp::layOutBlockBoxes) : Clean up
+
+2012-09-05 11:02  Shiki.Okasaka@gmail.com
+
+	* src/DocumentImp.cpp, src/DocumentImp.h, src/WindowImp.cpp:
+	  (WindowImp::poll) : Trigger a style re-matching when a binding
+	  document becomes ready
+	  (DocumentImp::isBindingDocumentWindow) : New
+
+2012-09-05 06:19  Shiki.Okasaka@gmail.com
+
+	* data/escort/escort.html: (binding id=input-button) : Fix template
+
+2012-09-04 08:53  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp: (BlockLevelBox::layOutAbsolute) : Do not reflow
+	  if the size of the content area is same
+
+2012-09-04 08:34  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-basic-001.html,
+	  testdata/partial-reflow-basic-002.html,
+	  testdata/partial-reflow-basic-003.html: Add a text node to the
+	  absolutely positioned box
+
+2012-09-04 08:31  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp: (BlockLevelBox::layOut) : Fix a bug
+
+2012-09-04 07:21  Shiki.Okasaka@gmail.com
+
+	* src/css/ViewCSSImp.cpp: (ViewCSSImp::layOut) : Clean up.
+
+2012-09-01 11:16  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-basic-001.html,
+	  testdata/partial-reflow-basic-002.html,
+	  testdata/partial-reflow-basic-003.html: Refine
+
+2012-09-01 11:08  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-basic-003.html:
+	  (testdata/partial-reflow-basic-003) : Test if the formatting
+	  context is restored correctly including the floating box context
+
+2012-09-01 10:54  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSStyleDeclarationImp.cpp,
+	  src/css/CSSStyleDeclarationImp.h:
+	  (CSSStyleDeclarationImp::resolve) : Re-resolve when the size of
+	  the containing block has been changed
+
+2012-09-01 10:27  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-basic-002.html,
+	  testdata/partial-reflow-basic-003.html:
+	  (partial-reflow-float-002) : Test the reflow of an absolutely
+	  positioned box when its containing box size is changed
+
+2012-09-01 07:11  Shiki.Okasaka@gmail.com
+
+	* src/WindowImp.cpp, src/css/Box.cpp, src/css/Box.h,
+	  src/css/FormattingContext.cpp, src/css/FormattingContext.h,
+	  src/css/Table.cpp, src/css/ViewCSSImp.cpp, src/css/ViewCSSImp.h:
+	  (BlockLevelBox::layOut) : Support partial reflow using dirty bits
+	  (SavedFormattingContext, BlockLevelBox::savedFormattingContext) :
+	  New structure for saving/restoring the formatting context at each
+	  block level box
+	  (FormattingContext::saveContext,
+	  FormattingContext::restoreContext, FormattingContext::hasChanged)
+	  : New
+	  (Box::NEED_RELOCATE, Box::NEED_CHILD_LAYOUT) : New dirty bits for
+	  partial reflow
+	  (ViewCSSImp::handleMutation) : Set NEED_REFLOW bit to the nearest
+	  block level box upon a DOMCharacterDataModified event to avoid
+	  complete reflow
+	  (WindowImp::poll, ViewCSSImp::layOut, Box::setFlags,
+	  BlockLevelBox::BlockLevelBox, BlockLevelBox::layOutInline,
+	  BlockLevelBox::layOutAbsolute, TableWrapperBox::layOutTableBox,
+	  TableWrapperBox::layOut, TableWrapperBox::layOutAbsolute) :
+	  Revise to support partial reflow
+	  (Box::needLayout) : New
+
+2012-09-01 07:08  Shiki.Okasaka@gmail.com
+
+	* src/html/HTMLElementImp.cpp: (src/html/HTMLElementImp.cpp) : Fix
+	  bugs
+
+2012-09-01 04:14  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-float-001.html:
+	  (partial-reflow-float-001) : Update the test text node directly
+
+2012-08-31 17:08  Shiki.Okasaka@gmail.com
+
+	* src/css/StackingContext.cpp, src/css/StackingContext.h,
+	  src/css/ViewCSSImp.cpp, src/css/ViewCSSImp.h:
+	  (ViewCSSImp::layOut) : Lay out absolutely positioned boxes by
+	  traversing the stacking contexts
+	  (StackingContext::layOutAbsolute) : New
+	  (ViewCSSImp::absoluteList) : Remove
+
+2012-08-31 09:09  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-abs-001.html: (partial-reflow-abs-001) :
+	  Update the test text node directly
+
+2012-08-30 04:10  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-basic-001.html,
+	  testdata/partial-reflow-basic-002.html,
+	  testdata/partial-reflow-basic-003.html:
+	  (partial-reflow-basic-001) : Rewrite to update the test text node
+	  directly
+
+2012-08-29 08:01  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/FormattingContext.cpp,
+	  src/css/FormattingContext.h: (FormattingContext::floatList,
+	  FormattingContext::adjustRemainingFloatingBoxes) : Clean up;
+	  these are not used anymore
+
+2012-08-29 07:42  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/FormattingContext.cpp,
+	  src/css/FormattingContext.h: (FormattingContext) : Fix bugs
+	  around handling blanks on the left and right sides; cf.
+	  partial-reflow-float-002.html
+
+2012-08-29 07:40  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/FormattingContext.cpp,
+	  src/css/FormattingContext.h: (Box::updateFormattingContext,
+	  Box::restoreFormattingContext) : Refine
+	  (FormattingContext::updateBlanks,
+	  FormattingContext::restoreBlanks) : New
+
+2012-08-29 07:30  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-float-001.html,
+	  testdata/partial-reflow-float-002.html: Refine
+
+2012-08-29 03:01  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-float-002.html: New
+
+2012-08-28 11:13  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/Box.h, src/css/LineBox.cpp,
+	  src/css/Table.cpp: (Box.h) : Do not include FormattingContext.h
+
+2012-08-28 11:01  Shiki.Okasaka@gmail.com
+
+	* Makefile.am, Makefile.in, src/Ico.test.cpp, src/WindowImp.cpp,
+	  src/css/Box.cpp, src/css/Box.h, src/css/BoxGL.cpp,
+	  src/css/BoxImage.cpp, src/css/BoxImage.h,
+	  src/css/CSSPropertyValueImp.cpp, src/css/Ico.cpp,
+	  src/css/TableGL.cpp, src/html/HTMLLinkElementImp.cpp,
+	  src/html/HTMLReplacedElementImp.h: (BoxImage.h) : New
+
+2012-08-28 10:58  Shiki.Okasaka@gmail.com
+
+	* src/css/BoxImage.h: Copy from Box.h
+
+2012-08-28 09:31  Shiki.Okasaka@gmail.com
+
+	* Makefile.am, Makefile.in, src/css/Box.h,
+	  src/css/FormattingContext.cpp, src/css/FormattingContext.h:
+	  Refine
+
+2012-08-28 09:29  Shiki.Okasaka@gmail.com
+
+	* src/css/FormattingContext.h: Copy from Box.h
+
+2012-08-26 09:41  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-abs-001.html: New.
+
+2012-08-25 06:45  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-basic-002.html: New.
+
+2012-08-25 06:24  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-basic-001.html,
+	  testdata/partial-reflow-block-001.html,
+	  testdata/partial-reflow-block-002.html,
+	  testdata/partial-reflow-float-001.html: New.
+
+2012-08-24 09:14  Shiki.Okasaka@gmail.com
+
+	* src/BackgroundTask.cpp, src/WindowImp.cpp:
+	  (WindowImp::BackgroundTask::operator(), WindowImp::render) :
+	  Refine outputs for recordTime
+
+2012-08-24 08:15  Shiki.Okasaka@gmail.com
+
+	* src/WindowImp.cpp: (WindowImp::render) : Change log-level to 2
+	  for using harness
+
+2012-08-24 08:10  Shiki.Okasaka@gmail.com
+
+	* src/WindowImp.cpp, src/WindowImp.h: (WindowImp::windowDepth) :
+	  New
+	  (WindowImp::WindowImp) : Set windowDepth
+	  (WindowImp::poll, WindowImp::render, WindowImp::mouse) : Refine
+	  outputs for recordTime
+
+2012-08-24 07:22  Shiki.Okasaka@gmail.com
+
+	* src/Test.util.cpp: (recordTime) : Use stdout
+
+2012-08-24 05:20  Shiki.Okasaka@gmail.com
+
+	* src/Test.util.cpp, src/Test.util.h: (recordTime) : Print the
+	  elapsed time since the launch
+
+2012-08-23 17:06  Shiki.Okasaka@gmail.com
+
+	* src/BackgroundTask.cpp, src/WindowImp.cpp, src/WindowImp.h:
+	  (WindowImp::setDocumentWindow) : Refine not to delete the same
+	  view twice
+	  (WindowImp::BackgroundTask::restart) : Take an optional flags to
+	  specify the next command to execute after restart
+
+2012-08-23 10:47  Shiki.Okasaka@gmail.com
+
+	* src/WindowImp.cpp: (WindowImp::setSize) : Fix not to trigger
+	  redundant reflow
+
+2012-08-23 10:13  Shiki.Okasaka@gmail.com
+
+	* src/WindowImp.cpp: (WindowImp) : Clean up
+
+2012-08-23 10:10  Shiki.Okasaka@gmail.com
+
+	* src/html/HTMLElementImp.cpp, src/html/HTMLImageElementImp.cpp,
+	  src/html/HTMLObjectElementImp.cpp,
+	  src/html/HTMLStyleElementImp.cpp: (HTMLElementImp, etc.) : Clean
+	  up
+
+2012-08-23 10:08  Shiki.Okasaka@gmail.com
+
+	* src/css/ViewCSSImp.cpp, src/css/ViewCSSImp.h: (ViewCSSImp) :
+	  Clean up
+
+2012-08-23 08:42  Shiki.Okasaka@gmail.com
+
+	* src/css/ViewCSSImp.cpp: (ViewCSSImp::ViewCSSImp) : Fix a bug
+
+2012-08-23 04:38  Shiki.Okasaka@gmail.com
+
+	* src/css/BoxGL.cpp: (BoxImage::render) : Fix a bug
+
+2012-08-22 17:00  Shiki.Okasaka@gmail.com
+
+	* src/css/ViewCSSImp.h: (ViewCSSImp::hasExpired) : Fix a bug
+
+2012-08-22 10:04  Shiki.Okasaka@gmail.com
+
+	* src/BackgroundTask.cpp, src/WindowImp.cpp, src/WindowImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp,
+	  src/css/CSSStyleDeclarationImp.h, src/css/StackingContext.cpp,
+	  src/css/StackingContext.h, src/css/ViewCSSImp.cpp,
+	  src/css/ViewCSSImp.h, src/css/ViewCSSImpGL.cpp: (WindowImp::poll)
+	  : Stop using double render tree algorithm; during reflow, window
+	  content areas are painted by their canvases
+	  (WindowImp::getScrollWidth, WindowImp::getScrollHeight) : New
+	  (WindowImp::updateView, WindowImp::BackgroundTask::wakeUp,
+	  WindowImp::BackgroundTask::getView, WindowImp::scroll) : Refine
+	  (ViewCSSImp::flip, CSSStyleDeclarationImp::flip,
+	  StackingContext::flip) : Remove
+
+2012-08-22 07:12  Shiki.Okasaka@gmail.com
+
+	* src/Test.glut.cpp, src/WindowImp.cpp, src/WindowImp.h,
+	  src/css/ViewCSSImpGL.cpp: (WindowImp::canvas) : New
+	  (WindowImp::render) : Paint to the offline canvas firstly
+	  (ViewCSSImp::render) : Maintain clipCount independently among
+	  views now that each window has its own offline canvas
+	  (display) : Add run-time checks
+
+2012-08-22 06:20  Shiki.Okasaka@gmail.com
+
+	* Makefile.am, Makefile.in, debian/control, escort.spec.in,
+	  src/Canvas.h, src/Canvas.test.cpp, src/CanvasGL.cpp,
+	  src/CanvasGL.h, src/Test.glut.cpp: (Canvas) : New for offline
+	  rendering
+	  (init) : Initialize GLEW and check if ARB_framebuffer_object is
+	  supported
+	  (BuildRequires) : Add glew-devel for Fedora
+	  (Build-Depends) : Add libglew-dev for Ubuntu
+
+2012-08-22 06:11  Shiki.Okasaka@gmail.com
+
+	* src/css/ViewCSSImp.cpp: (ViewCSSImp::layOut) : Update a comment
+
+2012-08-18 07:46  Shiki.Okasaka@gmail.com
+
+	* ChangeLog, Makefile.am, Makefile.in, configure, configure.ac,
+	  debian, debian/changelog.in, debian/compat, debian/control,
+	  debian/copyright, debian/docs, debian/rules, debian/source,
+	  debian/source/format: (AC_INIT) : Set version to 0.2.3
+	  (debian) : New for building deb packages
+	  (AC_CONFIG_FILES, EXTRA_DIST) : Include files under 'debian'
+
+2012-08-16 02:11  Shiki.Okasaka@gmail.com
+
+	* Makefile.am, Makefile.in, app/escort, configure, configure.ac:
+	  (escort) : Use /usr/lib/esrille instead of /usr/libexec/esrille
+	  on systems following FHS (http://www.pathname.com/fhs) such as
+	  Ubuntu
+
 2012-08-15 11:23  Shiki.Okasaka@gmail.com
 
 	* app/escort: (BASE_LIBEXEC_DIR) : Fix for the systems which do not
