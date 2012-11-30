@@ -629,7 +629,7 @@ void LineBox::resolveXY(ViewCSSImp* view, float left, float top, Block* clip)
         left = next;
     }
     if (rightBox) {
-        float right = x + getParentBox()->width;
+        float right = x + getParentBox()->width - getBlankRight();
         for (auto child = getLastChild(); child; child = child->getPreviousSibling()) {
             Block* floatingBox = dynamic_cast<Block*>(child);
             right -= floatingBox->getEffectiveTotalWidth();

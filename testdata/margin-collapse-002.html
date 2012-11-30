@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Partial reflow test</title>
+<style type="text/css">
+body {
+  margin: 0;
+}
+.float {
+  float: right;
+  color: green;
+  border: solid 1px green;
+  width: 50px;
+  height: 50px;
+}
+</style>
+</head>
+<body>
+<div>
+  <div class='float'>Filler Text</div>
+  Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text
+  Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text
+</div>
+<div class='float'>Filler Text</div>
+<div style='margin-top: 25px'>
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text
+</div>
+</body>
+</html>
