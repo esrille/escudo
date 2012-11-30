@@ -1391,7 +1391,7 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
     context = updateFormattingContext(context);
 
     layOutInlineBlocks(view);
-    if (hasInline() && !(flags & NEED_REFLOW) && !isAnonymous()) {
+    if (hasInline() && !(flags & NEED_REFLOW)) {
         // Only inline blocks have been marked NEED_REFLOW and no more reflow is necessary
         // with this block.
 #ifndef NDEBUG

@@ -1,0 +1,46 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Partial reflow test</title>
+<style type="text/css">
+#box {
+  float: right;
+  width: 150px;
+  height: 150px;
+  background-color: green;
+}
+a:hover {
+  text-decoration: underline;
+}
+</style>
+<script type="text/javascript">
+function doTest() {
+  this.addEventListener('keydown', function(event) {
+    if (event.keyCode == 13) {
+      var t = document.getElementById('t');
+      t.style.textDecoration = 'underline';
+    }
+  }, false);
+}
+</script>
+</head>
+<body onload="doTest()" style='margin-left: 140px;'>
+
+<p>Press [Enter] to draw an underline under the text in the silver box.</p>
+
+<div style='background-color: silver; position: absolute; left: 0px; top: 0px; width: 130px; height: 100%;'>
+  <span id='t'>Filler Text</span>
+</div>
+
+<div id='box'>
+</div>
+
+<p>
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text
+Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text Filler Text
+</p>
+</body>
+</html>
