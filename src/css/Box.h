@@ -240,6 +240,19 @@ public:
         return borderLeft;
     }
 
+    float getPaddingTop() const {
+        return paddingTop;
+    }
+    float getPaddingRight() const {
+        return paddingRight;
+    }
+    float getPaddingBottom() const {
+        return paddingBottom;
+    }
+    float getPaddingLeft() const {
+        return paddingLeft;
+    }
+
     bool hasMargins() const {  // have non-zero margins?
         return marginTop != 0.0f || marginRight != 0.0f || marginBottom != 0.0f || marginLeft != 0.0f;
     }
@@ -570,7 +583,6 @@ protected:
         Bottom = 8u
     };
 
-    bool isCollapsedThrough() const;
     float collapseMarginTop(FormattingContext* context);
     bool undoCollapseMarginTop(FormattingContext* context, float before);
     void collapseMarginBottom(FormattingContext* context);
@@ -652,6 +664,8 @@ public:
         // Note the root box is scrolled by the viewport.
         return parentBox && !isAnonymous() && style && style->overflow.canScroll();
     }
+
+    bool isCollapsedThrough() const;
 
     virtual const ContainingBlock* getContainingBlock(ViewCSSImp* view) const;
     void setContainingBlock(ViewCSSImp* view);

@@ -301,10 +301,47 @@ void FormattingContext::tryAddFloat(ViewCSSImp* view)
     }
 }
 
-float FormattingContext::adjustRemainingHeight(float h)
+namespace {
+
+bool isCollapsedThroughToParent(Block* block, Block* from)
+{
+    Block* to = block;
+    while (to->isCollapsedThrough()) {
+        Block* next = dynamic_cast<Block*>(to->getNextSibling());
+        if (!next)
+            break;
+        if (next == from) {
+            for (to = block;
+                 next = dynamic_cast<Block*>(to->getPreviousSibling());
+                 to = next)
+            {
+                if (!next->isCollapsedThrough())
+                    return false;
+            }
+            if (Block* parent = dynamic_cast<Block*>(to->getParentBox())) {
+                if (parent->isCollapsableInside() && parent->getBorderTop() == 0 && parent->getPaddingTop() == 0)
+                    return true;
+            }
+            return false;
+        }
+        to = next;
+    }
+    return false;
+}
+
+}
+
+float FormattingContext::adjustRemainingHeight(float h, Block* from)
 {
     float consumed = 0.0f;
     for (auto i = left.begin(); i != left.end();) {
+        if (from) {
+            Block* b = dynamic_cast<Block*>((*i)->parentBox->parentBox);
+            if (isCollapsedThroughToParent(b, from)) {
+                ++i;
+                continue;
+            }
+        }
         consumed = std::max(consumed, std::min(h, (*i)->remainingHeight));
         if (((*i)->remainingHeight -= h) <= 0.0f)
             i = left.erase(i);
@@ -312,6 +349,13 @@ float FormattingContext::adjustRemainingHeight(float h)
             ++i;    // consumed = h;
     }
     for (auto i = right.begin(); i != right.end();) {
+        if (from) {
+            Block* b = dynamic_cast<Block*>((*i)->parentBox->parentBox);
+            if (isCollapsedThroughToParent(b, from)) {
+                ++i;
+                continue;
+            }
+        }
         consumed = std::max(consumed, std::min(h, (*i)->remainingHeight));
         if (((*i)->remainingHeight -= h) <= 0.0f)
             i = right.erase(i);
@@ -330,7 +374,7 @@ void FormattingContext::useMargin(Block* block)
     block->consumed = 0.0f;
     float m = getMargin();
     if (usedMargin < m) {
-        block->consumed = adjustRemainingHeight(m - usedMargin);
+        block->consumed = adjustRemainingHeight(m - usedMargin, block);
         usedMargin = m;
     }
 }

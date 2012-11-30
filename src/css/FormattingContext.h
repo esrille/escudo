@@ -169,7 +169,7 @@ public:
     void dontWrap();
     void nextLine(ViewCSSImp* view, Block* parentBox, bool linefeed);
     void tryAddFloat(ViewCSSImp* view);
-    float adjustRemainingHeight(float height);
+    float adjustRemainingHeight(float height, Block* from = 0);
 
     // Use the positive margin stored in context to consume the remaining height of floating boxes.
     void useMargin(Block* block);
