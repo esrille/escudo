@@ -695,6 +695,8 @@ void Block::render(ViewCSSImp* view, StackingContext* stackingContext)
     unsigned overflow = renderBegin(view);
     renderNonInline(view, stackingContext);
     renderInline(view, stackingContext);
+    if (!isAnonymous() && 0.0f < getOutlineWidth())
+        renderOutline(view, x, y + getTopBorderEdge());
     renderEnd(view, overflow);
 }
 
