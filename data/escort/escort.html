@@ -126,6 +126,9 @@ body
 }
 #toolbar
 {
+    table-layout: fixed;
+    width: 100%;
+    border-collapse: collapse;
     background-color: #d6d2d0;
     position: fixed;
     left: 0;
@@ -133,9 +136,49 @@ body
     right: 0;
     height: 36px;
     font-family: monospace;
-    min-width: 740px;
+    min-width: 520px;
     white-space: nowrap;
     z-index: 1;
+}
+.button
+{
+    float: left;
+    width: 32px;
+    height: 32px;
+    margin: 2px;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+.button:hover
+{
+    outline: deepskyblue solid 2px;
+}
+#settings
+{
+    background-image: url(escort.png);
+}
+#back
+{
+    background-image: url(go-previous.png);
+}
+#forward
+{
+    background-image: url(go-next.png);
+}
+#reload
+{
+    background-image: url(view-refresh.png);
+}
+#stop
+{
+    background-image: url(process-stop.png);
+}
+#location
+{
+    width: 97%;
+    height: 20px;
+    background-color: white;
+    margin: 2px;
 }
 #main-pane
 {
@@ -146,61 +189,6 @@ body
     bottom: 36px;
     width: 100%;
     z-index: 0;
-}
-#settings
-{
-    display: inline-block;
-    background-image: url(escort.png);
-    background-repeat: no-repeat;
-    background-position: center center;
-    width: 32px;
-    height: 32px;
-    margin: 2px;
-}
-#back
-{
-    display: inline-block;
-    background: url(go-previous.png) no-repeat center center;
-    width: 32px;
-    height: 32px;
-    margin: 2px 0;
-}
-#forward
-{
-    display: inline-block;
-    background: url(go-next.png) no-repeat center center;
-    width: 32px;
-    height: 32px;
-    margin: 2px 0;
-}
-#reload
-{
-    display: inline-block;
-    background: url(view-refresh.png) no-repeat center center;
-    width: 32px;
-    height: 32px;
-    margin: 2px 0;
-}
-#stop
-{
-    display: inline-block;
-    background: url(process-stop.png) no-repeat center center;
-    width: 32px;
-    height: 32px;
-    margin: 2px 0;
-}
-#location
-{
-    vertical-align: top;
-    position: relative;
-    top: 6px;
-    width: 520px;
-    height: 20px;
-    background-color: white;
-}
-#toolbar > div:hover
-{
-    outline: deepskyblue solid 2px;
 }
 #main
 {
@@ -276,14 +264,20 @@ function init() {
 <link rel='icon' href='escort.ico' type='image/vnd.microsoft.icon'>
 </head>
 <body onload='init()'>
-<div id='toolbar'>
-  <div id='settings'></div>
-  <div id='back'></div>
-  <div id='forward'></div>
-  <input type='text' id='location'>
-  <div id='reload'></div>
-  <div id='stop'></div>
-</div>
+<table id='toolbar'>
+<td style='width: 108px;'>
+<div id='settings' class='button'></div>
+<div id='back' class='button'></div>
+<div id='forward' class='button'></div>
+</td>
+<td style='text-align: center;'>
+<input id='location' type='text'>
+</td>
+<td style='width: 72px;'>
+<div id='reload' class='button'></div>
+<div id='stop' class='button'></div>
+</td>
+</table>
 <div id='main-pane'><iframe id='main' src=''></iframe></div>
 </body>
 </html>
