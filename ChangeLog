@@ -1,3 +1,36 @@
+2012-12-01 08:18  Shiki.Okasaka@gmail.com
+
+	* testlog/css2.1/20110323/implement-report-Escort-Fedora.data:
+	  implement-report-Escort-Fedora.data : Update using r3230
+
+2012-12-01 07:02  Shiki.Okasaka@gmail.com
+
+	* data/escort/escort.html: (toolbar) : Enlarge the location field
+
+2012-12-01 06:58  Shiki.Okasaka@gmail.com
+
+	* src/css/BoxGL.cpp: (Block::render) : Fix a bug
+
+2012-12-01 05:08  Shiki.Okasaka@gmail.com
+
+	* testlog/css2.1/20110323/implement-report-Escort-Fedora.data:
+	  implement-report-Escort-Fedora.data : Update using r3227
+
+2012-12-01 05:06  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp: (Box::setStyle) : Fix a bug
+	  (Block::layOutInlineBlock) : Fix a bug
+
+2012-12-01 03:20  Shiki.Okasaka@gmail.com
+
+	* src/Navigator.test.cpp, src/Script.test.cpp, src/Test.glut.cpp,
+	  src/Test.util.h: Test.glut.cpp (init) : Set the window size based
+	  on the screen size by default; all callers changed.
+
+2012-11-30 09:51  Shiki.Okasaka@gmail.com
+
+	* ChangeLog: Update
+
 2012-11-30 09:48  Shiki.Okasaka@gmail.com
 
 	* Makefile.in, aclocal.m4: Update
