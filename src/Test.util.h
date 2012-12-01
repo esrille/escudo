@@ -60,7 +60,7 @@ std::string getFileURL(const std::string& path);
 //
 // Test.glut.cpp
 //
-void init(int* argc, char* argv[]);
+void init(int* argc, char* argv[], int width = -1, int height = -1);
 
 //
 // Test.x11.cpp

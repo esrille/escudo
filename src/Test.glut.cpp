@@ -192,11 +192,17 @@ void timer(int value)
     // TODO: do GC here or maybe in the idle proc
 }
 
-void init(int* argc, char* argv[])
+void init(int* argc, char* argv[], int width, int height)
 {
     glutInit(argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_STENCIL);
-    glutInitWindowSize(816, 1056);
+    if (width <= 0 || height <= 0) {
+        int w = glutGet(GLUT_SCREEN_WIDTH);
+        int h = glutGet(GLUT_SCREEN_HEIGHT);
+        width = std::min(std::max(780, w - 64), 816);
+        height = std::min(h - 128, width * 22 / 17);
+    }
+    glutInitWindowSize(width, height);
     glutCreateWindow(argv[0]);
 
     GLenum err = glewInit();

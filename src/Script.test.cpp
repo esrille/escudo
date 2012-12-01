@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
-    init(&argc, argv);
+    init(&argc, argv, 816, 1056);
     initLogLevel(&argc, argv);
     initFonts(&argc, argv);
 
