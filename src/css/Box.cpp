@@ -197,7 +197,8 @@ void Box::setStyle(CSSStyleDeclarationImp* style)
     this->style = style;
     if (style) {
         stackingContext = style->getStackingContext();
-        setPosition(style->position.getValue());
+        if (!isAnonymous())
+            setPosition(style->position.getValue());
     }
 }
 
@@ -748,7 +749,9 @@ void Block::layOutInlineBlock(ViewCSSImp* view, Node node, Block* inlineBlock, F
         else
             inlineBox->baseline = inlineBlock->getBaseline();
     }
-    while (context->leftover < inlineBox->getTotalWidth()) {
+    while (context->leftover < inlineBox->getTotalWidth() &&
+           (context->breakable || (style && style->whiteSpace.isBreakingLines())))
+    {
         if (context->lineBox->hasChildBoxes() || context->hasNewFloats()) {
             context->nextLine(view, this, false);
             if (!context->addLineBox(view, this))
