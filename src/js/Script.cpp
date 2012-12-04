@@ -254,7 +254,7 @@ JSClass globalClass = {
 
 void reportError(JSContext* cx, const char* message, JSErrorReport* report)
 {
-    std::cout << (report->filename ? report->filename : "<no filename>") << report->lineno << message;
+    std::cout << (report->filename ? report->filename : "<no filename>") << report->lineno << ' ' << message << '\n';
 }
 
 void registerClasses(JSContext* cx, JSObject* global)
