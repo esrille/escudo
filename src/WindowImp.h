@@ -46,6 +46,9 @@
 #include <mutex>
 #include <thread>
 
+#include <boost/iostreams/stream.hpp>
+#include <boost/iostreams/device/file_descriptor.hpp>
+
 #include <org/w3c/dom/css/CSSStyleSheet.h>
 
 #include "Canvas.h"
@@ -55,6 +58,7 @@
 #include "HistoryImp.h"
 #include "LocationImp.h"
 #include "NavigatorImp.h"
+#include "html/HTMLParser.h"
 #include "http/HTTPRequest.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
@@ -146,6 +150,25 @@ class WindowImp : public ObjectMixin<WindowImp>
         }
     };
 
+    class Parser {
+        boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream;
+        HTMLInputStream htmlInputStream;
+        HTMLTokenizer tokenizer;
+        HTMLParser parser;
+    public:
+        Parser(DocumentImp* document, int fd, const std::string& optionalEncoding);
+
+        Token getToken() {
+            return tokenizer.getToken();
+        }
+        bool processToken(Token& token) {
+            return parser.processToken(token);
+        }
+        const std::string& getEncoding() {
+            return htmlInputStream.getEncoding();
+        }
+    };
+
     HttpRequest request;
     Retained<NavigatorImp> navigator;
     Retained<HistoryImp> history;
@@ -161,6 +184,8 @@ class WindowImp : public ObjectMixin<WindowImp>
     ElementImp* frameElement;
 
     std::deque<EventTask> eventQueue;
+
+    Parser* parser;
 
     // for MouseEvent
     Element clickTarget;

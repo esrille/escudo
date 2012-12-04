@@ -427,8 +427,6 @@ class HTMLParser
 
     void resetInsertionMode();
 
-    bool processToken(Token& token);
-
     //
     // open element stack
     //
@@ -502,6 +500,8 @@ class HTMLParser
 public:
     HTMLParser(Document document, HTMLTokenizer* tokenizer, bool enableXBL = true);
     bool mainLoop();
+
+    bool processToken(Token& token);
 };
 
 #endif  // ES_HTMLPARSER_H

@@ -20,8 +20,6 @@
 #include <iostream>
 #include <boost/version.hpp>
 #include <boost/bind.hpp>
-#include <boost/iostreams/stream.hpp>
-#include <boost/iostreams/device/file_descriptor.hpp>
 
 #include "BeforeUnloadEventImp.h"
 #include "DOMImplementationImp.h"
@@ -32,7 +30,6 @@
 #include "css/BoxImage.h"
 #include "css/Ico.h"
 #include "css/ViewCSSImp.h"
-#include "html/HTMLParser.h"
 #include "html/HTMLIFrameElementImp.h"
 #include "html/HTMLLinkElementImp.h"
 #include "http/HTTPConnection.h"
@@ -40,6 +37,15 @@
 #include "Test.util.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
+
+WindowImp::Parser::Parser(DocumentImp* document, int fd, const std::string& optionalEncoding) :
+    stream(fd, boost::iostreams::never_close_handle),   // TODO: never_close_handle?
+    htmlInputStream(stream, optionalEncoding),
+    tokenizer(&htmlInputStream),
+    parser(document, &tokenizer)
+{
+    stream.seekg(0, std::ios::beg);
+}
 
 WindowImp::WindowImp(WindowImp* parent, ElementImp* frameElement) :
     request(parent ? parent->getLocation().getHref() : u""),
@@ -51,6 +57,7 @@ WindowImp::WindowImp(WindowImp* parent, ElementImp* frameElement) :
     viewFlags(0),
     parent(parent),
     frameElement(frameElement),
+    parser(0),
     clickTarget(0),
     detail(0),
     buttons(0),
@@ -248,17 +255,15 @@ bool WindowImp::poll()
                 // TODO: Note white it would be nice to parse the HTML docucment in
                 // the background task, firstly we need to check if we can run JS
                 // in the background.
-#if 104400 <= BOOST_VERSION
-                boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request.getContentDescriptor(), boost::iostreams::never_close_handle);
-#else
-                boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request.getContentDescriptor(), false);
-#endif
-                stream.seekg(0, std::ios::beg);
-                HTMLInputStream htmlInputStream(stream, request.getResponseMessage().getContentCharset());
-                HTMLTokenizer tokenizer(&htmlInputStream);
-                HTMLParser parser(imp, &tokenizer);
-                parser.mainLoop();  // TODO: run thin in background
-                imp->setCharset(utfconv(htmlInputStream.getEncoding()));
+                parser = new(std::nothrow) Parser(imp, request.getContentDescriptor(), request.getResponseMessage().getContentCharset());
+                // TODO: run thin in background
+                Token token;
+                do {
+                    token = parser->getToken();
+                    parser->processToken(token);
+                } while (token.getType() != Token::Type::EndOfFile);
+                imp->setCharset(utfconv(parser->getEncoding()));
+
                 NodeImp::evalTree(imp);
                 imp->resetStyleSheets();
                 recordTime("%*shtml parsed", windowDepth * 2, "");
