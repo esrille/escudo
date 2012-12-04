@@ -68,11 +68,12 @@ inline std::u16string CSSSerializeRGB(unsigned argb)
     std::u16string text;
     char buf[32];
     if ((argb & 0xFF000000) == 0xFF000000)
-        std::sprintf(buf, "#%06x", argb & 0x00FFFFFF);
-    else if (argb == 0)
-        return u"transparent";
+        std::sprintf(buf, "rgb(%u, %u, %u)",
+                     (argb >> 16) & 0xff,
+                     (argb >> 8) & 0xff,
+                     argb & 0xff);
     else
-        std::sprintf(buf, "rgba(%u,%u,%u,%.3g)",
+        std::sprintf(buf, "rgba(%u, %u, %u, %.3g)",
                      (argb >> 16) & 0xff,
                      (argb >> 8) & 0xff,
                      argb & 0xff,
