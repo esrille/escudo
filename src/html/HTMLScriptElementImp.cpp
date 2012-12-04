@@ -56,6 +56,7 @@ HTMLScriptElementImp::HTMLScriptElementImp(HTMLScriptElementImp* org, bool deep)
 {
 }
 
+// cf. http://www.whatwg.org/specs/web-apps/current-work/multipage/scripting-1.html#prepare-a-script
 bool HTMLScriptElementImp::prepare()
 {
     if (alreadyStarted)
@@ -64,11 +65,11 @@ bool HTMLScriptElementImp::prepare()
         wasParserInserted = true;
         parserInserted = false;
     } else
-        parserInserted = true;
+        wasParserInserted = false;
     if (wasParserInserted && !hasAttribute(u"async"))
         forceAsync = true;
 
-    // TODO s
+    // TODO 4. - 7.
 
     if (wasParserInserted) {
         parserInserted = true;
@@ -76,7 +77,7 @@ bool HTMLScriptElementImp::prepare()
     }
     alreadyStarted = true;
 
-    // TODO s
+    // TODO 10. - 13.
 
     if (hasAttribute(u"src")) {
         std::u16string src = getSrc();
