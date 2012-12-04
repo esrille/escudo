@@ -62,6 +62,9 @@ public:
     virtual Nullable<std::u16string> getPrefix();
     virtual std::u16string getLocalName();
     virtual std::u16string getTagName();
+
+    virtual std::u16string getClassName();  // new
+
     virtual ObjectArray<Attr> getAttributes();
     virtual Nullable<std::u16string> getAttribute(std::u16string qualifiedName);
     virtual Nullable<std::u16string> getAttributeNS(std::u16string _namespace, std::u16string localName);

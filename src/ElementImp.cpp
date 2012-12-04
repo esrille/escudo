@@ -16,10 +16,14 @@
 
 #include "ElementImp.h"
 
+#include <algorithm>
 #include <new>
+#include <vector>
+#include <boost/algorithm/string.hpp>
 
 #include "AttrImp.h"
 #include "DocumentImp.h"
+#include "NodeListImp.h"
 #include "MutationEventImp.h"
 #include "css/CSSSerialize.h"
 #include "html/HTMLTokenizer.h"
@@ -138,6 +142,11 @@ std::u16string ElementImp::getTagName()
     if (0 < prefix.length())
         return prefix + u':' + localName;
     return localName;
+}
+
+std::u16string ElementImp::getClassName()
+{
+    return getAttribute(u"class");
 }
 
 dom::ObjectArray<Attr> ElementImp:: getAttributes()
@@ -280,8 +289,21 @@ html::HTMLCollection ElementImp::getChildren()
 
 NodeList ElementImp::getElementsByTagName(std::u16string qualifiedName)
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    NodeListImp* nodeList = new(std::nothrow) NodeListImp;
+    if (!nodeList)
+        return 0;
+
+    if (qualifiedName == u"*") {
+        for (ElementImp* e = this; e; e = e->getNextElement())
+            nodeList->addItem(e);
+    } else {
+        // TODO: Support non HTML document
+        for (ElementImp* e = this; e; e = e->getNextElement()) {
+            if (e->getLocalName() == qualifiedName)
+                nodeList->addItem(e);
+        }
+    }
+    return nodeList;
 }
 
 NodeList ElementImp::getElementsByTagNameNS(std::u16string _namespace, std::u16string localName)
@@ -292,8 +314,27 @@ NodeList ElementImp::getElementsByTagNameNS(std::u16string _namespace, std::u16s
 
 NodeList ElementImp::getElementsByClassName(std::u16string classNames)
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    NodeListImp* nodeList = new(std::nothrow) NodeListImp;
+    if (!nodeList)
+        return 0;
+
+    std::vector<std::u16string> classes;
+    boost::algorithm::split(classes, classNames, isSpace);
+    for (ElementImp* e = this; e; e = e->getNextElement()) {
+        std::u16string c = e->getClassName();
+        std::vector<std::u16string> v;
+        boost::algorithm::split(v, c, isSpace);
+        bool notFound = false;
+        for (auto i = classes.begin(); i != classes.end(); ++i) {
+            if (std::find(v.begin(), v.end(), *i) == v.end()) {
+                notFound = true;
+                break;
+            }
+        }
+        if (!notFound)
+            nodeList->addItem(e);
+    }
+    return nodeList;
 }
 
 Element ElementImp::getFirstElementChild()
