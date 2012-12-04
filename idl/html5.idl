@@ -257,8 +257,10 @@ interface XMLDocumentLoader {
 };
 
 interface HTMLElement : Element {
+#if 0  // define in DOM Core
   // DOM tree accessors
   NodeList getElementsByClassName(in DOMString classNames);
+#endif
 
   // dynamic markup insertion
            attribute DOMString innerHTML;

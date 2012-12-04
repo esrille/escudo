@@ -375,12 +375,6 @@ css::CSSStyleDeclaration HTMLElementImp::getStyle()
 
 // HTMLElement - just genereated
 
-NodeList HTMLElementImp::getElementsByClassName(std::u16string classNames)
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
 std::u16string HTMLElementImp::getInnerHTML()
 {
     // TODO: implement me!

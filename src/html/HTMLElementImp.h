@@ -108,7 +108,6 @@ public:
     virtual int getClientHeight();
 
     // HTMLElement
-    virtual NodeList getElementsByClassName(std::u16string classNames);
     virtual std::u16string getInnerHTML();
     virtual void setInnerHTML(std::u16string innerHTML);
     virtual std::u16string getOuterHTML();
