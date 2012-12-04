@@ -180,6 +180,8 @@ bool WindowImp::isBindingDocumentWindow() const
 
 bool WindowImp::poll()
 {
+    if (!window)
+        return false;
     DocumentImp* document = dynamic_cast<DocumentImp*>(window->getDocument().self());
 
     // Update the canvas before processing events.
