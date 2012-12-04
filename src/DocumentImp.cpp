@@ -111,6 +111,7 @@ DocumentImp::DocumentImp(const std::u16string& url) :
     readyState(u"loading"),
     compatMode(u"CSS1Compat"),
     loadEventDelayCount(1),
+    pendingParsingBlockingScript(0),
     defaultView(0),
     activeElement(0),
     error(0)

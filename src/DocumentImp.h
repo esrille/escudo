@@ -63,6 +63,7 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class WindowImp;
 class ElementImp;
+class HTMLScriptElementImp;
 
 class DocumentImp : public ObjectMixin<DocumentImp, NodeImp>
 {
@@ -74,6 +75,8 @@ class DocumentImp : public ObjectMixin<DocumentImp, NodeImp>
     std::u16string compatMode;
     std::deque<stylesheets::StyleSheet> styleSheets;
     unsigned loadEventDelayCount;
+
+    HTMLScriptElementImp* pendingParsingBlockingScript;
 
     WindowImp* defaultView;
     ElementImp* activeElement;
@@ -110,6 +113,13 @@ public:
     }
     void setError(int value) {
         error = value;
+    }
+
+    HTMLScriptElementImp* getPendingParsingBlockingScript() const {
+        return pendingParsingBlockingScript;
+    }
+    void setPendingParsingBlockingScript(HTMLScriptElementImp* element) {
+        pendingParsingBlockingScript = element;
     }
 
     void setReadyState(const std::u16string& readyState);

@@ -884,11 +884,14 @@ bool HTMLParser::InHead::processStartTag(HTMLParser* parser, Token& token)
         return true;
     }
     if (token.getName() == u"script") {
-        parser->insertHtmlElement(token);
+        Element script = parser->insertHtmlElement(token);
+        if (HTMLScriptElementImp* imp = dynamic_cast<HTMLScriptElementImp*>(script.self())) {
+            imp->markAsParserInserted();
+            // TODO: fragment case
+        }
         parser->tokenizer->setState(&HTMLTokenizer::scriptDataState);
         parser->originalInsertionMode = parser->insertionMode;
         parser->setInsertionMode(&text);
-        // TODO: misc.
         return false;
     }
     if (token.getName() == u"head") {
@@ -2824,11 +2827,14 @@ bool HTMLParser::InBinding::processCharacter(HTMLParser* parser, Token& token)
 bool HTMLParser::InBinding::processStartTag(HTMLParser* parser, Token& token)
 {
     if (token.getName() == u"implementation") {
-        parser->insertHtmlElement(token);
+        Element script = parser->insertHtmlElement(token);
+        if (HTMLScriptElementImp* imp = dynamic_cast<HTMLScriptElementImp*>(script.self())) {
+            imp->markAsParserInserted();
+            // TODO: fragment case
+        }
         parser->tokenizer->setState(&HTMLTokenizer::scriptDataState);
         parser->originalInsertionMode = parser->insertionMode;
         parser->setInsertionMode(&text);
-        // TODO: misc.
         return false;
     }
     return anythingElse(parser, token);

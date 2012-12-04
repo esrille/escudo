@@ -37,6 +37,15 @@ class HTMLScriptElementImp : public ObjectMixin<HTMLScriptElementImp, HTMLElemen
 public:
     HTMLScriptElementImp(DocumentImp* ownerDocument, const std::u16string& localName = u"script");
     HTMLScriptElementImp(HTMLScriptElementImp* org, bool deep);
+    ~HTMLScriptElementImp();
+
+    void markAsParserInserted() {
+        parserInserted = true;
+        forceAsync = false;
+    }
+    bool isReadyToBeParserExecuted() const {
+        return readyToBeParserExecuted;
+    }
 
     bool execute();
     bool prepare();

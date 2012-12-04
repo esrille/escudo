@@ -52,8 +52,13 @@ HTMLScriptElementImp::HTMLScriptElementImp(HTMLScriptElementImp* org, bool deep)
     wasParserInserted(false),
     forceAsync(true),
     readyToBeParserExecuted(false),
-    request(0)  // TODO XXX
+    request(0)
 {
+}
+
+HTMLScriptElementImp::~HTMLScriptElementImp()
+{
+    delete request;
 }
 
 // cf. http://www.whatwg.org/specs/web-apps/current-work/multipage/scripting-1.html#prepare-a-script
@@ -78,6 +83,7 @@ bool HTMLScriptElementImp::prepare()
     alreadyStarted = true;
 
     // TODO 10. - 13.
+    DocumentImp* document = getOwnerDocumentImp();
 
     if (hasAttribute(u"src")) {
         std::u16string src = getSrc();
@@ -86,12 +92,14 @@ bool HTMLScriptElementImp::prepare()
             return false;
         }
 
-        DocumentImp* document = getOwnerDocumentImp();
         request = new(std::nothrow) HttpRequest(document->getDocumentURI());
         if (request) {
             request->open(u"GET", src);
             request->setHandler(boost::bind(&HTMLScriptElementImp::notify, this));
             document->incrementLoadEventDelayCount();
+            if (parserInserted)
+                document->setPendingParsingBlockingScript(this);
+            // TODO: deal with 'defer' and 'async'
             request->send();
         }
 
@@ -105,31 +113,35 @@ void HTMLScriptElementImp::notify()
 {
     DocumentImp* document = getOwnerDocumentImp();
     if (request->getStatus() == 200) {
-#if 104400 <= BOOST_VERSION
-        boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request->getContentDescriptor(), boost::iostreams::never_close_handle);
-#else
-        boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request->getContentDescriptor(), false);
-#endif
-        U16InputStream u16stream(stream, "utf-8");  // TODO detect encode
-        std::u16string script = u16stream;
-        DocumentWindowPtr window = document->activate();
-        if (window)
-            window->getContext()->evaluate(script);
+        if (parserInserted)
+            readyToBeParserExecuted = true;
+        // TODO: deal with 'defer' and 'async'
+    } else {
+        if (document->getPendingParsingBlockingScript() == this)
+            document->setPendingParsingBlockingScript(0);
     }
     document->decrementLoadEventDelayCount();
 }
 
 bool HTMLScriptElementImp::execute()
 {
-    Nullable<std::u16string> content = getTextContent();
-    if (!content.hasValue())
-        return false;
-    std::u16string script = content.value();
-    stripLeadingAndTrailingWhitespace(script);
-    if (script.compare(0, 4, u"<!--") == 0)
-        script.erase(0, 4);
-    if (3 <= script.length() && script.compare(script.length() - 3, 3, u"-->") == 0)
-        script.erase(script.length() - 3);
+    std::u16string script;
+    if (request) {
+        assert(request->getStatus() == 200);
+        boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request->getContentDescriptor(), boost::iostreams::never_close_handle);
+        U16InputStream u16stream(stream, "utf-8");  // TODO detect encode
+        script = u16stream;
+    } else {
+        Nullable<std::u16string> content = getTextContent();
+        if (!content.hasValue())
+            return false;
+        script = content.value();
+        stripLeadingAndTrailingWhitespace(script);
+        if (script.compare(0, 4, u"<!--") == 0)
+            script.erase(0, 4);
+        if (3 <= script.length() && script.compare(script.length() - 3, 3, u"-->") == 0)
+            script.erase(script.length() - 3);
+    }
     DocumentWindowPtr window = getOwnerDocumentImp()->activate();
     Any result = window->getContext()->evaluate(script);
     if (auto binding = dynamic_cast<HTMLBindingElementImp*>(getParentElement().self())) {

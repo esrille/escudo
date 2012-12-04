@@ -32,6 +32,7 @@
 #include "css/ViewCSSImp.h"
 #include "html/HTMLIFrameElementImp.h"
 #include "html/HTMLLinkElementImp.h"
+#include "html/HTMLScriptElementImp.h"
 #include "http/HTTPConnection.h"
 
 #include "Test.util.h"
@@ -241,45 +242,59 @@ bool WindowImp::poll()
         if (!document) {
             recordTime("%*shttp request done", windowDepth * 2, "");
             // TODO: Check header
-
             Document newDocument = getDOMImplementation()->createDocument(u"", u"", 0);
-            if (DocumentImp* imp = dynamic_cast<DocumentImp*>(newDocument.self())) {
+            if (document = dynamic_cast<DocumentImp*>(newDocument.self())) {
                 // TODO: Fire a simple unload event.
                 window->setDocument(newDocument);
-                imp->setDefaultView(this);
-                imp->setURL(request.getRequestMessage().getURL());
+                document->setDefaultView(this);
+                document->setURL(request.getRequestMessage().getURL());
                 if (!request.getError())
                     history.update(window);
                 else
-                    imp->setError(request.getError());
-                activate();
+                    document->setError(request.getError());
+                parser = new(std::nothrow) Parser(document, request.getContentDescriptor(), request.getResponseMessage().getContentCharset());
+                if (!parser)
+                    break;  // TODO: error handling
+            } else
+                break;  // TODO: error handling
+        }
+        if (document->getReadyState() == u"loading") {
+            // TODO: Note white it would be nice to parse the HTML docucment in
+            // the background task, firstly we need to check if we can run JS
+            // in the background.
+            activate();
 
-                // TODO: Note white it would be nice to parse the HTML docucment in
-                // the background task, firstly we need to check if we can run JS
-                // in the background.
-                parser = new(std::nothrow) Parser(imp, request.getContentDescriptor(), request.getResponseMessage().getContentCharset());
-                // TODO: run thin in background
-                Token token;
-                do {
-                    token = parser->getToken();
-                    parser->processToken(token);
-                } while (token.getType() != Token::Type::EndOfFile);
-                imp->setCharset(utfconv(parser->getEncoding()));
-
-                NodeImp::evalTree(imp);
-                imp->resetStyleSheets();
-                recordTime("%*shtml parsed", windowDepth * 2, "");
-
-                if (3 <= getLogLevel())
-                    dumpTree(std::cerr, imp);
-
-                if (events::Event event = new(std::nothrow) EventImp) {
-                    event.initEvent(u"DOMContentLoaded", true, false);
-                    imp->dispatchEvent(event);
-                }
-                imp->decrementLoadEventDelayCount();
-                backgroundTask.restart(BackgroundTask::Cascade);
+            HTMLScriptElementImp* script = document->getPendingParsingBlockingScript();
+            if (script) {
+                if (!script->isReadyToBeParserExecuted())
+                    break;
+                script->execute();
+                document->setPendingParsingBlockingScript(0);
             }
+
+            // TODO: run this in the background
+            Token token;
+            do {
+                token = parser->getToken();
+                parser->processToken(token);
+            } while (token.getType() != Token::Type::EndOfFile && !document->getPendingParsingBlockingScript());
+            if (document->getPendingParsingBlockingScript())
+                break;
+            document->setCharset(utfconv(parser->getEncoding()));
+
+            NodeImp::evalTree(document);
+            document->resetStyleSheets();
+            recordTime("%*shtml parsed", windowDepth * 2, "");
+
+            if (4 <= getLogLevel())
+                dumpTree(std::cerr, document);
+
+            if (events::Event event = new(std::nothrow) EventImp) {
+                event.initEvent(u"DOMContentLoaded", true, false);
+                document->dispatchEvent(event);
+            }
+            document->decrementLoadEventDelayCount();
+            backgroundTask.restart(BackgroundTask::Cascade);
             break;
         }
         switch (backgroundTask.getState()) {
