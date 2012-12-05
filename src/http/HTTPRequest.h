@@ -85,6 +85,7 @@ public:
     unsigned addCallback(boost::function<void (void)> f, unsigned id = static_cast<unsigned>(-1));
     void clearCallback(unsigned id);
 
+    bool redirect(const HttpResponseMessage& res);
     bool complete(bool error);
     void notify();
     bool notify(bool error);

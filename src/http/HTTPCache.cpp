@@ -38,18 +38,18 @@ void HttpCache::notify(HttpRequest* request, bool error)
     else {
         response.update(request->getResponseMessage());
         // TODO: deal with partial...
-        switch (request->getResponseMessage().getStatus()) {
-        case 304:   // Not Modified
+        unsigned short status = request->getResponseMessage().getStatus();
+        if (status == 304)  // Not Modified?
             request->constructResponseFromCache(false);
-            break;
-        default: {
+        else {
+            response.updateStatus(request->getResponseMessage());
             int fd = request->getContentDescriptor();
-            if (0 <= fd)
+            if (0 <= fd) {
+                if (0 <= fdContent)
+                    close(fdContent);
                 fdContent = dup(fd);
-            break;
+            }
         }
-        }
-
     }
 
     while (!requests.empty()) {
@@ -79,13 +79,6 @@ void HttpCache::invalidate()
 
 HttpCache* HttpCache::send(HttpRequest* request)
 {
-    HttpRequestMessage& requestMessage(request->getRequestMessage());
-
-    if (response.isCacheable() && response.isFresh(requestTime)) {
-        if (requestMessage.getMethodCode() == HttpRequestMessage::HEAD || 0 <= fdContent)
-            return this;
-    }
-
     if (current) {
         requests.push_back(request);
         return this;
@@ -97,6 +90,7 @@ HttpCache* HttpCache::send(HttpRequest* request)
     else {
         // Validate
         // by If-Modified-Since
+        HttpRequestMessage& requestMessage(request->getRequestMessage());
         std::string lastModified = response.getResponseHeader("Last-Modified");
         if (!lastModified.empty()) {
             // Use only strong validator here
@@ -144,14 +138,25 @@ HttpCache* HttpCacheManager::getCache(const URL& url)
 
 HttpCache* HttpCacheManager::send(HttpRequest* request)
 {
-    HttpRequestMessage& message(request->getRequestMessage());
-    HttpCache* cache = getCache(message.getURL());
-    if (!cache)
-        return 0;
+    for (;;) {
+        // TODO: check protocol is http.
+        HttpRequestMessage& message(request->getRequestMessage());
+        HttpCache* cache = getCache(message.getURL());
+        if (!cache)
+            return 0;
 
-    int methodCode = message.getMethodCode();
-    if (methodCode == HttpRequestMessage::GET || methodCode == HttpRequestMessage::HEAD)
-        return cache->send(request);
+        int code = message.getMethodCode();
+        if (code == HttpRequestMessage::GET || code == HttpRequestMessage::HEAD) {
+            if (cache->response.isCacheable() && cache->response.isFresh(cache->requestTime)) {
+                if (request->redirect(cache->response))
+                    continue;
+                if (code == HttpRequestMessage::HEAD || 0 <= cache->fdContent)
+                    return cache;
+            }
+            return cache->send(request);
+        }
+        break;
+    }
 
     // No need for going through the cache
     // TODO: call cache->invlidate();

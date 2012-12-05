@@ -47,6 +47,9 @@ class HttpCache
 
     std::list<HttpRequest*> requests;
     HttpRequest* current;
+
+    HttpCache* send(HttpRequest* request);
+
 public:
 
     bool isBusy() const {
@@ -61,7 +64,6 @@ public:
 
     // via PUT, DELETE, POST, and unknown
     void invalidate();
-    HttpCache* send(HttpRequest* request);
     bool abort(HttpRequest* request);
 
     const HttpResponseMessage& getResponseMessage() const {

@@ -64,11 +64,24 @@ public:
         return contentType;
     }
 
-    unsigned setStatus(unsigned short code) {
+    void setStatus(unsigned short code) {
         status = code;
     }
     unsigned short getStatus() const {
         return status;
+    }
+    // return true if the usr agent should automatically redirect
+    bool shouldRedirect() const {
+        switch (status) {
+        case 301:   // Moved Permanently
+        case 302:   // Found
+        case 303:   // See Other
+        case 305:   // Use Proxy
+        case 307:   // Temporary Redirect
+            return true;
+        default:
+            return false;
+        }
     }
     std::string getStatusText() const {
         return statusText;

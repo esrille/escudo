@@ -416,7 +416,11 @@ bool HttpResponseMessage::isCacheable() const
         if (!isNoCache())
             cacheable = true;
         break;
-    default:
+    default: {
+            unsigned value = 0;
+            if (getMaxAgeValue(value) || getExpiresValue(value))
+                cacheable = true;
+        }
         break;
     }
     return cacheable;
