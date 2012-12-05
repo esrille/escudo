@@ -376,9 +376,9 @@ void HttpConnection::readContent(const boost::system::error_code& err)
                 content.write(boost::asio::buffer_cast<const char*>(response.data()), length);
                 response.consume(length);
                 octetCount += length;
-                if (contentLength <= octetCount)
-                    completed = true;
             }
+            if (contentLength <= octetCount)
+                completed = true;
         }
         if (!err && !completed) {
             asyncRead(response, boost::asio::transfer_at_least(1), boost::bind(&HttpConnection::handleRead, this, boost::asio::placeholders::error));
