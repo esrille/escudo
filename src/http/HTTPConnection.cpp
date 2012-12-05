@@ -70,9 +70,10 @@ void HttpConnection::done(HttpConnectionManager* manager, bool error)
     if (!error) {
         retryCount = 0;
         if (!requests.empty()) {
-            current = requests.front();
+            // Note at this point, the socket might have been closed.
+            HttpRequest* request = requests.front();
             requests.pop_front();
-            sendRequest();
+            send(request);
         }
     } else {
         while (!requests.empty()) {
