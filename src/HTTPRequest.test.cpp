@@ -69,12 +69,13 @@ int main(int argc, char* argv[])
     initLogLevel(&argc, argv, 3);
 
     int result = 0;
-    if (2 <= argc)
-        return test(utfconv(argv[1]));
-
-    result += test(u"http://www.esrille.com/index.html");
-    sleep(3);
-    result += test(u"http://www.esrille.com/index.html");
-
+    if (2 <= argc) {
+        for (int i = 1; i < argc; ++i)
+            result += test(utfconv(argv[1]));
+    } else {
+        result += test(u"http://www.esrille.com/index.html");
+        sleep(3);
+        result += test(u"http://www.esrille.com/index.html");
+    }
     return result;
 }
