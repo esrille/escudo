@@ -29,6 +29,20 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 using namespace http;
 
+const char* HttpConnection::States[] = {
+    "Closed",
+    "Resolving",
+    "Resolved",
+    "Connected",
+    "Handshaking",
+    "ReadStatusLine",
+    "ReadHead",
+    "ReadContent",
+    "ReadChunk",
+    "ReadTrailer",
+    "CloseWait"
+};
+
 HttpConnection::HttpConnection(const std::string& protocol, const std::string& hostname, const std::string& port) :
     state(Closed),
     retryCount(0),
@@ -522,6 +536,11 @@ void HttpConnection::abort(HttpRequest* request)
     done(&HttpConnectionManager::getInstance(), true);
 }
 
+void HttpConnection::dump()
+{
+    std::cout << "HttpConnection: " << protocol << ' ' << hostname << ' ' << States[state] << ' ' << requests.size() << '\n';
+}
+
 HttpConnection* HttpConnectionManager::getConnection(const std::string& protocol, const std::string& hostname, const std::string& port)
 {
     for (auto i = connections.begin(); i != connections.end(); ++i) {
@@ -602,6 +621,14 @@ void HttpConnectionManager::poll()
 void HttpConnectionManager::operator()()
 {
     ioService.run();
+}
+
+void HttpConnectionManager::dump()
+{
+    HttpConnectionManager& instance(getInstance());
+    for (auto i = instance.connections.begin(); i != instance.connections.end(); ++i)
+        (*i)->dump();
+    std::cout << "completed: " << instance.completed.size() << '\n';
 }
 
 }}}}  // org::w3c::dom::bootstrap

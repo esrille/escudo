@@ -74,6 +74,8 @@ public:
     static boost::asio::io_service& getIOService() {
         return getInstance().ioService;
     }
+
+    static void dump();
 };
 
 class HttpConnection
@@ -87,7 +89,6 @@ class HttpConnection
         Resolved,
         Connected,
         Handshaking,
-        // RequestSent,
         ReadStatusLine,
         ReadHead,
         ReadContent,
@@ -95,6 +96,8 @@ class HttpConnection
         ReadTrailer,
         CloseWait
     };
+
+    static const char* States[];
 
     static const int MaxRetryCount = 3;
 
@@ -163,6 +166,7 @@ class HttpConnection
 
 public:
     HttpConnection(const std::string& protocol, const std::string& hostname, const std::string& port);
+    void dump();
 };
 
 }}}}  // org::w3c::dom::bootstrap
