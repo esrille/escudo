@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@
 #include <assert.h>
 #include <ctype.h>
 #include <float.h>
+#include <limits.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -288,6 +289,58 @@ double Any::toNumber() const
     }
     return 0.0;
 }
+
+unsigned int Any::toArrayIndex() const
+{
+    switch (type) {
+    case Undefined:
+        break;
+    case Bool:
+        break;
+    case Int32:
+        if (0 <= heap.i32)
+            return heap.i32;
+        break;
+    case Uint32:
+        return heap.u32;
+    case Int64:
+        if (0 <= heap.i64 && heap.i64 < UINT_MAX)
+            return heap.i64;
+    case Uint64:
+        if (heap.u64 < UINT_MAX)
+            return heap.u64;
+        break;
+    case Float32:
+        if (0.0f <= heap.f32) {
+            float f = floorf(heap.f32);
+            if (f == heap.f32 && f < UINT_MAX)
+                return static_cast<unsigned int>(heap.f32);
+        }
+        break;
+    case Float64:
+        if (0.0 <= heap.f64) {
+            double f = floor(heap.f64);
+            if (f == heap.f64 && f < UINT_MAX)
+                return static_cast<unsigned int>(heap.f64);
+        }
+        break;
+        break;
+    case Dynamic:
+        if (vtable->getType() == typeid(std::u16string)) {
+            double v = ::toNumber(*reinterpret_cast<const std::u16string*>(&heap));
+            if (0.0 <= v) {
+                double f = floor(v);
+                if (f == v && f < UINT_MAX && ::toString(f) == *reinterpret_cast<const std::u16string*>(&heap))
+                    return static_cast<unsigned int>(f);
+            }
+        }
+        break;
+    default:
+        break;
+    }
+    return UINT_MAX;
+}
+
 
 // toBoolean
 // Object returns true. Otherwise, false.

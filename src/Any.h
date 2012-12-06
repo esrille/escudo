@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -314,6 +314,7 @@ public:
 
     bool toBoolean() const;
     double toNumber() const;
+    unsigned int toArrayIndex() const;  // cf. [ECMA-262], section 15.4
 
     bool isString() const;
     std::u16string toString() const;
