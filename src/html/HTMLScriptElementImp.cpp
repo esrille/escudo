@@ -165,84 +165,90 @@ std::u16string HTMLScriptElementImp::getSrc()
 
 void HTMLScriptElementImp::setSrc(std::u16string src)
 {
-    // TODO: implement me!
+    setAttribute(u"src", src);
 }
 
 bool HTMLScriptElementImp::getAsync()
 {
-    // TODO: implement me!
-    return 0;
+    if (forceAsync)
+        return true;
+    Nullable<std::u16string> value = getAttribute(u"async");
+    if (!value.hasValue())
+        return false;
+    return value.value().empty() || !compareIgnoreCase(value.value(), u"async");
 }
 
 void HTMLScriptElementImp::setAsync(bool async)
 {
-    // TODO: implement me!
+    forceAsync = false;
+    if (async)
+        setAttribute(u"async", u"");
+    else
+        removeAttribute(u"async");
 }
 
 bool HTMLScriptElementImp::getDefer()
 {
-    // TODO: implement me!
-    return 0;
+    Nullable<std::u16string> value = getAttribute(u"defer");
+    if (!value.hasValue())
+        return false;
+    return value.value().empty() || !compareIgnoreCase(value.value(), u"defer");
 }
 
 void HTMLScriptElementImp::setDefer(bool defer)
 {
-    // TODO: implement me!
+    if (defer)
+        setAttribute(u"defer", u"");
+    else
+        removeAttribute(u"defer");
 }
 
 std::u16string HTMLScriptElementImp::getType()
 {
-    // TODO: implement me!
-    return u"";
+    return getAttribute(u"type");
 }
 
 void HTMLScriptElementImp::setType(std::u16string type)
 {
-    // TODO: implement me!
+    setAttribute(u"type", type);
 }
 
 std::u16string HTMLScriptElementImp::getCharset()
 {
-    // TODO: implement me!
-    return u"";
+    return getAttribute(u"charset");
 }
 
 void HTMLScriptElementImp::setCharset(std::u16string charset)
 {
-    // TODO: implement me!
+    setAttribute(u"charset", charset);
 }
 
 std::u16string HTMLScriptElementImp::getText()
 {
-    // TODO: implement me!
-    return u"";
+    return getTextContent();
 }
 
 void HTMLScriptElementImp::setText(std::u16string text)
 {
-    // TODO: implement me!
+    setTextContent(text);
 }
 
 std::u16string HTMLScriptElementImp::getEvent()
 {
-    // TODO: implement me!
     return u"";
 }
 
 void HTMLScriptElementImp::setEvent(std::u16string event)
 {
-    // TODO: implement me!
 }
 
 std::u16string HTMLScriptElementImp::getHtmlFor()
 {
-    // TODO: implement me!
     return u"";
 }
 
 void HTMLScriptElementImp::setHtmlFor(std::u16string htmlFor)
 {
-    // TODO: implement me!
 }
 
 }}}}  // org::w3c::dom::bootstrap
