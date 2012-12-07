@@ -114,7 +114,7 @@ void CSSImportRuleImp::notify()
         styleSheet = parser.parse(document, cssStream);
         if (auto imp = dynamic_cast<CSSStyleSheetImp*>(styleSheet.self()))
             imp->setParentStyleSheet(getParentStyleSheet());
-        if (3 <= getLogLevel())
+        if (4 <= getLogLevel())
             dumpStyleSheet(std::cerr, styleSheet.self());
     }
     document->decrementLoadEventDelayCount();

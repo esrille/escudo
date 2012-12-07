@@ -110,7 +110,7 @@ void HTMLLinkElementImp::linkStyleSheet()
             imp->setHref(request->getRequestMessage().getURL());
             imp->setOwnerNode(this);
         }
-        if (3 <= getLogLevel())
+        if (4 <= getLogLevel())
             dumpStyleSheet(std::cerr, styleSheet.self());
         document->resetStyleSheets();
         if (WindowImp* view = document->getDefaultWindow())

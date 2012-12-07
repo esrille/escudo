@@ -41,7 +41,7 @@ void HTMLStyleElementImp::eval()
         styleSheet = parser.parse(document, content);
         if (auto imp = dynamic_cast<CSSStyleSheetImp*>(styleSheet.self()))
             imp->setOwnerNode(this);
-        if (3 <= getLogLevel())
+        if (4 <= getLogLevel())
             dumpStyleSheet(std::cerr, styleSheet.self());
 
         if (WindowImp* view = document->getDefaultWindow())

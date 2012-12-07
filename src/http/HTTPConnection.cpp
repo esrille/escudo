@@ -189,7 +189,7 @@ void HttpConnection::handleHandshake(const boost::system::error_code& err)
 
 void HttpConnection::handleRead(const boost::system::error_code& err)
 {
-    if (3 <= getLogLevel())
+    if (4 <= getLogLevel())
         std::cerr << __func__ << ' ' << state << ' ' << err << '\n';
 
     switch (state) {
