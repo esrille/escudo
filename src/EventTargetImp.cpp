@@ -53,6 +53,8 @@ void EventTargetImp::invoke(EventImp* event)
             break;
         }
     }
+
+    // TODO: Called default actions; cf. http://www.w3.org/TR/DOM-Level-3-Events/#event-flow-default-cancel
 }
 
 // EventTarget
@@ -65,7 +67,7 @@ void EventTargetImp::addEventListener(std::u16string type, events::EventListener
     auto found = map.find(type);
     if (found == map.end()) {
         std::list<Listener> listeners;
-        listeners.push_front(item);
+        listeners.push_back(item);
         map.insert(std::pair<std::u16string, std::list<Listener>>(type, listeners));
         return;
     }
@@ -75,7 +77,7 @@ void EventTargetImp::addEventListener(std::u16string type, events::EventListener
         if (*i == item)
             return;
     }
-    listeners.push_front(item);
+    listeners.push_back(item);
 }
 
 void EventTargetImp::removeEventListener(std::u16string type, events::EventListener listener, bool useCapture)
