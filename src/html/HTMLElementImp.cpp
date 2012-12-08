@@ -231,7 +231,7 @@ void HTMLElementImp::invoke(EventImp* event)
         break;
     case events::Event::BUBBLING_PHASE:
     case events::Event::AT_TARGET:
-    case EventImp::AT_DEFAULT:
+    case EventImp::DEFAULT_PHASE:
         invokeShadowTarget(event);
         EventTargetImp::invoke(event);
         break;

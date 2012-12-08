@@ -50,7 +50,7 @@ void EventTargetImp::invoke(EventImp* event)
             if (!i->useDefault)
                 i->listener.handleEvent(event);
             break;
-        case EventImp::AT_DEFAULT:
+        case EventImp::DEFAULT_PHASE:
             if (i->useDefault)
                 i->listener.handleEvent(event);
         default:
@@ -173,7 +173,7 @@ bool EventTargetImp::dispatchEvent(events::Event evt)
             // TODO: Call default actions;
             // cf. http://www.w3.org/TR/DOM-Level-3-Events/#event-flow-default-cancel
             // cf. http://www.w3.org/TR/xbl/#the-default-phase0
-            event->setEventPhase(EventImp::AT_DEFAULT);
+            event->setEventPhase(EventImp::DEFAULT_PHASE);
             event->setCurrentTarget(node);
             node->invoke(event);
             if (event->getBubbles()) {
