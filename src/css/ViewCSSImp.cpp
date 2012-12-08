@@ -82,18 +82,24 @@ ViewCSSImp::ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyle
     delay(0)
 {
     setMediumFontSize(16);
-    getDocument().addEventListener(u"DOMAttrModified", &mutationListener);
-    getDocument().addEventListener(u"DOMCharacterDataModified", &mutationListener);
-    getDocument().addEventListener(u"DOMNodeInserted", &mutationListener);
-    getDocument().addEventListener(u"DOMNodeRemoved", &mutationListener);
+    DocumentImp* document = dynamic_cast<DocumentImp*>(getDocument().self());
+    if (document) {
+        document->addEventListener(u"DOMAttrModified", &mutationListener, false, true);
+        document->addEventListener(u"DOMCharacterDataModified", &mutationListener, false, true);
+        document->addEventListener(u"DOMNodeInserted", &mutationListener, false, true);
+        document->addEventListener(u"DOMNodeRemoved", &mutationListener, false, true);
+    }
 }
 
 ViewCSSImp::~ViewCSSImp()
 {
-    getDocument().removeEventListener(u"DOMAttrModified", &mutationListener);
-    getDocument().removeEventListener(u"DOMCharacterDataModified", &mutationListener);
-    getDocument().removeEventListener(u"DOMNodeInserted", &mutationListener);
-    getDocument().removeEventListener(u"DOMNodeRemoved", &mutationListener);
+    DocumentImp* document = dynamic_cast<DocumentImp*>(getDocument().self());
+    if (document) {
+        document->removeEventListener(u"DOMAttrModified", &mutationListener, false, true);
+        document->removeEventListener(u"DOMCharacterDataModified", &mutationListener, false, true);
+        document->removeEventListener(u"DOMNodeInserted", &mutationListener, false, true);
+        document->removeEventListener(u"DOMNodeRemoved", &mutationListener, false, true);
+    }
 }
 
 Box* ViewCSSImp::boxFromPoint(int x, int y)

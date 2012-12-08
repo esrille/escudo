@@ -40,6 +40,10 @@ namespace bootstrap
 {
 class EventImp : public ObjectMixin<EventImp>
 {
+public:
+    static const unsigned short AT_DEFAULT = 0x78626C44;
+
+private:
     std::u16string type;
     events::EventTarget target;
     events::EventTarget currentTarget;

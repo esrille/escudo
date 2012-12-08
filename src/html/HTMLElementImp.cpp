@@ -45,8 +45,8 @@ HTMLElementImp::HTMLElementImp(DocumentImp* ownerDocument, const std::u16string&
     shadowTarget(0),
     shadowImplementation(0)
 {
-    addEventListener(u"click", &clickListener);
-    addEventListener(u"mousemove", &mouseMoveListener);
+    addEventListener(u"click", &clickListener, false, true);
+    addEventListener(u"mousemove", &mouseMoveListener, false, true);
 }
 
 HTMLElementImp::HTMLElementImp(HTMLElementImp* org, bool deep) :
@@ -69,8 +69,8 @@ HTMLElementImp::HTMLElementImp(HTMLElementImp* org, bool deep) :
             style = imp;
         }
     }
-    addEventListener(u"click", &clickListener);
-    addEventListener(u"mousemove", &mouseMoveListener);
+    addEventListener(u"click", &clickListener, false, true);
+    addEventListener(u"mousemove", &mouseMoveListener, false, true);
 }
 
 HTMLElementImp::~HTMLElementImp()
@@ -79,8 +79,6 @@ HTMLElementImp::~HTMLElementImp()
 
 void HTMLElementImp::handleClick(events::Event event)
 {
-    if (event.getDefaultPrevented())
-        return;
     events::MouseEvent mouse = interface_cast<events::MouseEvent>(event);
     switch (mouse.getButton()) {
     case 0:
@@ -95,8 +93,6 @@ void HTMLElementImp::handleClick(events::Event event)
 
 void HTMLElementImp::handleMouseMove(events::Event event)
 {
-    if (event.getDefaultPrevented())
-        return;
     events::MouseEvent mouse = interface_cast<events::MouseEvent>(event);
     unsigned short buttons = mouse.getButtons();
     if (buttons & 1) {
@@ -235,6 +231,7 @@ void HTMLElementImp::invoke(EventImp* event)
         break;
     case events::Event::BUBBLING_PHASE:
     case events::Event::AT_TARGET:
+    case EventImp::AT_DEFAULT:
         invokeShadowTarget(event);
         EventTargetImp::invoke(event);
         break;
@@ -736,8 +733,7 @@ void HTMLElementImp::setOnclick(html::Function onclick)
     DocumentImp* document = getOwnerDocumentImp();
     DocumentWindowPtr window = document->activate();
     addEventListener(u"click",
-                     new(std::nothrow) EventListenerImp(boost::bind(&ECMAScriptContext::dispatchEvent, window->getContext(), onclick, _1)),
-                     false);
+                     new(std::nothrow) EventListenerImp(boost::bind(&ECMAScriptContext::dispatchEvent, window->getContext(), onclick, _1)));
 }
 
 html::Function HTMLElementImp::getOncontextmenu()

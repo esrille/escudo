@@ -36,14 +36,14 @@ HTMLAnchorElementImp::HTMLAnchorElementImp(HTMLAnchorElementImp* org, bool deep)
     ObjectMixin(org, deep),
     clickListener(boost::bind(&HTMLAnchorElementImp::handleClick, this, _1))
 {
-    addEventListener(u"click", &clickListener);
+    addEventListener(u"click", &clickListener, false, true);
 }
 
 HTMLAnchorElementImp::HTMLAnchorElementImp(DocumentImp* ownerDocument) :
     ObjectMixin(ownerDocument, u"a"),
     clickListener(boost::bind(&HTMLAnchorElementImp::handleClick, this, _1))
 {
-    addEventListener(u"click", &clickListener);
+    addEventListener(u"click", &clickListener, false, true);
 }
 
 HTMLAnchorElementImp::~HTMLAnchorElementImp()
@@ -52,8 +52,6 @@ HTMLAnchorElementImp::~HTMLAnchorElementImp()
 
 void HTMLAnchorElementImp::handleClick(events::Event event)
 {
-    if (event.getDefaultPrevented())
-        return;
     events::MouseEvent mouse = interface_cast<events::MouseEvent>(event);
     std::u16string href = getHref();
     if (!href.empty() && mouse.getButton() == 0)

@@ -130,9 +130,6 @@ void HTMLInputElementImp::eval()
 
 void HTMLInputElementImp::handleClick(events::Event event)
 {
-    if (event.getDefaultPrevented())
-        return;
-
     if (type == SubmitButton) {
         html::HTMLFormElement form = getForm();
         if (HTMLFormElementImp* imp = dynamic_cast<HTMLFormElementImp*>(form.self()))
@@ -142,9 +139,6 @@ void HTMLInputElementImp::handleClick(events::Event event)
 
 void HTMLInputElementImp::handleKeydown(events::Event event)
 {
-    if (event.getDefaultPrevented())
-        return;
-
     if (type == Text) {
         bool modified = false;
         std::u16string value = getValue();
@@ -203,7 +197,7 @@ void HTMLInputElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
             element->appendChild(text, true);
             style->setCssText(u"display: inline-block; white-space: pre; background-color: white; border: 2px inset; text-align: left; padding: 1px; min-height: 1em;");
             setShadowTree(element);
-            addEventListener(u"keydown", &keydownListener);
+            addEventListener(u"keydown", &keydownListener, false, true);
         }
         break;
     }
@@ -214,7 +208,7 @@ void HTMLInputElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
             element->appendChild(text, true);
             style->setCssText(u"display: inline-block; border: 2px outset; padding: 1px; text-align: center; min-height: 1em;");
             setShadowTree(element);
-            addEventListener(u"click", &clickListener);
+            addEventListener(u"click", &clickListener, false, true);
         }
         break;
     }
@@ -232,7 +226,7 @@ void HTMLInputElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
         HTMLElementImp::generateShadowContent(style);
         switch (type) {
         case SubmitButton:
-            addEventListener(u"click", &clickListener);
+            addEventListener(u"click", &clickListener, false, true);
             break;
         default:
             break;

@@ -1318,8 +1318,7 @@ void WindowImp::setOnload(html::Function onload)
     if (!window)
         return;
     window->addEventListener(u"load",
-                             new(std::nothrow) EventListenerImp(boost::bind(&ECMAScriptContext::dispatchEvent, window->getContext(), onload, _1)),
-                             false);
+                             new(std::nothrow) EventListenerImp(boost::bind(&ECMAScriptContext::dispatchEvent, window->getContext(), onload, _1)));
 }
 
 html::Function WindowImp::getOnloadeddata()

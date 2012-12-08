@@ -60,7 +60,7 @@ void HTMLIFrameElementImp::eval()
     HTMLElementImp::evalMarginHeight(this);
     HTMLElementImp::evalMarginWidth(this);
     setTabIndex(0);
-    addEventListener(u"blur", &blurListener);
+    addEventListener(u"blur", &blurListener, false, true);
     setSrc(getSrc());
 }
 

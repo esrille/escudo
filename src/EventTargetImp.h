@@ -36,10 +36,11 @@ class EventTargetImp : public ObjectMixin<EventTargetImp>
     {
         events::EventListener listener;
         bool useCapture;
+        bool useDefault;
 
         bool operator==(const Listener& other) const
         {
-            return listener == other.listener && useCapture == other.useCapture;
+            return listener == other.listener && useCapture == other.useCapture && useDefault == other.useDefault;
         }
     };
     std::map<std::u16string, std::list<Listener>> map;
@@ -51,8 +52,8 @@ public:
     virtual void invoke(EventImp* event);
 
     // EventTarget
-    virtual void addEventListener(std::u16string type, events::EventListener listener, bool capture = false);
-    virtual void removeEventListener(std::u16string type, events::EventListener listener, bool capture = false);
+    virtual void addEventListener(std::u16string type, events::EventListener listener, bool capture = false, bool useDefault = false);
+    virtual void removeEventListener(std::u16string type, events::EventListener listener, bool capture = false, bool useDefault = false);
     virtual bool dispatchEvent(events::Event event);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)

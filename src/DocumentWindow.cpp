@@ -35,8 +35,8 @@ DocumentWindow::DocumentWindow() :
     clickListener(boost::bind(&DocumentWindow::handleClick, this, _1)),
     mouseMoveListener(boost::bind(&DocumentWindow::handleMouseMove, this, _1))
 {
-    addEventListener(u"click", &clickListener);
-    addEventListener(u"mousemove", &mouseMoveListener);
+    addEventListener(u"click", &clickListener, false, true);
+    addEventListener(u"mousemove", &mouseMoveListener, false, true);
 }
 
 DocumentWindow::~DocumentWindow()

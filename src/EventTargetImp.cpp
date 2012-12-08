@@ -39,30 +39,32 @@ void EventTargetImp::invoke(EventImp* event)
             return;
         switch (event->getEventPhase()) {
         case events::Event::CAPTURING_PHASE:
-            if (i->useCapture)
+            if (i->useCapture && !i->useDefault)
                 i->listener.handleEvent(event);
             break;
         case events::Event::BUBBLING_PHASE:
-            if (!i->useCapture)
+            if (!i->useCapture && !i->useDefault)
                 i->listener.handleEvent(event);
             break;
         case events::Event::AT_TARGET:
-            i->listener.handleEvent(event);
+            if (!i->useDefault)
+                i->listener.handleEvent(event);
             break;
+        case EventImp::AT_DEFAULT:
+            if (i->useDefault)
+                i->listener.handleEvent(event);
         default:
             break;
         }
     }
-
-    // TODO: Called default actions; cf. http://www.w3.org/TR/DOM-Level-3-Events/#event-flow-default-cancel
 }
 
 // EventTarget
-void EventTargetImp::addEventListener(std::u16string type, events::EventListener listener, bool useCapture)
+void EventTargetImp::addEventListener(std::u16string type, events::EventListener listener, bool useCapture, bool useDefault)
 {
     if (!listener)
         return;
-    Listener item{ listener, useCapture };
+    Listener item{ listener, useCapture, useDefault };
 
     auto found = map.find(type);
     if (found == map.end()) {
@@ -80,11 +82,11 @@ void EventTargetImp::addEventListener(std::u16string type, events::EventListener
     listeners.push_back(item);
 }
 
-void EventTargetImp::removeEventListener(std::u16string type, events::EventListener listener, bool useCapture)
+void EventTargetImp::removeEventListener(std::u16string type, events::EventListener listener, bool useCapture, bool useDefault)
 {
     if (!listener)
         return;
-    Listener item{ listener, useCapture };
+    Listener item{ listener, useCapture, useDefault };
 
     auto found = map.find(type);
     if (found == map.end())
@@ -165,6 +167,25 @@ bool EventTargetImp::dispatchEvent(events::Event evt)
                 (*i)->invoke(event);
             }
         }
+
+
+        if (!event->getDefaultPrevented()) {
+            // TODO: Call default actions;
+            // cf. http://www.w3.org/TR/DOM-Level-3-Events/#event-flow-default-cancel
+            // cf. http://www.w3.org/TR/xbl/#the-default-phase0
+            event->setEventPhase(EventImp::AT_DEFAULT);
+            event->setCurrentTarget(node);
+            node->invoke(event);
+            if (event->getBubbles()) {
+                for (auto i = eventPath.rbegin(); i != eventPath.rend(); ++i) {
+                    if (event->getDefaultPrevented())
+                        break;
+                    event->setCurrentTarget(*i);
+                    (*i)->invoke(event);
+                }
+            }
+        }
+
     } else if (DocumentWindow* window = dynamic_cast<DocumentWindow*>(this)) {
         window->activate();
         event->setEventPhase(events::Event::AT_TARGET);
