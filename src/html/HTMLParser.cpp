@@ -1079,7 +1079,7 @@ bool HTMLParser::InBody::processEOF(HTMLParser* parser, Token& token)
         if (isOneOf(node.getLocalName(), { u"dd", u"dt", u"li", u"p", u"tbody", u"td", u"tfoot", u"th", u"thead", u"tr", u"body", u"html" }))
             parser->parseError();
     }
-    return true;  // stop parsing
+    return parser->stopParsing();
 }
 
 bool HTMLParser::InBody::processComment(HTMLParser* parser, Token& token)
