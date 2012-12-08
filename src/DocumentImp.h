@@ -49,21 +49,21 @@
 #include <org/w3c/dom/html/HTMLAllCollection.h>
 #include <org/w3c/dom/html/HTMLDocument.h>
 #include <org/w3c/dom/html/HTMLHeadElement.h>
+#include <org/w3c/dom/html/HTMLScriptElement.h>
 #include <org/w3c/dom/html/Window.h>
 #include <org/w3c/dom/html/Location.h>
 #include <org/w3c/dom/html/Function.h>
 
 #include <deque>
+#include <list>
 
 #include "NodeImp.h"
 #include "DocumentWindow.h"
 #include "EventListenerImp.h"
+#include "WindowImp.h"
+#include "html/HTMLScriptElementImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
-
-class WindowImp;
-class ElementImp;
-class HTMLScriptElementImp;
 
 class DocumentImp : public ObjectMixin<DocumentImp, NodeImp>
 {
@@ -75,8 +75,12 @@ class DocumentImp : public ObjectMixin<DocumentImp, NodeImp>
     std::u16string compatMode;
     std::deque<stylesheets::StyleSheet> styleSheets;
     unsigned loadEventDelayCount;
+    bool contentLoaded;
 
     HTMLScriptElementImp* pendingParsingBlockingScript;
+    std::list<html::HTMLScriptElement> deferScripts;
+    std::list<html::HTMLScriptElement> asyncScripts;
+    std::list<html::HTMLScriptElement> orderedScripts;
 
     WindowImp* defaultView;
     ElementImp* activeElement;
@@ -84,6 +88,8 @@ class DocumentImp : public ObjectMixin<DocumentImp, NodeImp>
 
     // XBL 2.0
     std::map<const std::u16string, html::Window> bindingDocuments;
+
+    bool processScripts(std::list<html::HTMLScriptElement>& scripts);
 
 public:
     DocumentImp(const std::u16string& url = u"about:blank");
@@ -106,6 +112,56 @@ public:
     }
     void setMode(int value) {
         mode = value;
+    }
+
+    void addDeferScript(HTMLScriptElementImp* script) {
+        deferScripts.push_back(script);
+    }
+    void addAsyncScript(HTMLScriptElementImp* script) {
+        asyncScripts.push_back(script);
+    }
+    void addOrderedScript(HTMLScriptElementImp* script) {
+        orderedScripts.push_back(script);
+    }
+    void removeDeferScript(HTMLScriptElementImp* script) {
+        for (auto i = deferScripts.begin(); i != deferScripts.end(); ++i) {
+            if (i->self() == script) {
+                deferScripts.erase(i);
+                break;
+            }
+        }
+    }
+    void removeAsyncScript(HTMLScriptElementImp* script) {
+        for (auto i = asyncScripts.begin(); i != asyncScripts.end(); ++i) {
+            if (i->self() == script) {
+                asyncScripts.erase(i);
+                break;
+            }
+        }
+    }
+    void removeOrderedScript(HTMLScriptElementImp* script) {
+        for (auto i = orderedScripts.begin(); i != orderedScripts.end(); ++i) {
+            if (i->self() == script) {
+                orderedScripts.erase(i);
+                break;
+            }
+        }
+    }
+    bool processDeferScripts() {
+        return processScripts(deferScripts);
+    }
+    bool hasAsyncScripts() {
+        return !asyncScripts.empty();
+    }
+    bool processOrderedScripts() {
+        return processScripts(orderedScripts);
+    }
+
+    bool hasContentLoaded() const {
+        return contentLoaded;
+    }
+    void setContentLoaded() {
+        contentLoaded = true;
     }
 
     int getError() const {

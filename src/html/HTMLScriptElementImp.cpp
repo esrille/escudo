@@ -64,6 +64,9 @@ HTMLScriptElementImp::~HTMLScriptElementImp()
 // cf. http://www.whatwg.org/specs/web-apps/current-work/multipage/scripting-1.html#prepare-a-script
 bool HTMLScriptElementImp::prepare()
 {
+    bool hasAsync = getAsync();
+    bool hasDefer = getDefer();
+
     if (alreadyStarted)
         return false;
     if (parserInserted) {
@@ -71,7 +74,7 @@ bool HTMLScriptElementImp::prepare()
         parserInserted = false;
     } else
         wasParserInserted = false;
-    if (wasParserInserted && !hasAttribute(u"async"))
+    if (wasParserInserted && !hasAsync)
         forceAsync = true;
 
     // TODO 4. - 7.
@@ -91,21 +94,29 @@ bool HTMLScriptElementImp::prepare()
             // TODO: fire the error event
             return false;
         }
-
         request = new(std::nothrow) HttpRequest(document->getDocumentURI());
         if (request) {
             request->open(u"GET", src);
             request->setHandler(boost::bind(&HTMLScriptElementImp::notify, this));
             document->incrementLoadEventDelayCount();
-            if (parserInserted)
+            if (hasDefer && parserInserted && !hasAsync) {
+                type = Defer;
+                document->addDeferScript(this);
+            } else if (parserInserted && !hasAsync) {
+                type = Blocking;
                 document->setPendingParsingBlockingScript(this);
-            // TODO: deal with 'defer' and 'async'
+            } else if (!hasAsync && !forceAsync) {
+                type = Ordered;
+                document->addOrderedScript(this);
+            } else {
+                type = Async;
+                document->addAsyncScript(this);
+            }
             request->send();
         }
-
         return true;
     }
-
+    // TODO: Check style sheets that is blocking scripts
     return execute();
 }
 
@@ -113,14 +124,43 @@ void HTMLScriptElementImp::notify()
 {
     DocumentImp* document = getOwnerDocumentImp();
     if (request->getStatus() == 200) {
-        if (parserInserted)
-            readyToBeParserExecuted = true;
-        // TODO: deal with 'defer' and 'async'
+        readyToBeParserExecuted = true;
+        switch (type) {
+        case Blocking:
+            document->decrementLoadEventDelayCount();
+            break;
+        case Async:
+            execute();
+            document->removeAsyncScript(this);
+            document->decrementLoadEventDelayCount();
+            break;
+        case Ordered:
+            document->processOrderedScripts();
+            break;
+        default:
+            break;
+        }
     } else {
-        if (document->getPendingParsingBlockingScript() == this)
+        switch (type) {
+        case Blocking:
+            assert(document->getPendingParsingBlockingScript() == this);
             document->setPendingParsingBlockingScript(0);
+            break;
+        case Defer:
+            document->removeDeferScript(this);
+            break;
+        case Async:
+            document->removeAsyncScript(this);
+            break;
+        case Ordered:
+            document->removeOrderedScript(this);
+            document->processOrderedScripts();
+            break;
+        default:
+            break;
+        }
+        document->decrementLoadEventDelayCount();
     }
-    document->decrementLoadEventDelayCount();
 }
 
 bool HTMLScriptElementImp::execute()

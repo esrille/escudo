@@ -300,18 +300,19 @@ void HTMLParser::fosterNode(Node node)
     fosterParent.appendChild(node);
 }
 
+// cf. http://www.whatwg.org/specs/web-apps/current-work/multipage/the-end.html#the-end
 bool HTMLParser::stopParsing()
 {
-    DocumentImp* documentImp = dynamic_cast<DocumentImp*>(document.self());
-    assert(documentImp);
+    DocumentImp* imp = dynamic_cast<DocumentImp*>(document.self());
+    assert(imp);
 
-    // Step 1
-    documentImp->setReadyState(u"interactive");
+    // 1.
+    imp->setReadyState(u"interactive");
     // TODO: set the insertion point to undefined.
-    // Step 2
+    // 2.
     while (!openElementStack.empty())
         popElement();
-    // TODO: implement me from step 3
+    // The rest of the steps are executed in WindowImp::poll()
     return true;
 }
 

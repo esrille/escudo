@@ -282,20 +282,13 @@ bool WindowImp::poll()
                 break;
             document->setCharset(utfconv(parser->getEncoding()));
 
+            // TODO: Check if the parser has been aborted.
             NodeImp::evalTree(document);
             document->resetStyleSheets();
             recordTime("%*shtml parsed", windowDepth * 2, "");
-
             if (4 <= getLogLevel())
                 dumpTree(std::cerr, document);
-
-            if (events::Event event = new(std::nothrow) EventImp) {
-                event.initEvent(u"DOMContentLoaded", true, false);
-                document->dispatchEvent(event);
-            }
-            document->decrementLoadEventDelayCount();
             backgroundTask.restart(BackgroundTask::Cascade);
-            break;
         }
         switch (backgroundTask.getState()) {
         case BackgroundTask::Cascaded:
@@ -305,6 +298,27 @@ bool WindowImp::poll()
         case BackgroundTask::Done: {
             ViewCSSImp* next = backgroundTask.getView();
             updateView(next);
+            if (document->getReadyState() == u"interactive") {
+                // TODO: Check if the parser has been aborted.
+
+                // Run from the step 3. of 'stops parsing'.
+                // cf. http://www.whatwg.org/specs/web-apps/current-work/multipage/the-end.html#the-end
+
+                // Process scripts that will execute when the document has finished parsing (i.e., defer).
+                // TODO: Check there's no style sheet that is blocking scripts.
+                if (document->processDeferScripts()) {
+                    if (!document->hasContentLoaded()) {
+                        if (events::Event event = new(std::nothrow) EventImp) {
+                            event.initEvent(u"DOMContentLoaded", true, false);
+                            document->dispatchEvent(event);
+                        }
+                        document->decrementLoadEventDelayCount();
+                        document->setContentLoaded();
+                    }
+                }
+            }
+            if (document->getReadyState() == u"complete") {
+            }
             if (view) {
                 if (unsigned flags = view->gatherFlags()) {
                     if (flags & Box::NEED_SELECTOR_REMATCHING) {

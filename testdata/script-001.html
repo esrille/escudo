@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Script test</title>
+<style type="text/css">
+#t {
+  width: 1in;
+  height: 1in;
+  background-color: lime;
+}
+</style>
+</head>
+<body>
+<p>Click the box below to change the color:</p>
+<div id='t'>
+</div>
+<script>
+document.getElementById('t').addEventListener(
+  'click',
+  function(e) {
+    if (getComputedStyle(e.target).backgroundColor == 'rgb(0, 255, 0)')
+      e.target.style.backgroundColor = 'cyan';
+    else
+      e.target.style.backgroundColor = 'lime';
+  }
+);
+</script>
+</body>
+</html>

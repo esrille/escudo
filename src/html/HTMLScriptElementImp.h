@@ -27,12 +27,21 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class HTMLScriptElementImp : public ObjectMixin<HTMLScriptElementImp, HTMLElementImp>
 {
+    // type values
+    enum {
+        Blocking,
+        Defer,
+        Async,
+        Ordered
+    };
+
     bool alreadyStarted;
     bool parserInserted;
     bool wasParserInserted;
     bool forceAsync;
     bool readyToBeParserExecuted;
     HttpRequest* request;
+    unsigned type;
 
 public:
     HTMLScriptElementImp(DocumentImp* ownerDocument, const std::u16string& localName = u"script");

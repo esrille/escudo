@@ -111,6 +111,7 @@ DocumentImp::DocumentImp(const std::u16string& url) :
     readyState(u"loading"),
     compatMode(u"CSS1Compat"),
     loadEventDelayCount(1),
+    contentLoaded(false),
     pendingParsingBlockingScript(0),
     defaultView(0),
     activeElement(0),
@@ -121,6 +122,19 @@ DocumentImp::DocumentImp(const std::u16string& url) :
 
 DocumentImp::~DocumentImp()
 {
+}
+
+bool DocumentImp::processScripts(std::list<html::HTMLScriptElement>& scripts)
+{
+    while (!scripts.empty()) {
+        auto script = dynamic_cast<HTMLScriptElementImp*>(scripts.front().self());
+        if (!script->isReadyToBeParserExecuted())
+            return false;
+        script->execute();
+        scripts.pop_front();
+        decrementLoadEventDelayCount();
+    }
+    return true;
 }
 
 void DocumentImp::setDefaultView(WindowImp* view)
