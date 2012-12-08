@@ -110,6 +110,8 @@ void DocumentWindow::handleClick(events::Event event)
     if (!imp)
         return;
     ViewCSSImp* view = imp->getView();
+    if (!view)
+        return;
 
     events::MouseEvent mouse = interface_cast<events::MouseEvent>(event);
     unsigned short buttons = mouse.getButtons();
@@ -150,6 +152,8 @@ void DocumentWindow::handleMouseMove(events::Event event)
     if (!imp)
         return;
     ViewCSSImp* view = imp->getView();
+    if (!view)
+        return;
     bool canScroll = view->canScroll();
 
     events::MouseEvent mouse = interface_cast<events::MouseEvent>(event);
