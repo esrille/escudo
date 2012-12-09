@@ -20,6 +20,7 @@
 #include <Object.h>
 #include <org/w3c/dom/views/ClientRectList.h>
 #include <org/w3c/dom/views/ClientRect.h>
+#include <org/w3c/dom/DOMTokenList.h>
 #include <org/w3c/dom/Node.h>
 #include <org/w3c/dom/Element.h>
 #include <org/w3c/dom/Attr.h>
@@ -66,7 +67,11 @@ public:
     virtual std::u16string getLocalName();
     virtual std::u16string getTagName();
 
-    virtual std::u16string getClassName();  // new
+    virtual std::u16string getId();
+    virtual void setId(std::u16string id);
+    virtual std::u16string getClassName();
+    virtual void setClassName(std::u16string className);
+    virtual DOMTokenList getClassList();
 
     virtual ObjectArray<Attr> getAttributes();
     virtual Nullable<std::u16string> getAttribute(std::u16string qualifiedName);

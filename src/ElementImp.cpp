@@ -177,9 +177,30 @@ std::u16string ElementImp::getTagName()
     return localName;
 }
 
+std::u16string ElementImp::getId()
+{
+    return getAttribute(u"id");
+}
+
+void ElementImp::setId(std::u16string id)
+{
+    setAttribute(u"id", id);
+}
+
 std::u16string ElementImp::getClassName()
 {
     return getAttribute(u"class");
+}
+
+void ElementImp::setClassName(std::u16string className)
+{
+    setAttribute(u"class", className);
+}
+
+DOMTokenList ElementImp::getClassList()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
 }
 
 dom::ObjectArray<Attr> ElementImp:: getAttributes()

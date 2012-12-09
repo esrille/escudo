@@ -113,17 +113,12 @@ public:
     virtual std::u16string getOuterHTML();
     virtual void setOuterHTML(std::u16string outerHTML);
     virtual void insertAdjacentHTML(std::u16string position, std::u16string text);
-    virtual std::u16string getId();
-    virtual void setId(std::u16string id);
     virtual std::u16string getTitle();
     virtual void setTitle(std::u16string title);
     virtual std::u16string getLang();
     virtual void setLang(std::u16string lang);
     virtual std::u16string getDir();
     virtual void setDir(std::u16string dir);
-    virtual std::u16string getClassName();
-    virtual void setClassName(std::u16string className);
-    virtual DOMTokenList getClassList();
     virtual DOMStringMap getDataset();
     virtual bool getItemScope();
     virtual void setItemScope(bool itemScope);

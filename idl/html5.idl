@@ -268,12 +268,16 @@ interface HTMLElement : Element {
   void insertAdjacentHTML(in DOMString position, in DOMString text);
 
   // metadata attributes
+#if 0  // define in DOM Core
            attribute DOMString id;
+#endif
            attribute DOMString title;
            attribute DOMString lang;
            attribute DOMString dir;
+#if 0  // define in DOM Core
            attribute DOMString className;
   readonly attribute DOMTokenList classList;
+#endif
   readonly attribute DOMStringMap dataset;
 
   // microdata

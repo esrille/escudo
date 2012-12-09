@@ -399,16 +399,6 @@ void HTMLElementImp::insertAdjacentHTML(std::u16string position, std::u16string 
     // TODO: implement me!
 }
 
-std::u16string HTMLElementImp::getId()
-{
-    return getAttribute(u"id");
-}
-
-void HTMLElementImp::setId(std::u16string id)
-{
-    setAttribute(u"id", id);
-}
-
 std::u16string HTMLElementImp::getTitle()
 {
     return getAttribute(u"title");
@@ -437,22 +427,6 @@ std::u16string HTMLElementImp::getDir()
 void HTMLElementImp::setDir(std::u16string dir)
 {
     setAttribute(u"dir", dir);
-}
-
-std::u16string HTMLElementImp::getClassName()
-{
-    return getAttribute(u"class");
-}
-
-void HTMLElementImp::setClassName(std::u16string className)
-{
-    setAttribute(u"class", className);
-}
-
-DOMTokenList HTMLElementImp::getClassList()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
 }
 
 DOMStringMap HTMLElementImp::getDataset()
