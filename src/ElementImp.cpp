@@ -121,6 +121,39 @@ void ElementImp::setTextContent(std::u16string textContent)
     }
 }
 
+bool ElementImp::isEqualNode(Node arg)
+{
+    ElementImp* element = dynamic_cast<ElementImp*>(arg.self());
+    if (this == element)
+        return true;
+    if (!element)
+        return false;
+    if (namespaceURI != element->namespaceURI)
+        return false;
+    if (prefix != element->prefix)
+        return false;
+    if (localName != element->localName)
+        return false;
+    if (attributes.size() != element->attributes.size())
+        return false;
+    for (auto i = attributes.begin(); i != attributes.end(); ++i) {
+        bool found = false;
+        for (auto j = element->attributes.begin(); j != element->attributes.end(); ++j) {
+            if (i->getLocalName() == j->getLocalName()) {
+                if (i->getNamespaceURI() != j->getNamespaceURI())
+                    break;
+                if (i->getValue() != j->getValue())
+                    break;
+                found = true;
+                break;
+            }
+        }
+        if (!found)
+            return false;
+    }
+    return NodeImp::isEqualNode(arg);
+}
+
 // Element
 Nullable<std::u16string> ElementImp::getNamespaceURI()
 {

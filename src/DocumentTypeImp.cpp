@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,22 @@ std::u16string DocumentTypeImp::getSystemId()
 unsigned short DocumentTypeImp::getNodeType()
 {
     return Node::DOCUMENT_TYPE_NODE;
+}
+
+bool DocumentTypeImp::isEqualNode(Node arg)
+{
+    DocumentTypeImp* documentType = dynamic_cast<DocumentTypeImp*>(arg.self());
+    if (this == documentType)
+        return true;
+    if (!documentType)
+        return false;
+    if (nodeName != documentType->nodeName)
+        return false;
+    if (publicId != documentType->publicId)
+        return false;
+    if (systemId != documentType->systemId)
+        return false;
+    return NodeImp::isEqualNode(arg);
 }
 
 }}}}  // org::w3c::dom::bootstrap

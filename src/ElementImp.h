@@ -58,6 +58,7 @@ public:
     virtual Node cloneNode(bool deep);
     virtual Nullable<std::u16string> getTextContent();
     virtual void setTextContent(std::u16string textContent);
+    virtual bool isEqualNode(Node arg);
 
     // Element
     virtual Nullable<std::u16string> getNamespaceURI();

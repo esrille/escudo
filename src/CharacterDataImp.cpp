@@ -40,6 +40,18 @@ void CharacterDataImp::setTextContent(Nullable<std::u16string> textContent)
         setData(textContent.value());
 }
 
+bool CharacterDataImp::isEqualNode(Node arg)
+{
+    CharacterDataImp* characterData = dynamic_cast<CharacterDataImp*>(arg.self());
+    if (this == characterData)
+        return true;
+    if (!characterData)
+        return false;
+    if (data != characterData->data)
+        return false;
+    return NodeImp::isEqualNode(arg);
+}
+
 // CharacterData
 std::u16string CharacterDataImp::getData()
 {

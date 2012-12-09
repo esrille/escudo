@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>DOM Test</title>
+</head>
+<body>
+<span id='t'></span>
+<div><div></div></div>
+<div><span></span></div>
+<script>
+var t = document.getElementById('t');
+var x = t.nextElementSibling;
+var y = x.nextElementSibling;
+if (x.isEqualNode(x) && !x.isEqualNode(y))
+  t.textContent = 'PASS';
+else
+  x.textContent = 'FAIL';
+</script>
+</body>
+</html>

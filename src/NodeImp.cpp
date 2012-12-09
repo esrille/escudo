@@ -290,8 +290,22 @@ bool NodeImp::isSameNode(Node other)
 
 bool NodeImp::isEqualNode(Node arg)
 {
-    // TODO: implement me!
-    return 0;
+    NodeImp* node = dynamic_cast<NodeImp*>(arg.self());
+    if (this == node)
+        return true;
+    if (!node)
+        return false;
+    if (getNodeType() != node->getNodeType())
+        return false;
+    if (getChildCount() != node->getChildCount())
+        return false;
+    NodeImp* x;
+    NodeImp* y;
+    for (x = firstChild, y = node->firstChild; x; x = x->nextSibling, y = y->nextSibling) {
+        if (!y || !x->isEqualNode(y))
+            return false;
+    }
+    return y ? false : true;
 }
 
 std::u16string NodeImp::lookupPrefix(std::u16string namespaceURI)

@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>DOM Test</title>
+</head>
+<body>
+<span id='x'></span>
+<span id='y'></span>
+<script>
+var x = document.getElementById('x');
+var y = document.getElementById('y');
+if (x.isEqualNode(x) && !x.isEqualNode(y))
+  x.textContent = 'PASS';
+else
+  x.textContent = 'FAIL';
+</script>
+</body>
+</html>

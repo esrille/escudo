@@ -46,6 +46,7 @@ public:
     }
     virtual Nullable<std::u16string> getTextContent();
     virtual void setTextContent(Nullable<std::u16string> textContent);
+    virtual bool isEqualNode(Node arg);
 
     // CharacterData
     virtual std::u16string getData();
