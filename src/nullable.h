@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  * Copyright 2008-2010 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -66,6 +66,19 @@ public:
         value_(nullable.value_),
         hasValue_(nullable.hasValue_)
     {
+    }
+
+    bool operator==(const Nullable<T>& other) const
+    {
+        if (!hasValue_)
+            return !other.hasValue_;
+        if (!other.hasValue_)
+            return false;
+        return value_ == other.value_;
+    }
+    bool operator!=(const Nullable<T>& other) const
+    {
+        return !(*this == other);
     }
 
     template<typename U>
