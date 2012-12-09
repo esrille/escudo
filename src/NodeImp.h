@@ -80,7 +80,7 @@ public:
     }
     void setOwnerDocument(DocumentImp* document);
 
-    unsigned int getChildCount() {
+    unsigned int getChildCount() const {
         return childCount;
     }
 
