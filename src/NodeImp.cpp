@@ -149,8 +149,58 @@ Node NodeImp::getNextSibling()
 
 unsigned short NodeImp::compareDocumentPosition(Node other)
 {
-    // TODO: implement me!
-    return 0;
+    NodeImp* node = this;
+    NodeImp* otherNode = dynamic_cast<NodeImp*>(other.self());
+    if (node == otherNode)
+        return 0;
+    if (!node || !otherNode) {   // not in the same tree?
+        return Node::DOCUMENT_POSITION_DISCONNECTED | Node::DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC |
+               ((otherNode < node) ? Node::DOCUMENT_POSITION_PRECEDING : Node::DOCUMENT_POSITION_FOLLOWING);
+    }
+
+    NodeImp* root;
+    NodeImp* otherRoot;
+    size_t depth = 1;
+    size_t otherDepth = 1;
+    for (root = node; root->parentNode; root = root->parentNode)
+        ++depth;
+    for (otherRoot = otherNode; otherRoot->parentNode; otherRoot = otherRoot->parentNode)
+        ++otherDepth;
+    if (root != otherRoot) {  // not in the same tree?
+        return Node::DOCUMENT_POSITION_DISCONNECTED | Node::DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC |
+               ((otherNode < node) ? Node::DOCUMENT_POSITION_PRECEDING : Node::DOCUMENT_POSITION_FOLLOWING);
+    }
+
+    NodeImp* x = node;
+    NodeImp* y = otherNode;
+    for (int i = depth - otherDepth; 0 < i; --i)
+        x = x->parentNode;
+    for (int i = otherDepth - depth; 0 < i; --i)
+        y = y->parentNode;
+    if (x == y) {
+        if (x == node) {
+            assert(depth < otherDepth);
+            return Node::DOCUMENT_POSITION_CONTAINED_BY | Node::DOCUMENT_POSITION_FOLLOWING;
+        }
+        if (y == otherNode) {
+            assert(otherDepth < depth);
+            return Node::DOCUMENT_POSITION_CONTAINS | Node::DOCUMENT_POSITION_PRECEDING;
+        }
+    }
+    while (x->parentNode != y->parentNode) {
+        x = x->parentNode;
+        y = y->parentNode;
+    }
+    assert(x != y);
+    if (!y->previousSibling || !x->nextSibling)
+        return Node::DOCUMENT_POSITION_PRECEDING;
+    if (!x->previousSibling || !y->nextSibling)
+        return Node::DOCUMENT_POSITION_FOLLOWING;
+    for (NodeImp* i = x->previousSibling; i; i = i->previousSibling) {
+        if (i == y)
+            return Node::DOCUMENT_POSITION_PRECEDING;
+    }
+    return Node::DOCUMENT_POSITION_FOLLOWING;
 }
 
 Nullable<std::u16string> NodeImp::getNodeValue()

@@ -1,0 +1,42 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>DOM Test</title>
+</head>
+<body>
+<span id='t'></span>
+<div id='a'><div id='b'></div>
+  <div id='c'>
+    <div id='d'></div>
+  </div>
+  <div id='e'>
+    <div id='f'></div>
+    <div id='g'></div>
+  </div>
+  <div id='h'></div></div>
+<script>
+var a = document.getElementById('a');
+var b = document.getElementById('b');
+var c = document.getElementById('c');
+var d = document.getElementById('d');
+var e = document.getElementById('e');
+var f = document.getElementById('f');
+var g = document.getElementById('g');
+var h = document.getElementById('h');
+var t = document.getElementById('t');
+if ((a.compareDocumentPosition(a) == 0) &&
+    (a.compareDocumentPosition(d) == (Node.DOCUMENT_POSITION_FOLLOWING | Node.DOCUMENT_POSITION_CONTAINED_BY)) &&
+    (d.compareDocumentPosition(a) == (Node.DOCUMENT_POSITION_PRECEDING | Node.DOCUMENT_POSITION_CONTAINS)) &&
+    (e.compareDocumentPosition(c) == Node.DOCUMENT_POSITION_PRECEDING) &&
+    (c.compareDocumentPosition(e) == Node.DOCUMENT_POSITION_FOLLOWING) &&
+    (c.compareDocumentPosition(b) == Node.DOCUMENT_POSITION_PRECEDING) &&
+    (h.compareDocumentPosition(e) == Node.DOCUMENT_POSITION_PRECEDING) &&
+    (b.compareDocumentPosition(c) == Node.DOCUMENT_POSITION_FOLLOWING) &&
+    (e.compareDocumentPosition(h) == Node.DOCUMENT_POSITION_FOLLOWING))
+  t.textContent = 'PASS';
+else
+  t.textContent = 'FAIL';
+</script>
+</body>
+</html>
