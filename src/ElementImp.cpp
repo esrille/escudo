@@ -287,23 +287,28 @@ html::HTMLCollection ElementImp::getChildren()
     return static_cast<Object*>(0);
 }
 
-NodeList ElementImp::getElementsByTagName(std::u16string qualifiedName)
+NodeListImp* ElementImp::getElementsByTagName(ElementImp* element, const std::u16string& qualifiedName)
 {
     NodeListImp* nodeList = new(std::nothrow) NodeListImp;
     if (!nodeList)
         return 0;
 
     if (qualifiedName == u"*") {
-        for (ElementImp* e = this; e; e = e->getNextElement())
+        for (ElementImp* e = element; e; e = e->getNextElement())
             nodeList->addItem(e);
     } else {
         // TODO: Support non HTML document
-        for (ElementImp* e = this; e; e = e->getNextElement()) {
+        for (ElementImp* e = element; e; e = e->getNextElement()) {
             if (e->getLocalName() == qualifiedName)
                 nodeList->addItem(e);
         }
     }
     return nodeList;
+}
+
+NodeList ElementImp::getElementsByTagName(std::u16string qualifiedName)
+{
+    return getElementsByTagName(this, qualifiedName);
 }
 
 NodeList ElementImp::getElementsByTagNameNS(std::u16string _namespace, std::u16string localName)
@@ -312,7 +317,7 @@ NodeList ElementImp::getElementsByTagNameNS(std::u16string _namespace, std::u16s
     return static_cast<Object*>(0);
 }
 
-NodeList ElementImp::getElementsByClassName(std::u16string classNames)
+NodeListImp* ElementImp::getElementsByClassName(ElementImp* element, const std::u16string& classNames)
 {
     NodeListImp* nodeList = new(std::nothrow) NodeListImp;
     if (!nodeList)
@@ -320,7 +325,7 @@ NodeList ElementImp::getElementsByClassName(std::u16string classNames)
 
     std::vector<std::u16string> classes;
     boost::algorithm::split(classes, classNames, isSpace);
-    for (ElementImp* e = this; e; e = e->getNextElement()) {
+    for (ElementImp* e = element; e; e = e->getNextElement()) {
         std::u16string c = e->getClassName();
         std::vector<std::u16string> v;
         boost::algorithm::split(v, c, isSpace);
@@ -335,6 +340,11 @@ NodeList ElementImp::getElementsByClassName(std::u16string classNames)
             nodeList->addItem(e);
     }
     return nodeList;
+}
+
+NodeList ElementImp::getElementsByClassName(std::u16string classNames)
+{
+    return getElementsByClassName(this, classNames);
 }
 
 Element ElementImp::getFirstElementChild()

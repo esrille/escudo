@@ -264,21 +264,7 @@ Element DocumentImp::getDocumentElement()
 
 NodeList DocumentImp::getElementsByTagName(std::u16string qualifiedName)
 {
-    NodeListImp* nodeList = new(std::nothrow) NodeListImp;
-    if (!nodeList)
-        return 0;
-
-    if (qualifiedName == u"*") {
-        for (ElementImp* e = dynamic_cast<ElementImp*>(getDocumentElement().self()); e; e = e->getNextElement())
-            nodeList->addItem(e);
-    } else {
-        // TODO: Support non HTML document
-        for (ElementImp* e = dynamic_cast<ElementImp*>(getDocumentElement().self()); e; e = e->getNextElement()) {
-            if (e->getLocalName() == qualifiedName)
-                nodeList->addItem(e);
-        }
-    }
-    return nodeList;
+    return ElementImp::getElementsByTagName(dynamic_cast<ElementImp*>(getDocumentElement().self()), qualifiedName);
 }
 
 NodeList DocumentImp::getElementsByTagNameNS(std::u16string _namespace, std::u16string localName)
@@ -289,27 +275,7 @@ NodeList DocumentImp::getElementsByTagNameNS(std::u16string _namespace, std::u16
 
 NodeList DocumentImp::getElementsByClassName(std::u16string classNames)
 {
-    NodeListImp* nodeList = new(std::nothrow) NodeListImp;
-    if (!nodeList)
-        return 0;
-
-    std::vector<std::u16string> classes;
-    boost::algorithm::split(classes, classNames, isSpace);
-    for (ElementImp* e = dynamic_cast<ElementImp*>(getDocumentElement().self()); e; e = e->getNextElement()) {
-        std::u16string c = e->getClassName();
-        std::vector<std::u16string> v;
-        boost::algorithm::split(v, c, isSpace);
-        bool notFound = false;
-        for (auto i = classes.begin(); i != classes.end(); ++i) {
-            if (std::find(v.begin(), v.end(), *i) == v.end()) {
-                notFound = true;
-                break;
-            }
-        }
-        if (!notFound)
-            nodeList->addItem(e);
-    }
-    return nodeList;
+    return ElementImp::getElementsByClassName(dynamic_cast<ElementImp*>(getDocumentElement().self()), classNames);
 }
 
 Element DocumentImp::getElementById(std::u16string elementId)

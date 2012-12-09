@@ -33,6 +33,8 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
+class NodeListImp;
+
 class ElementImp : public ObjectMixin<ElementImp, NodeImp>
 {
     friend class AttrArray;
@@ -114,6 +116,9 @@ public:
     {
         return Element::getMetaData();
     }
+
+    static NodeListImp* getElementsByTagName(ElementImp* element, const std::u16string& qualifiedName);
+    static NodeListImp* getElementsByClassName(ElementImp* element, const std::u16string& classNames);
 };
 
 }}}}  // org::w3c::dom::bootstrap
