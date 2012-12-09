@@ -285,7 +285,8 @@ Node NodeImp::cloneNode(bool deep)
 
 bool NodeImp::isSameNode(Node other)
 {
-    return other == *this;
+    NodeImp* node = dynamic_cast<NodeImp*>(other.self());
+    return this == node;
 }
 
 bool NodeImp::isEqualNode(Node arg)
