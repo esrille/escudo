@@ -64,7 +64,7 @@ public:
     NodeImp(NodeImp* org, bool deep);
     ~NodeImp();
 
-    virtual void eval();
+    virtual void eval() {}
 
     // Returns true if this is an ancestor of the node
     bool isAncestorOf(NodeImp* node) {

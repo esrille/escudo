@@ -72,10 +72,6 @@ NodeImp* NodeImp::appendChild(NodeImp* item)
     return item;
 }
 
-void NodeImp::eval()
-{
-}
-
 void NodeImp::setOwnerDocument(DocumentImp* document)
 {
     assert(!ownerDocument);
@@ -85,7 +81,7 @@ void NodeImp::setOwnerDocument(DocumentImp* document)
 // Node
 unsigned short NodeImp::getNodeType()
 {
-    // TODO: SHOUD NOT REACH HERE
+    // SHOULD NOT REACH HERE
     return 0;
 }
 
@@ -96,8 +92,9 @@ std::u16string NodeImp::getNodeName()
 
 Nullable<std::u16string> NodeImp::getBaseURI()
 {
-    // TODO: implement me!
-    return u"";
+    if (!ownerDocument)
+        return Nullable<std::u16string>();
+    return ownerDocument->getDocumentURI();
 }
 
 Document NodeImp::getOwnerDocument()
@@ -158,23 +155,20 @@ unsigned short NodeImp::compareDocumentPosition(Node other)
 
 Nullable<std::u16string> NodeImp::getNodeValue()
 {
-    // TODO: implement me!
-    return u"";
+    return Nullable<std::u16string>();
 }
 
 void NodeImp::setNodeValue(Nullable<std::u16string> nodeValue)
 {
-    // TODO: implement me!
 }
 
 Nullable<std::u16string> NodeImp::getTextContent()
 {
-    return u"";  // TODO: return null instead
+    return Nullable<std::u16string>();
 }
 
 void NodeImp::setTextContent(Nullable<std::u16string> textContent)
 {
-    // TODO: implement me!
 }
 
 Node NodeImp::insertBefore(Node newChild, Node refChild)
