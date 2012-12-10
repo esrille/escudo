@@ -23,6 +23,7 @@
 
 #include "AttrImp.h"
 #include "DocumentImp.h"
+#include "DOMTokenListImp.h"
 #include "NodeListImp.h"
 #include "MutationEventImp.h"
 #include "css/CSSSerialize.h"
@@ -199,8 +200,7 @@ void ElementImp::setClassName(std::u16string className)
 
 DOMTokenList ElementImp::getClassList()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return new(std::nothrow) DOMTokenListImp(this, u"class");
 }
 
 dom::ObjectArray<Attr> ElementImp:: getAttributes()

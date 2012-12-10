@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>DOM Test</title>
+</head>
+<body>
+<span id='t'></span>
+<div id='a' class='a b c'></div>
+<script>
+var t = document.getElementById('t');
+var a = document.getElementById('a');
+var list = a.classList;
+list.toggle('a');
+list.toggle('a');
+if (list.contains('a'))
+  t.textContent = 'PASS';
+else
+  t.textContent = 'FAIL';
+</script>
+</body>
+</html>
