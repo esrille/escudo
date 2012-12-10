@@ -21,6 +21,7 @@
 
 #include <org/w3c/dom/events/MouseEvent.h>
 
+#include "DOMTokenListImp.h"
 #include "utf.h"
 
 namespace org
@@ -113,8 +114,7 @@ void HTMLAnchorElementImp::setRel(std::u16string rel)
 
 DOMTokenList HTMLAnchorElementImp::getRelList()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return new(std::nothrow) DOMTokenListImp(this, u"rel");
 }
 
 std::u16string HTMLAnchorElementImp::getMedia()

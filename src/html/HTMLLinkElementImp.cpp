@@ -22,6 +22,7 @@
 #include <boost/iostreams/device/file_descriptor.hpp>
 
 #include "DocumentImp.h"
+#include "DOMTokenListImp.h"
 #include "WindowImp.h"
 #include "css/BoxImage.h"
 #include "css/CSSInputStream.h"
@@ -205,8 +206,7 @@ void HTMLLinkElementImp::setRel(std::u16string rel)
 
 DOMTokenList HTMLLinkElementImp::getRelList()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return new(std::nothrow) DOMTokenListImp(this, u"rel");
 }
 
 std::u16string HTMLLinkElementImp::getMedia()
