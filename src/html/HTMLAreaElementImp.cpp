@@ -33,7 +33,7 @@ std::u16string HTMLAreaElementImp::getAlt()
     return u"";
 }
 
-void HTMLAreaElementImp::setAlt(std::u16string alt)
+void HTMLAreaElementImp::setAlt(const std::u16string& alt)
 {
     // TODO: implement me!
 }
@@ -44,7 +44,7 @@ std::u16string HTMLAreaElementImp::getCoords()
     return u"";
 }
 
-void HTMLAreaElementImp::setCoords(std::u16string coords)
+void HTMLAreaElementImp::setCoords(const std::u16string& coords)
 {
     // TODO: implement me!
 }
@@ -55,7 +55,7 @@ std::u16string HTMLAreaElementImp::getShape()
     return u"";
 }
 
-void HTMLAreaElementImp::setShape(std::u16string shape)
+void HTMLAreaElementImp::setShape(const std::u16string& shape)
 {
     // TODO: implement me!
 }
@@ -66,7 +66,7 @@ std::u16string HTMLAreaElementImp::getHref()
     return u"";
 }
 
-void HTMLAreaElementImp::setHref(std::u16string href)
+void HTMLAreaElementImp::setHref(const std::u16string& href)
 {
     // TODO: implement me!
 }
@@ -77,7 +77,7 @@ std::u16string HTMLAreaElementImp::getTarget()
     return u"";
 }
 
-void HTMLAreaElementImp::setTarget(std::u16string target)
+void HTMLAreaElementImp::setTarget(const std::u16string& target)
 {
     // TODO: implement me!
 }
@@ -88,7 +88,7 @@ std::u16string HTMLAreaElementImp::getPing()
     return u"";
 }
 
-void HTMLAreaElementImp::setPing(std::u16string ping)
+void HTMLAreaElementImp::setPing(const std::u16string& ping)
 {
     // TODO: implement me!
 }
@@ -99,7 +99,7 @@ std::u16string HTMLAreaElementImp::getRel()
     return u"";
 }
 
-void HTMLAreaElementImp::setRel(std::u16string rel)
+void HTMLAreaElementImp::setRel(const std::u16string& rel)
 {
     // TODO: implement me!
 }
@@ -115,7 +115,7 @@ std::u16string HTMLAreaElementImp::getMedia()
     return u"";
 }
 
-void HTMLAreaElementImp::setMedia(std::u16string media)
+void HTMLAreaElementImp::setMedia(const std::u16string& media)
 {
     // TODO: implement me!
 }
@@ -126,7 +126,7 @@ std::u16string HTMLAreaElementImp::getHreflang()
     return u"";
 }
 
-void HTMLAreaElementImp::setHreflang(std::u16string hreflang)
+void HTMLAreaElementImp::setHreflang(const std::u16string& hreflang)
 {
     // TODO: implement me!
 }
@@ -137,7 +137,7 @@ std::u16string HTMLAreaElementImp::getType()
     return u"";
 }
 
-void HTMLAreaElementImp::setType(std::u16string type)
+void HTMLAreaElementImp::setType(const std::u16string& type)
 {
     // TODO: implement me!
 }
@@ -148,7 +148,7 @@ std::u16string HTMLAreaElementImp::getProtocol()
     return u"";
 }
 
-void HTMLAreaElementImp::setProtocol(std::u16string protocol)
+void HTMLAreaElementImp::setProtocol(const std::u16string& protocol)
 {
     // TODO: implement me!
 }
@@ -159,7 +159,7 @@ std::u16string HTMLAreaElementImp::getHost()
     return u"";
 }
 
-void HTMLAreaElementImp::setHost(std::u16string host)
+void HTMLAreaElementImp::setHost(const std::u16string& host)
 {
     // TODO: implement me!
 }
@@ -170,7 +170,7 @@ std::u16string HTMLAreaElementImp::getHostname()
     return u"";
 }
 
-void HTMLAreaElementImp::setHostname(std::u16string hostname)
+void HTMLAreaElementImp::setHostname(const std::u16string& hostname)
 {
     // TODO: implement me!
 }
@@ -181,7 +181,7 @@ std::u16string HTMLAreaElementImp::getPort()
     return u"";
 }
 
-void HTMLAreaElementImp::setPort(std::u16string port)
+void HTMLAreaElementImp::setPort(const std::u16string& port)
 {
     // TODO: implement me!
 }
@@ -192,7 +192,7 @@ std::u16string HTMLAreaElementImp::getPathname()
     return u"";
 }
 
-void HTMLAreaElementImp::setPathname(std::u16string pathname)
+void HTMLAreaElementImp::setPathname(const std::u16string& pathname)
 {
     // TODO: implement me!
 }
@@ -203,7 +203,7 @@ std::u16string HTMLAreaElementImp::getSearch()
     return u"";
 }
 
-void HTMLAreaElementImp::setSearch(std::u16string search)
+void HTMLAreaElementImp::setSearch(const std::u16string& search)
 {
     // TODO: implement me!
 }
@@ -214,7 +214,7 @@ std::u16string HTMLAreaElementImp::getHash()
     return u"";
 }
 
-void HTMLAreaElementImp::setHash(std::u16string hash)
+void HTMLAreaElementImp::setHash(const std::u16string& hash)
 {
     // TODO: implement me!
 }

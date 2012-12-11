@@ -30,7 +30,7 @@ class DocumentTypeImp : public ObjectMixin<DocumentTypeImp, NodeImp>
     std::u16string systemId;
 
 public:
-    DocumentTypeImp(std::u16string qualifiedName, Nullable<std::u16string> publicId, Nullable<std::u16string> systemId) :
+    DocumentTypeImp(const std::u16string& qualifiedName, Nullable<std::u16string> publicId, Nullable<std::u16string> systemId) :
         ObjectMixin(static_cast<DocumentImp*>(0)),  // TODO: use nullptr with gcc 4.6
         publicId(publicId.hasValue() ? publicId.value() : u""),
         systemId(systemId.hasValue() ? systemId.value() : u"") {

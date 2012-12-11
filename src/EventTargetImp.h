@@ -52,8 +52,8 @@ public:
     virtual void invoke(EventImp* event);
 
     // EventTarget
-    virtual void addEventListener(std::u16string type, events::EventListener listener, bool capture = false, bool useDefault = false);
-    virtual void removeEventListener(std::u16string type, events::EventListener listener, bool capture = false, bool useDefault = false);
+    virtual void addEventListener(const std::u16string& type, events::EventListener listener, bool capture = false, bool useDefault = false);
+    virtual void removeEventListener(const std::u16string& type, events::EventListener listener, bool capture = false, bool useDefault = false);
     virtual bool dispatchEvent(events::Event event);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)

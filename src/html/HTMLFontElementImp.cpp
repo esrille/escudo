@@ -37,7 +37,7 @@ std::u16string HTMLFontElementImp::getColor()
     return u"";
 }
 
-void HTMLFontElementImp::setColor(std::u16string color)
+void HTMLFontElementImp::setColor(const std::u16string& color)
 {
     // TODO: implement me!
 }
@@ -48,7 +48,7 @@ std::u16string HTMLFontElementImp::getFace()
     return u"";
 }
 
-void HTMLFontElementImp::setFace(std::u16string face)
+void HTMLFontElementImp::setFace(const std::u16string& face)
 {
     // TODO: implement me!
 }
@@ -59,7 +59,7 @@ std::u16string HTMLFontElementImp::getSize()
     return u"";
 }
 
-void HTMLFontElementImp::setSize(std::u16string size)
+void HTMLFontElementImp::setSize(const std::u16string& size)
 {
     // TODO: implement me!
 }

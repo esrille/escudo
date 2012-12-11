@@ -378,7 +378,7 @@ std::u16string HTMLElementImp::getInnerHTML()
     return u"";
 }
 
-void HTMLElementImp::setInnerHTML(std::u16string innerHTML)
+void HTMLElementImp::setInnerHTML(const std::u16string& innerHTML)
 {
     // TODO: implement me!
 }
@@ -389,12 +389,12 @@ std::u16string HTMLElementImp::getOuterHTML()
     return u"";
 }
 
-void HTMLElementImp::setOuterHTML(std::u16string outerHTML)
+void HTMLElementImp::setOuterHTML(const std::u16string& outerHTML)
 {
     // TODO: implement me!
 }
 
-void HTMLElementImp::insertAdjacentHTML(std::u16string position, std::u16string text)
+void HTMLElementImp::insertAdjacentHTML(const std::u16string& position, const std::u16string& text)
 {
     // TODO: implement me!
 }
@@ -404,7 +404,7 @@ std::u16string HTMLElementImp::getTitle()
     return getAttribute(u"title");
 }
 
-void HTMLElementImp::setTitle(std::u16string title)
+void HTMLElementImp::setTitle(const std::u16string& title)
 {
     setAttribute(u"title", title);
 }
@@ -414,7 +414,7 @@ std::u16string HTMLElementImp::getLang()
     return getAttribute(u"lang");
 }
 
-void HTMLElementImp::setLang(std::u16string lang)
+void HTMLElementImp::setLang(const std::u16string& lang)
 {
     setAttribute(u"lang", lang);
 }
@@ -424,7 +424,7 @@ std::u16string HTMLElementImp::getDir()
     return getAttribute(u"dir");
 }
 
-void HTMLElementImp::setDir(std::u16string dir)
+void HTMLElementImp::setDir(const std::u16string& dir)
 {
     setAttribute(u"dir", dir);
 }
@@ -452,7 +452,7 @@ std::u16string HTMLElementImp::getItemType()
     return u"";
 }
 
-void HTMLElementImp::setItemType(std::u16string itemType)
+void HTMLElementImp::setItemType(const std::u16string& itemType)
 {
     // TODO: implement me!
 }
@@ -463,7 +463,7 @@ std::u16string HTMLElementImp::getItemId()
     return u"";
 }
 
-void HTMLElementImp::setItemId(std::u16string itemId)
+void HTMLElementImp::setItemId(const std::u16string& itemId)
 {
     // TODO: implement me!
 }
@@ -474,7 +474,7 @@ DOMSettableTokenList HTMLElementImp::getItemRef()
     return static_cast<Object*>(0);
 }
 
-void HTMLElementImp::setItemRef(std::u16string itemRef)
+void HTMLElementImp::setItemRef(const std::u16string& itemRef)
 {
     // TODO: implement me!
 }
@@ -485,7 +485,7 @@ DOMSettableTokenList HTMLElementImp::getItemProp()
     return static_cast<Object*>(0);
 }
 
-void HTMLElementImp::setItemProp(std::u16string itemProp)
+void HTMLElementImp::setItemProp(const std::u16string& itemProp)
 {
     // TODO: implement me!
 }
@@ -539,7 +539,7 @@ std::u16string HTMLElementImp::getAccessKey()
     return u"";
 }
 
-void HTMLElementImp::setAccessKey(std::u16string accessKey)
+void HTMLElementImp::setAccessKey(const std::u16string& accessKey)
 {
     // TODO: implement me!
 }
@@ -567,7 +567,7 @@ DOMSettableTokenList HTMLElementImp::getDropzone()
     return static_cast<Object*>(0);
 }
 
-void HTMLElementImp::setDropzone(std::u16string dropzone)
+void HTMLElementImp::setDropzone(const std::u16string& dropzone)
 {
     // TODO: implement me!
 }
@@ -578,7 +578,7 @@ std::u16string HTMLElementImp::getContentEditable()
     return u"";
 }
 
-void HTMLElementImp::setContentEditable(std::u16string contentEditable)
+void HTMLElementImp::setContentEditable(const std::u16string& contentEditable)
 {
     // TODO: implement me!
 }
@@ -613,32 +613,32 @@ void HTMLElementImp::setSpellcheck(bool spellcheck)
 
 Nullable<std::u16string> HTMLElementImp::getCommandType()
 {
-    // TODO: implement me!
-    return u"";
+    return Nullable<std::u16string>();
 }
 
-Nullable<std::u16string> HTMLElementImp::getLabel()
+Nullable<std::u16string> HTMLElementImp::getCommandLabel()
 {
-    // TODO: implement me!
-    return u"";
+    return Nullable<std::u16string>();
 }
 
-Nullable<std::u16string> HTMLElementImp::getIcon()
+Nullable<std::u16string> HTMLElementImp::getCommandIcon()
 {
-    // TODO: implement me!
-    return u"";
+    return Nullable<std::u16string>();
 }
 
-bool HTMLElementImp::getDisabled()
+Nullable<bool> HTMLElementImp::getCommandHidden()
 {
-    // TODO: implement me!
-    return 0;
+    return Nullable<bool>();
 }
 
-bool HTMLElementImp::getChecked()
+Nullable<bool> HTMLElementImp::getCommandDisabled()
 {
-    // TODO: implement me!
-    return 0;
+    return Nullable<bool>();
+}
+
+Nullable<bool> HTMLElementImp::getCommandChecked()
+{
+    return Nullable<bool>();
 }
 
 html::Function HTMLElementImp::getOnabort()

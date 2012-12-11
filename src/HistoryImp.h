@@ -79,10 +79,10 @@ public:
     void go(int delta);
     void back();
     void forward();
-    void pushState(Any data, std::u16string title);
-    void pushState(Any data, std::u16string title, std::u16string url);
-    void replaceState(Any data, std::u16string title);
-    void replaceState(Any data, std::u16string title, std::u16string url);
+    void pushState(Any data, const std::u16string& title);
+    void pushState(Any data, const std::u16string& title, const std::u16string& url);
+    void replaceState(Any data, const std::u16string& title);
+    void replaceState(Any data, const std::u16string& title, const std::u16string& url);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

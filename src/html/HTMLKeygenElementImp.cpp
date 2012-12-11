@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ std::u16string HTMLKeygenElementImp::getChallenge()
     return u"";
 }
 
-void HTMLKeygenElementImp::setChallenge(std::u16string challenge)
+void HTMLKeygenElementImp::setChallenge(const std::u16string& challenge)
 {
     // TODO: implement me!
 }
@@ -70,7 +70,7 @@ std::u16string HTMLKeygenElementImp::getKeytype()
     return u"";
 }
 
-void HTMLKeygenElementImp::setKeytype(std::u16string keytype)
+void HTMLKeygenElementImp::setKeytype(const std::u16string& keytype)
 {
     // TODO: implement me!
 }
@@ -80,7 +80,7 @@ std::u16string HTMLKeygenElementImp::getName()
     return getAttribute(u"name");
 }
 
-void HTMLKeygenElementImp::setName(std::u16string name)
+void HTMLKeygenElementImp::setName(const std::u16string& name)
 {
     setAttribute(u"name", name);
 }
@@ -114,7 +114,7 @@ bool HTMLKeygenElementImp::checkValidity()
     return 0;
 }
 
-void HTMLKeygenElementImp::setCustomValidity(std::u16string error)
+void HTMLKeygenElementImp::setCustomValidity(const std::u16string& error)
 {
     // TODO: implement me!
 }

@@ -50,7 +50,7 @@ class HTMLTableRowElementImp : public ObjectMixin<HTMLTableRowElementImp, HTMLEl
         // HTMLCollection
         virtual unsigned int getLength();
         virtual Element item(unsigned int index);
-        virtual Object namedItem(std::u16string name) {
+        virtual Object namedItem(const std::u16string& name) {
             return 0;
         }
     };
@@ -77,15 +77,15 @@ public:
     void deleteCell(int index);
     // HTMLTableRowElement-33
     std::u16string getAlign();
-    void setAlign(std::u16string align);
+    void setAlign(const std::u16string& align);
     std::u16string getBgColor();
-    void setBgColor(std::u16string bgColor);
+    void setBgColor(const std::u16string& bgColor);
     std::u16string getCh();
-    void setCh(std::u16string ch);
+    void setCh(const std::u16string& ch);
     std::u16string getChOff();
-    void setChOff(std::u16string chOff);
+    void setChOff(const std::u16string& chOff);
     std::u16string getVAlign();
-    void setVAlign(std::u16string vAlign);
+    void setVAlign(const std::u16string& vAlign);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
         return html::HTMLTableRowElement::dispatch(this, selector, id, argc, argv);

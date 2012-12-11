@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ std::u16string HTMLSelectElementImp::getName()
     return getAttribute(u"name");
 }
 
-void HTMLSelectElementImp::setName(std::u16string name)
+void HTMLSelectElementImp::setName(const std::u16string& name)
 {
     setAttribute(u"name", name);
 }
@@ -125,7 +125,7 @@ Any HTMLSelectElementImp::item(unsigned int index)
     return 0;
 }
 
-Any HTMLSelectElementImp::namedItem(std::u16string name)
+Any HTMLSelectElementImp::namedItem(const std::u16string& name)
 {
     // TODO: implement me!
     return 0;
@@ -174,7 +174,7 @@ std::u16string HTMLSelectElementImp::getValue()
     return u"";
 }
 
-void HTMLSelectElementImp::setValue(std::u16string value)
+void HTMLSelectElementImp::setValue(const std::u16string& value)
 {
     // TODO: implement me!
 }
@@ -203,7 +203,7 @@ bool HTMLSelectElementImp::checkValidity()
     return 0;
 }
 
-void HTMLSelectElementImp::setCustomValidity(std::u16string error)
+void HTMLSelectElementImp::setCustomValidity(const std::u16string& error)
 {
     // TODO: implement me!
 }

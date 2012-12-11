@@ -43,7 +43,7 @@ public:
     // ProcessingInstruction
     std::u16string getTarget();
     std::u16string getData();
-    void setData(std::u16string data);
+    void setData(const std::u16string& data);
     // LinkStyle
     stylesheets::StyleSheet getSheet();
     // Object

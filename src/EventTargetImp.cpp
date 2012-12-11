@@ -60,7 +60,7 @@ void EventTargetImp::invoke(EventImp* event)
 }
 
 // EventTarget
-void EventTargetImp::addEventListener(std::u16string type, events::EventListener listener, bool useCapture, bool useDefault)
+void EventTargetImp::addEventListener(const std::u16string&  type, events::EventListener listener, bool useCapture, bool useDefault)
 {
     if (!listener)
         return;
@@ -82,7 +82,7 @@ void EventTargetImp::addEventListener(std::u16string type, events::EventListener
     listeners.push_back(item);
 }
 
-void EventTargetImp::removeEventListener(std::u16string type, events::EventListener listener, bool useCapture, bool useDefault)
+void EventTargetImp::removeEventListener(const std::u16string&  type, events::EventListener listener, bool useCapture, bool useDefault)
 {
     if (!listener)
         return;

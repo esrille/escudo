@@ -39,7 +39,7 @@ public:
     // CSSRule
     virtual unsigned short getType();
     virtual std::u16string getCssText();
-    virtual void setCssText(std::u16string cssText);
+    virtual void setCssText(const std::u16string& cssText);
     virtual css::CSSRule getParentRule();
     css::CSSStyleSheet getParentStyleSheet();
     // Object

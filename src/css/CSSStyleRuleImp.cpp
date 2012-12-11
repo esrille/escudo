@@ -41,7 +41,7 @@ std::u16string CSSStyleRuleImp::getSelectorText()
     return text;
 }
 
-void CSSStyleRuleImp::setSelectorText(std::u16string selectorText)
+void CSSStyleRuleImp::setSelectorText(const std::u16string& selectorText)
 {
     // TODO: implement me!
 }

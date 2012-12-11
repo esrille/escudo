@@ -37,7 +37,7 @@ std::u16string TextImp::getWholeText()
     return u"";
 }
 
-Text TextImp::replaceWholeText(std::u16string data)
+Text TextImp::replaceWholeText(const std::u16string& data)
 {
     // TODO: implement me!
     return static_cast<Object*>(0);

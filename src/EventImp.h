@@ -60,8 +60,8 @@ private:
 
 public:
     EventImp();
-    EventImp(std::u16string type);
-    EventImp(std::u16string type, events::EventInit eventInitDict);
+    EventImp(const std::u16string& type);
+    EventImp(const std::u16string& type, events::EventInit eventInitDict);
 
     void setEventPhase(unsigned short phase) {
         this->phase = phase;
@@ -99,7 +99,7 @@ public:
     bool getDefaultPrevented();
     bool getIsTrusted();
     DOMTimeStamp getTimeStamp();
-    void initEvent(std::u16string type, bool bubbles, bool cancelable);
+    void initEvent(const std::u16string& type, bool bubbles, bool cancelable);
     // EventXBL
     bool getTrusted();
     // Object

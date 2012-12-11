@@ -54,7 +54,7 @@ public:
         types = other.types;
         return *this;
     }
-    
+
     void clear() {
         types = 0;
     }
@@ -64,11 +64,11 @@ public:
 
     // MediaList
     std::u16string getMediaText();
-    void setMediaText(std::u16string mediaText);
+    void setMediaText(const std::u16string& mediaText);
     unsigned int getLength();
     std::u16string item(unsigned int index);
-    void appendMedium(std::u16string medium);
-    void deleteMedium(std::u16string medium);
+    void appendMedium(const std::u16string& medium);
+    void deleteMedium(const std::u16string& medium);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

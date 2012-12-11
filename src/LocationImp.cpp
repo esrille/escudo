@@ -27,12 +27,12 @@ std::u16string LocationImp::getHref()
     return static_cast<std::u16string>(url);
 }
 
-void LocationImp::setHref(std::u16string href)
+void LocationImp::setHref(const std::u16string& href)
 {
     assign(href);
 }
 
-void LocationImp::assign(std::u16string url)
+void LocationImp::assign(const std::u16string& url)
 {
     URL base(window->getLocation().getHref());    // TODO: window must be of the script.
     URL resolved(base, url);
@@ -41,7 +41,7 @@ void LocationImp::assign(std::u16string url)
     window->open(resolved, u"_self", u"", false);
 }
 
-void LocationImp::replace(std::u16string url)
+void LocationImp::replace(const std::u16string& url)
 {
     URL base(window->getLocation().getHref());    // TODO: window must be of the script.
     URL resolved(base, url);
@@ -61,7 +61,7 @@ std::u16string LocationImp::getProtocol()
     return url.getProtocol();
 }
 
-void LocationImp::setProtocol(std::u16string protocol)
+void LocationImp::setProtocol(const std::u16string& protocol)
 {
     // TODO: implement me!
 }
@@ -71,7 +71,7 @@ std::u16string LocationImp::getHost()
     return url.getHost();
 }
 
-void LocationImp::setHost(std::u16string host)
+void LocationImp::setHost(const std::u16string& host)
 {
     // TODO: implement me!
 }
@@ -81,7 +81,7 @@ std::u16string LocationImp::getHostname()
     return url.getHostname();
 }
 
-void LocationImp::setHostname(std::u16string hostname)
+void LocationImp::setHostname(const std::u16string& hostname)
 {
     // TODO: implement me!
 }
@@ -91,7 +91,7 @@ std::u16string LocationImp::getPort()
     return url.getPort();
 }
 
-void LocationImp::setPort(std::u16string port)
+void LocationImp::setPort(const std::u16string& port)
 {
     // TODO: implement me!
 }
@@ -101,7 +101,7 @@ std::u16string LocationImp::getPathname()
     return url.getPathname();
 }
 
-void LocationImp::setPathname(std::u16string pathname)
+void LocationImp::setPathname(const std::u16string& pathname)
 {
     // TODO: implement me!
 }
@@ -111,7 +111,7 @@ std::u16string LocationImp::getSearch()
     return url.getSearch();
 }
 
-void LocationImp::setSearch(std::u16string search)
+void LocationImp::setSearch(const std::u16string& search)
 {
     // TODO: implement me!
 }
@@ -121,12 +121,12 @@ std::u16string LocationImp::getHash()
     return url.getHash();
 }
 
-void LocationImp::setHash(std::u16string hash)
+void LocationImp::setHash(const std::u16string& hash)
 {
     // TODO: implement me!
 }
 
-std::u16string LocationImp::resolveURL(std::u16string url)
+std::u16string LocationImp::resolveURL(const std::u16string& url)
 {
     URL base(window->getLocation().getHref());    // TODO: window must be of the script.
     URL resolved(base, url);
@@ -134,7 +134,7 @@ std::u16string LocationImp::resolveURL(std::u16string url)
     return resolved;
 }
 
-LocationImp::LocationImp(WindowImp* window, std::u16string url) :
+LocationImp::LocationImp(WindowImp* window, const std::u16string& url) :
     window(window),
     url(url)
 {

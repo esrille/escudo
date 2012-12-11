@@ -51,15 +51,15 @@ public:
     void setSpan(unsigned int span);
     // HTMLTableColElement-9
     std::u16string getAlign();
-    void setAlign(std::u16string align);
+    void setAlign(const std::u16string& align);
     std::u16string getCh();
-    void setCh(std::u16string ch);
+    void setCh(const std::u16string& ch);
     std::u16string getChOff();
-    void setChOff(std::u16string chOff);
+    void setChOff(const std::u16string& chOff);
     std::u16string getVAlign();
-    void setVAlign(std::u16string vAlign);
+    void setVAlign(const std::u16string& vAlign);
     std::u16string getWidth();
-    void setWidth(std::u16string width);
+    void setWidth(const std::u16string& width);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

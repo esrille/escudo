@@ -2389,7 +2389,7 @@ bool Token::append(Attribute& attribute)
     return false;
 }
 
-Nullable<std::u16string> Token::getAttribute(std::u16string name) const
+Nullable<std::u16string> Token::getAttribute(const std::u16string& name) const
 {
     if (attrNames.find(name) != attrNames.end()) {
         for (auto i = attrList.begin(); i != attrList.end(); ++i) {

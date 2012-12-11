@@ -79,17 +79,17 @@ public:
     virtual void setOnunload(html::Function onunload);
     // HTMLBodyElement-6
     virtual std::u16string getText();
-    virtual void setText(std::u16string text);
+    virtual void setText(const std::u16string& text);
     virtual std::u16string getBgColor();
-    virtual void setBgColor(std::u16string bgColor);
+    virtual void setBgColor(const std::u16string& bgColor);
     virtual std::u16string getBackground();
-    virtual void setBackground(std::u16string background);
+    virtual void setBackground(const std::u16string& background);
     virtual std::u16string getLink();
-    virtual void setLink(std::u16string link);
+    virtual void setLink(const std::u16string& link);
     virtual std::u16string getVLink();
-    virtual void setVLink(std::u16string vLink);
+    virtual void setVLink(const std::u16string& vLink);
     virtual std::u16string getALink();
-    virtual void setALink(std::u16string aLink);
+    virtual void setALink(const std::u16string& aLink);
 
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {

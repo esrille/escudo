@@ -32,9 +32,9 @@ public:
 
     // HTMLBaseElement
     virtual std::u16string getHref();
-    virtual void setHref(std::u16string href);
+    virtual void setHref(const std::u16string& href);
     virtual std::u16string getTarget();
-    virtual void setTarget(std::u16string target);
+    virtual void setTarget(const std::u16string& target);
 
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {

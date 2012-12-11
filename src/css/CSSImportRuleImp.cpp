@@ -82,7 +82,7 @@ stylesheets::MediaList CSSImportRuleImp::getMedia()
     return &mediaList;
 }
 
-void CSSImportRuleImp::setMedia(std::u16string media)
+void CSSImportRuleImp::setMedia(const std::u16string& media)
 {
     mediaList.setMediaText(media);
 }

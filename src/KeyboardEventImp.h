@@ -61,8 +61,8 @@ public:
     bool getMetaKey();
     bool getRepeat();
     std::u16string getLocale();
-    bool getModifierState(std::u16string keyArg);
-    void initKeyboardEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, html::Window viewArg, std::u16string charArg, std::u16string keyArg, unsigned int locationArg, std::u16string modifiersListArg, bool repeat, std::u16string localeArg);
+    bool getModifierState(const std::u16string& keyArg);
+    void initKeyboardEvent(const std::u16string& typeArg, bool canBubbleArg, bool cancelableArg, html::Window viewArg, const std::u16string& charArg, const std::u16string& keyArg, unsigned int locationArg, const std::u16string& modifiersListArg, bool repeat, const std::u16string& localeArg);
     // KeyboardEvent-41
     unsigned int getCharCode();
     unsigned int getKeyCode();

@@ -133,7 +133,7 @@ public:
     }
 
     // for StyleSheet
-    unsigned int insertRule(std::u16string rule, unsigned int index)
+    unsigned int insertRule(const std::u16string& rule, unsigned int index)
     {
         // TODO: implement me
     }

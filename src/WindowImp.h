@@ -289,7 +289,7 @@ public:
     void setFavicon();
 
     // Window customized
-    html::Window open(std::u16string url = u"about:blank", std::u16string target = u"_blank", std::u16string features = u"", bool replace = false);
+    html::Window open(const std::u16string& url = u"about:blank", const std::u16string& target = u"_blank", const std::u16string& features = u"", bool replace = false);
 
     ElementImp* getFrameElementImp() const {
         return frameElement;
@@ -300,9 +300,9 @@ public:
     html::Window getSelf();
     Document getDocument();
     std::u16string getName();
-    void setName(std::u16string name);
+    void setName(const std::u16string& name);
     html::Location getLocation();
-    void setLocation(std::u16string location);
+    void setLocation(const std::u16string& location);
     html::History getHistory();
     html::UndoManager getUndoManager();
     Any getLocationbar();
@@ -318,7 +318,7 @@ public:
     Any getToolbar();
     void setToolbar(Any toolbar);
     std::u16string getStatus();
-    void setStatus(std::u16string status);
+    void setStatus(const std::u16string& status);
     void close();
     void stop();
     void focus();
@@ -333,20 +333,20 @@ public:
     html::Window getParent();
     Element getFrameElement();
     html::Window getElement(unsigned int index);
-    Any getElement(std::u16string name);
-    void setElement(std::u16string name, Any value);
+    Any getElement(const std::u16string& name);
+    void setElement(const std::u16string& name, Any value);
     html::Navigator getNavigator();
     html::External getExternal();
     html::ApplicationCache getApplicationCache();
-    void alert(std::u16string message);
-    bool confirm(std::u16string message);
-    Nullable<std::u16string> prompt(std::u16string message);
-    Nullable<std::u16string> prompt(std::u16string message, std::u16string _default);
+    void alert(const std::u16string& message);
+    bool confirm(const std::u16string& message);
+    Nullable<std::u16string> prompt(const std::u16string& message);
+    Nullable<std::u16string> prompt(const std::u16string& message, const std::u16string& _default);
     void print();
-    Any showModalDialog(std::u16string url);
-    Any showModalDialog(std::u16string url, Any argument);
-    void postMessage(Any message, std::u16string targetOrigin);
-    void postMessage(Any message, std::u16string targetOrigin, Sequence<html::Transferable> transfer);
+    Any showModalDialog(const std::u16string& url);
+    Any showModalDialog(const std::u16string& url, Any argument);
+    void postMessage(Any message, const std::u16string& targetOrigin);
+    void postMessage(Any message, const std::u16string& targetOrigin, Sequence<html::Transferable> transfer);
     html::Function getOnabort();
     void setOnabort(html::Function onabort);
     html::Function getOnafterprint();
@@ -487,9 +487,9 @@ public:
     void setOnwaiting(html::Function onwaiting);
     // Window-4
     css::CSSStyleDeclaration getComputedStyle(Element elt);
-    css::CSSStyleDeclaration getComputedStyle(Element elt, std::u16string pseudoElt);
+    css::CSSStyleDeclaration getComputedStyle(Element elt, const std::u16string& pseudoElt);
     // Window-5
-    html::MediaQueryList matchMedia(std::u16string media_query_list);
+    html::MediaQueryList matchMedia(const std::u16string& media_query_list);
     html::Screen getScreen();
     int getInnerWidth();
     int getInnerHeight();
@@ -505,12 +505,12 @@ public:
     int getOuterWidth();
     int getOuterHeight();
     // EventTarget
-    void addEventListener(std::u16string type, events::EventListener listener, bool capture = false);
-    void removeEventListener(std::u16string type, events::EventListener listener, bool capture = false);
+    void addEventListener(const std::u16string& type, events::EventListener listener, bool capture = false);
+    void removeEventListener(const std::u16string& type, events::EventListener listener, bool capture = false);
     bool dispatchEvent(events::Event event);
     // WindowBase64
-    std::u16string btoa(std::u16string btoa);
-    std::u16string atob(std::u16string atob);
+    std::u16string btoa(const std::u16string& btoa);
+    std::u16string atob(const std::u16string& atob);
     // WindowTimers
     int setTimeout(Any handler);
     int setTimeout(Any handler, Any timeout, Variadic<Any> args = Variadic<Any>());

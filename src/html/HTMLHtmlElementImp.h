@@ -31,7 +31,7 @@ public:
     virtual Node cloneNode(bool deep);
 
     virtual std::u16string getVersion();
-    virtual void setVersion(std::u16string version);
+    virtual void setVersion(const std::u16string& version);
 
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {

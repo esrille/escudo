@@ -45,7 +45,7 @@ public:
 
     // BeforeUnloadEvent
     std::u16string getReturnValue();
-    void setReturnValue(std::u16string returnValue);
+    void setReturnValue(const std::u16string& returnValue);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

@@ -215,7 +215,7 @@ public:
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) const {
         return u"";
     }
-    virtual void setCssText(std::u16string cssText) {}
+    virtual void setCssText(const std::u16string& cssText) {}
 };
 
 class CSSListStyleTypeValueImp : public CSSPropertyValueImp

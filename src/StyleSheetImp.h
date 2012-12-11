@@ -46,7 +46,7 @@ public:
     stylesheets::StyleSheet getParentStyleSheet();
     virtual std::u16string getTitle();
     virtual stylesheets::MediaList getMedia();
-    virtual void setMedia(std::u16string media);
+    virtual void setMedia(const std::u16string& media);
     bool getDisabled();
     void setDisabled(bool disabled);
     // Object

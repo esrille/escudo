@@ -65,22 +65,22 @@ public:
 
     // HTMLScriptElement
     virtual std::u16string getSrc();
-    virtual void setSrc(std::u16string src);
+    virtual void setSrc(const std::u16string& src);
     virtual bool getAsync();
     virtual void setAsync(bool async);
     virtual bool getDefer();
     virtual void setDefer(bool defer);
     virtual std::u16string getType();
-    virtual void setType(std::u16string type);
+    virtual void setType(const std::u16string& type);
     virtual std::u16string getCharset();
-    virtual void setCharset(std::u16string charset);
+    virtual void setCharset(const std::u16string& charset);
     virtual std::u16string getText();
-    virtual void setText(std::u16string text);
+    virtual void setText(const std::u16string& text);
     // HTMLScriptElement-29
     virtual std::u16string getEvent();
-    virtual void setEvent(std::u16string event);
+    virtual void setEvent(const std::u16string& event);
     virtual std::u16string getHtmlFor();
-    virtual void setHtmlFor(std::u16string htmlFor);
+    virtual void setHtmlFor(const std::u16string& htmlFor);
 
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {

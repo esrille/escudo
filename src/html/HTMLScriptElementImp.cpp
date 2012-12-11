@@ -203,7 +203,7 @@ std::u16string HTMLScriptElementImp::getSrc()
     return getAttribute(u"src");
 }
 
-void HTMLScriptElementImp::setSrc(std::u16string src)
+void HTMLScriptElementImp::setSrc(const std::u16string& src)
 {
     setAttribute(u"src", src);
 }
@@ -248,7 +248,7 @@ std::u16string HTMLScriptElementImp::getType()
     return getAttribute(u"type");
 }
 
-void HTMLScriptElementImp::setType(std::u16string type)
+void HTMLScriptElementImp::setType(const std::u16string& type)
 {
     setAttribute(u"type", type);
 }
@@ -258,7 +258,7 @@ std::u16string HTMLScriptElementImp::getCharset()
     return getAttribute(u"charset");
 }
 
-void HTMLScriptElementImp::setCharset(std::u16string charset)
+void HTMLScriptElementImp::setCharset(const std::u16string& charset)
 {
     setAttribute(u"charset", charset);
 }
@@ -268,7 +268,7 @@ std::u16string HTMLScriptElementImp::getText()
     return getTextContent();
 }
 
-void HTMLScriptElementImp::setText(std::u16string text)
+void HTMLScriptElementImp::setText(const std::u16string& text)
 {
     setTextContent(text);
 }
@@ -278,7 +278,7 @@ std::u16string HTMLScriptElementImp::getEvent()
     return u"";
 }
 
-void HTMLScriptElementImp::setEvent(std::u16string event)
+void HTMLScriptElementImp::setEvent(const std::u16string& event)
 {
 }
 
@@ -287,7 +287,7 @@ std::u16string HTMLScriptElementImp::getHtmlFor()
     return u"";
 }
 
-void HTMLScriptElementImp::setHtmlFor(std::u16string htmlFor)
+void HTMLScriptElementImp::setHtmlFor(const std::u16string& htmlFor)
 {
 }
 

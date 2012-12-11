@@ -671,7 +671,7 @@ html::Location WindowImp::getLocation()
     return getDocument().getLocation();
 }
 
-void WindowImp::setLocation(std::u16string href)
+void WindowImp::setLocation(const std::u16string& href)
 {
     getLocation().setHref(href);
 }
@@ -704,7 +704,7 @@ html::Window WindowImp::getParent()
     return parent;
 }
 
-html::Window WindowImp::open(std::u16string url, std::u16string target, std::u16string features, bool replace)
+html::Window WindowImp::open(const std::u16string& url, const std::u16string& target, const std::u16string& features, bool replace)
 {
     if (window) {
         if (DocumentImp* document = dynamic_cast<DocumentImp*>(window->getDocument().self())) {
@@ -737,11 +737,9 @@ html::Window WindowImp::open(std::u16string url, std::u16string target, std::u16
     // TODO: add more details
     window = new(std::nothrow) DocumentWindow;
 
-    if (url.empty())
-        url = u"about:blank";
     request.abort();
     history.setReplace(replace);
-    request.open(u"get", url);
+    request.open(u"get", url.empty() ? u"about:blank" : url);
     request.send();
     return this;
 }
@@ -753,7 +751,7 @@ html::Window WindowImp::getElement(unsigned int index)
     return 0;
 }
 
-void WindowImp::alert(std::u16string message)
+void WindowImp::alert(const std::u16string& message)
 {
     std::cerr << message << '\n';
 }
@@ -768,7 +766,7 @@ std::u16string WindowImp::getName()
     return u"";
 }
 
-void WindowImp::setName(std::u16string name)
+void WindowImp::setName(const std::u16string& name)
 {
     // TODO: implement me!
 }
@@ -851,7 +849,7 @@ std::u16string WindowImp::getStatus()
     return u"";
 }
 
-void WindowImp::setStatus(std::u16string status)
+void WindowImp::setStatus(const std::u16string& status)
 {
     // TODO: implement me!
 }
@@ -904,13 +902,13 @@ Element WindowImp::getFrameElement()
     return static_cast<Object*>(0);
 }
 
-Any WindowImp::getElement(std::u16string name)
+Any WindowImp::getElement(const std::u16string& name)
 {
     // TODO: implement me!
     return 0;
 }
 
-void WindowImp::setElement(std::u16string name, Any value)
+void WindowImp::setElement(const std::u16string& name, Any value)
 {
     // TODO: implement me!
 }
@@ -932,19 +930,19 @@ html::ApplicationCache WindowImp::getApplicationCache()
     return static_cast<Object*>(0);
 }
 
-bool WindowImp::confirm(std::u16string message)
+bool WindowImp::confirm(const std::u16string& message)
 {
     // TODO: implement me!
     return 0;
 }
 
-Nullable<std::u16string> WindowImp::prompt(std::u16string message)
+Nullable<std::u16string> WindowImp::prompt(const std::u16string& message)
 {
     // TODO: implement me!
     return u"";
 }
 
-Nullable<std::u16string> WindowImp::prompt(std::u16string message, std::u16string _default)
+Nullable<std::u16string> WindowImp::prompt(const std::u16string& message, const std::u16string& _default)
 {
     // TODO: implement me!
     return u"";
@@ -955,24 +953,24 @@ void WindowImp::print()
     // TODO: implement me!
 }
 
-Any WindowImp::showModalDialog(std::u16string url)
+Any WindowImp::showModalDialog(const std::u16string& url)
 {
     // TODO: implement me!
     return 0;
 }
 
-Any WindowImp::showModalDialog(std::u16string url, Any argument)
+Any WindowImp::showModalDialog(const std::u16string& url, Any argument)
 {
     // TODO: implement me!
     return 0;
 }
 
-void WindowImp::postMessage(Any message, std::u16string targetOrigin)
+void WindowImp::postMessage(Any message, const std::u16string& targetOrigin)
 {
     // TODO: implement me!
 }
 
-void WindowImp::postMessage(Any message, std::u16string targetOrigin, Sequence<html::Transferable> transfer)
+void WindowImp::postMessage(Any message, const std::u16string& targetOrigin, Sequence<html::Transferable> transfer)
 {
     // TODO: implement me!
 }
@@ -1746,14 +1744,14 @@ css::CSSStyleDeclaration WindowImp::getComputedStyle(Element elt)
     return view->getStyle(elt);
 }
 
-css::CSSStyleDeclaration WindowImp::getComputedStyle(Element elt, std::u16string pseudoElt)
+css::CSSStyleDeclaration WindowImp::getComputedStyle(Element elt, const std::u16string& pseudoElt)
 {
     if (!view)
         return 0;
     return view->getStyle(elt, pseudoElt);
 }
 
-html::MediaQueryList WindowImp::matchMedia(std::u16string media_query_list)
+html::MediaQueryList WindowImp::matchMedia(const std::u16string& media_query_list)
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
@@ -1844,13 +1842,13 @@ int WindowImp::getOuterHeight()
     return 0;
 }
 
-void WindowImp::addEventListener(std::u16string type, events::EventListener listener, bool capture)
+void WindowImp::addEventListener(const std::u16string& type, events::EventListener listener, bool capture)
 {
     if (window)
         window->addEventListener(type, listener, capture);
 }
 
-void WindowImp::removeEventListener(std::u16string type, events::EventListener listener, bool capture)
+void WindowImp::removeEventListener(const std::u16string& type, events::EventListener listener, bool capture)
 {
     if (window)
         window->removeEventListener(type, listener, capture);
@@ -1863,13 +1861,13 @@ bool WindowImp::dispatchEvent(events::Event event)
     return false;
 }
 
-std::u16string WindowImp::btoa(std::u16string btoa)
+std::u16string WindowImp::btoa(const std::u16string& btoa)
 {
     // TODO: implement me!
     return u"";
 }
 
-std::u16string WindowImp::atob(std::u16string atob)
+std::u16string WindowImp::atob(const std::u16string& atob)
 {
     // TODO: implement me!
     return u"";

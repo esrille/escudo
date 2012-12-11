@@ -50,7 +50,7 @@ Element HTMLCollectionImp::item(unsigned int index)
     return it->second;
 }
 
-Object HTMLCollectionImp::namedItem(std::u16string name)
+Object HTMLCollectionImp::namedItem(const std::u16string& name)
 {
     auto it = map.find(name);
     if (it == map.end())

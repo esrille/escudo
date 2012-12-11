@@ -39,7 +39,7 @@ class HTMLParser
     void insertCharacter(const std::u16string& data);
     void insertCharacter(Token& token);
     void parseRawtext(Token& token, HTMLTokenizer::State* state);
-    void generateImpliedEndTags(std::u16string exclude = u"");
+    void generateImpliedEndTags(const std::u16string& exclude = u"");
 
     class InsertionMode
     {

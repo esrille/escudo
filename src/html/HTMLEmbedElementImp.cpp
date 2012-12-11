@@ -40,7 +40,7 @@ std::u16string HTMLEmbedElementImp::getSrc()
     return u"";
 }
 
-void HTMLEmbedElementImp::setSrc(std::u16string src)
+void HTMLEmbedElementImp::setSrc(const std::u16string& src)
 {
     // TODO: implement me!
 }
@@ -51,7 +51,7 @@ std::u16string HTMLEmbedElementImp::getType()
     return u"";
 }
 
-void HTMLEmbedElementImp::setType(std::u16string type)
+void HTMLEmbedElementImp::setType(const std::u16string& type)
 {
     // TODO: implement me!
 }
@@ -62,7 +62,7 @@ std::u16string HTMLEmbedElementImp::getWidth()
     return u"";
 }
 
-void HTMLEmbedElementImp::setWidth(std::u16string width)
+void HTMLEmbedElementImp::setWidth(const std::u16string& width)
 {
     // TODO: implement me!
 }
@@ -73,7 +73,7 @@ std::u16string HTMLEmbedElementImp::getHeight()
     return u"";
 }
 
-void HTMLEmbedElementImp::setHeight(std::u16string height)
+void HTMLEmbedElementImp::setHeight(const std::u16string& height)
 {
     // TODO: implement me!
 }
@@ -84,7 +84,7 @@ std::u16string HTMLEmbedElementImp::getAlign()
     return u"";
 }
 
-void HTMLEmbedElementImp::setAlign(std::u16string align)
+void HTMLEmbedElementImp::setAlign(const std::u16string& align)
 {
     // TODO: implement me!
 }
@@ -95,7 +95,7 @@ std::u16string HTMLEmbedElementImp::getName()
     return u"";
 }
 
-void HTMLEmbedElementImp::setName(std::u16string name)
+void HTMLEmbedElementImp::setName(const std::u16string& name)
 {
     // TODO: implement me!
 }

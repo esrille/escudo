@@ -146,7 +146,7 @@ std::u16string HTMLTableRowElementImp::getAlign()
     return u"";
 }
 
-void HTMLTableRowElementImp::setAlign(std::u16string align)
+void HTMLTableRowElementImp::setAlign(const std::u16string& align)
 {
     // TODO: implement me!
 }
@@ -157,7 +157,7 @@ std::u16string HTMLTableRowElementImp::getBgColor()
     return u"";
 }
 
-void HTMLTableRowElementImp::setBgColor(std::u16string bgColor)
+void HTMLTableRowElementImp::setBgColor(const std::u16string& bgColor)
 {
     // TODO: implement me!
 }
@@ -168,7 +168,7 @@ std::u16string HTMLTableRowElementImp::getCh()
     return u"";
 }
 
-void HTMLTableRowElementImp::setCh(std::u16string ch)
+void HTMLTableRowElementImp::setCh(const std::u16string& ch)
 {
     // TODO: implement me!
 }
@@ -179,7 +179,7 @@ std::u16string HTMLTableRowElementImp::getChOff()
     return u"";
 }
 
-void HTMLTableRowElementImp::setChOff(std::u16string chOff)
+void HTMLTableRowElementImp::setChOff(const std::u16string& chOff)
 {
     // TODO: implement me!
 }
@@ -190,7 +190,7 @@ std::u16string HTMLTableRowElementImp::getVAlign()
     return u"";
 }
 
-void HTMLTableRowElementImp::setVAlign(std::u16string vAlign)
+void HTMLTableRowElementImp::setVAlign(const std::u16string& vAlign)
 {
     // TODO: implement me!
 }

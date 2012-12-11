@@ -112,7 +112,7 @@ Nullable<std::u16string> ElementImp::getTextContent()
     return content;
 }
 
-void ElementImp::setTextContent(std::u16string textContent)
+void ElementImp::setTextContent(const std::u16string& textContent)
 {
     while (hasChildNodes())
         removeChild(getFirstChild());
@@ -183,7 +183,7 @@ std::u16string ElementImp::getId()
     return getAttribute(u"id");
 }
 
-void ElementImp::setId(std::u16string id)
+void ElementImp::setId(const std::u16string& id)
 {
     setAttribute(u"id", id);
 }
@@ -193,7 +193,7 @@ std::u16string ElementImp::getClassName()
     return getAttribute(u"class");
 }
 
-void ElementImp::setClassName(std::u16string className)
+void ElementImp::setClassName(const std::u16string& className)
 {
     setAttribute(u"class", className);
 }
@@ -208,19 +208,20 @@ dom::ObjectArray<Attr> ElementImp:: getAttributes()
     return new(std::nothrow) AttrArray(this);
 }
 
-Nullable<std::u16string> ElementImp::getAttribute(std::u16string name)
+Nullable<std::u16string> ElementImp::getAttribute(const std::u16string& name)
 {
     // TODO: If the context node is in the HTML namespace and its ownerDocument is an HTML document
-        toLower(name);
+    std::u16string n(name);
+        toLower(n);
     for (auto i = attributes.begin(); i != attributes.end(); ++i) {
         Attr attr = *i;
-        if (attr.getName() == name)
+        if (attr.getName() == n)
             return attr.getValue();
     }
     return Nullable<std::u16string>();
 }
 
-Nullable<std::u16string> ElementImp::getAttributeNS(std::u16string namespaceURI, std::u16string localName)
+Nullable<std::u16string> ElementImp::getAttributeNS(const std::u16string& namespaceURI, const std::u16string& localName)
 {
     for (auto i = attributes.begin(); i != attributes.end(); ++i) {
         Attr attr = *i;
@@ -230,31 +231,32 @@ Nullable<std::u16string> ElementImp::getAttributeNS(std::u16string namespaceURI,
     return Nullable<std::u16string>();
 }
 
-void ElementImp::setAttribute(std::u16string name, std::u16string value)
+void ElementImp::setAttribute(const std::u16string& name, const std::u16string& value)
 {
     // TODO: If qualifiedName does not match the Name production in XML, raise an INVALID_CHARACTER_ERR exception and terminate these steps.
     // TODO: If the context node is in the HTML namespace and its ownerDocument is an HTML document
-        toLower(name);
+    std::u16string n(name);
+        toLower(n);
     // TODO: If qualifiedName starts with "xmlns", raise a NAMESPACE_ERR and terminate these steps.
     for (auto i = attributes.begin(); i != attributes.end(); ++i) {
         Attr attr = *i;
-        if (attr.getName() == name) {
+        if (attr.getName() == n) {
             std::u16string prevValue = attr.getValue();
             attr.setValue(value);
 
             events::MutationEvent event = new(std::nothrow) MutationEventImp;
             event.initMutationEvent(u"DOMAttrModified",
-                                    true, false, attr, prevValue, value, name, events::MutationEvent::MODIFICATION);
+                                    true, false, attr, prevValue, value, n, events::MutationEvent::MODIFICATION);
             this->dispatchEvent(event);
             return;
         }
     }
-    Attr attr = new(std::nothrow) AttrImp(Nullable<std::u16string>(), Nullable<std::u16string>(), name, value);
+    Attr attr = new(std::nothrow) AttrImp(Nullable<std::u16string>(), Nullable<std::u16string>(), n, value);
     if (attr)
         attributes.push_back(attr);
 }
 
-void ElementImp::setAttributeNS(std::u16string namespaceURI, std::u16string qualifiedName, std::u16string value)
+void ElementImp::setAttributeNS(const std::u16string& namespaceURI, const std::u16string& qualifiedName, const std::u16string& value)
 {
     // TODO:
     // TODO:
@@ -289,20 +291,21 @@ void ElementImp::setAttributeNS(std::u16string namespaceURI, std::u16string qual
         attributes.push_back(attr);
 }
 
-void ElementImp::removeAttribute(std::u16string name)
+void ElementImp::removeAttribute(const std::u16string& name)
 {
     // TODO: If the context node is in the HTML namespace and its ownerDocument is an HTML document
-        toLower(name);
+    std::u16string n(name);
+        toLower(n);
     for (auto i = attributes.begin(); i != attributes.end();) {
         Attr attr = *i;
-        if (attr.getName() == name)
+        if (attr.getName() == n)
             i = attributes.erase(i);
         else
             ++i;
     }
 }
 
-void ElementImp::removeAttributeNS(std::u16string namespaceURI, std::u16string localName)
+void ElementImp::removeAttributeNS(const std::u16string& namespaceURI, const std::u16string& localName)
 {
     for (auto i = attributes.begin(); i != attributes.end();) {
         Attr attr = *i;
@@ -313,19 +316,20 @@ void ElementImp::removeAttributeNS(std::u16string namespaceURI, std::u16string l
     }
 }
 
-bool ElementImp::hasAttribute(std::u16string name)
+bool ElementImp::hasAttribute(const std::u16string& name)
 {
     // TODO: If the context node is in the HTML namespace and its ownerDocument is an HTML document
-        toLower(name);
+    std::u16string n(name);
+        toLower(n);
     for (auto i = attributes.begin(); i != attributes.end(); ++i) {
         Attr attr = *i;
-        if (attr.getName() == name)
+        if (attr.getName() == n)
             return true;
     }
     return false;
 }
 
-bool ElementImp::hasAttributeNS(std::u16string namespaceURI, std::u16string localName)
+bool ElementImp::hasAttributeNS(const std::u16string& namespaceURI, const std::u16string& localName)
 {
     for (auto i = attributes.begin(); i != attributes.end(); ++i) {
         Attr attr = *i;
@@ -360,12 +364,12 @@ NodeListImp* ElementImp::getElementsByTagName(ElementImp* element, const std::u1
     return nodeList;
 }
 
-NodeList ElementImp::getElementsByTagName(std::u16string qualifiedName)
+NodeList ElementImp::getElementsByTagName(const std::u16string& qualifiedName)
 {
     return getElementsByTagName(this, qualifiedName);
 }
 
-NodeList ElementImp::getElementsByTagNameNS(std::u16string _namespace, std::u16string localName)
+NodeList ElementImp::getElementsByTagNameNS(const std::u16string& _namespace, const std::u16string& localName)
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
@@ -396,7 +400,7 @@ NodeListImp* ElementImp::getElementsByClassName(ElementImp* element, const std::
     return nodeList;
 }
 
-NodeList ElementImp::getElementsByClassName(std::u16string classNames)
+NodeList ElementImp::getElementsByClassName(const std::u16string& classNames)
 {
     return getElementsByClassName(this, classNames);
 }
@@ -524,13 +528,13 @@ int ElementImp::getClientHeight()
     return 0;
 }
 
-Element ElementImp::querySelector(std::u16string selectors)
+Element ElementImp::querySelector(const std::u16string& selectors)
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-NodeList ElementImp::querySelectorAll(std::u16string selectors)
+NodeList ElementImp::querySelectorAll(const std::u16string& selectors)
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
@@ -542,23 +546,23 @@ xbl2::XBLImplementationList ElementImp::getXblImplementations()
     return static_cast<Object*>(0);
 }
 
-void ElementImp::addBinding(std::u16string bindingURI)
+void ElementImp::addBinding(const std::u16string& bindingURI)
 {
     // TODO: implement me!
 }
 
-void ElementImp::removeBinding(std::u16string bindingURI)
+void ElementImp::removeBinding(const std::u16string& bindingURI)
 {
     // TODO: implement me!
 }
 
-bool ElementImp::hasBinding(std::u16string bindingURI)
+bool ElementImp::hasBinding(const std::u16string& bindingURI)
 {
     // TODO: implement me!
     return false;
 }
 
-ElementImp::ElementImp(DocumentImp* ownerDocument, const std::u16string& localName, std::u16string namespaceURI, std::u16string prefix) :
+ElementImp::ElementImp(DocumentImp* ownerDocument, const std::u16string& localName, const std::u16string& namespaceURI, const std::u16string& prefix) :
     ObjectMixin(ownerDocument),
     namespaceURI(namespaceURI),
     prefix(prefix),

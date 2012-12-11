@@ -51,47 +51,47 @@ public:
 
     // HTMLAnchorElement
     std::u16string getHref();
-    void setHref(std::u16string href);
+    void setHref(const std::u16string& href);
     std::u16string getTarget();
-    void setTarget(std::u16string target);
+    void setTarget(const std::u16string& target);
     std::u16string getPing();
-    void setPing(std::u16string ping);
+    void setPing(const std::u16string& ping);
     std::u16string getRel();
-    void setRel(std::u16string rel);
+    void setRel(const std::u16string& rel);
     DOMTokenList getRelList();
     std::u16string getMedia();
-    void setMedia(std::u16string media);
+    void setMedia(const std::u16string& media);
     std::u16string getHreflang();
-    void setHreflang(std::u16string hreflang);
+    void setHreflang(const std::u16string& hreflang);
     std::u16string getType();
-    void setType(std::u16string type);
+    void setType(const std::u16string& type);
     std::u16string getText();
-    void setText(std::u16string text);
+    void setText(const std::u16string& text);
     std::u16string getProtocol();
-    void setProtocol(std::u16string protocol);
+    void setProtocol(const std::u16string& protocol);
     std::u16string getHost();
-    void setHost(std::u16string host);
+    void setHost(const std::u16string& host);
     std::u16string getHostname();
-    void setHostname(std::u16string hostname);
+    void setHostname(const std::u16string& hostname);
     std::u16string getPort();
-    void setPort(std::u16string port);
+    void setPort(const std::u16string& port);
     std::u16string getPathname();
-    void setPathname(std::u16string pathname);
+    void setPathname(const std::u16string& pathname);
     std::u16string getSearch();
-    void setSearch(std::u16string search);
+    void setSearch(const std::u16string& search);
     std::u16string getHash();
-    void setHash(std::u16string hash);
+    void setHash(const std::u16string& hash);
     // HTMLAnchorElement-7
     std::u16string getCoords();
-    void setCoords(std::u16string coords);
+    void setCoords(const std::u16string& coords);
     std::u16string getCharset();
-    void setCharset(std::u16string charset);
+    void setCharset(const std::u16string& charset);
     std::u16string getName();
-    void setName(std::u16string name);
+    void setName(const std::u16string& name);
     std::u16string getRev();
-    void setRev(std::u16string rev);
+    void setRev(const std::u16string& rev);
     std::u16string getShape();
-    void setShape(std::u16string shape);
+    void setShape(const std::u16string& shape);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

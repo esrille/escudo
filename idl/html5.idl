@@ -306,10 +306,11 @@ interface HTMLElement : Element {
 
   // command API
   readonly attribute DOMString? commandType;
-  readonly attribute DOMString? label;
-  readonly attribute DOMString? icon;
-  readonly attribute boolean disabled;
-  readonly attribute boolean checked;
+  readonly attribute DOMString? commandLabel;
+  readonly attribute DOMString? commandIcon;
+  readonly attribute boolean? commandHidden;
+  readonly attribute boolean? commandDisabled;
+  readonly attribute boolean? commandChecked;
 
   // styling
   readonly attribute CSSStyleDeclaration style;

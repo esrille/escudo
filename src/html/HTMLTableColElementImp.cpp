@@ -60,7 +60,7 @@ std::u16string HTMLTableColElementImp::getAlign()
     return u"";
 }
 
-void HTMLTableColElementImp::setAlign(std::u16string align)
+void HTMLTableColElementImp::setAlign(const std::u16string& align)
 {
     // TODO: implement me!
 }
@@ -71,7 +71,7 @@ std::u16string HTMLTableColElementImp::getCh()
     return u"";
 }
 
-void HTMLTableColElementImp::setCh(std::u16string ch)
+void HTMLTableColElementImp::setCh(const std::u16string& ch)
 {
     // TODO: implement me!
 }
@@ -82,7 +82,7 @@ std::u16string HTMLTableColElementImp::getChOff()
     return u"";
 }
 
-void HTMLTableColElementImp::setChOff(std::u16string chOff)
+void HTMLTableColElementImp::setChOff(const std::u16string& chOff)
 {
     // TODO: implement me!
 }
@@ -93,7 +93,7 @@ std::u16string HTMLTableColElementImp::getVAlign()
     return u"";
 }
 
-void HTMLTableColElementImp::setVAlign(std::u16string vAlign)
+void HTMLTableColElementImp::setVAlign(const std::u16string& vAlign)
 {
     // TODO: implement me!
 }
@@ -104,7 +104,7 @@ std::u16string HTMLTableColElementImp::getWidth()
     return u"";
 }
 
-void HTMLTableColElementImp::setWidth(std::u16string width)
+void HTMLTableColElementImp::setWidth(const std::u16string& width)
 {
     // TODO: implement me!
 }

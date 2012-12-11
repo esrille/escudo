@@ -45,7 +45,7 @@ public:
     // HTMLCollection
     virtual unsigned int getLength();
     virtual Element item(unsigned int index);
-    virtual Object namedItem(std::u16string name);
+    virtual Object namedItem(const std::u16string& name);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

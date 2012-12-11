@@ -53,11 +53,11 @@ public:
     // DOMTokenList
     unsigned int getLength();
     Nullable<std::u16string> item(unsigned int index);
-    bool contains(std::u16string token);
+    bool contains(const std::u16string& token);
     void add(Variadic<std::u16string> tokens = Variadic<std::u16string>());
     void remove(Variadic<std::u16string> tokens = Variadic<std::u16string>());
-    bool toggle(std::u16string token);
-    bool toggle(std::u16string token, bool force);
+    bool toggle(const std::u16string& token);
+    bool toggle(const std::u16string& token, bool force);
     std::u16string toString();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)

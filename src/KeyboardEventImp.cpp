@@ -75,13 +75,13 @@ std::u16string KeyboardEventImp::getLocale()
     return u"";
 }
 
-bool KeyboardEventImp::getModifierState(std::u16string keyArg)
+bool KeyboardEventImp::getModifierState(const std::u16string& keyArg)
 {
     // TODO: implement me!
     return 0;
 }
 
-void KeyboardEventImp::initKeyboardEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, html::Window viewArg, std::u16string charArg, std::u16string keyArg, unsigned int locationArg, std::u16string modifiersListArg, bool repeat, std::u16string localeArg)
+void KeyboardEventImp::initKeyboardEvent(const std::u16string& typeArg, bool canBubbleArg, bool cancelableArg, html::Window viewArg, const std::u16string& charArg, const std::u16string& keyArg, unsigned int locationArg, const std::u16string& modifiersListArg, bool repeat, const std::u16string& localeArg)
 {
     // TODO: implement me!
     initUIEvent(typeArg, canBubbleArg, cancelableArg, viewArg, 0);

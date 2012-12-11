@@ -186,7 +186,7 @@ std::u16string HTMLLinkElementImp::getHref()
     return getAttribute(u"href");
 }
 
-void HTMLLinkElementImp::setHref(std::u16string href)
+void HTMLLinkElementImp::setHref(const std::u16string& href)
 {
     // TODO: implement me!
 }
@@ -199,7 +199,7 @@ std::u16string HTMLLinkElementImp::getRel()
     return rel;
 }
 
-void HTMLLinkElementImp::setRel(std::u16string rel)
+void HTMLLinkElementImp::setRel(const std::u16string& rel)
 {
     // TODO: implement me!
 }
@@ -214,7 +214,7 @@ std::u16string HTMLLinkElementImp::getMedia()
     return getAttribute(u"media");
 }
 
-void HTMLLinkElementImp::setMedia(std::u16string media)
+void HTMLLinkElementImp::setMedia(const std::u16string& media)
 {
     // TODO: implement me!
 }
@@ -224,7 +224,7 @@ std::u16string HTMLLinkElementImp::getHreflang()
     return getAttribute(u"hreflang");
 }
 
-void HTMLLinkElementImp::setHreflang(std::u16string hreflang)
+void HTMLLinkElementImp::setHreflang(const std::u16string& hreflang)
 {
     // TODO: implement me!
 }
@@ -234,7 +234,7 @@ std::u16string HTMLLinkElementImp::getType()
     return getAttribute(u"type");
 }
 
-void HTMLLinkElementImp::setType(std::u16string type)
+void HTMLLinkElementImp::setType(const std::u16string& type)
 {
     // TODO: implement me!
 }
@@ -245,7 +245,7 @@ DOMSettableTokenList HTMLLinkElementImp::getSizes()
     return static_cast<Object*>(0);
 }
 
-void HTMLLinkElementImp::setSizes(std::u16string sizes)
+void HTMLLinkElementImp::setSizes(const std::u16string& sizes)
 {
     // TODO: implement me!
 }
@@ -261,7 +261,7 @@ std::u16string HTMLLinkElementImp::getCharset()
     return u"";
 }
 
-void HTMLLinkElementImp::setCharset(std::u16string charset)
+void HTMLLinkElementImp::setCharset(const std::u16string& charset)
 {
     // TODO: implement me!
 }
@@ -272,7 +272,7 @@ std::u16string HTMLLinkElementImp::getRev()
     return u"";
 }
 
-void HTMLLinkElementImp::setRev(std::u16string rev)
+void HTMLLinkElementImp::setRev(const std::u16string& rev)
 {
     // TODO: implement me!
 }
@@ -283,7 +283,7 @@ std::u16string HTMLLinkElementImp::getTarget()
     return u"";
 }
 
-void HTMLLinkElementImp::setTarget(std::u16string target)
+void HTMLLinkElementImp::setTarget(const std::u16string& target)
 {
     // TODO: implement me!
 }

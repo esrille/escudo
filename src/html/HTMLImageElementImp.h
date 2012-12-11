@@ -50,13 +50,13 @@ public:
 
     // HTMLImageElement
     std::u16string getAlt();
-    void setAlt(std::u16string alt);
+    void setAlt(const std::u16string& alt);
     std::u16string getSrc();
-    void setSrc(std::u16string src);
+    void setSrc(const std::u16string& src);
     std::u16string getCrossOrigin();
-    void setCrossOrigin(std::u16string crossOrigin);
+    void setCrossOrigin(const std::u16string& crossOrigin);
     std::u16string getUseMap();
-    void setUseMap(std::u16string useMap);
+    void setUseMap(const std::u16string& useMap);
     bool getIsMap();
     void setIsMap(bool isMap);
     unsigned int getWidth();
@@ -68,15 +68,15 @@ public:
     bool getComplete();
     // HTMLImageElement-20
     std::u16string getName();
-    void setName(std::u16string name);
+    void setName(const std::u16string& name);
     std::u16string getAlign();
-    void setAlign(std::u16string align);
+    void setAlign(const std::u16string& align);
     std::u16string getBorder();
-    void setBorder(std::u16string border);
+    void setBorder(const std::u16string& border);
     unsigned int getHspace();
     void setHspace(unsigned int hspace);
     std::u16string getLongDesc();
-    void setLongDesc(std::u16string longDesc);
+    void setLongDesc(const std::u16string& longDesc);
     unsigned int getVspace();
     void setVspace(unsigned int vspace);
     // Object

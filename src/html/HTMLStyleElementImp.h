@@ -42,9 +42,9 @@ public:
     virtual bool getDisabled();
     virtual void setDisabled(bool disabled);
     virtual std::u16string getMedia();
-    virtual void setMedia(std::u16string media);
+    virtual void setMedia(const std::u16string& media);
     virtual std::u16string getType();
-    virtual void setType(std::u16string type);
+    virtual void setType(const std::u16string& type);
     virtual bool getScoped();
     virtual void setScoped(bool scoped);
 

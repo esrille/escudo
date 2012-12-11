@@ -256,7 +256,7 @@ std::u16string HTMLBodyElementImp::getText()
     return u"";
 }
 
-void HTMLBodyElementImp::setText(std::u16string text)
+void HTMLBodyElementImp::setText(const std::u16string& text)
 {
     // TODO: implement me!
 }
@@ -267,7 +267,7 @@ std::u16string HTMLBodyElementImp::getBgColor()
     return u"";
 }
 
-void HTMLBodyElementImp::setBgColor(std::u16string bgColor)
+void HTMLBodyElementImp::setBgColor(const std::u16string& bgColor)
 {
     // TODO: implement me!
 }
@@ -278,7 +278,7 @@ std::u16string HTMLBodyElementImp::getBackground()
     return u"";
 }
 
-void HTMLBodyElementImp::setBackground(std::u16string background)
+void HTMLBodyElementImp::setBackground(const std::u16string& background)
 {
     // TODO: implement me!
 }
@@ -289,7 +289,7 @@ std::u16string HTMLBodyElementImp::getLink()
     return u"";
 }
 
-void HTMLBodyElementImp::setLink(std::u16string link)
+void HTMLBodyElementImp::setLink(const std::u16string& link)
 {
     // TODO: implement me!
 }
@@ -300,7 +300,7 @@ std::u16string HTMLBodyElementImp::getVLink()
     return u"";
 }
 
-void HTMLBodyElementImp::setVLink(std::u16string vLink)
+void HTMLBodyElementImp::setVLink(const std::u16string& vLink)
 {
     // TODO: implement me!
 }
@@ -311,7 +311,7 @@ std::u16string HTMLBodyElementImp::getALink()
     return u"";
 }
 
-void HTMLBodyElementImp::setALink(std::u16string aLink)
+void HTMLBodyElementImp::setALink(const std::u16string& aLink)
 {
     // TODO: implement me!
 }

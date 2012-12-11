@@ -456,7 +456,7 @@ void HTMLParser::clearActiveFormattingElements()
     } while (entry);
 }
 
-void HTMLParser::generateImpliedEndTags(std::u16string exclude)
+void HTMLParser::generateImpliedEndTags(const std::u16string& exclude)
 {
     for (;;) {
         Element current = currentNode();

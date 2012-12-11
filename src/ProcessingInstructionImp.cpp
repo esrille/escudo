@@ -51,7 +51,7 @@ std::u16string ProcessingInstructionImp::getData()
     return u"";
 }
 
-void ProcessingInstructionImp::setData(std::u16string data)
+void ProcessingInstructionImp::setData(const std::u16string& data)
 {
     // TODO: implement me!
 }

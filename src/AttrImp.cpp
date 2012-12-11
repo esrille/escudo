@@ -50,12 +50,12 @@ std::u16string AttrImp::getValue()
     return value;
 }
 
-void AttrImp::setValue(std::u16string value)
+void AttrImp::setValue(const std::u16string& value)
 {
     this->value = value;
 }
 
-AttrImp::AttrImp(Nullable<std::u16string> namespaceURI, Nullable<std::u16string> prefix, std::u16string localName, std::u16string value) :
+AttrImp::AttrImp(Nullable<std::u16string> namespaceURI, Nullable<std::u16string> prefix, const std::u16string& localName, const std::u16string& value) :
     namespaceURI(namespaceURI),
     prefix(prefix),
     localName(localName),

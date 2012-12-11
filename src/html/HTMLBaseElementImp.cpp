@@ -31,7 +31,7 @@ std::u16string HTMLBaseElementImp::getHref()
     return u"";
 }
 
-void HTMLBaseElementImp::setHref(std::u16string href)
+void HTMLBaseElementImp::setHref(const std::u16string& href)
 {
     // TODO: implement me!
 }
@@ -42,7 +42,7 @@ std::u16string HTMLBaseElementImp::getTarget()
     return u"";
 }
 
-void HTMLBaseElementImp::setTarget(std::u16string target)
+void HTMLBaseElementImp::setTarget(const std::u16string& target)
 {
     // TODO: implement me!
 }

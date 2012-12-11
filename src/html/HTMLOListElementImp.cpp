@@ -74,7 +74,7 @@ std::u16string HTMLOListElementImp::getType()
     return u"";
 }
 
-void HTMLOListElementImp::setType(std::u16string type)
+void HTMLOListElementImp::setType(const std::u16string& type)
 {
     // TODO: implement me!
 }

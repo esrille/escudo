@@ -212,28 +212,28 @@ public:
     // Document
     DOMImplementation getImplementation();
     std::u16string getDocumentURI();
-    void setDocumentURI(std::u16string documentURI);
+    void setDocumentURI(const std::u16string& documentURI);
     std::u16string getCompatMode();
     std::u16string getCharset();
-    void setCharset(std::u16string charset);
+    void setCharset(const std::u16string& charset);
     std::u16string getCharacterSet();
     std::u16string getDefaultCharset();
     std::u16string getContentType();
     DocumentType getDoctype();
     Element getDocumentElement();
-    NodeList getElementsByTagName(std::u16string qualifiedName);
-    NodeList getElementsByTagNameNS(std::u16string _namespace, std::u16string localName);
-    NodeList getElementsByClassName(std::u16string classNames);
-    Element getElementById(std::u16string elementId);
-    Element createElement(std::u16string localName);
-    Element createElementNS(std::u16string _namespace, std::u16string qualifiedName);
+    NodeList getElementsByTagName(const std::u16string& qualifiedName);
+    NodeList getElementsByTagNameNS(const std::u16string& _namespace, const std::u16string& localName);
+    NodeList getElementsByClassName(const std::u16string& classNames);
+    Element getElementById(const std::u16string& elementId);
+    Element createElement(const std::u16string& localName);
+    Element createElementNS(const std::u16string& _namespace, const std::u16string& qualifiedName);
     DocumentFragment createDocumentFragment();
-    Text createTextNode(std::u16string data);
-    Comment createComment(std::u16string data);
-    ProcessingInstruction createProcessingInstruction(std::u16string target, std::u16string data);
+    Text createTextNode(const std::u16string& data);
+    Comment createComment(const std::u16string& data);
+    ProcessingInstruction createProcessingInstruction(const std::u16string& target, const std::u16string& data);
     Node importNode(Node node, bool deep);
     Node adoptNode(Node node);
-    events::Event createEvent(std::u16string eventInterfaceName);
+    events::Event createEvent(const std::u16string& eventInterfaceName);
     // DocumentCSS
     css::CSSStyleDeclaration getOverrideStyle(Element elt, Nullable<std::u16string> pseudoElt);
     // Document-1
@@ -248,24 +248,24 @@ public:
     Element elementFromPoint(float x, float y);
     CaretPosition caretPositionFromPoint(float x, float y);
     // NodeSelector
-    Element querySelector(std::u16string selectors);
-    NodeList querySelectorAll(std::u16string selectors);
+    Element querySelector(const std::u16string& selectors);
+    NodeList querySelectorAll(const std::u16string& selectors);
     // HTMLDocument
     html::Location getLocation();
-    void setLocation(std::u16string location);
+    void setLocation(const std::u16string& location);
     std::u16string getURL();
     std::u16string getDomain();
-    void setDomain(std::u16string domain);
+    void setDomain(const std::u16string& domain);
     std::u16string getReferrer();
     std::u16string getCookie();
-    void setCookie(std::u16string cookie);
+    void setCookie(const std::u16string& cookie);
     std::u16string getLastModified();
     std::u16string getReadyState();
-    Any getElement(std::u16string name);
+    Any getElement(const std::u16string& name);
     std::u16string getTitle();
-    void setTitle(std::u16string title);
+    void setTitle(const std::u16string& title);
     std::u16string getDir();
-    void setDir(std::u16string dir);
+    void setDir(const std::u16string& dir);
     html::HTMLElement getBody();
     void setBody(html::HTMLElement body);
     html::HTMLHeadElement getHead();
@@ -275,12 +275,12 @@ public:
     html::HTMLCollection getLinks();
     html::HTMLCollection getForms();
     html::HTMLCollection getScripts();
-    NodeList getElementsByName(std::u16string elementName);
+    NodeList getElementsByName(const std::u16string& elementName);
     DOMElementMap getCssElementMap();
     std::u16string getInnerHTML();
-    void setInnerHTML(std::u16string innerHTML);
-    html::HTMLDocument open(std::u16string type = u"text/html", std::u16string replace = u"");
-    html::Window open(std::u16string url, std::u16string name, std::u16string features, bool replace = false);
+    void setInnerHTML(const std::u16string& innerHTML);
+    html::HTMLDocument open(const std::u16string& type = u"text/html", const std::u16string& replace = u"");
+    html::Window open(const std::u16string& url, const std::u16string& name, const std::u16string& features, bool replace = false);
     void close();
     void write(Variadic<std::u16string> text = Variadic<std::u16string>());
     void writeln(Variadic<std::u16string> text = Variadic<std::u16string>());
@@ -288,15 +288,15 @@ public:
     Element getActiveElement();
     bool hasFocus();
     std::u16string getDesignMode();
-    void setDesignMode(std::u16string designMode);
-    bool execCommand(std::u16string commandId);
-    bool execCommand(std::u16string commandId, bool showUI);
-    bool execCommand(std::u16string commandId, bool showUI, std::u16string value);
-    bool queryCommandEnabled(std::u16string commandId);
-    bool queryCommandIndeterm(std::u16string commandId);
-    bool queryCommandState(std::u16string commandId);
-    bool queryCommandSupported(std::u16string commandId);
-    std::u16string queryCommandValue(std::u16string commandId);
+    void setDesignMode(const std::u16string& designMode);
+    bool execCommand(const std::u16string& commandId);
+    bool execCommand(const std::u16string& commandId, bool showUI);
+    bool execCommand(const std::u16string& commandId, bool showUI, const std::u16string& value);
+    bool queryCommandEnabled(const std::u16string& commandId);
+    bool queryCommandIndeterm(const std::u16string& commandId);
+    bool queryCommandState(const std::u16string& commandId);
+    bool queryCommandSupported(const std::u16string& commandId);
+    std::u16string queryCommandValue(const std::u16string& commandId);
     html::HTMLCollection getCommands();
     html::Function getOnabort();
     void setOnabort(html::Function onabort);
@@ -408,15 +408,15 @@ public:
     void setOnwaiting(html::Function onwaiting);
     // HTMLDocument-38
     std::u16string getFgColor();
-    void setFgColor(std::u16string fgColor);
+    void setFgColor(const std::u16string& fgColor);
     std::u16string getBgColor();
-    void setBgColor(std::u16string bgColor);
+    void setBgColor(const std::u16string& bgColor);
     std::u16string getLinkColor();
-    void setLinkColor(std::u16string linkColor);
+    void setLinkColor(const std::u16string& linkColor);
     std::u16string getVlinkColor();
-    void setVlinkColor(std::u16string vlinkColor);
+    void setVlinkColor(const std::u16string& vlinkColor);
     std::u16string getAlinkColor();
-    void setAlinkColor(std::u16string alinkColor);
+    void setAlinkColor(const std::u16string& alinkColor);
     html::HTMLCollection getAnchors();
     html::HTMLCollection getApplets();
     void clear();
@@ -428,7 +428,7 @@ public:
     traversal::TreeWalker createTreeWalker(Node root, unsigned int whatToShow, traversal::NodeFilter filter, bool entityReferenceExpansion) throw(DOMException);
     // DocumentXBL
     html::HTMLCollection getBindingDocuments();
-    Document loadBindingDocument(std::u16string documentURI);
+    Document loadBindingDocument(const std::u16string& documentURI);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

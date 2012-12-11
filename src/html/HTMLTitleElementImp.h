@@ -32,7 +32,7 @@ public:
 
     // HTMLTitleElement
     virtual std::u16string getText();
-    virtual void setText(std::u16string text);
+    virtual void setText(const std::u16string& text);
 
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {

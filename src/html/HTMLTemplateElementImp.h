@@ -63,7 +63,7 @@ public:
     }
 
     // HTMLTemplateElement
-    Element getElementById(std::u16string elementId);
+    Element getElementById(const std::u16string& elementId);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

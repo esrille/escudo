@@ -48,11 +48,11 @@ public:
 
     // HTMLFontElement
     std::u16string getColor();
-    void setColor(std::u16string color);
+    void setColor(const std::u16string& color);
     std::u16string getFace();
-    void setFace(std::u16string face);
+    void setFace(const std::u16string& face);
     std::u16string getSize();
-    void setSize(std::u16string size);
+    void setSize(const std::u16string& size);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

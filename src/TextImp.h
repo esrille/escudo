@@ -44,7 +44,7 @@ public:
     // Text
     virtual Text splitText(unsigned int offset);
     virtual std::u16string getWholeText();
-    virtual Text replaceWholeText(std::u16string data);
+    virtual Text replaceWholeText(const std::u16string& data);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

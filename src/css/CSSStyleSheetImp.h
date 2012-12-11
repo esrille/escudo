@@ -45,7 +45,7 @@ public:
     // CSSStyleSheet
     css::CSSRule getOwnerRule();
     css::CSSRuleList getCssRules();
-    unsigned int insertRule(std::u16string rule, unsigned int index);
+    unsigned int insertRule(const std::u16string& rule, unsigned int index);
     void deleteRule(unsigned int index);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)

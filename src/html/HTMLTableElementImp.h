@@ -53,7 +53,7 @@ class HTMLTableElementImp : public ObjectMixin<HTMLTableElementImp, HTMLElementI
         // HTMLCollection
         virtual unsigned int getLength();
         virtual Element item(unsigned int index);
-        virtual Object namedItem(std::u16string name) {
+        virtual Object namedItem(const std::u16string& name) {
             return 0;
         }
     };
@@ -92,24 +92,24 @@ public:
     html::HTMLElement insertRow(int index);
     void deleteRow(int index);
     std::u16string getSummary();
-    void setSummary(std::u16string summary);
+    void setSummary(const std::u16string& summary);
     // HTMLTableElement-30
     std::u16string getAlign();
-    void setAlign(std::u16string align);
+    void setAlign(const std::u16string& align);
     std::u16string getBgColor();
-    void setBgColor(std::u16string bgColor);
+    void setBgColor(const std::u16string& bgColor);
     std::u16string getBorder();
-    void setBorder(std::u16string border);
+    void setBorder(const std::u16string& border);
     std::u16string getCellPadding();
-    void setCellPadding(std::u16string cellPadding);
+    void setCellPadding(const std::u16string& cellPadding);
     std::u16string getCellSpacing();
-    void setCellSpacing(std::u16string cellSpacing);
+    void setCellSpacing(const std::u16string& cellSpacing);
     std::u16string getFrame();
-    void setFrame(std::u16string frame);
+    void setFrame(const std::u16string& frame);
     std::u16string getRules();
-    void setRules(std::u16string rules);
+    void setRules(const std::u16string& rules);
     std::u16string getWidth();
-    void setWidth(std::u16string width);
+    void setWidth(const std::u16string& width);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
         return html::HTMLTableElement::dispatch(this, selector, id, argc, argv);

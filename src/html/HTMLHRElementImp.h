@@ -42,15 +42,15 @@ public:
     // HTMLHRElement
     // HTMLHRElement-14
     std::u16string getAlign();
-    void setAlign(std::u16string align);
+    void setAlign(const std::u16string& align);
     std::u16string getColor();
-    void setColor(std::u16string color);
+    void setColor(const std::u16string& color);
     bool getNoShade();
     void setNoShade(bool noShade);
     std::u16string getSize();
-    void setSize(std::u16string size);
+    void setSize(const std::u16string& size);
     std::u16string getWidth();
-    void setWidth(std::u16string width);
+    void setWidth(const std::u16string& width);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

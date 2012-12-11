@@ -61,7 +61,7 @@ std::u16string HTMLTableSectionElementImp::getAlign()
     return u"";
 }
 
-void HTMLTableSectionElementImp::setAlign(std::u16string align)
+void HTMLTableSectionElementImp::setAlign(const std::u16string& align)
 {
     // TODO: implement me!
 }
@@ -72,7 +72,7 @@ std::u16string HTMLTableSectionElementImp::getCh()
     return u"";
 }
 
-void HTMLTableSectionElementImp::setCh(std::u16string ch)
+void HTMLTableSectionElementImp::setCh(const std::u16string& ch)
 {
     // TODO: implement me!
 }
@@ -83,7 +83,7 @@ std::u16string HTMLTableSectionElementImp::getChOff()
     return u"";
 }
 
-void HTMLTableSectionElementImp::setChOff(std::u16string chOff)
+void HTMLTableSectionElementImp::setChOff(const std::u16string& chOff)
 {
     // TODO: implement me!
 }
@@ -94,7 +94,7 @@ std::u16string HTMLTableSectionElementImp::getVAlign()
     return u"";
 }
 
-void HTMLTableSectionElementImp::setVAlign(std::u16string vAlign)
+void HTMLTableSectionElementImp::setVAlign(const std::u16string& vAlign)
 {
     // TODO: implement me!
 }

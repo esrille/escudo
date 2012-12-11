@@ -40,7 +40,7 @@ class HTMLPropertiesCollectionImp : public ObjectMixin<HTMLPropertiesCollectionI
 {
 public:
     // HTMLPropertiesCollection
-    Object /* html::PropertyNodeList */ namedItem(std::u16string name);
+    Object /* html::PropertyNodeList */ namedItem(const std::u16string& name);
     DOMStringList getNames();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)

@@ -46,7 +46,7 @@ std::u16string HTMLDivElementImp::getAlign()
     return getAttribute(u"align");
 }
 
-void HTMLDivElementImp::setAlign(std::u16string align)
+void HTMLDivElementImp::setAlign(const std::u16string& align)
 {
     setAttribute(u"align", align);
     assert(getAlign() == align);

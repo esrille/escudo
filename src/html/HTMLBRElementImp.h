@@ -33,7 +33,7 @@ public:
     // HTMLBRElement
     // HTMLBRElement-7
     virtual std::u16string getClear();
-    virtual void setClear(std::u16string clear);
+    virtual void setClear(const std::u16string& clear);
 
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {

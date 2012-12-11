@@ -44,7 +44,7 @@ public:
     // UIEvent
     html::Window getView();
     int getDetail();
-    void initUIEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, html::Window viewArg, int detailArg);
+    void initUIEvent(const std::u16string& typeArg, bool canBubbleArg, bool cancelableArg, html::Window viewArg, int detailArg);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

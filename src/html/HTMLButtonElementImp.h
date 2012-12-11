@@ -49,26 +49,26 @@ public:
     void setDisabled(bool disabled);
     html::HTMLFormElement getForm();
     std::u16string getFormAction();
-    void setFormAction(std::u16string formAction);
+    void setFormAction(const std::u16string& formAction);
     std::u16string getFormEnctype();
-    void setFormEnctype(std::u16string formEnctype);
+    void setFormEnctype(const std::u16string& formEnctype);
     std::u16string getFormMethod();
-    void setFormMethod(std::u16string formMethod);
+    void setFormMethod(const std::u16string& formMethod);
     std::u16string getFormNoValidate();
-    void setFormNoValidate(std::u16string formNoValidate);
+    void setFormNoValidate(const std::u16string& formNoValidate);
     std::u16string getFormTarget();
-    void setFormTarget(std::u16string formTarget);
+    void setFormTarget(const std::u16string& formTarget);
     std::u16string getName();
-    void setName(std::u16string name);
+    void setName(const std::u16string& name);
     std::u16string getType();
-    void setType(std::u16string type);
+    void setType(const std::u16string& type);
     std::u16string getValue();
-    void setValue(std::u16string value);
+    void setValue(const std::u16string& value);
     bool getWillValidate();
     html::ValidityState getValidity();
     std::u16string getValidationMessage();
     bool checkValidity();
-    void setCustomValidity(std::u16string error);
+    void setCustomValidity(const std::u16string& error);
     NodeList getLabels();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)

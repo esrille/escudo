@@ -49,7 +49,7 @@ public:
 
     // CSSStyleRule
     std::u16string getSelectorText();
-    void setSelectorText(std::u16string selectorText);
+    void setSelectorText(const std::u16string& selectorText);
     css::CSSStyleDeclaration getStyle();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)

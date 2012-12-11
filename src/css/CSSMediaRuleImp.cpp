@@ -50,7 +50,7 @@ stylesheets::MediaList CSSMediaRuleImp::getMedia()
     return &mediaList;
 }
 
-void CSSMediaRuleImp::setMedia(std::u16string media)
+void CSSMediaRuleImp::setMedia(const std::u16string& media)
 {
     mediaList.setMediaText(media);
 }
@@ -60,7 +60,7 @@ CSSRuleList CSSMediaRuleImp::getCssRules()
     return new(std::nothrow) ObjectArrayImp<CSSMediaRuleImp, CSSRule, &CSSMediaRuleImp::ruleList>(this);
 }
 
-unsigned int CSSMediaRuleImp::insertRule(std::u16string rule, unsigned int index)
+unsigned int CSSMediaRuleImp::insertRule(const std::u16string& rule, unsigned int index)
 {
     // TODO: implement me!
     return 0;

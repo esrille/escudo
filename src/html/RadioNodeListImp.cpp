@@ -57,7 +57,7 @@ std::u16string RadioNodeListImp::getValue()
     return u"";
 }
 
-void RadioNodeListImp::setValue(std::u16string value)
+void RadioNodeListImp::setValue(const std::u16string& value)
 {
     // TODO: implement me!
 }

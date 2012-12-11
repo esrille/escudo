@@ -58,7 +58,7 @@ std::u16string CharacterDataImp::getData()
     return data;
 }
 
-void CharacterDataImp::setData(std::u16string data)
+void CharacterDataImp::setData(const std::u16string& data)
 {
     std::u16string prev = this->data;
     this->data = data;
@@ -75,14 +75,14 @@ std::u16string CharacterDataImp::substringData(unsigned int offset, unsigned int
     return data.substr(offset, count);
 }
 
-void CharacterDataImp::appendData(std::u16string arg)
+void CharacterDataImp::appendData(const std::u16string& arg)
 {
     std::u16string prev = this->data;
     data += arg;
     dispatchMutationEvent(prev);
 }
 
-void CharacterDataImp::insertData(unsigned int offset, std::u16string arg)
+void CharacterDataImp::insertData(unsigned int offset, const std::u16string& arg)
 {
     std::u16string prev = this->data;
     data.insert(offset, arg);
@@ -96,7 +96,7 @@ void CharacterDataImp::deleteData(unsigned int offset, unsigned int count)
     dispatchMutationEvent(prev);
 }
 
-void CharacterDataImp::replaceData(unsigned int offset, unsigned int count, std::u16string arg)
+void CharacterDataImp::replaceData(unsigned int offset, unsigned int count, const std::u16string& arg)
 {
     std::u16string prev = this->data;
     data.replace(offset, count, arg);

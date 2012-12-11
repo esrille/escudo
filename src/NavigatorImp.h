@@ -46,13 +46,13 @@ public:
     // NavigatorOnLine
     bool getOnLine();
     // NavigatorContentUtils
-    void registerProtocolHandler(std::u16string scheme, std::u16string url, std::u16string title);
-    void registerContentHandler(std::u16string mimeType, std::u16string url, std::u16string title);
+    void registerProtocolHandler(const std::u16string& scheme, const std::u16string& url, const std::u16string& title);
+    void registerContentHandler(const std::u16string& mimeType, const std::u16string& url, const std::u16string& title);
     // NavigatorStorageUtils
     void yieldForStorageUpdates();
     // NavigatorUserMedia
-    void getUserMedia(std::u16string options, html::NavigatorUserMediaSuccessCallback successCallback);
-    void getUserMedia(std::u16string options, html::NavigatorUserMediaSuccessCallback successCallback, html::NavigatorUserMediaErrorCallback errorCallback);
+    void getUserMedia(const std::u16string& options, html::NavigatorUserMediaSuccessCallback successCallback);
+    void getUserMedia(const std::u16string& options, html::NavigatorUserMediaSuccessCallback successCallback, html::NavigatorUserMediaErrorCallback errorCallback);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

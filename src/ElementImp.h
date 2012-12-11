@@ -48,7 +48,7 @@ private:
     std::u16string localName;
 
 public:
-    ElementImp(DocumentImp* ownerDocument, const std::u16string& localName, std::u16string namespaceURI, std::u16string prefix = u"");
+    ElementImp(DocumentImp* ownerDocument, const std::u16string& localName, const std::u16string& namespaceURI, const std::u16string& prefix = u"");
     ElementImp(ElementImp* org, bool deep);
 
     void setAttributes(const std::deque<Attr>& attributes);
@@ -58,7 +58,7 @@ public:
     virtual unsigned short getNodeType();
     virtual Node cloneNode(bool deep);
     virtual Nullable<std::u16string> getTextContent();
-    virtual void setTextContent(std::u16string textContent);
+    virtual void setTextContent(const std::u16string& textContent);
     virtual bool isEqualNode(Node arg);
 
     // Element
@@ -68,23 +68,23 @@ public:
     virtual std::u16string getTagName();
 
     virtual std::u16string getId();
-    virtual void setId(std::u16string id);
+    virtual void setId(const std::u16string& id);
     virtual std::u16string getClassName();
-    virtual void setClassName(std::u16string className);
+    virtual void setClassName(const std::u16string& className);
     virtual DOMTokenList getClassList();
 
     virtual ObjectArray<Attr> getAttributes();
-    virtual Nullable<std::u16string> getAttribute(std::u16string qualifiedName);
-    virtual Nullable<std::u16string> getAttributeNS(std::u16string _namespace, std::u16string localName);
-    virtual void setAttribute(std::u16string qualifiedName, std::u16string value);
-    virtual void setAttributeNS(std::u16string _namespace, std::u16string qualifiedName, std::u16string value);
-    virtual void removeAttribute(std::u16string qualifiedName);
-    virtual void removeAttributeNS(std::u16string _namespace, std::u16string localName);
-    virtual bool hasAttribute(std::u16string qualifiedName);
-    virtual bool hasAttributeNS(std::u16string _namespace, std::u16string localName);
-    virtual NodeList getElementsByTagName(std::u16string qualifiedName);
-    virtual NodeList getElementsByTagNameNS(std::u16string _namespace, std::u16string localName);
-    virtual NodeList getElementsByClassName(std::u16string classNames);
+    virtual Nullable<std::u16string> getAttribute(const std::u16string& qualifiedName);
+    virtual Nullable<std::u16string> getAttributeNS(const std::u16string& _namespace, const std::u16string& localName);
+    virtual void setAttribute(const std::u16string& qualifiedName, const std::u16string& value);
+    virtual void setAttributeNS(const std::u16string& _namespace, const std::u16string& qualifiedName, const std::u16string& value);
+    virtual void removeAttribute(const std::u16string& qualifiedName);
+    virtual void removeAttributeNS(const std::u16string& _namespace, const std::u16string& localName);
+    virtual bool hasAttribute(const std::u16string& qualifiedName);
+    virtual bool hasAttributeNS(const std::u16string& _namespace, const std::u16string& localName);
+    virtual NodeList getElementsByTagName(const std::u16string& qualifiedName);
+    virtual NodeList getElementsByTagNameNS(const std::u16string& _namespace, const std::u16string& localName);
+    virtual NodeList getElementsByClassName(const std::u16string& classNames);
     virtual html::HTMLCollection getChildren();
     virtual Element getFirstElementChild();
     virtual Element getLastElementChild();
@@ -106,13 +106,13 @@ public:
     virtual int getClientWidth();
     virtual int getClientHeight();
     // NodeSelector
-    virtual Element querySelector(std::u16string selectors);
-    virtual NodeList querySelectorAll(std::u16string selectors);
+    virtual Element querySelector(const std::u16string& selectors);
+    virtual NodeList querySelectorAll(const std::u16string& selectors);
     // ElementXBL
     virtual xbl2::XBLImplementationList getXblImplementations();
-    virtual void addBinding(std::u16string bindingURI);
-    virtual void removeBinding(std::u16string bindingURI);
-    virtual bool hasBinding(std::u16string bindingURI);
+    virtual void addBinding(const std::u16string& bindingURI);
+    virtual void removeBinding(const std::u16string& bindingURI);
+    virtual bool hasBinding(const std::u16string& bindingURI);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

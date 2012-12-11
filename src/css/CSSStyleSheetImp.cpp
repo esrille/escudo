@@ -46,7 +46,7 @@ css::CSSRuleList CSSStyleSheetImp::getCssRules()
     return ruleList.self();
 }
 
-unsigned int CSSStyleSheetImp::insertRule(std::u16string rule, unsigned int index)
+unsigned int CSSStyleSheetImp::insertRule(const std::u16string& rule, unsigned int index)
 {
     return ruleList.insertRule(rule, index);
 }

@@ -65,7 +65,7 @@ public:
     unsigned short getAttrChange() {
         return attrChange;
     }
-    void initMutationEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, Object relatedNodeArg, std::u16string prevValueArg, std::u16string newValueArg, std::u16string attrNameArg, unsigned short attrChangeArg);
+    void initMutationEvent(const std::u16string& typeArg, bool canBubbleArg, bool cancelableArg, Object relatedNodeArg, const std::u16string& prevValueArg, const std::u16string& newValueArg, const std::u16string& attrNameArg, unsigned short attrChangeArg);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

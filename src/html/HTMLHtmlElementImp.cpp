@@ -31,7 +31,7 @@ std::u16string HTMLHtmlElementImp::getVersion()
     return u"";
 }
 
-void HTMLHtmlElementImp::setVersion(std::u16string version)
+void HTMLHtmlElementImp::setVersion(const std::u16string& version)
 {
     // TODO: implement me!
 }

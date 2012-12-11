@@ -122,7 +122,7 @@ Element HTMLFormControlsCollectionImp::item(unsigned int index)
     return 0;
 }
 
-Object HTMLFormControlsCollectionImp::namedItem(std::u16string name)
+Object HTMLFormControlsCollectionImp::namedItem(const std::u16string& name)
 {
     auto it = map.find(name);
     if (it == map.end())

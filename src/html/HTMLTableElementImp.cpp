@@ -265,7 +265,7 @@ std::u16string HTMLTableElementImp::getSummary()
     return u"";
 }
 
-void HTMLTableElementImp::setSummary(std::u16string summary)
+void HTMLTableElementImp::setSummary(const std::u16string& summary)
 {
     // TODO: implement me!
 }
@@ -276,7 +276,7 @@ std::u16string HTMLTableElementImp::getAlign()
     return u"";
 }
 
-void HTMLTableElementImp::setAlign(std::u16string align)
+void HTMLTableElementImp::setAlign(const std::u16string& align)
 {
     // TODO: implement me!
 }
@@ -287,7 +287,7 @@ std::u16string HTMLTableElementImp::getBgColor()
     return u"";
 }
 
-void HTMLTableElementImp::setBgColor(std::u16string bgColor)
+void HTMLTableElementImp::setBgColor(const std::u16string& bgColor)
 {
     // TODO: implement me!
 }
@@ -303,7 +303,7 @@ std::u16string HTMLTableElementImp::getBorder()
     return u"";
 }
 
-void HTMLTableElementImp::setBorder(std::u16string border)
+void HTMLTableElementImp::setBorder(const std::u16string& border)
 {
     // TODO: implement me!
 }
@@ -314,7 +314,7 @@ std::u16string HTMLTableElementImp::getCellPadding()
     return u"";
 }
 
-void HTMLTableElementImp::setCellPadding(std::u16string cellPadding)
+void HTMLTableElementImp::setCellPadding(const std::u16string& cellPadding)
 {
     // TODO: implement me!
 }
@@ -325,7 +325,7 @@ std::u16string HTMLTableElementImp::getCellSpacing()
     return u"";
 }
 
-void HTMLTableElementImp::setCellSpacing(std::u16string cellSpacing)
+void HTMLTableElementImp::setCellSpacing(const std::u16string& cellSpacing)
 {
     // TODO: implement me!
 }
@@ -336,7 +336,7 @@ std::u16string HTMLTableElementImp::getFrame()
     return u"";
 }
 
-void HTMLTableElementImp::setFrame(std::u16string frame)
+void HTMLTableElementImp::setFrame(const std::u16string& frame)
 {
     // TODO: implement me!
 }
@@ -347,7 +347,7 @@ std::u16string HTMLTableElementImp::getRules()
     return u"";
 }
 
-void HTMLTableElementImp::setRules(std::u16string rules)
+void HTMLTableElementImp::setRules(const std::u16string& rules)
 {
     // TODO: implement me!
 }
@@ -358,7 +358,7 @@ std::u16string HTMLTableElementImp::getWidth()
     return u"";
 }
 
-void HTMLTableElementImp::setWidth(std::u16string width)
+void HTMLTableElementImp::setWidth(const std::u16string& width)
 {
     // TODO: implement me!
 }

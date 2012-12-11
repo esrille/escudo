@@ -32,30 +32,30 @@ class LocationImp : public ObjectMixin<LocationImp>
     URL url;
 
 public:
-    LocationImp(WindowImp* window, std::u16string url);
+    LocationImp(WindowImp* window, const std::u16string& url);
     LocationImp(const LocationImp& other);
 
     // Location
     virtual std::u16string getHref();
-    virtual void setHref(std::u16string href);
-    virtual void assign(std::u16string url);
-    virtual void replace(std::u16string url);
+    virtual void setHref(const std::u16string& href);
+    virtual void assign(const std::u16string& url);
+    virtual void replace(const std::u16string& url);
     virtual void reload();
     virtual std::u16string getProtocol();
-    virtual void setProtocol(std::u16string protocol);
+    virtual void setProtocol(const std::u16string& protocol);
     virtual std::u16string getHost();
-    virtual void setHost(std::u16string host);
+    virtual void setHost(const std::u16string& host);
     virtual std::u16string getHostname();
-    virtual void setHostname(std::u16string hostname);
+    virtual void setHostname(const std::u16string& hostname);
     virtual std::u16string getPort();
-    virtual void setPort(std::u16string port);
+    virtual void setPort(const std::u16string& port);
     virtual std::u16string getPathname();
-    virtual void setPathname(std::u16string pathname);
+    virtual void setPathname(const std::u16string& pathname);
     virtual std::u16string getSearch();
-    virtual void setSearch(std::u16string search);
+    virtual void setSearch(const std::u16string& search);
     virtual std::u16string getHash();
-    virtual void setHash(std::u16string hash);
-    virtual std::u16string resolveURL(std::u16string url);
+    virtual void setHash(const std::u16string& hash);
+    virtual std::u16string resolveURL(const std::u16string& url);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

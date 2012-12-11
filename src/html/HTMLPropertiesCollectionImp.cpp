@@ -25,7 +25,7 @@ namespace dom
 namespace bootstrap
 {
 
-Object /* html::PropertyNodeList */ HTMLPropertiesCollectionImp::namedItem(std::u16string name)
+Object /* html::PropertyNodeList */ HTMLPropertiesCollectionImp::namedItem(const std::u16string& name)
 {
     // TODO: implement me!
     return static_cast<Object*>(0);

@@ -74,7 +74,7 @@ std::u16string HTMLStyleElementImp::getMedia()
     return media;
 }
 
-void HTMLStyleElementImp::setMedia(std::u16string media)
+void HTMLStyleElementImp::setMedia(const std::u16string& media)
 {
     this->media = media;
 }
@@ -84,7 +84,7 @@ std::u16string HTMLStyleElementImp::getType()
     return type;
 }
 
-void HTMLStyleElementImp::setType(std::u16string type)
+void HTMLStyleElementImp::setType(const std::u16string& type)
 {
     this->type = type;
 }

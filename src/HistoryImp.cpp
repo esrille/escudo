@@ -99,22 +99,22 @@ void HistoryImp::forward()
     go(1);
 }
 
-void HistoryImp::pushState(Any data, std::u16string title)
+void HistoryImp::pushState(Any data, const std::u16string& title)
 {
     // TODO: implement me!
 }
 
-void HistoryImp::pushState(Any data, std::u16string title, std::u16string url)
+void HistoryImp::pushState(Any data, const std::u16string& title, const std::u16string& url)
 {
     // TODO: implement me!
 }
 
-void HistoryImp::replaceState(Any data, std::u16string title)
+void HistoryImp::replaceState(Any data, const std::u16string& title)
 {
     // TODO: implement me!
 }
 
-void HistoryImp::replaceState(Any data, std::u16string title, std::u16string url)
+void HistoryImp::replaceState(Any data, const std::u16string& title, const std::u16string& url)
 {
     // TODO: implement me!
 }

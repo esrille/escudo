@@ -120,7 +120,7 @@ std::u16string HTMLObjectElementImp::getData()
     return u"";
 }
 
-void HTMLObjectElementImp::setData(std::u16string data)
+void HTMLObjectElementImp::setData(const std::u16string& data)
 {
     // TODO: implement me!
 }
@@ -131,7 +131,7 @@ std::u16string HTMLObjectElementImp::getType()
     return u"";
 }
 
-void HTMLObjectElementImp::setType(std::u16string type)
+void HTMLObjectElementImp::setType(const std::u16string& type)
 {
     // TODO: implement me!
 }
@@ -152,7 +152,7 @@ std::u16string HTMLObjectElementImp::getName()
     return getAttribute(u"name");
 }
 
-void HTMLObjectElementImp::setName(std::u16string name)
+void HTMLObjectElementImp::setName(const std::u16string& name)
 {
     setAttribute(u"name", name);
 }
@@ -163,7 +163,7 @@ std::u16string HTMLObjectElementImp::getUseMap()
     return u"";
 }
 
-void HTMLObjectElementImp::setUseMap(std::u16string useMap)
+void HTMLObjectElementImp::setUseMap(const std::u16string& useMap)
 {
     // TODO: implement me!
 }
@@ -180,7 +180,7 @@ std::u16string HTMLObjectElementImp::getWidth()
     return u"";
 }
 
-void HTMLObjectElementImp::setWidth(std::u16string width)
+void HTMLObjectElementImp::setWidth(const std::u16string& width)
 {
     // TODO: implement me!
 }
@@ -191,7 +191,7 @@ std::u16string HTMLObjectElementImp::getHeight()
     return u"";
 }
 
-void HTMLObjectElementImp::setHeight(std::u16string height)
+void HTMLObjectElementImp::setHeight(const std::u16string& height)
 {
     // TODO: implement me!
 }
@@ -232,7 +232,7 @@ bool HTMLObjectElementImp::checkValidity()
     return 0;
 }
 
-void HTMLObjectElementImp::setCustomValidity(std::u16string error)
+void HTMLObjectElementImp::setCustomValidity(const std::u16string& error)
 {
     // TODO: implement me!
 }
@@ -243,7 +243,7 @@ std::u16string HTMLObjectElementImp::getAlign()
     return u"";
 }
 
-void HTMLObjectElementImp::setAlign(std::u16string align)
+void HTMLObjectElementImp::setAlign(const std::u16string& align)
 {
     // TODO: implement me!
 }
@@ -254,7 +254,7 @@ std::u16string HTMLObjectElementImp::getArchive()
     return u"";
 }
 
-void HTMLObjectElementImp::setArchive(std::u16string archive)
+void HTMLObjectElementImp::setArchive(const std::u16string& archive)
 {
     // TODO: implement me!
 }
@@ -265,7 +265,7 @@ std::u16string HTMLObjectElementImp::getBorder()
     return u"";
 }
 
-void HTMLObjectElementImp::setBorder(std::u16string border)
+void HTMLObjectElementImp::setBorder(const std::u16string& border)
 {
     // TODO: implement me!
 }
@@ -276,7 +276,7 @@ std::u16string HTMLObjectElementImp::getCode()
     return u"";
 }
 
-void HTMLObjectElementImp::setCode(std::u16string code)
+void HTMLObjectElementImp::setCode(const std::u16string& code)
 {
     // TODO: implement me!
 }
@@ -287,7 +287,7 @@ std::u16string HTMLObjectElementImp::getCodeBase()
     return u"";
 }
 
-void HTMLObjectElementImp::setCodeBase(std::u16string codeBase)
+void HTMLObjectElementImp::setCodeBase(const std::u16string& codeBase)
 {
     // TODO: implement me!
 }
@@ -298,7 +298,7 @@ std::u16string HTMLObjectElementImp::getCodeType()
     return u"";
 }
 
-void HTMLObjectElementImp::setCodeType(std::u16string codeType)
+void HTMLObjectElementImp::setCodeType(const std::u16string& codeType)
 {
     // TODO: implement me!
 }
@@ -331,7 +331,7 @@ std::u16string HTMLObjectElementImp::getStandby()
     return u"";
 }
 
-void HTMLObjectElementImp::setStandby(std::u16string standby)
+void HTMLObjectElementImp::setStandby(const std::u16string& standby)
 {
     // TODO: implement me!
 }

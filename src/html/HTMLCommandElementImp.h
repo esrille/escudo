@@ -32,7 +32,7 @@ public:
 
     // HTMLCommandElement
     virtual std::u16string getType();
-    virtual void setType(std::u16string type);
+    virtual void setType(const std::u16string& type);
     virtual Nullable<std::u16string> getLabel();
     virtual void setLabel(Nullable<std::u16string> label);
     virtual Nullable<std::u16string> getIcon();
@@ -42,7 +42,7 @@ public:
     virtual bool getChecked();
     virtual void setChecked(bool checked);
     virtual std::u16string getRadiogroup();
-    virtual void setRadiogroup(std::u16string radiogroup);
+    virtual void setRadiogroup(const std::u16string& radiogroup);
 
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {

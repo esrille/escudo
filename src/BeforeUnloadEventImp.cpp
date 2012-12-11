@@ -30,7 +30,7 @@ std::u16string BeforeUnloadEventImp::getReturnValue()
     return returnValue;
 }
 
-void BeforeUnloadEventImp::setReturnValue(std::u16string returnValue)
+void BeforeUnloadEventImp::setReturnValue(const std::u16string& returnValue)
 {
     this->returnValue = returnValue;
 }

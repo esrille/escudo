@@ -124,7 +124,7 @@ public:
         return name;
     }
 
-    void setName(std::u16string name)
+    void setName(const std::u16string& name)
     {
         this->name = name;
     }
@@ -134,7 +134,7 @@ public:
         return attrList;
     }
 
-    Nullable<std::u16string> getAttribute(std::u16string name) const;
+    Nullable<std::u16string> getAttribute(const std::u16string& name) const;
 
     bool hasPublicId() const
     {

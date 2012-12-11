@@ -30,7 +30,7 @@ std::u16string HTMLTitleElementImp::getText()
     return getTextContent();
 }
 
-void HTMLTitleElementImp::setText(std::u16string text)
+void HTMLTitleElementImp::setText(const std::u16string& text)
 {
     setTextContent(text);
 }

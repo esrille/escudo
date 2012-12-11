@@ -61,7 +61,7 @@ Nullable<std::u16string> DOMTokenListImp::item(unsigned int index)
     return tokens[index];
 }
 
-bool DOMTokenListImp::contains(std::u16string token)
+bool DOMTokenListImp::contains(const std::u16string& token)
 {
     return std::find(tokens.begin(), tokens.end(), token) != tokens.end();
 }
@@ -93,32 +93,34 @@ void DOMTokenListImp::remove(Variadic<std::u16string> tokens)
     update();
 }
 
-bool DOMTokenListImp::toggle(std::u16string token)
+bool DOMTokenListImp::toggle(const std::u16string& token)
 {
-    stripLeadingAndTrailingWhitespace(token);
-    if (token.empty())
+    std::u16string t(token);
+    stripLeadingAndTrailingWhitespace(t);
+    if (t.empty())
         return false; // TODO: throw
-    auto found = std::find(tokens.begin(), tokens.end(), token);
+    auto found = std::find(tokens.begin(), tokens.end(), t);
     if (found != tokens.end()) {
         tokens.erase(found);
         update();
         return false;
     } else {
-        tokens.push_back(token);
+        tokens.push_back(t);
         update();
         return true;
     }
 }
 
-bool DOMTokenListImp::toggle(std::u16string token, bool force)
+bool DOMTokenListImp::toggle(const std::u16string& token, bool force)
 {
-    stripLeadingAndTrailingWhitespace(token);
-    if (token.empty())
+    std::u16string t(token);
+    stripLeadingAndTrailingWhitespace(t);
+    if (t.empty())
         return false; // TODO: throw
-    auto found = std::find(tokens.begin(), tokens.end(), token);
+    auto found = std::find(tokens.begin(), tokens.end(), t);
     if (force) {
         if (found == tokens.end()) {
-            tokens.push_back(token);
+            tokens.push_back(t);
             update();
         }
         return true;

@@ -50,13 +50,13 @@ public:
 
     // CharacterData
     virtual std::u16string getData();
-    virtual void setData(std::u16string data);
+    virtual void setData(const std::u16string& data);
     virtual unsigned int getLength();
     virtual std::u16string substringData(unsigned int offset, unsigned int count);
-    virtual void appendData(std::u16string data);
-    virtual void insertData(unsigned int offset, std::u16string data);
+    virtual void appendData(const std::u16string& data);
+    virtual void insertData(unsigned int offset, const std::u16string& data);
     virtual void deleteData(unsigned int offset, unsigned int count);
-    virtual void replaceData(unsigned int offset, unsigned int count, std::u16string data);
+    virtual void replaceData(unsigned int offset, unsigned int count, const std::u16string& data);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

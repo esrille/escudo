@@ -74,7 +74,7 @@ std::u16string HTMLAnchorElementImp::getHref()
     return getAttribute(u"href");
 }
 
-void HTMLAnchorElementImp::setHref(std::u16string href)
+void HTMLAnchorElementImp::setHref(const std::u16string& href)
 {
     setAttribute(u"href", href);
 }
@@ -85,7 +85,7 @@ std::u16string HTMLAnchorElementImp::getTarget()
     return u"";
 }
 
-void HTMLAnchorElementImp::setTarget(std::u16string target)
+void HTMLAnchorElementImp::setTarget(const std::u16string& target)
 {
     // TODO: implement me!
 }
@@ -96,7 +96,7 @@ std::u16string HTMLAnchorElementImp::getPing()
     return u"";
 }
 
-void HTMLAnchorElementImp::setPing(std::u16string ping)
+void HTMLAnchorElementImp::setPing(const std::u16string& ping)
 {
     // TODO: implement me!
 }
@@ -107,7 +107,7 @@ std::u16string HTMLAnchorElementImp::getRel()
     return u"";
 }
 
-void HTMLAnchorElementImp::setRel(std::u16string rel)
+void HTMLAnchorElementImp::setRel(const std::u16string& rel)
 {
     // TODO: implement me!
 }
@@ -123,7 +123,7 @@ std::u16string HTMLAnchorElementImp::getMedia()
     return u"";
 }
 
-void HTMLAnchorElementImp::setMedia(std::u16string media)
+void HTMLAnchorElementImp::setMedia(const std::u16string& media)
 {
     // TODO: implement me!
 }
@@ -134,7 +134,7 @@ std::u16string HTMLAnchorElementImp::getHreflang()
     return u"";
 }
 
-void HTMLAnchorElementImp::setHreflang(std::u16string hreflang)
+void HTMLAnchorElementImp::setHreflang(const std::u16string& hreflang)
 {
     // TODO: implement me!
 }
@@ -145,7 +145,7 @@ std::u16string HTMLAnchorElementImp::getType()
     return u"";
 }
 
-void HTMLAnchorElementImp::setType(std::u16string type)
+void HTMLAnchorElementImp::setType(const std::u16string& type)
 {
     // TODO: implement me!
 }
@@ -156,7 +156,7 @@ std::u16string HTMLAnchorElementImp::getText()
     return u"";
 }
 
-void HTMLAnchorElementImp::setText(std::u16string text)
+void HTMLAnchorElementImp::setText(const std::u16string& text)
 {
     // TODO: implement me!
 }
@@ -167,7 +167,7 @@ std::u16string HTMLAnchorElementImp::getProtocol()
     return u"";
 }
 
-void HTMLAnchorElementImp::setProtocol(std::u16string protocol)
+void HTMLAnchorElementImp::setProtocol(const std::u16string& protocol)
 {
     // TODO: implement me!
 }
@@ -178,7 +178,7 @@ std::u16string HTMLAnchorElementImp::getHost()
     return u"";
 }
 
-void HTMLAnchorElementImp::setHost(std::u16string host)
+void HTMLAnchorElementImp::setHost(const std::u16string& host)
 {
     // TODO: implement me!
 }
@@ -189,7 +189,7 @@ std::u16string HTMLAnchorElementImp::getHostname()
     return u"";
 }
 
-void HTMLAnchorElementImp::setHostname(std::u16string hostname)
+void HTMLAnchorElementImp::setHostname(const std::u16string& hostname)
 {
     // TODO: implement me!
 }
@@ -200,7 +200,7 @@ std::u16string HTMLAnchorElementImp::getPort()
     return u"";
 }
 
-void HTMLAnchorElementImp::setPort(std::u16string port)
+void HTMLAnchorElementImp::setPort(const std::u16string& port)
 {
     // TODO: implement me!
 }
@@ -211,7 +211,7 @@ std::u16string HTMLAnchorElementImp::getPathname()
     return u"";
 }
 
-void HTMLAnchorElementImp::setPathname(std::u16string pathname)
+void HTMLAnchorElementImp::setPathname(const std::u16string& pathname)
 {
     // TODO: implement me!
 }
@@ -222,7 +222,7 @@ std::u16string HTMLAnchorElementImp::getSearch()
     return u"";
 }
 
-void HTMLAnchorElementImp::setSearch(std::u16string search)
+void HTMLAnchorElementImp::setSearch(const std::u16string& search)
 {
     // TODO: implement me!
 }
@@ -233,7 +233,7 @@ std::u16string HTMLAnchorElementImp::getHash()
     return u"";
 }
 
-void HTMLAnchorElementImp::setHash(std::u16string hash)
+void HTMLAnchorElementImp::setHash(const std::u16string& hash)
 {
     // TODO: implement me!
 }
@@ -244,7 +244,7 @@ std::u16string HTMLAnchorElementImp::getCoords()
     return u"";
 }
 
-void HTMLAnchorElementImp::setCoords(std::u16string coords)
+void HTMLAnchorElementImp::setCoords(const std::u16string& coords)
 {
     // TODO: implement me!
 }
@@ -255,7 +255,7 @@ std::u16string HTMLAnchorElementImp::getCharset()
     return u"";
 }
 
-void HTMLAnchorElementImp::setCharset(std::u16string charset)
+void HTMLAnchorElementImp::setCharset(const std::u16string& charset)
 {
     // TODO: implement me!
 }
@@ -266,7 +266,7 @@ std::u16string HTMLAnchorElementImp::getName()
     return u"";
 }
 
-void HTMLAnchorElementImp::setName(std::u16string name)
+void HTMLAnchorElementImp::setName(const std::u16string& name)
 {
     // TODO: implement me!
 }
@@ -277,7 +277,7 @@ std::u16string HTMLAnchorElementImp::getRev()
     return u"";
 }
 
-void HTMLAnchorElementImp::setRev(std::u16string rev)
+void HTMLAnchorElementImp::setRev(const std::u16string& rev)
 {
     // TODO: implement me!
 }
@@ -288,7 +288,7 @@ std::u16string HTMLAnchorElementImp::getShape()
     return u"";
 }
 
-void HTMLAnchorElementImp::setShape(std::u16string shape)
+void HTMLAnchorElementImp::setShape(const std::u16string& shape)
 {
     // TODO: implement me!
 }

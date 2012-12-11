@@ -54,7 +54,7 @@ bool isSubDelims(int c)
     }
 }
 
-std::u16string removeDotSegments(std::u16string input)
+std::u16string removeDotSegments(const std::u16string& input)
 {
     std::u16string output;
     size_t pos = 0;

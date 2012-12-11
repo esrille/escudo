@@ -854,19 +854,17 @@ int CSSStyleDeclarationImp::setProperty(int id, CSSParserExpr* expr, const std::
     return id;
 }
 
-int CSSStyleDeclarationImp::setProperty(std::u16string property, CSSParserExpr* expr, const std::u16string& prio)
+int CSSStyleDeclarationImp::setProperty(const std::u16string& property, CSSParserExpr* expr, const std::u16string& prio)
 {
     if (!expr)
         return Unknown;
-    toLower(property);
     return setProperty(getPropertyID(property), expr, prio);
 }
 
-int CSSStyleDeclarationImp::appendProperty(std::u16string property, CSSParserExpr* expr, const std::u16string& prio)
+int CSSStyleDeclarationImp::appendProperty(const std::u16string& property, CSSParserExpr* expr, const std::u16string& prio)
 {
     propertyID = Unknown;
     if (expr) {
-        toLower(property);
         propertyID = getPropertyID(property);
         expression = expr;
         priority = prio;
@@ -2366,7 +2364,7 @@ std::u16string CSSStyleDeclarationImp::getCssText()
     return text;
 }
 
-void CSSStyleDeclarationImp::setCssText(std::u16string cssText)
+void CSSStyleDeclarationImp::setCssText(const std::u16string& cssText)
 {
     CSSParser parser;
     parser.setStyleDeclaration(this);
@@ -2387,15 +2385,13 @@ std::u16string CSSStyleDeclarationImp::item(unsigned int index)
     return u"";
 }
 
-std::u16string CSSStyleDeclarationImp::getPropertyValue(std::u16string property)
+std::u16string CSSStyleDeclarationImp::getPropertyValue(const std::u16string& property)
 {
-    toLower(property);
     return item(getPropertyID(property));
 }
 
-std::u16string CSSStyleDeclarationImp::getPropertyPriority(std::u16string property)
+std::u16string CSSStyleDeclarationImp::getPropertyPriority(const std::u16string& property)
 {
-    toLower(property);
     if (importantSet.test(getPropertyID(property)))
         return u"important";
     else
@@ -2467,9 +2463,8 @@ std::u16string CSSStyleDeclarationImp::removeProperty(int id)
     return u"";  // ask Anne
 }
 
-std::u16string CSSStyleDeclarationImp::removeProperty(std::u16string property)
+std::u16string CSSStyleDeclarationImp::removeProperty(const std::u16string& property)
 {
-    toLower(property);
     return removeProperty(getPropertyID(property));
 }
 

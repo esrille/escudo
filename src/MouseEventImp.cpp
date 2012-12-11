@@ -20,7 +20,7 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 // MouseEvent
 
-void MouseEventImp::initMouseEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, html::Window viewArg, int detailArg,
+void MouseEventImp::initMouseEvent(const std::u16string& typeArg, bool canBubbleArg, bool cancelableArg, html::Window viewArg, int detailArg,
                                    int screenXArg, int screenYArg, int clientXArg, int clientYArg, bool ctrlKeyArg, bool altKeyArg, bool shiftKeyArg, bool metaKeyArg, unsigned short buttonArg, events::EventTarget relatedTargetArg)
 {
     screenX = screenXArg;
@@ -36,7 +36,7 @@ void MouseEventImp::initMouseEvent(std::u16string typeArg, bool canBubbleArg, bo
     initUIEvent(typeArg, canBubbleArg, cancelableArg, viewArg, detailArg);
 }
 
-bool MouseEventImp::getModifierState(std::u16string keyArg)
+bool MouseEventImp::getModifierState(const std::u16string& keyArg)
 {
 }
 

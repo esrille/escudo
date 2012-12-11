@@ -104,7 +104,7 @@ std::u16string HTMLImageElementImp::getAlt()
     return u"";
 }
 
-void HTMLImageElementImp::setAlt(std::u16string alt)
+void HTMLImageElementImp::setAlt(const std::u16string& alt)
 {
     // TODO: implement me!
 }
@@ -115,7 +115,7 @@ std::u16string HTMLImageElementImp::getSrc()
     return getAttribute(u"src");
 }
 
-void HTMLImageElementImp::setSrc(std::u16string src)
+void HTMLImageElementImp::setSrc(const std::u16string& src)
 {
     setAttribute(u"src", src);
     DocumentImp* document = getOwnerDocumentImp();
@@ -137,7 +137,7 @@ std::u16string HTMLImageElementImp::getCrossOrigin()
     return u"";
 }
 
-void HTMLImageElementImp::setCrossOrigin(std::u16string crossOrigin)
+void HTMLImageElementImp::setCrossOrigin(const std::u16string& crossOrigin)
 {
     // TODO: implement me!
 }
@@ -148,7 +148,7 @@ std::u16string HTMLImageElementImp::getUseMap()
     return u"";
 }
 
-void HTMLImageElementImp::setUseMap(std::u16string useMap)
+void HTMLImageElementImp::setUseMap(const std::u16string& useMap)
 {
     // TODO: implement me!
 }
@@ -210,7 +210,7 @@ std::u16string HTMLImageElementImp::getName()
     return u"";
 }
 
-void HTMLImageElementImp::setName(std::u16string name)
+void HTMLImageElementImp::setName(const std::u16string& name)
 {
     // TODO: implement me!
 }
@@ -221,7 +221,7 @@ std::u16string HTMLImageElementImp::getAlign()
     return u"";
 }
 
-void HTMLImageElementImp::setAlign(std::u16string align)
+void HTMLImageElementImp::setAlign(const std::u16string& align)
 {
     // TODO: implement me!
 }
@@ -232,7 +232,7 @@ std::u16string HTMLImageElementImp::getBorder()
     return u"";
 }
 
-void HTMLImageElementImp::setBorder(std::u16string border)
+void HTMLImageElementImp::setBorder(const std::u16string& border)
 {
     // TODO: implement me!
 }
@@ -254,7 +254,7 @@ std::u16string HTMLImageElementImp::getLongDesc()
     return u"";
 }
 
-void HTMLImageElementImp::setLongDesc(std::u16string longDesc)
+void HTMLImageElementImp::setLongDesc(const std::u16string& longDesc)
 {
     // TODO: implement me!
 }

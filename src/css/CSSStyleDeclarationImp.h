@@ -484,12 +484,12 @@ public:
         return flags & Resolved;
     }
 
-    int appendProperty(std::u16string property, CSSParserExpr* expr, const std::u16string& prio = u"");
+    int appendProperty(const std::u16string& property, CSSParserExpr* expr, const std::u16string& prio = u"");
     int commitAppend();
     int cancelAppend();
 
     int setProperty(int id, CSSParserExpr* expr, const std::u16string& prio = u"");
-    int setProperty(std::u16string property, CSSParserExpr* expr, const std::u16string& prio = u"");
+    int setProperty(const std::u16string& property, CSSParserExpr* expr, const std::u16string& prio = u"");
 
     void setColor(unsigned color) {
         this->color = color;
@@ -612,14 +612,14 @@ public:
 
     // CSSStyleDeclaration
     virtual std::u16string getCssText();
-    virtual void setCssText(std::u16string cssText);
+    virtual void setCssText(const std::u16string& cssText);
     virtual unsigned int getLength();
     virtual std::u16string item(unsigned int index);
-    virtual std::u16string getPropertyValue(std::u16string property);
-    virtual std::u16string getPropertyPriority(std::u16string property);
+    virtual std::u16string getPropertyValue(const std::u16string& property);
+    virtual std::u16string getPropertyPriority(const std::u16string& property);
     virtual void setProperty(Nullable<std::u16string> property, Nullable<std::u16string> value);
     virtual void setProperty(Nullable<std::u16string> property, Nullable<std::u16string> value, Nullable<std::u16string> priority);
-    virtual std::u16string removeProperty(std::u16string property);
+    virtual std::u16string removeProperty(const std::u16string& property);
     virtual css::CSSStyleDeclarationValue getValues();
     virtual css::CSSRule getParentRule();
     // CSS2Properties

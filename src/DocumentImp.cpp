@@ -232,7 +232,7 @@ std::u16string DocumentImp::getDocumentURI()
     return url;
 }
 
-void DocumentImp::setDocumentURI(std::u16string documentURI)
+void DocumentImp::setDocumentURI(const std::u16string& documentURI)
 {
     if (defaultView)
         defaultView->setLocation(documentURI);
@@ -262,23 +262,23 @@ Element DocumentImp::getDocumentElement()
     return 0;
 }
 
-NodeList DocumentImp::getElementsByTagName(std::u16string qualifiedName)
+NodeList DocumentImp::getElementsByTagName(const std::u16string& qualifiedName)
 {
     return ElementImp::getElementsByTagName(dynamic_cast<ElementImp*>(getDocumentElement().self()), qualifiedName);
 }
 
-NodeList DocumentImp::getElementsByTagNameNS(std::u16string _namespace, std::u16string localName)
+NodeList DocumentImp::getElementsByTagNameNS(const std::u16string& _namespace, const std::u16string& localName)
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-NodeList DocumentImp::getElementsByClassName(std::u16string classNames)
+NodeList DocumentImp::getElementsByClassName(const std::u16string& classNames)
 {
     return ElementImp::getElementsByClassName(dynamic_cast<ElementImp*>(getDocumentElement().self()), classNames);
 }
 
-Element DocumentImp::getElementById(std::u16string elementId)
+Element DocumentImp::getElementById(const std::u16string& elementId)
 {
     ElementImp* e = dynamic_cast<ElementImp*>(getDocumentElement().self());
     while (e) {
@@ -290,206 +290,207 @@ Element DocumentImp::getElementById(std::u16string elementId)
     return 0;
 }
 
-Element DocumentImp::createElement(std::u16string localName)
+Element DocumentImp::createElement(const std::u16string& localName)
 {
-    toLower(localName);  // TODO: if html
+    std::u16string name(localName);
+    toLower(name);  // TODO: if html
 
     // Checked in the order of descriptions in the HTML specification
-    if (localName == u"html")
+    if (name == u"html")
         return new(std::nothrow) HTMLHtmlElementImp(this);
-    if (localName == u"head")
+    if (name == u"head")
         return new(std::nothrow) HTMLHeadElementImp(this);
-    if (localName == u"title")
+    if (name == u"title")
         return new(std::nothrow) HTMLTitleElementImp(this);
-    if (localName == u"base")
+    if (name == u"base")
         return new(std::nothrow) HTMLBaseElementImp(this);
-    if (localName == u"link")
+    if (name == u"link")
         return new(std::nothrow) HTMLLinkElementImp(this);
-    if (localName == u"meta")
+    if (name == u"meta")
         return new(std::nothrow) HTMLMetaElementImp(this);
-    if (localName == u"style")
+    if (name == u"style")
         return new(std::nothrow) HTMLStyleElementImp(this);
-    if (localName == u"script")
+    if (name == u"script")
         return new(std::nothrow) HTMLScriptElementImp(this);
-    if (localName == u"noscript")
-        return new(std::nothrow) HTMLElementImp(this, localName);
-    if (localName == u"body")
+    if (name == u"noscript")
+        return new(std::nothrow) HTMLElementImp(this, name);
+    if (name == u"body")
         return new(std::nothrow) HTMLBodyElementImp(this);
-    if (localName == u"section" ||
-        localName == u"nav" ||
-        localName == u"article" ||
-        localName == u"aside")
-        return new(std::nothrow) HTMLElementImp(this, localName);
-    if (localName == u"h1" ||
-        localName == u"h2" ||
-        localName == u"h3" ||
-        localName == u"h4" ||
-        localName == u"h5" ||
-        localName == u"h6")
-        return new(std::nothrow) HTMLHeadingElementImp(this, localName);
-    if (localName == u"hgroup" ||
-        localName == u"header" ||
-        localName == u"footer" ||
-        localName == u"address")
-        return new(std::nothrow) HTMLElementImp(this, localName);
-    if (localName == u"p")
+    if (name == u"section" ||
+        name == u"nav" ||
+        name == u"article" ||
+        name == u"aside")
+        return new(std::nothrow) HTMLElementImp(this, name);
+    if (name == u"h1" ||
+        name == u"h2" ||
+        name == u"h3" ||
+        name == u"h4" ||
+        name == u"h5" ||
+        name == u"h6")
+        return new(std::nothrow) HTMLHeadingElementImp(this, name);
+    if (name == u"hgroup" ||
+        name == u"header" ||
+        name == u"footer" ||
+        name == u"address")
+        return new(std::nothrow) HTMLElementImp(this, name);
+    if (name == u"p")
         return new(std::nothrow) HTMLParagraphElementImp(this);
-    if (localName == u"hr")
+    if (name == u"hr")
         return new(std::nothrow) HTMLHRElementImp(this);
-    if (localName == u"pre")
+    if (name == u"pre")
         return new(std::nothrow) HTMLPreElementImp(this);
-    if (localName == u"blockquote")
-        return new(std::nothrow) HTMLQuoteElementImp(this, localName);
-    if (localName == u"ol")
+    if (name == u"blockquote")
+        return new(std::nothrow) HTMLQuoteElementImp(this, name);
+    if (name == u"ol")
         return new(std::nothrow) HTMLOListElementImp(this);
-    if (localName == u"ul")
+    if (name == u"ul")
         return new(std::nothrow) HTMLUListElementImp(this);
-    if (localName == u"li")
+    if (name == u"li")
         return new(std::nothrow) HTMLLIElementImp(this);
-    if (localName == u"dl")
+    if (name == u"dl")
         return new(std::nothrow) HTMLDListElementImp(this);
-    if (localName == u"dt" ||
-        localName == u"dd" ||
-        localName == u"figure" ||
-        localName == u"figcaption")
-        return new(std::nothrow) HTMLElementImp(this, localName);
-    if (localName == u"div")
+    if (name == u"dt" ||
+        name == u"dd" ||
+        name == u"figure" ||
+        name == u"figcaption")
+        return new(std::nothrow) HTMLElementImp(this, name);
+    if (name == u"div")
         return new(std::nothrow) HTMLDivElementImp(this);
-    if (localName == u"a")
+    if (name == u"a")
         return new(std::nothrow) HTMLAnchorElementImp(this);
-    if (localName == u"em" ||
-        localName == u"strong" ||
-        localName == u"small" ||
-        localName == u"s" ||
-        localName == u"cite")
-        return new(std::nothrow) HTMLElementImp(this, localName);
-    if (localName == u"q")
-        return new(std::nothrow) HTMLQuoteElementImp(this, localName);
-    if (localName == u"dfn" ||
-        localName == u"abbr")
-        return new(std::nothrow) HTMLElementImp(this, localName);
-    if (localName == u"time")
+    if (name == u"em" ||
+        name == u"strong" ||
+        name == u"small" ||
+        name == u"s" ||
+        name == u"cite")
+        return new(std::nothrow) HTMLElementImp(this, name);
+    if (name == u"q")
+        return new(std::nothrow) HTMLQuoteElementImp(this, name);
+    if (name == u"dfn" ||
+        name == u"abbr")
+        return new(std::nothrow) HTMLElementImp(this, name);
+    if (name == u"time")
         return new(std::nothrow) HTMLTimeElementImp(this);
-    if (localName == u"code" ||
-        localName == u"var" ||
-        localName == u"samp" ||
-        localName == u"kbd" ||
-        localName == u"sub" ||
-        localName == u"sup" ||
-        localName == u"i" ||
-        localName == u"b" ||
-        localName == u"u" ||
-        localName == u"mark" ||
-        localName == u"ruby" ||
-        localName == u"rt" ||
-        localName == u"rp" ||
-        localName == u"bdi" ||
-        localName == u"bdo")
-        return new(std::nothrow) HTMLElementImp(this, localName);
-    if (localName == u"span")
+    if (name == u"code" ||
+        name == u"var" ||
+        name == u"samp" ||
+        name == u"kbd" ||
+        name == u"sub" ||
+        name == u"sup" ||
+        name == u"i" ||
+        name == u"b" ||
+        name == u"u" ||
+        name == u"mark" ||
+        name == u"ruby" ||
+        name == u"rt" ||
+        name == u"rp" ||
+        name == u"bdi" ||
+        name == u"bdo")
+        return new(std::nothrow) HTMLElementImp(this, name);
+    if (name == u"span")
         return new(std::nothrow) HTMLSpanElementImp(this);
-    if (localName == u"br")
+    if (name == u"br")
         return new(std::nothrow) HTMLBRElementImp(this);
-    if (localName == u"wbr")
-        return new(std::nothrow) HTMLElementImp(this, localName);
-    if (localName == u"ins" ||
-        localName == u"del")
-        return new(std::nothrow) HTMLModElementImp(this, localName);
-    if (localName == u"img")
+    if (name == u"wbr")
+        return new(std::nothrow) HTMLElementImp(this, name);
+    if (name == u"ins" ||
+        name == u"del")
+        return new(std::nothrow) HTMLModElementImp(this, name);
+    if (name == u"img")
         return new(std::nothrow) HTMLImageElementImp(this);
-    if (localName == u"iframe")
+    if (name == u"iframe")
         return new(std::nothrow) HTMLIFrameElementImp(this);
-    if (localName == u"embed")
+    if (name == u"embed")
         return new(std::nothrow) HTMLEmbedElementImp(this);
-    if (localName == u"object")
+    if (name == u"object")
         return new(std::nothrow) HTMLObjectElementImp(this);
-    if (localName == u"param")
+    if (name == u"param")
         return new(std::nothrow) HTMLParamElementImp(this);
-    if (localName == u"video")
+    if (name == u"video")
         return new(std::nothrow) HTMLVideoElementImp(this);
-    if (localName == u"audio")
+    if (name == u"audio")
         return new(std::nothrow) HTMLAudioElementImp(this);
-    if (localName == u"source")
+    if (name == u"source")
         return new(std::nothrow) HTMLSourceElementImp(this);
-    if (localName == u"canvas")
+    if (name == u"canvas")
         return new(std::nothrow) HTMLCanvasElementImp(this);
-    if (localName == u"map")
+    if (name == u"map")
         return new(std::nothrow) HTMLMapElementImp(this);
-    if (localName == u"area")
+    if (name == u"area")
         return new(std::nothrow) HTMLAreaElementImp(this);
-    if (localName == u"table")
+    if (name == u"table")
         return new(std::nothrow) HTMLTableElementImp(this);
-    if (localName == u"caption")
+    if (name == u"caption")
         return new(std::nothrow) HTMLTableCaptionElementImp(this);
-    if (localName == u"colgroup" ||
-        localName == u"col")
-        return new(std::nothrow) HTMLTableColElementImp(this, localName);
-    if (localName == u"tbody" ||
-        localName == u"thead" ||
-        localName == u"tfoot")
-        return new(std::nothrow) HTMLTableSectionElementImp(this, localName);
-    if (localName == u"tr")
+    if (name == u"colgroup" ||
+        name == u"col")
+        return new(std::nothrow) HTMLTableColElementImp(this, name);
+    if (name == u"tbody" ||
+        name == u"thead" ||
+        name == u"tfoot")
+        return new(std::nothrow) HTMLTableSectionElementImp(this, name);
+    if (name == u"tr")
         return new(std::nothrow) HTMLTableRowElementImp(this);
-    if (localName == u"td")
+    if (name == u"td")
         return new(std::nothrow) HTMLTableDataCellElementImp(this);
-    if (localName == u"th")
+    if (name == u"th")
         return new(std::nothrow) HTMLTableHeaderCellElementImp(this);
-    if (localName == u"form")
+    if (name == u"form")
         return new(std::nothrow) HTMLFormElementImp(this);
-    if (localName == u"fieldset")
+    if (name == u"fieldset")
         return new(std::nothrow) HTMLFieldSetElementImp(this);
-    if (localName == u"legend")
+    if (name == u"legend")
         return new(std::nothrow) HTMLLegendElementImp(this);
-    if (localName == u"label")
+    if (name == u"label")
         return new(std::nothrow) HTMLLabelElementImp(this);
-    if (localName == u"input")
+    if (name == u"input")
         return new(std::nothrow) HTMLInputElementImp(this);
-    if (localName == u"button")
+    if (name == u"button")
         return new(std::nothrow) HTMLButtonElementImp(this);
-    if (localName == u"select")
+    if (name == u"select")
         return new(std::nothrow) HTMLSelectElementImp(this);
-    if (localName == u"datalist")
+    if (name == u"datalist")
         return new(std::nothrow) HTMLDataListElementImp(this);
-    if (localName == u"optgroup")
+    if (name == u"optgroup")
         return new(std::nothrow) HTMLOptGroupElementImp(this);
-    if (localName == u"option")
+    if (name == u"option")
         return new(std::nothrow) HTMLOptionElementImp(this);
-    if (localName == u"textarea")
+    if (name == u"textarea")
         return new(std::nothrow) HTMLTextAreaElementImp(this);
-    if (localName == u"keygen")
+    if (name == u"keygen")
         return new(std::nothrow) HTMLKeygenElementImp(this);
-    if (localName == u"output")
+    if (name == u"output")
         return new(std::nothrow) HTMLOutputElementImp(this);
-    if (localName == u"progress")
+    if (name == u"progress")
         return new(std::nothrow) HTMLProgressElementImp(this);
-    if (localName == u"meter")
+    if (name == u"meter")
         return new(std::nothrow) HTMLMeterElementImp(this);
-    if (localName == u"details")
+    if (name == u"details")
         return new(std::nothrow) HTMLDetailsElementImp(this);
-    if (localName == u"summary")
-        return new(std::nothrow) HTMLElementImp(this, localName);
-    if (localName == u"command")
+    if (name == u"summary")
+        return new(std::nothrow) HTMLElementImp(this, name);
+    if (name == u"command")
         return new(std::nothrow) HTMLCommandElementImp(this);
-    if (localName == u"menu")
+    if (name == u"menu")
         return new(std::nothrow) HTMLMenuElementImp(this);
 
-    if (localName == u"binding")
+    if (name == u"binding")
         return new(std::nothrow) HTMLBindingElementImp(this);
-    if (localName == u"template")
+    if (name == u"template")
         return new(std::nothrow) HTMLTemplateElementImp(this);
-    if (localName == u"implementation")
-        return new(std::nothrow) HTMLScriptElementImp(this, localName);
+    if (name == u"implementation")
+        return new(std::nothrow) HTMLScriptElementImp(this, name);
 
     // Deprecated elements
-    if (localName == u"center")   // shorthand for DIV align=center
-        return new(std::nothrow) HTMLDivElementImp(this, localName);
-    if (localName == u"font")
+    if (name == u"center")   // shorthand for DIV align=center
+        return new(std::nothrow) HTMLDivElementImp(this, name);
+    if (name == u"font")
         return new(std::nothrow) HTMLFontElementImp(this);
 
-    return new(std::nothrow) HTMLUnknownElementImp(this, localName);
+    return new(std::nothrow) HTMLUnknownElementImp(this, name);
 }
 
-Element DocumentImp::createElementNS(std::u16string namespaceURI, std::u16string qualifiedName)
+Element DocumentImp::createElementNS(const std::u16string& namespaceURI, const std::u16string& qualifiedName)
 {
     std::u16string prefix;
     std::u16string localName;
@@ -509,17 +510,17 @@ DocumentFragment DocumentImp::createDocumentFragment()
     return static_cast<Object*>(0);
 }
 
-Text DocumentImp::createTextNode(std::u16string data)
+Text DocumentImp::createTextNode(const std::u16string& data)
 {
     return new(std::nothrow) TextImp(this, data);
 }
 
-Comment DocumentImp::createComment(std::u16string data)
+Comment DocumentImp::createComment(const std::u16string& data)
 {
     return new(std::nothrow) CommentImp(this, data);
 }
 
-ProcessingInstruction DocumentImp::createProcessingInstruction(std::u16string target, std::u16string data)
+ProcessingInstruction DocumentImp::createProcessingInstruction(const std::u16string& target, const std::u16string& data)
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
@@ -537,7 +538,7 @@ Node DocumentImp::adoptNode(Node node)
     return static_cast<Object*>(0);
 }
 
-events::Event DocumentImp::createEvent(std::u16string interface)
+events::Event DocumentImp::createEvent(const std::u16string& interface)
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
@@ -550,7 +551,7 @@ html::Location DocumentImp::getLocation()
     return new(std::nothrow) LocationImp(defaultView, url);
 }
 
-void DocumentImp::setLocation(std::u16string href)
+void DocumentImp::setLocation(const std::u16string& href)
 {
     if (defaultView)
         defaultView->setLocation(href);
@@ -567,7 +568,7 @@ std::u16string DocumentImp::getDomain()
     return u"";
 }
 
-void DocumentImp::setDomain(std::u16string domain)
+void DocumentImp::setDomain(const std::u16string& domain)
 {
     // TODO: implement me!
 }
@@ -584,7 +585,7 @@ std::u16string DocumentImp::getCookie()
     return u"";
 }
 
-void DocumentImp::setCookie(std::u16string cookie)
+void DocumentImp::setCookie(const std::u16string& cookie)
 {
     // TODO: implement me!
 }
@@ -600,7 +601,7 @@ std::u16string DocumentImp::getCharset()
     return charset;
 }
 
-void DocumentImp::setCharset(std::u16string charset)
+void DocumentImp::setCharset(const std::u16string& charset)
 {
     if (this->charset.empty()) {
         this->charset = charset;
@@ -625,7 +626,7 @@ std::u16string DocumentImp::getReadyState()
     return readyState;
 }
 
-Any DocumentImp::getElement(std::u16string name)
+Any DocumentImp::getElement(const std::u16string& name)
 {
     Element e = getDocumentElement();
     if (!e)
@@ -697,7 +698,7 @@ std::u16string DocumentImp::getTitle()
     return u"";
 }
 
-void DocumentImp::setTitle(std::u16string title)
+void DocumentImp::setTitle(const std::u16string& title)
 {
     html::HTMLHeadElement head = getHead();
     if (!head)
@@ -721,7 +722,7 @@ std::u16string DocumentImp::getDir()
     return u"";
 }
 
-void DocumentImp::setDir(std::u16string dir)
+void DocumentImp::setDir(const std::u16string& dir)
 {
     // TODO: implement me!
 }
@@ -789,7 +790,7 @@ html::HTMLCollection DocumentImp::getScripts()
     return static_cast<Object*>(0);
 }
 
-NodeList DocumentImp::getElementsByName(std::u16string elementName)
+NodeList DocumentImp::getElementsByName(const std::u16string& elementName)
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
@@ -807,18 +808,18 @@ std::u16string DocumentImp::getInnerHTML()
     return u"";
 }
 
-void DocumentImp::setInnerHTML(std::u16string innerHTML)
+void DocumentImp::setInnerHTML(const std::u16string& innerHTML)
 {
     // TODO: implement me!
 }
 
-html::HTMLDocument DocumentImp::open(std::u16string type, std::u16string replace)
+html::HTMLDocument DocumentImp::open(const std::u16string& type, const std::u16string& replace)
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-html::Window DocumentImp::open(std::u16string url, std::u16string name, std::u16string features, bool replace)
+html::Window DocumentImp::open(const std::u16string& url, const std::u16string& name, const std::u16string& features, bool replace)
 {
     if (defaultView)
         return defaultView->open(url, name, features, replace);
@@ -864,54 +865,54 @@ std::u16string DocumentImp::getDesignMode()
     return u"";
 }
 
-void DocumentImp::setDesignMode(std::u16string designMode)
+void DocumentImp::setDesignMode(const std::u16string& designMode)
 {
     // TODO: implement me!
 }
 
-bool DocumentImp::execCommand(std::u16string commandId)
-{
-    // TODO: implement me!
-    return 0;
-}
-
-bool DocumentImp::execCommand(std::u16string commandId, bool showUI)
+bool DocumentImp::execCommand(const std::u16string& commandId)
 {
     // TODO: implement me!
     return 0;
 }
 
-bool DocumentImp::execCommand(std::u16string commandId, bool showUI, std::u16string value)
+bool DocumentImp::execCommand(const std::u16string& commandId, bool showUI)
 {
     // TODO: implement me!
     return 0;
 }
 
-bool DocumentImp::queryCommandEnabled(std::u16string commandId)
+bool DocumentImp::execCommand(const std::u16string& commandId, bool showUI, const std::u16string& value)
 {
     // TODO: implement me!
     return 0;
 }
 
-bool DocumentImp::queryCommandIndeterm(std::u16string commandId)
+bool DocumentImp::queryCommandEnabled(const std::u16string& commandId)
 {
     // TODO: implement me!
     return 0;
 }
 
-bool DocumentImp::queryCommandState(std::u16string commandId)
+bool DocumentImp::queryCommandIndeterm(const std::u16string& commandId)
 {
     // TODO: implement me!
     return 0;
 }
 
-bool DocumentImp::queryCommandSupported(std::u16string commandId)
+bool DocumentImp::queryCommandState(const std::u16string& commandId)
 {
     // TODO: implement me!
     return 0;
 }
 
-std::u16string DocumentImp::queryCommandValue(std::u16string commandId)
+bool DocumentImp::queryCommandSupported(const std::u16string& commandId)
+{
+    // TODO: implement me!
+    return 0;
+}
+
+std::u16string DocumentImp::queryCommandValue(const std::u16string& commandId)
 {
     // TODO: implement me!
     return u"";
@@ -1523,7 +1524,7 @@ std::u16string DocumentImp::getFgColor()
     return u"";
 }
 
-void DocumentImp::setFgColor(std::u16string fgColor)
+void DocumentImp::setFgColor(const std::u16string& fgColor)
 {
     // TODO: implement me!
 }
@@ -1534,7 +1535,7 @@ std::u16string DocumentImp::getBgColor()
     return u"";
 }
 
-void DocumentImp::setBgColor(std::u16string bgColor)
+void DocumentImp::setBgColor(const std::u16string& bgColor)
 {
     // TODO: implement me!
 }
@@ -1545,7 +1546,7 @@ std::u16string DocumentImp::getLinkColor()
     return u"";
 }
 
-void DocumentImp::setLinkColor(std::u16string linkColor)
+void DocumentImp::setLinkColor(const std::u16string& linkColor)
 {
     // TODO: implement me!
 }
@@ -1556,7 +1557,7 @@ std::u16string DocumentImp::getVlinkColor()
     return u"";
 }
 
-void DocumentImp::setVlinkColor(std::u16string vlinkColor)
+void DocumentImp::setVlinkColor(const std::u16string& vlinkColor)
 {
     // TODO: implement me!
 }
@@ -1567,7 +1568,7 @@ std::u16string DocumentImp::getAlinkColor()
     return u"";
 }
 
-void DocumentImp::setAlinkColor(std::u16string alinkColor)
+void DocumentImp::setAlinkColor(const std::u16string& alinkColor)
 {
     // TODO: implement me!
 }
@@ -1653,13 +1654,13 @@ CaretPosition DocumentImp::caretPositionFromPoint(float x, float y)
     return static_cast<Object*>(0);
 }
 
-Element DocumentImp::querySelector(std::u16string selectors)
+Element DocumentImp::querySelector(const std::u16string& selectors)
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-NodeList DocumentImp::querySelectorAll(std::u16string selectors)
+NodeList DocumentImp::querySelectorAll(const std::u16string& selectors)
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
@@ -1689,7 +1690,7 @@ html::HTMLCollection DocumentImp::getBindingDocuments()
     return static_cast<Object*>(0);
 }
 
-Document DocumentImp::loadBindingDocument(std::u16string documentURI)
+Document DocumentImp::loadBindingDocument(const std::u16string& documentURI)
 {
     auto found = bindingDocuments.find(documentURI);
     if (found != bindingDocuments.end())

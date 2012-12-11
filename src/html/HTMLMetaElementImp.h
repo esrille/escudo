@@ -32,14 +32,14 @@ public:
 
     // HTMLMetaElement
     virtual std::u16string getName();
-    virtual void setName(std::u16string name);
+    virtual void setName(const std::u16string& name);
     virtual std::u16string getHttpEquiv();
-    virtual void setHttpEquiv(std::u16string httpEquiv);
+    virtual void setHttpEquiv(const std::u16string& httpEquiv);
     virtual std::u16string getContent();
-    virtual void setContent(std::u16string content);
+    virtual void setContent(const std::u16string& content);
     // HTMLMetaElement-23
     virtual std::u16string getScheme();
-    virtual void setScheme(std::u16string scheme);
+    virtual void setScheme(const std::u16string& scheme);
 
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {

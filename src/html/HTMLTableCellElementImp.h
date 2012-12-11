@@ -55,29 +55,29 @@ public:
     unsigned int getRowSpan();
     void setRowSpan(unsigned int rowSpan);
     DOMSettableTokenList getHeaders();
-    void setHeaders(std::u16string headers);
+    void setHeaders(const std::u16string& headers);
     int getCellIndex();
     // HTMLTableCellElement-32
     std::u16string getAbbr();
-    void setAbbr(std::u16string abbr);
+    void setAbbr(const std::u16string& abbr);
     std::u16string getAlign();
-    void setAlign(std::u16string align);
+    void setAlign(const std::u16string& align);
     std::u16string getAxis();
-    void setAxis(std::u16string axis);
+    void setAxis(const std::u16string& axis);
     std::u16string getBgColor();
-    void setBgColor(std::u16string bgColor);
+    void setBgColor(const std::u16string& bgColor);
     std::u16string getCh();
-    void setCh(std::u16string ch);
+    void setCh(const std::u16string& ch);
     std::u16string getChOff();
-    void setChOff(std::u16string chOff);
+    void setChOff(const std::u16string& chOff);
     std::u16string getHeight();
-    void setHeight(std::u16string height);
+    void setHeight(const std::u16string& height);
     bool getNoWrap();
     void setNoWrap(bool noWrap);
     std::u16string getVAlign();
-    void setVAlign(std::u16string vAlign);
+    void setVAlign(const std::u16string& vAlign);
     std::u16string getWidth();
-    void setWidth(std::u16string width);
+    void setWidth(const std::u16string& width);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

@@ -41,40 +41,40 @@ namespace bootstrap
 
 class DocumentImp;
 class HttpRequest;
-    
+
 class CSSImportRuleImp : public ObjectMixin<CSSImportRuleImp, CSSRuleImp>
 {
     DocumentImp* document;
-    
+
     std::u16string href;
     Retained<MediaListImp> mediaList;
 
     HttpRequest* request;
-    css::CSSStyleSheet styleSheet;    
-    
+    css::CSSStyleSheet styleSheet;
+
     void notify();
 
 public:
     CSSImportRuleImp(const std::u16string& href);
-    ~CSSImportRuleImp();    
+    ~CSSImportRuleImp();
 
     void setDocument(DocumentImp* document) {
         this->document = document;
     }
-    
+
     void setMediaList(MediaListImp* list) {
         if (list)
             mediaList = *list;
-    }    
-    
+    }
+
     // CSSRule
     virtual unsigned short getType();
     virtual std::u16string getCssText();
-    
+
     // CSSImportRule
     std::u16string getHref();
     stylesheets::MediaList getMedia();
-    void setMedia(std::u16string media);
+    void setMedia(const std::u16string& media);
     css::CSSStyleSheet getStyleSheet();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)

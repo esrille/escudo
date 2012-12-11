@@ -359,7 +359,7 @@ bool NodeImp::isEqualNode(Node arg)
     return y ? false : true;
 }
 
-std::u16string NodeImp::lookupPrefix(std::u16string namespaceURI)
+std::u16string NodeImp::lookupPrefix(const std::u16string& namespaceURI)
 {
     // TODO: implement me!
     return u"";
@@ -371,7 +371,7 @@ std::u16string NodeImp::lookupNamespaceURI(Nullable<std::u16string> prefix)
     return u"";
 }
 
-bool NodeImp::isDefaultNamespace(std::u16string namespaceURI)
+bool NodeImp::isDefaultNamespace(const std::u16string& namespaceURI)
 {
     // TODO: implement me!
     return 0;

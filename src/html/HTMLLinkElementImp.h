@@ -51,25 +51,25 @@ public:
     virtual bool getDisabled();
     virtual void setDisabled(bool disabled);
     virtual std::u16string getHref();
-    virtual void setHref(std::u16string href);
+    virtual void setHref(const std::u16string& href);
     virtual std::u16string getRel();
-    virtual void setRel(std::u16string rel);
+    virtual void setRel(const std::u16string& rel);
     virtual DOMTokenList getRelList();
     virtual std::u16string getMedia();
-    virtual void setMedia(std::u16string media);
+    virtual void setMedia(const std::u16string& media);
     virtual std::u16string getHreflang();
-    virtual void setHreflang(std::u16string hreflang);
+    virtual void setHreflang(const std::u16string& hreflang);
     virtual std::u16string getType();
-    virtual void setType(std::u16string type);
+    virtual void setType(const std::u16string& type);
     virtual DOMSettableTokenList getSizes();
-    virtual void setSizes(std::u16string sizes);
+    virtual void setSizes(const std::u16string& sizes);
     // HTMLLinkElement-21
     virtual std::u16string getCharset();
-    virtual void setCharset(std::u16string charset);
+    virtual void setCharset(const std::u16string& charset);
     virtual std::u16string getRev();
-    virtual void setRev(std::u16string rev);
+    virtual void setRev(const std::u16string& rev);
     virtual std::u16string getTarget();
-    virtual void setTarget(std::u16string target);
+    virtual void setTarget(const std::u16string& target);
 
     // LinkStyle
     virtual stylesheets::StyleSheet getSheet();

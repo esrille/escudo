@@ -28,7 +28,7 @@ int UIEventImp::getDetail()
     return detail;
 }
 
-void UIEventImp::initUIEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg,
+void UIEventImp::initUIEvent(const std::u16string& typeArg, bool canBubbleArg, bool cancelableArg,
                              html::Window viewArg, int detailArg)
 {
     view = viewArg;

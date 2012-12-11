@@ -73,7 +73,7 @@ stylesheets::MediaList StyleSheetImp::getMedia()
     return static_cast<Object*>(0);
 }
 
-void StyleSheetImp::setMedia(std::u16string media)
+void StyleSheetImp::setMedia(const std::u16string& media)
 {
     // TODO: implement me!
 }

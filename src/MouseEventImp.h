@@ -101,8 +101,8 @@ public:
     {
         return relatedTarget;
     }
-    void initMouseEvent(std::u16string typeArg, bool canBubbleArg, bool cancelableArg, html::Window viewArg, int detailArg, int screenXArg, int screenYArg, int clientXArg, int clientYArg, bool ctrlKeyArg, bool altKeyArg, bool shiftKeyArg, bool metaKeyArg, unsigned short buttonArg, events::EventTarget relatedTargetArg);
-    bool getModifierState(std::u16string keyArg);
+    void initMouseEvent(const std::u16string& typeArg, bool canBubbleArg, bool cancelableArg, html::Window viewArg, int detailArg, int screenXArg, int screenYArg, int clientXArg, int clientYArg, bool ctrlKeyArg, bool altKeyArg, bool shiftKeyArg, bool metaKeyArg, unsigned short buttonArg, events::EventTarget relatedTargetArg);
+    bool getModifierState(const std::u16string& keyArg);
     // MouseEvent-42
     int getPageX()
     {

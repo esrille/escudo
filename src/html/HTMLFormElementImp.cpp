@@ -193,7 +193,7 @@ std::u16string HTMLFormElementImp::getAcceptCharset()
     return getAttribute(u"accept-charset");
 }
 
-void HTMLFormElementImp::setAcceptCharset(std::u16string acceptCharset)
+void HTMLFormElementImp::setAcceptCharset(const std::u16string& acceptCharset)
 {
     setAttribute(u"accept-charset", acceptCharset);
 }
@@ -203,7 +203,7 @@ std::u16string HTMLFormElementImp::getAction()
     return getAttribute(u"action");
 }
 
-void HTMLFormElementImp::setAction(std::u16string action)
+void HTMLFormElementImp::setAction(const std::u16string& action)
 {
     setAttribute(u"action", action);
 }
@@ -213,7 +213,7 @@ std::u16string HTMLFormElementImp::getAutocomplete()
     return getAttribute(u"autocomplete");
 }
 
-void HTMLFormElementImp::setAutocomplete(std::u16string autocomplete)
+void HTMLFormElementImp::setAutocomplete(const std::u16string& autocomplete)
 {
     setAttribute(u"autocomplete", autocomplete);
 }
@@ -223,7 +223,7 @@ std::u16string HTMLFormElementImp::getEnctype()
     return getAttribute(u"enctype");
 }
 
-void HTMLFormElementImp::setEnctype(std::u16string enctype)
+void HTMLFormElementImp::setEnctype(const std::u16string& enctype)
 {
     setAttribute(u"enctype", enctype);
 }
@@ -233,7 +233,7 @@ std::u16string HTMLFormElementImp::getEncoding()
     return getEnctype();
 }
 
-void HTMLFormElementImp::setEncoding(std::u16string encoding)
+void HTMLFormElementImp::setEncoding(const std::u16string& encoding)
 {
     setEnctype(encoding);
 }
@@ -243,7 +243,7 @@ std::u16string HTMLFormElementImp::getMethod()
     return getAttribute(u"method");
 }
 
-void HTMLFormElementImp::setMethod(std::u16string method)
+void HTMLFormElementImp::setMethod(const std::u16string& method)
 {
     setAttribute(u"method", method);
 }
@@ -253,7 +253,7 @@ std::u16string HTMLFormElementImp::getName()
     return getAttribute(u"name");
 }
 
-void HTMLFormElementImp::setName(std::u16string name)
+void HTMLFormElementImp::setName(const std::u16string& name)
 {
     setAttribute(u"name", name);
 }
@@ -276,7 +276,7 @@ std::u16string HTMLFormElementImp::getTarget()
     return getAttribute(u"target");
 }
 
-void HTMLFormElementImp::setTarget(std::u16string target)
+void HTMLFormElementImp::setTarget(const std::u16string& target)
 {
     setAttribute(u"target", target);
 }
@@ -304,7 +304,7 @@ Any HTMLFormElementImp::getElement(unsigned int index)
     return 0;
 }
 
-Any HTMLFormElementImp::getElement(std::u16string name)
+Any HTMLFormElementImp::getElement(const std::u16string& name)
 {
     getElements();
     if (elements) {

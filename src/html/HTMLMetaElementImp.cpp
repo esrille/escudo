@@ -31,7 +31,7 @@ std::u16string HTMLMetaElementImp::getName()
     return u"";
 }
 
-void HTMLMetaElementImp::setName(std::u16string name)
+void HTMLMetaElementImp::setName(const std::u16string& name)
 {
     // TODO: implement me!
 }
@@ -42,7 +42,7 @@ std::u16string HTMLMetaElementImp::getHttpEquiv()
     return u"";
 }
 
-void HTMLMetaElementImp::setHttpEquiv(std::u16string httpEquiv)
+void HTMLMetaElementImp::setHttpEquiv(const std::u16string& httpEquiv)
 {
     // TODO: implement me!
 }
@@ -53,7 +53,7 @@ std::u16string HTMLMetaElementImp::getContent()
     return u"";
 }
 
-void HTMLMetaElementImp::setContent(std::u16string content)
+void HTMLMetaElementImp::setContent(const std::u16string& content)
 {
     // TODO: implement me!
 }
@@ -64,7 +64,7 @@ std::u16string HTMLMetaElementImp::getScheme()
     return u"";
 }
 
-void HTMLMetaElementImp::setScheme(std::u16string scheme)
+void HTMLMetaElementImp::setScheme(const std::u16string& scheme)
 {
     // TODO: implement me!
 }

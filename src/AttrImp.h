@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ private:
     std::u16string value;
 
 public:
-    AttrImp(Nullable<std::u16string> namespaceURI, Nullable<std::u16string> prefix, std::u16string localName, std::u16string value);
+    AttrImp(Nullable<std::u16string> namespaceURI, Nullable<std::u16string> prefix, const std::u16string& localName, const std::u16string& value);
 
     // Attr
     virtual Nullable<std::u16string> getNamespaceURI();
@@ -39,7 +39,7 @@ public:
     virtual std::u16string getLocalName();
     virtual std::u16string getName();
     virtual std::u16string getValue();
-    virtual void setValue(std::u16string value);
+    virtual void setValue(const std::u16string& value);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

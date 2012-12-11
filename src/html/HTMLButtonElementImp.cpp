@@ -67,7 +67,7 @@ std::u16string HTMLButtonElementImp::getFormAction()
     return u"";
 }
 
-void HTMLButtonElementImp::setFormAction(std::u16string formAction)
+void HTMLButtonElementImp::setFormAction(const std::u16string& formAction)
 {
     // TODO: implement me!
 }
@@ -78,7 +78,7 @@ std::u16string HTMLButtonElementImp::getFormEnctype()
     return u"";
 }
 
-void HTMLButtonElementImp::setFormEnctype(std::u16string formEnctype)
+void HTMLButtonElementImp::setFormEnctype(const std::u16string& formEnctype)
 {
     // TODO: implement me!
 }
@@ -89,7 +89,7 @@ std::u16string HTMLButtonElementImp::getFormMethod()
     return u"";
 }
 
-void HTMLButtonElementImp::setFormMethod(std::u16string formMethod)
+void HTMLButtonElementImp::setFormMethod(const std::u16string& formMethod)
 {
     // TODO: implement me!
 }
@@ -100,7 +100,7 @@ std::u16string HTMLButtonElementImp::getFormNoValidate()
     return u"";
 }
 
-void HTMLButtonElementImp::setFormNoValidate(std::u16string formNoValidate)
+void HTMLButtonElementImp::setFormNoValidate(const std::u16string& formNoValidate)
 {
     // TODO: implement me!
 }
@@ -111,7 +111,7 @@ std::u16string HTMLButtonElementImp::getFormTarget()
     return u"";
 }
 
-void HTMLButtonElementImp::setFormTarget(std::u16string formTarget)
+void HTMLButtonElementImp::setFormTarget(const std::u16string& formTarget)
 {
     // TODO: implement me!
 }
@@ -121,7 +121,7 @@ std::u16string HTMLButtonElementImp::getName()
     return getAttribute(u"name");
 }
 
-void HTMLButtonElementImp::setName(std::u16string name)
+void HTMLButtonElementImp::setName(const std::u16string& name)
 {
     setAttribute(u"name", name);
 }
@@ -132,7 +132,7 @@ std::u16string HTMLButtonElementImp::getType()
     return getAttribute(u"type");
 }
 
-void HTMLButtonElementImp::setType(std::u16string type)
+void HTMLButtonElementImp::setType(const std::u16string& type)
 {
     setAttribute(u"type", type);
 }
@@ -143,7 +143,7 @@ std::u16string HTMLButtonElementImp::getValue()
     return u"";
 }
 
-void HTMLButtonElementImp::setValue(std::u16string value)
+void HTMLButtonElementImp::setValue(const std::u16string& value)
 {
     // TODO: implement me!
 }
@@ -172,7 +172,7 @@ bool HTMLButtonElementImp::checkValidity()
     return 0;
 }
 
-void HTMLButtonElementImp::setCustomValidity(std::u16string error)
+void HTMLButtonElementImp::setCustomValidity(const std::u16string& error)
 {
     // TODO: implement me!
 }

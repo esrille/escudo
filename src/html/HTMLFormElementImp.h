@@ -60,27 +60,27 @@ public:
 
     // HTMLFormElement
     std::u16string getAcceptCharset();
-    void setAcceptCharset(std::u16string acceptCharset);
+    void setAcceptCharset(const std::u16string& acceptCharset);
     std::u16string getAction();
-    void setAction(std::u16string action);
+    void setAction(const std::u16string& action);
     std::u16string getAutocomplete();
-    void setAutocomplete(std::u16string autocomplete);
+    void setAutocomplete(const std::u16string& autocomplete);
     std::u16string getEnctype();
-    void setEnctype(std::u16string enctype);
+    void setEnctype(const std::u16string& enctype);
     std::u16string getEncoding();
-    void setEncoding(std::u16string encoding);
+    void setEncoding(const std::u16string& encoding);
     std::u16string getMethod();
-    void setMethod(std::u16string method);
+    void setMethod(const std::u16string& method);
     std::u16string getName();
-    void setName(std::u16string name);
+    void setName(const std::u16string& name);
     bool getNoValidate();
     void setNoValidate(bool noValidate);
     std::u16string getTarget();
-    void setTarget(std::u16string target);
+    void setTarget(const std::u16string& target);
     html::HTMLFormControlsCollection getElements();
     int getLength();
     Any getElement(unsigned int index);
-    Any getElement(std::u16string name);
+    Any getElement(const std::u16string& name);
     void submit(ElementImp* submitter = 0);  // Take submitter as a hidden parameter
     void reset();
     bool checkValidity();

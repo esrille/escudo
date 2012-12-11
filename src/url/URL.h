@@ -84,46 +84,48 @@ public:
     std::u16string getProtocol() const {
         return url.substr(0, protocolEnd);
     }
-    void setProtocol(std::u16string protocol);
+    void setProtocol(const std::u16string& protocol);
     std::u16string getHost() const {
         return url.substr(hostStart, hostEnd - hostStart);
     }
-    void setHost(std::u16string host);
+    void setHost(const std::u16string& host);
     std::u16string getHostname() const {
         return url.substr(hostnameStart, hostnameEnd - hostnameStart);
     }
-    void setHostname(std::u16string hostname);
+    void setHostname(const std::u16string& hostname);
     std::u16string getPort() const;
-    void setPort(std::u16string port);
+    void setPort(const std::u16string& port);
     std::u16string getPathname() const {
         return url.substr(pathnameStart, pathnameEnd - pathnameStart);
     }
-    void setPathname(std::u16string pathname);
+    void setPathname(const std::u16string& pathname);
     std::u16string getSearch() const {
         return url.substr(searchStart, searchEnd - searchStart);
     }
-    void setSearch(std::u16string search) {
+    void setSearch(const std::u16string& search) {
         // TODO: update fields
-        if (search[0] != u'?')
-            search = u"?" + search;
+        std::u16string s(search);
+        if (s[0] != u'?')
+            s = u"?" + s;
         if (searchStart < searchEnd)
-            url.replace(searchStart, searchEnd - searchStart, search);
+            url.replace(searchStart, searchEnd - searchStart, s);
         else {
             assert(pathnameStart < pathnameEnd);
-            url.insert(pathnameEnd, search);
+            url.insert(pathnameEnd, s);
         }
     }
     std::u16string getHash() const {
         return url.substr(hashStart, hashEnd - hashStart);
     }
-    void setHash(std::u16string hash) {
+    void setHash(const std::u16string& hash) {
         // TODO: update fields
-        if (hash[0] != u'#')
-            hash = u"#" + hash;
+        std::u16string h(hash);
+        if (h[0] != u'#')
+            h = u"#" + h;
         if (hashStart < hashEnd)
-            url.replace(hashStart, hashEnd - hashStart, hash);
+            url.replace(hashStart, hashEnd - hashStart, h);
         else
-            url += hash;
+            url += h;
     }
 
     bool testProtocol(const char16_t* protocol) const {

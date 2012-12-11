@@ -55,7 +55,7 @@ public:
     unsigned int getLength();
     Element item(unsigned int index);
     // HTMLFormControlsCollection
-    Object namedItem(std::u16string name);
+    Object namedItem(const std::u16string& name);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

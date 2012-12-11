@@ -30,7 +30,7 @@ std::u16string HTMLBRElementImp::getClear()
     return u"";
 }
 
-void HTMLBRElementImp::setClear(std::u16string clear)
+void HTMLBRElementImp::setClear(const std::u16string& clear)
 {
     // TODO: implement me!
 }

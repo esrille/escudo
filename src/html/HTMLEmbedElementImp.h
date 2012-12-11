@@ -50,18 +50,18 @@ public:
 
     // HTMLEmbedElement
     std::u16string getSrc();
-    void setSrc(std::u16string src);
+    void setSrc(const std::u16string& src);
     std::u16string getType();
-    void setType(std::u16string type);
+    void setType(const std::u16string& type);
     std::u16string getWidth();
-    void setWidth(std::u16string width);
+    void setWidth(const std::u16string& width);
     std::u16string getHeight();
-    void setHeight(std::u16string height);
+    void setHeight(const std::u16string& height);
     // HTMLEmbedElement-12
     std::u16string getAlign();
-    void setAlign(std::u16string align);
+    void setAlign(const std::u16string& align);
     std::u16string getName();
-    void setName(std::u16string name);
+    void setName(const std::u16string& name);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

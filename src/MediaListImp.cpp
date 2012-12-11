@@ -41,7 +41,7 @@ const char16_t* const mediaTypes[] = {
 
 const size_t mediaTypesCount = sizeof mediaTypes / sizeof mediaTypes[0];
 
-unsigned getMediaTypeBits(std::u16string& media)
+unsigned getMediaTypeBits(std::u16string media)
 {
     assert(mediaTypesCount <= 32);
     toLower(media);
@@ -75,7 +75,7 @@ std::u16string MediaListImp::getMediaText()
     return text;
 }
 
-void MediaListImp::setMediaText(std::u16string mediaText)
+void MediaListImp::setMediaText(const std::u16string& mediaText)
 {
     clear();
     if (!mediaText.empty()) {
@@ -105,12 +105,12 @@ std::u16string MediaListImp::item(unsigned int index)
     return u"";
 }
 
-void MediaListImp::appendMedium(std::u16string medium)
+void MediaListImp::appendMedium(const std::u16string& medium)
 {
     types |= getMediaTypeBits(medium);
 }
 
-void MediaListImp::deleteMedium(std::u16string medium)
+void MediaListImp::deleteMedium(const std::u16string& medium)
 {
     types &= ~getMediaTypeBits(medium);
 }

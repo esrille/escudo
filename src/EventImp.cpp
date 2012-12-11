@@ -34,7 +34,7 @@ EventImp::EventImp() :
 {
 }
 
-EventImp::EventImp(std::u16string type) :
+EventImp::EventImp(const std::u16string& type) :
     ObjectMixin(),
     target(0),
     currentTarget(0),
@@ -43,7 +43,7 @@ EventImp::EventImp(std::u16string type) :
     initEvent(type, true, false);
 }
 
-EventImp::EventImp(std::u16string type, events::EventInit eventInitDict) :
+EventImp::EventImp(const std::u16string& type, events::EventInit eventInitDict) :
     ObjectMixin(),
     target(0),
     currentTarget(0),
@@ -115,7 +115,7 @@ DOMTimeStamp EventImp::getTimeStamp()
     return 0;
 }
 
-void EventImp::initEvent(std::u16string type, bool bubbles, bool cancelable)
+void EventImp::initEvent(const std::u16string&  type, bool bubbles, bool cancelable)
 {
     initializedFlag = true;
     if (dispatchFlag)

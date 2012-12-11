@@ -54,12 +54,12 @@ bool NavigatorImp::getOnLine()
     return 0;
 }
 
-void NavigatorImp::registerProtocolHandler(std::u16string scheme, std::u16string url, std::u16string title)
+void NavigatorImp::registerProtocolHandler(const std::u16string& scheme, const std::u16string& url, const std::u16string& title)
 {
     // TODO: implement me!
 }
 
-void NavigatorImp::registerContentHandler(std::u16string mimeType, std::u16string url, std::u16string title)
+void NavigatorImp::registerContentHandler(const std::u16string& mimeType, const std::u16string& url, const std::u16string& title)
 {
     // TODO: implement me!
 }
@@ -69,12 +69,12 @@ void NavigatorImp::yieldForStorageUpdates()
     // TODO: implement me!
 }
 
-void NavigatorImp::getUserMedia(std::u16string options, html::NavigatorUserMediaSuccessCallback successCallback)
+void NavigatorImp::getUserMedia(const std::u16string& options, html::NavigatorUserMediaSuccessCallback successCallback)
 {
     // TODO: implement me!
 }
 
-void NavigatorImp::getUserMedia(std::u16string options, html::NavigatorUserMediaSuccessCallback successCallback, html::NavigatorUserMediaErrorCallback errorCallback)
+void NavigatorImp::getUserMedia(const std::u16string& options, html::NavigatorUserMediaSuccessCallback successCallback, html::NavigatorUserMediaErrorCallback errorCallback)
 {
     // TODO: implement me!
 }

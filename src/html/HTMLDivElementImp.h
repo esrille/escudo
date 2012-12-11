@@ -53,7 +53,7 @@ public:
     // HTMLDivElement
     // HTMLDivElement-10
     std::u16string getAlign();
-    void setAlign(std::u16string align);
+    void setAlign(const std::u16string& align);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

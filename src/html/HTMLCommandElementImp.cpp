@@ -31,7 +31,7 @@ std::u16string HTMLCommandElementImp::getType()
     return u"";
 }
 
-void HTMLCommandElementImp::setType(std::u16string type)
+void HTMLCommandElementImp::setType(const std::u16string& type)
 {
     // TODO: implement me!
 }
@@ -86,7 +86,7 @@ std::u16string HTMLCommandElementImp::getRadiogroup()
     return u"";
 }
 
-void HTMLCommandElementImp::setRadiogroup(std::u16string radiogroup)
+void HTMLCommandElementImp::setRadiogroup(const std::u16string& radiogroup)
 {
     // TODO: implement me!
 }

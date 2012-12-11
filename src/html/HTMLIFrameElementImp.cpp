@@ -79,18 +79,19 @@ std::u16string HTMLIFrameElementImp::getSrc()
     return getAttribute(u"src");
 }
 
-void HTMLIFrameElementImp::setSrc(std::u16string src)
+void HTMLIFrameElementImp::setSrc(const std::u16string& src)
 {
-    if (!src.empty()) {
+    std::u16string s(src);
+    if (!s.empty()) {
         if (DocumentImp* document = getOwnerDocumentImp()) {
             URL base(document->getDocumentURI());
-            URL url(base, src);
-            src = url;
+            URL url(base, s);
+            s = url;
         } else
-            src.clear();
-        // TODO: Check what should be done if src is still empty (i.e. invalid)
+            s.clear();
+        // TODO: Check what should be done if s is still empty (i.e. invalid)
     }
-    window.open(src, u"_self");
+    window.open(s, u"_self");
 }
 
 std::u16string HTMLIFrameElementImp::getSrcdoc()
@@ -99,7 +100,7 @@ std::u16string HTMLIFrameElementImp::getSrcdoc()
     return u"";
 }
 
-void HTMLIFrameElementImp::setSrcdoc(std::u16string srcdoc)
+void HTMLIFrameElementImp::setSrcdoc(const std::u16string& srcdoc)
 {
     // TODO: implement me!
 }
@@ -110,7 +111,7 @@ std::u16string HTMLIFrameElementImp::getName()
     return u"";
 }
 
-void HTMLIFrameElementImp::setName(std::u16string name)
+void HTMLIFrameElementImp::setName(const std::u16string& name)
 {
     // TODO: implement me!
 }
@@ -121,7 +122,7 @@ DOMSettableTokenList HTMLIFrameElementImp::getSandbox()
     return static_cast<Object*>(0);
 }
 
-void HTMLIFrameElementImp::setSandbox(std::u16string sandbox)
+void HTMLIFrameElementImp::setSandbox(const std::u16string& sandbox)
 {
     // TODO: implement me!
 }
@@ -142,7 +143,7 @@ std::u16string HTMLIFrameElementImp::getWidth()
     return getAttribute(u"width");
 }
 
-void HTMLIFrameElementImp::setWidth(std::u16string width)
+void HTMLIFrameElementImp::setWidth(const std::u16string& width)
 {
     // TODO: implement me!
 }
@@ -152,7 +153,7 @@ std::u16string HTMLIFrameElementImp::getHeight()
     return getAttribute(u"height");
 }
 
-void HTMLIFrameElementImp::setHeight(std::u16string height)
+void HTMLIFrameElementImp::setHeight(const std::u16string& height)
 {
     // TODO: implement me!
 }
@@ -173,7 +174,7 @@ std::u16string HTMLIFrameElementImp::getAlign()
     return u"";
 }
 
-void HTMLIFrameElementImp::setAlign(std::u16string align)
+void HTMLIFrameElementImp::setAlign(const std::u16string& align)
 {
     // TODO: implement me!
 }
@@ -184,7 +185,7 @@ std::u16string HTMLIFrameElementImp::getFrameBorder()
     return u"";
 }
 
-void HTMLIFrameElementImp::setFrameBorder(std::u16string frameBorder)
+void HTMLIFrameElementImp::setFrameBorder(const std::u16string& frameBorder)
 {
     // TODO: implement me!
 }
@@ -195,7 +196,7 @@ std::u16string HTMLIFrameElementImp::getLongDesc()
     return u"";
 }
 
-void HTMLIFrameElementImp::setLongDesc(std::u16string longDesc)
+void HTMLIFrameElementImp::setLongDesc(const std::u16string& longDesc)
 {
     // TODO: implement me!
 }
@@ -206,7 +207,7 @@ std::u16string HTMLIFrameElementImp::getMarginHeight()
     return u"";
 }
 
-void HTMLIFrameElementImp::setMarginHeight(std::u16string marginHeight)
+void HTMLIFrameElementImp::setMarginHeight(const std::u16string& marginHeight)
 {
     // TODO: implement me!
 }
@@ -217,7 +218,7 @@ std::u16string HTMLIFrameElementImp::getMarginWidth()
     return u"";
 }
 
-void HTMLIFrameElementImp::setMarginWidth(std::u16string marginWidth)
+void HTMLIFrameElementImp::setMarginWidth(const std::u16string& marginWidth)
 {
     // TODO: implement me!
 }
@@ -228,7 +229,7 @@ std::u16string HTMLIFrameElementImp::getScrolling()
     return u"";
 }
 
-void HTMLIFrameElementImp::setScrolling(std::u16string scrolling)
+void HTMLIFrameElementImp::setScrolling(const std::u16string& scrolling)
 {
     // TODO: implement me!
 }

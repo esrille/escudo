@@ -113,9 +113,9 @@ public:
     virtual Node cloneNode(bool deep);
     virtual bool isSameNode(Node node);
     virtual bool isEqualNode(Node node);
-    virtual std::u16string lookupPrefix(std::u16string _namespace);
+    virtual std::u16string lookupPrefix(const std::u16string& _namespace);
     virtual std::u16string lookupNamespaceURI(Nullable<std::u16string> prefix);
-    virtual bool isDefaultNamespace(std::u16string _namespace);
+    virtual bool isDefaultNamespace(const std::u16string& _namespace);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
         return Node::dispatch(this, selector, id, argc, argv);

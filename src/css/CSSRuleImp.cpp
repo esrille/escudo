@@ -37,7 +37,7 @@ std::u16string CSSRuleImp::getCssText()
     return u"";
 }
 
-void CSSRuleImp::setCssText(std::u16string cssText)
+void CSSRuleImp::setCssText(const std::u16string& cssText)
 {
     // TODO: implement me!
 }

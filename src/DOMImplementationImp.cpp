@@ -22,29 +22,29 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
-bool DOMImplementationImp::hasFeature(std::u16string feature, std::u16string version)
+bool DOMImplementationImp::hasFeature(const std::u16string& feature, const std::u16string& version)
 {
     // TODO: implement me!
     return 0;
 }
 
-DocumentType DOMImplementationImp::createDocumentType(std::u16string qualifiedName, std::u16string publicId, std::u16string systemId)
+DocumentType DOMImplementationImp::createDocumentType(const std::u16string& qualifiedName, const std::u16string& publicId, const std::u16string& systemId)
 {
     return new(std::nothrow) DocumentTypeImp(qualifiedName, publicId, systemId);
 }
 
-Document DOMImplementationImp::createDocument(std::u16string namespaceURI, std::u16string qualifiedName, DocumentType doctype)
+Document DOMImplementationImp::createDocument(const std::u16string& namespaceURI, const std::u16string& qualifiedName, DocumentType doctype)
 {
     return new(std::nothrow) DocumentImp();
 }
 
-Document DOMImplementationImp::createHTMLDocument(std::u16string title)
+Document DOMImplementationImp::createHTMLDocument(const std::u16string& title)
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-css::CSSStyleSheet DOMImplementationImp::createCSSStyleSheet(std::u16string title, std::u16string media) throw(DOMException)
+css::CSSStyleSheet DOMImplementationImp::createCSSStyleSheet(const std::u16string& title, const std::u16string& media) throw(DOMException)
 {
     // TODO: implement me!
     return static_cast<Object*>(0);

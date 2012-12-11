@@ -38,7 +38,7 @@ std::u16string HTMLHRElementImp::getAlign()
     return u"";
 }
 
-void HTMLHRElementImp::setAlign(std::u16string align)
+void HTMLHRElementImp::setAlign(const std::u16string& align)
 {
     // TODO: implement me!
 }
@@ -49,7 +49,7 @@ std::u16string HTMLHRElementImp::getColor()
     return u"";
 }
 
-void HTMLHRElementImp::setColor(std::u16string color)
+void HTMLHRElementImp::setColor(const std::u16string& color)
 {
     // TODO: implement me!
 }
@@ -71,7 +71,7 @@ std::u16string HTMLHRElementImp::getSize()
     return u"";
 }
 
-void HTMLHRElementImp::setSize(std::u16string size)
+void HTMLHRElementImp::setSize(const std::u16string& size)
 {
     // TODO: implement me!
 }
@@ -82,7 +82,7 @@ std::u16string HTMLHRElementImp::getWidth()
     return u"";
 }
 
-void HTMLHRElementImp::setWidth(std::u16string width)
+void HTMLHRElementImp::setWidth(const std::u16string& width)
 {
     // TODO: implement me!
 }

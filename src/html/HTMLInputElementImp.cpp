@@ -241,7 +241,7 @@ std::u16string HTMLInputElementImp::getAccept()
     return u"";
 }
 
-void HTMLInputElementImp::setAccept(std::u16string accept)
+void HTMLInputElementImp::setAccept(const std::u16string& accept)
 {
     // TODO: implement me!
 }
@@ -252,7 +252,7 @@ std::u16string HTMLInputElementImp::getAlt()
     return u"";
 }
 
-void HTMLInputElementImp::setAlt(std::u16string alt)
+void HTMLInputElementImp::setAlt(const std::u16string& alt)
 {
     // TODO: implement me!
 }
@@ -262,7 +262,7 @@ std::u16string HTMLInputElementImp::getAutocomplete()
     return getAttribute(u"autocomplete");
 }
 
-void HTMLInputElementImp::setAutocomplete(std::u16string autocomplete)
+void HTMLInputElementImp::setAutocomplete(const std::u16string& autocomplete)
 {
     setAttribute(u"autocomplete", autocomplete);
 }
@@ -306,7 +306,7 @@ std::u16string HTMLInputElementImp::getDirName()
     return u"";
 }
 
-void HTMLInputElementImp::setDirName(std::u16string dirName)
+void HTMLInputElementImp::setDirName(const std::u16string& dirName)
 {
     // TODO: implement me!
 }
@@ -345,7 +345,7 @@ std::u16string HTMLInputElementImp::getFormAction()
     return u"";
 }
 
-void HTMLInputElementImp::setFormAction(std::u16string formAction)
+void HTMLInputElementImp::setFormAction(const std::u16string& formAction)
 {
     // TODO: implement me!
 }
@@ -356,7 +356,7 @@ std::u16string HTMLInputElementImp::getFormEnctype()
     return u"";
 }
 
-void HTMLInputElementImp::setFormEnctype(std::u16string formEnctype)
+void HTMLInputElementImp::setFormEnctype(const std::u16string& formEnctype)
 {
     // TODO: implement me!
 }
@@ -367,7 +367,7 @@ std::u16string HTMLInputElementImp::getFormMethod()
     return u"";
 }
 
-void HTMLInputElementImp::setFormMethod(std::u16string formMethod)
+void HTMLInputElementImp::setFormMethod(const std::u16string& formMethod)
 {
     // TODO: implement me!
 }
@@ -389,7 +389,7 @@ std::u16string HTMLInputElementImp::getFormTarget()
     return u"";
 }
 
-void HTMLInputElementImp::setFormTarget(std::u16string formTarget)
+void HTMLInputElementImp::setFormTarget(const std::u16string& formTarget)
 {
     // TODO: implement me!
 }
@@ -400,7 +400,7 @@ std::u16string HTMLInputElementImp::getHeight()
     return u"";
 }
 
-void HTMLInputElementImp::setHeight(std::u16string height)
+void HTMLInputElementImp::setHeight(const std::u16string& height)
 {
     // TODO: implement me!
 }
@@ -428,7 +428,7 @@ std::u16string HTMLInputElementImp::getMax()
     return u"";
 }
 
-void HTMLInputElementImp::setMax(std::u16string max)
+void HTMLInputElementImp::setMax(const std::u16string& max)
 {
     // TODO: implement me!
 }
@@ -450,7 +450,7 @@ std::u16string HTMLInputElementImp::getMin()
     return u"";
 }
 
-void HTMLInputElementImp::setMin(std::u16string min)
+void HTMLInputElementImp::setMin(const std::u16string& min)
 {
     // TODO: implement me!
 }
@@ -471,7 +471,7 @@ std::u16string HTMLInputElementImp::getName()
     return getAttribute(u"name");
 }
 
-void HTMLInputElementImp::setName(std::u16string name)
+void HTMLInputElementImp::setName(const std::u16string& name)
 {
     setAttribute(u"name", name);
 }
@@ -482,7 +482,7 @@ std::u16string HTMLInputElementImp::getPattern()
     return u"";
 }
 
-void HTMLInputElementImp::setPattern(std::u16string pattern)
+void HTMLInputElementImp::setPattern(const std::u16string& pattern)
 {
     // TODO: implement me!
 }
@@ -493,7 +493,7 @@ std::u16string HTMLInputElementImp::getPlaceholder()
     return u"";
 }
 
-void HTMLInputElementImp::setPlaceholder(std::u16string placeholder)
+void HTMLInputElementImp::setPlaceholder(const std::u16string& placeholder)
 {
     // TODO: implement me!
 }
@@ -537,7 +537,7 @@ std::u16string HTMLInputElementImp::getSrc()
     return u"";
 }
 
-void HTMLInputElementImp::setSrc(std::u16string src)
+void HTMLInputElementImp::setSrc(const std::u16string& src)
 {
     // TODO: implement me!
 }
@@ -548,7 +548,7 @@ std::u16string HTMLInputElementImp::getStep()
     return u"";
 }
 
-void HTMLInputElementImp::setStep(std::u16string step)
+void HTMLInputElementImp::setStep(const std::u16string& step)
 {
     // TODO: implement me!
 }
@@ -558,11 +558,12 @@ std::u16string HTMLInputElementImp::getType()
     return typeKeywords[type];
 }
 
-void HTMLInputElementImp::setType(std::u16string type)
+void HTMLInputElementImp::setType(const std::u16string& type)
 {
-    toLower(type);
+    std::u16string t(type);
+    toLower(t);
     for (const char16_t** i = typeKeywords; i < typeKeywords + TypeMax; ++i) {
-        if (type.compare(*i) == 0) {
+        if (t.compare(*i) == 0) {
             this->type = i - typeKeywords;
             return;
         }
@@ -576,7 +577,7 @@ std::u16string HTMLInputElementImp::getDefaultValue()
     return u"";
 }
 
-void HTMLInputElementImp::setDefaultValue(std::u16string defaultValue)
+void HTMLInputElementImp::setDefaultValue(const std::u16string& defaultValue)
 {
     // TODO: implement me!
 }
@@ -586,7 +587,7 @@ std::u16string HTMLInputElementImp::getValue()
     return getAttribute(u"value");
 }
 
-void HTMLInputElementImp::setValue(std::u16string value)
+void HTMLInputElementImp::setValue(const std::u16string& value)
 {
     setAttribute(u"value", value);
 }
@@ -625,7 +626,7 @@ std::u16string HTMLInputElementImp::getWidth()
     return u"";
 }
 
-void HTMLInputElementImp::setWidth(std::u16string width)
+void HTMLInputElementImp::setWidth(const std::u16string& width)
 {
     // TODO: implement me!
 }
@@ -674,7 +675,7 @@ bool HTMLInputElementImp::checkValidity()
     return 0;
 }
 
-void HTMLInputElementImp::setCustomValidity(std::u16string error)
+void HTMLInputElementImp::setCustomValidity(const std::u16string& error)
 {
     // TODO: implement me!
 }
@@ -718,7 +719,7 @@ std::u16string HTMLInputElementImp::getSelectionDirection()
     return u"";
 }
 
-void HTMLInputElementImp::setSelectionDirection(std::u16string selectionDirection)
+void HTMLInputElementImp::setSelectionDirection(const std::u16string& selectionDirection)
 {
     // TODO: implement me!
 }
@@ -728,7 +729,7 @@ void HTMLInputElementImp::setSelectionRange(unsigned int start, unsigned int end
     // TODO: implement me!
 }
 
-void HTMLInputElementImp::setSelectionRange(unsigned int start, unsigned int end, std::u16string direction)
+void HTMLInputElementImp::setSelectionRange(unsigned int start, unsigned int end, const std::u16string& direction)
 {
     // TODO: implement me!
 }
@@ -739,7 +740,7 @@ std::u16string HTMLInputElementImp::getAlign()
     return u"";
 }
 
-void HTMLInputElementImp::setAlign(std::u16string align)
+void HTMLInputElementImp::setAlign(const std::u16string& align)
 {
     // TODO: implement me!
 }
@@ -750,7 +751,7 @@ std::u16string HTMLInputElementImp::getUseMap()
     return u"";
 }
 
-void HTMLInputElementImp::setUseMap(std::u16string useMap)
+void HTMLInputElementImp::setUseMap(const std::u16string& useMap)
 {
     // TODO: implement me!
 }

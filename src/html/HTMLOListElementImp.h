@@ -58,7 +58,7 @@ public:
     bool getCompact();
     void setCompact(bool compact);
     std::u16string getType();
-    void setType(std::u16string type);
+    void setType(const std::u16string& type);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

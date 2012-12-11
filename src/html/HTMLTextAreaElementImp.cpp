@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2012 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ std::u16string HTMLTextAreaElementImp::getDirName()
     return u"";
 }
 
-void HTMLTextAreaElementImp::setDirName(std::u16string dirName)
+void HTMLTextAreaElementImp::setDirName(const std::u16string& dirName)
 {
     // TODO: implement me!
 }
@@ -91,7 +91,7 @@ std::u16string HTMLTextAreaElementImp::getName()
     return getAttribute(u"name");
 }
 
-void HTMLTextAreaElementImp::setName(std::u16string name)
+void HTMLTextAreaElementImp::setName(const std::u16string& name)
 {
     setAttribute(u"name", name);
 }
@@ -102,7 +102,7 @@ std::u16string HTMLTextAreaElementImp::getPlaceholder()
     return u"";
 }
 
-void HTMLTextAreaElementImp::setPlaceholder(std::u16string placeholder)
+void HTMLTextAreaElementImp::setPlaceholder(const std::u16string& placeholder)
 {
     // TODO: implement me!
 }
@@ -146,7 +146,7 @@ std::u16string HTMLTextAreaElementImp::getWrap()
     return u"";
 }
 
-void HTMLTextAreaElementImp::setWrap(std::u16string wrap)
+void HTMLTextAreaElementImp::setWrap(const std::u16string& wrap)
 {
     // TODO: implement me!
 }
@@ -162,7 +162,7 @@ std::u16string HTMLTextAreaElementImp::getDefaultValue()
     return u"";
 }
 
-void HTMLTextAreaElementImp::setDefaultValue(std::u16string defaultValue)
+void HTMLTextAreaElementImp::setDefaultValue(const std::u16string& defaultValue)
 {
     // TODO: implement me!
 }
@@ -173,7 +173,7 @@ std::u16string HTMLTextAreaElementImp::getValue()
     return u"";
 }
 
-void HTMLTextAreaElementImp::setValue(std::u16string value)
+void HTMLTextAreaElementImp::setValue(const std::u16string& value)
 {
     // TODO: implement me!
 }
@@ -208,7 +208,7 @@ bool HTMLTextAreaElementImp::checkValidity()
     return 0;
 }
 
-void HTMLTextAreaElementImp::setCustomValidity(std::u16string error)
+void HTMLTextAreaElementImp::setCustomValidity(const std::u16string& error)
 {
     // TODO: implement me!
 }
@@ -252,7 +252,7 @@ std::u16string HTMLTextAreaElementImp::getSelectionDirection()
     return u"";
 }
 
-void HTMLTextAreaElementImp::setSelectionDirection(std::u16string selectionDirection)
+void HTMLTextAreaElementImp::setSelectionDirection(const std::u16string& selectionDirection)
 {
     // TODO: implement me!
 }
@@ -262,7 +262,7 @@ void HTMLTextAreaElementImp::setSelectionRange(unsigned int start, unsigned int 
     // TODO: implement me!
 }
 
-void HTMLTextAreaElementImp::setSelectionRange(unsigned int start, unsigned int end, std::u16string direction)
+void HTMLTextAreaElementImp::setSelectionRange(unsigned int start, unsigned int end, const std::u16string& direction)
 {
     // TODO: implement me!
 }
