@@ -288,13 +288,13 @@ bool WindowImp::poll()
             recordTime("%*shtml parsed", windowDepth * 2, "");
             if (4 <= getLogLevel())
                 dumpTree(std::cerr, document);
-            backgroundTask.restart(BackgroundTask::Cascade);
         }
         switch (backgroundTask.getState()) {
         case BackgroundTask::Cascaded:
             HTMLElementImp::xblEnteredDocument(document);
             backgroundTask.wakeUp(BackgroundTask::Layout);
             break;
+        case BackgroundTask::Init:
         case BackgroundTask::Done: {
             ViewCSSImp* next = backgroundTask.getView();
             updateView(next);
@@ -314,6 +314,8 @@ bool WindowImp::poll()
                         }
                         document->decrementLoadEventDelayCount();
                         document->setContentLoaded();
+
+                        backgroundTask.restart(BackgroundTask::Cascade);
                     }
                 }
             }

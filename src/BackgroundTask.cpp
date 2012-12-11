@@ -156,8 +156,8 @@ void WindowImp::BackgroundTask::restart(unsigned flags)
 
 ViewCSSImp* WindowImp::BackgroundTask::getView()
 {
-    assert(state == Done);
-    if (!xfered) {
+    assert(state == Done || state == Init);
+    if (!xfered && view) {
         xfered = true;
         return view;
     }
