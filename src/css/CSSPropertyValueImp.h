@@ -2050,13 +2050,14 @@ public:
         return u"url(" + CSSSerializeString(uri) + u')';
     }
     bool operator==(const CSSListStyleImageValueImp& image) const {
-        return uri == image.uri;
+        return uri == image.uri && status == image.status;
     }
     bool operator!=(const CSSListStyleImageValueImp& image) const {
-        return uri != image.uri;
+        return uri != image.uri || status != image.status;
     }
     void specify(const CSSListStyleImageValueImp& specified) {
         uri = specified.uri;
+        status = specified.status;
     }
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* self);
     bool hasImage() const {

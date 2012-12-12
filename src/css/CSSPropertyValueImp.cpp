@@ -1721,9 +1721,15 @@ void CSSListStyleImageValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp
     if (isNone() || self->getPseudoElementSelectorType() != CSSPseudoElementSelector::Marker || !self->content.wasNormal())
         return;
     if (view->getDocument()) {
+        HttpRequest* prev = request;
         request = view->preload(view->getDocument().getDocumentURI(), getValue());
-        if (request)
+        if (request) {
+            if (prev && prev != request)
+                prev ->clearCallback(requestID);
             requestID = request->addCallback(boost::bind(&CSSListStyleImageValueImp::notify, this, self), requestID);
+            status = request->getStatus();
+            // TODO: load count should be incremented
+        }
     }
 }
 
@@ -1731,7 +1737,6 @@ void CSSListStyleImageValueImp::notify(CSSStyleDeclarationImp* self)
 {
     assert(request);
     if (status != request->getStatus()) {
-        status = request->getStatus();
         self->requestReconstruct(Box::NEED_STYLE_RECALCULATION);
         self->clearFlags(CSSStyleDeclarationImp::Computed);
     }
