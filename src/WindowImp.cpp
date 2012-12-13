@@ -156,6 +156,19 @@ void WindowImp::updateView(ViewCSSImp* next)
     view->setZoom(zoom);
     detail = 0;
     redisplay = true;
+
+    if (!view->getTree()) {
+        // cf. http://test.csswg.org/suites/css2.1/20110323/html4/root-box-003.htm
+        canvas.shutdown();
+        canvas.setup(width, height);
+        canvas.beginRender(view->getBackgroundColor());
+        canvas.endRender();
+    }
+
+    if (!parent) {
+        std::u16string title = view->getDocument().getTitle();
+        setWindowTitle(utfconv(title).c_str());
+    }
 }
 
 void WindowImp::setDocumentWindow(const DocumentWindowPtr& window)
@@ -362,26 +375,23 @@ bool WindowImp::poll()
 void WindowImp::render(ViewCSSImp* parentView)
 {
     recordTime("%*srepaint begin: %s (%s)", windowDepth * 2, "", utfconv(window->getDocument().getReadyState()).c_str(), view ? "render" : "canvas");
-    if (view && (view->gatherFlags() & Box::NEED_REPAINT)) {
-        view->clearFlags(Box::NEED_REPAINT);
-        canvas.shutdown();
-        canvas.setup(width, height);
-        canvas.beginRender();
-        view->render(parentView ? parentView->getClipCount() : 0);
-        scrollWidth = view->getScrollWidth();
-        scrollHeight = view->getScrollHeight();
-        canvas.endRender();
-
-        if (!parent) {
-            std::u16string title = view->getDocument().getTitle();
-            setWindowTitle(utfconv(title).c_str());
+    if (view) {
+        if (view->gatherFlags() & Box::NEED_REPAINT) {
+            view->clearFlags(Box::NEED_REPAINT);
+            canvas.shutdown();
+            canvas.setup(width, height);
+            canvas.beginRender(view->getBackgroundColor());
+            view->render(parentView ? parentView->getClipCount() : 0);
+            scrollWidth = view->getScrollWidth();
+            scrollHeight = view->getScrollHeight();
+            canvas.endRender();
         }
-    }
-    if (view && 2 <= getLogLevel() && backgroundTask.getState() == BackgroundTask::Done && !view->gatherFlags()) {
-        std::cout << "\n## " << window->getDocument().getReadyState() << '\n';
-        view->dump();
-        std::cout << "##\n";
-        std::cout.flush();
+        if (2 <= getLogLevel() && backgroundTask.getState() == BackgroundTask::Done && !view->gatherFlags()) {
+            std::cout << "\n## " << window->getDocument().getReadyState() << '\n';
+            view->dump();
+            std::cout << "##\n";
+            std::cout.flush();
+        }
     }
     canvas.render(width, height);
     recordTime("%*srepaint end", windowDepth * 2, "");

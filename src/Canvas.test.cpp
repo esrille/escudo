@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
     glutDisplayFunc(myDisplay);
 
     canvas.setup(816, 1056);
-    canvas.beginRender();
+    canvas.beginRender(0xffffffff);
     render(816, 1056);
     canvas.endRender();
 

@@ -46,7 +46,9 @@ void reshape(int w, int h)
 
 void display()
 {
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
     if (WindowImp* imp = static_cast<WindowImp*>(window.self())) {
         imp->render(0);
 #ifndef NDEBUG
@@ -217,14 +219,14 @@ void init(int* argc, char* argv[], int width, int height)
 
     glutReshapeFunc(reshape);
     glutDisplayFunc(display);
-    glClearColor(1.0, 1.0, 1.0, 1.0);
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glEnable(GL_TEXTURE_2D);
     glDepthFunc(GL_LEQUAL);
     glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_ALPHA_TEST);
     glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glutKeyboardFunc(keyboard);
     glutKeyboardUpFunc(keyboardUp);

@@ -870,4 +870,14 @@ css::CSSStyleDeclaration ViewCSSImp::getComputedStyle(Element elt, Nullable<std:
     return getStyle(elt, pseudoElt);
 }
 
+unsigned ViewCSSImp::getBackgroundColor()
+{
+    if (boxTree)
+        return boxTree->backgroundColor;
+    // cf. http://test.csswg.org/suites/css2.1/20110323/html4/root-box-003.htm
+    if (CSSStyleDeclarationImp* style = getStyle(getDocument().getDocumentElement()))
+        return style->backgroundColor.getARGB();
+    return 0;
+}
+
 }}}}  // org::w3c::dom::bootstrap

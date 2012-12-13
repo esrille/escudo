@@ -50,7 +50,7 @@ public:
     void setup(int width, int height);
     void shutdown();
 
-    void beginRender();
+    void beginRender(unsigned backgroundColor);
     void endRender();
 
     int getWidth() const {

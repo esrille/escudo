@@ -128,6 +128,7 @@ public:
     // Repaint
     void render(unsigned clipCount);
     void renderCanvas(unsigned color);
+    unsigned getBackgroundColor();
 
     // Misc.
 

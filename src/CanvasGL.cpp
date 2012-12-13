@@ -63,7 +63,7 @@ void Canvas::Impl::shutdown()
     width = height = 0;
 }
 
-void Canvas::Impl::beginRender()
+void Canvas::Impl::beginRender(unsigned backgroundColor)
 {
     GLint v[4];
     glGetIntegerv(GL_VIEWPORT, v);
@@ -85,6 +85,10 @@ void Canvas::Impl::beginRender()
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
 
+    glClearColor(((backgroundColor >> 16) & 255) / 255.0f,
+                 ((backgroundColor >> 8) & 255) / 255.0f,
+                 (backgroundColor & 255) / 255.0f,
+                 ((backgroundColor >> 24) & 255) / 255.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 }
 
@@ -146,9 +150,9 @@ void Canvas::shutdown()
     pimpl->shutdown();
 }
 
-void Canvas::beginRender()
+void Canvas::beginRender(unsigned backgroundColor)
 {
-    pimpl->beginRender();
+    pimpl->beginRender(backgroundColor);
 }
 
 void Canvas::endRender()
