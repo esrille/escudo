@@ -1,3 +1,4 @@
+ACLOCAL_AMFLAGS = -I m4
 SUFFIXES = .idl .re
 SUBDIRS = data
 
@@ -1285,6 +1286,7 @@ dist-hook:
 	-rm -f $(distdir)/CSSGrammar.cc $(distdir)/CSSGrammar.h
 
 EXTRA_DIST = \
+	m4/ax_compare_version.m4 \
 	escort.spec.in \
 	escort.spec \
 	debian/changelog \

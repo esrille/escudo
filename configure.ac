@@ -1,6 +1,7 @@
 dnl Process this file with autoconf to produce a configure script
-AC_INIT([escort], [0.2.3])
+AC_INIT([escort], [0.2.4])
 AC_CONFIG_AUX_DIR(.)
+AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([foreign no-define])
 AC_PROG_YACC
 AC_PROG_CXX
@@ -28,6 +29,15 @@ AH_BOTTOM([#include <Object.h>])
 AH_BOTTOM([#if 4 < __GNUC__ || __GNUC__ == 4 && 6 <= __GNUC_MINOR__
 #define HAVE_NULLPTR 1
 #endif])
+
+# Check for esidl 0.2.1 or later
+AC_CHECK_PROG(HAVE_ESIDL, esidl, [`esidl --version`], [no], [])
+if test "$HAVE_ESIDL" = "no"; then
+	AC_MSG_ERROR([Cannot find esidl; esidl Web IDL compiler is needed.])
+fi
+ESIDL_VERSION=`esidl --version | cut -f 3 -d ' '`
+AX_COMPARE_VERSION([$ESIDL_VERSION], [lt], [0.2.1],
+	AC_MSG_ERROR([Cannot find esidl version 0.2.1 or later. A newer version is needed.]))
 
 # check systems not following FHS (http://www.pathname.com/fhs)
 AM_CONDITIONAL([HAVE_LIBEXEC], [test -d /usr/libexec])

@@ -83,7 +83,8 @@ DIST_COMMON = $(am__configure_deps) $(dist_aboutdata_DATA) \
 	$(top_srcdir)/debian/changelog.in CSSGrammar.cc CSSGrammar.h \
 	ChangeLog depcomp install-sh missing ylwrap
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/m4/ax_compare_version.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
@@ -620,6 +621,7 @@ EXEEXT = @EXEEXT@
 FREETYPE_CPPFLAGS = @FREETYPE_CPPFLAGS@
 FREETYPE_LIBS = @FREETYPE_LIBS@
 HAVE_AEGEAN = @HAVE_AEGEAN@
+HAVE_ESIDL = @HAVE_ESIDL@
 HAVE_IPA_GOTHIC = @HAVE_IPA_GOTHIC@
 HAVE_IPA_MINCHO = @HAVE_IPA_MINCHO@
 HAVE_IPA_PGOTHIC = @HAVE_IPA_PGOTHIC@
@@ -699,6 +701,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+ACLOCAL_AMFLAGS = -I m4
 SUFFIXES = .idl .re
 SUBDIRS = data
 idl_files = \
@@ -1678,6 +1681,7 @@ dist_aboutdata_DATA = \
 	data/escort/about/escort_128.png
 
 EXTRA_DIST = \
+	m4/ax_compare_version.m4 \
 	escort.spec.in \
 	escort.spec \
 	debian/changelog \
