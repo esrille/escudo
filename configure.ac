@@ -30,14 +30,14 @@ AH_BOTTOM([#if 4 < __GNUC__ || __GNUC__ == 4 && 6 <= __GNUC_MINOR__
 #define HAVE_NULLPTR 1
 #endif])
 
-# Check for esidl 0.2.1 or later
+# Check for esidl 0.2.2 or later
 AC_CHECK_PROG(HAVE_ESIDL, esidl, [`esidl --version`], [no], [])
 if test "$HAVE_ESIDL" = "no"; then
 	AC_MSG_ERROR([Cannot find esidl; esidl Web IDL compiler is needed.])
 fi
 ESIDL_VERSION=`esidl --version | cut -f 3 -d ' '`
-AX_COMPARE_VERSION([$ESIDL_VERSION], [lt], [0.2.1],
-	AC_MSG_ERROR([Cannot find esidl version 0.2.1 or later. A newer version is needed.]))
+AX_COMPARE_VERSION([$ESIDL_VERSION], [lt], [0.2.2],
+	AC_MSG_ERROR([Cannot find esidl version 0.2.2 or later. A newer version is needed.]))
 
 # check systems not following FHS (http://www.pathname.com/fhs)
 AM_CONDITIONAL([HAVE_LIBEXEC], [test -d /usr/libexec])

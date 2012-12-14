@@ -4041,7 +4041,7 @@ ac_config_files="$ac_config_files escort.spec debian/changelog Makefile data/Mak
 
 
 
-# Check for esidl 0.2.1 or later
+# Check for esidl 0.2.2 or later
 # Extract the first word of "esidl", so it can be a program name with args.
 set dummy esidl; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
@@ -4103,7 +4103,7 @@ ESIDL_VERSION=`esidl --version | cut -f 3 -d ' '`
                      -e 's/[^0-9]//g'`
 
 
-  ax_compare_version_B=`echo "0.2.1" | sed -e 's/\([0-9]*\)/Z\1Z/g' \
+  ax_compare_version_B=`echo "0.2.2" | sed -e 's/\([0-9]*\)/Z\1Z/g' \
                      -e 's/Z\([0-9]\)Z/Z0\1Z/g' \
                      -e 's/Z\([0-9][0-9]\)Z/Z0\1Z/g' \
                      -e 's/Z\([0-9][0-9][0-9]\)Z/Z0\1Z/g' \
@@ -4116,7 +4116,7 @@ x$ax_compare_version_B" | sed 's/^ *//' | sort -r | sed "s/x${ax_compare_version
 
 
     if test "$ax_compare_version" = "true" ; then
-    as_fn_error $? "Cannot find esidl version 0.2.1 or later. A newer version is needed." "$LINENO" 5
+    as_fn_error $? "Cannot find esidl version 0.2.2 or later. A newer version is needed." "$LINENO" 5
       fi
 
 
