@@ -140,22 +140,22 @@ bool HttpRequest::redirect(const HttpResponseMessage& res)
 bool HttpRequest::complete(bool error)
 {
     errorFlag = error;
-    if (cache)
-        cache->notify(this, error);
-    if (!error) {
-        if (redirect(response)) {
-            response.clear();
-            send();
-            return false;
-        }
-    } else
+    if (error)
         response.setStatus(404);
-    readyState = (handler || !callbackList.empty()) ? COMPLETE : DONE;
+    readyState = (cache || handler || !callbackList.empty()) ? COMPLETE : DONE;
     return readyState == COMPLETE;
 }
 
 void HttpRequest::notify()
 {
+    if (cache)
+        cache->notify(this, errorFlag);
+    if (!errorFlag && redirect(response)) {
+        response.clear();
+        send();
+        return;
+    }
+
     readyState = DONE;
     if (handler) {
         handler();
