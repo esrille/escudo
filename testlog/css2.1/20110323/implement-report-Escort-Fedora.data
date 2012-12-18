@@ -1,4 +1,4 @@
-# Escort 0.2.3 (r3277) Fedora Linux 17
+# Escort 0.2.3 (r3289) Fedora Linux 17
 # Escort/0.2.3
 # http://test.csswg.org/suites/css2.1/20110323/
 # See http://wiki.csswg.org/test/implementation-report for instructions
@@ -3261,7 +3261,7 @@ html4/c21-focus-ln-000.htm	fail
 html4/c21-hover-ln-000.htm	pass
 html4/c21-pseu-cls-000.htm	pass
 html4/c21-pseu-id-000.htm	pass
-html4/c21-pseud-anch-000.htm	pass
+html4/c21-pseud-anch-000.htm	fail
 html4/c21-pseud-link-000.htm	pass
 html4/c21-pseud-link-001.htm	pass
 html4/c21-pseud-link-002.htm	fail
