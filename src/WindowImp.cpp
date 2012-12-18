@@ -387,7 +387,13 @@ void WindowImp::render(ViewCSSImp* parentView)
             canvas.endRender();
         }
         if (2 <= getLogLevel() && backgroundTask.getState() == BackgroundTask::Done && !view->gatherFlags()) {
-            std::cout << "\n## " << window->getDocument().getReadyState() << '\n';
+            unsigned depth = 1;
+            for (WindowImp* w = this; w->parent; w = w->parent)
+                ++depth;
+            std::cout << "\n## " << window->getDocument().getReadyState();
+            if (1 < depth)
+                std::cout << " (" << depth << ')';
+            std::cout << '\n';
             view->dump();
             std::cout << "##\n";
             std::cout.flush();
