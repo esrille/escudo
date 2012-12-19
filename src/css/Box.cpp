@@ -1398,11 +1398,13 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
         // Only inline blocks have been marked NEED_REFLOW and no more reflow is necessary
         // with this block.
 #ifndef NDEBUG
-            if (3 <= getLogLevel())
-                std::cout << "Block::" << __func__ << ": skip reflow for '" << tag << "'\n";
+        if (3 <= getLogLevel())
+            std::cout << "Block::" << __func__ << ": skip reflow for '" << tag << "'\n";
 #endif
         flags &= ~(NEED_CHILD_REFLOW | NEED_REPOSITION);
-        context = restoreFormattingContext(context);
+        restoreFormattingContext(context);
+        if (parentContext && context != parentContext)
+            context = parentContext;
         height = savedHeight;
         mcw = savedMcw;
         if (context) {
@@ -1700,7 +1702,6 @@ void Block::layOutAbsolute(ViewCSSImp* view)
 
     float savedWidth = width;
     float savedHeight = height;
-    FormattingContext* context;
 
     setContainingBlock(view);
     const ContainingBlock* containingBlock = &absoluteBlock;
@@ -1762,7 +1763,7 @@ void Block::layOutAbsolute(ViewCSSImp* view)
         flags |= NEED_REFLOW;
     }
 
-    context = updateFormattingContext(context);
+    FormattingContext* context = updateFormattingContext(0);
     assert(context);
 
     if (width != savedWidth)

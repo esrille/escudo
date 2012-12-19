@@ -1693,12 +1693,14 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
             // with this block.
 #ifndef NDEBUG
             if (3 <= getLogLevel())
-                std::cout << "Block::" << __func__ << ": skip table reflow\n";
+                std::cout << "TableWrapperBox::" << __func__ << ": skip table reflow\n";
 #endif
             flags &= ~(NEED_CHILD_REFLOW | NEED_REPOSITION);
             width = savedWidth;
             height = savedHeight;
-            context = restoreFormattingContext(context);
+            restoreFormattingContext(context);
+            if (parentContext && context != parentContext)
+                context = parentContext;
             if (context) {
                 context->restoreContext(this);
                 return true;
@@ -1806,7 +1808,7 @@ void TableWrapperBox::layOutAbsolute(ViewCSSImp* view)
     bool collapsingModel = resolveBorderConflict();
     bool fixedLayout = (style->tableLayout.getValue() == CSSTableLayoutValueImp::Fixed) && !style->width.isAuto();
 
-    FormattingContext* context = updateFormattingContext(context);
+    FormattingContext* context = updateFormattingContext(0);
     assert(context);
 
     float before = height;
