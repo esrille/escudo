@@ -393,7 +393,8 @@ FormattingContext* Box::updateFormattingContext(FormattingContext* context)
     if (isFlowRoot()) {
         assert(formattingContext);
         return formattingContext;
-    } else
+    }
+    if (context)
         context->updateBlanks(this);
     return context;
 }
