@@ -99,7 +99,7 @@ public:
     }
 
     virtual float shrinkTo();
-    virtual float resolveWidth(float w, FormattingContext* context);
+    virtual float resolveWidth(float w, FormattingContext* context, float r);
     virtual void render(ViewCSSImp* view, StackingContext* stackingContext);
     void renderNonInline(ViewCSSImp* view, StackingContext* stackingContext);
 };

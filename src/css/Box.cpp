@@ -612,7 +612,7 @@ float Block::setWidth(float w, float maxWidth, float minWidth)
 //
 // marginLeft + borderLeftWidth + paddingLeft + width + paddingRight + borderRightWidth + marginRight
 // == containingBlock->width (- scrollbar width, if any)
-float Block::resolveWidth(float w, FormattingContext* context)
+float Block::resolveWidth(float w, FormattingContext* context, float r)
 {
     if (isAnonymous()) {
         width = w;
@@ -633,6 +633,11 @@ float Block::resolveWidth(float w, FormattingContext* context)
             return width;
         }
         if (intrinsic) {
+            --autoCount;
+            autoMask &= ~Width;
+            w -= width;
+        } else if (!isnan(r)) {
+            width = r;
             --autoCount;
             autoMask &= ~Width;
             w -= width;
@@ -1525,7 +1530,7 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
                         clearance += h;
                     if (width <= leftover) {
                         // TODO: Adjust clearance and set margins to the original values
-                        resolveWidth(containingBlock->width, parentContext);
+                        resolveWidth(containingBlock->width, parentContext, width);
                         updateFormattingContext(parentContext);
                         break;
                     }

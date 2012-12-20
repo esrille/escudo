@@ -130,14 +130,14 @@ float CellBox::shrinkTo()
     return min + getBlankLeft() + getBlankRight();
 }
 
-float CellBox::resolveWidth(float w, FormattingContext* context)
+float CellBox::resolveWidth(float w, FormattingContext* context, float r)
 {
     if (fixedLayout) {
         w -= borderLeft + paddingLeft + paddingRight + borderRight;
         width = w;
         return 0.0f;
     }
-    return Block::resolveWidth(w, context);
+    return Block::resolveWidth(w, context, r);
 }
 
 bool CellBox::isEmptyCell() const
@@ -1741,7 +1741,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
                         clearance += h;
                     if (width <= leftover) {
                         // TODO: Adjust clearance and set margins to the original values
-                        resolveWidth(containingBlock->width, parentContext);
+                        resolveWidth(containingBlock->width, parentContext, width);
                         updateFormattingContext(parentContext);
                         break;
                     }
