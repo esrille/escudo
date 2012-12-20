@@ -43,13 +43,13 @@ CellBox::CellBox(Element element, CSSStyleDeclarationImp* style):
         verticalAlign = style->verticalAlign.getValueForCell();
 }
 
-void CellBox::fit(float w)
+void CellBox::fit(float w, FormattingContext* context)
 {
     if (getBlockWidth() == w)
         return;
     width = w - getBlankLeft() - getBlankRight();
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
-        child->fit(width);
+        child->fit(width, context);
 }
 
 void CellBox::separateBorders(CSSStyleDeclarationPtr style, unsigned xWidth, unsigned yHeight)
@@ -130,14 +130,14 @@ float CellBox::shrinkTo()
     return min + getBlankLeft() + getBlankRight();
 }
 
-void CellBox::resolveWidth(float w)
+float CellBox::resolveWidth(float w, FormattingContext* context)
 {
     if (fixedLayout) {
         w -= borderLeft + paddingLeft + paddingRight + borderRight;
         width = w;
-        return;
+        return 0.0f;
     }
-    Block::resolveWidth(w);
+    return Block::resolveWidth(w, context);
 }
 
 bool CellBox::isEmptyCell() const
@@ -868,7 +868,7 @@ void TableWrapperBox::processFooter()
 // Common part
 //
 
-void TableWrapperBox::fit(float w)
+void TableWrapperBox::fit(float w, FormattingContext* context)
 {
     float diff = w - getTotalWidth();
     if (0.0f < diff) {
@@ -1536,7 +1536,7 @@ Reflow:
                 float w = widths[x];
                 for (unsigned c = 1; c < cellBox->getColSpan(); ++c)
                     w += widths[x + c];
-                cellBox->fit(w);
+                cellBox->fit(w, context);
             }
             float h = heights[y];
             for (unsigned r = 1; r < cellBox->getRowSpan(); ++r)
@@ -1596,6 +1596,14 @@ Reflow:
             child->layOut(view, context);
             width = std::max(width, child->getBlockWidth());
         }
+    }
+
+    mcw = width;
+    if (!isAnonymous()) {
+        if (!style->marginLeft.isPercentage() && !style->marginLeft.isAuto())
+            mcw += style->marginLeft.getPx();
+        if (!style->marginRight.isPercentage() && !style->marginRight.isAuto())
+            mcw += style->marginRight.getPx();
     }
 
     h = 0.0f;
@@ -1670,14 +1678,19 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
     backgroundColor = getParentBox() ? 0x00000000 : style->backgroundColor.getARGB();
     paddingTop = paddingRight = paddingBottom = paddingLeft = 0.0f;
     borderTop = borderRight = borderBottom = borderLeft = 0.0f;
-    resolveMargin(view, containingBlock);
+    float leftover = resolveWidth(containingBlock->width, context);
+    resolveHeight();
 
     visibility = style->visibility.getValue();
     textAlign = style->textAlign.getValue();
 
-    if (context)
+    if (context) {
         collapseMarginTop(context);
+        if (!isnan(context->clearance))
+            leftover = resolveWidth(containingBlock->width, context);
+    }
     context = updateFormattingContext(context);
+
     if (isCollapsableOutside()) {
         context->inheritMarginContext(parentContext);
         // The top margin of the table caption is not collapsed with top margin of the table.
@@ -1718,10 +1731,27 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
     if (parentContext && parentContext != context) {
         if (isCollapsableOutside()) {
             parentContext->inheritMarginContext(context);
-            if (0.0f < height)
-                context->updateRemainingHeight(height);
+            if (!isAnonymous() && isFlowRoot() && leftover < width) {
+                float h;
+                while (0 < (h = parentContext->shiftDown(&leftover))) {
+                    parentContext->updateRemainingHeight(h);
+                    if (isnanf(clearance))
+                        clearance = h;
+                    else
+                        clearance += h;
+                    if (width <= leftover) {
+                        // TODO: Adjust clearance and set margins to the original values
+                        resolveWidth(containingBlock->width, parentContext);
+                        updateFormattingContext(parentContext);
+                        break;
+                    }
+                }
+            }
         }
         context = parentContext;
+        if (0.0f < height)
+            context->updateRemainingHeight(height);
+        // TODO: if there's not enough width...
     }
 
     if (context->hasChanged(this)) {
@@ -1730,7 +1760,6 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
             nextSibling->setFlags(NEED_REFLOW);
     }
     flags &= ~(NEED_REFLOW | NEED_CHILD_REFLOW | NEED_REPOSITION);
-
     return true;
 }
 

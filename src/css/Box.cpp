@@ -588,55 +588,51 @@ void Block::resolveBackgroundPosition(ViewCSSImp* view, const ContainingBlock* c
     backgroundTop = style->backgroundPosition.getTopPx();
 }
 
-void Block::resolveWidth(float w)
+float Block::setWidth(float w, float maxWidth, float minWidth)
 {
-    resolveNormalWidth(w);
-    applyMinMaxWidth(w);
-}
-
-void Block::applyMinMaxWidth(float w)
-{
-    if (!style->maxWidth.isNone()) {
-        float maxWidth = style->maxWidth.getPx();
-        if (maxWidth < width)
-            resolveNormalWidth(w, maxWidth);
+    float d = 0.0f;
+    if (maxWidth < w) {
+        d = w - maxWidth;
+        w = maxWidth;
         // cf. html4/max-width-applies-to-007.htm (note that strictly speaking, this test is invalid.)
         if (!style->width.isAuto() && !style->width.isPercentage())
             updateMCW(std::min(style->width.getPx(), maxWidth));
     } else if (!style->width.isAuto() && !style->width.isPercentage())
         updateMCW(style->width.getPx());
-
-    float minWidth = style->minWidth.getPx();
-    if (width < minWidth)
-        resolveNormalWidth(w, minWidth);
-    updateMCW(minWidth);
+    if (w < minWidth) {
+        d -= (minWidth - w);
+        w = minWidth;
+        updateMCW(minWidth);
+    }
+    width = w;
+    return d;
 }
 
 // Calculate width
 //
 // marginLeft + borderLeftWidth + paddingLeft + width + paddingRight + borderRightWidth + marginRight
 // == containingBlock->width (- scrollbar width, if any)
-void Block::resolveNormalWidth(float w, float r)
+float Block::resolveWidth(float w, FormattingContext* context)
 {
     if (isAnonymous()) {
-        if (!isnan(r))
-            width = r;
-        else
-            width = w;
-        return;
+        width = w;
+        return width;
     }
 
+    float maxWidth = HUGE_VALF;
+    float minWidth = 0.0f;
     int autoCount = 3;
     unsigned autoMask = Left | Width | Right;
-    if (style) {
-        if (style->isFloat() || style->display.isInlineLevel())
-            return resolveFloatWidth(w, r);
+    if (!style)
+        width = 0.0f;
+    else {
+        maxWidth = style->maxWidth.isNone() ? HUGE_VALF : style->maxWidth.getPx();
+        minWidth = style->minWidth.getPx();
+        if (style->isFloat() || style->display.isInlineLevel()) {
+            resolveFloatWidth(w, maxWidth, minWidth);
+            return width;
+        }
         if (intrinsic) {
-            --autoCount;
-            autoMask &= ~Width;
-            w -= width;
-        } else if (!isnan(r)) {
-            width = r;
             --autoCount;
             autoMask &= ~Width;
             w -= width;
@@ -645,7 +641,8 @@ void Block::resolveNormalWidth(float w, float r)
             --autoCount;
             autoMask &= ~Width;
             w -= width;
-        }
+        } else
+            width = 0.0f;
         if (!style->marginLeft.isAuto()) {
             marginLeft = style->marginLeft.getPx();
             --autoCount;
@@ -662,53 +659,82 @@ void Block::resolveNormalWidth(float w, float r)
     w -= borderLeft + paddingLeft + paddingRight + borderRight;
     if (w < 0.0f && !(autoMask & Width))
         w = 0.0f;
+
+    float leftover = w + width;
+    float ld = 0.0f;
+    float rd = 0.0f;
+    if (isFlowRoot() && context) {
+        float e;
+        if (0.0f < (e = context->getLeftEdge()))
+            ld = std::max(0.0f, e - marginLeft);
+        if (0.0f < (e = context->getRightEdge()))
+            rd = std::max(0.0f, e - marginRight);
+        w -= ld + rd;
+        leftover = w + width;
+        if (w < 0.0f && !(autoMask & Width))
+            w = 0.0f;
+    }
+
+    float d;
     switch (autoMask) {
     case Left | Width | Right:
-        width = w;
-        marginLeft = marginRight = 0.0f;
+        d = setWidth(w, maxWidth, minWidth);
+        marginLeft = ld + d / 2.0f;
+        marginRight = rd + d / 2.0f;
         break;
     case Left | Width:
-        width = w;
-        marginLeft = 0.0f;
+        d = setWidth(w, maxWidth, minWidth);
+        marginLeft = ld;
+        marginRight += rd + d;
         break;
     case Width | Right:
-        width = w;
-        marginRight = 0.0f;
+        d = setWidth(w, maxWidth, minWidth);
+        marginLeft += ld + d;
+        marginRight = rd;
         break;
     case Left | Right:
-        marginLeft = marginRight = w / 2.0f;
+        w += setWidth(width, maxWidth, minWidth);
+        marginLeft = w / 2.0f + ld;
+        marginRight = w / 2.0f + rd;
         break;
     case Left:
-        marginLeft = w;
+        w += setWidth(width, maxWidth, minWidth);
+        marginLeft = w + ld;
+        marginRight += rd;
         break;
     case Width:
-        width = w;
+        d = setWidth(w, maxWidth, minWidth);
+        marginLeft += ld;
+        marginRight += rd + d;  // TODO: assuming LTR
         break;
     case Right:
-        marginRight = w;
+        w += setWidth(width, maxWidth, minWidth);
+        marginLeft += ld;
+        marginRight = w + rd;
         break;
     default:  // over-constrained
-        marginRight += w;   // TODO: assuming LTR
+        w += setWidth(width, maxWidth, minWidth);
+        marginLeft += ld;
+        marginRight += w + rd;   // TODO: assuming LTR
         break;
     }
+
+    return leftover;
 }
 
-void Block::resolveFloatWidth(float w, float r)
+void Block::resolveFloatWidth(float w, float maxWidth, float minWidth)
 {
     assert(style);
     marginLeft = style->marginLeft.isAuto() ? 0.0f : style->marginLeft.getPx();
     marginRight = style->marginRight.isAuto() ? 0.0f : style->marginRight.getPx();
-    if (!isnan(r))
-        width = r;
-    else if (!style->width.isAuto())
-        width = style->width.getPx();
+    if (!style->width.isAuto())
+        setWidth(style->width.getPx(), maxWidth, minWidth);
     else
-        width = w - getBlankLeft() - getBlankRight();
+        setWidth(w - getBlankLeft() - getBlankRight(), maxWidth, minWidth);
 }
 
-void Block::resolveMargin(ViewCSSImp* view, const ContainingBlock* containingBlock)
+void Block::resolveHeight()
 {
-    resolveWidth(containingBlock->width);
     if (!style->marginTop.isAuto())
         marginTop = style->marginTop.getPx();
     else
@@ -901,9 +927,9 @@ bool Block::layOutInline(ViewCSSImp* view, FormattingContext* context, float ori
 // TODO for a more complete implementation, see,
 //      http://groups.google.com/group/netscape.public.mozilla.layout/msg/0455a21b048ffac3?pli=1
 
-void Block::shrinkToFit()
+void Block::shrinkToFit(FormattingContext* context)
 {
-    fit(shrinkTo());
+    fit(shrinkTo(), context);
 }
 
 float Block::shrinkTo()
@@ -933,15 +959,15 @@ float Block::shrinkTo()
     return min;
 }
 
-void Block::fit(float w)
+void Block::fit(float w, FormattingContext* context)
 {
     if (getBlockWidth() == w)
         return;
-    resolveWidth(w);
+    resolveWidth(w, context);
     if (!isAnonymous() && !style->width.isAuto())
         return;
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
-        child->fit(width);
+        child->fit(width, context);
 }
 
 float Block::getBaseline(const Box* box) const
@@ -1053,11 +1079,7 @@ float Block::collapseMarginTop(FormattingContext* context)
     marginTop = context->collapseMargins(marginTop);
 
     if (!isAnonymous()) {
-        unsigned clearValue = style->clear.getValue();
-        if (isFlowRoot())
-            clearValue = CSSFloatValueImp::Left | CSSFloatValueImp::Right;
-
-        clearance = context->clear(clearValue);
+        clearance = context->clear(style->clear.getValue());
         Block* prev = dynamic_cast<Block*>(getPreviousSibling());
         if (clearance == 0.0f)
             clearance = NAN;
@@ -1342,6 +1364,7 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
     float savedWidth = width;
     float savedHeight = height;
     float savedMcw = mcw;
+    float leftover = 0.0f;
 
     mcw = 0.0f;
     if (!isAnonymous()) {
@@ -1350,7 +1373,8 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
         resolveBackground(view);
         updatePadding();
         updateBorderWidth();
-        resolveMargin(view, containingBlock);
+        resolveHeight();
+        leftover = resolveWidth(containingBlock->width, context);
     } else {
         // The properties of anonymous boxes are inherited from the enclosing non-anonymous box.
         // Theoretically, we are supposed to create a new style for this anonymous box, but
@@ -1378,6 +1402,8 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
     float before = NAN;
     if (context) {
         before = collapseMarginTop(context);
+        if (!isnan(context->clearance))
+            leftover = resolveWidth(containingBlock->width, context);
         if (isInFlow() && 0.0f < borderTop + paddingTop)
             context->updateRemainingHeight(borderTop + paddingTop);
         if (!needLayout()) {
@@ -1434,8 +1460,7 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
         if ((style->width.isAuto() || style->marginLeft.isAuto() || style->marginRight.isAuto()) &&
             (style->isInlineBlock() || style->isFloat() || (cell && isnan(cw)) || isReplacedElement(element)) &&
             !intrinsic)
-            shrinkToFit();
-        applyMinMaxWidth(getTotalWidth());
+            shrinkToFit(parentContext);
 
         if (!cell) {
             mcw += borderLeft + borderRight;
@@ -1450,7 +1475,7 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
         } else if (isnan(cw))
             mcw += getBlankLeft() + getBlankRight();
     } else if (cell)
-        shrinkToFit();
+        shrinkToFit(parentContext);
 
     // Collapse margins with the first and the last children before calculating the auto height.
     collapseMarginBottom(context);
@@ -1480,7 +1505,7 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
 
     // Now that 'height' is fixed, calculate 'left', 'right', 'top', and 'bottom'.
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
-        child->fit(width);
+        child->fit(width, parentContext);
 
     resolveBackgroundPosition(view, containingBlock);
 
@@ -1490,10 +1515,26 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
             // TODO: Review this logic; what's going to happen when collapse through, etc.
             // Note TableWrapperBox::layOut() has the same code and it must be updated, too.
             parentContext->inheritMarginContext(context);
-            if (0.0f < height)
-                parentContext->updateRemainingHeight(height);
+            if (!isAnonymous() && isFlowRoot() && leftover < width) {
+                float h;
+                while (0 < (h = parentContext->shiftDown(&leftover))) {
+                    parentContext->updateRemainingHeight(h);
+                    if (isnanf(clearance))
+                        clearance = h;
+                    else
+                        clearance += h;
+                    if (width <= leftover) {
+                        // TODO: Adjust clearance and set margins to the original values
+                        resolveWidth(containingBlock->width, parentContext);
+                        updateFormattingContext(parentContext);
+                        break;
+                    }
+                }
+            }
         }
         context = parentContext;
+        if (0.0f < height)
+            context->updateRemainingHeight(height);
     }
 
 
@@ -1783,7 +1824,7 @@ void Block::layOutAbsolute(ViewCSSImp* view)
     layOutChildren(view, context);
 
     if (maskH == (Left | Width) || maskH == (Width | Right)) {
-        shrinkToFit();
+        shrinkToFit(0);
         if (maskH & Left)
             left = containingBlock->width - getTotalWidth() - right;
     }
@@ -1812,7 +1853,7 @@ void Block::layOutAbsolute(ViewCSSImp* view)
 
     // Now that 'height' is fixed, calculate 'left', 'right', 'top', and 'bottom'.
     for (Box* child = getFirstChild(); child; child = child->getNextSibling())
-        child->fit(width);
+        child->fit(width, 0);
 
     resolveBackgroundPosition(view, containingBlock);
 

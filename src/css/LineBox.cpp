@@ -572,7 +572,7 @@ float LineBox::shrinkTo()
     return std::max(w, std::max(l, r));
 }
 
-void LineBox::fit(float w)
+void LineBox::fit(float w, FormattingContext* context)
 {
     assert(parentBox);
     assert(dynamic_cast<Block*>(parentBox));

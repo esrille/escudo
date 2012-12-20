@@ -44,7 +44,7 @@ class CellBox : public Block
 public:
     CellBox(Element element = 0, CSSStyleDeclarationImp* style = 0);
 
-    virtual void fit(float w);
+    virtual void fit(float w, FormattingContext* context);
 
     unsigned getColSpan() const {
         return colSpan;
@@ -99,7 +99,7 @@ public:
     }
 
     virtual float shrinkTo();
-    virtual void resolveWidth(float w);
+    virtual float resolveWidth(float w, FormattingContext* context);
     virtual void render(ViewCSSImp* view, StackingContext* stackingContext);
     void renderNonInline(ViewCSSImp* view, StackingContext* stackingContext);
 };
@@ -261,7 +261,7 @@ public:
 
     float getBaseline() const;
 
-    virtual void fit(float w);
+    virtual void fit(float w, FormattingContext* context);
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context);
     virtual float shrinkTo();
 

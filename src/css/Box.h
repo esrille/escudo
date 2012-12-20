@@ -331,7 +331,7 @@ public:
     }
 
     virtual float shrinkTo();
-    virtual void fit(float w) {}
+    virtual void fit(float w, FormattingContext* context) {}
 
     void toViewPort(float& x, float& y) const {
         const Box* box = this;
@@ -597,9 +597,9 @@ public:
     }
     void clearInlines();
 
-    void shrinkToFit();
+    void shrinkToFit(FormattingContext* context);
     virtual float shrinkTo();
-    virtual void fit(float w);
+    virtual void fit(float w, FormattingContext* context);
 
     virtual const Box* towardViewPort(const Box* child, float& x, float& y) const {
         if (const Box* box = child->getPreviousSibling()) {
@@ -686,11 +686,10 @@ public:
 
     void resolveBackground(ViewCSSImp* view);
     void resolveBackgroundPosition(ViewCSSImp* view, const ContainingBlock* containingBlock);
-    void resolveMargin(ViewCSSImp* view, const ContainingBlock* containingBlock);
-    virtual void resolveWidth(float w);
-    void applyMinMaxWidth(float w);
-    void resolveNormalWidth(float w, float r = NAN);
-    void resolveFloatWidth(float w, float r = NAN);
+    void resolveHeight();
+    virtual float resolveWidth(float w, FormattingContext* context);
+    float setWidth(float w, float maxWidth, float minWidth);
+    void resolveFloatWidth(float w, float maxWidth, float minWidth);
 
     virtual float getMCW() const {
         return mcw;
@@ -789,7 +788,7 @@ public:
     virtual void render(ViewCSSImp* view, StackingContext* stackingContext);
     virtual void dump(std::string indent);
     virtual float shrinkTo();
-    virtual void fit(float w);
+    virtual void fit(float w, FormattingContext* context);
 };
 
 typedef boost::intrusive_ptr<LineBox> LineBoxPtr;

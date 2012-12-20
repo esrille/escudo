@@ -82,7 +82,9 @@ struct SavedFormattingContext
     // Saved context for margin collapse
     float clearance;
     float marginTop;
+    float marginRight;
     float marginBottom;
+    float marginLeft;
     float topBorderEdge;
     float consumed;
     MarginContext marginContext;
@@ -98,7 +100,9 @@ struct SavedFormattingContext
 
 class FormattingContext
 {
+    friend class Box;
     friend class Block;
+    friend class TableWrapperBox;
 
     TextIterator textIterator;
     size_t textLength;
@@ -131,8 +135,8 @@ class FormattingContext
     float lineHeight;
     bool atLineHead;
 
-    void shiftDownLeft();
-    void shiftDownRight();
+    float shiftDownLeft();
+    float shiftDownRight();
 
     void saveContext(SavedFormattingContext::MarginContext& context);
     void restoreContext(const SavedFormattingContext::MarginContext& context);
@@ -162,7 +166,7 @@ public:
     float getRightEdge() const;
     float getLeftRemainingHeight() const;
     float getRightRemainingHeight() const;
-    float shiftDown();
+    float shiftDown(float* e = 0);
     bool shiftDownLineBox(ViewCSSImp* view);
     bool hasNewFloats() const;
     void appendInlineBox(ViewCSSImp* view, InlineBox* inlineBox, CSSStyleDeclarationImp* activeStyle);

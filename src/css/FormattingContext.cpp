@@ -104,7 +104,9 @@ void FormattingContext::saveContext(Block* block)
 
     block->savedFormattingContext.clearance = block->clearance;
     block->savedFormattingContext.marginTop = block->marginTop;
+    block->savedFormattingContext.marginRight = block->marginRight;
     block->savedFormattingContext.marginBottom = block->marginBottom;
+    block->savedFormattingContext.marginLeft= block->marginLeft;
     block->savedFormattingContext.topBorderEdge = block->topBorderEdge;
     block->savedFormattingContext.consumed = block->consumed;
     saveContext(block->savedFormattingContext.marginContext);
@@ -132,7 +134,9 @@ void FormattingContext::restoreContext(Block* block)
 
     block->clearance = block->savedFormattingContext.clearance;
     block->marginTop = block->savedFormattingContext.marginTop;
+    block->marginRight = block->savedFormattingContext.marginRight;
     block->marginBottom = block->savedFormattingContext.marginBottom;
+    block->marginLeft = block->savedFormattingContext.marginLeft;
     block->topBorderEdge = block->savedFormattingContext.topBorderEdge;
     block->consumed = block->savedFormattingContext.consumed;
     restoreContext(block->savedFormattingContext.marginContext);
@@ -179,7 +183,9 @@ bool FormattingContext::hasChanged(const Block* block)
         return true;
     if (!isnan(block->clearance) && block->clearance != block->savedFormattingContext.clearance ||
         block->marginTop != block->savedFormattingContext.marginTop ||
+        block->marginRight != block->savedFormattingContext.marginRight||
         block->marginBottom != block->savedFormattingContext.marginBottom ||
+        block->marginLeft != block->savedFormattingContext.marginLeft ||
         block->topBorderEdge != block->savedFormattingContext.topBorderEdge ||
         block->consumed != block->savedFormattingContext.consumed)
             return true;
@@ -386,7 +392,7 @@ float FormattingContext::updateRemainingHeight(float h)
     return adjustRemainingHeight(h);
 }
 
-void FormattingContext::shiftDownLeft()
+float FormattingContext::shiftDownLeft()
 {
     float w = getLeftEdge();
     if (1 < left.size()) {
@@ -396,9 +402,10 @@ void FormattingContext::shiftDownLeft()
     }
     x -= w;
     leftover += w;
+    return w;
 }
 
-void FormattingContext::shiftDownRight()
+float FormattingContext::shiftDownRight()
 {
     float w = getRightEdge();
     if (1 < right.size()) {
@@ -407,25 +414,28 @@ void FormattingContext::shiftDownRight()
         w -= std::max(0.0f, (*it)->edge - blankRight);
     }
     leftover += w;
+    return w;
 }
 
-float FormattingContext::shiftDown()
+float FormattingContext::shiftDown(float* e)
 {
     float h = 0.0f;
     float w = 0.0f;
     float lh = getLeftRemainingHeight();
     float rh = getRightRemainingHeight();
     if (0.0f < lh && (lh < rh || rh <= 0.0f)) {
-        shiftDownLeft();
+        w = shiftDownLeft();
         h += lh;
     } else if (0.0f < rh && (rh < lh || lh <= 0.0f)) {
-        shiftDownRight();
+        w = shiftDownRight();
         h += rh;
     } else if (0.0f < lh) {
-        shiftDownLeft();
-        shiftDownRight();
+        w = shiftDownLeft();
+        w += shiftDownRight();
         h += lh;
     }
+    if (e)
+        *e += w;
     return h;
 }
 
