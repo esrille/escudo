@@ -146,7 +146,6 @@ protected:
     unsigned backgroundStart;
 
     CSSStyleDeclarationPtr style;
-    FormattingContext* formattingContext;
 
     unsigned short flags;
 
@@ -380,13 +379,7 @@ public:
 
     virtual const ContainingBlock* getContainingBlock(ViewCSSImp* view) const;
 
-    FormattingContext* updateFormattingContext(FormattingContext* context);
-    FormattingContext* restoreFormattingContext(FormattingContext* context);
-    FormattingContext* establishFormattingContext();
-    bool isFlowRoot() const {
-        return formattingContext;
-    }
-    bool isFlowOf(const Box* floatRoot) const;
+    bool isFlowOf(const Block* floatRoot) const;
 
     bool isInFlow() const {
         // cf. 9.3 Positioning schemes
@@ -512,6 +505,7 @@ class Block : public Box
     friend class TableWrapperBox;
     friend Box* Box::removeChild(Box* item);
 
+    FormattingContext* formattingContext;
     unsigned textAlign;
 
     // for a collapsed-through box
@@ -591,10 +585,19 @@ protected:
 
 public:
     Block(Node node = 0, CSSStyleDeclarationImp* style = 0);
+    virtual ~Block();
 
     virtual unsigned getBoxType() const {
         return BLOCK_LEVEL_BOX;
     }
+    bool isFlowRoot() const {
+        return formattingContext;
+    }
+
+    FormattingContext* updateFormattingContext(FormattingContext* context);
+    FormattingContext* restoreFormattingContext(FormattingContext* context);
+    FormattingContext* establishFormattingContext();
+
     void clearInlines();
 
     void shrinkToFit(FormattingContext* context);

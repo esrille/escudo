@@ -100,7 +100,6 @@ struct SavedFormattingContext
 
 class FormattingContext
 {
-    friend class Box;
     friend class Block;
     friend class TableWrapperBox;
 

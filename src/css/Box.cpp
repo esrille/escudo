@@ -84,7 +84,6 @@ Box::Box(Node node) :
     backgroundTop(0.0f),
     backgroundStart(getTick()),
     style(0),
-    formattingContext(0),
     flags(0),
     childWindow(0)
 {
@@ -104,8 +103,6 @@ Box::~Box()
 
     if (style)
         style->removeBox(this);
-
-    delete formattingContext;
 }
 
 Box* Box::removeChild(Box* item)
@@ -388,7 +385,7 @@ void Block::setContainingBlock(ViewCSSImp* view)
     absoluteBlock.height = view->getInitialContainingBlock()->height;
 }
 
-FormattingContext* Box::updateFormattingContext(FormattingContext* context)
+FormattingContext* Block::updateFormattingContext(FormattingContext* context)
 {
     if (isFlowRoot()) {
         assert(formattingContext);
@@ -399,7 +396,7 @@ FormattingContext* Box::updateFormattingContext(FormattingContext* context)
     return context;
 }
 
-FormattingContext* Box::restoreFormattingContext(FormattingContext* context)
+FormattingContext* Block::restoreFormattingContext(FormattingContext* context)
 {
     if (isFlowRoot())
         return formattingContext;
@@ -408,14 +405,14 @@ FormattingContext* Box::restoreFormattingContext(FormattingContext* context)
     return context;
 }
 
-FormattingContext* Box::establishFormattingContext()
+FormattingContext* Block::establishFormattingContext()
 {
     if (!formattingContext);
         formattingContext = new(std::nothrow) FormattingContext;
     return formattingContext;
 }
 
-bool Box::isFlowOf(const Box* flowRoot) const
+bool Box::isFlowOf(const Block* flowRoot) const
 {
     assert(flowRoot->isFlowRoot());
     for (const Box* box = this; box; box = box->getParentBox()) {
@@ -472,6 +469,7 @@ unsigned short Box::gatherFlags() const
 
 Block::Block(Node node, CSSStyleDeclarationImp* style) :
     Box(node),
+    formattingContext(0),
     textAlign(CSSTextAlignValueImp::Default),
     topBorderEdge(0.0f),
     consumed(0.0f),
@@ -489,6 +487,12 @@ Block::Block(Node node, CSSStyleDeclarationImp* style) :
     if (style)
         setStyle(style);
     flags |= NEED_EXPANSION | NEED_REFLOW | NEED_CHILD_REFLOW;
+}
+
+Block::~Block()
+{
+    delete formattingContext;
+    formattingContext = 0;
 }
 
 void Block::clearInlines()
