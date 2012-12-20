@@ -1,4 +1,4 @@
-# Escort 0.2.3 (r3289) Fedora Linux 17
+# Escort 0.2.3 (r3293) Fedora Linux 17
 # Escort/0.2.3
 # http://test.csswg.org/suites/css2.1/20110323/
 # See http://wiki.csswg.org/test/implementation-report for instructions
@@ -3620,20 +3620,20 @@ html4/clear-003.htm	pass
 html4/clear-004.htm	pass
 html4/clear-005.htm	pass
 html4/clear-applies-to-000.htm	pass
-html4/clear-applies-to-001.htm	fail
-html4/clear-applies-to-002.htm	fail
-html4/clear-applies-to-003.htm	fail
-html4/clear-applies-to-004.htm	fail
-html4/clear-applies-to-005.htm	fail
-html4/clear-applies-to-006.htm	fail
-html4/clear-applies-to-007.htm	fail
+html4/clear-applies-to-001.htm	pass
+html4/clear-applies-to-002.htm	pass
+html4/clear-applies-to-003.htm	pass
+html4/clear-applies-to-004.htm	pass
+html4/clear-applies-to-005.htm	pass
+html4/clear-applies-to-006.htm	pass
+html4/clear-applies-to-007.htm	pass
 html4/clear-applies-to-008.htm	pass
 html4/clear-applies-to-009.htm	pass
 html4/clear-applies-to-010.htm	pass
 html4/clear-applies-to-012.htm	pass
 html4/clear-applies-to-013.htm	pass
 html4/clear-applies-to-014.htm	pass
-html4/clear-applies-to-015.htm	fail
+html4/clear-applies-to-015.htm	pass
 html4/clear-clearance-calculation-001.htm	pass
 html4/clear-clearance-calculation-002.htm	pass
 html4/clear-clearance-calculation-003.htm	pass
@@ -5230,21 +5230,21 @@ html4/floats-rule3-outside-right-001.htm	pass
 html4/floats-rule3-outside-right-002.htm	pass
 html4/floats-rule7-outside-left-001.htm	pass
 html4/floats-rule7-outside-right-001.htm	pass
-html4/floats-wrap-bfc-001-left-overflow.htm	fail
-html4/floats-wrap-bfc-001-left-table.htm	fail
-html4/floats-wrap-bfc-001-right-overflow.htm	fail
-html4/floats-wrap-bfc-001-right-table.htm	fail
-html4/floats-wrap-bfc-002-left-overflow.htm	fail
-html4/floats-wrap-bfc-002-left-table.htm	fail
-html4/floats-wrap-bfc-002-right-overflow.htm	fail
-html4/floats-wrap-bfc-002-right-table.htm	fail
-html4/floats-wrap-bfc-003-left-overflow.htm	fail
-html4/floats-wrap-bfc-003-left-table.htm	fail
-html4/floats-wrap-bfc-003-right-overflow.htm	fail
-html4/floats-wrap-bfc-003-right-table.htm	fail
-html4/floats-wrap-bfc-004.htm	fail
+html4/floats-wrap-bfc-001-left-overflow.htm	pass
+html4/floats-wrap-bfc-001-left-table.htm	pass
+html4/floats-wrap-bfc-001-right-overflow.htm	pass
+html4/floats-wrap-bfc-001-right-table.htm	pass
+html4/floats-wrap-bfc-002-left-overflow.htm	pass
+html4/floats-wrap-bfc-002-left-table.htm	fail (no yellow)
+html4/floats-wrap-bfc-002-right-overflow.htm	pass
+html4/floats-wrap-bfc-002-right-table.htm	fail (no yellow)
+html4/floats-wrap-bfc-003-left-overflow.htm	pass
+html4/floats-wrap-bfc-003-left-table.htm	pass
+html4/floats-wrap-bfc-003-right-overflow.htm	pass
+html4/floats-wrap-bfc-003-right-table.htm	pass
+html4/floats-wrap-bfc-004.htm	pass
 html4/floats-wrap-bfc-005.htm	pass
-html4/floats-wrap-bfc-006.htm	b
+html4/floats-wrap-bfc-006.htm	fail
 html4/floats-wrap-bfc-007.htm	fail
 html4/floats-wrap-bfc-outside-001.htm	fail
 html4/floats-wrap-top-below-bfc-001l.htm	fail
@@ -6458,7 +6458,7 @@ html4/margin-collapse-clear-006.htm	pass
 html4/margin-collapse-clear-007.htm	pass
 html4/margin-collapse-clear-008.htm	pass
 html4/margin-collapse-clear-009.htm	pass
-html4/margin-collapse-clear-010.htm	fail
+html4/margin-collapse-clear-010.htm	pass
 html4/margin-collapse-clear-011.htm	pass
 html4/margin-collapse-clear-012.htm	pass
 html4/margin-collapse-clear-013.htm	pass
@@ -6835,14 +6835,14 @@ html4/max-width-105.htm	pass
 html4/max-width-106.htm	pass
 html4/max-width-107.htm	pass
 html4/max-width-108.htm	pass
-html4/max-width-109.htm	fail
+html4/max-width-109.htm	pass
 html4/max-width-applies-to-001.htm	pass
 html4/max-width-applies-to-002.htm	pass
 html4/max-width-applies-to-003.htm	pass
 html4/max-width-applies-to-004.htm	pass
 html4/max-width-applies-to-005.htm	invalid
 html4/max-width-applies-to-006.htm	invalid
-html4/max-width-applies-to-007.htm	pass (invalid)
+html4/max-width-applies-to-007.htm	pass
 html4/max-width-applies-to-008.htm	pass
 html4/max-width-applies-to-009.htm	pass
 html4/max-width-applies-to-010.htm	pass
@@ -8218,8 +8218,8 @@ html4/table-anonymous-objects-085.htm	pass
 html4/table-anonymous-objects-086.htm	pass
 html4/table-anonymous-objects-087.htm	pass
 html4/table-anonymous-objects-088.htm	pass
-html4/table-anonymous-objects-089.htm	pass (when no wrap)
-html4/table-anonymous-objects-090.htm	pass (when no wrap)
+html4/table-anonymous-objects-089.htm	fail (check)
+html4/table-anonymous-objects-090.htm	fail (check)
 html4/table-anonymous-objects-091.htm	pass (when no wrap)
 html4/table-anonymous-objects-092.htm	pass (when no wrap)
 html4/table-anonymous-objects-093.htm	pass
