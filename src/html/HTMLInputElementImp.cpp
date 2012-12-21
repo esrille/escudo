@@ -120,7 +120,7 @@ void HTMLInputElementImp::eval()
                 length = u"20em";
         }
         css::CSSStyleDeclaration style = getStyle();
-        style.setProperty(u"min-width", length, u"non-css");
+        style.setProperty(u"width", length, u"non-css");
         break;
     }
     default:
