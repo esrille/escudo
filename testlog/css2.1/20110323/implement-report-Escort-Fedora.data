@@ -1,4 +1,4 @@
-# Escort 0.2.3 (r3293) Fedora Linux 17
+# Escort 0.2.3 (r3297) Fedora Linux 17
 # Escort/0.2.3
 # http://test.csswg.org/suites/css2.1/20110323/
 # See http://wiki.csswg.org/test/implementation-report for instructions
@@ -8069,7 +8069,7 @@ html4/right-offset-004.htm	pass
 html4/right-offset-percentage-001.htm	pass
 html4/root-box-001.htm	pass
 html4/root-box-002.htm	fail
-html4/root-box-003.htm	fail
+html4/root-box-003.htm	pass
 html4/root-canvas-001.htm	fail
 html4/row-visibility-001.htm	fail
 html4/row-visibility-002.htm	fail
