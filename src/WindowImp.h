@@ -148,6 +148,9 @@ class WindowImp : public ObjectMixin<WindowImp>
         int getState() const {
             return state;
         }
+        bool isIdle() const {
+            return state == Done && !flags;
+        }
     };
 
     class Parser {

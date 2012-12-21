@@ -386,7 +386,7 @@ void WindowImp::render(ViewCSSImp* parentView)
             scrollHeight = view->getScrollHeight();
             canvas.endRender();
         }
-        if (2 <= getLogLevel() && backgroundTask.getState() == BackgroundTask::Done && !view->gatherFlags()) {
+        if (2 <= getLogLevel() && backgroundTask.isIdle() && !view->gatherFlags()) {
             unsigned depth = 1;
             for (WindowImp* w = this; w->parent; w = w->parent)
                 ++depth;
