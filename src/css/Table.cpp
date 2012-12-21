@@ -1739,12 +1739,13 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
                         clearance = h;
                     else
                         clearance += h;
-                    if (width <= leftover) {
-                        // TODO: Adjust clearance and set margins to the original values
-                        resolveWidth(containingBlock->width, parentContext, width);
-                        updateFormattingContext(parentContext);
+                    if (width <= leftover)
                         break;
-                    }
+                }
+                if (!isnanf(clearance)) {
+                    // TODO: Adjust clearance and set margins to the original values
+                    resolveWidth(containingBlock->width, parentContext, width);
+                    updateFormattingContext(parentContext);
                 }
             }
         }
