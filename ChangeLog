@@ -1,3 +1,17 @@
+2012-12-22 13:06  Shiki.Okasaka@gmail.com
+
+	* data/escort/about/index.html.in: (body) : Set the background
+	  color
+
+2012-12-22 07:08  Shiki.Okasaka@gmail.com
+
+	* testlog/css2.1/20110323/implement-report-Escort-Fedora.data:
+	  Update the version number
+
+2012-12-22 06:38  Shiki.Okasaka@gmail.com
+
+	* ChangeLog: Update
+
 2012-12-22 06:04  Shiki.Okasaka@gmail.com
 
 	* testlog/css2.1/20110323/implement-report-Escort-Fedora.data:
