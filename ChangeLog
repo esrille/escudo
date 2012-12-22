@@ -1,3 +1,723 @@
+2012-12-22 06:04  Shiki.Okasaka@gmail.com
+
+	* testlog/css2.1/20110323/implement-report-Escort-Fedora.data:
+	  implement-report-Escort-Fedora.data : Update using r3302
+
+2012-12-22 04:07  Shiki.Okasaka@gmail.com
+
+	* data/escort/default.css, testdata/default.css: default.css
+	  (textarea) : Set background-color white by default
+
+2012-12-21 14:14  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/Table.cpp: (Block::layOut,
+	  TableWrapperBox::layOut) : Fix bugs
+
+2012-12-21 11:40  Shiki.Okasaka@gmail.com
+
+	* src/html/HTMLInputElementImp.cpp: (HTMLInputElementImp::eval) :
+	  Fix a bug
+
+2012-12-21 10:24  Shiki.Okasaka@gmail.com
+
+	* src/css/LineBox.cpp: (LineBox::layOut) : Fix bugs
+
+2012-12-21 07:20  Shiki.Okasaka@gmail.com
+
+	* testlog/css2.1/20110323/implement-report-Escort-Fedora.data:
+	  implement-report-Escort-Fedora.data : Update using r3297
+
+2012-12-21 07:17  Shiki.Okasaka@gmail.com
+
+	* src/WindowImp.cpp, src/WindowImp.h: (WindowImp::render) : Fix not
+	  to dump view unless the background task is completely idle; this
+	  makes harness more stable
+	  (BackgroundTask::isIdle) : New
+
+2012-12-20 22:32  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/Box.h, src/css/FormattingContext.h:
+	  (Block::formattingContext) : Move from Box
+
+2012-12-20 21:56  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/Box.h, src/css/Table.cpp,
+	  src/css/Table.h: (Block::layOut, TableWrapperBox::layOut) : Keep
+	  the block width after the shift down
+	  (Block::resolveWidth, CellBox::resolveWidth) : Refine
+
+2012-12-20 12:00  Shiki.Okasaka@gmail.com
+
+	* testlog/css2.1/20110323/implement-report-Escort-Fedora.data:
+	  implement-report-Escort-Fedora.data : Update using r3293
+
+2012-12-20 11:53  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/Box.h, src/css/FormattingContext.cpp,
+	  src/css/FormattingContext.h, src/css/LineBox.cpp,
+	  src/css/Table.cpp, src/css/Table.h: (Block::layOut,
+	  TableWrapperBox::layOut, Block::resolveWidth,
+	  Block::collapseMarginTop) : Place a flow root box adjacent to
+	  floats if there is sufficient space
+	  (Block::resolveFloatWidth, Block::shrinkToFit, Block::fit) :
+	  Refine
+	  (Block::setWidth, Block::resolveHeight) : New
+	  (Block::applyMinMaxWidth, Block::resolveNormalWidth) : Remove and
+	  integrated to resolveWidth
+	  (LineBox::fit, CellBox::fit, TableWrapperBox::fit) : Refine
+	  (CellBox::resolveWidth) : Refine
+	  (TableWrapperBox::layOutTableBox) : Refine
+	  (FormattingContext::saveContext,
+	  FormattingContext::restoreContext, FormattingContext::hasChanged)
+	  : Add horizontal margins to the member
+	  (FormattingContext::shiftDown, FormattingContext::shiftDownLeft,
+	  FormattingContext::shiftDownRight) : Refine
+
+2012-12-19 09:02  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp: (Box::updateFormattingContext) : Fix a bug
+
+2012-12-19 03:11  Shiki.Okasaka@gmail.com
+
+	* src/css/Box.cpp, src/css/Table.cpp: (Block::layOut,
+	  Block::layOutAbsolute) : Fix bugs
+	  (TableWrapperBox::layOut, TableWrapperBox::layOutAbsolute) : Fix
+	  bugs
+
+2012-12-18 07:00  Shiki.Okasaka@gmail.com
+
+	* testlog/css2.1/20110323/implement-report-Escort-Fedora.data:
+	  implement-report-Escort-Fedora.data : Update using r3289
+
+2012-12-18 06:37  Shiki.Okasaka@gmail.com
+
+	* src/WindowImp.cpp: (WindowImp::render) : Dump window depth at log
+	  level 2; note this is for harness to always check the top level
+	  window
+
+2012-12-16 03:21  Shiki.Okasaka@gmail.com
+
+	* src/css/BoxGL.cpp: (Block::renderBegin, Block::renderEnd) : Do
+	  not increase the model view matrix depth unnecessarily
+
+2012-12-15 05:08  Shiki.Okasaka@gmail.com
+
+	* src/http/HTTPRequest.cpp: (HttpRequest::complete,
+	  HttpRequest::notify) : Fix to call HttpCache::notify() from the
+	  main thread
+
+2012-12-14 09:20  Shiki.Okasaka@gmail.com
+
+	* configure, configure.ac: configure.ac : Check for esidl 0.2.2 or
+	  later
+
+2012-12-14 06:14  Shiki.Okasaka@gmail.com
+
+	* Makefile.am, Makefile.in, aclocal.m4, configure, configure.ac,
+	  m4, m4/ax_compare_version.m4: Set escort version to 0.2.4; note
+	  if you use aclocal, run 'aclocal -I m4'
+	  to include additional macros from the directory 'm4'.
+	  
+	  configure.ac : Check for esidl 0.2.1 or later; Add directory 'm4'
+	  for additional local Autoconf macros.
+	  Makefile.am (ACLOCAL_AMFLAGS) : Add 'm4' to the macro search list
+	  m4/ax_compare_version.m4 : New; cf.
+	  http://www.gnu.org/software/autoconf-archive/ax_compare_version.html
+
+2012-12-14 03:33  Shiki.Okasaka@gmail.com
+
+	* testlog/css2.1/20110323/implement-report-Escort-Fedora.data:
+	  implement-report-Escort-Fedora.data : Update using r3277
+
+2012-12-13 09:37  Shiki.Okasaka@gmail.com
+
+	* data/escort/about/index.html: (body) : Set the background color
+
+2012-12-13 09:36  Shiki.Okasaka@gmail.com
+
+	* src/Canvas.h, src/Canvas.test.cpp, src/CanvasGL.cpp,
+	  src/CanvasGL.h, src/Test.glut.cpp, src/WindowImp.cpp,
+	  src/css/ViewCSSImp.cpp, src/css/ViewCSSImp.h:
+	  (ViewCSSImp::getBackgroundColor) : New
+	  (Canvas::beginRender, Canvas::Impl::beginRender) : Take the
+	  background color as an argument
+	  Test.glut.cpp (display) : Paint the entire canvas white as the
+	  default color
+	  Test.glut.cpp (init) : Refine
+	  (WindowImp::updateView) : Support documents which do not create
+	  CSS boxes at all
+	  (WindowImp::render) : Refine
+
+2012-12-12 11:30  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSPropertyValueImp.cpp, src/css/CSSPropertyValueImp.h:
+	  (CSSListStyleImageValueImp::compute,
+	  CSSListStyleImageValueImp::notify,
+	  CSSListStyleImageValueImp::specify,
+	  CSSListStyleImageValueImp::operator==,
+	  CSSListStyleImageValueImp::operator!=) : Make a status change
+	  detectable by CSSStyleDeclarationBoard::compare
+
+2012-12-11 14:55  Shiki.Okasaka@gmail.com
+
+	* src/BackgroundTask.cpp, src/WindowImp.cpp: (WindowImp::poll) :
+	  Make it a bit conservative and start the background thread just
+	  after DOMContentLoaded for now
+	  (WindowImp::BackgroundTask::getView) : Update assert and allow
+	  Init
+
+2012-12-11 01:41  Shiki.Okasaka@gmail.com
+
+	* idl/html5.idl, src/ApplicationCacheImp.cpp,
+	  src/ApplicationCacheImp.h, src/AttrImp.cpp, src/AttrImp.h,
+	  src/BarPropImp.cpp, src/BarPropImp.h,
+	  src/BeforeUnloadEventImp.cpp, src/BeforeUnloadEventImp.h,
+	  src/BlobImp.cpp, src/BlobImp.h, src/CaretPositionImp.cpp,
+	  src/CaretPositionImp.h, src/CharacterDataImp.cpp,
+	  src/CharacterDataImp.h, src/ClientRectImp.cpp,
+	  src/ClientRectImp.h, src/ClientRectListImp.cpp,
+	  src/ClientRectListImp.h, src/CompositionEventImp.cpp,
+	  src/CompositionEventImp.h, src/CustomEventImp.cpp,
+	  src/CustomEventImp.h, src/CustomEventInitImp.cpp,
+	  src/CustomEventInitImp.h, src/DOMImplementationImp.cpp,
+	  src/DOMImplementationImp.h, src/DOMSettableTokenListImp.cpp,
+	  src/DOMSettableTokenListImp.h, src/DOMStringListImp.cpp,
+	  src/DOMStringListImp.h, src/DOMStringMapImp.cpp,
+	  src/DOMStringMapImp.h, src/DOMTokenListImp.cpp,
+	  src/DOMTokenListImp.h, src/DocumentFragmentImp.cpp,
+	  src/DocumentFragmentImp.h, src/DocumentImp.cpp,
+	  src/DocumentImp.h, src/DocumentRangeImp.cpp,
+	  src/DocumentRangeImp.h, src/DocumentTraversalImp.cpp,
+	  src/DocumentTraversalImp.h, src/DocumentTypeImp.h,
+	  src/DragEventImp.cpp, src/DragEventImp.h, src/ElementImp.cpp,
+	  src/ElementImp.h, src/EventImp.cpp, src/EventImp.h,
+	  src/EventInitImp.cpp, src/EventInitImp.h, src/EventSourceImp.cpp,
+	  src/EventSourceImp.h, src/EventTargetImp.cpp,
+	  src/EventTargetImp.h, src/FocusEventImp.cpp, src/FocusEventImp.h,
+	  src/FunctionImp.cpp, src/FunctionImp.h,
+	  src/HashChangeEventImp.cpp, src/HashChangeEventImp.h,
+	  src/HistoryImp.cpp, src/HistoryImp.h, src/KeyboardEventImp.cpp,
+	  src/KeyboardEventImp.h, src/LinkStyleImp.cpp, src/LinkStyleImp.h,
+	  src/LocationImp.cpp, src/LocationImp.h, src/MediaErrorImp.cpp,
+	  src/MediaErrorImp.h, src/MediaListImp.cpp, src/MediaListImp.h,
+	  src/MediaQueryListImp.cpp, src/MediaQueryListImp.h,
+	  src/MediaQueryListListenerImp.cpp,
+	  src/MediaQueryListListenerImp.h, src/MessageChannelImp.cpp,
+	  src/MessageChannelImp.h, src/MessageEventImp.cpp,
+	  src/MessageEventImp.h, src/MessagePortImp.cpp,
+	  src/MessagePortImp.h, src/MouseEventImp.cpp, src/MouseEventImp.h,
+	  src/MutationEventImp.cpp, src/MutationEventImp.h,
+	  src/MutationNameEventImp.cpp, src/MutationNameEventImp.h,
+	  src/NavigatorImp.cpp, src/NavigatorImp.h, src/NodeFilterImp.cpp,
+	  src/NodeFilterImp.h, src/NodeImp.cpp, src/NodeImp.h,
+	  src/NodeIteratorImp.cpp, src/NodeIteratorImp.h,
+	  src/PageTransitionEventImp.cpp, src/PageTransitionEventImp.h,
+	  src/PopStateEventImp.cpp, src/PopStateEventImp.h,
+	  src/ProcessingInstructionImp.cpp, src/ProcessingInstructionImp.h,
+	  src/ProgressEventImp.cpp, src/ProgressEventImp.h,
+	  src/PropertyNodeListImp.cpp, src/PropertyNodeListImp.h,
+	  src/RangeImp.cpp, src/RangeImp.h, src/ScreenImp.cpp,
+	  src/ScreenImp.h, src/StyleSheetImp.cpp, src/StyleSheetImp.h,
+	  src/TextEventImp.cpp, src/TextEventImp.h, src/TextImp.cpp,
+	  src/TextImp.h, src/TreeWalkerImp.cpp, src/TreeWalkerImp.h,
+	  src/UIEventImp.cpp, src/UIEventImp.h,
+	  src/UndoManagerEventImp.cpp, src/UndoManagerEventImp.h,
+	  src/UndoManagerImp.cpp, src/UndoManagerImp.h,
+	  src/WheelEventImp.cpp, src/WheelEventImp.h, src/WindowImp.cpp,
+	  src/WindowImp.h, src/css/CSS2PropertiesImp.cpp,
+	  src/css/CSS2PropertiesImp.h, src/css/CSSCharsetRuleImp.cpp,
+	  src/css/CSSCharsetRuleImp.h,
+	  src/css/CSSColorComponentValueImp.cpp,
+	  src/css/CSSColorComponentValueImp.h,
+	  src/css/CSSComponentValueImp.cpp, src/css/CSSComponentValueImp.h,
+	  src/css/CSSFontFaceRuleImp.cpp, src/css/CSSFontFaceRuleImp.h,
+	  src/css/CSSIdentifierComponentValueImp.cpp,
+	  src/css/CSSIdentifierComponentValueImp.h,
+	  src/css/CSSImportRuleImp.cpp, src/css/CSSImportRuleImp.h,
+	  src/css/CSSKeywordComponentValueImp.cpp,
+	  src/css/CSSKeywordComponentValueImp.h,
+	  src/css/CSSLengthComponentValueImp.cpp,
+	  src/css/CSSLengthComponentValueImp.h, src/css/CSSMapValueImp.cpp,
+	  src/css/CSSMapValueImp.h, src/css/CSSMediaRuleImp.cpp,
+	  src/css/CSSMediaRuleImp.h, src/css/CSSNamespaceRuleImp.cpp,
+	  src/css/CSSNamespaceRuleImp.h, src/css/CSSPageRuleImp.cpp,
+	  src/css/CSSPageRuleImp.h,
+	  src/css/CSSPercentageComponentValueImp.cpp,
+	  src/css/CSSPercentageComponentValueImp.h,
+	  src/css/CSSPrimitiveValueImp.cpp, src/css/CSSPrimitiveValueImp.h,
+	  src/css/CSSPropertyNames.re, src/css/CSSPropertyValueImp.h,
+	  src/css/CSSPropertyValueListImp.cpp,
+	  src/css/CSSPropertyValueListImp.h, src/css/CSSRuleImp.cpp,
+	  src/css/CSSRuleImp.h, src/css/CSSRuleListImp.h,
+	  src/css/CSSStringComponentValueImp.cpp,
+	  src/css/CSSStringComponentValueImp.h,
+	  src/css/CSSStyleDeclarationImp.cpp,
+	  src/css/CSSStyleDeclarationImp.h,
+	  src/css/CSSStyleDeclarationValueImp.cpp,
+	  src/css/CSSStyleDeclarationValueImp.h,
+	  src/css/CSSStyleRuleImp.cpp, src/css/CSSStyleRuleImp.h,
+	  src/css/CSSStyleSheetImp.cpp, src/css/CSSStyleSheetImp.h,
+	  src/css/CSSURLComponentValueImp.cpp,
+	  src/css/CSSURLComponentValueImp.h, src/css/CSSUnknownRuleImp.cpp,
+	  src/css/CSSUnknownRuleImp.h, src/css/CSSValueImp.cpp,
+	  src/css/CSSValueImp.h, src/css/CSSValueListImp.cpp,
+	  src/css/CSSValueListImp.h, src/css/DOMImplementationCSSImp.cpp,
+	  src/css/DOMImplementationCSSImp.h, src/css/DocumentCSSImp.cpp,
+	  src/css/DocumentCSSImp.h, src/css/ElementCSSInlineStyleImp.cpp,
+	  src/css/ElementCSSInlineStyleImp.h, src/css/RGBColorImp.cpp,
+	  src/css/RGBColorImp.h, src/css/RectImp.cpp, src/css/RectImp.h,
+	  src/file/FileErrorImp.cpp, src/file/FileErrorImp.h,
+	  src/file/FileImp.cpp, src/file/FileImp.h,
+	  src/file/FileListImp.cpp, src/file/FileListImp.h,
+	  src/file/FileReaderImp.cpp, src/file/FileReaderImp.h,
+	  src/file/FileReaderSyncImp.cpp, src/file/FileReaderSyncImp.h,
+	  src/html/CanvasGradientImp.cpp, src/html/CanvasGradientImp.h,
+	  src/html/CanvasPatternImp.cpp, src/html/CanvasPatternImp.h,
+	  src/html/CanvasPixelArrayImp.cpp, src/html/CanvasPixelArrayImp.h,
+	  src/html/CanvasRenderingContext2DImp.cpp,
+	  src/html/CanvasRenderingContext2DImp.h,
+	  src/html/DataTransferImp.cpp, src/html/DataTransferImp.h,
+	  src/html/DataTransferItemImp.cpp, src/html/DataTransferItemImp.h,
+	  src/html/DataTransferItemListImp.cpp,
+	  src/html/DataTransferItemListImp.h,
+	  src/html/HTMLAllCollectionImp.cpp,
+	  src/html/HTMLAllCollectionImp.h,
+	  src/html/HTMLAnchorElementImp.cpp,
+	  src/html/HTMLAnchorElementImp.h,
+	  src/html/HTMLAppletElementImp.cpp,
+	  src/html/HTMLAppletElementImp.h, src/html/HTMLAreaElementImp.cpp,
+	  src/html/HTMLAreaElementImp.h, src/html/HTMLAudioElementImp.cpp,
+	  src/html/HTMLAudioElementImp.h, src/html/HTMLBRElementImp.cpp,
+	  src/html/HTMLBRElementImp.h, src/html/HTMLBaseElementImp.cpp,
+	  src/html/HTMLBaseElementImp.h,
+	  src/html/HTMLBaseFontElementImp.cpp,
+	  src/html/HTMLBaseFontElementImp.h,
+	  src/html/HTMLBodyElementImp.cpp, src/html/HTMLBodyElementImp.h,
+	  src/html/HTMLButtonElementImp.cpp,
+	  src/html/HTMLButtonElementImp.h,
+	  src/html/HTMLCanvasElementImp.cpp,
+	  src/html/HTMLCanvasElementImp.h, src/html/HTMLCollectionImp.cpp,
+	  src/html/HTMLCollectionImp.h, src/html/HTMLCommandElementImp.cpp,
+	  src/html/HTMLCommandElementImp.h,
+	  src/html/HTMLDListElementImp.cpp, src/html/HTMLDListElementImp.h,
+	  src/html/HTMLDataListElementImp.cpp,
+	  src/html/HTMLDataListElementImp.h,
+	  src/html/HTMLDetailsElementImp.cpp,
+	  src/html/HTMLDetailsElementImp.h,
+	  src/html/HTMLDirectoryElementImp.cpp,
+	  src/html/HTMLDirectoryElementImp.h,
+	  src/html/HTMLDivElementImp.cpp, src/html/HTMLDivElementImp.h,
+	  src/html/HTMLDocumentImp.cpp, src/html/HTMLDocumentImp.h,
+	  src/html/HTMLElementImp.cpp, src/html/HTMLElementImp.h,
+	  src/html/HTMLEmbedElementImp.cpp, src/html/HTMLEmbedElementImp.h,
+	  src/html/HTMLFieldSetElementImp.cpp,
+	  src/html/HTMLFieldSetElementImp.h,
+	  src/html/HTMLFontElementImp.cpp, src/html/HTMLFontElementImp.h,
+	  src/html/HTMLFormControlsCollectionImp.cpp,
+	  src/html/HTMLFormControlsCollectionImp.h,
+	  src/html/HTMLFormElementImp.cpp, src/html/HTMLFormElementImp.h,
+	  src/html/HTMLFrameElementImp.cpp, src/html/HTMLFrameElementImp.h,
+	  src/html/HTMLFrameSetElementImp.cpp,
+	  src/html/HTMLFrameSetElementImp.h, src/html/HTMLHRElementImp.cpp,
+	  src/html/HTMLHRElementImp.h, src/html/HTMLHeadingElementImp.cpp,
+	  src/html/HTMLHeadingElementImp.h,
+	  src/html/HTMLHtmlElementImp.cpp, src/html/HTMLHtmlElementImp.h,
+	  src/html/HTMLIFrameElementImp.cpp,
+	  src/html/HTMLIFrameElementImp.h,
+	  src/html/HTMLImageElementImp.cpp, src/html/HTMLImageElementImp.h,
+	  src/html/HTMLInputElementImp.cpp, src/html/HTMLInputElementImp.h,
+	  src/html/HTMLKeygenElementImp.cpp,
+	  src/html/HTMLKeygenElementImp.h, src/html/HTMLLIElementImp.cpp,
+	  src/html/HTMLLIElementImp.h, src/html/HTMLLabelElementImp.cpp,
+	  src/html/HTMLLabelElementImp.h,
+	  src/html/HTMLLegendElementImp.cpp,
+	  src/html/HTMLLegendElementImp.h, src/html/HTMLLinkElementImp.cpp,
+	  src/html/HTMLLinkElementImp.h, src/html/HTMLMapElementImp.cpp,
+	  src/html/HTMLMapElementImp.h, src/html/HTMLMarqueeElementImp.cpp,
+	  src/html/HTMLMarqueeElementImp.h,
+	  src/html/HTMLMediaElementImp.cpp, src/html/HTMLMediaElementImp.h,
+	  src/html/HTMLMenuElementImp.cpp, src/html/HTMLMenuElementImp.h,
+	  src/html/HTMLMetaElementImp.cpp, src/html/HTMLMetaElementImp.h,
+	  src/html/HTMLMeterElementImp.cpp, src/html/HTMLMeterElementImp.h,
+	  src/html/HTMLModElementImp.cpp, src/html/HTMLModElementImp.h,
+	  src/html/HTMLOListElementImp.cpp, src/html/HTMLOListElementImp.h,
+	  src/html/HTMLObjectElementImp.cpp,
+	  src/html/HTMLObjectElementImp.h,
+	  src/html/HTMLOptGroupElementImp.cpp,
+	  src/html/HTMLOptGroupElementImp.h,
+	  src/html/HTMLOptionElementImp.cpp,
+	  src/html/HTMLOptionElementImp.h,
+	  src/html/HTMLOptionsCollectionImp.cpp,
+	  src/html/HTMLOptionsCollectionImp.h,
+	  src/html/HTMLOutputElementImp.cpp,
+	  src/html/HTMLOutputElementImp.h,
+	  src/html/HTMLParagraphElementImp.cpp,
+	  src/html/HTMLParagraphElementImp.h,
+	  src/html/HTMLParamElementImp.cpp, src/html/HTMLParamElementImp.h,
+	  src/html/HTMLParser.cpp, src/html/HTMLParser.h,
+	  src/html/HTMLProgressElementImp.cpp,
+	  src/html/HTMLProgressElementImp.h,
+	  src/html/HTMLPropertiesCollectionImp.cpp,
+	  src/html/HTMLPropertiesCollectionImp.h,
+	  src/html/HTMLQuoteElementImp.cpp, src/html/HTMLQuoteElementImp.h,
+	  src/html/HTMLScriptElementImp.cpp,
+	  src/html/HTMLScriptElementImp.h,
+	  src/html/HTMLSelectElementImp.cpp,
+	  src/html/HTMLSelectElementImp.h,
+	  src/html/HTMLSourceElementImp.cpp,
+	  src/html/HTMLSourceElementImp.h,
+	  src/html/HTMLStyleElementImp.cpp, src/html/HTMLStyleElementImp.h,
+	  src/html/HTMLTableCaptionElementImp.cpp,
+	  src/html/HTMLTableCaptionElementImp.h,
+	  src/html/HTMLTableCellElementImp.cpp,
+	  src/html/HTMLTableCellElementImp.h,
+	  src/html/HTMLTableColElementImp.cpp,
+	  src/html/HTMLTableColElementImp.h,
+	  src/html/HTMLTableDataCellElementImp.cpp,
+	  src/html/HTMLTableDataCellElementImp.h,
+	  src/html/HTMLTableElementImp.cpp, src/html/HTMLTableElementImp.h,
+	  src/html/HTMLTableHeaderCellElementImp.cpp,
+	  src/html/HTMLTableHeaderCellElementImp.h,
+	  src/html/HTMLTableRowElementImp.cpp,
+	  src/html/HTMLTableRowElementImp.h,
+	  src/html/HTMLTableSectionElementImp.cpp,
+	  src/html/HTMLTableSectionElementImp.h,
+	  src/html/HTMLTemplateElementImp.cpp,
+	  src/html/HTMLTemplateElementImp.h,
+	  src/html/HTMLTextAreaElementImp.cpp,
+	  src/html/HTMLTextAreaElementImp.h,
+	  src/html/HTMLTimeElementImp.cpp, src/html/HTMLTimeElementImp.h,
+	  src/html/HTMLTitleElementImp.cpp, src/html/HTMLTitleElementImp.h,
+	  src/html/HTMLTokenizer.cpp, src/html/HTMLTokenizer.h,
+	  src/html/HTMLUListElementImp.cpp, src/html/HTMLUListElementImp.h,
+	  src/html/HTMLVideoElementImp.cpp, src/html/HTMLVideoElementImp.h,
+	  src/html/ImageDataImp.cpp, src/html/ImageDataImp.h,
+	  src/html/RadioNodeListImp.cpp, src/html/RadioNodeListImp.h,
+	  src/html/TextMetricsImp.cpp, src/html/TextMetricsImp.h,
+	  src/html/TimeRangesImp.cpp, src/html/TimeRangesImp.h,
+	  src/html/ValidityStateImp.cpp, src/html/ValidityStateImp.h,
+	  src/typedarray/ArrayBufferImp.cpp,
+	  src/typedarray/ArrayBufferImp.h,
+	  src/typedarray/ArrayBufferViewImp.cpp,
+	  src/typedarray/ArrayBufferViewImp.h,
+	  src/typedarray/DataViewImp.cpp, src/typedarray/DataViewImp.h,
+	  src/typedarray/Float32ArrayImp.cpp,
+	  src/typedarray/Float32ArrayImp.h,
+	  src/typedarray/Float64ArrayImp.cpp,
+	  src/typedarray/Float64ArrayImp.h,
+	  src/typedarray/Int16ArrayImp.cpp, src/typedarray/Int16ArrayImp.h,
+	  src/typedarray/Int32ArrayImp.cpp, src/typedarray/Int32ArrayImp.h,
+	  src/typedarray/Int8ArrayImp.cpp, src/typedarray/Int8ArrayImp.h,
+	  src/typedarray/Uint16ArrayImp.cpp,
+	  src/typedarray/Uint16ArrayImp.h,
+	  src/typedarray/Uint32ArrayImp.cpp,
+	  src/typedarray/Uint32ArrayImp.h,
+	  src/typedarray/Uint8ArrayImp.cpp, src/typedarray/Uint8ArrayImp.h,
+	  src/url/URL.cpp, src/url/URL.h, src/xbl/XBLContentElementImp.cpp,
+	  src/xbl/XBLContentElementImp.h, src/xbl/XBLImplementationImp.cpp,
+	  src/xbl/XBLImplementationImp.h,
+	  src/xbl/XBLImplementationListImp.cpp,
+	  src/xbl/XBLImplementationListImp.h,
+	  src/xhr/AnonXMLHttpRequestImp.cpp,
+	  src/xhr/AnonXMLHttpRequestImp.h, src/xhr/FormDataImp.cpp,
+	  src/xhr/FormDataImp.h, src/xhr/XMLHttpRequestEventTargetImp.cpp,
+	  src/xhr/XMLHttpRequestEventTargetImp.h,
+	  src/xhr/XMLHttpRequestImp.cpp, src/xhr/XMLHttpRequestImp.h,
+	  src/xhr/XMLHttpRequestUploadImp.cpp,
+	  src/xhr/XMLHttpRequestUploadImp.h: Switch over to esidl (r3272).
+	  
+	  (CSSStyleDeclarationImp::getPropertyID) : Make it
+	  case-insensitive
+	  html5.idl (HTMLElement) : Update command API
+
+2012-12-10 04:07  Shiki.Okasaka@gmail.com
+
+	* src/html/HTMLAnchorElementImp.cpp,
+	  src/html/HTMLAreaElementImp.cpp, src/html/HTMLLinkElementImp.cpp:
+	  (HTMLAnchorElementImp::getRelList,
+	  HTMLAreaElementImp::getRelList, HTMLLinkElementImp::getRelList) :
+	  Add details
+
+2012-12-10 03:18  Shiki.Okasaka@gmail.com
+
+	* src/DOMTokenListImp.cpp, src/DOMTokenListImp.h,
+	  src/ElementImp.cpp, testdata/dom-005.html, testdata/dom-006.html,
+	  testdata/dom-007.html, testdata/dom-008.html,
+	  testdata/dom-009.html: (ElementImp::getClassList) : Add details
+	  (DOMTokenListImp) : Add more details
+	  dom-005.html, dom-006.html, dom-007.html, dom-008.html,
+	  dom-009.html : New
+
+2012-12-10 00:44  Shiki.Okasaka@gmail.com
+
+	* idl/domcore.idl, src/DOMTokenListImp.cpp, src/DOMTokenListImp.h:
+	  Make DOMTokenList add/remove support variable arity
+	  
+	  domcore.idl : Update
+	  DOMTokenListImp.h, DOMTokenListImp.cpp : Update
+
+2012-12-09 23:56  Shiki.Okasaka@gmail.com
+
+	* idl/domcore.idl, idl/html5.idl, src/ElementImp.cpp,
+	  src/ElementImp.h, src/html/HTMLElementImp.cpp,
+	  src/html/HTMLElementImp.h: Introduce Element.id,
+	  Element.className, and Element.classList; cf.
+	  https://www.w3.org/Bugs/Public/show_bug.cgi?id=13347
+	  
+	  (ElementImp::setId, ElementImp::getClassName,
+	  ElementImp::setClassName, ElementImp::getClassList) : New
+	  (HTMLElementImp::getId, HTMLElementImp::setId,
+	  HTMLElementImp::getClassName, HTMLElementImp::setClassName,
+	  HTMLElementImp::getClassList) : Remove
+	  domcore.idl, html5.idl : Update
+
+2012-12-09 13:10  Shiki.Okasaka@gmail.com
+
+	* src/NodeImp.cpp, testdata/dom-004.html:
+	  (NodeImp::compareDocumentPosition) : Add details
+	  dom-004.html : New
+
+2012-12-09 06:34  Shiki.Okasaka@gmail.com
+
+	* src/NodeImp.cpp: (NodeImp::isSameNode) : Refine
+
+2012-12-09 06:29  Shiki.Okasaka@gmail.com
+
+	* src/CharacterDataImp.cpp, src/CharacterDataImp.h,
+	  src/DocumentTypeImp.cpp, src/DocumentTypeImp.h,
+	  src/ElementImp.cpp, src/ElementImp.h, src/NodeImp.cpp,
+	  src/ProcessingInstructionImp.cpp, src/ProcessingInstructionImp.h,
+	  testdata/dom-001.html, testdata/dom-002.html,
+	  testdata/dom-003.html: (NodeImp::isEqualNode) : Add details
+	  (CharacterDataImp::isEqualNode, DocumentTypeImp::isEqualNode,
+	  ElementImp::isEqualNode, ProcessingInstructionImp::isEqualNode) :
+	  New
+	  dom-001.html, dom-002.html, dom-003.html : New
+
+2012-12-09 06:26  Shiki.Okasaka@gmail.com
+
+	* src/nullable.h: (Nullable) : Add == and != operators
+
+2012-12-09 05:57  Shiki.Okasaka@gmail.com
+
+	* src/NodeImp.h: (NodeImp::getChildCount) : Make it const
+
+2012-12-09 04:52  Shiki.Okasaka@gmail.com
+
+	* src/NodeImp.cpp, src/NodeImp.h: (NodeImp::getBaseURI,
+	  NodeImp::getNodeValue, NodeImp::getTextContent) : Add more
+	  details
+
+2012-12-09 04:07  Shiki.Okasaka@gmail.com
+
+	* src/DocumentImp.cpp, src/ElementImp.cpp, src/ElementImp.h:
+	  (ElementImp::getElementsByTagName,
+	  ElementImp::getElementsByClassName) : Refine
+	  (DocumentImp::getElementsByTagName,
+	  DocumentImp::getElementsByClassName) : Refine
+
+2012-12-08 11:18  Shiki.Okasaka@gmail.com
+
+	* src/EventImp.h, src/EventTargetImp.cpp,
+	  src/html/HTMLElementImp.cpp: (EventImp::DEFAULT_PHASE) : Rename
+	  from AT_DEFAULT
+
+2012-12-08 10:44  Shiki.Okasaka@gmail.com
+
+	* src/DocumentWindow.cpp, src/EventImp.h, src/EventTargetImp.cpp,
+	  src/EventTargetImp.h, src/WindowImp.cpp, src/css/ViewCSSImp.cpp,
+	  src/html/HTMLAnchorElementImp.cpp, src/html/HTMLElementImp.cpp,
+	  src/html/HTMLIFrameElementImp.cpp,
+	  src/html/HTMLInputElementImp.cpp: (EventImp::AT_DEFAULT) : New;
+	  cf. http://www.w3.org/TR/xbl/#the-default-phase
+	  (EventTargetImp::dispatchEvent, EventTargetImp::invoke,
+	  HTMLElementImp::invoke) : Support the default phase; cf
+	  http://www.w3.org/TR/xbl/#event-flow-and-targeting-across-shadow-s
+	  (EventTargetImp::addEventListener,
+	  EventTargetImp::removeEventListener) : Take the 4th argument for
+	  using the default phase
+	  (ViewCSSImp::ViewCSSImp, ViewCSSImp::~ViewCSSImp) : Use the
+	  default phase for the event handling
+	  (DocumentWindow::DocumentWindow) : Use the default phase for the
+	  event handling
+	  (HTMLAnchorElementImp::HTMLAnchorElementImp,
+	  HTMLAnchorElementImp::handleClick) : Use the default phase for
+	  the event handling
+	  (HTMLElementImp::HTMLElementImp, HTMLElementImp::handleClick,
+	  HTMLElementImp::handleMouseMove) : Use the default phase for the
+	  event handling
+	  (HTMLIFrameElementImp::eval) : Use the default phase for the
+	  event handling
+	  (HTMLInputElementImp::handleClick,
+	  HTMLInputElementImp::handleKeydown,
+	  HTMLInputElementImp::generateShadowContent) : Use the default
+	  phase for the event handling
+	  (WindowImp::setOnload, HTMLElementImp::setOnclick) : Refine
+
+2012-12-08 10:32  Shiki.Okasaka@gmail.com
+
+	* src/DocumentWindow.cpp: (DocumentWindow::handleClick,
+	  DocumentWindow::handleMouseMove) : Fix bugs
+
+2012-12-08 05:14  Shiki.Okasaka@gmail.com
+
+	* src/DocumentImp.cpp, src/DocumentImp.h, src/WindowImp.cpp,
+	  src/html/HTMLParser.cpp, src/html/HTMLScriptElementImp.cpp,
+	  src/html/HTMLScriptElementImp.h, testdata/script-001.html,
+	  testdata/script-002.html, testdata/script-002.js,
+	  testdata/script-003.html, testdata/script-003.js,
+	  testdata/script-004.html, testdata/script-004.js:
+	  (WindowImp::poll, HTMLScriptElementImp::prepare,
+	  HTMLScriptElementImp::notify) : Process the defer and async
+	  script element attributes
+	  (DocumentImp::addDeferScript, DocumentImp::removeDeferScript,
+	  DocumentImp::processDeferScripts) : New
+	  (DocumentImp::addAsyncScript, DocumentImp::removeAsyncScript,
+	  DocumentImp::hasAsyncScripts) : New
+	  (DocumentImp::addOrderedScript, DocumentImp::removeOrderedScript,
+	  DocumentImp::processOrderedScripts) : New
+	  (DocumentImp::hasContentLoaded, DocumentImp::setContentLoaded) :
+	  New
+	  (DocumentImp::processScripts) : New
+	  (HTMLParser::stopParsing) : Refine comments
+
+2012-12-08 05:07  Shiki.Okasaka@gmail.com
+
+	* src/EventTargetImp.cpp: (EventTargetImp::addEventListener) : Fix
+	  the order of listeners; listeners should be invoked in the order
+	  as they are added
+	  (EventTargetImp::invoke) : Add a TODO item
+
+2012-12-08 04:53  Shiki.Okasaka@gmail.com
+
+	* src/html/HTMLParser.cpp: (HTMLParser::InBody::processEOF) : Fix a
+	  bug
+
+2012-12-07 20:01  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSImportRuleImp.cpp, src/html/HTMLLinkElementImp.cpp,
+	  src/html/HTMLStyleElementImp.cpp, src/http/HTTPConnection.cpp:
+	  (CSSImportRuleImp::notify, HTMLLinkElementImp::linkStyleSheet,
+	  HTMLStyleElementImp::eval, HttpConnection::handleRead) : Use log
+	  level 4
+
+2012-12-07 11:09  Shiki.Okasaka@gmail.com
+
+	* src/html/HTMLScriptElementImp.cpp: (HTMLScriptElementImp) :
+	  Support getters and setters for the src, async, defer, type,
+	  charset, text, event, and htmlFor attributes
+
+2012-12-06 06:52  Shiki.Okasaka@gmail.com
+
+	* data/escort/default.css: default.css (form) : Do not set margin
+	  to the form element; cf.
+	  http://www.whatwg.org/specs/web-apps/current-work/multipage/rendering.html#flow-content-1
+
+2012-12-06 04:49  Shiki.Okasaka@gmail.com
+
+	* src/Any.cpp, src/Any.h: (Any::toArrayIndex) : New; cf.
+	  [ECMA-262], section 15.4
+
+2012-12-05 10:02  Shiki.Okasaka@gmail.com
+
+	* src/http/HTTPCache.cpp, src/http/HTTPCache.h,
+	  src/http/HTTPRequest.cpp, src/http/HTTPRequest.h,
+	  src/http/HTTPResponseMessage.cpp, src/http/HTTPResponseMessage.h:
+	  (HttpCacheManager::send) : Handle redirect
+	  (HttpCache::notify, HttpResponseMessage::isCacheable,
+	  HttpResponseMessage::setStatus) : Fix bugs
+	  (HttpRequest::redirect, HttpResponseMessage::shouldRedirect) :
+	  New
+	  (HttpCache::send, HttpRequest::complete) : Refine
+
+2012-12-05 08:59  Shiki.Okasaka@gmail.com
+
+	* src/HTTPRequest.test.cpp: (main) : Get all specified URLs
+
+2012-12-05 08:48  Shiki.Okasaka@gmail.com
+
+	* src/http/HTTPConnection.cpp: (HttpConnection::readContent) : Fix
+	  a bug
+
+2012-12-05 08:17  Shiki.Okasaka@gmail.com
+
+	* src/http/HTTPConnection.cpp, src/http/HTTPConnection.h:
+	  (HttpConnectionManager::dump, HttpConnection::dump) : New
+
+2012-12-05 08:14  Shiki.Okasaka@gmail.com
+
+	* src/http/HTTPConnection.cpp: (HttpConnection::done) : Fix a bug
+
+2012-12-04 21:58  Shiki.Okasaka@gmail.com
+
+	* src/DocumentImp.cpp, src/DocumentImp.h, src/WindowImp.cpp,
+	  src/html/HTMLParser.cpp, src/html/HTMLScriptElementImp.cpp,
+	  src/html/HTMLScriptElementImp.h: (WindowImp::poll) : Suspend the
+	  document parser until the blocking script becomes ready to be
+	  executed; we will support 'defer' and 'async' later
+	  (HTMLParser::InHead::processStartTag,
+	  HTMLParser::InBinding::processStartTag) : Mark the script element
+	  as parser inserted
+	  (HTMLScriptElementImp::prepare, HTMLScriptElementImp::notify,
+	  HTMLScriptElementImp::execute) : Adding more details
+	  (HTMLScriptElementImp::markAsParserInserted,
+	  HTMLScriptElementImp::isReadyToBeParserExecuted,
+	  HTMLScriptElementImp::~HTMLScriptElementImp) : New
+	  (DocumentImp::getPendingParsingBlockingScript,
+	  DocumentImp::setPendingParsingBlockingScript) : New
+
+2012-12-04 21:17  Shiki.Okasaka@gmail.com
+
+	* src/js/Script.cpp: (reportError) : Refine the report format
+
+2012-12-04 21:05  Shiki.Okasaka@gmail.com
+
+	* testlog/css2.1/20110323/implement-report-Escort-Fedora.data:
+	  implement-report-Escort-Fedora.data : Update using r3241
+
+2012-12-04 21:03  Shiki.Okasaka@gmail.com
+
+	* src/css/CSSSerialize.h: (CSSSerializeRGB) : Use rgb(); cf.
+	  http://dev.w3.org/csswg/cssom/#serializing-css-values
+
+2012-12-04 20:41  Shiki.Okasaka@gmail.com
+
+	* testdata/partial-reflow-white-space-001.html,
+	  testdata/partial-reflow-word-spacing-001.html: Clean up
+
+2012-12-04 01:15  Shiki.Okasaka@gmail.com
+
+	* src/DocumentImp.cpp, src/ElementImp.cpp, src/ElementImp.h:
+	  (DocumentImp::getElementsByClassName) : Add details
+	  (ElementImp::getElementsByClassName) : Add details
+	  (ElementImp::getElementsByTagName) : Add details
+	  (ElementImp::getClassName) : New
+
+2012-12-04 01:09  Shiki.Okasaka@gmail.com
+
+	* idl/html5.idl, src/html/HTMLElementImp.cpp,
+	  src/html/HTMLElementImp.h: html5.idl
+	  (HTMLElement::getElementsByClassName) : Remove
+	  (HTMLElementImp::getElementsByClassName) : Remove
+
+2012-12-04 01:07  Shiki.Okasaka@gmail.com
+
+	* src/WindowImp.cpp: (WindowImp::poll) : Fix a bug
+
+2012-12-04 01:05  Shiki.Okasaka@gmail.com
+
+	* src/WindowImp.cpp, src/WindowImp.h, src/html/HTMLParser.h:
+	  (WindowImp::Parser) : New
+
+2012-12-04 01:03  Shiki.Okasaka@gmail.com
+
+	* src/html/HTMLScriptElementImp.cpp:
+	  (HTMLScriptElementImp::prepare) : Fix a bug
+
+2012-12-01 08:41  Shiki.Okasaka@gmail.com
+
+	* ChangeLog: Update
+
 2012-12-01 08:18  Shiki.Okasaka@gmail.com
 
 	* testlog/css2.1/20110323/implement-report-Escort-Fedora.data:
