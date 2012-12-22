@@ -149,7 +149,7 @@ class WindowImp : public ObjectMixin<WindowImp>
             return state;
         }
         bool isIdle() const {
-            return state == Done && !flags;
+            return state == Done && !flags && xfered;
         }
     };
 
