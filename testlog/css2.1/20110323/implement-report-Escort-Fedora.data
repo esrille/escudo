@@ -1,4 +1,4 @@
-# Escort 0.2.3 (r3297) Fedora Linux 17
+# Escort 0.2.3 (r3302) Fedora Linux 17
 # Escort/0.2.3
 # http://test.csswg.org/suites/css2.1/20110323/
 # See http://wiki.csswg.org/test/implementation-report for instructions
@@ -5246,7 +5246,7 @@ html4/floats-wrap-bfc-004.htm	pass
 html4/floats-wrap-bfc-005.htm	pass
 html4/floats-wrap-bfc-006.htm	fail
 html4/floats-wrap-bfc-007.htm	fail
-html4/floats-wrap-bfc-outside-001.htm	fail
+html4/floats-wrap-bfc-outside-001.htm	pass
 html4/floats-wrap-top-below-bfc-001l.htm	fail
 html4/floats-wrap-top-below-bfc-001r.htm	fail
 html4/floats-wrap-top-below-bfc-002l.htm	fail
