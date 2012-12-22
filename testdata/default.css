@@ -136,3 +136,4 @@ time[datetime] { binding: time; }
 /* misc. */
 iframe { overflow: hidden; }
 noscript { display: none; }
+textarea { background-color: white; }
