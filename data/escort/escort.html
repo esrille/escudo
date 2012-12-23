@@ -256,6 +256,7 @@ function init() {
     document.getElementById('stop').addEventListener('click', stop, false);
     document.getElementById('settings').addEventListener('click', settings, false);
     var m = document.getElementById('main');
+    l.value = m.contentWindow.location;
     m.addEventListener('load', complete, false);
     m.addEventListener('error', complete, false);
     m.contentWindow.addEventListener('beforeunload', busy, false);
