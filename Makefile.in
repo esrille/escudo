@@ -74,7 +74,7 @@ noinst_PROGRAMS = harness$(EXEEXT) Any.test$(EXEEXT) \
 	Profile.test$(EXEEXT)
 escortlibexec_PROGRAMS = escort$(EXEEXT)
 subdir = .
-DIST_COMMON = $(am__configure_deps) $(dist_aboutdata_DATA) \
+DIST_COMMON = README $(am__configure_deps) $(dist_aboutdata_DATA) \
 	$(dist_bin_SCRIPTS) $(dist_desktop_DATA) \
 	$(dist_escortdata_DATA) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
