@@ -491,11 +491,12 @@ NativeClass::NativeClass(JSContext* cx, JSObject* global, const char* metadata, 
         jsval val;
         if (JS_GetProperty(cx, global, parentName.c_str(), &val) && JSVAL_IS_OBJECT(val)) {
             JSObject* parent = JSVAL_TO_OBJECT(val);
-            if (JS_GetProperty(cx, parent, "prototype", &val) && JSVAL_IS_OBJECT(val))
+            if (JS_GetProperty(cx, parent, "prototype", &val) && JSVAL_IS_OBJECT(val)) {
                 parentProto = JSVAL_TO_OBJECT(val);
                 JSClass* jsclass = JS_GET_CLASS(cx, parentProto);
                 assert(jsclass);
                 proto = reinterpret_cast<NativeClass*>(reinterpret_cast<char*>(jsclass) - offsetof(NativeClass, jsclass));
+            }
         } else {
             std::cerr << "error: Interface " << parentName << " has not been initialized.\n";
             return;
