@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,81 +51,65 @@ public:
     {
     }
 
-    void setButtons(unsigned short value)
-    {
+    void setButtons(unsigned short value) {
         buttons = value;
     }
 
     // MouseEvent
-    int getScreenX()
-    {
+    int getScreenX() {
         return screenX;
     }
-    int getScreenY()
-    {
+    int getScreenY() {
         return screenY;
     }
-    int getClientX()
-    {
+    int getClientX() {
         return clientX;
     }
-    int getClientY()
-    {
+    int getClientY() {
         return clientY;
     }
-    bool getCtrlKey()
-    {
+    bool getCtrlKey() {
         return ctrlKey;
     }
-    bool getShiftKey()
-    {
+    bool getShiftKey() {
         return shiftKey;
     }
-    bool getAltKey()
-    {
+    bool getAltKey() {
         return altKey;
     }
-    bool getMetaKey()
-    {
+    bool getMetaKey() {
         return metaKey;
     }
-    unsigned short getButton()
-    {
+    unsigned short getButton() {
         return button;
     }
-    unsigned short getButtons()
-    {
+    unsigned short getButtons() {
         return buttons;
     }
-    events::EventTarget getRelatedTarget()
-    {
+    events::EventTarget getRelatedTarget() {
         return relatedTarget;
     }
     void initMouseEvent(const std::u16string& typeArg, bool canBubbleArg, bool cancelableArg, html::Window viewArg, int detailArg, int screenXArg, int screenYArg, int clientXArg, int clientYArg, bool ctrlKeyArg, bool altKeyArg, bool shiftKeyArg, bool metaKeyArg, unsigned short buttonArg, events::EventTarget relatedTargetArg);
     bool getModifierState(const std::u16string& keyArg);
-    // MouseEvent-42
-    int getPageX()
-    {
+    // MouseEvent
+    Nullable<std::u16string> getRegion();
+    // MouseEvent
+    int getPageX() {
         return pageX;
     }
-    int getPageY()
-    {
+    int getPageY() {
         return pageY;
     }
-    int getX()
-    {
+    int getX() {
         return getClientX();
     }
-    int getY()
-    {
+    int getY() {
         return getClientY();
     }
-    int getOffsetX()
-    {
+    int getOffsetX() {
         return offsetX;
     }
-    int getOffsetY()
-    {
+    int getOffsetY() {
         return offsetY;
     }
 

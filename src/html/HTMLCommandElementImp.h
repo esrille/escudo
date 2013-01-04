@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,26 @@
  * limitations under the License.
  */
 
-#ifndef HTMLCOMMANDELEMENT_IMP_H
-#define HTMLCOMMANDELEMENT_IMP_H
+#ifndef ORG_W3C_DOM_BOOTSTRAP_HTMLCOMMANDELEMENTIMP_H_INCLUDED
+#define ORG_W3C_DOM_BOOTSTRAP_HTMLCOMMANDELEMENTIMP_H_INCLUDED
 
-#include <Object.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <org/w3c/dom/html/HTMLCommandElement.h>
-
 #include "HTMLElementImp.h"
 
-namespace org { namespace w3c { namespace dom { namespace bootstrap {
+#include <org/w3c/dom/html/HTMLElement.h>
 
+namespace org
+{
+namespace w3c
+{
+namespace dom
+{
+namespace bootstrap
+{
 class HTMLCommandElementImp : public ObjectMixin<HTMLCommandElementImp, HTMLElementImp>
 {
 public:
@@ -31,21 +41,22 @@ public:
     virtual Node cloneNode(bool deep);
 
     // HTMLCommandElement
-    virtual std::u16string getType();
-    virtual void setType(const std::u16string& type);
-    virtual Nullable<std::u16string> getLabel();
-    virtual void setLabel(Nullable<std::u16string> label);
-    virtual Nullable<std::u16string> getIcon();
-    virtual void setIcon(Nullable<std::u16string> icon);
-    virtual bool getDisabled();
-    virtual void setDisabled(bool disabled);
-    virtual bool getChecked();
-    virtual void setChecked(bool checked);
-    virtual std::u16string getRadiogroup();
-    virtual void setRadiogroup(const std::u16string& radiogroup);
-
+    std::u16string getType();
+    void setType(const std::u16string& type);
+    std::u16string getLabel();
+    void setLabel(const std::u16string& label);
+    std::u16string getIcon();
+    void setIcon(const std::u16string& icon);
+    bool getDisabled();
+    void setDisabled(bool disabled);
+    bool getChecked();
+    void setChecked(bool checked);
+    std::u16string getRadiogroup();
+    void setRadiogroup(const std::u16string& radiogroup);
+    html::HTMLElement getCommand();
     // Object
-    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
+    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
+    {
         return html::HTMLCommandElement::dispatch(this, selector, id, argc, argv);
     }
     static const char* const getMetaData()
@@ -63,4 +74,4 @@ public:
 
 }}}}  // org::w3c::dom::bootstrap
 
-#endif  // HTMLCOMMANDELEMENT_IMP_H
+#endif  // ORG_W3C_DOM_BOOTSTRAP_HTMLCOMMANDELEMENTIMP_H_INCLUDED

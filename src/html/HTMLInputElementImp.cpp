@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -394,13 +394,13 @@ void HTMLInputElementImp::setFormTarget(const std::u16string& formTarget)
     // TODO: implement me!
 }
 
-std::u16string HTMLInputElementImp::getHeight()
+unsigned int HTMLInputElementImp::getHeight()
 {
     // TODO: implement me!
-    return u"";
+    return 0;
 }
 
-void HTMLInputElementImp::setHeight(const std::u16string& height)
+void HTMLInputElementImp::setHeight(unsigned int height)
 {
     // TODO: implement me!
 }
@@ -592,13 +592,13 @@ void HTMLInputElementImp::setValue(const std::u16string& value)
     setAttribute(u"value", value);
 }
 
-unsigned long long HTMLInputElementImp::getValueAsDate()
+Nullable<unsigned long long> HTMLInputElementImp::getValueAsDate()
 {
     // TODO: implement me!
     return 0;
 }
 
-void HTMLInputElementImp::setValueAsDate(unsigned long long valueAsDate)
+void HTMLInputElementImp::setValueAsDate(Nullable<unsigned long long> valueAsDate)
 {
     // TODO: implement me!
 }
@@ -614,19 +614,13 @@ void HTMLInputElementImp::setValueAsNumber(double valueAsNumber)
     // TODO: implement me!
 }
 
-html::HTMLOptionElement HTMLInputElementImp::getSelectedOption()
+unsigned int HTMLInputElementImp::getWidth()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return 0;
 }
 
-std::u16string HTMLInputElementImp::getWidth()
-{
-    // TODO: implement me!
-    return u"";
-}
-
-void HTMLInputElementImp::setWidth(const std::u16string& width)
+void HTMLInputElementImp::setWidth(unsigned int width)
 {
     // TODO: implement me!
 }

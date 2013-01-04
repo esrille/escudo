@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -119,34 +119,34 @@ void HTMLSelectElementImp::setLength(unsigned int length)
     // TODO: implement me!
 }
 
-Any HTMLSelectElementImp::item(unsigned int index)
+Element HTMLSelectElementImp::item(unsigned int index)
 {
     // TODO: implement me!
-    return 0;
+    return static_cast<Object*>(0);
 }
 
-Any HTMLSelectElementImp::namedItem(const std::u16string& name)
+Object HTMLSelectElementImp::namedItem(const std::u16string& name)
 {
     // TODO: implement me!
-    return 0;
+    return static_cast<Object*>(0);
 }
 
-void HTMLSelectElementImp::add(html::HTMLElement element)
-{
-    // TODO: implement me!
-}
-
-void HTMLSelectElementImp::add(html::HTMLElement element, html::HTMLElement before)
+void HTMLSelectElementImp::add(Any element)
 {
     // TODO: implement me!
 }
 
-void HTMLSelectElementImp::add(html::HTMLElement element, int before)
+void HTMLSelectElementImp::add(Any element, Any before)
 {
     // TODO: implement me!
 }
 
 void HTMLSelectElementImp::remove(int index)
+{
+    // TODO: implement me!
+}
+
+void HTMLSelectElementImp::setElement(unsigned int index, html::HTMLOptionElement option)
 {
     // TODO: implement me!
 }

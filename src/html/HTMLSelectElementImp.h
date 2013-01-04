@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,14 +21,18 @@
 #include "config.h"
 #endif
 
+#include <org/w3c/dom/html/HTMLOptionElement.h>
+
 #include <org/w3c/dom/html/HTMLSelectElement.h>
 #include "HTMLElementImp.h"
 
-#include <org/w3c/dom/html/HTMLElement.h>
+#include <org/w3c/dom/Element.h>
 #include <org/w3c/dom/NodeList.h>
 #include <org/w3c/dom/html/HTMLCollection.h>
 #include <org/w3c/dom/html/HTMLOptionsCollection.h>
+#include <org/w3c/dom/html/HTMLElement.h>
 #include <org/w3c/dom/html/HTMLFormElement.h>
+#include <org/w3c/dom/html/HTMLOptGroupElement.h>
 #include <org/w3c/dom/html/ValidityState.h>
 
 namespace org
@@ -67,12 +71,12 @@ public:
     html::HTMLOptionsCollection getOptions();
     unsigned int getLength();
     void setLength(unsigned int length);
-    Any item(unsigned int index);
-    Any namedItem(const std::u16string& name);
-    void add(html::HTMLElement element);
-    void add(html::HTMLElement element, html::HTMLElement before);
-    void add(html::HTMLElement element, int before);
+    Element item(unsigned int index);
+    Object namedItem(const std::u16string& name);
+    void add(Any element);
+    void add(Any element, Any before);
     void remove(int index);
+    void setElement(unsigned int index, html::HTMLOptionElement option);
     html::HTMLCollection getSelectedOptions();
     int getSelectedIndex();
     void setSelectedIndex(int selectedIndex);

@@ -3,12 +3,45 @@
  *
  * HTML Canvas 2D Context
  *
- * OriginalW3C Working Draft 24 June 2010:
+ * Original W3C Candidate Recommendation 17 December 2012:
  *
- *   http://www.w3.org/TR/2010/WD-2dcontext-20100624/
+ *   http://www.w3.org/TR/2012/CR-2dcontext-20121217/
+ *
+ * Plus
+ *
+ *   http://www.w3.org/TR/SVG/coords.html#InterfaceSVGMatrix
  */
 
+module svg {
+
+interface SVGMatrix {
+
+  attribute float a;
+  attribute float b;
+  attribute float c;
+  attribute float d;
+  attribute float e;
+  attribute float f;
+
+  SVGMatrix multiply(SVGMatrix secondMatrix);
+  SVGMatrix inverse();
+  SVGMatrix translate(float x, float y);
+  SVGMatrix scale(float scaleFactor);
+  SVGMatrix scaleNonUniform(float scaleFactorX, float scaleFactorY);
+  SVGMatrix rotate(float angle);
+  SVGMatrix rotateFromVector(float x, float y);
+  SVGMatrix flipX();
+  SVGMatrix flipY();
+  SVGMatrix skewX(float angle);
+  SVGMatrix skewY(float angle);
+};
+
+};
+
 module html {
+
+typedef dom::Uint8ClampedArray Uint8ClampedArray;
+typedef svg::SVGMatrix SVGMatrix;
 
 interface CanvasRenderingContext2D {
 
@@ -20,86 +53,112 @@ interface CanvasRenderingContext2D {
   void restore(); // pop state stack and restore state
 
   // transformations (default transform is the identity matrix)
-  void scale(in float x, in float y);
-  void rotate(in float angle);
-  void translate(in float x, in float y);
-  void transform(in float m11, in float m12, in float m21, in float m22, in float dx, in float dy);
-  void setTransform(in float m11, in float m12, in float m21, in float m22, in float dx, in float dy);
+  void scale(unrestricted double x, unrestricted double y);
+  void rotate(unrestricted double angle);
+  void translate(unrestricted double x, unrestricted double y);
+  void transform(unrestricted double a, unrestricted double b, unrestricted double c, unrestricted double d, unrestricted double e, unrestricted double f);
+  void setTransform(unrestricted double a, unrestricted double b, unrestricted double c, unrestricted double d, unrestricted double e, unrestricted double f);
 
   // compositing
-           attribute float globalAlpha; // (default 1.0)
+           attribute unrestricted double globalAlpha; // (default 1.0)
            attribute DOMString globalCompositeOperation; // (default source-over)
 
-  // colors and styles
-           attribute any strokeStyle; // (default black)
-           attribute any fillStyle; // (default black)
-  CanvasGradient createLinearGradient(in float x0, in float y0, in float x1, in float y1);
-  CanvasGradient createRadialGradient(in float x0, in float y0, in float r0, in float x1, in float y1, in float r1);
-  CanvasPattern createPattern(in HTMLImageElement image, in DOMString repetition);
-  CanvasPattern createPattern(in HTMLCanvasElement image, in DOMString repetition);
-  CanvasPattern createPattern(in HTMLVideoElement image, in DOMString repetition);
-
-  // line caps/joins
-           attribute float lineWidth; // (default 1)
-           attribute DOMString lineCap; // "butt", "round", "square" (default "butt")
-           attribute DOMString lineJoin; // "round", "bevel", "miter" (default "miter")
-           attribute float miterLimit; // (default 10)
+  // colors and styles (see also the CanvasDrawingStyles interface)
+           attribute (DOMString or CanvasGradient or CanvasPattern) strokeStyle; // (default black)
+           attribute (DOMString or CanvasGradient or CanvasPattern) fillStyle; // (default black)
+  CanvasGradient createLinearGradient(double x0, double y0, double x1, double y1);
+  CanvasGradient createRadialGradient(double x0, double y0, double r0, double x1, double y1, double r1);
+  CanvasPattern createPattern((HTMLImageElement or HTMLCanvasElement or HTMLVideoElement) image, [TreatNullAs=Emptytring]DOMString repetition);
 
   // shadows
-           attribute float shadowOffsetX; // (default 0)
-           attribute float shadowOffsetY; // (default 0)
-           attribute float shadowBlur; // (default 0)
+           attribute unrestricted double shadowOffsetX; // (default 0)
+           attribute unrestricted double shadowOffsetY; // (default 0)
+           attribute unrestricted double shadowBlur; // (default 0)
            attribute DOMString shadowColor; // (default transparent black)
 
   // rects
-  void clearRect(in float x, in float y, in float w, in float h);
-  void fillRect(in float x, in float y, in float w, in float h);
-  void strokeRect(in float x, in float y, in float w, in float h);
+  void clearRect(unrestricted double x, unrestricted double y, unrestricted double w, unrestricted double h);
+  void fillRect(unrestricted double x, unrestricted double y, unrestricted double w, unrestricted double h);
+  void strokeRect(unrestricted double x, unrestricted double y, unrestricted double w, unrestricted double h);
 
-  // path API
+  // path API (see also CanvasPathMethods)
   void beginPath();
-  void closePath();
-  void moveTo(in float x, in float y);
-  void lineTo(in float x, in float y);
-  void quadraticCurveTo(in float cpx, in float cpy, in float x, in float y);
-  void bezierCurveTo(in float cp1x, in float cp1y, in float cp2x, in float cp2y, in float x, in float y);
-  void arcTo(in float x1, in float y1, in float x2, in float y2, in float radius);
-  void rect(in float x, in float y, in float w, in float h);
-  void arc(in float x, in float y, in float radius, in float startAngle, in float endAngle, in boolean anticlockwise);
   void fill();
+  void fill(Path path);
   void stroke();
+  void stroke(Path path);
+  void drawSystemFocusRing(Element element);
+  void drawSystemFocusRing(Path path, Element element);
+  boolean drawCustomFocusRing(Element element);
+  boolean drawCustomFocusRing(Path path, Element element);
+  void scrollPathIntoView();
+  void scrollPathIntoView(Path path);
   void clip();
-  boolean isPointInPath(in float x, in float y);
+  void clip(Path path);
+  boolean isPointInPath(unrestricted double x, unrestricted double y);
+  boolean isPointInPath(Path path, unrestricted double x, unrestricted double y);
 
-  // focus management
-  boolean drawFocusRing(in Element element, in float xCaret, in float yCaret, in optional boolean canDrawCustom);
+  // text (see also the CanvasDrawingStyles interface)
+  void fillText(DOMString text, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
+  void strokeText(DOMString text, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
+  TextMetrics measureText(DOMString text);
+
+  // drawing images
+  void drawImage((HTMLImageElement or HTMLCanvasElement or HTMLVideoElement) image, unrestricted double dx, unrestricted double dy);
+  void drawImage((HTMLImageElement or HTMLCanvasElement or HTMLVideoElement) image, unrestricted double dx, unrestricted double dy, unrestricted double dw, unrestricted double dh);
+  void drawImage((HTMLImageElement or HTMLCanvasElement or HTMLVideoElement) image, unrestricted double sx, unrestricted double sy, unrestricted double sw, unrestricted double sh, unrestricted double dx, unrestricted double dy, unrestricted double dw, unrestricted double dh);
+
+  // hit regions
+  void addHitRegion(HitRegionOptions options);
+  void removeHitRegion(HitRegionOptions options);
+
+  // pixel manipulation
+  ImageData createImageData(unrestricted double sw, unrestricted double sh);
+  ImageData createImageData(ImageData imagedata);
+  ImageData getImageData(double sx, double sy, double sw, double sh);
+  void putImageData(ImageData imagedata, double dx, double dy, double dirtyX, double dirtyY, double dirtyWidth, double dirtyHeight);
+  void putImageData(ImageData imagedata, double dx, double dy);
+};
+CanvasRenderingContext2D implements CanvasDrawingStyles;
+CanvasRenderingContext2D implements CanvasPathMethods;
+
+[NoInterfaceObject]
+interface CanvasDrawingStyles {
+  // line caps/joins
+           attribute unrestricted double lineWidth; // (default 1)
+           attribute DOMString lineCap; // "butt", "round", "square" (default "butt")
+           attribute DOMString lineJoin; // "round", "bevel", "miter" (default "miter")
+           attribute unrestricted double miterLimit; // (default 10)
+
+  // dashed lines
+  void setLineDash(sequence<unrestricted double> segments); // default empty
+  sequence<unrestricted double> getLineDash();
+           attribute unrestricted double lineDashOffset;
+
 
   // text
            attribute DOMString font; // (default 10px sans-serif)
            attribute DOMString textAlign; // "start", "end", "left", "right", "center" (default: "start")
            attribute DOMString textBaseline; // "top", "hanging", "middle", "alphabetic", "ideographic", "bottom" (default: "alphabetic")
-  void fillText(in DOMString text, in float x, in float y, in optional float maxWidth);
-  void strokeText(in DOMString text, in float x, in float y, in optional float maxWidth);
-  TextMetrics measureText(in DOMString text);
-
-  // drawing images
-  void drawImage(in HTMLImageElement image, in float dx, in float dy, in optional float dw, in float dh);
-  void drawImage(in HTMLImageElement image, in float sx, in float sy, in float sw, in float sh, in float dx, in float dy, in float dw, in float dh);
-  void drawImage(in HTMLCanvasElement image, in float dx, in float dy, in optional float dw, in float dh);
-  void drawImage(in HTMLCanvasElement image, in float sx, in float sy, in float sw, in float sh, in float dx, in float dy, in float dw, in float dh);
-  void drawImage(in HTMLVideoElement image, in float dx, in float dy, in optional float dw, in float dh);
-  void drawImage(in HTMLVideoElement image, in float sx, in float sy, in float sw, in float sh, in float dx, in float dy, in float dw, in float dh);
-
-  // pixel manipulation
-  ImageData createImageData(in float sw, in float sh);
-  ImageData createImageData(in ImageData imagedata);
-  ImageData getImageData(in float sx, in float sy, in float sw, in float sh);
-  void putImageData(in ImageData imagedata, in float dx, in float dy, in optional float dirtyX, in float dirtyY, in float dirtyWidth, in float dirtyHeight);
 };
+
+[NoInterfaceObject]
+interface CanvasPathMethods {
+  // shared path API methods
+  void closePath();
+  void moveTo(unrestricted double x, unrestricted double y);
+  void lineTo(unrestricted double x, unrestricted double y);
+  void quadraticCurveTo(unrestricted double cpx, unrestricted double cpy, unrestricted double x, unrestricted double y);
+  void bezierCurveTo(unrestricted double cp1x, unrestricted double cp1y, unrestricted double cp2x, unrestricted double cp2y, unrestricted double x, unrestricted double y);
+  void arcTo(unrestricted double x1, unrestricted double y1, unrestricted double x2, unrestricted double y2, unrestricted double radius);
+  void rect(unrestricted double x, unrestricted double y, unrestricted double w, unrestricted double h);
+  void arc(unrestricted double x, unrestricted double y, unrestricted double radius, unrestricted double startAngle, unrestricted double endAngle, optional boolean anticlockwise = false);
+  void ellipse(unrestricted double x, unrestricted double y, unrestricted double radiusX, unrestricted double radiusY,  unrestricted double rotation, unrestricted double startAngle, unrestricted double endAngle, boolean anticlockwise);
+  };
 
 interface CanvasGradient {
   // opaque object
-  void addColorStop(in float offset, in DOMString color);
+  void addColorStop(double offset, DOMString color);
 };
 
 interface CanvasPattern {
@@ -107,20 +166,68 @@ interface CanvasPattern {
 };
 
 interface TextMetrics {
-  readonly attribute float width;
+  // x-direction
+  readonly attribute double width;
+  readonly attribute double actualBoundingBoxLeft;
+  readonly attribute double actualBoundingBoxRight;
+
+  // y-direction
+  readonly attribute double fontBoundingBoxAscent;
+  readonly attribute double fontBoundingBoxDescent;
+  readonly attribute double actualBoundingBoxAscent;
+  readonly attribute double actualBoundingBoxDescent;
+  readonly attribute double emHeightAscent;
+  readonly attribute double emHeightDescent;
+  readonly attribute double hangingBaseline;
+  readonly attribute double alphabeticBaseline;
+  readonly attribute double ideographicBaseline;
+
+};
+
+dictionary HitRegionOptions {
+  Path? path = null;
+  DOMString id = "";
+  DOMString? parentID = null;
+  DOMString cursor = "inherit";
+  // for control-backed regions:
+  Element? control = null;
+  // for unbacked regions:
+  DOMString? label = null;
+  DOMString? role = null;
 };
 
 interface ImageData {
   readonly attribute unsigned long width;
   readonly attribute unsigned long height;
-  readonly attribute CanvasPixelArray data;
+  readonly attribute Uint8ClampedArray data;
 };
 
-interface CanvasPixelArray {
-  readonly attribute unsigned long length;
-  getter octet (in unsigned long index);
-  setter void (in unsigned long index, in octet value);
+[Constructor(optional Element scope)]
+interface DrawingStyle { };
+DrawingStyle implements CanvasDrawingStyles;
+
+[Constructor]
+interface Path {
+  void addPath(Path path, SVGMatrix? transformation);
+  void addPathByStrokingPath(Path path, CanvasDrawingStyles styles, SVGMatrix? transformation);
+  void addText(DOMString text, CanvasDrawingStyles styles, SVGMatrix? transformation, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
+  void addPathByStrokingText(DOMString text, CanvasDrawingStyles styles, SVGMatrix? transformation, unrestricted double x, unrestricted double y, optional unrestricted double maxWidth);
+  void addText(DOMString text, CanvasDrawingStyles styles, SVGMatrix? transformation, Path path, optional unrestricted double maxWidth);
+  void addPathByStrokingText(DOMString text, CanvasDrawingStyles styles, SVGMatrix? transformation, Path path, optional unrestricted double maxWidth);
+
 };
+Path implements CanvasPathMethods;
 
 };
 
+module events {
+
+partial interface MouseEvent {
+  readonly attribute DOMString? region;
+};
+
+partial dictionary MouseEventInit {
+  DOMString? region;
+};
+
+};

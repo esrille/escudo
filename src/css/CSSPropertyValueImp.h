@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,6 @@
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
-
-#include <org/w3c/dom/css/CSSPropertyValue.h>
 
 #include <org/w3c/dom/Document.h>
 #include <org/w3c/dom/Element.h>
@@ -570,7 +568,7 @@ public:
             name(name),
             number(number) {
         }
-        virtual std::u16string getCssText(int defaultNumber) const {
+        std::u16string getCssText(int defaultNumber) const {
             if (number == defaultNumber)
                 return CSSSerializeIdentifier(name);
             return CSSSerializeIdentifier(name) + u' ' + CSSSerializeInteger(number);

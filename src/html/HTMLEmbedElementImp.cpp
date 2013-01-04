@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Esrille Inc.
+ * Copyright 2012, 2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,6 +76,12 @@ std::u16string HTMLEmbedElementImp::getHeight()
 void HTMLEmbedElementImp::setHeight(const std::u16string& height)
 {
     // TODO: implement me!
+}
+
+Any HTMLEmbedElementImp::operator() (Variadic<Any> arguments)
+{
+    // TODO: implement me!
+    return 0;
 }
 
 std::u16string HTMLEmbedElementImp::getAlign()

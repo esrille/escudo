@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@
 #include <org/w3c/dom/DocumentType.h>
 #include <org/w3c/dom/Element.h>
 #include <org/w3c/dom/Text.h>
-#include <org/w3c/dom/html/HTMLDocument.h>
 #include <org/w3c/dom/html/HTMLHtmlElement.h>
 
 #include <algorithm>

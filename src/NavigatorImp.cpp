@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Esrille Inc.
+ * Copyright 2012, 2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,17 +64,29 @@ void NavigatorImp::registerContentHandler(const std::u16string& mimeType, const 
     // TODO: implement me!
 }
 
+std::u16string NavigatorImp::isProtocolHandlerRegistered(const std::u16string& scheme, const std::u16string& url)
+{
+    // TODO: implement me!
+    return u"";
+}
+
+std::u16string NavigatorImp::isContentHandlerRegistered(const std::u16string& mimeType, const std::u16string& url)
+{
+    // TODO: implement me!
+    return u"";
+}
+
+void NavigatorImp::unregisterProtocolHandler(const std::u16string& scheme, const std::u16string& url)
+{
+    // TODO: implement me!
+}
+
+void NavigatorImp::unregisterContentHandler(const std::u16string& mimeType, const std::u16string& url)
+{
+    // TODO: implement me!
+}
+
 void NavigatorImp::yieldForStorageUpdates()
-{
-    // TODO: implement me!
-}
-
-void NavigatorImp::getUserMedia(const std::u16string& options, html::NavigatorUserMediaSuccessCallback successCallback)
-{
-    // TODO: implement me!
-}
-
-void NavigatorImp::getUserMedia(const std::u16string& options, html::NavigatorUserMediaSuccessCallback successCallback, html::NavigatorUserMediaErrorCallback errorCallback)
 {
     // TODO: implement me!
 }

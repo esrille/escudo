@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,8 +54,8 @@ public:
     void setFormEnctype(const std::u16string& formEnctype);
     std::u16string getFormMethod();
     void setFormMethod(const std::u16string& formMethod);
-    std::u16string getFormNoValidate();
-    void setFormNoValidate(const std::u16string& formNoValidate);
+    bool getFormNoValidate();
+    void setFormNoValidate(bool formNoValidate);
     std::u16string getFormTarget();
     void setFormTarget(const std::u16string& formTarget);
     std::u16string getName();

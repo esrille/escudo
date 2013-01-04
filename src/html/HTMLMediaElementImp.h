@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,8 @@
 #include <org/w3c/dom/html/AudioTrackList.h>
 #include <org/w3c/dom/html/VideoTrackList.h>
 #include <org/w3c/dom/html/MediaController.h>
+#include <org/w3c/dom/html/TextTrackList.h>
 #include <org/w3c/dom/html/TextTrack.h>
-#include <org/w3c/dom/html/MutableTextTrack.h>
 #include <org/w3c/dom/html/TimeRanges.h>
 
 namespace org
@@ -68,9 +68,8 @@ public:
     bool getSeeking();
     double getCurrentTime();
     void setCurrentTime(double currentTime);
-    double getInitialTime();
     double getDuration();
-    unsigned long long getStartOffsetTime();
+    unsigned long long getStartDate();
     bool getPaused();
     double getDefaultPlaybackRate();
     void setDefaultPlaybackRate(double defaultPlaybackRate);
@@ -100,9 +99,9 @@ public:
     html::AudioTrackList getAudioTracks();
     html::VideoTrackList getVideoTracks();
     html::TextTrackList getTextTracks();
-    html::MutableTextTrack addTextTrack(const std::u16string& kind);
-    html::MutableTextTrack addTextTrack(const std::u16string& kind, const std::u16string& label);
-    html::MutableTextTrack addTextTrack(const std::u16string& kind, const std::u16string& label, const std::u16string& language);
+    html::TextTrack addTextTrack(const std::u16string& kind);
+    html::TextTrack addTextTrack(const std::u16string& kind, const std::u16string& label);
+    html::TextTrack addTextTrack(const std::u16string& kind, const std::u16string& label, const std::u16string& language);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

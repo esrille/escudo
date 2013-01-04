@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Esrille Inc.
+ * Copyright 2012, 2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,15 +19,17 @@
 
 #include <boost/scoped_ptr.hpp>
 #include <Object.h>
-#include <org/w3c/dom/html/Function.h>
 #include <org/w3c/dom/html/BeforeUnloadEvent.h>
 #include <org/w3c/dom/events/Event.h>
 #include <org/w3c/dom/events/EventTarget.h>
+#include <org/w3c/dom/events/EventHandlerNonNull.h>
 
 Any callFunction(Object thisObject, Object functionObject, int argc, Any* argv);
 
 class ECMAScriptContext
 {
+    typedef org::w3c::dom::events::EventHandlerNonNull Function;
+
     class Impl;
     boost::scoped_ptr<Impl> pimpl;
     static ObjectImp* current;
@@ -45,7 +47,7 @@ public:
     Object* compileFunction(const std::u16string& body);
     Any callFunction(Object thisObject, Object functionObject, int argc, Any* argv);
 
-    void dispatchEvent(org::w3c::dom::html::Function function, org::w3c::dom::events::Event event)
+    void dispatchEvent(Function function, org::w3c::dom::events::Event event)
     {
         Any arg(event);
         Any result = callFunction(event.getCurrentTarget(), function, 1, &arg);

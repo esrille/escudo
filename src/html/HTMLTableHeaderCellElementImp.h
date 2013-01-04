@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,8 @@ public:
     // HTMLTableHeaderCellElement
     std::u16string getScope();
     void setScope(const std::u16string& scope);
+    std::u16string getAbbr();
+    void setAbbr(const std::u16string& abbr);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

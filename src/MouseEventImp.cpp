@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,5 +40,10 @@ bool MouseEventImp::getModifierState(const std::u16string& keyArg)
 {
 }
 
+Nullable<std::u16string> MouseEventImp::getRegion()
+{
+    // TODO: implement me!
+    return u"";
+}
 
 }}}}  // org::w3c::dom::bootstrap

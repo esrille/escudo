@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,141 +18,131 @@
 
 #include <iostream>
 
-#include "ApplicationCacheImp.h"
 #include "AttrImp.h"
-#include "BarPropImp.h"
-#include "BeforeUnloadEventImp.h"
-#include "BlobImp.h"
 #include "CaretPositionImp.h"
 #include "CharacterDataImp.h"
-#include "ClientRectImp.h"
-#include "ClientRectListImp.h"
 #include "CommentImp.h"
-#include "CompositionEventImp.h"
-#include "CustomEventImp.h"
-#include "CustomEventInitImp.h"
+#include "DocumentFragmentImp.h"
+#include "DocumentImp.h"
+#include "DocumentTypeImp.h"
+#include "DOMElementMapImp.h"
+#include "DOMErrorImp.h"
+// #include "DOMExceptionImp.h"
 #include "DOMImplementationImp.h"
 #include "DOMSettableTokenListImp.h"
 #include "DOMStringListImp.h"
 #include "DOMStringMapImp.h"
 #include "DOMTokenListImp.h"
-#include "DocumentFragmentImp.h"
-#include "DocumentImp.h"
-#include "DocumentRangeImp.h"
-#include "DocumentTraversalImp.h"
-#include "DocumentTypeImp.h"
-#include "DragEventImp.h"
 #include "ElementImp.h"
-#include "EventImp.h"
-#include "EventInitImp.h"
-#include "EventListenerImp.h"
-#include "EventSourceImp.h"
-#include "EventTargetImp.h"
-#include "FocusEventImp.h"
-#include "FunctionImp.h"
-#include "HashChangeEventImp.h"
-#include "HistoryImp.h"
-#include "KeyboardEventImp.h"
-#include "LinkStyleImp.h"
-#include "LocationImp.h"
-#include "MediaErrorImp.h"
-#include "MediaListImp.h"
-#include "MediaQueryListImp.h"
-#include "MediaQueryListListenerImp.h"
-#include "MessageChannelImp.h"
-#include "MessageEventImp.h"
-#include "MessagePortImp.h"
-#include "MouseEventImp.h"
-#include "MutationEventImp.h"
-#include "MutationNameEventImp.h"
-#include "NavigatorImp.h"
-#include "NodeFilterImp.h"
 #include "NodeImp.h"
-#include "NodeIteratorImp.h"
 #include "NodeListImp.h"
-#include "ObjectArrayImp.h"
-#include "PageTransitionEventImp.h"
-#include "PopStateEventImp.h"
 #include "ProcessingInstructionImp.h"
-#include "ProgressEventImp.h"
-#include "PropertyNodeListImp.h"
-#include "RangeImp.h"
-#include "ScreenImp.h"
-#include "StyleSheetImp.h"
-#include "TextEventImp.h"
 #include "TextImp.h"
-#include "TreeWalkerImp.h"
-#include "UIEventImp.h"
-#include "UndoManagerEventImp.h"
-#include "UndoManagerImp.h"
-#include "WheelEventImp.h"
-#include "WindowImp.h"
+
+#include "css/CounterImp.h"
 #include "css/CSS2PropertiesImp.h"
 #include "css/CSSCharsetRuleImp.h"
-#include "css/CSSColorComponentValueImp.h"
-#include "css/CSSComponentValueImp.h"
 #include "css/CSSFontFaceRuleImp.h"
-#include "css/CSSIdentifierComponentValueImp.h"
 #include "css/CSSImportRuleImp.h"
-#include "css/CSSKeywordComponentValueImp.h"
-#include "css/CSSLengthComponentValueImp.h"
-#include "css/CSSMapValueImp.h"
 #include "css/CSSMediaRuleImp.h"
 #include "css/CSSNamespaceRuleImp.h"
 #include "css/CSSPageRuleImp.h"
-#include "css/CSSPercentageComponentValueImp.h"
 #include "css/CSSPrimitiveValueImp.h"
-#include "css/CSSPropertyValueImp.h"
-#include "css/CSSPropertyValueListImp.h"
 #include "css/CSSRuleImp.h"
-#include "css/CSSStringComponentValueImp.h"
 #include "css/CSSStyleDeclarationImp.h"
 #include "css/CSSStyleDeclarationValueImp.h"
 #include "css/CSSStyleRuleImp.h"
 #include "css/CSSStyleSheetImp.h"
-#include "css/CSSURLComponentValueImp.h"
 #include "css/CSSUnknownRuleImp.h"
 #include "css/CSSValueImp.h"
 #include "css/CSSValueListImp.h"
-#include "css/CounterImp.h"
-#include "css/DOMImplementationCSSImp.h"
-#include "css/DocumentCSSImp.h"
-#include "css/ElementCSSInlineStyleImp.h"
-#include "css/RGBColorImp.h"
+// #include "css/DocumentCSSImp.h"
+// #include "css/DOMImplementationCSSImp.h"
+// #include "css/ElementCSSInlineStyleImp.h"
 #include "css/RectImp.h"
-#include "css/ViewCSSImp.h"
-#include "file/FileErrorImp.h"
+#include "css/RGBColorImp.h"
+
+// events
+#include "CompositionEventImp.h"
+#include "CompositionEventInitImp.h"
+#include "CustomEventImp.h"
+#include "CustomEventInitImp.h"
+#include "EventImp.h"
+#include "EventHandlerNonNullImp.h"
+#include "EventInitImp.h"
+#include "EventListenerImp.h"
+#include "EventTargetImp.h"
+// #include "EventXBLImp.h"
+#include "FocusEventImp.h"
+#include "FocusEventInitImp.h"
+#include "KeyboardEventImp.h"
+#include "KeyboardEventInitImp.h"
+#include "MouseEventImp.h"
+#include "MouseEventInitImp.h"
+#include "MutationEventImp.h"
+#include "OnErrorEventHandlerNonNullImp.h"
+#include "ProgressEventImp.h"
+#include "UIEventImp.h"
+#include "UIEventInitImp.h"
+#include "WheelEventImp.h"
+#include "WheelEventInitImp.h"
+
+// eventsource
+#include "EventSourceImp.h"
+
+// file
+#include "file/BlobImp.h"
+#include "file/BlobPropertyBagImp.h"
+#include "file/FileCallbackImp.h"
 #include "file/FileImp.h"
 #include "file/FileListImp.h"
 #include "file/FileReaderImp.h"
 #include "file/FileReaderSyncImp.h"
+#include "file/LineEndingsImp.h"
+
+// html
+#include "html/ApplicationCacheImp.h"
+#include "html/AudioTrackImp.h"
+#include "html/AudioTrackListImp.h"
+#include "html/BarPropImp.h"
+#include "BeforeUnloadEventImp.h"
+#include "html/CanvasDrawingStylesImp.h"
 #include "html/CanvasGradientImp.h"
+#include "html/CanvasPathMethodsImp.h"
 #include "html/CanvasPatternImp.h"
-#include "html/CanvasPixelArrayImp.h"
 #include "html/CanvasRenderingContext2DImp.h"
 #include "html/DataTransferImp.h"
 #include "html/DataTransferItemImp.h"
 #include "html/DataTransferItemListImp.h"
+#include "DragEventImp.h"
+#include "DragEventInitImp.h"
+#include "html/DrawingStyleImp.h"
+#include "ExternalImp.h"
+#include "FunctionStringCallbackImp.h"
+#include "HashChangeEventImp.h"
+#include "HashChangeEventInitImp.h"
+#include "HistoryImp.h"
+#include "html/HitRegionOptionsImp.h"
 #include "html/HTMLAllCollectionImp.h"
 #include "html/HTMLAnchorElementImp.h"
 #include "html/HTMLAppletElementImp.h"
 #include "html/HTMLAreaElementImp.h"
 #include "html/HTMLAudioElementImp.h"
-#include "html/HTMLBRElementImp.h"
 #include "html/HTMLBaseElementImp.h"
 #include "html/HTMLBaseFontElementImp.h"
 #include "html/HTMLBindingElementImp.h"
 #include "html/HTMLBodyElementImp.h"
+#include "html/HTMLBRElementImp.h"
 #include "html/HTMLButtonElementImp.h"
 #include "html/HTMLCanvasElementImp.h"
 #include "html/HTMLCollectionImp.h"
 #include "html/HTMLCommandElementImp.h"
-#include "html/HTMLDListElementImp.h"
 #include "html/HTMLDataListElementImp.h"
 #include "html/HTMLDetailsElementImp.h"
+#include "html/HTMLDialogElementImp.h"
 #include "html/HTMLDirectoryElementImp.h"
 #include "html/HTMLDivElementImp.h"
-#include "html/HTMLDocumentImp.h"
+#include "html/HTMLDListElementImp.h"
 #include "html/HTMLElementImp.h"
 #include "html/HTMLEmbedElementImp.h"
 #include "html/HTMLFieldSetElementImp.h"
@@ -161,17 +151,17 @@
 #include "html/HTMLFormElementImp.h"
 #include "html/HTMLFrameElementImp.h"
 #include "html/HTMLFrameSetElementImp.h"
-#include "html/HTMLHRElementImp.h"
 #include "html/HTMLHeadElementImp.h"
 #include "html/HTMLHeadingElementImp.h"
+#include "html/HTMLHRElementImp.h"
 #include "html/HTMLHtmlElementImp.h"
 #include "html/HTMLIFrameElementImp.h"
 #include "html/HTMLImageElementImp.h"
 #include "html/HTMLInputElementImp.h"
 #include "html/HTMLKeygenElementImp.h"
-#include "html/HTMLLIElementImp.h"
 #include "html/HTMLLabelElementImp.h"
 #include "html/HTMLLegendElementImp.h"
+#include "html/HTMLLIElementImp.h"
 #include "html/HTMLLinkElementImp.h"
 #include "html/HTMLMapElementImp.h"
 #include "html/HTMLMarqueeElementImp.h"
@@ -180,8 +170,8 @@
 #include "html/HTMLMetaElementImp.h"
 #include "html/HTMLMeterElementImp.h"
 #include "html/HTMLModElementImp.h"
-#include "html/HTMLOListElementImp.h"
 #include "html/HTMLObjectElementImp.h"
+#include "html/HTMLOListElementImp.h"
 #include "html/HTMLOptGroupElementImp.h"
 #include "html/HTMLOptionElementImp.h"
 #include "html/HTMLOptionsCollectionImp.h"
@@ -190,7 +180,6 @@
 #include "html/HTMLParamElementImp.h"
 #include "html/HTMLPreElementImp.h"
 #include "html/HTMLProgressElementImp.h"
-#include "html/HTMLPropertiesCollectionImp.h"
 #include "html/HTMLQuoteElementImp.h"
 #include "html/HTMLScriptElementImp.h"
 #include "html/HTMLSelectElementImp.h"
@@ -209,15 +198,69 @@
 #include "html/HTMLTextAreaElementImp.h"
 #include "html/HTMLTimeElementImp.h"
 #include "html/HTMLTitleElementImp.h"
+#include "html/HTMLTrackElementImp.h"
 #include "html/HTMLUListElementImp.h"
 #include "html/HTMLUnknownElementImp.h"
 #include "html/HTMLVideoElementImp.h"
 #include "html/ImageDataImp.h"
+#include "LocationImp.h"
+#include "html/MediaControllerImp.h"
+#include "html/MediaErrorImp.h"
+#include "html/MediaQueryListImp.h"
+#include "html/MediaQueryListListenerImp.h"
+#include "html/MessageChannelImp.h"
+#include "MessageEventImp.h"
+#include "MessageEventInitImp.h"
+#include "html/MessagePortImp.h"
+#include "NavigatorContentUtilsImp.h"
+#include "NavigatorImp.h"
+#include "NavigatorIDImp.h"
+#include "NavigatorOnLineImp.h"
+#include "NavigatorStorageUtilsImp.h"
+#include "PageTransitionEventImp.h"
+#include "PageTransitionEventInitImp.h"
+#include "html/PathImp.h"
+#include "PopStateEventImp.h"
+#include "PopStateEventInitImp.h"
 #include "html/RadioNodeListImp.h"
+#include "html/ScreenImp.h"
 #include "html/TextMetricsImp.h"
+#include "html/TextTrackCueImp.h"
+#include "html/TextTrackCueListImp.h"
+#include "html/TextTrackImp.h"
+#include "html/TextTrackListImp.h"
 #include "html/TimeRangesImp.h"
+#include "TrackEventImp.h"
+#include "TrackEventInitImp.h"
+#include "html/TransferableImp.h"
 #include "html/ValidityStateImp.h"
-#if 0
+#include "html/VideoTrackImp.h"
+#include "html/VideoTrackListImp.h"
+// #include "WindowBase64Imp.h"
+#include "WindowImp.h"
+// #include "WindowModalImp.h"
+// #include "WindowTimersImp.h"
+
+// ranges
+#include "DocumentRangeImp.h"
+// #include "RangeExceptionImp.h"
+#include "RangeImp.h"
+
+// stylesheets
+#include "LinkStyleImp.h"
+#include "MediaListImp.h"
+#include "StyleSheetImp.h"
+
+// svg
+#include "svg/SVGMatrixImp.h"
+
+// traversal
+#include "DocumentTraversalImp.h"
+#include "NodeFilterImp.h"
+#include "NodeIteratorImp.h"
+#include "TreeWalkerImp.h"
+
+// typedarray
 #include "typedarray/ArrayBufferImp.h"
 #include "typedarray/ArrayBufferViewImp.h"
 #include "typedarray/DataViewImp.h"
@@ -229,11 +272,24 @@
 #include "typedarray/Uint16ArrayImp.h"
 #include "typedarray/Uint32ArrayImp.h"
 #include "typedarray/Uint8ArrayImp.h"
-#endif
-#include "xhr/AnonXMLHttpRequestImp.h"
+#include "typedarray/Uint8ClampedArrayImp.h"
+
+// views
+#include "ClientRectImp.h"
+#include "ClientRectListImp.h"
+
+// xbl2
+// #include "xbl/DocumentXBLImp.h"
+// #include "xbl/ElementXBLImp.h"
+#include "xbl/XBLContentElementImp.h"
+#include "xbl/XBLImplementationImp.h"
+#include "xbl/XBLImplementationListImp.h"
+
+// xhr
 #include "xhr/FormDataImp.h"
 #include "xhr/XMLHttpRequestEventTargetImp.h"
 #include "xhr/XMLHttpRequestImp.h"
+#include "xhr/XMLHttpRequestOptionsImp.h"
 #include "xhr/XMLHttpRequestUploadImp.h"
 
 using namespace org::w3c::dom::bootstrap;
@@ -249,147 +305,167 @@ void registerClasses(v8::Handle<v8::ObjectTemplate> global)
     AttrImp::setStaticPrivate(new NativeClass(global, AttrImp::getMetaData()));
     CSSRuleImp::setStaticPrivate(new NativeClass(global, CSSRuleImp::getMetaData()));
     CSSStyleDeclarationImp::setStaticPrivate(new NativeClass(global, CSSStyleDeclarationImp::getMetaData()));
+    CSSValueImp::setStaticPrivate(new NativeClass(global, CSSValueImp::getMetaData()));
     DOMImplementationImp::setStaticPrivate(new NativeClass(global, DOMImplementationImp::getMetaData()));
+    DOMTokenListImp::setStaticPrivate(new NativeClass(global, DOMTokenListImp::getMetaData()));
     EventImp::setStaticPrivate(new NativeClass(global, EventImp::getMetaData()));
+    EventInitImp::setStaticPrivate(new NativeClass(global, EventInitImp::getMetaData()));
     EventTargetImp::setStaticPrivate(new NativeClass(global, EventTargetImp::getMetaData()));
+    HTMLCollectionImp::setStaticPrivate(new NativeClass(global, HTMLCollectionImp::getMetaData()));
     LocationImp::setStaticPrivate(new NativeClass(global, LocationImp::getMetaData()));
     MediaListImp::setStaticPrivate(new NativeClass(global, MediaListImp::getMetaData()));
+    NodeImp::setStaticPrivate(new NativeClass(global, NodeImp::getMetaData()));
     NodeListImp::setStaticPrivate(new NativeClass(global, NodeListImp::getMetaData()));
     StyleSheetImp::setStaticPrivate(new NativeClass(global, StyleSheetImp::getMetaData()));
+    UIEventImp::setStaticPrivate(new NativeClass(global, UIEventImp::getMetaData()));
 
-    // dom
-    ApplicationCacheImp::setStaticPrivate(new NativeClass(global, ApplicationCacheImp::getMetaData()));
-    BarPropImp::setStaticPrivate(new NativeClass(global, BarPropImp::getMetaData()));
-    BlobImp::setStaticPrivate(new NativeClass(global, BlobImp::getMetaData()));
-    CanvasGradientImp::setStaticPrivate(new NativeClass(global, CanvasGradientImp::getMetaData()));
-    CanvasPatternImp::setStaticPrivate(new NativeClass(global, CanvasPatternImp::getMetaData()));
-    CanvasPixelArrayImp::setStaticPrivate(new NativeClass(global, CanvasPixelArrayImp::getMetaData()));
-    CanvasRenderingContext2DImp::setStaticPrivate(new NativeClass(global, CanvasRenderingContext2DImp::getMetaData()));
+    ElementImp::setStaticPrivate(new NativeClass(global, ElementImp::getMetaData()));
+    HTMLElementImp::setStaticPrivate(new NativeClass(global, HTMLElementImp::getMetaData()));
+    HTMLMediaElementImp::setStaticPrivate(new NativeClass(global, HTMLMediaElementImp::getMetaData()));
+
+//    AttrImp::setStaticPrivate(new NativeClass(global, AttrImp::getMetaData()));
     CaretPositionImp::setStaticPrivate(new NativeClass(global, CaretPositionImp::getMetaData()));
-    ClientRectImp::setStaticPrivate(new NativeClass(global, ClientRectImp::getMetaData()));
-    ClientRectListImp::setStaticPrivate(new NativeClass(global, ClientRectListImp::getMetaData()));
-    CounterImp::setStaticPrivate(new NativeClass(global, CounterImp::getMetaData()));
-    // DOMConfigurationImp::setStaticPrivate(new NativeClass(global, DOMConfigurationImp::getMetaData()));
+    CharacterDataImp::setStaticPrivate(new NativeClass(global, CharacterDataImp::getMetaData()));
+    CommentImp::setStaticPrivate(new NativeClass(global, CommentImp::getMetaData()));
+    DocumentFragmentImp::setStaticPrivate(new NativeClass(global, DocumentFragmentImp::getMetaData()));
+    DocumentImp::setStaticPrivate(new NativeClass(global, DocumentImp::getMetaData()));
+    DocumentTypeImp::setStaticPrivate(new NativeClass(global, DocumentTypeImp::getMetaData()));
+    DOMElementMapImp::setStaticPrivate(new NativeClass(global, DOMElementMapImp::getMetaData()));
+    DOMErrorImp::setStaticPrivate(new NativeClass(global, DOMErrorImp::getMetaData()));
+//    DOMImplementationImp::setStaticPrivate(new NativeClass(global, DOMImplementationImp::getMetaData()));
+    DOMSettableTokenListImp::setStaticPrivate(new NativeClass(global, DOMSettableTokenListImp::getMetaData()));
     DOMStringListImp::setStaticPrivate(new NativeClass(global, DOMStringListImp::getMetaData()));
     DOMStringMapImp::setStaticPrivate(new NativeClass(global, DOMStringMapImp::getMetaData()));
-    DataTransferImp::setStaticPrivate(new NativeClass(global, DataTransferImp::getMetaData()));
-    DocumentRangeImp::setStaticPrivate(new NativeClass(global, DocumentRangeImp::getMetaData()));
-    DocumentTraversalImp::setStaticPrivate(new NativeClass(global, DocumentTraversalImp::getMetaData()));
-    ElementCSSInlineStyleImp::setStaticPrivate(new NativeClass(global, ElementCSSInlineStyleImp::getMetaData()));
-    EventListenerImp::setStaticPrivate(new NativeClass(global, EventListenerImp::getMetaData()));
-    EventSourceImp::setStaticPrivate(new NativeClass(global, EventSourceImp::getMetaData()));
-    FormDataImp::setStaticPrivate(new NativeClass(global, FormDataImp::getMetaData()));
-    HistoryImp::setStaticPrivate(new NativeClass(global, HistoryImp::getMetaData()));
-    ImageDataImp::setStaticPrivate(new NativeClass(global, ImageDataImp::getMetaData()));
-    LinkStyleImp::setStaticPrivate(new NativeClass(global, LinkStyleImp::getMetaData()));
-    MediaErrorImp::setStaticPrivate(new NativeClass(global, MediaErrorImp::getMetaData()));
-    MediaQueryListImp::setStaticPrivate(new NativeClass(global, MediaQueryListImp::getMetaData()));
-    MediaQueryListListenerImp::setStaticPrivate(new NativeClass(global, MediaQueryListListenerImp::getMetaData()));
-    MessageChannelImp::setStaticPrivate(new NativeClass(global, MessageChannelImp::getMetaData()));
-    MessagePortImp::setStaticPrivate(new NativeClass(global, MessagePortImp::getMetaData()));
-    // NameListImp::setStaticPrivate(new NativeClass(global, NameListImp::getMetaData()));
-    NavigatorImp::setStaticPrivate(new NativeClass(global, NavigatorImp::getMetaData()));
-    NodeFilterImp::setStaticPrivate(new NativeClass(global, NodeFilterImp::getMetaData()));
-    NodeIteratorImp::setStaticPrivate(new NativeClass(global, NodeIteratorImp::getMetaData()));
-    PropertyNodeListImp::setStaticPrivate(new NativeClass(global, PropertyNodeListImp::getMetaData()));
-    RGBColorImp::setStaticPrivate(new NativeClass(global, RGBColorImp::getMetaData()));
-    RadioNodeListImp::setStaticPrivate(new NativeClass(global, RadioNodeListImp::getMetaData()));
-    RangeImp::setStaticPrivate(new NativeClass(global, RangeImp::getMetaData()));
-    RectImp::setStaticPrivate(new NativeClass(global, RectImp::getMetaData()));
-    ScreenImp::setStaticPrivate(new NativeClass(global, ScreenImp::getMetaData()));
-    TextMetricsImp::setStaticPrivate(new NativeClass(global, TextMetricsImp::getMetaData()));
-    TimeRangesImp::setStaticPrivate(new NativeClass(global, TimeRangesImp::getMetaData()));
-    TreeWalkerImp::setStaticPrivate(new NativeClass(global, TreeWalkerImp::getMetaData()));
-    // URLImp::setStaticPrivate(new NativeClass(global, URLImp::getMetaData()));
-    UndoManagerImp::setStaticPrivate(new NativeClass(global, UndoManagerImp::getMetaData()));
-    ValidityStateImp::setStaticPrivate(new NativeClass(global, ValidityStateImp::getMetaData()));
-
-    DOMTokenListImp::setStaticPrivate(new NativeClass(global, DOMTokenListImp::getMetaData()));
-    DOMSettableTokenListImp::setStaticPrivate(new NativeClass(global, DOMSettableTokenListImp::getMetaData()));
-
-    // window
-    WindowImp::setStaticPrivate(new NativeClass(global, html::Window::getMetaData()));
-
-    // node
-    NodeImp::setStaticPrivate(new NativeClass(global, Node::getMetaData()));
-    CharacterDataImp::setStaticPrivate(new NativeClass(global, CharacterData::getMetaData()));
-    DocumentImp::setStaticPrivate(new NativeClass(global, Document::getMetaData()));
-    DocumentFragmentImp::setStaticPrivate(new NativeClass(global, DocumentFragmentImp::getMetaData()));
-    DocumentTypeImp::setStaticPrivate(new NativeClass(global, DocumentType::getMetaData()));
-    ElementImp::setStaticPrivate(new NativeClass(global, Element::getMetaData()));
+//    DOMTokenListImp::setStaticPrivate(new NativeClass(global, DOMTokenListImp::getMetaData()));
+//    ElementImp::setStaticPrivate(new NativeClass(global, ElementImp::getMetaData()));
+//    NodeImp::setStaticPrivate(new NativeClass(global, NodeImp::getMetaData()));
+//    NodeListImp::setStaticPrivate(new NativeClass(global, NodeListImp::getMetaData()));
     ProcessingInstructionImp::setStaticPrivate(new NativeClass(global, ProcessingInstructionImp::getMetaData()));
-
-    // event
-    UIEventImp::setStaticPrivate(new NativeClass(global, events::UIEvent::getMetaData()));
-    MouseEventImp::setStaticPrivate(new NativeClass(global, MouseEventImp::getMetaData()));
-    DragEventImp::setStaticPrivate(new NativeClass(global, DragEventImp::getMetaData()));
-    MutationEventImp::setStaticPrivate(new NativeClass(global, MutationEventImp::getMetaData()));
-    PageTransitionEventImp::setStaticPrivate(new NativeClass(global, PageTransitionEventImp::getMetaData()));
-    PopStateEventImp::setStaticPrivate(new NativeClass(global, PopStateEventImp::getMetaData()));
-    ProgressEventImp::setStaticPrivate(new NativeClass(global, ProgressEventImp::getMetaData()));
-    TextEventImp::setStaticPrivate(new NativeClass(global, TextEventImp::getMetaData()));
-    UndoManagerEventImp::setStaticPrivate(new NativeClass(global, UndoManagerEventImp::getMetaData()));
-    WheelEventImp::setStaticPrivate(new NativeClass(global, WheelEventImp::getMetaData()));
-    BeforeUnloadEventImp::setStaticPrivate(new NativeClass(global, BeforeUnloadEventImp::getMetaData()));
+    TextImp::setStaticPrivate(new NativeClass(global, TextImp::getMetaData()));
+    CounterImp::setStaticPrivate(new NativeClass(global, CounterImp::getMetaData()));
+    CSS2PropertiesImp::setStaticPrivate(new NativeClass(global, CSS2PropertiesImp::getMetaData()));
+    CSSCharsetRuleImp::setStaticPrivate(new NativeClass(global, CSSCharsetRuleImp::getMetaData()));
+    CSSFontFaceRuleImp::setStaticPrivate(new NativeClass(global, CSSFontFaceRuleImp::getMetaData()));
+    CSSImportRuleImp::setStaticPrivate(new NativeClass(global, CSSImportRuleImp::getMetaData()));
+    CSSMediaRuleImp::setStaticPrivate(new NativeClass(global, CSSMediaRuleImp::getMetaData()));
+    CSSNamespaceRuleImp::setStaticPrivate(new NativeClass(global, CSSNamespaceRuleImp::getMetaData()));
+    CSSPageRuleImp::setStaticPrivate(new NativeClass(global, CSSPageRuleImp::getMetaData()));
+    CSSPrimitiveValueImp::setStaticPrivate(new NativeClass(global, CSSPrimitiveValueImp::getMetaData()));
+//    CSSRuleImp::setStaticPrivate(new NativeClass(global, CSSRuleImp::getMetaData()));
+//    CSSStyleDeclarationImp::setStaticPrivate(new NativeClass(global, CSSStyleDeclarationImp::getMetaData()));
+    CSSStyleDeclarationValueImp::setStaticPrivate(new NativeClass(global, CSSStyleDeclarationValueImp::getMetaData()));
+    CSSStyleRuleImp::setStaticPrivate(new NativeClass(global, CSSStyleRuleImp::getMetaData()));
+    CSSStyleSheetImp::setStaticPrivate(new NativeClass(global, CSSStyleSheetImp::getMetaData()));
+    CSSUnknownRuleImp::setStaticPrivate(new NativeClass(global, CSSUnknownRuleImp::getMetaData()));
+//    CSSValueImp::setStaticPrivate(new NativeClass(global, CSSValueImp::getMetaData()));
+    CSSValueListImp::setStaticPrivate(new NativeClass(global, CSSValueListImp::getMetaData()));
+    RectImp::setStaticPrivate(new NativeClass(global, RectImp::getMetaData()));
+    RGBColorImp::setStaticPrivate(new NativeClass(global, RGBColorImp::getMetaData()));
     CompositionEventImp::setStaticPrivate(new NativeClass(global, CompositionEventImp::getMetaData()));
+    CompositionEventInitImp::setStaticPrivate(new NativeClass(global, CompositionEventInitImp::getMetaData()));
     CustomEventImp::setStaticPrivate(new NativeClass(global, CustomEventImp::getMetaData()));
+    CustomEventInitImp::setStaticPrivate(new NativeClass(global, CustomEventInitImp::getMetaData()));
+//    EventImp::setStaticPrivate(new NativeClass(global, EventImp::getMetaData()));
+    EventHandlerNonNullImp::setStaticPrivate(new NativeClass(global, EventHandlerNonNullImp::getMetaData()));
+//    EventInitImp::setStaticPrivate(new NativeClass(global, EventInitImp::getMetaData()));
+    EventListenerImp::setStaticPrivate(new NativeClass(global, EventListenerImp::getMetaData()));
+//    EventTargetImp::setStaticPrivate(new NativeClass(global, EventTargetImp::getMetaData()));
     FocusEventImp::setStaticPrivate(new NativeClass(global, FocusEventImp::getMetaData()));
-    HashChangeEventImp::setStaticPrivate(new NativeClass(global, HashChangeEventImp::getMetaData()));
+    FocusEventInitImp::setStaticPrivate(new NativeClass(global, FocusEventInitImp::getMetaData()));
     KeyboardEventImp::setStaticPrivate(new NativeClass(global, KeyboardEventImp::getMetaData()));
-    MessageEventImp::setStaticPrivate(new NativeClass(global, MessageEventImp::getMetaData()));
-    MutationNameEventImp::setStaticPrivate(new NativeClass(global, MutationNameEventImp::getMetaData()));
-
-    // character data
-    CommentImp::setStaticPrivate(new NativeClass(global, Comment::getMetaData()));
-    TextImp::setStaticPrivate(new NativeClass(global, Text::getMetaData()));
-
-    // html element
-    HTMLElementImp::setStaticPrivate(new NativeClass(global, HTMLElementImp::getMetaData()));
+    KeyboardEventInitImp::setStaticPrivate(new NativeClass(global, KeyboardEventInitImp::getMetaData()));
+    MouseEventImp::setStaticPrivate(new NativeClass(global, MouseEventImp::getMetaData()));
+    MouseEventInitImp::setStaticPrivate(new NativeClass(global, MouseEventInitImp::getMetaData()));
+    MutationEventImp::setStaticPrivate(new NativeClass(global, MutationEventImp::getMetaData()));
+    OnErrorEventHandlerNonNullImp::setStaticPrivate(new NativeClass(global, OnErrorEventHandlerNonNullImp::getMetaData()));
+    ProgressEventImp::setStaticPrivate(new NativeClass(global, ProgressEventImp::getMetaData()));
+//    UIEventImp::setStaticPrivate(new NativeClass(global, UIEventImp::getMetaData()));
+    UIEventInitImp::setStaticPrivate(new NativeClass(global, UIEventInitImp::getMetaData()));
+    WheelEventImp::setStaticPrivate(new NativeClass(global, WheelEventImp::getMetaData()));
+    WheelEventInitImp::setStaticPrivate(new NativeClass(global, WheelEventInitImp::getMetaData()));
+    EventSourceImp::setStaticPrivate(new NativeClass(global, EventSourceImp::getMetaData()));
+    BlobImp::setStaticPrivate(new NativeClass(global, BlobImp::getMetaData()));
+    BlobPropertyBagImp::setStaticPrivate(new NativeClass(global, BlobPropertyBagImp::getMetaData()));
+    FileCallbackImp::setStaticPrivate(new NativeClass(global, FileCallbackImp::getMetaData()));
+    FileImp::setStaticPrivate(new NativeClass(global, FileImp::getMetaData()));
+    FileListImp::setStaticPrivate(new NativeClass(global, FileListImp::getMetaData()));
+    FileReaderImp::setStaticPrivate(new NativeClass(global, FileReaderImp::getMetaData()));
+    FileReaderSyncImp::setStaticPrivate(new NativeClass(global, FileReaderSyncImp::getMetaData()));
+    LineEndingsImp::setStaticPrivate(new NativeClass(global, LineEndingsImp::getMetaData()));
+    ApplicationCacheImp::setStaticPrivate(new NativeClass(global, ApplicationCacheImp::getMetaData()));
+    AudioTrackImp::setStaticPrivate(new NativeClass(global, AudioTrackImp::getMetaData()));
+    AudioTrackListImp::setStaticPrivate(new NativeClass(global, AudioTrackListImp::getMetaData()));
+    BarPropImp::setStaticPrivate(new NativeClass(global, BarPropImp::getMetaData()));
+    BeforeUnloadEventImp::setStaticPrivate(new NativeClass(global, BeforeUnloadEventImp::getMetaData()));
+    CanvasDrawingStylesImp::setStaticPrivate(new NativeClass(global, CanvasDrawingStylesImp::getMetaData()));
+    CanvasGradientImp::setStaticPrivate(new NativeClass(global, CanvasGradientImp::getMetaData()));
+    CanvasPathMethodsImp::setStaticPrivate(new NativeClass(global, CanvasPathMethodsImp::getMetaData()));
+    CanvasPatternImp::setStaticPrivate(new NativeClass(global, CanvasPatternImp::getMetaData()));
+    CanvasRenderingContext2DImp::setStaticPrivate(new NativeClass(global, CanvasRenderingContext2DImp::getMetaData()));
+    DataTransferImp::setStaticPrivate(new NativeClass(global, DataTransferImp::getMetaData()));
+    DataTransferItemImp::setStaticPrivate(new NativeClass(global, DataTransferItemImp::getMetaData()));
+    DataTransferItemListImp::setStaticPrivate(new NativeClass(global, DataTransferItemListImp::getMetaData()));
+    DragEventImp::setStaticPrivate(new NativeClass(global, DragEventImp::getMetaData()));
+    DragEventInitImp::setStaticPrivate(new NativeClass(global, DragEventInitImp::getMetaData()));
+    DrawingStyleImp::setStaticPrivate(new NativeClass(global, DrawingStyleImp::getMetaData()));
+    ExternalImp::setStaticPrivate(new NativeClass(global, ExternalImp::getMetaData()));
+    FunctionStringCallbackImp::setStaticPrivate(new NativeClass(global, FunctionStringCallbackImp::getMetaData()));
+    HashChangeEventImp::setStaticPrivate(new NativeClass(global, HashChangeEventImp::getMetaData()));
+    HashChangeEventInitImp::setStaticPrivate(new NativeClass(global, HashChangeEventInitImp::getMetaData()));
+    HistoryImp::setStaticPrivate(new NativeClass(global, HistoryImp::getMetaData()));
+    HitRegionOptionsImp::setStaticPrivate(new NativeClass(global, HitRegionOptionsImp::getMetaData()));
+    HTMLAllCollectionImp::setStaticPrivate(new NativeClass(global, HTMLAllCollectionImp::getMetaData()));
     HTMLAnchorElementImp::setStaticPrivate(new NativeClass(global, HTMLAnchorElementImp::getMetaData()));
     HTMLAppletElementImp::setStaticPrivate(new NativeClass(global, HTMLAppletElementImp::getMetaData()));
     HTMLAreaElementImp::setStaticPrivate(new NativeClass(global, HTMLAreaElementImp::getMetaData()));
-    HTMLBRElementImp::setStaticPrivate(new NativeClass(global, HTMLBRElementImp::getMetaData()));
+    HTMLAudioElementImp::setStaticPrivate(new NativeClass(global, HTMLAudioElementImp::getMetaData()));
     HTMLBaseElementImp::setStaticPrivate(new NativeClass(global, HTMLBaseElementImp::getMetaData()));
     HTMLBaseFontElementImp::setStaticPrivate(new NativeClass(global, HTMLBaseFontElementImp::getMetaData()));
     HTMLBindingElementImp::setStaticPrivate(new NativeClass(global, HTMLBindingElementImp::getMetaData()));
     HTMLBodyElementImp::setStaticPrivate(new NativeClass(global, HTMLBodyElementImp::getMetaData()));
+    HTMLBRElementImp::setStaticPrivate(new NativeClass(global, HTMLBRElementImp::getMetaData()));
     HTMLButtonElementImp::setStaticPrivate(new NativeClass(global, HTMLButtonElementImp::getMetaData()));
     HTMLCanvasElementImp::setStaticPrivate(new NativeClass(global, HTMLCanvasElementImp::getMetaData()));
+//    HTMLCollectionImp::setStaticPrivate(new NativeClass(global, HTMLCollectionImp::getMetaData()));
     HTMLCommandElementImp::setStaticPrivate(new NativeClass(global, HTMLCommandElementImp::getMetaData()));
-    HTMLDListElementImp::setStaticPrivate(new NativeClass(global, HTMLDListElementImp::getMetaData()));
     HTMLDataListElementImp::setStaticPrivate(new NativeClass(global, HTMLDataListElementImp::getMetaData()));
     HTMLDetailsElementImp::setStaticPrivate(new NativeClass(global, HTMLDetailsElementImp::getMetaData()));
+    HTMLDialogElementImp::setStaticPrivate(new NativeClass(global, HTMLDialogElementImp::getMetaData()));
     HTMLDirectoryElementImp::setStaticPrivate(new NativeClass(global, HTMLDirectoryElementImp::getMetaData()));
     HTMLDivElementImp::setStaticPrivate(new NativeClass(global, HTMLDivElementImp::getMetaData()));
-    HTMLDocumentImp::setStaticPrivate(new NativeClass(global, HTMLDocumentImp::getMetaData()));
+    HTMLDListElementImp::setStaticPrivate(new NativeClass(global, HTMLDListElementImp::getMetaData()));
+//    HTMLElementImp::setStaticPrivate(new NativeClass(global, HTMLElementImp::getMetaData()));
     HTMLEmbedElementImp::setStaticPrivate(new NativeClass(global, HTMLEmbedElementImp::getMetaData()));
     HTMLFieldSetElementImp::setStaticPrivate(new NativeClass(global, HTMLFieldSetElementImp::getMetaData()));
     HTMLFontElementImp::setStaticPrivate(new NativeClass(global, HTMLFontElementImp::getMetaData()));
+    HTMLFormControlsCollectionImp::setStaticPrivate(new NativeClass(global, HTMLFormControlsCollectionImp::getMetaData()));
     HTMLFormElementImp::setStaticPrivate(new NativeClass(global, HTMLFormElementImp::getMetaData()));
     HTMLFrameElementImp::setStaticPrivate(new NativeClass(global, HTMLFrameElementImp::getMetaData()));
     HTMLFrameSetElementImp::setStaticPrivate(new NativeClass(global, HTMLFrameSetElementImp::getMetaData()));
-    HTMLHRElementImp::setStaticPrivate(new NativeClass(global, HTMLHRElementImp::getMetaData()));
     HTMLHeadElementImp::setStaticPrivate(new NativeClass(global, HTMLHeadElementImp::getMetaData()));
     HTMLHeadingElementImp::setStaticPrivate(new NativeClass(global, HTMLHeadingElementImp::getMetaData()));
+    HTMLHRElementImp::setStaticPrivate(new NativeClass(global, HTMLHRElementImp::getMetaData()));
     HTMLHtmlElementImp::setStaticPrivate(new NativeClass(global, HTMLHtmlElementImp::getMetaData()));
     HTMLIFrameElementImp::setStaticPrivate(new NativeClass(global, HTMLIFrameElementImp::getMetaData()));
     HTMLImageElementImp::setStaticPrivate(new NativeClass(global, HTMLImageElementImp::getMetaData()));
     HTMLInputElementImp::setStaticPrivate(new NativeClass(global, HTMLInputElementImp::getMetaData()));
     HTMLKeygenElementImp::setStaticPrivate(new NativeClass(global, HTMLKeygenElementImp::getMetaData()));
-    HTMLLIElementImp::setStaticPrivate(new NativeClass(global, HTMLLIElementImp::getMetaData()));
     HTMLLabelElementImp::setStaticPrivate(new NativeClass(global, HTMLLabelElementImp::getMetaData()));
     HTMLLegendElementImp::setStaticPrivate(new NativeClass(global, HTMLLegendElementImp::getMetaData()));
+    HTMLLIElementImp::setStaticPrivate(new NativeClass(global, HTMLLIElementImp::getMetaData()));
     HTMLLinkElementImp::setStaticPrivate(new NativeClass(global, HTMLLinkElementImp::getMetaData()));
     HTMLMapElementImp::setStaticPrivate(new NativeClass(global, HTMLMapElementImp::getMetaData()));
     HTMLMarqueeElementImp::setStaticPrivate(new NativeClass(global, HTMLMarqueeElementImp::getMetaData()));
+//    HTMLMediaElementImp::setStaticPrivate(new NativeClass(global, HTMLMediaElementImp::getMetaData()));
     HTMLMenuElementImp::setStaticPrivate(new NativeClass(global, HTMLMenuElementImp::getMetaData()));
     HTMLMetaElementImp::setStaticPrivate(new NativeClass(global, HTMLMetaElementImp::getMetaData()));
     HTMLMeterElementImp::setStaticPrivate(new NativeClass(global, HTMLMeterElementImp::getMetaData()));
     HTMLModElementImp::setStaticPrivate(new NativeClass(global, HTMLModElementImp::getMetaData()));
-    HTMLOListElementImp::setStaticPrivate(new NativeClass(global, HTMLOListElementImp::getMetaData()));
     HTMLObjectElementImp::setStaticPrivate(new NativeClass(global, HTMLObjectElementImp::getMetaData()));
+    HTMLOListElementImp::setStaticPrivate(new NativeClass(global, HTMLOListElementImp::getMetaData()));
     HTMLOptGroupElementImp::setStaticPrivate(new NativeClass(global, HTMLOptGroupElementImp::getMetaData()));
     HTMLOptionElementImp::setStaticPrivate(new NativeClass(global, HTMLOptionElementImp::getMetaData()));
+    HTMLOptionsCollectionImp::setStaticPrivate(new NativeClass(global, HTMLOptionsCollectionImp::getMetaData()));
     HTMLOutputElementImp::setStaticPrivate(new NativeClass(global, HTMLOutputElementImp::getMetaData()));
     HTMLParagraphElementImp::setStaticPrivate(new NativeClass(global, HTMLParagraphElementImp::getMetaData()));
     HTMLParamElementImp::setStaticPrivate(new NativeClass(global, HTMLParamElementImp::getMetaData()));
@@ -413,74 +489,77 @@ void registerClasses(v8::Handle<v8::ObjectTemplate> global)
     HTMLTextAreaElementImp::setStaticPrivate(new NativeClass(global, HTMLTextAreaElementImp::getMetaData()));
     HTMLTimeElementImp::setStaticPrivate(new NativeClass(global, HTMLTimeElementImp::getMetaData()));
     HTMLTitleElementImp::setStaticPrivate(new NativeClass(global, HTMLTitleElementImp::getMetaData()));
+    HTMLTrackElementImp::setStaticPrivate(new NativeClass(global, HTMLTrackElementImp::getMetaData()));
     HTMLUListElementImp::setStaticPrivate(new NativeClass(global, HTMLUListElementImp::getMetaData()));
     HTMLUnknownElementImp::setStaticPrivate(new NativeClass(global, HTMLUnknownElementImp::getMetaData()));
-
-    // media element
-    HTMLMediaElementImp::setStaticPrivate(new NativeClass(global, HTMLMediaElementImp::getMetaData()));
-    HTMLAudioElementImp::setStaticPrivate(new NativeClass(global, HTMLAudioElementImp::getMetaData()));
     HTMLVideoElementImp::setStaticPrivate(new NativeClass(global, HTMLVideoElementImp::getMetaData()));
-
-    // html collection
-    HTMLCollectionImp::setStaticPrivate(new NativeClass(global, HTMLCollectionImp::getMetaData()));
-    HTMLAllCollectionImp::setStaticPrivate(new NativeClass(global, HTMLAllCollectionImp::getMetaData()));
-    HTMLOptionsCollectionImp::setStaticPrivate(new NativeClass(global, HTMLOptionsCollectionImp::getMetaData()));
-    HTMLFormControlsCollectionImp::setStaticPrivate(new NativeClass(global, HTMLFormControlsCollectionImp::getMetaData()));
-    HTMLPropertiesCollectionImp::setStaticPrivate(new NativeClass(global, HTMLPropertiesCollectionImp::getMetaData()));
-
-    // style sheet
-    CSSStyleSheetImp::setStaticPrivate(new NativeClass(global, css::CSSStyleSheet::getMetaData()));
-
-    // css rule
-    CSSMediaRuleImp::setStaticPrivate(new NativeClass(global, css::CSSMediaRule::getMetaData()));
-    CSSStyleRuleImp::setStaticPrivate(new NativeClass(global, css::CSSStyleRule::getMetaData()));
-
-    // css value
-    CSSValueImp::setStaticPrivate(new NativeClass(global, CSSValueImp::getMetaData()));
-
-    // css
-    DOMImplementationCSSImp::setStaticPrivate(new NativeClass(global, DOMImplementationCSSImp::getMetaData()));
-    DocumentCSSImp::setStaticPrivate(new NativeClass(global, DocumentCSSImp::getMetaData()));
-    CSS2PropertiesImp::setStaticPrivate(new NativeClass(global, CSS2PropertiesImp::getMetaData()));
-    CSSCharsetRuleImp::setStaticPrivate(new NativeClass(global, CSSCharsetRuleImp::getMetaData()));
-    CSSColorComponentValueImp::setStaticPrivate(new NativeClass(global, CSSColorComponentValueImp::getMetaData()));
-    CSSComponentValueImp::setStaticPrivate(new NativeClass(global, CSSComponentValueImp::getMetaData()));
-    CSSFontFaceRuleImp::setStaticPrivate(new NativeClass(global, CSSFontFaceRuleImp::getMetaData()));
-    CSSIdentifierComponentValueImp::setStaticPrivate(new NativeClass(global, CSSIdentifierComponentValueImp::getMetaData()));
-    CSSImportRuleImp::setStaticPrivate(new NativeClass(global, CSSImportRuleImp::getMetaData()));
-    CSSKeywordComponentValueImp::setStaticPrivate(new NativeClass(global, CSSKeywordComponentValueImp::getMetaData()));
-    CSSLengthComponentValueImp::setStaticPrivate(new NativeClass(global, CSSLengthComponentValueImp::getMetaData()));
-    CSSMapValueImp::setStaticPrivate(new NativeClass(global, CSSMapValueImp::getMetaData()));
-    CSSNamespaceRuleImp::setStaticPrivate(new NativeClass(global, CSSNamespaceRuleImp::getMetaData()));
-    CSSPageRuleImp::setStaticPrivate(new NativeClass(global, CSSPageRuleImp::getMetaData()));
-    CSSPercentageComponentValueImp::setStaticPrivate(new NativeClass(global, CSSPercentageComponentValueImp::getMetaData()));
-    CSSPrimitiveValueImp::setStaticPrivate(new NativeClass(global, CSSPrimitiveValueImp::getMetaData()));
-    // CSSPropertyValueImp::setStaticPrivate(new NativeClass(global, CSSPropertyValueImp::getMetaData()));
-    CSSPropertyValueListImp::setStaticPrivate(new NativeClass(global, CSSPropertyValueListImp::getMetaData()));
-    CSSStringComponentValueImp::setStaticPrivate(new NativeClass(global, CSSStringComponentValueImp::getMetaData()));
-    CSSStyleDeclarationValueImp::setStaticPrivate(new NativeClass(global, CSSStyleDeclarationValueImp::getMetaData()));
-    CSSURLComponentValueImp::setStaticPrivate(new NativeClass(global, CSSURLComponentValueImp::getMetaData()));
-    CSSUnknownRuleImp::setStaticPrivate(new NativeClass(global, CSSUnknownRuleImp::getMetaData()));
-    CSSValueListImp::setStaticPrivate(new NativeClass(global, CSSValueListImp::getMetaData()));
-
-    // XMLHttpRequest
+    ImageDataImp::setStaticPrivate(new NativeClass(global, ImageDataImp::getMetaData()));
+//    LocationImp::setStaticPrivate(new NativeClass(global, LocationImp::getMetaData()));
+    MediaControllerImp::setStaticPrivate(new NativeClass(global, MediaControllerImp::getMetaData()));
+    MediaErrorImp::setStaticPrivate(new NativeClass(global, MediaErrorImp::getMetaData()));
+    MediaQueryListImp::setStaticPrivate(new NativeClass(global, MediaQueryListImp::getMetaData()));
+    MediaQueryListListenerImp::setStaticPrivate(new NativeClass(global, MediaQueryListListenerImp::getMetaData()));
+    MessageChannelImp::setStaticPrivate(new NativeClass(global, MessageChannelImp::getMetaData()));
+    MessageEventImp::setStaticPrivate(new NativeClass(global, MessageEventImp::getMetaData()));
+    MessageEventInitImp::setStaticPrivate(new NativeClass(global, MessageEventInitImp::getMetaData()));
+    MessagePortImp::setStaticPrivate(new NativeClass(global, MessagePortImp::getMetaData()));
+    NavigatorContentUtilsImp::setStaticPrivate(new NativeClass(global, NavigatorContentUtilsImp::getMetaData()));
+    NavigatorImp::setStaticPrivate(new NativeClass(global, NavigatorImp::getMetaData()));
+    NavigatorIDImp::setStaticPrivate(new NativeClass(global, NavigatorIDImp::getMetaData()));
+    NavigatorOnLineImp::setStaticPrivate(new NativeClass(global, NavigatorOnLineImp::getMetaData()));
+    NavigatorStorageUtilsImp::setStaticPrivate(new NativeClass(global, NavigatorStorageUtilsImp::getMetaData()));
+    PageTransitionEventImp::setStaticPrivate(new NativeClass(global, PageTransitionEventImp::getMetaData()));
+    PageTransitionEventInitImp::setStaticPrivate(new NativeClass(global, PageTransitionEventInitImp::getMetaData()));
+    PathImp::setStaticPrivate(new NativeClass(global, PathImp::getMetaData()));
+    PopStateEventImp::setStaticPrivate(new NativeClass(global, PopStateEventImp::getMetaData()));
+    PopStateEventInitImp::setStaticPrivate(new NativeClass(global, PopStateEventInitImp::getMetaData()));
+    RadioNodeListImp::setStaticPrivate(new NativeClass(global, RadioNodeListImp::getMetaData()));
+    ScreenImp::setStaticPrivate(new NativeClass(global, ScreenImp::getMetaData()));
+    TextMetricsImp::setStaticPrivate(new NativeClass(global, TextMetricsImp::getMetaData()));
+    TextTrackCueImp::setStaticPrivate(new NativeClass(global, TextTrackCueImp::getMetaData()));
+    TextTrackCueListImp::setStaticPrivate(new NativeClass(global, TextTrackCueListImp::getMetaData()));
+    TextTrackImp::setStaticPrivate(new NativeClass(global, TextTrackImp::getMetaData()));
+    TextTrackListImp::setStaticPrivate(new NativeClass(global, TextTrackListImp::getMetaData()));
+    TimeRangesImp::setStaticPrivate(new NativeClass(global, TimeRangesImp::getMetaData()));
+    TrackEventImp::setStaticPrivate(new NativeClass(global, TrackEventImp::getMetaData()));
+    TrackEventInitImp::setStaticPrivate(new NativeClass(global, TrackEventInitImp::getMetaData()));
+    TransferableImp::setStaticPrivate(new NativeClass(global, TransferableImp::getMetaData()));
+    ValidityStateImp::setStaticPrivate(new NativeClass(global, ValidityStateImp::getMetaData()));
+    VideoTrackImp::setStaticPrivate(new NativeClass(global, VideoTrackImp::getMetaData()));
+    VideoTrackListImp::setStaticPrivate(new NativeClass(global, VideoTrackListImp::getMetaData()));
+    WindowImp::setStaticPrivate(new NativeClass(global, WindowImp::getMetaData()));
+    DocumentRangeImp::setStaticPrivate(new NativeClass(global, DocumentRangeImp::getMetaData()));
+    RangeImp::setStaticPrivate(new NativeClass(global, RangeImp::getMetaData()));
+    LinkStyleImp::setStaticPrivate(new NativeClass(global, LinkStyleImp::getMetaData()));
+//    MediaListImp::setStaticPrivate(new NativeClass(global, MediaListImp::getMetaData()));
+//    StyleSheetImp::setStaticPrivate(new NativeClass(global, StyleSheetImp::getMetaData()));
+    SVGMatrixImp::setStaticPrivate(new NativeClass(global, SVGMatrixImp::getMetaData()));
+    DocumentTraversalImp::setStaticPrivate(new NativeClass(global, DocumentTraversalImp::getMetaData()));
+    NodeFilterImp::setStaticPrivate(new NativeClass(global, NodeFilterImp::getMetaData()));
+    NodeIteratorImp::setStaticPrivate(new NativeClass(global, NodeIteratorImp::getMetaData()));
+    TreeWalkerImp::setStaticPrivate(new NativeClass(global, TreeWalkerImp::getMetaData()));
+    ArrayBufferImp::setStaticPrivate(new NativeClass(global, ArrayBufferImp::getMetaData()));
+    ArrayBufferViewImp::setStaticPrivate(new NativeClass(global, ArrayBufferViewImp::getMetaData()));
+    DataViewImp::setStaticPrivate(new NativeClass(global, DataViewImp::getMetaData()));
+    Float32ArrayImp::setStaticPrivate(new NativeClass(global, Float32ArrayImp::getMetaData()));
+    Float64ArrayImp::setStaticPrivate(new NativeClass(global, Float64ArrayImp::getMetaData()));
+    Int16ArrayImp::setStaticPrivate(new NativeClass(global, Int16ArrayImp::getMetaData()));
+    Int32ArrayImp::setStaticPrivate(new NativeClass(global, Int32ArrayImp::getMetaData()));
+    Int8ArrayImp::setStaticPrivate(new NativeClass(global, Int8ArrayImp::getMetaData()));
+    Uint16ArrayImp::setStaticPrivate(new NativeClass(global, Uint16ArrayImp::getMetaData()));
+    Uint32ArrayImp::setStaticPrivate(new NativeClass(global, Uint32ArrayImp::getMetaData()));
+    Uint8ArrayImp::setStaticPrivate(new NativeClass(global, Uint8ArrayImp::getMetaData()));
+    Uint8ClampedArrayImp::setStaticPrivate(new NativeClass(global, Uint8ClampedArrayImp::getMetaData()));
+    ClientRectImp::setStaticPrivate(new NativeClass(global, ClientRectImp::getMetaData()));
+    ClientRectListImp::setStaticPrivate(new NativeClass(global, ClientRectListImp::getMetaData()));
+    XBLContentElementImp::setStaticPrivate(new NativeClass(global, XBLContentElementImp::getMetaData()));
+    XBLImplementationImp::setStaticPrivate(new NativeClass(global, XBLImplementationImp::getMetaData()));
+    XBLImplementationListImp::setStaticPrivate(new NativeClass(global, XBLImplementationListImp::getMetaData()));
+    FormDataImp::setStaticPrivate(new NativeClass(global, FormDataImp::getMetaData()));
     XMLHttpRequestEventTargetImp::setStaticPrivate(new NativeClass(global, XMLHttpRequestEventTargetImp::getMetaData()));
     XMLHttpRequestImp::setStaticPrivate(new NativeClass(global, XMLHttpRequestImp::getMetaData()));
-    AnonXMLHttpRequestImp::setStaticPrivate(new NativeClass(global, AnonXMLHttpRequestImp::getMetaData()));
+    XMLHttpRequestOptionsImp::setStaticPrivate(new NativeClass(global, XMLHttpRequestOptionsImp::getMetaData()));
     XMLHttpRequestUploadImp::setStaticPrivate(new NativeClass(global, XMLHttpRequestUploadImp::getMetaData()));
-
-    // file
-    FileErrorImp::setStaticPrivate(new NativeClass(global, FileErrorImp::getMetaData()));
-    FileImp::setStaticPrivate(new NativeClass(global, FileImp::getMetaData()));
-    FileListImp::setStaticPrivate(new NativeClass(global, FileListImp::getMetaData()));
-    FileReaderImp::setStaticPrivate(new NativeClass(global, FileReaderImp::getMetaData()));
-    FileReaderSyncImp::setStaticPrivate(new NativeClass(global, FileReaderSyncImp::getMetaData()));
-
-    // new stuff
-    EventInitImp::setStaticPrivate(new NativeClass(global, EventInitImp::getMetaData()));
-    CustomEventInitImp::setStaticPrivate(new NativeClass(global, CustomEventInitImp::getMetaData()));
-    DataTransferItemImp::setStaticPrivate(new NativeClass(global, DataTransferItemImp::getMetaData()));
-    DataTransferItemListImp::setStaticPrivate(new NativeClass(global, DataTransferItemListImp::getMetaData()));
 }
 
 }  // namespace

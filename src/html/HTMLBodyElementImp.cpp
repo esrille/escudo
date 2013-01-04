@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,211 +41,201 @@ Node HTMLBodyElementImp::cloneNode(bool deep)
 }
 
 // HTMLBodyElement
-html::Function HTMLBodyElementImp::getOnafterprint()
+
+events::EventHandlerNonNull HTMLBodyElementImp::getOnafterprint()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void HTMLBodyElementImp::setOnafterprint(html::Function onafterprint)
+void HTMLBodyElementImp::setOnafterprint(events::EventHandlerNonNull onafterprint)
 {
     // TODO: implement me!
 }
 
-html::Function HTMLBodyElementImp::getOnbeforeprint()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void HTMLBodyElementImp::setOnbeforeprint(html::Function onbeforeprint)
-{
-    // TODO: implement me!
-}
-
-html::Function HTMLBodyElementImp::getOnbeforeunload()
+events::EventHandlerNonNull HTMLBodyElementImp::getOnbeforeprint()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void HTMLBodyElementImp::setOnbeforeunload(html::Function onbeforeunload)
+void HTMLBodyElementImp::setOnbeforeprint(events::EventHandlerNonNull onbeforeprint)
 {
     // TODO: implement me!
 }
 
-html::Function HTMLBodyElementImp::getOnblur()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void HTMLBodyElementImp::setOnblur(html::Function onblur)
-{
-    // TODO: implement me!
-}
-
-html::Function HTMLBodyElementImp::getOnerror()
+events::EventHandlerNonNull HTMLBodyElementImp::getOnbeforeunload()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void HTMLBodyElementImp::setOnerror(html::Function onerror)
+void HTMLBodyElementImp::setOnbeforeunload(events::EventHandlerNonNull onbeforeunload)
 {
     // TODO: implement me!
 }
 
-html::Function HTMLBodyElementImp::getOnfocus()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void HTMLBodyElementImp::setOnfocus(html::Function onfocus)
-{
-    // TODO: implement me!
-}
-
-html::Function HTMLBodyElementImp::getOnhashchange()
+events::EventHandlerNonNull HTMLBodyElementImp::getOnblur()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void HTMLBodyElementImp::setOnhashchange(html::Function onhashchange)
+void HTMLBodyElementImp::setOnblur(events::EventHandlerNonNull onblur)
 {
     // TODO: implement me!
 }
 
-html::Function HTMLBodyElementImp::getOnload()
+events::OnErrorEventHandlerNonNull HTMLBodyElementImp::getOnerror()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void HTMLBodyElementImp::setOnload(html::Function onload)
+void HTMLBodyElementImp::setOnerror(events::OnErrorEventHandlerNonNull onerror)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull HTMLBodyElementImp::getOnfocus()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void HTMLBodyElementImp::setOnfocus(events::EventHandlerNonNull onfocus)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull HTMLBodyElementImp::getOnhashchange()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void HTMLBodyElementImp::setOnhashchange(events::EventHandlerNonNull onhashchange)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull HTMLBodyElementImp::getOnload()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void HTMLBodyElementImp::setOnload(events::EventHandlerNonNull onload)
 {
     getOwnerDocument().getDefaultView().setOnload(onload);
 }
 
-html::Function HTMLBodyElementImp::getOnmessage()
+events::EventHandlerNonNull HTMLBodyElementImp::getOnmessage()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void HTMLBodyElementImp::setOnmessage(html::Function onmessage)
+void HTMLBodyElementImp::setOnmessage(events::EventHandlerNonNull onmessage)
 {
     // TODO: implement me!
 }
 
-html::Function HTMLBodyElementImp::getOnoffline()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void HTMLBodyElementImp::setOnoffline(html::Function onoffline)
-{
-    // TODO: implement me!
-}
-
-html::Function HTMLBodyElementImp::getOnonline()
+events::EventHandlerNonNull HTMLBodyElementImp::getOnoffline()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void HTMLBodyElementImp::setOnonline(html::Function ononline)
+void HTMLBodyElementImp::setOnoffline(events::EventHandlerNonNull onoffline)
 {
     // TODO: implement me!
 }
 
-html::Function HTMLBodyElementImp::getOnpopstate()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void HTMLBodyElementImp::setOnpopstate(html::Function onpopstate)
-{
-    // TODO: implement me!
-}
-
-html::Function HTMLBodyElementImp::getOnpagehide()
+events::EventHandlerNonNull HTMLBodyElementImp::getOnonline()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void HTMLBodyElementImp::setOnpagehide(html::Function onpagehide)
+void HTMLBodyElementImp::setOnonline(events::EventHandlerNonNull ononline)
 {
     // TODO: implement me!
 }
 
-html::Function HTMLBodyElementImp::getOnpageshow()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void HTMLBodyElementImp::setOnpageshow(html::Function onpageshow)
-{
-    // TODO: implement me!
-}
-
-html::Function HTMLBodyElementImp::getOnredo()
+events::EventHandlerNonNull HTMLBodyElementImp::getOnpopstate()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void HTMLBodyElementImp::setOnredo(html::Function onredo)
+void HTMLBodyElementImp::setOnpopstate(events::EventHandlerNonNull onpopstate)
 {
     // TODO: implement me!
 }
 
-html::Function HTMLBodyElementImp::getOnresize()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void HTMLBodyElementImp::setOnresize(html::Function onresize)
-{
-    // TODO: implement me!
-}
-
-html::Function HTMLBodyElementImp::getOnstorage()
+events::EventHandlerNonNull HTMLBodyElementImp::getOnpagehide()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void HTMLBodyElementImp::setOnstorage(html::Function onstorage)
+void HTMLBodyElementImp::setOnpagehide(events::EventHandlerNonNull onpagehide)
 {
     // TODO: implement me!
 }
 
-html::Function HTMLBodyElementImp::getOnundo()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void HTMLBodyElementImp::setOnundo(html::Function onundo)
-{
-    // TODO: implement me!
-}
-
-html::Function HTMLBodyElementImp::getOnunload()
+events::EventHandlerNonNull HTMLBodyElementImp::getOnpageshow()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void HTMLBodyElementImp::setOnunload(html::Function onunload)
+void HTMLBodyElementImp::setOnpageshow(events::EventHandlerNonNull onpageshow)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull HTMLBodyElementImp::getOnresize()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void HTMLBodyElementImp::setOnresize(events::EventHandlerNonNull onresize)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull HTMLBodyElementImp::getOnscroll()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void HTMLBodyElementImp::setOnscroll(events::EventHandlerNonNull onscroll)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull HTMLBodyElementImp::getOnstorage()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void HTMLBodyElementImp::setOnstorage(events::EventHandlerNonNull onstorage)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull HTMLBodyElementImp::getOnunload()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void HTMLBodyElementImp::setOnunload(events::EventHandlerNonNull onunload)
 {
     // TODO: implement me!
 }

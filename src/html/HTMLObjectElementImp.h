@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Esrille Inc.
+ * Copyright 2012, 2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,19 +78,14 @@ public:
     std::u16string getValidationMessage();
     bool checkValidity();
     void setCustomValidity(const std::u16string& error);
-    // HTMLObjectElement-27
+    Any operator() (Variadic<Any> arguments = Variadic<Any>());
+    // HTMLObjectElement-24
     std::u16string getAlign();
     void setAlign(const std::u16string& align);
     std::u16string getArchive();
     void setArchive(const std::u16string& archive);
-    std::u16string getBorder();
-    void setBorder(const std::u16string& border);
     std::u16string getCode();
     void setCode(const std::u16string& code);
-    std::u16string getCodeBase();
-    void setCodeBase(const std::u16string& codeBase);
-    std::u16string getCodeType();
-    void setCodeType(const std::u16string& codeType);
     bool getDeclare();
     void setDeclare(bool declare);
     unsigned int getHspace();
@@ -99,6 +94,12 @@ public:
     void setStandby(const std::u16string& standby);
     unsigned int getVspace();
     void setVspace(unsigned int vspace);
+    std::u16string getCodeBase();
+    void setCodeBase(const std::u16string& codeBase);
+    std::u16string getCodeType();
+    void setCodeType(const std::u16string& codeType);
+    std::u16string getBorder();
+    void setBorder(const std::u16string& border);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

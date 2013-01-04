@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -237,6 +237,12 @@ void HTMLObjectElementImp::setCustomValidity(const std::u16string& error)
     // TODO: implement me!
 }
 
+Any HTMLObjectElementImp::operator() (Variadic<Any> arguments)
+{
+    // TODO: implement me!
+    return 0;
+}
+
 std::u16string HTMLObjectElementImp::getAlign()
 {
     // TODO: implement me!
@@ -259,17 +265,6 @@ void HTMLObjectElementImp::setArchive(const std::u16string& archive)
     // TODO: implement me!
 }
 
-std::u16string HTMLObjectElementImp::getBorder()
-{
-    // TODO: implement me!
-    return u"";
-}
-
-void HTMLObjectElementImp::setBorder(const std::u16string& border)
-{
-    // TODO: implement me!
-}
-
 std::u16string HTMLObjectElementImp::getCode()
 {
     // TODO: implement me!
@@ -277,28 +272,6 @@ std::u16string HTMLObjectElementImp::getCode()
 }
 
 void HTMLObjectElementImp::setCode(const std::u16string& code)
-{
-    // TODO: implement me!
-}
-
-std::u16string HTMLObjectElementImp::getCodeBase()
-{
-    // TODO: implement me!
-    return u"";
-}
-
-void HTMLObjectElementImp::setCodeBase(const std::u16string& codeBase)
-{
-    // TODO: implement me!
-}
-
-std::u16string HTMLObjectElementImp::getCodeType()
-{
-    // TODO: implement me!
-    return u"";
-}
-
-void HTMLObjectElementImp::setCodeType(const std::u16string& codeType)
 {
     // TODO: implement me!
 }
@@ -343,6 +316,39 @@ unsigned int HTMLObjectElementImp::getVspace()
 }
 
 void HTMLObjectElementImp::setVspace(unsigned int vspace)
+{
+    // TODO: implement me!
+}
+
+std::u16string HTMLObjectElementImp::getCodeBase()
+{
+    // TODO: implement me!
+    return u"";
+}
+
+void HTMLObjectElementImp::setCodeBase(const std::u16string& codeBase)
+{
+    // TODO: implement me!
+}
+
+std::u16string HTMLObjectElementImp::getCodeType()
+{
+    // TODO: implement me!
+    return u"";
+}
+
+void HTMLObjectElementImp::setCodeType(const std::u16string& codeType)
+{
+    // TODO: implement me!
+}
+
+std::u16string HTMLObjectElementImp::getBorder()
+{
+    // TODO: implement me!
+    return u"";
+}
+
+void HTMLObjectElementImp::setBorder(const std::u16string& border)
 {
     // TODO: implement me!
 }

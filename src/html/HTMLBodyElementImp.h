@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,28 @@
  * limitations under the License.
  */
 
-#ifndef HTMLBODYELEMENT_IMP_H
-#define HTMLBODYELEMENT_IMP_H
+#ifndef ORG_W3C_DOM_BOOTSTRAP_HTMLBODYELEMENTIMP_H_INCLUDED
+#define ORG_W3C_DOM_BOOTSTRAP_HTMLBODYELEMENTIMP_H_INCLUDED
 
-#include <Object.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <org/w3c/dom/html/HTMLBodyElement.h>
-
 #include "HTMLElementImp.h"
 
-namespace org { namespace w3c { namespace dom { namespace bootstrap {
+#include <org/w3c/dom/events/EventHandlerNonNull.h>
+#include <org/w3c/dom/events/OnErrorEventHandlerNonNull.h>
+#include <org/w3c/dom/html/HTMLElement.h>
 
+namespace org
+{
+namespace w3c
+{
+namespace dom
+{
+namespace bootstrap
+{
 class HTMLBodyElementImp : public ObjectMixin<HTMLBodyElementImp, HTMLElementImp>
 {
 public:
@@ -39,44 +51,42 @@ public:
     // Node
     virtual Node cloneNode(bool deep);
     // HTMLBodyElement
-    virtual html::Function getOnafterprint();
-    virtual void setOnafterprint(html::Function onafterprint);
-    virtual html::Function getOnbeforeprint();
-    virtual void setOnbeforeprint(html::Function onbeforeprint);
-    virtual html::Function getOnbeforeunload();
-    virtual void setOnbeforeunload(html::Function onbeforeunload);
-    virtual html::Function getOnblur();
-    virtual void setOnblur(html::Function onblur);
-    virtual html::Function getOnerror();
-    virtual void setOnerror(html::Function onerror);
-    virtual html::Function getOnfocus();
-    virtual void setOnfocus(html::Function onfocus);
-    virtual html::Function getOnhashchange();
-    virtual void setOnhashchange(html::Function onhashchange);
-    virtual html::Function getOnload();
-    virtual void setOnload(html::Function onload);
-    virtual html::Function getOnmessage();
-    virtual void setOnmessage(html::Function onmessage);
-    virtual html::Function getOnoffline();
-    virtual void setOnoffline(html::Function onoffline);
-    virtual html::Function getOnonline();
-    virtual void setOnonline(html::Function ononline);
-    virtual html::Function getOnpopstate();
-    virtual void setOnpopstate(html::Function onpopstate);
-    virtual html::Function getOnpagehide();
-    virtual void setOnpagehide(html::Function onpagehide);
-    virtual html::Function getOnpageshow();
-    virtual void setOnpageshow(html::Function onpageshow);
-    virtual html::Function getOnredo();
-    virtual void setOnredo(html::Function onredo);
-    virtual html::Function getOnresize();
-    virtual void setOnresize(html::Function onresize);
-    virtual html::Function getOnstorage();
-    virtual void setOnstorage(html::Function onstorage);
-    virtual html::Function getOnundo();
-    virtual void setOnundo(html::Function onundo);
-    virtual html::Function getOnunload();
-    virtual void setOnunload(html::Function onunload);
+    virtual events::EventHandlerNonNull getOnafterprint();
+    virtual void setOnafterprint(events::EventHandlerNonNull onafterprint);
+    virtual events::EventHandlerNonNull getOnbeforeprint();
+    virtual void setOnbeforeprint(events::EventHandlerNonNull onbeforeprint);
+    virtual events::EventHandlerNonNull getOnbeforeunload();
+    virtual void setOnbeforeunload(events::EventHandlerNonNull onbeforeunload);
+    virtual events::EventHandlerNonNull getOnblur();
+    virtual void setOnblur(events::EventHandlerNonNull onblur);
+    virtual events::OnErrorEventHandlerNonNull getOnerror();
+    virtual void setOnerror(events::OnErrorEventHandlerNonNull onerror);
+    virtual events::EventHandlerNonNull getOnfocus();
+    virtual void setOnfocus(events::EventHandlerNonNull onfocus);
+    virtual events::EventHandlerNonNull getOnhashchange();
+    virtual void setOnhashchange(events::EventHandlerNonNull onhashchange);
+    virtual events::EventHandlerNonNull getOnload();
+    virtual void setOnload(events::EventHandlerNonNull onload);
+    virtual events::EventHandlerNonNull getOnmessage();
+    virtual void setOnmessage(events::EventHandlerNonNull onmessage);
+    virtual events::EventHandlerNonNull getOnoffline();
+    virtual void setOnoffline(events::EventHandlerNonNull onoffline);
+    virtual events::EventHandlerNonNull getOnonline();
+    virtual void setOnonline(events::EventHandlerNonNull ononline);
+    virtual events::EventHandlerNonNull getOnpopstate();
+    virtual void setOnpopstate(events::EventHandlerNonNull onpopstate);
+    virtual events::EventHandlerNonNull getOnpagehide();
+    virtual void setOnpagehide(events::EventHandlerNonNull onpagehide);
+    virtual events::EventHandlerNonNull getOnpageshow();
+    virtual void setOnpageshow(events::EventHandlerNonNull onpageshow);
+    virtual events::EventHandlerNonNull getOnresize();
+    virtual void setOnresize(events::EventHandlerNonNull onresize);
+    virtual events::EventHandlerNonNull getOnscroll();
+    virtual void setOnscroll(events::EventHandlerNonNull onscroll);
+    virtual events::EventHandlerNonNull getOnstorage();
+    virtual void setOnstorage(events::EventHandlerNonNull onstorage);
+    virtual events::EventHandlerNonNull getOnunload();
+    virtual void setOnunload(events::EventHandlerNonNull onunload);
     // HTMLBodyElement-6
     virtual std::u16string getText();
     virtual void setText(const std::u16string& text);
@@ -92,7 +102,8 @@ public:
     virtual void setALink(const std::u16string& aLink);
 
     // Object
-    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
+    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
+    {
         return html::HTMLBodyElement::dispatch(this, selector, id, argc, argv);
     }
     static const char* const getMetaData()
@@ -101,6 +112,9 @@ public:
     }
 };
 
-}}}}  // org::w3c::dom::bootstrap
+}
+}
+}
+}
 
-#endif  // HTMLBODYELEMENT_IMP_H
+#endif  // ORG_W3C_DOM_BOOTSTRAP_HTMLBODYELEMENTIMP_H_INCLUDED

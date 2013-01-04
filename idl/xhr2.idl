@@ -1,41 +1,53 @@
 /*
  * xhr2.idl
  *
- * XMLHttpRequest Level 2
+ * XMLHttpRequest
  *
- * Original Editor's Draft 4 March 2011:
+ * Original W3C Working Draft 6 December 2012:
  *
- *   http://dev.w3.org/2006/webapi/XMLHttpRequest-2/
+ *   http://www.w3.org/TR/2012/WD-XMLHttpRequest-20121206/
  */
 
 module dom {
 
 typedef events::EventTarget EventTarget;
 typedef file::Blob Blob;
-typedef html::Function Function;
+typedef html::EventHandler EventHandler;
 typedef html::HTMLFormElement HTMLFormElement;
-typedef typedarray::ArrayBuffer ArrayBuffer;
 
 [NoInterfaceObject]
 interface XMLHttpRequestEventTarget : EventTarget {
-  // event handler attributes
-           attribute Function onloadstart;
-           attribute Function onprogress;
-           attribute Function onabort;
-           attribute Function onerror;
-           attribute Function onload;
-           attribute Function ontimeout;
-           attribute Function onloadend;
+  // event handlers
+  attribute EventHandler onloadstart;
+  attribute EventHandler onprogress;
+  attribute EventHandler onabort;
+  attribute EventHandler onerror;
+  attribute EventHandler onload;
+  attribute EventHandler ontimeout;
+  attribute EventHandler onloadend;
 };
 
 interface XMLHttpRequestUpload : XMLHttpRequestEventTarget {
 
 };
 
-[Constructor]
+enum XMLHttpRequestResponseType {
+  "",
+  "arraybuffer",
+  "blob",
+  "document",
+  "json",
+  "text"
+};
+
+dictionary XMLHttpRequestOptions {
+  boolean anon = false;
+};
+
+[Constructor(optional XMLHttpRequestOptions options)]
 interface XMLHttpRequest : XMLHttpRequestEventTarget {
-  // event handler attributes
-           attribute Function onreadystatechange;
+  // event handler
+  attribute EventHandler onreadystatechange;
 
   // states
   const unsigned short UNSENT = 0;
@@ -46,42 +58,29 @@ interface XMLHttpRequest : XMLHttpRequestEventTarget {
   readonly attribute unsigned short readyState;
 
   // request
-  void open(DOMString method, DOMString url);
-  void open(DOMString method, DOMString url, boolean async);
-  void open(DOMString method, DOMString url, boolean async, DOMString? user);
-  void open(DOMString method, DOMString url, boolean async, DOMString? user, DOMString? password);
-  void setRequestHeader(DOMString header, DOMString value);
+  void open(ByteString method, DOMString url, optional boolean async = true, optional DOMString? user = null, optional DOMString? password = null);
+  void setRequestHeader(ByteString header, ByteString value);
            attribute unsigned long timeout;
            attribute boolean withCredentials;
   readonly attribute XMLHttpRequestUpload upload;
-  void send();
-  void send(ArrayBuffer data);
-  void send(Blob data);
-  void send(Document data);
-  void send(FormData data);
-  void send([AllowAny] DOMString? data);
+  void send(optional (ArrayBufferView or Blob or Document or DOMString or FormData)? data = null);
   void abort();
 
   // response
   readonly attribute unsigned short status;
-  readonly attribute DOMString statusText;
-  DOMString getResponseHeader(DOMString header);
-  DOMString getAllResponseHeaders();
+  readonly attribute ByteString statusText;
+  ByteString? getResponseHeader(ByteString header);
+  ByteString getAllResponseHeaders();
   void overrideMimeType(DOMString mime);
-           attribute DOMString responseType;
+           attribute XMLHttpRequestResponseType responseType;
   readonly attribute any response;
   readonly attribute DOMString responseText;
-  readonly attribute Document responseXML;
+  readonly attribute Document? responseXML;
 };
 
-[Constructor]
-interface AnonXMLHttpRequest : XMLHttpRequest {
-};
-
-[Constructor,
- Constructor(HTMLFormElement form)]
+[Constructor(optional HTMLFormElement form)]
 interface FormData {
-  void append(DOMString name, Blob value);
+  void append(DOMString name, Blob value, optional DOMString filename);
   void append(DOMString name, DOMString value);
 };
 

@@ -1,0 +1,46 @@
+/*
+ * webmessaging.idl
+ *
+ * HTML5 Web Messaging
+ *
+ * Original W3C Candidate Recommendation 01 May 2012:
+ *
+ *   http://www.w3.org/TR/2012/CR-html5-20121217/
+ */
+
+module html {
+
+[Constructor(DOMString type, optional MessageEventInit eventInitDict)]
+interface MessageEvent : Event {
+  readonly attribute any data;
+  readonly attribute DOMString origin;
+  readonly attribute DOMString lastEventId;
+  readonly attribute WindowProxy? source;
+  readonly attribute MessagePort[]? ports;
+};
+
+dictionary MessageEventInit : EventInit {
+  any data;
+  DOMString origin;
+  DOMString lastEventId;
+  WindowProxy? source;
+  MessagePort[]? ports;
+};
+
+[Constructor]
+interface MessageChannel {
+  readonly attribute MessagePort port1;
+  readonly attribute MessagePort port2;
+};
+
+interface MessagePort : EventTarget {
+  void postMessage(any message, optional sequence<Transferable> transfer);
+  void start();
+  void close();
+
+  // event handlers
+  [TreatNonCallableAsNull] attribute Function? onmessage;
+};
+MessagePort implements Transferable;
+
+};

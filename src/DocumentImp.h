@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef DOCUMENT_IMP_H
-#define DOCUMENT_IMP_H
+#ifndef ORG_W3C_DOM_BOOTSTRAP_DOCUMENTIMP_H_INCLUDED
+#define ORG_W3C_DOM_BOOTSTRAP_DOCUMENTIMP_H_INCLUDED
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -26,7 +26,6 @@
 
 #include <org/w3c/dom/stylesheets/StyleSheet.h>
 #include <org/w3c/dom/css/CSSStyleDeclaration.h>
-#include <org/w3c/dom/html/HTMLElement.h>
 #include <org/w3c/dom/CaretPosition.h>
 #include <org/w3c/dom/ranges/Range.h>
 #include <org/w3c/dom/traversal/NodeIterator.h>
@@ -45,14 +44,13 @@
 #include <org/w3c/dom/NodeList.h>
 #include <org/w3c/dom/html/HTMLCollection.h>
 #include <org/w3c/dom/DOMStringList.h>
-#include <org/w3c/dom/DOMElementMap.h>
+#include <org/w3c/dom/events/EventHandlerNonNull.h>
+#include <org/w3c/dom/events/OnErrorEventHandlerNonNull.h>
 #include <org/w3c/dom/html/HTMLAllCollection.h>
-#include <org/w3c/dom/html/HTMLDocument.h>
+#include <org/w3c/dom/html/HTMLElement.h>
 #include <org/w3c/dom/html/HTMLHeadElement.h>
-#include <org/w3c/dom/html/HTMLScriptElement.h>
 #include <org/w3c/dom/html/Window.h>
 #include <org/w3c/dom/html/Location.h>
-#include <org/w3c/dom/html/Function.h>
 
 #include <deque>
 #include <list>
@@ -164,6 +162,8 @@ public:
         contentLoaded = true;
     }
 
+    void setCharacterSet(const std::u16string& charset);
+
     int getError() const {
         return error;
     }
@@ -211,13 +211,11 @@ public:
 
     // Document
     DOMImplementation getImplementation();
+    std::u16string getURL();
     std::u16string getDocumentURI();
     void setDocumentURI(const std::u16string& documentURI);
     std::u16string getCompatMode();
-    std::u16string getCharset();
-    void setCharset(const std::u16string& charset);
     std::u16string getCharacterSet();
-    std::u16string getDefaultCharset();
     std::u16string getContentType();
     DocumentType getDoctype();
     Element getDocumentElement();
@@ -235,25 +233,21 @@ public:
     Node adoptNode(Node node);
     events::Event createEvent(const std::u16string& eventInterfaceName);
     // DocumentCSS
-    css::CSSStyleDeclaration getOverrideStyle(Element elt, Nullable<std::u16string> pseudoElt);
-    // Document-1
+    css::CSSStyleDeclaration getOverrideStyle(Element elt, const Nullable<std::u16string>& pseudoElt);
+    // Document-47
     stylesheets::StyleSheetList getStyleSheets();
     Nullable<std::u16string> getSelectedStyleSheetSet();
-    void setSelectedStyleSheetSet(Nullable<std::u16string> selectedStyleSheetSet);
+    void setSelectedStyleSheetSet(const Nullable<std::u16string>& selectedStyleSheetSet);
     Nullable<std::u16string> getLastStyleSheetSet();
     Nullable<std::u16string> getPreferredStyleSheetSet();
     DOMStringList getStyleSheetSets();
-    void enableStyleSheetsForSet(Nullable<std::u16string> name);
-    // Document-2
+    void enableStyleSheetsForSet(const Nullable<std::u16string>& name);
+    // Document-48
     Element elementFromPoint(float x, float y);
     CaretPosition caretPositionFromPoint(float x, float y);
-    // NodeSelector
-    Element querySelector(const std::u16string& selectors);
-    NodeList querySelectorAll(const std::u16string& selectors);
-    // HTMLDocument
+    // Document-50
     html::Location getLocation();
     void setLocation(const std::u16string& location);
-    std::u16string getURL();
     std::u16string getDomain();
     void setDomain(const std::u16string& domain);
     std::u16string getReferrer();
@@ -276,10 +270,7 @@ public:
     html::HTMLCollection getForms();
     html::HTMLCollection getScripts();
     NodeList getElementsByName(const std::u16string& elementName);
-    DOMElementMap getCssElementMap();
-    std::u16string getInnerHTML();
-    void setInnerHTML(const std::u16string& innerHTML);
-    html::HTMLDocument open(const std::u16string& type = u"text/html", const std::u16string& replace = u"");
+    Document open(const std::u16string& type = u"text/html", const std::u16string& replace = u"");
     html::Window open(const std::u16string& url, const std::u16string& name, const std::u16string& features, bool replace = false);
     void close();
     void write(Variadic<std::u16string> text = Variadic<std::u16string>());
@@ -298,129 +289,136 @@ public:
     bool queryCommandSupported(const std::u16string& commandId);
     std::u16string queryCommandValue(const std::u16string& commandId);
     html::HTMLCollection getCommands();
-    html::Function getOnabort();
-    void setOnabort(html::Function onabort);
-    html::Function getOnblur();
-    void setOnblur(html::Function onblur);
-    html::Function getOncanplay();
-    void setOncanplay(html::Function oncanplay);
-    html::Function getOncanplaythrough();
-    void setOncanplaythrough(html::Function oncanplaythrough);
-    html::Function getOnchange();
-    void setOnchange(html::Function onchange);
-    html::Function getOnclick();
-    void setOnclick(html::Function onclick);
-    html::Function getOncontextmenu();
-    void setOncontextmenu(html::Function oncontextmenu);
-    html::Function getOncuechange();
-    void setOncuechange(html::Function oncuechange);
-    html::Function getOndblclick();
-    void setOndblclick(html::Function ondblclick);
-    html::Function getOndrag();
-    void setOndrag(html::Function ondrag);
-    html::Function getOndragend();
-    void setOndragend(html::Function ondragend);
-    html::Function getOndragenter();
-    void setOndragenter(html::Function ondragenter);
-    html::Function getOndragleave();
-    void setOndragleave(html::Function ondragleave);
-    html::Function getOndragover();
-    void setOndragover(html::Function ondragover);
-    html::Function getOndragstart();
-    void setOndragstart(html::Function ondragstart);
-    html::Function getOndrop();
-    void setOndrop(html::Function ondrop);
-    html::Function getOndurationchange();
-    void setOndurationchange(html::Function ondurationchange);
-    html::Function getOnemptied();
-    void setOnemptied(html::Function onemptied);
-    html::Function getOnended();
-    void setOnended(html::Function onended);
-    html::Function getOnerror();
-    void setOnerror(html::Function onerror);
-    html::Function getOnfocus();
-    void setOnfocus(html::Function onfocus);
-    html::Function getOninput();
-    void setOninput(html::Function oninput);
-    html::Function getOninvalid();
-    void setOninvalid(html::Function oninvalid);
-    html::Function getOnkeydown();
-    void setOnkeydown(html::Function onkeydown);
-    html::Function getOnkeypress();
-    void setOnkeypress(html::Function onkeypress);
-    html::Function getOnkeyup();
-    void setOnkeyup(html::Function onkeyup);
-    html::Function getOnload();
-    void setOnload(html::Function onload);
-    html::Function getOnloadeddata();
-    void setOnloadeddata(html::Function onloadeddata);
-    html::Function getOnloadedmetadata();
-    void setOnloadedmetadata(html::Function onloadedmetadata);
-    html::Function getOnloadstart();
-    void setOnloadstart(html::Function onloadstart);
-    html::Function getOnmousedown();
-    void setOnmousedown(html::Function onmousedown);
-    html::Function getOnmousemove();
-    void setOnmousemove(html::Function onmousemove);
-    html::Function getOnmouseout();
-    void setOnmouseout(html::Function onmouseout);
-    html::Function getOnmouseover();
-    void setOnmouseover(html::Function onmouseover);
-    html::Function getOnmouseup();
-    void setOnmouseup(html::Function onmouseup);
-    html::Function getOnmousewheel();
-    void setOnmousewheel(html::Function onmousewheel);
-    html::Function getOnpause();
-    void setOnpause(html::Function onpause);
-    html::Function getOnplay();
-    void setOnplay(html::Function onplay);
-    html::Function getOnplaying();
-    void setOnplaying(html::Function onplaying);
-    html::Function getOnprogress();
-    void setOnprogress(html::Function onprogress);
-    html::Function getOnratechange();
-    void setOnratechange(html::Function onratechange);
-    html::Function getOnreadystatechange();
-    void setOnreadystatechange(html::Function onreadystatechange);
-    html::Function getOnreset();
-    void setOnreset(html::Function onreset);
-    html::Function getOnscroll();
-    void setOnscroll(html::Function onscroll);
-    html::Function getOnseeked();
-    void setOnseeked(html::Function onseeked);
-    html::Function getOnseeking();
-    void setOnseeking(html::Function onseeking);
-    html::Function getOnselect();
-    void setOnselect(html::Function onselect);
-    html::Function getOnshow();
-    void setOnshow(html::Function onshow);
-    html::Function getOnstalled();
-    void setOnstalled(html::Function onstalled);
-    html::Function getOnsubmit();
-    void setOnsubmit(html::Function onsubmit);
-    html::Function getOnsuspend();
-    void setOnsuspend(html::Function onsuspend);
-    html::Function getOntimeupdate();
-    void setOntimeupdate(html::Function ontimeupdate);
-    html::Function getOnvolumechange();
-    void setOnvolumechange(html::Function onvolumechange);
-    html::Function getOnwaiting();
-    void setOnwaiting(html::Function onwaiting);
-    // HTMLDocument-38
+    events::EventHandlerNonNull getOnabort();
+    void setOnabort(events::EventHandlerNonNull onabort);
+    events::EventHandlerNonNull getOnblur();
+    void setOnblur(events::EventHandlerNonNull onblur);
+    events::EventHandlerNonNull getOncancel();
+    void setOncancel(events::EventHandlerNonNull oncancel);
+    events::EventHandlerNonNull getOncanplay();
+    void setOncanplay(events::EventHandlerNonNull oncanplay);
+    events::EventHandlerNonNull getOncanplaythrough();
+    void setOncanplaythrough(events::EventHandlerNonNull oncanplaythrough);
+    events::EventHandlerNonNull getOnchange();
+    void setOnchange(events::EventHandlerNonNull onchange);
+    events::EventHandlerNonNull getOnclick();
+    void setOnclick(events::EventHandlerNonNull onclick);
+    events::EventHandlerNonNull getOnclose();
+    void setOnclose(events::EventHandlerNonNull onclose);
+    events::EventHandlerNonNull getOncontextmenu();
+    void setOncontextmenu(events::EventHandlerNonNull oncontextmenu);
+    events::EventHandlerNonNull getOncuechange();
+    void setOncuechange(events::EventHandlerNonNull oncuechange);
+    events::EventHandlerNonNull getOndblclick();
+    void setOndblclick(events::EventHandlerNonNull ondblclick);
+    events::EventHandlerNonNull getOndrag();
+    void setOndrag(events::EventHandlerNonNull ondrag);
+    events::EventHandlerNonNull getOndragend();
+    void setOndragend(events::EventHandlerNonNull ondragend);
+    events::EventHandlerNonNull getOndragenter();
+    void setOndragenter(events::EventHandlerNonNull ondragenter);
+    events::EventHandlerNonNull getOndragleave();
+    void setOndragleave(events::EventHandlerNonNull ondragleave);
+    events::EventHandlerNonNull getOndragover();
+    void setOndragover(events::EventHandlerNonNull ondragover);
+    events::EventHandlerNonNull getOndragstart();
+    void setOndragstart(events::EventHandlerNonNull ondragstart);
+    events::EventHandlerNonNull getOndrop();
+    void setOndrop(events::EventHandlerNonNull ondrop);
+    events::EventHandlerNonNull getOndurationchange();
+    void setOndurationchange(events::EventHandlerNonNull ondurationchange);
+    events::EventHandlerNonNull getOnemptied();
+    void setOnemptied(events::EventHandlerNonNull onemptied);
+    events::EventHandlerNonNull getOnended();
+    void setOnended(events::EventHandlerNonNull onended);
+    events::OnErrorEventHandlerNonNull getOnerror();
+    void setOnerror(events::OnErrorEventHandlerNonNull onerror);
+    events::EventHandlerNonNull getOnfocus();
+    void setOnfocus(events::EventHandlerNonNull onfocus);
+    events::EventHandlerNonNull getOninput();
+    void setOninput(events::EventHandlerNonNull oninput);
+    events::EventHandlerNonNull getOninvalid();
+    void setOninvalid(events::EventHandlerNonNull oninvalid);
+    events::EventHandlerNonNull getOnkeydown();
+    void setOnkeydown(events::EventHandlerNonNull onkeydown);
+    events::EventHandlerNonNull getOnkeypress();
+    void setOnkeypress(events::EventHandlerNonNull onkeypress);
+    events::EventHandlerNonNull getOnkeyup();
+    void setOnkeyup(events::EventHandlerNonNull onkeyup);
+    events::EventHandlerNonNull getOnload();
+    void setOnload(events::EventHandlerNonNull onload);
+    events::EventHandlerNonNull getOnloadeddata();
+    void setOnloadeddata(events::EventHandlerNonNull onloadeddata);
+    events::EventHandlerNonNull getOnloadedmetadata();
+    void setOnloadedmetadata(events::EventHandlerNonNull onloadedmetadata);
+    events::EventHandlerNonNull getOnloadstart();
+    void setOnloadstart(events::EventHandlerNonNull onloadstart);
+    events::EventHandlerNonNull getOnmousedown();
+    void setOnmousedown(events::EventHandlerNonNull onmousedown);
+    events::EventHandlerNonNull getOnmousemove();
+    void setOnmousemove(events::EventHandlerNonNull onmousemove);
+    events::EventHandlerNonNull getOnmouseout();
+    void setOnmouseout(events::EventHandlerNonNull onmouseout);
+    events::EventHandlerNonNull getOnmouseover();
+    void setOnmouseover(events::EventHandlerNonNull onmouseover);
+    events::EventHandlerNonNull getOnmouseup();
+    void setOnmouseup(events::EventHandlerNonNull onmouseup);
+    events::EventHandlerNonNull getOnmousewheel();
+    void setOnmousewheel(events::EventHandlerNonNull onmousewheel);
+    events::EventHandlerNonNull getOnpause();
+    void setOnpause(events::EventHandlerNonNull onpause);
+    events::EventHandlerNonNull getOnplay();
+    void setOnplay(events::EventHandlerNonNull onplay);
+    events::EventHandlerNonNull getOnplaying();
+    void setOnplaying(events::EventHandlerNonNull onplaying);
+    events::EventHandlerNonNull getOnprogress();
+    void setOnprogress(events::EventHandlerNonNull onprogress);
+    events::EventHandlerNonNull getOnratechange();
+    void setOnratechange(events::EventHandlerNonNull onratechange);
+    events::EventHandlerNonNull getOnreset();
+    void setOnreset(events::EventHandlerNonNull onreset);
+    events::EventHandlerNonNull getOnscroll();
+    void setOnscroll(events::EventHandlerNonNull onscroll);
+    events::EventHandlerNonNull getOnseeked();
+    void setOnseeked(events::EventHandlerNonNull onseeked);
+    events::EventHandlerNonNull getOnseeking();
+    void setOnseeking(events::EventHandlerNonNull onseeking);
+    events::EventHandlerNonNull getOnselect();
+    void setOnselect(events::EventHandlerNonNull onselect);
+    events::EventHandlerNonNull getOnshow();
+    void setOnshow(events::EventHandlerNonNull onshow);
+    events::EventHandlerNonNull getOnstalled();
+    void setOnstalled(events::EventHandlerNonNull onstalled);
+    events::EventHandlerNonNull getOnsubmit();
+    void setOnsubmit(events::EventHandlerNonNull onsubmit);
+    events::EventHandlerNonNull getOnsuspend();
+    void setOnsuspend(events::EventHandlerNonNull onsuspend);
+    events::EventHandlerNonNull getOntimeupdate();
+    void setOntimeupdate(events::EventHandlerNonNull ontimeupdate);
+    events::EventHandlerNonNull getOnvolumechange();
+    void setOnvolumechange(events::EventHandlerNonNull onvolumechange);
+    events::EventHandlerNonNull getOnwaiting();
+    void setOnwaiting(events::EventHandlerNonNull onwaiting);
+    events::EventHandlerNonNull getOnreadystatechange();
+    void setOnreadystatechange(events::EventHandlerNonNull onreadystatechange);
+    // Document-51
     std::u16string getFgColor();
     void setFgColor(const std::u16string& fgColor);
-    std::u16string getBgColor();
-    void setBgColor(const std::u16string& bgColor);
     std::u16string getLinkColor();
     void setLinkColor(const std::u16string& linkColor);
     std::u16string getVlinkColor();
     void setVlinkColor(const std::u16string& vlinkColor);
     std::u16string getAlinkColor();
     void setAlinkColor(const std::u16string& alinkColor);
+    std::u16string getBgColor();
+    void setBgColor(const std::u16string& bgColor);
     html::HTMLCollection getAnchors();
     html::HTMLCollection getApplets();
     void clear();
     html::HTMLAllCollection getAll();
+    // NodeSelector
+    Element querySelector(const std::u16string& selectors);
+    NodeList querySelectorAll(const std::u16string& selectors);
     // DocumentRange
     ranges::Range createRange();
     // DocumentTraversal
@@ -440,6 +438,9 @@ public:
     }
 };
 
-}}}}  // org::w3c::dom::bootstrap
+}
+}
+}
+}
 
-#endif  // DOCUMENT_IMP_H
+#endif  // ORG_W3C_DOM_BOOTSTRAP_DOCUMENTIMP_H_INCLUDED

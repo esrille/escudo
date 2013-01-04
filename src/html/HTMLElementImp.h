@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,22 +14,25 @@
  * limitations under the License.
  */
 
-#ifndef HTMLELEMENT_IMP_H
-#define HTMLELEMENT_IMP_H
+#ifndef ORG_W3C_DOM_BOOTSTRAP_HTMLELEMENTIMP_H_INCLUDED
+#define ORG_W3C_DOM_BOOTSTRAP_HTMLELEMENTIMP_H_INCLUDED
 
-#include <Object.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <org/w3c/dom/html/HTMLElement.h>
 #include <org/w3c/dom/html/HTMLTemplateElement.h>
 
-#include <org/w3c/dom/css/CSSStyleDeclaration.h>
 #include <org/w3c/dom/Element.h>
 #include <org/w3c/dom/NodeList.h>
 #include <org/w3c/dom/DOMTokenList.h>
 #include <org/w3c/dom/DOMSettableTokenList.h>
 #include <org/w3c/dom/DOMStringMap.h>
+#include <org/w3c/dom/css/CSSStyleDeclaration.h>
+#include <org/w3c/dom/events/EventHandlerNonNull.h>
+#include <org/w3c/dom/events/OnErrorEventHandlerNonNull.h>
 #include <org/w3c/dom/html/HTMLMenuElement.h>
-#include <org/w3c/dom/html/Function.h>
-#include <org/w3c/dom/html/HTMLPropertiesCollection.h>
 #include <org/w3c/dom/xbl2/XBLImplementation.h>
 
 #include "ElementImp.h"
@@ -108,31 +111,15 @@ public:
     virtual int getClientHeight();
 
     // HTMLElement
-    virtual std::u16string getInnerHTML();
-    virtual void setInnerHTML(const std::u16string& innerHTML);
-    virtual std::u16string getOuterHTML();
-    virtual void setOuterHTML(const std::u16string& outerHTML);
-    virtual void insertAdjacentHTML(const std::u16string& position, const std::u16string& text);
     virtual std::u16string getTitle();
     virtual void setTitle(const std::u16string& title);
     virtual std::u16string getLang();
     virtual void setLang(const std::u16string& lang);
+    virtual bool getTranslate();
+    virtual void setTranslate(bool translate);
     virtual std::u16string getDir();
     virtual void setDir(const std::u16string& dir);
     virtual DOMStringMap getDataset();
-    virtual bool getItemScope();
-    virtual void setItemScope(bool itemScope);
-    virtual std::u16string getItemType();
-    virtual void setItemType(const std::u16string& itemType);
-    virtual std::u16string getItemId();
-    virtual void setItemId(const std::u16string& itemId);
-    virtual DOMSettableTokenList getItemRef();
-    virtual void setItemRef(const std::u16string& itemRef);
-    virtual DOMSettableTokenList getItemProp();
-    virtual void setItemProp(const std::u16string& itemProp);
-    virtual html::HTMLPropertiesCollection getProperties();
-    virtual Any getItemValue();
-    virtual void setItemValue(Any itemValue);
     virtual bool getHidden();
     virtual void setHidden(bool hidden);
     virtual void click();
@@ -154,122 +141,124 @@ public:
     virtual void setContextMenu(html::HTMLMenuElement contextMenu);
     virtual bool getSpellcheck();
     virtual void setSpellcheck(bool spellcheck);
-    Nullable<std::u16string> getCommandType();
-    Nullable<std::u16string> getCommandLabel();
-    Nullable<std::u16string> getCommandIcon();
-    Nullable<bool> getCommandHidden();
-    Nullable<bool> getCommandDisabled();
-    Nullable<bool> getCommandChecked();
+    virtual Nullable<std::u16string> getCommandType();
+    virtual Nullable<std::u16string> getCommandLabel();
+    virtual Nullable<std::u16string> getCommandIcon();
+    virtual Nullable<bool> getCommandHidden();
+    virtual Nullable<bool> getCommandDisabled();
+    virtual Nullable<bool> getCommandChecked();
     virtual css::CSSStyleDeclaration getStyle();
-    virtual html::Function getOnabort();
-    virtual void setOnabort(html::Function onabort);
-    virtual html::Function getOnblur();
-    virtual void setOnblur(html::Function onblur);
-    virtual html::Function getOncanplay();
-    virtual void setOncanplay(html::Function oncanplay);
-    virtual html::Function getOncanplaythrough();
-    virtual void setOncanplaythrough(html::Function oncanplaythrough);
-    virtual html::Function getOnchange();
-    virtual void setOnchange(html::Function onchange);
-    virtual html::Function getOnclick();
-    virtual void setOnclick(html::Function onclick);
-    virtual html::Function getOncontextmenu();
-    virtual void setOncontextmenu(html::Function oncontextmenu);
-    virtual html::Function getOncuechange();
-    virtual void setOncuechange(html::Function oncuechange);
-    virtual html::Function getOndblclick();
-    virtual void setOndblclick(html::Function ondblclick);
-    virtual html::Function getOndrag();
-    virtual void setOndrag(html::Function ondrag);
-    virtual html::Function getOndragend();
-    virtual void setOndragend(html::Function ondragend);
-    virtual html::Function getOndragenter();
-    virtual void setOndragenter(html::Function ondragenter);
-    virtual html::Function getOndragleave();
-    virtual void setOndragleave(html::Function ondragleave);
-    virtual html::Function getOndragover();
-    virtual void setOndragover(html::Function ondragover);
-    virtual html::Function getOndragstart();
-    virtual void setOndragstart(html::Function ondragstart);
-    virtual html::Function getOndrop();
-    virtual void setOndrop(html::Function ondrop);
-    virtual html::Function getOndurationchange();
-    virtual void setOndurationchange(html::Function ondurationchange);
-    virtual html::Function getOnemptied();
-    virtual void setOnemptied(html::Function onemptied);
-    virtual html::Function getOnended();
-    virtual void setOnended(html::Function onended);
-    virtual html::Function getOnerror();
-    virtual void setOnerror(html::Function onerror);
-    virtual html::Function getOnfocus();
-    virtual void setOnfocus(html::Function onfocus);
-    virtual html::Function getOninput();
-    virtual void setOninput(html::Function oninput);
-    virtual html::Function getOninvalid();
-    virtual void setOninvalid(html::Function oninvalid);
-    virtual html::Function getOnkeydown();
-    virtual void setOnkeydown(html::Function onkeydown);
-    virtual html::Function getOnkeypress();
-    virtual void setOnkeypress(html::Function onkeypress);
-    virtual html::Function getOnkeyup();
-    virtual void setOnkeyup(html::Function onkeyup);
-    virtual html::Function getOnload();
-    virtual void setOnload(html::Function onload);
-    virtual html::Function getOnloadeddata();
-    virtual void setOnloadeddata(html::Function onloadeddata);
-    virtual html::Function getOnloadedmetadata();
-    virtual void setOnloadedmetadata(html::Function onloadedmetadata);
-    virtual html::Function getOnloadstart();
-    virtual void setOnloadstart(html::Function onloadstart);
-    virtual html::Function getOnmousedown();
-    virtual void setOnmousedown(html::Function onmousedown);
-    virtual html::Function getOnmousemove();
-    virtual void setOnmousemove(html::Function onmousemove);
-    virtual html::Function getOnmouseout();
-    virtual void setOnmouseout(html::Function onmouseout);
-    virtual html::Function getOnmouseover();
-    virtual void setOnmouseover(html::Function onmouseover);
-    virtual html::Function getOnmouseup();
-    virtual void setOnmouseup(html::Function onmouseup);
-    virtual html::Function getOnmousewheel();
-    virtual void setOnmousewheel(html::Function onmousewheel);
-    virtual html::Function getOnpause();
-    virtual void setOnpause(html::Function onpause);
-    virtual html::Function getOnplay();
-    virtual void setOnplay(html::Function onplay);
-    virtual html::Function getOnplaying();
-    virtual void setOnplaying(html::Function onplaying);
-    virtual html::Function getOnprogress();
-    virtual void setOnprogress(html::Function onprogress);
-    virtual html::Function getOnratechange();
-    virtual void setOnratechange(html::Function onratechange);
-    virtual html::Function getOnreadystatechange();
-    virtual void setOnreadystatechange(html::Function onreadystatechange);
-    virtual html::Function getOnreset();
-    virtual void setOnreset(html::Function onreset);
-    virtual html::Function getOnscroll();
-    virtual void setOnscroll(html::Function onscroll);
-    virtual html::Function getOnseeked();
-    virtual void setOnseeked(html::Function onseeked);
-    virtual html::Function getOnseeking();
-    virtual void setOnseeking(html::Function onseeking);
-    virtual html::Function getOnselect();
-    virtual void setOnselect(html::Function onselect);
-    virtual html::Function getOnshow();
-    virtual void setOnshow(html::Function onshow);
-    virtual html::Function getOnstalled();
-    virtual void setOnstalled(html::Function onstalled);
-    virtual html::Function getOnsubmit();
-    virtual void setOnsubmit(html::Function onsubmit);
-    virtual html::Function getOnsuspend();
-    virtual void setOnsuspend(html::Function onsuspend);
-    virtual html::Function getOntimeupdate();
-    virtual void setOntimeupdate(html::Function ontimeupdate);
-    virtual html::Function getOnvolumechange();
-    virtual void setOnvolumechange(html::Function onvolumechange);
-    virtual html::Function getOnwaiting();
-    virtual void setOnwaiting(html::Function onwaiting);
-    // HTMLElement-6
+    virtual events::EventHandlerNonNull getOnabort();
+    virtual void setOnabort(events::EventHandlerNonNull onabort);
+    virtual events::EventHandlerNonNull getOnblur();
+    virtual void setOnblur(events::EventHandlerNonNull onblur);
+    virtual events::EventHandlerNonNull getOncancel();
+    virtual void setOncancel(events::EventHandlerNonNull oncancel);
+    virtual events::EventHandlerNonNull getOncanplay();
+    virtual void setOncanplay(events::EventHandlerNonNull oncanplay);
+    virtual events::EventHandlerNonNull getOncanplaythrough();
+    virtual void setOncanplaythrough(events::EventHandlerNonNull oncanplaythrough);
+    virtual events::EventHandlerNonNull getOnchange();
+    virtual void setOnchange(events::EventHandlerNonNull onchange);
+    virtual events::EventHandlerNonNull getOnclick();
+    virtual void setOnclick(events::EventHandlerNonNull onclick);
+    virtual events::EventHandlerNonNull getOnclose();
+    virtual void setOnclose(events::EventHandlerNonNull onclose);
+    virtual events::EventHandlerNonNull getOncontextmenu();
+    virtual void setOncontextmenu(events::EventHandlerNonNull oncontextmenu);
+    virtual events::EventHandlerNonNull getOncuechange();
+    virtual void setOncuechange(events::EventHandlerNonNull oncuechange);
+    virtual events::EventHandlerNonNull getOndblclick();
+    virtual void setOndblclick(events::EventHandlerNonNull ondblclick);
+    virtual events::EventHandlerNonNull getOndrag();
+    virtual void setOndrag(events::EventHandlerNonNull ondrag);
+    virtual events::EventHandlerNonNull getOndragend();
+    virtual void setOndragend(events::EventHandlerNonNull ondragend);
+    virtual events::EventHandlerNonNull getOndragenter();
+    virtual void setOndragenter(events::EventHandlerNonNull ondragenter);
+    virtual events::EventHandlerNonNull getOndragleave();
+    virtual void setOndragleave(events::EventHandlerNonNull ondragleave);
+    virtual events::EventHandlerNonNull getOndragover();
+    virtual void setOndragover(events::EventHandlerNonNull ondragover);
+    virtual events::EventHandlerNonNull getOndragstart();
+    virtual void setOndragstart(events::EventHandlerNonNull ondragstart);
+    virtual events::EventHandlerNonNull getOndrop();
+    virtual void setOndrop(events::EventHandlerNonNull ondrop);
+    virtual events::EventHandlerNonNull getOndurationchange();
+    virtual void setOndurationchange(events::EventHandlerNonNull ondurationchange);
+    virtual events::EventHandlerNonNull getOnemptied();
+    virtual void setOnemptied(events::EventHandlerNonNull onemptied);
+    virtual events::EventHandlerNonNull getOnended();
+    virtual void setOnended(events::EventHandlerNonNull onended);
+    virtual events::OnErrorEventHandlerNonNull getOnerror();
+    virtual void setOnerror(events::OnErrorEventHandlerNonNull onerror);
+    virtual events::EventHandlerNonNull getOnfocus();
+    virtual void setOnfocus(events::EventHandlerNonNull onfocus);
+    virtual events::EventHandlerNonNull getOninput();
+    virtual void setOninput(events::EventHandlerNonNull oninput);
+    virtual events::EventHandlerNonNull getOninvalid();
+    virtual void setOninvalid(events::EventHandlerNonNull oninvalid);
+    virtual events::EventHandlerNonNull getOnkeydown();
+    virtual void setOnkeydown(events::EventHandlerNonNull onkeydown);
+    virtual events::EventHandlerNonNull getOnkeypress();
+    virtual void setOnkeypress(events::EventHandlerNonNull onkeypress);
+    virtual events::EventHandlerNonNull getOnkeyup();
+    virtual void setOnkeyup(events::EventHandlerNonNull onkeyup);
+    virtual events::EventHandlerNonNull getOnload();
+    virtual void setOnload(events::EventHandlerNonNull onload);
+    virtual events::EventHandlerNonNull getOnloadeddata();
+    virtual void setOnloadeddata(events::EventHandlerNonNull onloadeddata);
+    virtual events::EventHandlerNonNull getOnloadedmetadata();
+    virtual void setOnloadedmetadata(events::EventHandlerNonNull onloadedmetadata);
+    virtual events::EventHandlerNonNull getOnloadstart();
+    virtual void setOnloadstart(events::EventHandlerNonNull onloadstart);
+    virtual events::EventHandlerNonNull getOnmousedown();
+    virtual void setOnmousedown(events::EventHandlerNonNull onmousedown);
+    virtual events::EventHandlerNonNull getOnmousemove();
+    virtual void setOnmousemove(events::EventHandlerNonNull onmousemove);
+    virtual events::EventHandlerNonNull getOnmouseout();
+    virtual void setOnmouseout(events::EventHandlerNonNull onmouseout);
+    virtual events::EventHandlerNonNull getOnmouseover();
+    virtual void setOnmouseover(events::EventHandlerNonNull onmouseover);
+    virtual events::EventHandlerNonNull getOnmouseup();
+    virtual void setOnmouseup(events::EventHandlerNonNull onmouseup);
+    virtual events::EventHandlerNonNull getOnmousewheel();
+    virtual void setOnmousewheel(events::EventHandlerNonNull onmousewheel);
+    virtual events::EventHandlerNonNull getOnpause();
+    virtual void setOnpause(events::EventHandlerNonNull onpause);
+    virtual events::EventHandlerNonNull getOnplay();
+    virtual void setOnplay(events::EventHandlerNonNull onplay);
+    virtual events::EventHandlerNonNull getOnplaying();
+    virtual void setOnplaying(events::EventHandlerNonNull onplaying);
+    virtual events::EventHandlerNonNull getOnprogress();
+    virtual void setOnprogress(events::EventHandlerNonNull onprogress);
+    virtual events::EventHandlerNonNull getOnratechange();
+    virtual void setOnratechange(events::EventHandlerNonNull onratechange);
+    virtual events::EventHandlerNonNull getOnreset();
+    virtual void setOnreset(events::EventHandlerNonNull onreset);
+    virtual events::EventHandlerNonNull getOnscroll();
+    virtual void setOnscroll(events::EventHandlerNonNull onscroll);
+    virtual events::EventHandlerNonNull getOnseeked();
+    virtual void setOnseeked(events::EventHandlerNonNull onseeked);
+    virtual events::EventHandlerNonNull getOnseeking();
+    virtual void setOnseeking(events::EventHandlerNonNull onseeking);
+    virtual events::EventHandlerNonNull getOnselect();
+    virtual void setOnselect(events::EventHandlerNonNull onselect);
+    virtual events::EventHandlerNonNull getOnshow();
+    virtual void setOnshow(events::EventHandlerNonNull onshow);
+    virtual events::EventHandlerNonNull getOnstalled();
+    virtual void setOnstalled(events::EventHandlerNonNull onstalled);
+    virtual events::EventHandlerNonNull getOnsubmit();
+    virtual void setOnsubmit(events::EventHandlerNonNull onsubmit);
+    virtual events::EventHandlerNonNull getOnsuspend();
+    virtual void setOnsuspend(events::EventHandlerNonNull onsuspend);
+    virtual events::EventHandlerNonNull getOntimeupdate();
+    virtual void setOntimeupdate(events::EventHandlerNonNull ontimeupdate);
+    virtual events::EventHandlerNonNull getOnvolumechange();
+    virtual void setOnvolumechange(events::EventHandlerNonNull onvolumechange);
+    virtual events::EventHandlerNonNull getOnwaiting();
+    virtual void setOnwaiting(events::EventHandlerNonNull onwaiting);
+    // HTMLElement
     virtual Element getOffsetParent();
     virtual int getOffsetTop();
     virtual int getOffsetLeft();
@@ -320,4 +309,4 @@ public:
 
 }}}}  // org::w3c::dom::bootstrap
 
-#endif  // HTMLELEMENT_IMP_H
+#endif  // ORG_W3C_DOM_BOOTSTRAP_HTMLELEMENTIMP_H_INCLUDED

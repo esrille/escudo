@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -293,7 +293,7 @@ bool WindowImp::poll()
             } while (token.getType() != Token::Type::EndOfFile && !document->getPendingParsingBlockingScript());
             if (document->getPendingParsingBlockingScript())
                 break;
-            document->setCharset(utfconv(parser->getEncoding()));
+            document->setCharacterSet(utfconv(parser->getEncoding()));
 
             // TODO: Check if the parser has been aborted.
             NodeImp::evalTree(document);
@@ -666,7 +666,7 @@ Element WindowImp::elementFromPoint(float x, float y)
 }
 
 //
-// html::Window - implemented
+// html::Window
 //
 
 html::Window WindowImp::getWindow()
@@ -674,109 +674,20 @@ html::Window WindowImp::getWindow()
     return this;
 }
 
-html::Window WindowImp::getSelf()
+Any WindowImp::getSelf()
 {
     return this;
+}
+
+void WindowImp::setSelf(Any self)
+{
+    // TODO: implement me!
 }
 
 Document WindowImp::getDocument()
 {
     return !window ? 0 : window->getDocument();
 }
-
-html::Location WindowImp::getLocation()
-{
-    return getDocument().getLocation();
-}
-
-void WindowImp::setLocation(const std::u16string& href)
-{
-    getLocation().setHref(href);
-}
-
-html::History WindowImp::getHistory()
-{
-    return &history;
-}
-
-Any WindowImp::getFrames()
-{
-    return this;
-}
-
-Any WindowImp::getLength()
-{
-    return childWindows.size();
-}
-
-html::Window WindowImp::getTop()
-{
-    WindowImp* top = this;
-    while (top->parent)
-        top = top->parent;
-    return top;
-}
-
-html::Window WindowImp::getParent()
-{
-    return parent;
-}
-
-html::Window WindowImp::open(const std::u16string& url, const std::u16string& target, const std::u16string& features, bool replace)
-{
-    if (window) {
-        if (DocumentImp* document = dynamic_cast<DocumentImp*>(window->getDocument().self())) {
-            URL base(document->getDocumentURI());
-            URL link(base, url);
-            if (base.isSameExceptFragments(link)) {
-                // cf. http://www.whatwg.org/specs/web-apps/current-work/multipage/history.html#scroll-to-fragid
-                // TODO: update history, etc.
-                std::u16string hash = link.getHash();
-                if (hash[0] == '#')
-                    hash.erase(0, 1);
-                if (Element element = document->getElementById(hash))
-                    element.scrollIntoView(true);
-                return this;
-            }
-
-            // Prompt to unload the Document object.
-            if (html::BeforeUnloadEvent event = new(std::nothrow) BeforeUnloadEventImp) {
-                window->dispatchEvent(event);
-                if (!event.getReturnValue().empty() || event.getDefaultPrevented())
-                    return this;
-                if (parent && parent->getFaviconOverridable())
-                    parent->setFavicon();
-            }
-        }
-    }
-
-    backgroundTask.restart();
-
-    // TODO: add more details
-    window = new(std::nothrow) DocumentWindow;
-
-    request.abort();
-    history.setReplace(replace);
-    request.open(u"get", url.empty() ? u"about:blank" : url);
-    request.send();
-    return this;
-}
-
-html::Window WindowImp::getElement(unsigned int index)
-{
-    if (index < childWindows.size())
-        return childWindows[index];
-    return 0;
-}
-
-void WindowImp::alert(const std::u16string& message)
-{
-    std::cerr << message << '\n';
-}
-
-//
-// html::Window - just generated
-//
 
 std::u16string WindowImp::getName()
 {
@@ -789,10 +700,19 @@ void WindowImp::setName(const std::u16string& name)
     // TODO: implement me!
 }
 
-html::UndoManager WindowImp::getUndoManager()
+html::Location WindowImp::getLocation()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return getDocument().getLocation();
+}
+
+void WindowImp::setLocation(const std::u16string& location)
+{
+    getLocation().setHref(location);
+}
+
+html::History WindowImp::getHistory()
+{
+    return &history;
 }
 
 Any WindowImp::getLocationbar()
@@ -892,14 +812,32 @@ void WindowImp::blur()
     // TODO: implement me!
 }
 
+Any WindowImp::getFrames()
+{
+    return this;
+}
+
 void WindowImp::setFrames(Any frames)
 {
     // TODO: implement me!
 }
 
+Any WindowImp::getLength()
+{
+    return childWindows.size();
+}
+
 void WindowImp::setLength(Any length)
 {
     // TODO: implement me!
+}
+
+html::Window WindowImp::getTop()
+{
+    WindowImp* top = this;
+    while (top->parent)
+        top = top->parent;
+    return top;
 }
 
 html::Window WindowImp::getOpener()
@@ -913,22 +851,68 @@ void WindowImp::setOpener(html::Window opener)
     // TODO: implement me!
 }
 
+html::Window WindowImp::getParent()
+{
+    return parent;
+}
+
 Element WindowImp::getFrameElement()
 {
-
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-Any WindowImp::getElement(const std::u16string& name)
+html::Window WindowImp::open(const std::u16string& url, const std::u16string& target, const std::u16string& features, bool replace)
 {
-    // TODO: implement me!
+    if (window) {
+        if (DocumentImp* document = dynamic_cast<DocumentImp*>(window->getDocument().self())) {
+            URL base(document->getDocumentURI());
+            URL link(base, url);
+            if (base.isSameExceptFragments(link)) {
+                // cf. http://www.whatwg.org/specs/web-apps/current-work/multipage/history.html#scroll-to-fragid
+                // TODO: update history, etc.
+                std::u16string hash = link.getHash();
+                if (hash[0] == '#')
+                    hash.erase(0, 1);
+                if (Element element = document->getElementById(hash))
+                    element.scrollIntoView(true);
+                return this;
+            }
+
+            // Prompt to unload the Document object.
+            if (html::BeforeUnloadEvent event = new(std::nothrow) BeforeUnloadEventImp) {
+                window->dispatchEvent(event);
+                if (!event.getReturnValue().empty() || event.getDefaultPrevented())
+                    return this;
+                if (parent && parent->getFaviconOverridable())
+                    parent->setFavicon();
+            }
+        }
+    }
+
+    backgroundTask.restart();
+
+    // TODO: add more details
+    window = new(std::nothrow) DocumentWindow;
+
+    request.abort();
+    history.setReplace(replace);
+    request.open(u"get", url.empty() ? u"about:blank" : url);
+    request.send();
+    return this;
+}
+
+html::Window WindowImp::getElement(unsigned int index)
+{
+    if (index < childWindows.size())
+        return childWindows[index];
     return 0;
 }
 
-void WindowImp::setElement(const std::u16string& name, Any value)
+Object WindowImp::getElement(const std::u16string& name)
 {
     // TODO: implement me!
+    return static_cast<Object*>(0);
 }
 
 html::Navigator WindowImp::getNavigator()
@@ -946,6 +930,11 @@ html::ApplicationCache WindowImp::getApplicationCache()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
+}
+
+void WindowImp::alert(const std::u16string& message)
+{
+    std::cerr << message << '\n';
 }
 
 bool WindowImp::confirm(const std::u16string& message)
@@ -983,353 +972,365 @@ Any WindowImp::showModalDialog(const std::u16string& url, Any argument)
     return 0;
 }
 
-void WindowImp::postMessage(Any message, const std::u16string& targetOrigin)
-{
-    // TODO: implement me!
-}
-
-void WindowImp::postMessage(Any message, const std::u16string& targetOrigin, Sequence<html::Transferable> transfer)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOnabort()
+events::EventHandlerNonNull WindowImp::getOnabort()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOnabort(html::Function onabort)
+void WindowImp::setOnabort(events::EventHandlerNonNull onabort)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOnafterprint()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOnafterprint(html::Function onafterprint)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOnbeforeprint()
+events::EventHandlerNonNull WindowImp::getOnafterprint()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOnbeforeprint(html::Function onbeforeprint)
+void WindowImp::setOnafterprint(events::EventHandlerNonNull onafterprint)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOnbeforeunload()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOnbeforeunload(html::Function onbeforeunload)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOnblur()
+events::EventHandlerNonNull WindowImp::getOnbeforeprint()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOnblur(html::Function onblur)
+void WindowImp::setOnbeforeprint(events::EventHandlerNonNull onbeforeprint)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOncanplay()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOncanplay(html::Function oncanplay)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOncanplaythrough()
+events::EventHandlerNonNull WindowImp::getOnbeforeunload()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOncanplaythrough(html::Function oncanplaythrough)
+void WindowImp::setOnbeforeunload(events::EventHandlerNonNull onbeforeunload)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOnchange()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOnchange(html::Function onchange)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOnclick()
+events::EventHandlerNonNull WindowImp::getOnblur()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOnclick(html::Function onclick)
+void WindowImp::setOnblur(events::EventHandlerNonNull onblur)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOncontextmenu()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOncontextmenu(html::Function oncontextmenu)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOncuechange()
+events::EventHandlerNonNull WindowImp::getOncancel()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOncuechange(html::Function oncuechange)
+void WindowImp::setOncancel(events::EventHandlerNonNull oncancel)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOndblclick()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOndblclick(html::Function ondblclick)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOndrag()
+events::EventHandlerNonNull WindowImp::getOncanplay()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOndrag(html::Function ondrag)
+void WindowImp::setOncanplay(events::EventHandlerNonNull oncanplay)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOndragend()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOndragend(html::Function ondragend)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOndragenter()
+events::EventHandlerNonNull WindowImp::getOncanplaythrough()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOndragenter(html::Function ondragenter)
+void WindowImp::setOncanplaythrough(events::EventHandlerNonNull oncanplaythrough)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOndragleave()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOndragleave(html::Function ondragleave)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOndragover()
+events::EventHandlerNonNull WindowImp::getOnchange()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOndragover(html::Function ondragover)
+void WindowImp::setOnchange(events::EventHandlerNonNull onchange)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOndragstart()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOndragstart(html::Function ondragstart)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOndrop()
+events::EventHandlerNonNull WindowImp::getOnclick()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOndrop(html::Function ondrop)
+void WindowImp::setOnclick(events::EventHandlerNonNull onclick)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOndurationchange()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOndurationchange(html::Function ondurationchange)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOnemptied()
+events::EventHandlerNonNull WindowImp::getOnclose()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOnemptied(html::Function onemptied)
+void WindowImp::setOnclose(events::EventHandlerNonNull onclose)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOnended()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOnended(html::Function onended)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOnerror()
+events::EventHandlerNonNull WindowImp::getOncontextmenu()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOnerror(html::Function onerror)
+void WindowImp::setOncontextmenu(events::EventHandlerNonNull oncontextmenu)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOnfocus()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOnfocus(html::Function onfocus)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOnhashchange()
+events::EventHandlerNonNull WindowImp::getOncuechange()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOnhashchange(html::Function onhashchange)
+void WindowImp::setOncuechange(events::EventHandlerNonNull oncuechange)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOninput()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOninput(html::Function oninput)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOninvalid()
+events::EventHandlerNonNull WindowImp::getOndblclick()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOninvalid(html::Function oninvalid)
+void WindowImp::setOndblclick(events::EventHandlerNonNull ondblclick)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOnkeydown()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOnkeydown(html::Function onkeydown)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOnkeypress()
+events::EventHandlerNonNull WindowImp::getOndrag()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOnkeypress(html::Function onkeypress)
+void WindowImp::setOndrag(events::EventHandlerNonNull ondrag)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOnkeyup()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOnkeyup(html::Function onkeyup)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOnload()
+events::EventHandlerNonNull WindowImp::getOndragend()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOnload(html::Function onload)
+void WindowImp::setOndragend(events::EventHandlerNonNull ondragend)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull WindowImp::getOndragenter()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOndragenter(events::EventHandlerNonNull ondragenter)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull WindowImp::getOndragleave()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOndragleave(events::EventHandlerNonNull ondragleave)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull WindowImp::getOndragover()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOndragover(events::EventHandlerNonNull ondragover)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull WindowImp::getOndragstart()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOndragstart(events::EventHandlerNonNull ondragstart)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull WindowImp::getOndrop()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOndrop(events::EventHandlerNonNull ondrop)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull WindowImp::getOndurationchange()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOndurationchange(events::EventHandlerNonNull ondurationchange)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull WindowImp::getOnemptied()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOnemptied(events::EventHandlerNonNull onemptied)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull WindowImp::getOnended()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOnended(events::EventHandlerNonNull onended)
+{
+    // TODO: implement me!
+}
+
+events::OnErrorEventHandlerNonNull WindowImp::getOnerror()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOnerror(events::OnErrorEventHandlerNonNull onerror)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull WindowImp::getOnfocus()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOnfocus(events::EventHandlerNonNull onfocus)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull WindowImp::getOnhashchange()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOnhashchange(events::EventHandlerNonNull onhashchange)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull WindowImp::getOninput()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOninput(events::EventHandlerNonNull oninput)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull WindowImp::getOninvalid()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOninvalid(events::EventHandlerNonNull oninvalid)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull WindowImp::getOnkeydown()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOnkeydown(events::EventHandlerNonNull onkeydown)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull WindowImp::getOnkeypress()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOnkeypress(events::EventHandlerNonNull onkeypress)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull WindowImp::getOnkeyup()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOnkeyup(events::EventHandlerNonNull onkeyup)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull WindowImp::getOnload()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOnload(events::EventHandlerNonNull onload)
 {
     if (!window)
         return;
@@ -1337,420 +1338,387 @@ void WindowImp::setOnload(html::Function onload)
                              new(std::nothrow) EventListenerImp(boost::bind(&ECMAScriptContext::dispatchEvent, window->getContext(), onload, _1)));
 }
 
-html::Function WindowImp::getOnloadeddata()
+events::EventHandlerNonNull WindowImp::getOnloadeddata()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOnloadeddata(html::Function onloadeddata)
+void WindowImp::setOnloadeddata(events::EventHandlerNonNull onloadeddata)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOnloadedmetadata()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOnloadedmetadata(html::Function onloadedmetadata)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOnloadstart()
+events::EventHandlerNonNull WindowImp::getOnloadedmetadata()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOnloadstart(html::Function onloadstart)
+void WindowImp::setOnloadedmetadata(events::EventHandlerNonNull onloadedmetadata)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOnmessage()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOnmessage(html::Function onmessage)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOnmousedown()
+events::EventHandlerNonNull WindowImp::getOnloadstart()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOnmousedown(html::Function onmousedown)
+void WindowImp::setOnloadstart(events::EventHandlerNonNull onloadstart)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOnmousemove()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOnmousemove(html::Function onmousemove)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOnmouseout()
+events::EventHandlerNonNull WindowImp::getOnmessage()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOnmouseout(html::Function onmouseout)
+void WindowImp::setOnmessage(events::EventHandlerNonNull onmessage)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOnmouseover()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOnmouseover(html::Function onmouseover)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOnmouseup()
+events::EventHandlerNonNull WindowImp::getOnmousedown()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOnmouseup(html::Function onmouseup)
+void WindowImp::setOnmousedown(events::EventHandlerNonNull onmousedown)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOnmousewheel()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOnmousewheel(html::Function onmousewheel)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOnoffline()
+events::EventHandlerNonNull WindowImp::getOnmousemove()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOnoffline(html::Function onoffline)
+void WindowImp::setOnmousemove(events::EventHandlerNonNull onmousemove)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOnonline()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOnonline(html::Function ononline)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOnpause()
+events::EventHandlerNonNull WindowImp::getOnmouseout()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOnpause(html::Function onpause)
+void WindowImp::setOnmouseout(events::EventHandlerNonNull onmouseout)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOnplay()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOnplay(html::Function onplay)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOnplaying()
+events::EventHandlerNonNull WindowImp::getOnmouseover()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOnplaying(html::Function onplaying)
+void WindowImp::setOnmouseover(events::EventHandlerNonNull onmouseover)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOnpagehide()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOnpagehide(html::Function onpagehide)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOnpageshow()
+events::EventHandlerNonNull WindowImp::getOnmouseup()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOnpageshow(html::Function onpageshow)
+void WindowImp::setOnmouseup(events::EventHandlerNonNull onmouseup)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOnpopstate()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOnpopstate(html::Function onpopstate)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOnprogress()
+events::EventHandlerNonNull WindowImp::getOnmousewheel()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOnprogress(html::Function onprogress)
+void WindowImp::setOnmousewheel(events::EventHandlerNonNull onmousewheel)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOnratechange()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOnratechange(html::Function onratechange)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOnreadystatechange()
+events::EventHandlerNonNull WindowImp::getOnoffline()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOnreadystatechange(html::Function onreadystatechange)
+void WindowImp::setOnoffline(events::EventHandlerNonNull onoffline)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOnredo()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOnredo(html::Function onredo)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOnreset()
+events::EventHandlerNonNull WindowImp::getOnonline()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOnreset(html::Function onreset)
+void WindowImp::setOnonline(events::EventHandlerNonNull ononline)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOnresize()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOnresize(html::Function onresize)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOnscroll()
+events::EventHandlerNonNull WindowImp::getOnpause()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOnscroll(html::Function onscroll)
+void WindowImp::setOnpause(events::EventHandlerNonNull onpause)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOnseeked()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOnseeked(html::Function onseeked)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOnseeking()
+events::EventHandlerNonNull WindowImp::getOnplay()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOnseeking(html::Function onseeking)
+void WindowImp::setOnplay(events::EventHandlerNonNull onplay)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOnselect()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOnselect(html::Function onselect)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOnshow()
+events::EventHandlerNonNull WindowImp::getOnplaying()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOnshow(html::Function onshow)
+void WindowImp::setOnplaying(events::EventHandlerNonNull onplaying)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOnstalled()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOnstalled(html::Function onstalled)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOnstorage()
+events::EventHandlerNonNull WindowImp::getOnpagehide()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOnstorage(html::Function onstorage)
+void WindowImp::setOnpagehide(events::EventHandlerNonNull onpagehide)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOnsubmit()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOnsubmit(html::Function onsubmit)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOnsuspend()
+events::EventHandlerNonNull WindowImp::getOnpageshow()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOnsuspend(html::Function onsuspend)
+void WindowImp::setOnpageshow(events::EventHandlerNonNull onpageshow)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOntimeupdate()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOntimeupdate(html::Function ontimeupdate)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOnundo()
+events::EventHandlerNonNull WindowImp::getOnpopstate()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOnundo(html::Function onundo)
+void WindowImp::setOnpopstate(events::EventHandlerNonNull onpopstate)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOnunload()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-void WindowImp::setOnunload(html::Function onunload)
-{
-    // TODO: implement me!
-}
-
-html::Function WindowImp::getOnvolumechange()
+events::EventHandlerNonNull WindowImp::getOnprogress()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOnvolumechange(html::Function onvolumechange)
+void WindowImp::setOnprogress(events::EventHandlerNonNull onprogress)
 {
     // TODO: implement me!
 }
 
-html::Function WindowImp::getOnwaiting()
+events::EventHandlerNonNull WindowImp::getOnratechange()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOnwaiting(html::Function onwaiting)
+void WindowImp::setOnratechange(events::EventHandlerNonNull onratechange)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull WindowImp::getOnreset()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOnreset(events::EventHandlerNonNull onreset)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull WindowImp::getOnresize()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOnresize(events::EventHandlerNonNull onresize)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull WindowImp::getOnscroll()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOnscroll(events::EventHandlerNonNull onscroll)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull WindowImp::getOnseeked()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOnseeked(events::EventHandlerNonNull onseeked)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull WindowImp::getOnseeking()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOnseeking(events::EventHandlerNonNull onseeking)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull WindowImp::getOnselect()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOnselect(events::EventHandlerNonNull onselect)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull WindowImp::getOnshow()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOnshow(events::EventHandlerNonNull onshow)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull WindowImp::getOnstalled()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOnstalled(events::EventHandlerNonNull onstalled)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull WindowImp::getOnstorage()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOnstorage(events::EventHandlerNonNull onstorage)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull WindowImp::getOnsubmit()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOnsubmit(events::EventHandlerNonNull onsubmit)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull WindowImp::getOnsuspend()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOnsuspend(events::EventHandlerNonNull onsuspend)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull WindowImp::getOntimeupdate()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOntimeupdate(events::EventHandlerNonNull ontimeupdate)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull WindowImp::getOnunload()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOnunload(events::EventHandlerNonNull onunload)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull WindowImp::getOnvolumechange()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOnvolumechange(events::EventHandlerNonNull onvolumechange)
+{
+    // TODO: implement me!
+}
+
+events::EventHandlerNonNull WindowImp::getOnwaiting()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void WindowImp::setOnwaiting(events::EventHandlerNonNull onwaiting)
 {
     // TODO: implement me!
 }
@@ -1891,13 +1859,25 @@ std::u16string WindowImp::atob(const std::u16string& atob)
     return u"";
 }
 
-int WindowImp::setTimeout(Any handler)
+int WindowImp::setTimeout(events::EventHandlerNonNull handler)
 {
     // TODO: implement me!
     return 0;
 }
 
-int WindowImp::setTimeout(Any handler, Any timeout, Variadic<Any> args)
+int WindowImp::setTimeout(events::EventHandlerNonNull handler, int timeout, Variadic<Any> arguments)
+{
+    // TODO: implement me!
+    return 0;
+}
+
+int WindowImp::setTimeout(const std::u16string& handler)
+{
+    // TODO: implement me!
+    return 0;
+}
+
+int WindowImp::setTimeout(const std::u16string& handler, int timeout, Variadic<Any> arguments)
 {
     // TODO: implement me!
     return 0;
@@ -1908,13 +1888,25 @@ void WindowImp::clearTimeout(int handle)
     // TODO: implement me!
 }
 
-int WindowImp::setInterval(Any handler)
+int WindowImp::setInterval(events::EventHandlerNonNull handler)
 {
     // TODO: implement me!
     return 0;
 }
 
-int WindowImp::setInterval(Any handler, Any timeout, Variadic<Any> args)
+int WindowImp::setInterval(events::EventHandlerNonNull handler, int timeout, Variadic<Any> arguments)
+{
+    // TODO: implement me!
+    return 0;
+}
+
+int WindowImp::setInterval(const std::u16string& handler)
+{
+    // TODO: implement me!
+    return 0;
+}
+
+int WindowImp::setInterval(const std::u16string& handler, int timeout, Variadic<Any> arguments)
 {
     // TODO: implement me!
     return 0;
@@ -1923,6 +1915,12 @@ int WindowImp::setInterval(Any handler, Any timeout, Variadic<Any> args)
 void WindowImp::clearInterval(int handle)
 {
     // TODO: implement me!
+}
+
+std::u16string WindowImp::toNativeLineEndings(const std::u16string& string)
+{
+    // TODO: implement me!
+    return u"";
 }
 
 }}}}  // org::w3c::dom::bootstrap

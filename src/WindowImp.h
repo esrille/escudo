@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef WINDOW_IMP_H
-#define WINDOW_IMP_H
+#ifndef ORG_W3C_DOM_BOOTSTRAP_WINDOWIMP_H_INCLUDED
+#define ORG_W3C_DOM_BOOTSTRAP_WINDOWIMP_H_INCLUDED
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -26,19 +26,18 @@
 #include <org/w3c/dom/css/CSSStyleDeclaration.h>
 #include <org/w3c/dom/html/MediaQueryList.h>
 #include <org/w3c/dom/html/Screen.h>
-#include <org/w3c/dom/events/Event.h>
-#include <org/w3c/dom/events/EventListener.h>
-#include <org/w3c/dom/Document.h>
-#include <org/w3c/dom/html/Transferable.h>
+#include <org/w3c/dom/events/EventTarget.h>
+#include <org/w3c/dom/Element.h>
+#include <org/w3c/dom/events/EventHandlerNonNull.h>
+#include <org/w3c/dom/events/OnErrorEventHandlerNonNull.h>
 #include <org/w3c/dom/html/Window.h>
 #include <org/w3c/dom/html/BarProp.h>
 #include <org/w3c/dom/html/History.h>
 #include <org/w3c/dom/html/Location.h>
 #include <org/w3c/dom/html/ApplicationCache.h>
-#include <org/w3c/dom/html/Function.h>
 #include <org/w3c/dom/html/Navigator.h>
 #include <org/w3c/dom/html/External.h>
-#include <org/w3c/dom/html/UndoManager.h>
+#include <org/w3c/dom/Document.h>
 
 #include <condition_variable>
 #include <cstdio>
@@ -291,23 +290,20 @@ public:
     void setFavicon(BoxImage* image);
     void setFavicon();
 
-    // Window customized
-    html::Window open(const std::u16string& url = u"about:blank", const std::u16string& target = u"_blank", const std::u16string& features = u"", bool replace = false);
-
     ElementImp* getFrameElementImp() const {
         return frameElement;
     }
 
     // Window
     html::Window getWindow();
-    html::Window getSelf();
+    Any getSelf();
+    void setSelf(Any self);
     Document getDocument();
     std::u16string getName();
     void setName(const std::u16string& name);
     html::Location getLocation();
     void setLocation(const std::u16string& location);
     html::History getHistory();
-    html::UndoManager getUndoManager();
     Any getLocationbar();
     void setLocationbar(Any locationbar);
     Any getMenubar();
@@ -335,8 +331,9 @@ public:
     void setOpener(html::Window opener);
     html::Window getParent();
     Element getFrameElement();
+    html::Window open(const std::u16string& url = u"about:blank", const std::u16string& target = u"_blank", const std::u16string& features = u"", bool replace = false);
     html::Window getElement(unsigned int index);
-    Any getElement(const std::u16string& name);
+    Object getElement(const std::u16string& name);
     void setElement(const std::u16string& name, Any value);
     html::Navigator getNavigator();
     html::External getExternal();
@@ -348,150 +345,146 @@ public:
     void print();
     Any showModalDialog(const std::u16string& url);
     Any showModalDialog(const std::u16string& url, Any argument);
-    void postMessage(Any message, const std::u16string& targetOrigin);
-    void postMessage(Any message, const std::u16string& targetOrigin, Sequence<html::Transferable> transfer);
-    html::Function getOnabort();
-    void setOnabort(html::Function onabort);
-    html::Function getOnafterprint();
-    void setOnafterprint(html::Function onafterprint);
-    html::Function getOnbeforeprint();
-    void setOnbeforeprint(html::Function onbeforeprint);
-    html::Function getOnbeforeunload();
-    void setOnbeforeunload(html::Function onbeforeunload);
-    html::Function getOnblur();
-    void setOnblur(html::Function onblur);
-    html::Function getOncanplay();
-    void setOncanplay(html::Function oncanplay);
-    html::Function getOncanplaythrough();
-    void setOncanplaythrough(html::Function oncanplaythrough);
-    html::Function getOnchange();
-    void setOnchange(html::Function onchange);
-    html::Function getOnclick();
-    void setOnclick(html::Function onclick);
-    html::Function getOncontextmenu();
-    void setOncontextmenu(html::Function oncontextmenu);
-    html::Function getOncuechange();
-    void setOncuechange(html::Function oncuechange);
-    html::Function getOndblclick();
-    void setOndblclick(html::Function ondblclick);
-    html::Function getOndrag();
-    void setOndrag(html::Function ondrag);
-    html::Function getOndragend();
-    void setOndragend(html::Function ondragend);
-    html::Function getOndragenter();
-    void setOndragenter(html::Function ondragenter);
-    html::Function getOndragleave();
-    void setOndragleave(html::Function ondragleave);
-    html::Function getOndragover();
-    void setOndragover(html::Function ondragover);
-    html::Function getOndragstart();
-    void setOndragstart(html::Function ondragstart);
-    html::Function getOndrop();
-    void setOndrop(html::Function ondrop);
-    html::Function getOndurationchange();
-    void setOndurationchange(html::Function ondurationchange);
-    html::Function getOnemptied();
-    void setOnemptied(html::Function onemptied);
-    html::Function getOnended();
-    void setOnended(html::Function onended);
-    html::Function getOnerror();
-    void setOnerror(html::Function onerror);
-    html::Function getOnfocus();
-    void setOnfocus(html::Function onfocus);
-    html::Function getOnhashchange();
-    void setOnhashchange(html::Function onhashchange);
-    html::Function getOninput();
-    void setOninput(html::Function oninput);
-    html::Function getOninvalid();
-    void setOninvalid(html::Function oninvalid);
-    html::Function getOnkeydown();
-    void setOnkeydown(html::Function onkeydown);
-    html::Function getOnkeypress();
-    void setOnkeypress(html::Function onkeypress);
-    html::Function getOnkeyup();
-    void setOnkeyup(html::Function onkeyup);
-    html::Function getOnload();
-    void setOnload(html::Function onload);
-    html::Function getOnloadeddata();
-    void setOnloadeddata(html::Function onloadeddata);
-    html::Function getOnloadedmetadata();
-    void setOnloadedmetadata(html::Function onloadedmetadata);
-    html::Function getOnloadstart();
-    void setOnloadstart(html::Function onloadstart);
-    html::Function getOnmessage();
-    void setOnmessage(html::Function onmessage);
-    html::Function getOnmousedown();
-    void setOnmousedown(html::Function onmousedown);
-    html::Function getOnmousemove();
-    void setOnmousemove(html::Function onmousemove);
-    html::Function getOnmouseout();
-    void setOnmouseout(html::Function onmouseout);
-    html::Function getOnmouseover();
-    void setOnmouseover(html::Function onmouseover);
-    html::Function getOnmouseup();
-    void setOnmouseup(html::Function onmouseup);
-    html::Function getOnmousewheel();
-    void setOnmousewheel(html::Function onmousewheel);
-    html::Function getOnoffline();
-    void setOnoffline(html::Function onoffline);
-    html::Function getOnonline();
-    void setOnonline(html::Function ononline);
-    html::Function getOnpause();
-    void setOnpause(html::Function onpause);
-    html::Function getOnplay();
-    void setOnplay(html::Function onplay);
-    html::Function getOnplaying();
-    void setOnplaying(html::Function onplaying);
-    html::Function getOnpagehide();
-    void setOnpagehide(html::Function onpagehide);
-    html::Function getOnpageshow();
-    void setOnpageshow(html::Function onpageshow);
-    html::Function getOnpopstate();
-    void setOnpopstate(html::Function onpopstate);
-    html::Function getOnprogress();
-    void setOnprogress(html::Function onprogress);
-    html::Function getOnratechange();
-    void setOnratechange(html::Function onratechange);
-    html::Function getOnreadystatechange();
-    void setOnreadystatechange(html::Function onreadystatechange);
-    html::Function getOnredo();
-    void setOnredo(html::Function onredo);
-    html::Function getOnreset();
-    void setOnreset(html::Function onreset);
-    html::Function getOnresize();
-    void setOnresize(html::Function onresize);
-    html::Function getOnscroll();
-    void setOnscroll(html::Function onscroll);
-    html::Function getOnseeked();
-    void setOnseeked(html::Function onseeked);
-    html::Function getOnseeking();
-    void setOnseeking(html::Function onseeking);
-    html::Function getOnselect();
-    void setOnselect(html::Function onselect);
-    html::Function getOnshow();
-    void setOnshow(html::Function onshow);
-    html::Function getOnstalled();
-    void setOnstalled(html::Function onstalled);
-    html::Function getOnstorage();
-    void setOnstorage(html::Function onstorage);
-    html::Function getOnsubmit();
-    void setOnsubmit(html::Function onsubmit);
-    html::Function getOnsuspend();
-    void setOnsuspend(html::Function onsuspend);
-    html::Function getOntimeupdate();
-    void setOntimeupdate(html::Function ontimeupdate);
-    html::Function getOnundo();
-    void setOnundo(html::Function onundo);
-    html::Function getOnunload();
-    void setOnunload(html::Function onunload);
-    html::Function getOnvolumechange();
-    void setOnvolumechange(html::Function onvolumechange);
-    html::Function getOnwaiting();
-    void setOnwaiting(html::Function onwaiting);
-    // Window-4
+    events::EventHandlerNonNull getOnabort();
+    void setOnabort(events::EventHandlerNonNull onabort);
+    events::EventHandlerNonNull getOnafterprint();
+    void setOnafterprint(events::EventHandlerNonNull onafterprint);
+    events::EventHandlerNonNull getOnbeforeprint();
+    void setOnbeforeprint(events::EventHandlerNonNull onbeforeprint);
+    events::EventHandlerNonNull getOnbeforeunload();
+    void setOnbeforeunload(events::EventHandlerNonNull onbeforeunload);
+    events::EventHandlerNonNull getOnblur();
+    void setOnblur(events::EventHandlerNonNull onblur);
+    events::EventHandlerNonNull getOncancel();
+    void setOncancel(events::EventHandlerNonNull oncancel);
+    events::EventHandlerNonNull getOncanplay();
+    void setOncanplay(events::EventHandlerNonNull oncanplay);
+    events::EventHandlerNonNull getOncanplaythrough();
+    void setOncanplaythrough(events::EventHandlerNonNull oncanplaythrough);
+    events::EventHandlerNonNull getOnchange();
+    void setOnchange(events::EventHandlerNonNull onchange);
+    events::EventHandlerNonNull getOnclick();
+    void setOnclick(events::EventHandlerNonNull onclick);
+    events::EventHandlerNonNull getOnclose();
+    void setOnclose(events::EventHandlerNonNull onclose);
+    events::EventHandlerNonNull getOncontextmenu();
+    void setOncontextmenu(events::EventHandlerNonNull oncontextmenu);
+    events::EventHandlerNonNull getOncuechange();
+    void setOncuechange(events::EventHandlerNonNull oncuechange);
+    events::EventHandlerNonNull getOndblclick();
+    void setOndblclick(events::EventHandlerNonNull ondblclick);
+    events::EventHandlerNonNull getOndrag();
+    void setOndrag(events::EventHandlerNonNull ondrag);
+    events::EventHandlerNonNull getOndragend();
+    void setOndragend(events::EventHandlerNonNull ondragend);
+    events::EventHandlerNonNull getOndragenter();
+    void setOndragenter(events::EventHandlerNonNull ondragenter);
+    events::EventHandlerNonNull getOndragleave();
+    void setOndragleave(events::EventHandlerNonNull ondragleave);
+    events::EventHandlerNonNull getOndragover();
+    void setOndragover(events::EventHandlerNonNull ondragover);
+    events::EventHandlerNonNull getOndragstart();
+    void setOndragstart(events::EventHandlerNonNull ondragstart);
+    events::EventHandlerNonNull getOndrop();
+    void setOndrop(events::EventHandlerNonNull ondrop);
+    events::EventHandlerNonNull getOndurationchange();
+    void setOndurationchange(events::EventHandlerNonNull ondurationchange);
+    events::EventHandlerNonNull getOnemptied();
+    void setOnemptied(events::EventHandlerNonNull onemptied);
+    events::EventHandlerNonNull getOnended();
+    void setOnended(events::EventHandlerNonNull onended);
+    events::OnErrorEventHandlerNonNull getOnerror();
+    void setOnerror(events::OnErrorEventHandlerNonNull onerror);
+    events::EventHandlerNonNull getOnfocus();
+    void setOnfocus(events::EventHandlerNonNull onfocus);
+    events::EventHandlerNonNull getOnhashchange();
+    void setOnhashchange(events::EventHandlerNonNull onhashchange);
+    events::EventHandlerNonNull getOninput();
+    void setOninput(events::EventHandlerNonNull oninput);
+    events::EventHandlerNonNull getOninvalid();
+    void setOninvalid(events::EventHandlerNonNull oninvalid);
+    events::EventHandlerNonNull getOnkeydown();
+    void setOnkeydown(events::EventHandlerNonNull onkeydown);
+    events::EventHandlerNonNull getOnkeypress();
+    void setOnkeypress(events::EventHandlerNonNull onkeypress);
+    events::EventHandlerNonNull getOnkeyup();
+    void setOnkeyup(events::EventHandlerNonNull onkeyup);
+    events::EventHandlerNonNull getOnload();
+    void setOnload(events::EventHandlerNonNull onload);
+    events::EventHandlerNonNull getOnloadeddata();
+    void setOnloadeddata(events::EventHandlerNonNull onloadeddata);
+    events::EventHandlerNonNull getOnloadedmetadata();
+    void setOnloadedmetadata(events::EventHandlerNonNull onloadedmetadata);
+    events::EventHandlerNonNull getOnloadstart();
+    void setOnloadstart(events::EventHandlerNonNull onloadstart);
+    events::EventHandlerNonNull getOnmessage();
+    void setOnmessage(events::EventHandlerNonNull onmessage);
+    events::EventHandlerNonNull getOnmousedown();
+    void setOnmousedown(events::EventHandlerNonNull onmousedown);
+    events::EventHandlerNonNull getOnmousemove();
+    void setOnmousemove(events::EventHandlerNonNull onmousemove);
+    events::EventHandlerNonNull getOnmouseout();
+    void setOnmouseout(events::EventHandlerNonNull onmouseout);
+    events::EventHandlerNonNull getOnmouseover();
+    void setOnmouseover(events::EventHandlerNonNull onmouseover);
+    events::EventHandlerNonNull getOnmouseup();
+    void setOnmouseup(events::EventHandlerNonNull onmouseup);
+    events::EventHandlerNonNull getOnmousewheel();
+    void setOnmousewheel(events::EventHandlerNonNull onmousewheel);
+    events::EventHandlerNonNull getOnoffline();
+    void setOnoffline(events::EventHandlerNonNull onoffline);
+    events::EventHandlerNonNull getOnonline();
+    void setOnonline(events::EventHandlerNonNull ononline);
+    events::EventHandlerNonNull getOnpause();
+    void setOnpause(events::EventHandlerNonNull onpause);
+    events::EventHandlerNonNull getOnplay();
+    void setOnplay(events::EventHandlerNonNull onplay);
+    events::EventHandlerNonNull getOnplaying();
+    void setOnplaying(events::EventHandlerNonNull onplaying);
+    events::EventHandlerNonNull getOnpagehide();
+    void setOnpagehide(events::EventHandlerNonNull onpagehide);
+    events::EventHandlerNonNull getOnpageshow();
+    void setOnpageshow(events::EventHandlerNonNull onpageshow);
+    events::EventHandlerNonNull getOnpopstate();
+    void setOnpopstate(events::EventHandlerNonNull onpopstate);
+    events::EventHandlerNonNull getOnprogress();
+    void setOnprogress(events::EventHandlerNonNull onprogress);
+    events::EventHandlerNonNull getOnratechange();
+    void setOnratechange(events::EventHandlerNonNull onratechange);
+    events::EventHandlerNonNull getOnreset();
+    void setOnreset(events::EventHandlerNonNull onreset);
+    events::EventHandlerNonNull getOnresize();
+    void setOnresize(events::EventHandlerNonNull onresize);
+    events::EventHandlerNonNull getOnscroll();
+    void setOnscroll(events::EventHandlerNonNull onscroll);
+    events::EventHandlerNonNull getOnseeked();
+    void setOnseeked(events::EventHandlerNonNull onseeked);
+    events::EventHandlerNonNull getOnseeking();
+    void setOnseeking(events::EventHandlerNonNull onseeking);
+    events::EventHandlerNonNull getOnselect();
+    void setOnselect(events::EventHandlerNonNull onselect);
+    events::EventHandlerNonNull getOnshow();
+    void setOnshow(events::EventHandlerNonNull onshow);
+    events::EventHandlerNonNull getOnstalled();
+    void setOnstalled(events::EventHandlerNonNull onstalled);
+    events::EventHandlerNonNull getOnstorage();
+    void setOnstorage(events::EventHandlerNonNull onstorage);
+    events::EventHandlerNonNull getOnsubmit();
+    void setOnsubmit(events::EventHandlerNonNull onsubmit);
+    events::EventHandlerNonNull getOnsuspend();
+    void setOnsuspend(events::EventHandlerNonNull onsuspend);
+    events::EventHandlerNonNull getOntimeupdate();
+    void setOntimeupdate(events::EventHandlerNonNull ontimeupdate);
+    events::EventHandlerNonNull getOnunload();
+    void setOnunload(events::EventHandlerNonNull onunload);
+    events::EventHandlerNonNull getOnvolumechange();
+    void setOnvolumechange(events::EventHandlerNonNull onvolumechange);
+    events::EventHandlerNonNull getOnwaiting();
+    void setOnwaiting(events::EventHandlerNonNull onwaiting);
+    // Window-1
     css::CSSStyleDeclaration getComputedStyle(Element elt);
     css::CSSStyleDeclaration getComputedStyle(Element elt, const std::u16string& pseudoElt);
-    // Window-5
+    // Window
     html::MediaQueryList matchMedia(const std::u16string& media_query_list);
     html::Screen getScreen();
     int getInnerWidth();
@@ -515,12 +508,18 @@ public:
     std::u16string btoa(const std::u16string& btoa);
     std::u16string atob(const std::u16string& atob);
     // WindowTimers
-    int setTimeout(Any handler);
-    int setTimeout(Any handler, Any timeout, Variadic<Any> args = Variadic<Any>());
+    int setTimeout(events::EventHandlerNonNull handler);
+    int setTimeout(events::EventHandlerNonNull handler, int timeout, Variadic<Any> arguments = Variadic<Any>());
+    int setTimeout(const std::u16string& handler);
+    int setTimeout(const std::u16string& handler, int timeout, Variadic<Any> arguments = Variadic<Any>());
     void clearTimeout(int handle);
-    int setInterval(Any handler);
-    int setInterval(Any handler, Any timeout, Variadic<Any> args = Variadic<Any>());
+    int setInterval(events::EventHandlerNonNull handler);
+    int setInterval(events::EventHandlerNonNull handler, int timeout, Variadic<Any> arguments = Variadic<Any>());
+    int setInterval(const std::u16string& handler);
+    int setInterval(const std::u16string& handler, int timeout, Variadic<Any> arguments = Variadic<Any>());
     void clearInterval(int handle);
+    // LineEndings
+    std::u16string toNativeLineEndings(const std::u16string& string);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {
@@ -534,4 +533,4 @@ public:
 
 }}}}  // org::w3c::dom::bootstrap
 
-#endif  // WINDOW_IMP_H
+#endif  // ORG_W3C_DOM_BOOTSTRAP_WINDOWIMP_H_INCLUDED

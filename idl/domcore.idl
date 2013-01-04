@@ -44,6 +44,10 @@ exception DOMException {
   DOMString name;
 };
 
+interface DOMError {
+  readonly attribute DOMString name;
+};
+
 };
 
 module events {
@@ -165,12 +169,10 @@ interface DocumentFragment : Node {
 
 interface Document : Node {
   readonly attribute DOMImplementation implementation;
+  readonly attribute DOMString URL;
            attribute DOMString documentURI;
   readonly attribute DOMString compatMode;
-
-           attribute DOMString charset;
   readonly attribute DOMString characterSet;
-  readonly attribute DOMString defaultCharset;
   readonly attribute DOMString contentType;
 
   readonly attribute DocumentType? doctype;

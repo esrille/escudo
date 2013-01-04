@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Esrille Inc.
+ * Copyright 2012, 2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,6 +57,7 @@ public:
     void setWidth(const std::u16string& width);
     std::u16string getHeight();
     void setHeight(const std::u16string& height);
+    Any operator() (Variadic<Any> arguments = Variadic<Any>());
     // HTMLEmbedElement-12
     std::u16string getAlign();
     void setAlign(const std::u16string& align);

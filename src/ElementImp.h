@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,25 @@
  * limitations under the License.
  */
 
-#ifndef ELEMENT_IMP_H
-#define ELEMENT_IMP_H
+#ifndef ORG_W3C_DOM_BOOTSTRAP_ELEMENTIMP_H_INCLUDED
+#define ORG_W3C_DOM_BOOTSTRAP_ELEMENTIMP_H_INCLUDED
 
-#include <Object.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#include <org/w3c/dom/Element.h>
+#include "NodeImp.h"
+
+#include <org/w3c/dom/css/CSSStyleDeclaration.h>
 #include <org/w3c/dom/views/ClientRectList.h>
 #include <org/w3c/dom/views/ClientRect.h>
-#include <org/w3c/dom/DOMTokenList.h>
 #include <org/w3c/dom/Node.h>
 #include <org/w3c/dom/Element.h>
 #include <org/w3c/dom/Attr.h>
 #include <org/w3c/dom/NodeList.h>
 #include <org/w3c/dom/html/HTMLCollection.h>
+#include <org/w3c/dom/DOMTokenList.h>
 #include <org/w3c/dom/xbl2/XBLImplementationList.h>
 
 #include <deque>
@@ -66,13 +73,11 @@ public:
     virtual Nullable<std::u16string> getPrefix();
     virtual std::u16string getLocalName();
     virtual std::u16string getTagName();
-
     virtual std::u16string getId();
     virtual void setId(const std::u16string& id);
     virtual std::u16string getClassName();
     virtual void setClassName(const std::u16string& className);
     virtual DOMTokenList getClassList();
-
     virtual ObjectArray<Attr> getAttributes();
     virtual Nullable<std::u16string> getAttribute(const std::u16string& qualifiedName);
     virtual Nullable<std::u16string> getAttributeNS(const std::u16string& _namespace, const std::u16string& localName);
@@ -91,7 +96,9 @@ public:
     virtual Element getPreviousElementSibling();
     virtual Element getNextElementSibling();
     virtual unsigned int getChildElementCount();
-    // Element-3
+    // ElementCSSInlineStyle
+    virtual css::CSSStyleDeclaration getStyle();
+    // Element-49
     virtual views::ClientRectList getClientRects();
     virtual views::ClientRect getBoundingClientRect();
     virtual void scrollIntoView(bool top = true);
@@ -113,6 +120,7 @@ public:
     virtual void addBinding(const std::u16string& bindingURI);
     virtual void removeBinding(const std::u16string& bindingURI);
     virtual bool hasBinding(const std::u16string& bindingURI);
+
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {
@@ -129,4 +137,4 @@ public:
 
 }}}}  // org::w3c::dom::bootstrap
 
-#endif  // ELEMENT_IMP_H
+#endif  // ORG_W3C_DOM_BOOTSTRAP_ELEMENTIMP_H_INCLUDED

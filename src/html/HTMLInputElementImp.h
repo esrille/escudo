@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -136,8 +136,8 @@ public:
     void setFormNoValidate(bool formNoValidate);
     std::u16string getFormTarget();
     void setFormTarget(const std::u16string& formTarget);
-    std::u16string getHeight();
-    void setHeight(const std::u16string& height);
+    unsigned int getHeight();
+    void setHeight(unsigned int height);
     bool getIndeterminate();
     void setIndeterminate(bool indeterminate);
     html::HTMLElement getList();
@@ -171,13 +171,12 @@ public:
     void setDefaultValue(const std::u16string& defaultValue);
     std::u16string getValue();
     void setValue(const std::u16string& value);
-    unsigned long long getValueAsDate();
-    void setValueAsDate(unsigned long long valueAsDate);
+    Nullable<unsigned long long> getValueAsDate();
+    void setValueAsDate(Nullable<unsigned long long> valueAsDate);
     double getValueAsNumber();
     void setValueAsNumber(double valueAsNumber);
-    html::HTMLOptionElement getSelectedOption();
-    std::u16string getWidth();
-    void setWidth(const std::u16string& width);
+    unsigned int getWidth();
+    void setWidth(unsigned int width);
     void stepUp();
     void stepUp(int n);
     void stepDown();
@@ -197,7 +196,7 @@ public:
     void setSelectionDirection(const std::u16string& selectionDirection);
     void setSelectionRange(unsigned int start, unsigned int end);
     void setSelectionRange(unsigned int start, unsigned int end, const std::u16string& direction);
-    // HTMLInputElement-21
+    // HTMLInputElement-18
     std::u16string getAlign();
     void setAlign(const std::u16string& align);
     std::u16string getUseMap();

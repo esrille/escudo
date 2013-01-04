@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,13 +94,13 @@ void HTMLButtonElementImp::setFormMethod(const std::u16string& formMethod)
     // TODO: implement me!
 }
 
-std::u16string HTMLButtonElementImp::getFormNoValidate()
+bool HTMLButtonElementImp::getFormNoValidate()
 {
     // TODO: implement me!
-    return u"";
+    return 0;
 }
 
-void HTMLButtonElementImp::setFormNoValidate(const std::u16string& formNoValidate)
+void HTMLButtonElementImp::setFormNoValidate(bool formNoValidate)
 {
     // TODO: implement me!
 }
