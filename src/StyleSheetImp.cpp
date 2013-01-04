@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ std::u16string StyleSheetImp::getType()
     return u"";
 }
 
-std::u16string StyleSheetImp::getHref()
+Nullable<std::u16string> StyleSheetImp::getHref()
 {
     return href;
 }
@@ -61,7 +61,7 @@ stylesheets::StyleSheet StyleSheetImp::getParentStyleSheet()
     return parent;
 }
 
-std::u16string StyleSheetImp::getTitle()
+Nullable<std::u16string> StyleSheetImp::getTitle()
 {
     // TODO: implement me!
     return u"";

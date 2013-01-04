@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef STYLESHEET_IMP_H
-#define STYLESHEET_IMP_H
+#ifndef ORG_W3C_DOM_BOOTSTRAP_STYLESHEETIMP_H_INCLUDED
+#define ORG_W3C_DOM_BOOTSTRAP_STYLESHEETIMP_H_INCLUDED
 
 #include <Object.h>
 #include <org/w3c/dom/stylesheets/StyleSheet.h>
@@ -41,10 +41,10 @@ public:
 
     // StyleSheet
     virtual std::u16string getType();
-    std::u16string getHref();
+    Nullable<std::u16string> getHref();
     Node getOwnerNode();
     stylesheets::StyleSheet getParentStyleSheet();
-    virtual std::u16string getTitle();
+    virtual Nullable<std::u16string> getTitle();
     virtual stylesheets::MediaList getMedia();
     virtual void setMedia(const std::u16string& media);
     bool getDisabled();
@@ -62,4 +62,4 @@ public:
 
 }}}}  // org::w3c::dom::bootstrap
 
-#endif  // STYLESHEET_IMP_H
+#endif  // ORG_W3C_DOM_BOOTSTRAP_STYLESHEETIMP_H_INCLUDED

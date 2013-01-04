@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-#ifndef MEDIALIST_IMP_H
-#define MEDIALIST_IMP_H
+#ifndef ORG_W3C_DOM_BOOTSTRAP_MEDIALISTIMP_H_INCLUDED
+#define ORG_W3C_DOM_BOOTSTRAP_MEDIALISTIMP_H_INCLUDED
 
-#include <Object.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <org/w3c/dom/stylesheets/MediaList.h>
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
@@ -82,4 +85,4 @@ public:
 
 }}}}  // org::w3c::dom::bootstrap
 
-#endif  // MEDIALIST_IMP_H
+#endif  // ORG_W3C_DOM_BOOTSTRAP_MEDIALISTIMP_H_INCLUDED

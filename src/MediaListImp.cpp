@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -115,4 +115,42 @@ void MediaListImp::deleteMedium(const std::u16string& medium)
     types &= ~getMediaTypeBits(medium);
 }
 
-}}}}  // org::w3c::dom::bootstrap
+}  // org::w3c::dom::bootstrap
+
+namespace stylesheets {
+
+namespace {
+
+class Constructor : public Object
+{
+public:
+    // Object
+    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
+        bootstrap::MediaListImp* imp = 0;
+        switch (argc) {
+        case 1:
+            imp = new(std::nothrow) bootstrap::MediaListImp;
+            if (imp)
+                imp->setMediaText(argv[0].toString());
+            break;
+        default:
+            break;
+        }
+        return imp;
+    }
+    Constructor() :
+        Object(this) {
+    }
+};
+
+}  // namespace
+
+Object MediaList::getConstructor()
+{
+    static Constructor constructor;
+    return constructor.self();
+}
+
+}
+
+}}}  // org::w3c::dom::bootstrap

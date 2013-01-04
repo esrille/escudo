@@ -121,255 +121,133 @@ module css {
     readonly attribute DOMString        separator;
   };
 
-/* Switch over to CSSOM
   // Introduced in DOM Level 2:
   interface CSS2Properties {
-             attribute DOMString        azimuth setraises(DOMException);
-
-             attribute DOMString        background setraises(DOMException);
-
-             attribute DOMString        backgroundAttachment setraises(DOMException);
-
-             attribute DOMString        backgroundColor setraises(DOMException);
-
-             attribute DOMString        backgroundImage setraises(DOMException);
-
-             attribute DOMString        backgroundPosition setraises(DOMException);
-
-             attribute DOMString        backgroundRepeat setraises(DOMException);
-
-             attribute DOMString        border setraises(DOMException);
-
-             attribute DOMString        borderCollapse setraises(DOMException);
-
-             attribute DOMString        borderColor setraises(DOMException);
-
-             attribute DOMString        borderSpacing setraises(DOMException);
-
-             attribute DOMString        borderStyle setraises(DOMException);
-
-             attribute DOMString        borderTop setraises(DOMException);
-
-             attribute DOMString        borderRight setraises(DOMException);
-
-             attribute DOMString        borderBottom setraises(DOMException);
-
-             attribute DOMString        borderLeft setraises(DOMException);
-
-             attribute DOMString        borderTopColor setraises(DOMException);
-
-             attribute DOMString        borderRightColor setraises(DOMException);
-
-             attribute DOMString        borderBottomColor setraises(DOMException);
-
-             attribute DOMString        borderLeftColor setraises(DOMException);
-
-             attribute DOMString        borderTopStyle setraises(DOMException);
-
-             attribute DOMString        borderRightStyle setraises(DOMException);
-
-             attribute DOMString        borderBottomStyle setraises(DOMException);
-
-             attribute DOMString        borderLeftStyle setraises(DOMException);
-
-             attribute DOMString        borderTopWidth setraises(DOMException);
-
-             attribute DOMString        borderRightWidth setraises(DOMException);
-
-             attribute DOMString        borderBottomWidth setraises(DOMException);
-
-             attribute DOMString        borderLeftWidth setraises(DOMException);
-
-             attribute DOMString        borderWidth setraises(DOMException);
-
-             attribute DOMString        bottom setraises(DOMException);
-
-             attribute DOMString        captionSide setraises(DOMException);
-
-             attribute DOMString        clear setraises(DOMException);
-
-             attribute DOMString        clip setraises(DOMException);
-
-             attribute DOMString        color setraises(DOMException);
-
-             attribute DOMString        content setraises(DOMException);
-
-             attribute DOMString        counterIncrement setraises(DOMException);
-
-             attribute DOMString        counterReset setraises(DOMException);
-
-             attribute DOMString        cue setraises(DOMException);
-
-             attribute DOMString        cueAfter setraises(DOMException);
-
-             attribute DOMString        cueBefore setraises(DOMException);
-
-             attribute DOMString        cursor setraises(DOMException);
-
-             attribute DOMString        direction setraises(DOMException);
-
-             attribute DOMString        display setraises(DOMException);
-
-             attribute DOMString        elevation setraises(DOMException);
-
-             attribute DOMString        emptyCells setraises(DOMException);
-
-             attribute DOMString        cssFloat setraises(DOMException);
-
-             attribute DOMString        font setraises(DOMException);
-
-             attribute DOMString        fontFamily setraises(DOMException);
-
-             attribute DOMString        fontSize setraises(DOMException);
-
-             attribute DOMString        fontSizeAdjust setraises(DOMException);
-
-             attribute DOMString        fontStretch setraises(DOMException);
-
-             attribute DOMString        fontStyle setraises(DOMException);
-
-             attribute DOMString        fontVariant setraises(DOMException);
-
-             attribute DOMString        fontWeight setraises(DOMException);
-
-             attribute DOMString        height setraises(DOMException);
-
-             attribute DOMString        left setraises(DOMException);
-
-             attribute DOMString        letterSpacing setraises(DOMException);
-
-             attribute DOMString        lineHeight setraises(DOMException);
-
-             attribute DOMString        listStyle setraises(DOMException);
-
-             attribute DOMString        listStyleImage setraises(DOMException);
-
-             attribute DOMString        listStylePosition setraises(DOMException);
-
-             attribute DOMString        listStyleType setraises(DOMException);
-
-             attribute DOMString        margin setraises(DOMException);
-
-             attribute DOMString        marginTop setraises(DOMException);
-
-             attribute DOMString        marginRight setraises(DOMException);
-
-             attribute DOMString        marginBottom setraises(DOMException);
-
-             attribute DOMString        marginLeft setraises(DOMException);
-
-             attribute DOMString        markerOffset setraises(DOMException);
-
-             attribute DOMString        marks setraises(DOMException);
-
-             attribute DOMString        maxHeight setraises(DOMException);
-
-             attribute DOMString        maxWidth setraises(DOMException);
-
-             attribute DOMString        minHeight setraises(DOMException);
-
-             attribute DOMString        minWidth setraises(DOMException);
-
-             attribute DOMString        orphans setraises(DOMException);
-
-             attribute DOMString        outline setraises(DOMException);
-
-             attribute DOMString        outlineColor setraises(DOMException);
-
-             attribute DOMString        outlineStyle setraises(DOMException);
-
-             attribute DOMString        outlineWidth setraises(DOMException);
-
-             attribute DOMString        overflow setraises(DOMException);
-
-             attribute DOMString        padding setraises(DOMException);
-
-             attribute DOMString        paddingTop setraises(DOMException);
-
-             attribute DOMString        paddingRight setraises(DOMException);
-
-             attribute DOMString        paddingBottom setraises(DOMException);
-
-             attribute DOMString        paddingLeft setraises(DOMException);
-
-             attribute DOMString        page setraises(DOMException);
-
-             attribute DOMString        pageBreakAfter setraises(DOMException);
-
-             attribute DOMString        pageBreakBefore setraises(DOMException);
-
-             attribute DOMString        pageBreakInside setraises(DOMException);
-
-             attribute DOMString        pause setraises(DOMException);
-
-             attribute DOMString        pauseAfter setraises(DOMException);
-
-             attribute DOMString        pauseBefore setraises(DOMException);
-
-             attribute DOMString        pitch setraises(DOMException);
-
-             attribute DOMString        pitchRange setraises(DOMException);
-
-             attribute DOMString        playDuring setraises(DOMException);
-
-             attribute DOMString        position setraises(DOMException);
-
-             attribute DOMString        quotes setraises(DOMException);
-
-             attribute DOMString        richness setraises(DOMException);
-
-             attribute DOMString        right setraises(DOMException);
-
-             attribute DOMString        size setraises(DOMException);
-
-             attribute DOMString        speak setraises(DOMException);
-
-             attribute DOMString        speakHeader setraises(DOMException);
-
-             attribute DOMString        speakNumeral setraises(DOMException);
-
-             attribute DOMString        speakPunctuation setraises(DOMException);
-
-             attribute DOMString        speechRate setraises(DOMException);
-
-             attribute DOMString        stress setraises(DOMException);
-
-             attribute DOMString        tableLayout setraises(DOMException);
-
-             attribute DOMString        textAlign setraises(DOMException);
-
-             attribute DOMString        textDecoration setraises(DOMException);
-
-             attribute DOMString        textIndent setraises(DOMException);
-
-             attribute DOMString        textShadow setraises(DOMException);
-
-             attribute DOMString        textTransform setraises(DOMException);
-
-             attribute DOMString        top setraises(DOMException);
-
-             attribute DOMString        unicodeBidi setraises(DOMException);
-
-             attribute DOMString        verticalAlign setraises(DOMException);
-
-             attribute DOMString        visibility setraises(DOMException);
-
-             attribute DOMString        voiceFamily setraises(DOMException);
-
-             attribute DOMString        volume setraises(DOMException);
-
-             attribute DOMString        whiteSpace setraises(DOMException);
-
-             attribute DOMString        widows setraises(DOMException);
-
-             attribute DOMString        width setraises(DOMException);
-
-             attribute DOMString        wordSpacing setraises(DOMException);
-
-             attribute DOMString        zIndex setraises(DOMException);
-
+    attribute DOMString? azimuth;
+    attribute DOMString? background;
+    attribute DOMString? backgroundAttachment;
+    attribute DOMString? backgroundColor;
+    attribute DOMString? backgroundImage;
+    attribute DOMString? backgroundPosition;
+    attribute DOMString? backgroundRepeat;
+    attribute DOMString? border;
+    attribute DOMString? borderCollapse;
+    attribute DOMString? borderColor;
+    attribute DOMString? borderSpacing;
+    attribute DOMString? borderStyle;
+    attribute DOMString? borderTop;
+    attribute DOMString? borderRight;
+    attribute DOMString? borderBottom;
+    attribute DOMString? borderLeft;
+    attribute DOMString? borderTopColor;
+    attribute DOMString? borderRightColor;
+    attribute DOMString? borderBottomColor;
+    attribute DOMString? borderLeftColor;
+    attribute DOMString? borderTopStyle;
+    attribute DOMString? borderRightStyle;
+    attribute DOMString? borderBottomStyle;
+    attribute DOMString? borderLeftStyle;
+    attribute DOMString? borderTopWidth;
+    attribute DOMString? borderRightWidth;
+    attribute DOMString? borderBottomWidth;
+    attribute DOMString? borderLeftWidth;
+    attribute DOMString? borderWidth;
+    attribute DOMString? bottom;
+    attribute DOMString? captionSide;
+    attribute DOMString? clear;
+    attribute DOMString? clip;
+    attribute DOMString? color;
+    attribute DOMString? content;
+    attribute DOMString? counterIncrement;
+    attribute DOMString? counterReset;
+    attribute DOMString? cue;
+    attribute DOMString? cueAfter;
+    attribute DOMString? cueBefore;
+    attribute DOMString? cursor;
+    attribute DOMString? direction;
+    attribute DOMString? display;
+    attribute DOMString? elevation;
+    attribute DOMString? emptyCells;
+    attribute DOMString? cssFloat;
+    attribute DOMString? font;
+    attribute DOMString? fontFamily;
+    attribute DOMString? fontSize;
+    attribute DOMString? fontSizeAdjust;
+    attribute DOMString? fontStretch;
+    attribute DOMString? fontStyle;
+    attribute DOMString? fontVariant;
+    attribute DOMString? fontWeight;
+    attribute DOMString? height;
+    attribute DOMString? left;
+    attribute DOMString? letterSpacing;
+    attribute DOMString? lineHeight;
+    attribute DOMString? listStyle;
+    attribute DOMString? listStyleImage;
+    attribute DOMString? listStylePosition;
+    attribute DOMString? listStyleType;
+    attribute DOMString? margin;
+    attribute DOMString? marginTop;
+    attribute DOMString? marginRight;
+    attribute DOMString? marginBottom;
+    attribute DOMString? marginLeft;
+    attribute DOMString? markerOffset;
+    attribute DOMString? marks;
+    attribute DOMString? maxHeight;
+    attribute DOMString? maxWidth;
+    attribute DOMString? minHeight;
+    attribute DOMString? minWidth;
+    attribute DOMString? orphans;
+    attribute DOMString? outline;
+    attribute DOMString? outlineColor;
+    attribute DOMString? outlineStyle;
+    attribute DOMString? outlineWidth;
+    attribute DOMString? overflow;
+    attribute DOMString? padding;
+    attribute DOMString? paddingTop;
+    attribute DOMString? paddingRight;
+    attribute DOMString? paddingBottom;
+    attribute DOMString? paddingLeft;
+    attribute DOMString? page;
+    attribute DOMString? pageBreakAfter;
+    attribute DOMString? pageBreakBefore;
+    attribute DOMString? pageBreakInside;
+    attribute DOMString? pause;
+    attribute DOMString? pauseAfter;
+    attribute DOMString? pauseBefore;
+    attribute DOMString? pitch;
+    attribute DOMString? pitchRange;
+    attribute DOMString? playDuring;
+    attribute DOMString? position;
+    attribute DOMString? quotes;
+    attribute DOMString? richness;
+    attribute DOMString? right;
+    attribute DOMString? size;
+    attribute DOMString? speak;
+    attribute DOMString? speakHeader;
+    attribute DOMString? speakNumeral;
+    attribute DOMString? speakPunctuation;
+    attribute DOMString? speechRate;
+    attribute DOMString? stress;
+    attribute DOMString? tableLayout;
+    attribute DOMString? textAlign;
+    attribute DOMString? textDecoration;
+    attribute DOMString? textIndent;
+    attribute DOMString? textShadow;
+    attribute DOMString? textTransform;
+    attribute DOMString? top;
+    attribute DOMString? unicodeBidi;
+    attribute DOMString? verticalAlign;
+    attribute DOMString? visibility;
+    attribute DOMString? voiceFamily;
+    attribute DOMString? volume;
+    attribute DOMString? whiteSpace;
+    attribute DOMString? widows;
+    attribute DOMString? width;
+    attribute DOMString? wordSpacing;
+    attribute DOMString? zIndex;
   };
-*/
+
+  CSSStyleDeclaration implements CSS2Properties;
 
 /* Obsoleted by CSSOM
   // Introduced in DOM Level 2:
