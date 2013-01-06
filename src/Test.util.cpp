@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -189,7 +189,7 @@ unsigned recordTime(const char* msg, ...)
     if (msg) {
         va_list ap;
         va_start(ap, msg);
-        printf("%02u:%02u:%02u.%06u: ",
+        printf("%02lu:%02lu:%02lu.%06lu: ",
                tick.tv_sec / (60*60*60), tick.tv_sec / 60 % 60, tick.tv_sec % 60,
                tick.tv_nsec / 1000);
         vprintf(msg, ap);
