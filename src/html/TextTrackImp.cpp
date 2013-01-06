@@ -44,7 +44,7 @@ html::TextTrackMode TextTrackImp::getMode()
     return 0;
 }
 
-void TextTrackImp::setMode(html::TextTrackMode mode)
+void TextTrackImp::setMode(const html::TextTrackMode& mode)
 {
     // TODO: implement me!
 }

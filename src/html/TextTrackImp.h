@@ -35,7 +35,7 @@ public:
     std::u16string getLanguage();
     std::u16string getInBandMetadataTrackDispatchType();
     html::TextTrackMode getMode();
-    void setMode(html::TextTrackMode mode);
+    void setMode(const html::TextTrackMode& mode);
     html::TextTrackCueList getCues();
     html::TextTrackCueList getActiveCues();
     void addCue(html::TextTrackCue cue);
