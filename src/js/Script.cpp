@@ -52,7 +52,6 @@
 #include "css/CSSPrimitiveValueImp.h"
 #include "css/CSSRuleImp.h"
 #include "css/CSSStyleDeclarationImp.h"
-#include "css/CSSStyleDeclarationValueImp.h"
 #include "css/CSSStyleRuleImp.h"
 #include "css/CSSStyleSheetImp.h"
 #include "css/CSSUnknownRuleImp.h"
@@ -367,7 +366,6 @@ void registerClasses(JSContext* cx, JSObject* global)
     CSSPrimitiveValueImp::setStaticPrivate(new NativeClass(cx, global, CSSPrimitiveValueImp::getMetaData()));
 //    CSSRuleImp::setStaticPrivate(new NativeClass(cx, global, CSSRuleImp::getMetaData()));
 //    CSSStyleDeclarationImp::setStaticPrivate(new NativeClass(cx, global, CSSStyleDeclarationImp::getMetaData()));
-    CSSStyleDeclarationValueImp::setStaticPrivate(new NativeClass(cx, global, CSSStyleDeclarationValueImp::getMetaData()));
     CSSStyleRuleImp::setStaticPrivate(new NativeClass(cx, global, CSSStyleRuleImp::getMetaData()));
     CSSStyleSheetImp::setStaticPrivate(new NativeClass(cx, global, CSSStyleSheetImp::getMetaData()));
     CSSUnknownRuleImp::setStaticPrivate(new NativeClass(cx, global, CSSUnknownRuleImp::getMetaData()));

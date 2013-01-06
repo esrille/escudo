@@ -24,7 +24,6 @@
 #include <org/w3c/dom/css/CSSStyleDeclaration.h>
 
 #include <org/w3c/dom/css/CSSRule.h>
-#include <org/w3c/dom/css/CSSStyleDeclarationValue.h>
 
 #include <bitset>
 #include <list>

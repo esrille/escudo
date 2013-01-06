@@ -76,7 +76,6 @@ generated_headers = \
 	org/w3c/dom/css/CSSPrimitiveValue.h \
 	org/w3c/dom/css/CSSRule.h \
 	org/w3c/dom/css/CSSStyleDeclaration.h \
-	org/w3c/dom/css/CSSStyleDeclarationValue.h \
 	org/w3c/dom/css/CSSStyleRule.h \
 	org/w3c/dom/css/CSSStyleSheet.h \
 	org/w3c/dom/css/CSSUnknownRule.h \
@@ -325,7 +324,6 @@ generated_sources = \
 	org/w3c/dom/css/CSSPrimitiveValue.cpp \
 	org/w3c/dom/css/CSSRule.cpp \
 	org/w3c/dom/css/CSSStyleDeclaration.cpp \
-	org/w3c/dom/css/CSSStyleDeclarationValue.cpp \
 	org/w3c/dom/css/CSSStyleRule.cpp \
 	org/w3c/dom/css/CSSStyleSheet.cpp \
 	org/w3c/dom/css/CSSUnknownRule.cpp \
@@ -886,8 +884,6 @@ libeshtml5_a_SOURCES += \
 	src/css/CSSRuleListImp.h \
 	src/css/CSSStyleDeclarationImp.cpp \
 	src/css/CSSStyleDeclarationImp.h \
-	src/css/CSSStyleDeclarationValueImp.cpp \
-	src/css/CSSStyleDeclarationValueImp.h \
 	src/css/CSSStyleRuleImp.cpp \
 	src/css/CSSStyleRuleImp.h \
 	src/css/CSSStyleSheetImp.cpp \
