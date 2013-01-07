@@ -31,7 +31,7 @@ exception DOMException {
   const unsigned short NAMESPACE_ERR = 14;
   const unsigned short INVALID_ACCESS_ERR = 15;
   const unsigned short VALIDATION_ERR = 16; // historical
-  const unsigned short TYPE_MISMATCH_ERR = 17;
+  const unsigned short TYPE_MISMATCH_ERR = 17; // historical; use TypeError instead
   const unsigned short SECURITY_ERR = 18;
   const unsigned short NETWORK_ERR = 19;
   const unsigned short ABORT_ERR = 20;
@@ -41,7 +41,6 @@ exception DOMException {
   const unsigned short INVALID_NODE_TYPE_ERR = 24;
   const unsigned short DATA_CLONE_ERR = 25;
   unsigned short code;
-  DOMString name;
 };
 
 interface DOMError {
