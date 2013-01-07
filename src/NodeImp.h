@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-#ifndef NODE_IMP_H
-#define NODE_IMP_H
+#ifndef ORG_W3C_DOM_BOOTSTRAP_NODEIMP_H_INCLUDED
+#define ORG_W3C_DOM_BOOTSTRAP_NODEIMP_H_INCLUDED
 
-#include <assert.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
-#include <Object.h>
+#include <org/w3c/dom/Node.h>
+
 #include <org/w3c/dom/events/Event.h>
 #include <org/w3c/dom/events/EventListener.h>
 #include <org/w3c/dom/DOMException.h>
-#include <org/w3c/dom/Node.h>
 #include <org/w3c/dom/Document.h>
 #include <org/w3c/dom/Element.h>
 #include <org/w3c/dom/NodeList.h>
@@ -100,21 +102,24 @@ public:
     virtual Node getLastChild();
     virtual Node getPreviousSibling();
     virtual Node getNextSibling();
-    virtual unsigned short compareDocumentPosition(Node other);
     virtual Nullable<std::u16string> getNodeValue();
-    virtual void setNodeValue(Nullable<std::u16string> nodeValue);
+    virtual void setNodeValue(const Nullable<std::u16string>& nodeValue);
     virtual Nullable<std::u16string> getTextContent();
-    virtual void setTextContent(Nullable<std::u16string> textContent);
-    virtual Node insertBefore(Node newChild, Node refChild);
-    virtual Node replaceChild(Node newChild, Node oldChild);
-    virtual Node removeChild(Node oldChild);
-    virtual Node appendChild(Node newChild, bool clone = false);
-    virtual Node cloneNode(bool deep);
-    virtual bool isSameNode(Node node);
+    virtual void setTextContent(const Nullable<std::u16string>& textContent);
+    virtual Node insertBefore(Node node, Node child);
+    virtual Node appendChild(Node node, bool clone = false);
+    virtual Node replaceChild(Node node, Node child);
+    virtual Node removeChild(Node child);
+    virtual void normalize();
+    virtual Node cloneNode(bool deep = true);
+    virtual bool isSameNode(Node other);
     virtual bool isEqualNode(Node node);
-    virtual std::u16string lookupPrefix(const std::u16string& _namespace);
-    virtual std::u16string lookupNamespaceURI(Nullable<std::u16string> prefix);
-    virtual bool isDefaultNamespace(const std::u16string& _namespace);
+    virtual unsigned short compareDocumentPosition(Node other);
+    virtual bool contains(Node other);
+    virtual Nullable<std::u16string> lookupPrefix(const Nullable<std::u16string>& _namespace);
+    virtual Nullable<std::u16string> lookupNamespaceURI(const Nullable<std::u16string>& prefix);
+    virtual bool isDefaultNamespace(const Nullable<std::u16string>& _namespace);
+
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
         return Node::dispatch(this, selector, id, argc, argv);
@@ -135,4 +140,4 @@ public:
 
 }}}}  // org::w3c::dom::bootstrap
 
-#endif  // NODE_IMP_H
+#endif  // ORG_W3C_DOM_BOOTSTRAP_NODEIMP_H_INCLUDED

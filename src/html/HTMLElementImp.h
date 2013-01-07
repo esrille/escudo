@@ -93,7 +93,7 @@ public:
     virtual void generateShadowContent(CSSStyleDeclarationImp* style);
 
     // Node
-    virtual Node cloneNode(bool deep);
+    virtual Node cloneNode(bool deep = true);
 
     // Element (CSSOM view)
     virtual views::ClientRectList getClientRects();

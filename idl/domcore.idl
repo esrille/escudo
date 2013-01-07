@@ -140,6 +140,17 @@ interface Node : EventTarget {
   readonly attribute Node? previousSibling;
   readonly attribute Node? nextSibling;
 
+           attribute DOMString? nodeValue;
+           attribute DOMString? textContent;
+  Node insertBefore(Node node, Node? child);
+  Node appendChild(Node node);
+  Node replaceChild(Node node, Node child);
+  Node removeChild(Node child);
+  void normalize();
+
+  Node cloneNode(optional boolean deep = true);
+  boolean isEqualNode(Node? node);
+
   const unsigned short DOCUMENT_POSITION_DISCONNECTED = 0x01;
   const unsigned short DOCUMENT_POSITION_PRECEDING = 0x02;
   const unsigned short DOCUMENT_POSITION_FOLLOWING = 0x04;
@@ -147,21 +158,11 @@ interface Node : EventTarget {
   const unsigned short DOCUMENT_POSITION_CONTAINED_BY = 0x10;
   const unsigned short DOCUMENT_POSITION_IMPLEMENTATION_SPECIFIC = 0x20;
   unsigned short compareDocumentPosition(Node other);
+  boolean contains(Node? other);
 
-           attribute DOMString? nodeValue;
-           attribute DOMString? textContent;
-  Node insertBefore(Node newChild, Node? refChild);
-  Node replaceChild(Node newChild, Node oldChild);
-  Node removeChild(Node oldChild);
-  Node appendChild(Node newChild);
-
-  Node cloneNode(boolean deep);
-  boolean isSameNode(Node? node);
-  boolean isEqualNode(Node? node);
-
-  DOMString lookupPrefix([TreatNullAs=EmptyString] DOMString namespace);
-  DOMString lookupNamespaceURI(DOMString? prefix);
-  boolean isDefaultNamespace([TreatNullAs=EmptyString] DOMString namespace);
+  DOMString? lookupPrefix(DOMString? namespace);
+  DOMString? lookupNamespaceURI(DOMString? prefix);
+  boolean isDefaultNamespace(DOMString? namespace);
 };
 
 interface DocumentFragment : Node {

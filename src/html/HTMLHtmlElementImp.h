@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ class HTMLHtmlElementImp : public ObjectMixin<HTMLHtmlElementImp, HTMLElementImp
 {
 public:
     // Node
-    virtual Node cloneNode(bool deep);
+    virtual Node cloneNode(bool deep = true);
 
     virtual std::u16string getVersion();
     virtual void setVersion(const std::u16string& version);

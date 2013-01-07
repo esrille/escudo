@@ -63,10 +63,10 @@ void HTMLLinkElementImp::eval()
     setTabIndex(0);
 
     std::u16string rel = getRel();
-    if (contains(rel, u"stylesheet")) {
+    if (::contains(rel, u"stylesheet")) {
         // TODO: check "type"
 
-        if (!contains(rel, u"alternate")) {
+        if (!::contains(rel, u"alternate")) {
             // Check "media"
             std::u16string mediaText = getMedia();
             Retained<MediaListImp> mediaList;
@@ -83,7 +83,7 @@ void HTMLLinkElementImp::eval()
             }
         }
     }
-    else if (contains(rel, u"icon")) {
+    else if (::contains(rel, u"icon")) {
         DocumentImp* document = getOwnerDocumentImp();
         request = new(std::nothrow) HttpRequest(document->getDocumentURI());
         if (request) {
@@ -130,7 +130,7 @@ void HTMLLinkElementImp::linkIcon()
 bool HTMLLinkElementImp::setFavicon(DocumentImp* document)
 {
     std::u16string rel = getRel();
-    if (!contains(rel, u"icon"))
+    if (!::contains(rel, u"icon"))
         return false;
     if (!request || request->getStatus() != 200)
         return false;

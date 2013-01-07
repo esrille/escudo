@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -203,12 +203,18 @@ unsigned short NodeImp::compareDocumentPosition(Node other)
     return Node::DOCUMENT_POSITION_FOLLOWING;
 }
 
+bool NodeImp::contains(Node other)
+{
+    // TODO: implement me!
+    return false;
+}
+
 Nullable<std::u16string> NodeImp::getNodeValue()
 {
     return Nullable<std::u16string>();
 }
 
-void NodeImp::setNodeValue(Nullable<std::u16string> nodeValue)
+void NodeImp::setNodeValue(const Nullable<std::u16string>& nodeValue)
 {
 }
 
@@ -217,7 +223,7 @@ Nullable<std::u16string> NodeImp::getTextContent()
     return Nullable<std::u16string>();
 }
 
-void NodeImp::setTextContent(Nullable<std::u16string> textContent)
+void NodeImp::setTextContent(const Nullable<std::u16string>& textContent)
 {
 }
 
@@ -328,6 +334,11 @@ Node NodeImp::appendChild(Node newChild, bool clone)
     return newChild;
 }
 
+void NodeImp::normalize()
+{
+    // TODO: implement me!
+}
+
 Node NodeImp::cloneNode(bool deep)
 {
     return new(std::nothrow) NodeImp(this, deep);
@@ -359,19 +370,19 @@ bool NodeImp::isEqualNode(Node arg)
     return y ? false : true;
 }
 
-std::u16string NodeImp::lookupPrefix(const std::u16string& namespaceURI)
+Nullable<std::u16string> NodeImp::lookupPrefix(const Nullable<std::u16string>& _namespace)
 {
     // TODO: implement me!
     return u"";
 }
 
-std::u16string NodeImp::lookupNamespaceURI(Nullable<std::u16string> prefix)
+Nullable<std::u16string> NodeImp::lookupNamespaceURI(const Nullable<std::u16string>& prefix)
 {
     // TODO: implement me!
     return u"";
 }
 
-bool NodeImp::isDefaultNamespace(const std::u16string& namespaceURI)
+bool NodeImp::isDefaultNamespace(const Nullable<std::u16string>& _namespace)
 {
     // TODO: implement me!
     return 0;

@@ -38,7 +38,7 @@ class HTMLCommandElementImp : public ObjectMixin<HTMLCommandElementImp, HTMLElem
 {
 public:
     // Node
-    virtual Node cloneNode(bool deep);
+    virtual Node cloneNode(bool deep = true);
 
     // HTMLCommandElement
     std::u16string getType();

@@ -32,7 +32,7 @@ class HTMLBRElementImp : public ObjectMixin<HTMLBRElementImp, HTMLElementImp>
 {
 public:
     // Node
-    virtual Node cloneNode(bool deep);
+    virtual Node cloneNode(bool deep = true);
 
     // HTMLBRElement
     // HTMLBRElement-7

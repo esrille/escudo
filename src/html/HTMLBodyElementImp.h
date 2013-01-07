@@ -49,7 +49,7 @@ public:
     virtual void eval();
 
     // Node
-    virtual Node cloneNode(bool deep);
+    virtual Node cloneNode(bool deep = true);
     // HTMLBodyElement
     virtual events::EventHandlerNonNull getOnafterprint();
     virtual void setOnafterprint(events::EventHandlerNonNull onafterprint);
