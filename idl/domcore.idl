@@ -59,6 +59,7 @@ interface Event {
   readonly attribute EventTarget? target;
   readonly attribute EventTarget? currentTarget;
 
+  const unsigned short NONE = 0;
   const unsigned short CAPTURING_PHASE = 1;
   const unsigned short AT_TARGET = 2;
   const unsigned short BUBBLING_PHASE = 3;
@@ -93,13 +94,12 @@ dictionary CustomEventInit : EventInit {
 };
 
 interface EventTarget {
-  void addEventListener(DOMString type, EventListener? listener, optional boolean capture);
-  void removeEventListener(DOMString type, EventListener? listener, optional boolean capture);
+  void addEventListener(DOMString type, EventListener? callback, optional boolean capture = false);
+  void removeEventListener(DOMString type, EventListener? callback, optional boolean capture = false);
   boolean dispatchEvent(Event event);
 };
 
-[Callback, NoInterfaceObject]
-interface EventListener {
+callback interface EventListener {
   void handleEvent(Event event);
 };
 
