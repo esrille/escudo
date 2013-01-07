@@ -80,7 +80,11 @@
 #include "KeyboardEventInitImp.h"
 #include "MouseEventImp.h"
 #include "MouseEventInitImp.h"
+#include "MutationCallbackImp.h"
 #include "MutationEventImp.h"
+#include "MutationObserverImp.h"
+#include "MutationObserverInitImp.h"
+#include "MutationRecordImp.h"
 #include "OnErrorEventHandlerNonNullImp.h"
 #include "ProgressEventImp.h"
 #include "UIEventImp.h"
@@ -388,7 +392,11 @@ void registerClasses(JSContext* cx, JSObject* global)
     KeyboardEventInitImp::setStaticPrivate(new NativeClass(cx, global, KeyboardEventInitImp::getMetaData()));
     MouseEventImp::setStaticPrivate(new NativeClass(cx, global, MouseEventImp::getMetaData()));
     MouseEventInitImp::setStaticPrivate(new NativeClass(cx, global, MouseEventInitImp::getMetaData()));
+    MutationCallbackImp::setStaticPrivate(new NativeClass(cx, global, MutationCallbackImp::getMetaData()));
     MutationEventImp::setStaticPrivate(new NativeClass(cx, global, MutationEventImp::getMetaData()));
+    MutationObserverImp::setStaticPrivate(new NativeClass(cx, global, MutationObserverImp::getMetaData()));
+    MutationObserverInitImp::setStaticPrivate(new NativeClass(cx, global, MutationObserverInitImp::getMetaData()));
+    MutationRecordImp::setStaticPrivate(new NativeClass(cx, global, MutationRecordImp::getMetaData()));
     OnErrorEventHandlerNonNullImp::setStaticPrivate(new NativeClass(cx, global, OnErrorEventHandlerNonNullImp::getMetaData()));
     ProgressEventImp::setStaticPrivate(new NativeClass(cx, global, ProgressEventImp::getMetaData()));
 //    UIEventImp::setStaticPrivate(new NativeClass(cx, global, UIEventImp::getMetaData()));

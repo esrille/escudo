@@ -78,7 +78,11 @@
 #include "KeyboardEventInitImp.h"
 #include "MouseEventImp.h"
 #include "MouseEventInitImp.h"
+#include "MutationCallbackImp.h"
 #include "MutationEventImp.h"
+#include "MutationObserverImp.h"
+#include "MutationObserverInitImp.h"
+#include "MutationRecordImp.h"
 #include "OnErrorEventHandlerNonNullImp.h"
 #include "ProgressEventImp.h"
 #include "UIEventImp.h"
@@ -374,7 +378,11 @@ void registerClasses(v8::Handle<v8::ObjectTemplate> global)
     KeyboardEventInitImp::setStaticPrivate(new NativeClass(global, KeyboardEventInitImp::getMetaData()));
     MouseEventImp::setStaticPrivate(new NativeClass(global, MouseEventImp::getMetaData()));
     MouseEventInitImp::setStaticPrivate(new NativeClass(global, MouseEventInitImp::getMetaData()));
+    MutationCallbackImp::setStaticPrivate(new NativeClass(global, MutationCallbackImp::getMetaData()));
     MutationEventImp::setStaticPrivate(new NativeClass(global, MutationEventImp::getMetaData()));
+    MutationObserverImp::setStaticPrivate(new NativeClass(global, MutationObserverImp::getMetaData()));
+    MutationObserverInitImp::setStaticPrivate(new NativeClass(global, MutationObserverInitImp::getMetaData()));
+    MutationRecordImp::setStaticPrivate(new NativeClass(global, MutationRecordImp::getMetaData()));
     OnErrorEventHandlerNonNullImp::setStaticPrivate(new NativeClass(global, OnErrorEventHandlerNonNullImp::getMetaData()));
     ProgressEventImp::setStaticPrivate(new NativeClass(global, ProgressEventImp::getMetaData()));
 //    UIEventImp::setStaticPrivate(new NativeClass(global, UIEventImp::getMetaData()));

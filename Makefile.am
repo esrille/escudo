@@ -102,7 +102,11 @@ generated_headers = \
 	org/w3c/dom/events/KeyboardEventInit.h \
 	org/w3c/dom/events/MouseEvent.h \
 	org/w3c/dom/events/MouseEventInit.h \
+	org/w3c/dom/events/MutationCallback.h \
 	org/w3c/dom/events/MutationEvent.h \
+	org/w3c/dom/events/MutationObserver.h \
+	org/w3c/dom/events/MutationObserverInit.h \
+	org/w3c/dom/events/MutationRecord.h \
 	org/w3c/dom/events/OnErrorEventHandlerNonNull.h \
 	org/w3c/dom/events/ProgressEvent.h \
 	org/w3c/dom/events/UIEvent.h \
@@ -350,7 +354,11 @@ generated_sources = \
 	org/w3c/dom/events/KeyboardEventInit.cpp \
 	org/w3c/dom/events/MouseEvent.cpp \
 	org/w3c/dom/events/MouseEventInit.cpp \
+	org/w3c/dom/events/MutationCallback.cpp \
 	org/w3c/dom/events/MutationEvent.cpp \
+	org/w3c/dom/events/MutationObserver.cpp \
+	org/w3c/dom/events/MutationObserverInit.cpp \
+	org/w3c/dom/events/MutationRecord.cpp \
 	org/w3c/dom/events/OnErrorEventHandlerNonNull.cpp \
 	org/w3c/dom/events/ProgressEvent.cpp \
 	org/w3c/dom/events/UIEvent.cpp \
@@ -804,8 +812,16 @@ libeshtml5_a_SOURCES += \
 	src/MouseEventImp.h \
 	src/MouseEventInitImp.cpp \
 	src/MouseEventInitImp.h \
+	src/MutationCallbackImp.cpp \
+	src/MutationCallbackImp.h \
 	src/MutationEventImp.cpp \
 	src/MutationEventImp.h \
+	src/MutationObserverImp.cpp \
+	src/MutationObserverImp.h \
+	src/MutationObserverInitImp.cpp \
+	src/MutationObserverInitImp.h \
+	src/MutationRecordImp.cpp \
+	src/MutationRecordImp.h \
 	src/NavigatorContentUtilsImp.cpp \
 	src/NavigatorContentUtilsImp.h \
 	src/NavigatorIDImp.cpp \

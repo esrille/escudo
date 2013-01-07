@@ -52,6 +52,7 @@ interface DOMError {
 module events {
 
 typedef dom::DOMObject DOMObject;
+typedef dom::NodeList NodeList;
 
 [Constructor(DOMString type, optional EventInit eventInitDict)]
 interface Event {
@@ -101,6 +102,37 @@ interface EventTarget {
 
 callback interface EventListener {
   void handleEvent(Event event);
+};
+
+[Constructor(MutationCallback callback)]
+interface MutationObserver {
+  void observe(Node target, MutationObserverInit options);
+  void disconnect();
+  sequence<MutationRecord> takeRecords();
+};
+
+callback MutationCallback = void (sequence<MutationRecord> mutations, MutationObserver observer);
+
+dictionary MutationObserverInit {
+  boolean childList = false;
+  boolean attributes = false;
+  boolean characterData = false;
+  boolean subtree = false;
+  boolean attributeOldValue = false;
+  boolean characterDataOldValue = false;
+  sequence<DOMString> attributeFilter;
+};
+
+interface MutationRecord {
+  readonly attribute DOMString type;
+  readonly attribute Node target;
+  readonly attribute NodeList addedNodes;
+  readonly attribute NodeList removedNodes;
+  readonly attribute Node? previousSibling;
+  readonly attribute Node? nextSibling;
+  readonly attribute DOMString? attributeName;
+  readonly attribute DOMString? attributeNamespace;
+  readonly attribute DOMString? oldValue;
 };
 
 };

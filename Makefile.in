@@ -147,7 +147,9 @@ am_libeshtml5_a_OBJECTS = Any.$(OBJEXT) utf.$(OBJEXT) \
 	KeyboardEventInitImp.$(OBJEXT) LocationImp.$(OBJEXT) \
 	MediaListImp.$(OBJEXT) MessageEventImp.$(OBJEXT) \
 	MessageEventInitImp.$(OBJEXT) MouseEventImp.$(OBJEXT) \
-	MouseEventInitImp.$(OBJEXT) MutationEventImp.$(OBJEXT) \
+	MouseEventInitImp.$(OBJEXT) MutationCallbackImp.$(OBJEXT) \
+	MutationEventImp.$(OBJEXT) MutationObserverImp.$(OBJEXT) \
+	MutationObserverInitImp.$(OBJEXT) MutationRecordImp.$(OBJEXT) \
 	NavigatorContentUtilsImp.$(OBJEXT) NavigatorIDImp.$(OBJEXT) \
 	NavigatorImp.$(OBJEXT) NavigatorOnLineImp.$(OBJEXT) \
 	NavigatorStorageUtilsImp.$(OBJEXT) NodeFilterImp.$(OBJEXT) \
@@ -289,7 +291,9 @@ am__objects_1 = ArrayBuffer.$(OBJEXT) ArrayBufferView.$(OBJEXT) \
 	EventXBL.$(OBJEXT) FocusEvent.$(OBJEXT) \
 	FocusEventInit.$(OBJEXT) KeyboardEvent.$(OBJEXT) \
 	KeyboardEventInit.$(OBJEXT) MouseEvent.$(OBJEXT) \
-	MouseEventInit.$(OBJEXT) MutationEvent.$(OBJEXT) \
+	MouseEventInit.$(OBJEXT) MutationCallback.$(OBJEXT) \
+	MutationEvent.$(OBJEXT) MutationObserver.$(OBJEXT) \
+	MutationObserverInit.$(OBJEXT) MutationRecord.$(OBJEXT) \
 	OnErrorEventHandlerNonNull.$(OBJEXT) ProgressEvent.$(OBJEXT) \
 	UIEvent.$(OBJEXT) UIEventInit.$(OBJEXT) WheelEvent.$(OBJEXT) \
 	WheelEventInit.$(OBJEXT) EventSource.$(OBJEXT) Blob.$(OBJEXT) \
@@ -816,7 +820,11 @@ generated_headers = \
 	org/w3c/dom/events/KeyboardEventInit.h \
 	org/w3c/dom/events/MouseEvent.h \
 	org/w3c/dom/events/MouseEventInit.h \
+	org/w3c/dom/events/MutationCallback.h \
 	org/w3c/dom/events/MutationEvent.h \
+	org/w3c/dom/events/MutationObserver.h \
+	org/w3c/dom/events/MutationObserverInit.h \
+	org/w3c/dom/events/MutationRecord.h \
 	org/w3c/dom/events/OnErrorEventHandlerNonNull.h \
 	org/w3c/dom/events/ProgressEvent.h \
 	org/w3c/dom/events/UIEvent.h \
@@ -1064,7 +1072,11 @@ generated_sources = \
 	org/w3c/dom/events/KeyboardEventInit.cpp \
 	org/w3c/dom/events/MouseEvent.cpp \
 	org/w3c/dom/events/MouseEventInit.cpp \
+	org/w3c/dom/events/MutationCallback.cpp \
 	org/w3c/dom/events/MutationEvent.cpp \
+	org/w3c/dom/events/MutationObserver.cpp \
+	org/w3c/dom/events/MutationObserverInit.cpp \
+	org/w3c/dom/events/MutationRecord.cpp \
 	org/w3c/dom/events/OnErrorEventHandlerNonNull.cpp \
 	org/w3c/dom/events/ProgressEvent.cpp \
 	org/w3c/dom/events/UIEvent.cpp \
@@ -1375,7 +1387,11 @@ libeshtml5_a_SOURCES = org/w3c/dom/ObjectArray.h src/Object.h \
 	src/MessageEventInitImp.cpp src/MessageEventInitImp.h \
 	src/MouseEventImp.cpp src/MouseEventImp.h \
 	src/MouseEventInitImp.cpp src/MouseEventInitImp.h \
+	src/MutationCallbackImp.cpp src/MutationCallbackImp.h \
 	src/MutationEventImp.cpp src/MutationEventImp.h \
+	src/MutationObserverImp.cpp src/MutationObserverImp.h \
+	src/MutationObserverInitImp.cpp src/MutationObserverInitImp.h \
+	src/MutationRecordImp.cpp src/MutationRecordImp.h \
 	src/NavigatorContentUtilsImp.cpp \
 	src/NavigatorContentUtilsImp.h src/NavigatorIDImp.cpp \
 	src/NavigatorIDImp.h src/NavigatorImp.cpp src/NavigatorImp.h \
@@ -2422,8 +2438,16 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MouseEventImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MouseEventInit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MouseEventInitImp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MutationCallback.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MutationCallbackImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MutationEvent.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MutationEventImp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MutationObserver.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MutationObserverImp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MutationObserverInit.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MutationObserverInitImp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MutationRecord.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MutationRecordImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Navigator.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NavigatorContentUtils.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/NavigatorContentUtilsImp.Po@am__quote@
@@ -3838,6 +3862,20 @@ MouseEventInitImp.obj: src/MouseEventInitImp.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MouseEventInitImp.obj `if test -f 'src/MouseEventInitImp.cpp'; then $(CYGPATH_W) 'src/MouseEventInitImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/MouseEventInitImp.cpp'; fi`
 
+MutationCallbackImp.o: src/MutationCallbackImp.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MutationCallbackImp.o -MD -MP -MF $(DEPDIR)/MutationCallbackImp.Tpo -c -o MutationCallbackImp.o `test -f 'src/MutationCallbackImp.cpp' || echo '$(srcdir)/'`src/MutationCallbackImp.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/MutationCallbackImp.Tpo $(DEPDIR)/MutationCallbackImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/MutationCallbackImp.cpp' object='MutationCallbackImp.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MutationCallbackImp.o `test -f 'src/MutationCallbackImp.cpp' || echo '$(srcdir)/'`src/MutationCallbackImp.cpp
+
+MutationCallbackImp.obj: src/MutationCallbackImp.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MutationCallbackImp.obj -MD -MP -MF $(DEPDIR)/MutationCallbackImp.Tpo -c -o MutationCallbackImp.obj `if test -f 'src/MutationCallbackImp.cpp'; then $(CYGPATH_W) 'src/MutationCallbackImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/MutationCallbackImp.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/MutationCallbackImp.Tpo $(DEPDIR)/MutationCallbackImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/MutationCallbackImp.cpp' object='MutationCallbackImp.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MutationCallbackImp.obj `if test -f 'src/MutationCallbackImp.cpp'; then $(CYGPATH_W) 'src/MutationCallbackImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/MutationCallbackImp.cpp'; fi`
+
 MutationEventImp.o: src/MutationEventImp.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MutationEventImp.o -MD -MP -MF $(DEPDIR)/MutationEventImp.Tpo -c -o MutationEventImp.o `test -f 'src/MutationEventImp.cpp' || echo '$(srcdir)/'`src/MutationEventImp.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/MutationEventImp.Tpo $(DEPDIR)/MutationEventImp.Po
@@ -3851,6 +3889,48 @@ MutationEventImp.obj: src/MutationEventImp.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/MutationEventImp.cpp' object='MutationEventImp.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MutationEventImp.obj `if test -f 'src/MutationEventImp.cpp'; then $(CYGPATH_W) 'src/MutationEventImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/MutationEventImp.cpp'; fi`
+
+MutationObserverImp.o: src/MutationObserverImp.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MutationObserverImp.o -MD -MP -MF $(DEPDIR)/MutationObserverImp.Tpo -c -o MutationObserverImp.o `test -f 'src/MutationObserverImp.cpp' || echo '$(srcdir)/'`src/MutationObserverImp.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/MutationObserverImp.Tpo $(DEPDIR)/MutationObserverImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/MutationObserverImp.cpp' object='MutationObserverImp.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MutationObserverImp.o `test -f 'src/MutationObserverImp.cpp' || echo '$(srcdir)/'`src/MutationObserverImp.cpp
+
+MutationObserverImp.obj: src/MutationObserverImp.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MutationObserverImp.obj -MD -MP -MF $(DEPDIR)/MutationObserverImp.Tpo -c -o MutationObserverImp.obj `if test -f 'src/MutationObserverImp.cpp'; then $(CYGPATH_W) 'src/MutationObserverImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/MutationObserverImp.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/MutationObserverImp.Tpo $(DEPDIR)/MutationObserverImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/MutationObserverImp.cpp' object='MutationObserverImp.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MutationObserverImp.obj `if test -f 'src/MutationObserverImp.cpp'; then $(CYGPATH_W) 'src/MutationObserverImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/MutationObserverImp.cpp'; fi`
+
+MutationObserverInitImp.o: src/MutationObserverInitImp.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MutationObserverInitImp.o -MD -MP -MF $(DEPDIR)/MutationObserverInitImp.Tpo -c -o MutationObserverInitImp.o `test -f 'src/MutationObserverInitImp.cpp' || echo '$(srcdir)/'`src/MutationObserverInitImp.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/MutationObserverInitImp.Tpo $(DEPDIR)/MutationObserverInitImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/MutationObserverInitImp.cpp' object='MutationObserverInitImp.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MutationObserverInitImp.o `test -f 'src/MutationObserverInitImp.cpp' || echo '$(srcdir)/'`src/MutationObserverInitImp.cpp
+
+MutationObserverInitImp.obj: src/MutationObserverInitImp.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MutationObserverInitImp.obj -MD -MP -MF $(DEPDIR)/MutationObserverInitImp.Tpo -c -o MutationObserverInitImp.obj `if test -f 'src/MutationObserverInitImp.cpp'; then $(CYGPATH_W) 'src/MutationObserverInitImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/MutationObserverInitImp.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/MutationObserverInitImp.Tpo $(DEPDIR)/MutationObserverInitImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/MutationObserverInitImp.cpp' object='MutationObserverInitImp.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MutationObserverInitImp.obj `if test -f 'src/MutationObserverInitImp.cpp'; then $(CYGPATH_W) 'src/MutationObserverInitImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/MutationObserverInitImp.cpp'; fi`
+
+MutationRecordImp.o: src/MutationRecordImp.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MutationRecordImp.o -MD -MP -MF $(DEPDIR)/MutationRecordImp.Tpo -c -o MutationRecordImp.o `test -f 'src/MutationRecordImp.cpp' || echo '$(srcdir)/'`src/MutationRecordImp.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/MutationRecordImp.Tpo $(DEPDIR)/MutationRecordImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/MutationRecordImp.cpp' object='MutationRecordImp.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MutationRecordImp.o `test -f 'src/MutationRecordImp.cpp' || echo '$(srcdir)/'`src/MutationRecordImp.cpp
+
+MutationRecordImp.obj: src/MutationRecordImp.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MutationRecordImp.obj -MD -MP -MF $(DEPDIR)/MutationRecordImp.Tpo -c -o MutationRecordImp.obj `if test -f 'src/MutationRecordImp.cpp'; then $(CYGPATH_W) 'src/MutationRecordImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/MutationRecordImp.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/MutationRecordImp.Tpo $(DEPDIR)/MutationRecordImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/MutationRecordImp.cpp' object='MutationRecordImp.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MutationRecordImp.obj `if test -f 'src/MutationRecordImp.cpp'; then $(CYGPATH_W) 'src/MutationRecordImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/MutationRecordImp.cpp'; fi`
 
 NavigatorContentUtilsImp.o: src/NavigatorContentUtilsImp.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT NavigatorContentUtilsImp.o -MD -MP -MF $(DEPDIR)/NavigatorContentUtilsImp.Tpo -c -o NavigatorContentUtilsImp.o `test -f 'src/NavigatorContentUtilsImp.cpp' || echo '$(srcdir)/'`src/NavigatorContentUtilsImp.cpp
@@ -7506,6 +7586,20 @@ MouseEventInit.obj: org/w3c/dom/events/MouseEventInit.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MouseEventInit.obj `if test -f 'org/w3c/dom/events/MouseEventInit.cpp'; then $(CYGPATH_W) 'org/w3c/dom/events/MouseEventInit.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/events/MouseEventInit.cpp'; fi`
 
+MutationCallback.o: org/w3c/dom/events/MutationCallback.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MutationCallback.o -MD -MP -MF $(DEPDIR)/MutationCallback.Tpo -c -o MutationCallback.o `test -f 'org/w3c/dom/events/MutationCallback.cpp' || echo '$(srcdir)/'`org/w3c/dom/events/MutationCallback.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/MutationCallback.Tpo $(DEPDIR)/MutationCallback.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/events/MutationCallback.cpp' object='MutationCallback.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MutationCallback.o `test -f 'org/w3c/dom/events/MutationCallback.cpp' || echo '$(srcdir)/'`org/w3c/dom/events/MutationCallback.cpp
+
+MutationCallback.obj: org/w3c/dom/events/MutationCallback.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MutationCallback.obj -MD -MP -MF $(DEPDIR)/MutationCallback.Tpo -c -o MutationCallback.obj `if test -f 'org/w3c/dom/events/MutationCallback.cpp'; then $(CYGPATH_W) 'org/w3c/dom/events/MutationCallback.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/events/MutationCallback.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/MutationCallback.Tpo $(DEPDIR)/MutationCallback.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/events/MutationCallback.cpp' object='MutationCallback.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MutationCallback.obj `if test -f 'org/w3c/dom/events/MutationCallback.cpp'; then $(CYGPATH_W) 'org/w3c/dom/events/MutationCallback.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/events/MutationCallback.cpp'; fi`
+
 MutationEvent.o: org/w3c/dom/events/MutationEvent.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MutationEvent.o -MD -MP -MF $(DEPDIR)/MutationEvent.Tpo -c -o MutationEvent.o `test -f 'org/w3c/dom/events/MutationEvent.cpp' || echo '$(srcdir)/'`org/w3c/dom/events/MutationEvent.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/MutationEvent.Tpo $(DEPDIR)/MutationEvent.Po
@@ -7519,6 +7613,48 @@ MutationEvent.obj: org/w3c/dom/events/MutationEvent.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/events/MutationEvent.cpp' object='MutationEvent.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MutationEvent.obj `if test -f 'org/w3c/dom/events/MutationEvent.cpp'; then $(CYGPATH_W) 'org/w3c/dom/events/MutationEvent.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/events/MutationEvent.cpp'; fi`
+
+MutationObserver.o: org/w3c/dom/events/MutationObserver.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MutationObserver.o -MD -MP -MF $(DEPDIR)/MutationObserver.Tpo -c -o MutationObserver.o `test -f 'org/w3c/dom/events/MutationObserver.cpp' || echo '$(srcdir)/'`org/w3c/dom/events/MutationObserver.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/MutationObserver.Tpo $(DEPDIR)/MutationObserver.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/events/MutationObserver.cpp' object='MutationObserver.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MutationObserver.o `test -f 'org/w3c/dom/events/MutationObserver.cpp' || echo '$(srcdir)/'`org/w3c/dom/events/MutationObserver.cpp
+
+MutationObserver.obj: org/w3c/dom/events/MutationObserver.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MutationObserver.obj -MD -MP -MF $(DEPDIR)/MutationObserver.Tpo -c -o MutationObserver.obj `if test -f 'org/w3c/dom/events/MutationObserver.cpp'; then $(CYGPATH_W) 'org/w3c/dom/events/MutationObserver.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/events/MutationObserver.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/MutationObserver.Tpo $(DEPDIR)/MutationObserver.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/events/MutationObserver.cpp' object='MutationObserver.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MutationObserver.obj `if test -f 'org/w3c/dom/events/MutationObserver.cpp'; then $(CYGPATH_W) 'org/w3c/dom/events/MutationObserver.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/events/MutationObserver.cpp'; fi`
+
+MutationObserverInit.o: org/w3c/dom/events/MutationObserverInit.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MutationObserverInit.o -MD -MP -MF $(DEPDIR)/MutationObserverInit.Tpo -c -o MutationObserverInit.o `test -f 'org/w3c/dom/events/MutationObserverInit.cpp' || echo '$(srcdir)/'`org/w3c/dom/events/MutationObserverInit.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/MutationObserverInit.Tpo $(DEPDIR)/MutationObserverInit.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/events/MutationObserverInit.cpp' object='MutationObserverInit.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MutationObserverInit.o `test -f 'org/w3c/dom/events/MutationObserverInit.cpp' || echo '$(srcdir)/'`org/w3c/dom/events/MutationObserverInit.cpp
+
+MutationObserverInit.obj: org/w3c/dom/events/MutationObserverInit.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MutationObserverInit.obj -MD -MP -MF $(DEPDIR)/MutationObserverInit.Tpo -c -o MutationObserverInit.obj `if test -f 'org/w3c/dom/events/MutationObserverInit.cpp'; then $(CYGPATH_W) 'org/w3c/dom/events/MutationObserverInit.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/events/MutationObserverInit.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/MutationObserverInit.Tpo $(DEPDIR)/MutationObserverInit.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/events/MutationObserverInit.cpp' object='MutationObserverInit.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MutationObserverInit.obj `if test -f 'org/w3c/dom/events/MutationObserverInit.cpp'; then $(CYGPATH_W) 'org/w3c/dom/events/MutationObserverInit.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/events/MutationObserverInit.cpp'; fi`
+
+MutationRecord.o: org/w3c/dom/events/MutationRecord.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MutationRecord.o -MD -MP -MF $(DEPDIR)/MutationRecord.Tpo -c -o MutationRecord.o `test -f 'org/w3c/dom/events/MutationRecord.cpp' || echo '$(srcdir)/'`org/w3c/dom/events/MutationRecord.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/MutationRecord.Tpo $(DEPDIR)/MutationRecord.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/events/MutationRecord.cpp' object='MutationRecord.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MutationRecord.o `test -f 'org/w3c/dom/events/MutationRecord.cpp' || echo '$(srcdir)/'`org/w3c/dom/events/MutationRecord.cpp
+
+MutationRecord.obj: org/w3c/dom/events/MutationRecord.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MutationRecord.obj -MD -MP -MF $(DEPDIR)/MutationRecord.Tpo -c -o MutationRecord.obj `if test -f 'org/w3c/dom/events/MutationRecord.cpp'; then $(CYGPATH_W) 'org/w3c/dom/events/MutationRecord.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/events/MutationRecord.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/MutationRecord.Tpo $(DEPDIR)/MutationRecord.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/events/MutationRecord.cpp' object='MutationRecord.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MutationRecord.obj `if test -f 'org/w3c/dom/events/MutationRecord.cpp'; then $(CYGPATH_W) 'org/w3c/dom/events/MutationRecord.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/events/MutationRecord.cpp'; fi`
 
 OnErrorEventHandlerNonNull.o: org/w3c/dom/events/OnErrorEventHandlerNonNull.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT OnErrorEventHandlerNonNull.o -MD -MP -MF $(DEPDIR)/OnErrorEventHandlerNonNull.Tpo -c -o OnErrorEventHandlerNonNull.o `test -f 'org/w3c/dom/events/OnErrorEventHandlerNonNull.cpp' || echo '$(srcdir)/'`org/w3c/dom/events/OnErrorEventHandlerNonNull.cpp
