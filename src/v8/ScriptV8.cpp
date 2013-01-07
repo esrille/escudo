@@ -25,7 +25,6 @@
 #include "DocumentFragmentImp.h"
 #include "DocumentImp.h"
 #include "DocumentTypeImp.h"
-#include "DOMElementMapImp.h"
 #include "DOMErrorImp.h"
 // #include "DOMExceptionImp.h"
 #include "DOMImplementationImp.h"
@@ -333,7 +332,6 @@ void registerClasses(v8::Handle<v8::ObjectTemplate> global)
     DocumentFragmentImp::setStaticPrivate(new NativeClass(global, DocumentFragmentImp::getMetaData()));
     DocumentImp::setStaticPrivate(new NativeClass(global, DocumentImp::getMetaData()));
     DocumentTypeImp::setStaticPrivate(new NativeClass(global, DocumentTypeImp::getMetaData()));
-    DOMElementMapImp::setStaticPrivate(new NativeClass(global, DOMElementMapImp::getMetaData()));
     DOMErrorImp::setStaticPrivate(new NativeClass(global, DOMErrorImp::getMetaData()));
 //    DOMImplementationImp::setStaticPrivate(new NativeClass(global, DOMImplementationImp::getMetaData()));
     DOMSettableTokenListImp::setStaticPrivate(new NativeClass(global, DOMSettableTokenListImp::getMetaData()));

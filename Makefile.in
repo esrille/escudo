@@ -131,8 +131,7 @@ am_libeshtml5_a_OBJECTS = Any.$(OBJEXT) utf.$(OBJEXT) \
 	CustomEventInitImp.$(OBJEXT) DocumentFragmentImp.$(OBJEXT) \
 	DocumentImp.$(OBJEXT) DocumentRangeImp.$(OBJEXT) \
 	DocumentTraversalImp.$(OBJEXT) DocumentTypeImp.$(OBJEXT) \
-	DOMElementMapImp.$(OBJEXT) DOMErrorImp.$(OBJEXT) \
-	DOMImplementationImp.$(OBJEXT) \
+	DOMErrorImp.$(OBJEXT) DOMImplementationImp.$(OBJEXT) \
 	DOMSettableTokenListImp.$(OBJEXT) DOMStringListImp.$(OBJEXT) \
 	DOMStringMapImp.$(OBJEXT) DOMTokenListImp.$(OBJEXT) \
 	DragEventImp.$(OBJEXT) DragEventInitImp.$(OBJEXT) \
@@ -261,15 +260,15 @@ am__objects_1 = ArrayBuffer.$(OBJEXT) ArrayBufferView.$(OBJEXT) \
 	Attr.$(OBJEXT) CaretPosition.$(OBJEXT) CharacterData.$(OBJEXT) \
 	Comment.$(OBJEXT) DataView.$(OBJEXT) \
 	DocumentFragment.$(OBJEXT) Document.$(OBJEXT) \
-	DocumentType.$(OBJEXT) DOMElementMap.$(OBJEXT) \
-	DOMError.$(OBJEXT) DOMImplementation.$(OBJEXT) \
-	DOMSettableTokenList.$(OBJEXT) DOMStringList.$(OBJEXT) \
-	DOMStringMap.$(OBJEXT) DOMTokenList.$(OBJEXT) \
-	Element.$(OBJEXT) Float32Array.$(OBJEXT) \
-	Float64Array.$(OBJEXT) FormData.$(OBJEXT) Int16Array.$(OBJEXT) \
-	Int32Array.$(OBJEXT) Int8Array.$(OBJEXT) Node.$(OBJEXT) \
-	NodeList.$(OBJEXT) ProcessingInstruction.$(OBJEXT) \
-	Text.$(OBJEXT) Uint16Array.$(OBJEXT) Uint32Array.$(OBJEXT) \
+	DocumentType.$(OBJEXT) DOMError.$(OBJEXT) \
+	DOMImplementation.$(OBJEXT) DOMSettableTokenList.$(OBJEXT) \
+	DOMStringList.$(OBJEXT) DOMStringMap.$(OBJEXT) \
+	DOMTokenList.$(OBJEXT) Element.$(OBJEXT) \
+	Float32Array.$(OBJEXT) Float64Array.$(OBJEXT) \
+	FormData.$(OBJEXT) Int16Array.$(OBJEXT) Int32Array.$(OBJEXT) \
+	Int8Array.$(OBJEXT) Node.$(OBJEXT) NodeList.$(OBJEXT) \
+	ProcessingInstruction.$(OBJEXT) Text.$(OBJEXT) \
+	Uint16Array.$(OBJEXT) Uint32Array.$(OBJEXT) \
 	Uint8Array.$(OBJEXT) Uint8ClampedArray.$(OBJEXT) \
 	XMLHttpRequestEventTarget.$(OBJEXT) XMLHttpRequest.$(OBJEXT) \
 	XMLHttpRequestOptions.$(OBJEXT) XMLHttpRequestUpload.$(OBJEXT) \
@@ -756,7 +755,6 @@ generated_headers = \
 	org/w3c/dom/DocumentFragment.h \
 	org/w3c/dom/Document.h \
 	org/w3c/dom/DocumentType.h \
-	org/w3c/dom/DOMElementMap.h \
 	org/w3c/dom/DOMError.h \
 	org/w3c/dom/DOMException.h \
 	org/w3c/dom/DOMImplementation.h \
@@ -1009,7 +1007,6 @@ generated_sources = \
 	org/w3c/dom/DocumentFragment.cpp \
 	org/w3c/dom/Document.cpp \
 	org/w3c/dom/DocumentType.cpp \
-	org/w3c/dom/DOMElementMap.cpp \
 	org/w3c/dom/DOMError.cpp \
 	org/w3c/dom/DOMImplementation.cpp \
 	org/w3c/dom/DOMSettableTokenList.cpp \
@@ -1357,8 +1354,7 @@ libeshtml5_a_SOURCES = org/w3c/dom/ObjectArray.h src/Object.h \
 	src/DocumentImp.cpp src/DocumentImp.h src/DocumentRangeImp.cpp \
 	src/DocumentRangeImp.h src/DocumentTraversalImp.cpp \
 	src/DocumentTraversalImp.h src/DocumentTypeImp.cpp \
-	src/DocumentTypeImp.h src/DOMElementMapImp.cpp \
-	src/DOMElementMapImp.h src/DOMErrorImp.cpp src/DOMErrorImp.h \
+	src/DocumentTypeImp.h src/DOMErrorImp.cpp src/DOMErrorImp.h \
 	src/DOMImplementationImp.cpp src/DOMImplementationImp.h \
 	src/DOMSettableTokenListImp.cpp src/DOMSettableTokenListImp.h \
 	src/DOMStringListImp.cpp src/DOMStringListImp.h \
@@ -2129,8 +2125,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CustomEventImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CustomEventInit.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CustomEventInitImp.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMElementMap.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMElementMapImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMError.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMErrorImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMImplementation.Po@am__quote@
@@ -3427,20 +3421,6 @@ DocumentTypeImp.obj: src/DocumentTypeImp.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/DocumentTypeImp.cpp' object='DocumentTypeImp.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DocumentTypeImp.obj `if test -f 'src/DocumentTypeImp.cpp'; then $(CYGPATH_W) 'src/DocumentTypeImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/DocumentTypeImp.cpp'; fi`
-
-DOMElementMapImp.o: src/DOMElementMapImp.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMElementMapImp.o -MD -MP -MF $(DEPDIR)/DOMElementMapImp.Tpo -c -o DOMElementMapImp.o `test -f 'src/DOMElementMapImp.cpp' || echo '$(srcdir)/'`src/DOMElementMapImp.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/DOMElementMapImp.Tpo $(DEPDIR)/DOMElementMapImp.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/DOMElementMapImp.cpp' object='DOMElementMapImp.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMElementMapImp.o `test -f 'src/DOMElementMapImp.cpp' || echo '$(srcdir)/'`src/DOMElementMapImp.cpp
-
-DOMElementMapImp.obj: src/DOMElementMapImp.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMElementMapImp.obj -MD -MP -MF $(DEPDIR)/DOMElementMapImp.Tpo -c -o DOMElementMapImp.obj `if test -f 'src/DOMElementMapImp.cpp'; then $(CYGPATH_W) 'src/DOMElementMapImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/DOMElementMapImp.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/DOMElementMapImp.Tpo $(DEPDIR)/DOMElementMapImp.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/DOMElementMapImp.cpp' object='DOMElementMapImp.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMElementMapImp.obj `if test -f 'src/DOMElementMapImp.cpp'; then $(CYGPATH_W) 'src/DOMElementMapImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/DOMElementMapImp.cpp'; fi`
 
 DOMErrorImp.o: src/DOMErrorImp.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMErrorImp.o -MD -MP -MF $(DEPDIR)/DOMErrorImp.Tpo -c -o DOMErrorImp.o `test -f 'src/DOMErrorImp.cpp' || echo '$(srcdir)/'`src/DOMErrorImp.cpp
@@ -6703,20 +6683,6 @@ DocumentType.obj: org/w3c/dom/DocumentType.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/DocumentType.cpp' object='DocumentType.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DocumentType.obj `if test -f 'org/w3c/dom/DocumentType.cpp'; then $(CYGPATH_W) 'org/w3c/dom/DocumentType.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/DocumentType.cpp'; fi`
-
-DOMElementMap.o: org/w3c/dom/DOMElementMap.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMElementMap.o -MD -MP -MF $(DEPDIR)/DOMElementMap.Tpo -c -o DOMElementMap.o `test -f 'org/w3c/dom/DOMElementMap.cpp' || echo '$(srcdir)/'`org/w3c/dom/DOMElementMap.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/DOMElementMap.Tpo $(DEPDIR)/DOMElementMap.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/DOMElementMap.cpp' object='DOMElementMap.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMElementMap.o `test -f 'org/w3c/dom/DOMElementMap.cpp' || echo '$(srcdir)/'`org/w3c/dom/DOMElementMap.cpp
-
-DOMElementMap.obj: org/w3c/dom/DOMElementMap.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMElementMap.obj -MD -MP -MF $(DEPDIR)/DOMElementMap.Tpo -c -o DOMElementMap.obj `if test -f 'org/w3c/dom/DOMElementMap.cpp'; then $(CYGPATH_W) 'org/w3c/dom/DOMElementMap.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/DOMElementMap.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/DOMElementMap.Tpo $(DEPDIR)/DOMElementMap.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/DOMElementMap.cpp' object='DOMElementMap.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMElementMap.obj `if test -f 'org/w3c/dom/DOMElementMap.cpp'; then $(CYGPATH_W) 'org/w3c/dom/DOMElementMap.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/DOMElementMap.cpp'; fi`
 
 DOMError.o: org/w3c/dom/DOMError.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMError.o -MD -MP -MF $(DEPDIR)/DOMError.Tpo -c -o DOMError.o `test -f 'org/w3c/dom/DOMError.cpp' || echo '$(srcdir)/'`org/w3c/dom/DOMError.cpp

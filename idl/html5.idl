@@ -41,7 +41,6 @@ typedef dom::DOMImplementation DOMImplementation;
 typedef dom::DOMSettableTokenList DOMSettableTokenList;
 typedef dom::DOMStringList DOMStringList;
 typedef dom::DOMStringMap DOMStringMap;
-typedef dom::DOMElementMap DOMElementMap;
 typedef dom::DOMTokenList DOMTokenList;
 typedef dom::Element Element;
 typedef dom::Node Node;

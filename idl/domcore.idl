@@ -345,18 +345,4 @@ interface DOMSettableTokenList : DOMTokenList {
             attribute DOMString value;
 };
 
-interface DOMStringMap {
-  getter DOMString (in DOMString name);
-  setter void (in DOMString name, in DOMString value);
-  creator void (in DOMString name, in DOMString value);
-  deleter void (in DOMString name);
-};
-
-interface DOMElementMap {
-  getter DOMString (in DOMString name);
-  setter void (in DOMString name, in Element value);
-  creator void (in DOMString name, in Element value);
-  deleter void (in DOMString name);
-};
-
 };

@@ -27,7 +27,6 @@
 #include "DocumentFragmentImp.h"
 #include "DocumentImp.h"
 #include "DocumentTypeImp.h"
-#include "DOMElementMapImp.h"
 #include "DOMErrorImp.h"
 // #include "DOMExceptionImp.h"
 #include "DOMImplementationImp.h"
@@ -347,7 +346,6 @@ void registerClasses(JSContext* cx, JSObject* global)
     DocumentFragmentImp::setStaticPrivate(new NativeClass(cx, global, DocumentFragmentImp::getMetaData()));
     DocumentImp::setStaticPrivate(new NativeClass(cx, global, DocumentImp::getMetaData()));
     DocumentTypeImp::setStaticPrivate(new NativeClass(cx, global, DocumentTypeImp::getMetaData()));
-    DOMElementMapImp::setStaticPrivate(new NativeClass(cx, global, DOMElementMapImp::getMetaData()));
     DOMErrorImp::setStaticPrivate(new NativeClass(cx, global, DOMErrorImp::getMetaData()));
 //    DOMImplementationImp::setStaticPrivate(new NativeClass(cx, global, DOMImplementationImp::getMetaData()));
     DOMSettableTokenListImp::setStaticPrivate(new NativeClass(cx, global, DOMSettableTokenListImp::getMetaData()));

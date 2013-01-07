@@ -38,7 +38,6 @@ generated_headers = \
 	org/w3c/dom/DocumentFragment.h \
 	org/w3c/dom/Document.h \
 	org/w3c/dom/DocumentType.h \
-	org/w3c/dom/DOMElementMap.h \
 	org/w3c/dom/DOMError.h \
 	org/w3c/dom/DOMException.h \
 	org/w3c/dom/DOMImplementation.h \
@@ -291,7 +290,6 @@ generated_sources = \
 	org/w3c/dom/DocumentFragment.cpp \
 	org/w3c/dom/Document.cpp \
 	org/w3c/dom/DocumentType.cpp \
-	org/w3c/dom/DOMElementMap.cpp \
 	org/w3c/dom/DOMError.cpp \
 	org/w3c/dom/DOMImplementation.cpp \
 	org/w3c/dom/DOMSettableTokenList.cpp \
@@ -750,8 +748,6 @@ libeshtml5_a_SOURCES += \
 	src/DocumentTraversalImp.h \
 	src/DocumentTypeImp.cpp \
 	src/DocumentTypeImp.h \
-	src/DOMElementMapImp.cpp \
-	src/DOMElementMapImp.h \
 	src/DOMErrorImp.cpp \
 	src/DOMErrorImp.h \
 	src/DOMImplementationImp.cpp \
