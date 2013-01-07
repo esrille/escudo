@@ -2368,14 +2368,14 @@ public:
     std::u16string getOpenQuote(int depth) const {
         if (depth < 0 || quotes.size() == 0)
             return u"";
-        if (quotes.size() <= depth)
+        if (quotes.size() <= static_cast<size_t>(depth))
             depth = quotes.size() - 1;
         return quotes[depth].first;
     }
     std::u16string getCloseQuote(int depth) const {
         if (depth < 0 || quotes.size() == 0)
             return u"";
-        if (quotes.size() <= depth)
+        if (quotes.size() <= static_cast<size_t>(depth))
             depth = quotes.size() - 1;
         return quotes[depth].second;
     }
