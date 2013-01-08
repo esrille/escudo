@@ -196,9 +196,6 @@ interface Node : EventTarget {
   boolean isDefaultNamespace(DOMString? namespace);
 };
 
-interface DocumentFragment : Node {
-};
-
 interface Document : Node {
   readonly attribute DOMImplementation implementation;
   readonly attribute DOMString URL;
@@ -235,6 +232,27 @@ interface DOMImplementation {
   Document createHTMLDocument(optional DOMString title);
 
   boolean hasFeature(DOMString feature, [TreatNullAs=EmptyString] DOMString version);
+};
+
+interface DocumentFragment : Node {
+#if 0
+  // NEW
+  void prepend((Node or DOMString)... nodes);
+  void append((Node or DOMString)... nodes);
+#endif
+};
+
+interface DocumentType : Node {
+  readonly attribute DOMString name;
+  readonly attribute DOMString publicId;
+  readonly attribute DOMString systemId;
+#if 0
+  // NEW
+  void before((Node or DOMString)... nodes);
+  void after((Node or DOMString)... nodes);
+  void replace((Node or DOMString)... nodes);
+  void remove();
+#endif
 };
 
 interface Element : Node {
@@ -277,12 +295,6 @@ interface Attr {
   readonly attribute DOMString? namespaceURI;
   readonly attribute DOMString? prefix;
   readonly attribute DOMString localName;
-};
-
-interface DocumentType : Node {
-  readonly attribute DOMString name;
-  readonly attribute DOMString publicId;
-  readonly attribute DOMString systemId;
 };
 
 interface CharacterData : Node {
@@ -438,8 +450,8 @@ module html {
 
 interface HTMLCollection {
   readonly attribute unsigned long length;
-  legacycaller getter Element? item(in unsigned long index);
-  legacycaller getter object? namedItem(in DOMString name); // only returns Element
+  getter Element? item(unsigned long index);
+  getter object? namedItem(DOMString name); // only returns Element
 };
 
 };
