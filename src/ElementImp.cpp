@@ -112,12 +112,13 @@ Nullable<std::u16string> ElementImp::getTextContent()
     return content;
 }
 
-void ElementImp::setTextContent(const std::u16string& textContent)
+void ElementImp::setTextContent(const Nullable<std::u16string>& textContent)
 {
     while (hasChildNodes())
         removeChild(getFirstChild());
-    if (0 < textContent.length()) {
-        org::w3c::dom::Text text = ownerDocument->createTextNode(textContent);
+    std::u16string content = static_cast<std::u16string>(textContent);
+    if (!content.empty()) {
+        org::w3c::dom::Text text = ownerDocument->createTextNode(content);
         appendChild(text);
     }
 }

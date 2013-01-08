@@ -45,7 +45,7 @@ public:
         return new(std::nothrow) CharacterDataImp(this, deep);
     }
     virtual Nullable<std::u16string> getTextContent();
-    virtual void setTextContent(Nullable<std::u16string> textContent);
+    virtual void setTextContent(const Nullable<std::u16string>& textContent);
     virtual bool isEqualNode(Node arg);
 
     // CharacterData

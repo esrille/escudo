@@ -65,7 +65,7 @@ public:
     virtual unsigned short getNodeType();
     virtual Node cloneNode(bool deep = true);
     virtual Nullable<std::u16string> getTextContent();
-    virtual void setTextContent(const std::u16string& textContent);
+    virtual void setTextContent(const Nullable<std::u16string>& textContent);
     virtual bool isEqualNode(Node arg);
 
     // Element
