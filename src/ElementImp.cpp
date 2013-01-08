@@ -222,11 +222,11 @@ Nullable<std::u16string> ElementImp::getAttribute(const std::u16string& name)
     return Nullable<std::u16string>();
 }
 
-Nullable<std::u16string> ElementImp::getAttributeNS(const std::u16string& namespaceURI, const std::u16string& localName)
+Nullable<std::u16string> ElementImp::getAttributeNS(const Nullable<std::u16string>& namespaceURI, const std::u16string& localName)
 {
     for (auto i = attributes.begin(); i != attributes.end(); ++i) {
         Attr attr = *i;
-        if (attr.getNamespaceURI().hasValue() && attr.getNamespaceURI().value() == namespaceURI && attr.getLocalName() == localName)
+        if (static_cast<std::u16string>(attr.getNamespaceURI()) == static_cast<std::u16string>(namespaceURI) && attr.getLocalName() == localName)
             return attr.getValue();
     }
     return Nullable<std::u16string>();
@@ -257,31 +257,31 @@ void ElementImp::setAttribute(const std::u16string& name, const std::u16string& 
         attributes.push_back(attr);
 }
 
-void ElementImp::setAttributeNS(const std::u16string& namespaceURI, const std::u16string& qualifiedName, const std::u16string& value)
+void ElementImp::setAttributeNS(const Nullable<std::u16string>& namespaceURI, const std::u16string& name, const std::u16string& value)
 {
     // TODO:
     // TODO:
     Nullable<std::u16string> prefix;
     std::u16string localName;
-    size_t pos = qualifiedName.find(u':');
+    size_t pos = name.find(u':');
     if (pos != std::u16string::npos) {
-        prefix = qualifiedName.substr(0, pos);
-        localName = qualifiedName.substr(pos + 1);
+        prefix = name.substr(0, pos);
+        localName = name.substr(pos + 1);
     } else
-        localName = qualifiedName;
+        localName = name;
     if (prefix.hasValue()) {
-        if (namespaceURI.length() == 0)
+        if (static_cast<std::u16string>(namespaceURI).empty())
             throw DOMException{DOMException::NAMESPACE_ERR};
         if (prefix.value() == u"xml" && namespaceURI != u"http://www.w3.org/XML/1998/namespace")
             throw DOMException{DOMException::NAMESPACE_ERR};
     }
-    if ((qualifiedName == u"xmlns" || prefix.hasValue() && prefix.value() == u"xmlns") &&
+    if ((name == u"xmlns" || prefix.hasValue() && prefix.value() == u"xmlns") &&
         namespaceURI != u"http://www.w3.org/2000/xmlns") {
         throw DOMException{DOMException::NAMESPACE_ERR};
     }
     for (auto i = attributes.begin(); i != attributes.end(); ++i) {
         Attr attr = *i;
-        if (attr.getNamespaceURI().hasValue() && attr.getNamespaceURI().value() == namespaceURI && attr.getLocalName() == localName) {
+        if (static_cast<std::u16string>(attr.getNamespaceURI()) == static_cast<std::u16string>(namespaceURI) && attr.getLocalName() == localName) {
             attr.setValue(value);
             // TODO: set prefix, too.
             return;
@@ -306,11 +306,11 @@ void ElementImp::removeAttribute(const std::u16string& name)
     }
 }
 
-void ElementImp::removeAttributeNS(const std::u16string& namespaceURI, const std::u16string& localName)
+void ElementImp::removeAttributeNS(const Nullable<std::u16string>& namespaceURI, const std::u16string& localName)
 {
     for (auto i = attributes.begin(); i != attributes.end();) {
         Attr attr = *i;
-        if (attr.getNamespaceURI().hasValue() && attr.getNamespaceURI().value() == namespaceURI && attr.getLocalName() == localName)
+        if (static_cast<std::u16string>(attr.getNamespaceURI()) == static_cast<std::u16string>(namespaceURI) && attr.getLocalName() == localName)
             i = attributes.erase(i);
         else
             ++i;
@@ -330,11 +330,11 @@ bool ElementImp::hasAttribute(const std::u16string& name)
     return false;
 }
 
-bool ElementImp::hasAttributeNS(const std::u16string& namespaceURI, const std::u16string& localName)
+bool ElementImp::hasAttributeNS(const Nullable<std::u16string>& namespaceURI, const std::u16string& localName)
 {
     for (auto i = attributes.begin(); i != attributes.end(); ++i) {
         Attr attr = *i;
-        if (attr.getNamespaceURI().hasValue() && attr.getNamespaceURI().value() == namespaceURI && attr.getLocalName() == localName)
+        if (static_cast<std::u16string>(attr.getNamespaceURI()) == static_cast<std::u16string>(namespaceURI) && attr.getLocalName() == localName)
             return true;
     }
     return false;

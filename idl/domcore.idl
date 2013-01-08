@@ -1,11 +1,11 @@
 /*
  * domcore.idl
  *
- * DOM Core
+ * DOM Standard
  *
- * Original Editor's Draft 3 March 2011:
+ * Original W3C Working Draft 6 December 2012:
  *
- *   http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html
+ *   http://www.w3.org/TR/2012/WD-dom-20121206/
  */
 
 module dom {
@@ -277,20 +277,19 @@ interface Element : Node {
   readonly attribute DOMString localName;
   readonly attribute DOMString tagName;
 
-  // cf. https://www.w3.org/Bugs/Public/show_bug.cgi?id=13347
-  attribute DOMString id;
-  attribute DOMString className;
+           attribute DOMString id;
+           attribute DOMString className;
   readonly attribute DOMTokenList classList;
 
   readonly attribute Attr[] attributes;
-  DOMString? getAttribute(DOMString qualifiedName);
-  DOMString? getAttributeNS(DOMString namespace, DOMString localName);
-  void setAttribute(DOMString qualifiedName, DOMString value);
-  void setAttributeNS(DOMString namespace, DOMString qualifiedName, DOMString value);
-  void removeAttribute(DOMString qualifiedName);
-  void removeAttributeNS(DOMString namespace, DOMString localName);
-  boolean hasAttribute(DOMString qualifiedName);
-  boolean hasAttributeNS(DOMString namespace, DOMString localName);
+  DOMString? getAttribute(DOMString name);
+  DOMString? getAttributeNS(DOMString? namespace, DOMString localName);
+  void setAttribute(DOMString name, DOMString value);
+  void setAttributeNS(DOMString? namespace, DOMString name, DOMString value);
+  void removeAttribute(DOMString name);
+  void removeAttributeNS(DOMString? namespace, DOMString localName);
+  boolean hasAttribute(DOMString name);
+  boolean hasAttributeNS(DOMString? namespace, DOMString localName);
 
   HTMLCollection getElementsByTagName(DOMString localName);
   HTMLCollection getElementsByTagNameNS(DOMString? namespace, DOMString localName);

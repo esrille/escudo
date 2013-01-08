@@ -79,14 +79,14 @@ public:
     virtual void setClassName(const std::u16string& className);
     virtual DOMTokenList getClassList();
     virtual ObjectArray<Attr> getAttributes();
-    virtual Nullable<std::u16string> getAttribute(const std::u16string& qualifiedName);
-    virtual Nullable<std::u16string> getAttributeNS(const std::u16string& _namespace, const std::u16string& localName);
-    virtual void setAttribute(const std::u16string& qualifiedName, const std::u16string& value);
-    virtual void setAttributeNS(const std::u16string& _namespace, const std::u16string& qualifiedName, const std::u16string& value);
-    virtual void removeAttribute(const std::u16string& qualifiedName);
-    virtual void removeAttributeNS(const std::u16string& _namespace, const std::u16string& localName);
-    virtual bool hasAttribute(const std::u16string& qualifiedName);
-    virtual bool hasAttributeNS(const std::u16string& _namespace, const std::u16string& localName);
+    virtual Nullable<std::u16string> getAttribute(const std::u16string& name);
+    virtual Nullable<std::u16string> getAttributeNS(const Nullable<std::u16string>& _namespace, const std::u16string& localName);
+    virtual void setAttribute(const std::u16string& name, const std::u16string& value);
+    virtual void setAttributeNS(const Nullable<std::u16string>& _namespace, const std::u16string& name, const std::u16string& value);
+    virtual void removeAttribute(const std::u16string& name);
+    virtual void removeAttributeNS(const Nullable<std::u16string>& _namespace, const std::u16string& localName);
+    virtual bool hasAttribute(const std::u16string& name);
+    virtual bool hasAttributeNS(const Nullable<std::u16string>& _namespace, const std::u16string& localName);
     virtual html::HTMLCollection getElementsByTagName(const std::u16string& localName);
     virtual html::HTMLCollection getElementsByTagNameNS(const Nullable<std::u16string>& _namespace, const std::u16string& localName);
     virtual html::HTMLCollection getElementsByClassName(const std::u16string& classNames);
@@ -131,7 +131,7 @@ public:
         return Element::getMetaData();
     }
 
-    static HTMLCollectionImp* getElementsByTagName(ElementImp* element, const std::u16string& qualifiedName);
+    static HTMLCollectionImp* getElementsByTagName(ElementImp* element, const std::u16string& localName);
     static HTMLCollectionImp* getElementsByClassName(ElementImp* element, const std::u16string& classNames);
 };
 
