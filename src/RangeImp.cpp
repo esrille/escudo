@@ -14,135 +14,153 @@ namespace dom
 namespace bootstrap
 {
 
-Node RangeImp::getStartContainer() throw(DOMException)
+Node RangeImp::getStartContainer()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-int RangeImp::getStartOffset() throw(DOMException)
+unsigned int RangeImp::getStartOffset()
 {
     // TODO: implement me!
     return 0;
 }
 
-Node RangeImp::getEndContainer() throw(DOMException)
+Node RangeImp::getEndContainer()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-int RangeImp::getEndOffset() throw(DOMException)
+unsigned int RangeImp::getEndOffset()
 {
     // TODO: implement me!
     return 0;
 }
 
-bool RangeImp::getCollapsed() throw(DOMException)
+bool RangeImp::getCollapsed()
 {
     // TODO: implement me!
     return 0;
 }
 
-Node RangeImp::getCommonAncestorContainer() throw(DOMException)
+Node RangeImp::getCommonAncestorContainer()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void RangeImp::setStart(Node refNode, int offset) throw(ranges::RangeException, DOMException)
+void RangeImp::setStart(Node refNode, unsigned int offset)
 {
     // TODO: implement me!
 }
 
-void RangeImp::setEnd(Node refNode, int offset) throw(ranges::RangeException, DOMException)
+void RangeImp::setEnd(Node refNode, unsigned int offset)
 {
     // TODO: implement me!
 }
 
-void RangeImp::setStartBefore(Node refNode) throw(ranges::RangeException, DOMException)
+void RangeImp::setStartBefore(Node refNode)
 {
     // TODO: implement me!
 }
 
-void RangeImp::setStartAfter(Node refNode) throw(ranges::RangeException, DOMException)
+void RangeImp::setStartAfter(Node refNode)
 {
     // TODO: implement me!
 }
 
-void RangeImp::setEndBefore(Node refNode) throw(ranges::RangeException, DOMException)
+void RangeImp::setEndBefore(Node refNode)
 {
     // TODO: implement me!
 }
 
-void RangeImp::setEndAfter(Node refNode) throw(ranges::RangeException, DOMException)
+void RangeImp::setEndAfter(Node refNode)
 {
     // TODO: implement me!
 }
 
-void RangeImp::collapse(bool toStart) throw(DOMException)
+void RangeImp::collapse(bool toStart)
 {
     // TODO: implement me!
 }
 
-void RangeImp::selectNode(Node refNode) throw(ranges::RangeException, DOMException)
+void RangeImp::selectNode(Node refNode)
 {
     // TODO: implement me!
 }
 
-void RangeImp::selectNodeContents(Node refNode) throw(ranges::RangeException, DOMException)
+void RangeImp::selectNodeContents(Node refNode)
 {
     // TODO: implement me!
 }
 
-short RangeImp::compareBoundaryPoints(unsigned short how, ranges::Range sourceRange) throw(DOMException)
+short RangeImp::compareBoundaryPoints(unsigned short how, ranges::Range sourceRange)
 {
     // TODO: implement me!
     return 0;
 }
 
-void RangeImp::deleteContents() throw(DOMException)
+void RangeImp::deleteContents()
 {
     // TODO: implement me!
 }
 
-DocumentFragment RangeImp::extractContents() throw(DOMException)
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-DocumentFragment RangeImp::cloneContents() throw(DOMException)
+DocumentFragment RangeImp::extractContents()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void RangeImp::insertNode(Node newNode) throw(DOMException, ranges::RangeException)
-{
-    // TODO: implement me!
-}
-
-void RangeImp::surroundContents(Node newParent) throw(DOMException, ranges::RangeException)
-{
-    // TODO: implement me!
-}
-
-ranges::Range RangeImp::cloneRange() throw(DOMException)
+DocumentFragment RangeImp::cloneContents()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-std::u16string RangeImp::toString() throw(DOMException)
+void RangeImp::insertNode(Node node)
+{
+    // TODO: implement me!
+}
+
+void RangeImp::surroundContents(Node newParent)
+{
+    // TODO: implement me!
+}
+
+ranges::Range RangeImp::cloneRange()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+void RangeImp::detach()
+{
+    // TODO: implement me!
+}
+
+bool RangeImp::isPointInRange(Node node, unsigned int offset)
+{
+    // TODO: implement me!
+    return 0;
+}
+
+short RangeImp::comparePoint(Node node, unsigned int offset)
+{
+    // TODO: implement me!
+    return 0;
+}
+
+bool RangeImp::intersectsNode(Node node)
+{
+    // TODO: implement me!
+    return 0;
+}
+
+std::u16string RangeImp::toString()
 {
     // TODO: implement me!
     return u"";
-}
-
-void RangeImp::detach() throw(DOMException)
-{
-    // TODO: implement me!
 }
 
 views::ClientRectList RangeImp::getClientRects()

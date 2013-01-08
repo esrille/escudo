@@ -227,6 +227,8 @@ interface Document : Node {
   Event createEvent(DOMString eventInterfaceName);
 };
 
+interface XMLDocument : Document {};
+
 interface DOMImplementation {
   boolean hasFeature(DOMString feature, [TreatNullAs=EmptyString] DOMString version);
 
@@ -305,6 +307,117 @@ interface Text : CharacterData {
 
 interface Comment : CharacterData {
 };
+
+};
+
+module ranges
+{
+
+typedef dom::Node Node;
+typedef dom::DocumentFragment DocumentFragment;
+
+interface Range {
+  readonly attribute Node startContainer;
+  readonly attribute unsigned long startOffset;
+  readonly attribute Node endContainer;
+  readonly attribute unsigned long endOffset;
+  readonly attribute boolean collapsed;
+  readonly attribute Node commonAncestorContainer;
+
+  void setStart(Node refNode, unsigned long offset);
+  void setEnd(Node refNode, unsigned long offset);
+  void setStartBefore(Node refNode);
+  void setStartAfter(Node refNode);
+  void setEndBefore(Node refNode);
+  void setEndAfter(Node refNode);
+  void collapse(boolean toStart);
+  void selectNode(Node refNode);
+  void selectNodeContents(Node refNode);
+
+  const unsigned short START_TO_START = 0;
+  const unsigned short START_TO_END = 1;
+  const unsigned short END_TO_END = 2;
+  const unsigned short END_TO_START = 3;
+  short compareBoundaryPoints(unsigned short how, Range sourceRange);
+
+  void deleteContents();
+  DocumentFragment extractContents();
+  DocumentFragment cloneContents();
+  void insertNode(Node node);
+  void surroundContents(Node newParent);
+
+  Range cloneRange();
+  void detach();
+
+  boolean isPointInRange(Node node, unsigned long offset);
+  short comparePoint(Node node, unsigned long offset);
+
+  boolean intersectsNode(Node node);
+
+  stringifier DOMString ();
+};
+
+};
+
+module traversal {
+
+typedef dom::Node Node;
+
+interface NodeIterator {
+  readonly attribute Node root;
+  readonly attribute Node? referenceNode;
+  readonly attribute boolean pointerBeforeReferenceNode;
+  readonly attribute unsigned long whatToShow;
+  readonly attribute NodeFilter? filter;
+
+  Node? nextNode();
+  Node? previousNode();
+
+  void detach();
+};
+
+interface TreeWalker {
+  readonly attribute Node root;
+  readonly attribute unsigned long whatToShow;
+  readonly attribute NodeFilter? filter;
+           attribute Node currentNode;
+
+  Node? parentNode();
+  Node? firstChild();
+  Node? lastChild();
+  Node? previousSibling();
+  Node? nextSibling();
+  Node? previousNode();
+  Node? nextNode();
+};
+
+callback interface NodeFilter {
+  // Constants for acceptNode()
+  const unsigned short FILTER_ACCEPT = 1;
+  const unsigned short FILTER_REJECT = 2;
+  const unsigned short FILTER_SKIP = 3;
+
+  // Constants for whatToShow
+  const unsigned long SHOW_ALL = 0xFFFFFFFF;
+  const unsigned long SHOW_ELEMENT = 0x1;
+  const unsigned long SHOW_ATTRIBUTE = 0x2; // historical
+  const unsigned long SHOW_TEXT = 0x4;
+  const unsigned long SHOW_CDATA_SECTION = 0x8; // historical
+  const unsigned long SHOW_ENTITY_REFERENCE = 0x10; // historical
+  const unsigned long SHOW_ENTITY = 0x20; // historical
+  const unsigned long SHOW_PROCESSING_INSTRUCTION = 0x40;
+  const unsigned long SHOW_COMMENT = 0x80;
+  const unsigned long SHOW_DOCUMENT = 0x100;
+  const unsigned long SHOW_DOCUMENT_TYPE = 0x200;
+  const unsigned long SHOW_DOCUMENT_FRAGMENT = 0x400;
+  const unsigned long SHOW_NOTATION = 0x800; // historical
+
+  unsigned short acceptNode(Node node);
+};
+
+};
+
+module dom {
 
 interface NodeList {
   getter Node? item(unsigned long index);

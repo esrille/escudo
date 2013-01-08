@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 class TextIterator
 {
     UBreakIterator* bi;
-    size_t current;
+    int32_t current;
     size_t length;
 public:
     TextIterator(UBreakIteratorType type = UBRK_LINE) :

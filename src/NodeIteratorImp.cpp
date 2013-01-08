@@ -20,6 +20,18 @@ Node NodeIteratorImp::getRoot()
     return static_cast<Object*>(0);
 }
 
+Node NodeIteratorImp::getReferenceNode()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
+bool NodeIteratorImp::getPointerBeforeReferenceNode()
+{
+    // TODO: implement me!
+    return 0;
+}
+
 unsigned int NodeIteratorImp::getWhatToShow()
 {
     // TODO: implement me!
@@ -32,19 +44,13 @@ traversal::NodeFilter NodeIteratorImp::getFilter()
     return static_cast<Object*>(0);
 }
 
-bool NodeIteratorImp::getExpandEntityReferences()
-{
-    // TODO: implement me!
-    return 0;
-}
-
-Node NodeIteratorImp::nextNode() throw(DOMException)
+Node NodeIteratorImp::nextNode()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-Node NodeIteratorImp::previousNode() throw(DOMException)
+Node NodeIteratorImp::previousNode()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);

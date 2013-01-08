@@ -129,8 +129,7 @@ am_libeshtml5_a_OBJECTS = Any.$(OBJEXT) utf.$(OBJEXT) \
 	CompositionEventImp.$(OBJEXT) \
 	CompositionEventInitImp.$(OBJEXT) CustomEventImp.$(OBJEXT) \
 	CustomEventInitImp.$(OBJEXT) DocumentFragmentImp.$(OBJEXT) \
-	DocumentImp.$(OBJEXT) DocumentRangeImp.$(OBJEXT) \
-	DocumentTraversalImp.$(OBJEXT) DocumentTypeImp.$(OBJEXT) \
+	DocumentImp.$(OBJEXT) DocumentTypeImp.$(OBJEXT) \
 	DOMErrorImp.$(OBJEXT) DOMImplementationImp.$(OBJEXT) \
 	DOMSettableTokenListImp.$(OBJEXT) DOMStringListImp.$(OBJEXT) \
 	DOMStringMapImp.$(OBJEXT) DOMTokenListImp.$(OBJEXT) \
@@ -163,16 +162,16 @@ am_libeshtml5_a_OBJECTS = Any.$(OBJEXT) utf.$(OBJEXT) \
 	TreeWalkerImp.$(OBJEXT) UIEventImp.$(OBJEXT) \
 	UIEventInitImp.$(OBJEXT) WheelEventImp.$(OBJEXT) \
 	WheelEventInitImp.$(OBJEXT) WindowImp.$(OBJEXT) \
-	CounterImp.$(OBJEXT) CSS2PropertiesImp.$(OBJEXT) \
-	CSSCharsetRuleImp.$(OBJEXT) CSSFontFaceRuleImp.$(OBJEXT) \
-	CSSImportRuleImp.$(OBJEXT) CSSMediaRuleImp.$(OBJEXT) \
-	CSSNamespaceRuleImp.$(OBJEXT) CSSPageRuleImp.$(OBJEXT) \
-	CSSPrimitiveValueImp.$(OBJEXT) CSSRuleImp.$(OBJEXT) \
-	CSSRuleListImp.$(OBJEXT) CSSStyleDeclarationImp.$(OBJEXT) \
-	CSSStyleRuleImp.$(OBJEXT) CSSStyleSheetImp.$(OBJEXT) \
-	CSSUnknownRuleImp.$(OBJEXT) CSSValueImp.$(OBJEXT) \
-	CSSValueListImp.$(OBJEXT) RectImp.$(OBJEXT) \
-	RGBColorImp.$(OBJEXT) BlobImp.$(OBJEXT) \
+	XMLDocumentImp.$(OBJEXT) CounterImp.$(OBJEXT) \
+	CSS2PropertiesImp.$(OBJEXT) CSSCharsetRuleImp.$(OBJEXT) \
+	CSSFontFaceRuleImp.$(OBJEXT) CSSImportRuleImp.$(OBJEXT) \
+	CSSMediaRuleImp.$(OBJEXT) CSSNamespaceRuleImp.$(OBJEXT) \
+	CSSPageRuleImp.$(OBJEXT) CSSPrimitiveValueImp.$(OBJEXT) \
+	CSSRuleImp.$(OBJEXT) CSSRuleListImp.$(OBJEXT) \
+	CSSStyleDeclarationImp.$(OBJEXT) CSSStyleRuleImp.$(OBJEXT) \
+	CSSStyleSheetImp.$(OBJEXT) CSSUnknownRuleImp.$(OBJEXT) \
+	CSSValueImp.$(OBJEXT) CSSValueListImp.$(OBJEXT) \
+	RectImp.$(OBJEXT) RGBColorImp.$(OBJEXT) BlobImp.$(OBJEXT) \
 	BlobPropertyBagImp.$(OBJEXT) FileCallbackImp.$(OBJEXT) \
 	FileImp.$(OBJEXT) FileListImp.$(OBJEXT) \
 	FileReaderImp.$(OBJEXT) FileReaderSyncImp.$(OBJEXT) \
@@ -369,9 +368,8 @@ am__objects_1 = ArrayBuffer.$(OBJEXT) ArrayBufferView.$(OBJEXT) \
 	ValidityState.$(OBJEXT) VideoTrack.$(OBJEXT) \
 	VideoTrackList.$(OBJEXT) WindowBase64.$(OBJEXT) \
 	Window.$(OBJEXT) WindowModal.$(OBJEXT) WindowTimers.$(OBJEXT) \
-	DocumentRange.$(OBJEXT) Range.$(OBJEXT) LinkStyle.$(OBJEXT) \
-	MediaList.$(OBJEXT) StyleSheet.$(OBJEXT) SVGMatrix.$(OBJEXT) \
-	DocumentTraversal.$(OBJEXT) NodeFilter.$(OBJEXT) \
+	Range.$(OBJEXT) LinkStyle.$(OBJEXT) MediaList.$(OBJEXT) \
+	StyleSheet.$(OBJEXT) SVGMatrix.$(OBJEXT) NodeFilter.$(OBJEXT) \
 	NodeIterator.$(OBJEXT) TreeWalker.$(OBJEXT) \
 	ClientRect.$(OBJEXT) ClientRectList.$(OBJEXT) \
 	DocumentXBL.$(OBJEXT) ElementXBL.$(OBJEXT) \
@@ -730,8 +728,6 @@ idl_files = \
 	cssom.idl \
 	cssomview.idl \
 	dom2css.idl \
-	dom2ranges.idl \
-	dom2traversal.idl \
 	dom3events.idl \
 	domcore.idl \
 	eventsource.idl \
@@ -977,14 +973,12 @@ generated_headers = \
 	org/w3c/dom/html/Window.h \
 	org/w3c/dom/html/WindowModal.h \
 	org/w3c/dom/html/WindowTimers.h \
-	org/w3c/dom/ranges/DocumentRange.h \
 	org/w3c/dom/ranges/RangeException.h \
 	org/w3c/dom/ranges/Range.h \
 	org/w3c/dom/stylesheets/LinkStyle.h \
 	org/w3c/dom/stylesheets/MediaList.h \
 	org/w3c/dom/stylesheets/StyleSheet.h \
 	org/w3c/dom/svg/SVGMatrix.h \
-	org/w3c/dom/traversal/DocumentTraversal.h \
 	org/w3c/dom/traversal/NodeFilter.h \
 	org/w3c/dom/traversal/NodeIterator.h \
 	org/w3c/dom/traversal/TreeWalker.h \
@@ -1228,13 +1222,11 @@ generated_sources = \
 	org/w3c/dom/html/Window.cpp \
 	org/w3c/dom/html/WindowModal.cpp \
 	org/w3c/dom/html/WindowTimers.cpp \
-	org/w3c/dom/ranges/DocumentRange.cpp \
 	org/w3c/dom/ranges/Range.cpp \
 	org/w3c/dom/stylesheets/LinkStyle.cpp \
 	org/w3c/dom/stylesheets/MediaList.cpp \
 	org/w3c/dom/stylesheets/StyleSheet.cpp \
 	org/w3c/dom/svg/SVGMatrix.cpp \
-	org/w3c/dom/traversal/DocumentTraversal.cpp \
 	org/w3c/dom/traversal/NodeFilter.cpp \
 	org/w3c/dom/traversal/NodeIterator.cpp \
 	org/w3c/dom/traversal/TreeWalker.cpp \
@@ -1351,9 +1343,7 @@ libeshtml5_a_SOURCES = org/w3c/dom/ObjectArray.h src/Object.h \
 	src/CustomEventImp.cpp src/CustomEventImp.h \
 	src/CustomEventInitImp.cpp src/CustomEventInitImp.h \
 	src/DocumentFragmentImp.cpp src/DocumentFragmentImp.h \
-	src/DocumentImp.cpp src/DocumentImp.h src/DocumentRangeImp.cpp \
-	src/DocumentRangeImp.h src/DocumentTraversalImp.cpp \
-	src/DocumentTraversalImp.h src/DocumentTypeImp.cpp \
+	src/DocumentImp.cpp src/DocumentImp.h src/DocumentTypeImp.cpp \
 	src/DocumentTypeImp.h src/DOMErrorImp.cpp src/DOMErrorImp.h \
 	src/DOMImplementationImp.cpp src/DOMImplementationImp.h \
 	src/DOMSettableTokenListImp.cpp src/DOMSettableTokenListImp.h \
@@ -1413,7 +1403,8 @@ libeshtml5_a_SOURCES = org/w3c/dom/ObjectArray.h src/Object.h \
 	src/UIEventImp.h src/UIEventInitImp.cpp src/UIEventInitImp.h \
 	src/WheelEventImp.cpp src/WheelEventImp.h \
 	src/WheelEventInitImp.cpp src/WheelEventInitImp.h \
-	src/WindowImp.cpp src/WindowImp.h src/css/CounterImp.cpp \
+	src/WindowImp.cpp src/WindowImp.h src/XMLDocumentImp.cpp \
+	src/XMLDocumentImp.h src/css/CounterImp.cpp \
 	src/css/CounterImp.h src/css/CSS2PropertiesImp.cpp \
 	src/css/CSS2PropertiesImp.h src/css/CSSCharsetRuleImp.cpp \
 	src/css/CSSCharsetRuleImp.h src/css/CSSFontFaceRuleImp.cpp \
@@ -2151,10 +2142,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DocumentFragment.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DocumentFragmentImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DocumentImp.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DocumentRange.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DocumentRangeImp.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DocumentTraversal.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DocumentTraversalImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DocumentType.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DocumentTypeImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DocumentWindow.Po@am__quote@
@@ -2566,6 +2553,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XBLImplementationImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XBLImplementationList.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XBLImplementationListImp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XMLDocumentImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XMLHttpRequest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XMLHttpRequestEventTarget.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XMLHttpRequestEventTargetImp.Po@am__quote@
@@ -3379,34 +3367,6 @@ DocumentImp.obj: src/DocumentImp.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/DocumentImp.cpp' object='DocumentImp.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DocumentImp.obj `if test -f 'src/DocumentImp.cpp'; then $(CYGPATH_W) 'src/DocumentImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/DocumentImp.cpp'; fi`
-
-DocumentRangeImp.o: src/DocumentRangeImp.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DocumentRangeImp.o -MD -MP -MF $(DEPDIR)/DocumentRangeImp.Tpo -c -o DocumentRangeImp.o `test -f 'src/DocumentRangeImp.cpp' || echo '$(srcdir)/'`src/DocumentRangeImp.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/DocumentRangeImp.Tpo $(DEPDIR)/DocumentRangeImp.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/DocumentRangeImp.cpp' object='DocumentRangeImp.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DocumentRangeImp.o `test -f 'src/DocumentRangeImp.cpp' || echo '$(srcdir)/'`src/DocumentRangeImp.cpp
-
-DocumentRangeImp.obj: src/DocumentRangeImp.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DocumentRangeImp.obj -MD -MP -MF $(DEPDIR)/DocumentRangeImp.Tpo -c -o DocumentRangeImp.obj `if test -f 'src/DocumentRangeImp.cpp'; then $(CYGPATH_W) 'src/DocumentRangeImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/DocumentRangeImp.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/DocumentRangeImp.Tpo $(DEPDIR)/DocumentRangeImp.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/DocumentRangeImp.cpp' object='DocumentRangeImp.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DocumentRangeImp.obj `if test -f 'src/DocumentRangeImp.cpp'; then $(CYGPATH_W) 'src/DocumentRangeImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/DocumentRangeImp.cpp'; fi`
-
-DocumentTraversalImp.o: src/DocumentTraversalImp.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DocumentTraversalImp.o -MD -MP -MF $(DEPDIR)/DocumentTraversalImp.Tpo -c -o DocumentTraversalImp.o `test -f 'src/DocumentTraversalImp.cpp' || echo '$(srcdir)/'`src/DocumentTraversalImp.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/DocumentTraversalImp.Tpo $(DEPDIR)/DocumentTraversalImp.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/DocumentTraversalImp.cpp' object='DocumentTraversalImp.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DocumentTraversalImp.o `test -f 'src/DocumentTraversalImp.cpp' || echo '$(srcdir)/'`src/DocumentTraversalImp.cpp
-
-DocumentTraversalImp.obj: src/DocumentTraversalImp.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DocumentTraversalImp.obj -MD -MP -MF $(DEPDIR)/DocumentTraversalImp.Tpo -c -o DocumentTraversalImp.obj `if test -f 'src/DocumentTraversalImp.cpp'; then $(CYGPATH_W) 'src/DocumentTraversalImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/DocumentTraversalImp.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/DocumentTraversalImp.Tpo $(DEPDIR)/DocumentTraversalImp.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/DocumentTraversalImp.cpp' object='DocumentTraversalImp.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DocumentTraversalImp.obj `if test -f 'src/DocumentTraversalImp.cpp'; then $(CYGPATH_W) 'src/DocumentTraversalImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/DocumentTraversalImp.cpp'; fi`
 
 DocumentTypeImp.o: src/DocumentTypeImp.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DocumentTypeImp.o -MD -MP -MF $(DEPDIR)/DocumentTypeImp.Tpo -c -o DocumentTypeImp.o `test -f 'src/DocumentTypeImp.cpp' || echo '$(srcdir)/'`src/DocumentTypeImp.cpp
@@ -4289,6 +4249,20 @@ WindowImp.obj: src/WindowImp.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/WindowImp.cpp' object='WindowImp.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o WindowImp.obj `if test -f 'src/WindowImp.cpp'; then $(CYGPATH_W) 'src/WindowImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/WindowImp.cpp'; fi`
+
+XMLDocumentImp.o: src/XMLDocumentImp.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XMLDocumentImp.o -MD -MP -MF $(DEPDIR)/XMLDocumentImp.Tpo -c -o XMLDocumentImp.o `test -f 'src/XMLDocumentImp.cpp' || echo '$(srcdir)/'`src/XMLDocumentImp.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/XMLDocumentImp.Tpo $(DEPDIR)/XMLDocumentImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/XMLDocumentImp.cpp' object='XMLDocumentImp.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XMLDocumentImp.o `test -f 'src/XMLDocumentImp.cpp' || echo '$(srcdir)/'`src/XMLDocumentImp.cpp
+
+XMLDocumentImp.obj: src/XMLDocumentImp.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XMLDocumentImp.obj -MD -MP -MF $(DEPDIR)/XMLDocumentImp.Tpo -c -o XMLDocumentImp.obj `if test -f 'src/XMLDocumentImp.cpp'; then $(CYGPATH_W) 'src/XMLDocumentImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/XMLDocumentImp.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/XMLDocumentImp.Tpo $(DEPDIR)/XMLDocumentImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/XMLDocumentImp.cpp' object='XMLDocumentImp.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XMLDocumentImp.obj `if test -f 'src/XMLDocumentImp.cpp'; then $(CYGPATH_W) 'src/XMLDocumentImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/XMLDocumentImp.cpp'; fi`
 
 CounterImp.o: src/css/CounterImp.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT CounterImp.o -MD -MP -MF $(DEPDIR)/CounterImp.Tpo -c -o CounterImp.o `test -f 'src/css/CounterImp.cpp' || echo '$(srcdir)/'`src/css/CounterImp.cpp
@@ -9778,20 +9752,6 @@ WindowTimers.obj: org/w3c/dom/html/WindowTimers.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o WindowTimers.obj `if test -f 'org/w3c/dom/html/WindowTimers.cpp'; then $(CYGPATH_W) 'org/w3c/dom/html/WindowTimers.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/html/WindowTimers.cpp'; fi`
 
-DocumentRange.o: org/w3c/dom/ranges/DocumentRange.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DocumentRange.o -MD -MP -MF $(DEPDIR)/DocumentRange.Tpo -c -o DocumentRange.o `test -f 'org/w3c/dom/ranges/DocumentRange.cpp' || echo '$(srcdir)/'`org/w3c/dom/ranges/DocumentRange.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/DocumentRange.Tpo $(DEPDIR)/DocumentRange.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/ranges/DocumentRange.cpp' object='DocumentRange.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DocumentRange.o `test -f 'org/w3c/dom/ranges/DocumentRange.cpp' || echo '$(srcdir)/'`org/w3c/dom/ranges/DocumentRange.cpp
-
-DocumentRange.obj: org/w3c/dom/ranges/DocumentRange.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DocumentRange.obj -MD -MP -MF $(DEPDIR)/DocumentRange.Tpo -c -o DocumentRange.obj `if test -f 'org/w3c/dom/ranges/DocumentRange.cpp'; then $(CYGPATH_W) 'org/w3c/dom/ranges/DocumentRange.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/ranges/DocumentRange.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/DocumentRange.Tpo $(DEPDIR)/DocumentRange.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/ranges/DocumentRange.cpp' object='DocumentRange.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DocumentRange.obj `if test -f 'org/w3c/dom/ranges/DocumentRange.cpp'; then $(CYGPATH_W) 'org/w3c/dom/ranges/DocumentRange.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/ranges/DocumentRange.cpp'; fi`
-
 Range.o: org/w3c/dom/ranges/Range.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Range.o -MD -MP -MF $(DEPDIR)/Range.Tpo -c -o Range.o `test -f 'org/w3c/dom/ranges/Range.cpp' || echo '$(srcdir)/'`org/w3c/dom/ranges/Range.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/Range.Tpo $(DEPDIR)/Range.Po
@@ -9861,20 +9821,6 @@ SVGMatrix.obj: org/w3c/dom/svg/SVGMatrix.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/svg/SVGMatrix.cpp' object='SVGMatrix.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o SVGMatrix.obj `if test -f 'org/w3c/dom/svg/SVGMatrix.cpp'; then $(CYGPATH_W) 'org/w3c/dom/svg/SVGMatrix.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/svg/SVGMatrix.cpp'; fi`
-
-DocumentTraversal.o: org/w3c/dom/traversal/DocumentTraversal.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DocumentTraversal.o -MD -MP -MF $(DEPDIR)/DocumentTraversal.Tpo -c -o DocumentTraversal.o `test -f 'org/w3c/dom/traversal/DocumentTraversal.cpp' || echo '$(srcdir)/'`org/w3c/dom/traversal/DocumentTraversal.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/DocumentTraversal.Tpo $(DEPDIR)/DocumentTraversal.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/traversal/DocumentTraversal.cpp' object='DocumentTraversal.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DocumentTraversal.o `test -f 'org/w3c/dom/traversal/DocumentTraversal.cpp' || echo '$(srcdir)/'`org/w3c/dom/traversal/DocumentTraversal.cpp
-
-DocumentTraversal.obj: org/w3c/dom/traversal/DocumentTraversal.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DocumentTraversal.obj -MD -MP -MF $(DEPDIR)/DocumentTraversal.Tpo -c -o DocumentTraversal.obj `if test -f 'org/w3c/dom/traversal/DocumentTraversal.cpp'; then $(CYGPATH_W) 'org/w3c/dom/traversal/DocumentTraversal.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/traversal/DocumentTraversal.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/DocumentTraversal.Tpo $(DEPDIR)/DocumentTraversal.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/traversal/DocumentTraversal.cpp' object='DocumentTraversal.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DocumentTraversal.obj `if test -f 'org/w3c/dom/traversal/DocumentTraversal.cpp'; then $(CYGPATH_W) 'org/w3c/dom/traversal/DocumentTraversal.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/traversal/DocumentTraversal.cpp'; fi`
 
 NodeFilter.o: org/w3c/dom/traversal/NodeFilter.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT NodeFilter.o -MD -MP -MF $(DEPDIR)/NodeFilter.Tpo -c -o NodeFilter.o `test -f 'org/w3c/dom/traversal/NodeFilter.cpp' || echo '$(srcdir)/'`org/w3c/dom/traversal/NodeFilter.cpp

@@ -12,9 +12,8 @@
 
 #include <org/w3c/dom/traversal/NodeIterator.h>
 
-#include <org/w3c/dom/traversal/NodeFilter.h>
-#include <org/w3c/dom/DOMException.h>
 #include <org/w3c/dom/Node.h>
+#include <org/w3c/dom/traversal/NodeFilter.h>
 
 namespace org
 {
@@ -29,11 +28,12 @@ class NodeIteratorImp : public ObjectMixin<NodeIteratorImp>
 public:
     // NodeIterator
     Node getRoot();
+    Node getReferenceNode();
+    bool getPointerBeforeReferenceNode();
     unsigned int getWhatToShow();
     traversal::NodeFilter getFilter();
-    bool getExpandEntityReferences();
-    Node nextNode() throw(DOMException);
-    Node previousNode() throw(DOMException);
+    Node nextNode();
+    Node previousNode();
     void detach();
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)

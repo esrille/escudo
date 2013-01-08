@@ -3,7 +3,7 @@
 // implementation.  Permission to use, copy, modify and distribute
 // this file in any software license is hereby granted.
 
-#include "DocumentRangeImp.h"
+#include "XMLDocumentImp.h"
 
 namespace org
 {
@@ -14,10 +14,10 @@ namespace dom
 namespace bootstrap
 {
 
-ranges::Range DocumentRangeImp::createRange()
+bool XMLDocumentImp::load(const std::u16string& url)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return 0;
 }
 
 }

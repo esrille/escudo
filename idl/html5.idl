@@ -211,15 +211,11 @@ partial interface Document {
   [LenientThis] attribute EventHandler onreadystatechange;
 };
 
-};
-
-#if 0
-
 partial interface XMLDocument {
   boolean load(DOMString url);
 };
 
-#endif
+};
 
 module html {
 

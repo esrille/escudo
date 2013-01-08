@@ -13,8 +13,6 @@ idl_files = \
 	cssom.idl \
 	cssomview.idl \
 	dom2css.idl \
-	dom2ranges.idl \
-	dom2traversal.idl \
 	dom3events.idl \
 	domcore.idl \
 	eventsource.idl \
@@ -260,14 +258,12 @@ generated_headers = \
 	org/w3c/dom/html/Window.h \
 	org/w3c/dom/html/WindowModal.h \
 	org/w3c/dom/html/WindowTimers.h \
-	org/w3c/dom/ranges/DocumentRange.h \
 	org/w3c/dom/ranges/RangeException.h \
 	org/w3c/dom/ranges/Range.h \
 	org/w3c/dom/stylesheets/LinkStyle.h \
 	org/w3c/dom/stylesheets/MediaList.h \
 	org/w3c/dom/stylesheets/StyleSheet.h \
 	org/w3c/dom/svg/SVGMatrix.h \
-	org/w3c/dom/traversal/DocumentTraversal.h \
 	org/w3c/dom/traversal/NodeFilter.h \
 	org/w3c/dom/traversal/NodeIterator.h \
 	org/w3c/dom/traversal/TreeWalker.h \
@@ -511,13 +507,11 @@ generated_sources = \
 	org/w3c/dom/html/Window.cpp \
 	org/w3c/dom/html/WindowModal.cpp \
 	org/w3c/dom/html/WindowTimers.cpp \
-	org/w3c/dom/ranges/DocumentRange.cpp \
 	org/w3c/dom/ranges/Range.cpp \
 	org/w3c/dom/stylesheets/LinkStyle.cpp \
 	org/w3c/dom/stylesheets/MediaList.cpp \
 	org/w3c/dom/stylesheets/StyleSheet.cpp \
 	org/w3c/dom/svg/SVGMatrix.cpp \
-	org/w3c/dom/traversal/DocumentTraversal.cpp \
 	org/w3c/dom/traversal/NodeFilter.cpp \
 	org/w3c/dom/traversal/NodeIterator.cpp \
 	org/w3c/dom/traversal/TreeWalker.cpp \
@@ -742,10 +736,6 @@ libeshtml5_a_SOURCES += \
 	src/DocumentFragmentImp.h \
 	src/DocumentImp.cpp \
 	src/DocumentImp.h \
-	src/DocumentRangeImp.cpp \
-	src/DocumentRangeImp.h \
-	src/DocumentTraversalImp.cpp \
-	src/DocumentTraversalImp.h \
 	src/DocumentTypeImp.cpp \
 	src/DocumentTypeImp.h \
 	src/DOMErrorImp.cpp \
@@ -872,6 +862,8 @@ libeshtml5_a_SOURCES += \
 	src/WheelEventInitImp.h \
 	src/WindowImp.cpp \
 	src/WindowImp.h \
+	src/XMLDocumentImp.cpp \
+	src/XMLDocumentImp.h \
 	src/css/CounterImp.cpp \
 	src/css/CounterImp.h \
 	src/css/CSS2PropertiesImp.cpp \

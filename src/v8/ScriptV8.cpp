@@ -37,6 +37,7 @@
 #include "NodeListImp.h"
 #include "ProcessingInstructionImp.h"
 #include "TextImp.h"
+#include "XMLDocumentImp.h"
 
 #include "css/CounterImp.h"
 #include "css/CSS2PropertiesImp.h"
@@ -244,7 +245,6 @@
 // #include "WindowTimersImp.h"
 
 // ranges
-#include "DocumentRangeImp.h"
 // #include "RangeExceptionImp.h"
 #include "RangeImp.h"
 
@@ -257,7 +257,6 @@
 #include "svg/SVGMatrixImp.h"
 
 // traversal
-#include "DocumentTraversalImp.h"
 #include "NodeFilterImp.h"
 #include "NodeIteratorImp.h"
 #include "TreeWalkerImp.h"
@@ -343,6 +342,7 @@ void registerClasses(v8::Handle<v8::ObjectTemplate> global)
 //    NodeListImp::setStaticPrivate(new NativeClass(global, NodeListImp::getMetaData()));
     ProcessingInstructionImp::setStaticPrivate(new NativeClass(global, ProcessingInstructionImp::getMetaData()));
     TextImp::setStaticPrivate(new NativeClass(global, TextImp::getMetaData()));
+    XMLDocumentImp::setStaticPrivate(new NativeClass(global, XMLDocumentImp::getMetaData()));
     CounterImp::setStaticPrivate(new NativeClass(global, CounterImp::getMetaData()));
     CSS2PropertiesImp::setStaticPrivate(new NativeClass(global, CSS2PropertiesImp::getMetaData()));
     CSSCharsetRuleImp::setStaticPrivate(new NativeClass(global, CSSCharsetRuleImp::getMetaData()));
@@ -532,13 +532,11 @@ void registerClasses(v8::Handle<v8::ObjectTemplate> global)
     VideoTrackImp::setStaticPrivate(new NativeClass(global, VideoTrackImp::getMetaData()));
     VideoTrackListImp::setStaticPrivate(new NativeClass(global, VideoTrackListImp::getMetaData()));
     WindowImp::setStaticPrivate(new NativeClass(global, WindowImp::getMetaData()));
-    DocumentRangeImp::setStaticPrivate(new NativeClass(global, DocumentRangeImp::getMetaData()));
     RangeImp::setStaticPrivate(new NativeClass(global, RangeImp::getMetaData()));
     LinkStyleImp::setStaticPrivate(new NativeClass(global, LinkStyleImp::getMetaData()));
 //    MediaListImp::setStaticPrivate(new NativeClass(global, MediaListImp::getMetaData()));
 //    StyleSheetImp::setStaticPrivate(new NativeClass(global, StyleSheetImp::getMetaData()));
     SVGMatrixImp::setStaticPrivate(new NativeClass(global, SVGMatrixImp::getMetaData()));
-    DocumentTraversalImp::setStaticPrivate(new NativeClass(global, DocumentTraversalImp::getMetaData()));
     NodeFilterImp::setStaticPrivate(new NativeClass(global, NodeFilterImp::getMetaData()));
     NodeIteratorImp::setStaticPrivate(new NativeClass(global, NodeIteratorImp::getMetaData()));
     TreeWalkerImp::setStaticPrivate(new NativeClass(global, TreeWalkerImp::getMetaData()));

@@ -14,11 +14,9 @@
 
 #include <org/w3c/dom/views/ClientRectList.h>
 #include <org/w3c/dom/views/ClientRect.h>
-#include <org/w3c/dom/ranges/RangeException.h>
-#include <org/w3c/dom/ranges/Range.h>
-#include <org/w3c/dom/DOMException.h>
 #include <org/w3c/dom/Node.h>
 #include <org/w3c/dom/DocumentFragment.h>
+#include <org/w3c/dom/ranges/Range.h>
 
 namespace org
 {
@@ -32,31 +30,34 @@ class RangeImp : public ObjectMixin<RangeImp>
 {
 public:
     // Range
-    Node getStartContainer() throw(DOMException);
-    int getStartOffset() throw(DOMException);
-    Node getEndContainer() throw(DOMException);
-    int getEndOffset() throw(DOMException);
-    bool getCollapsed() throw(DOMException);
-    Node getCommonAncestorContainer() throw(DOMException);
-    void setStart(Node refNode, int offset) throw(ranges::RangeException, DOMException);
-    void setEnd(Node refNode, int offset) throw(ranges::RangeException, DOMException);
-    void setStartBefore(Node refNode) throw(ranges::RangeException, DOMException);
-    void setStartAfter(Node refNode) throw(ranges::RangeException, DOMException);
-    void setEndBefore(Node refNode) throw(ranges::RangeException, DOMException);
-    void setEndAfter(Node refNode) throw(ranges::RangeException, DOMException);
-    void collapse(bool toStart) throw(DOMException);
-    void selectNode(Node refNode) throw(ranges::RangeException, DOMException);
-    void selectNodeContents(Node refNode) throw(ranges::RangeException, DOMException);
-    short compareBoundaryPoints(unsigned short how, ranges::Range sourceRange) throw(DOMException);
-    void deleteContents() throw(DOMException);
-    DocumentFragment extractContents() throw(DOMException);
-    DocumentFragment cloneContents() throw(DOMException);
-    void insertNode(Node newNode) throw(DOMException, ranges::RangeException);
-    void surroundContents(Node newParent) throw(DOMException, ranges::RangeException);
-    ranges::Range cloneRange() throw(DOMException);
-    std::u16string toString() throw(DOMException);
-    void detach() throw(DOMException);
-    // Range-52
+    Node getStartContainer();
+    unsigned int getStartOffset();
+    Node getEndContainer();
+    unsigned int getEndOffset();
+    bool getCollapsed();
+    Node getCommonAncestorContainer();
+    void setStart(Node refNode, unsigned int offset);
+    void setEnd(Node refNode, unsigned int offset);
+    void setStartBefore(Node refNode);
+    void setStartAfter(Node refNode);
+    void setEndBefore(Node refNode);
+    void setEndAfter(Node refNode);
+    void collapse(bool toStart);
+    void selectNode(Node refNode);
+    void selectNodeContents(Node refNode);
+    short compareBoundaryPoints(unsigned short how, ranges::Range sourceRange);
+    void deleteContents();
+    DocumentFragment extractContents();
+    DocumentFragment cloneContents();
+    void insertNode(Node node);
+    void surroundContents(Node newParent);
+    ranges::Range cloneRange();
+    void detach();
+    bool isPointInRange(Node node, unsigned int offset);
+    short comparePoint(Node node, unsigned int offset);
+    bool intersectsNode(Node node);
+    std::u16string toString();
+    // Range-53
     views::ClientRectList getClientRects();
     views::ClientRect getBoundingClientRect();
     // Object
