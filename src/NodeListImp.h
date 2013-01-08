@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#ifndef NODELIST_IMP_H
-#define NODELIST_IMP_H
+#ifndef ORG_W3C_DOM_BOOTSTRAP_NODELISTIMP_H_INCLUDED
+#define ORG_W3C_DOM_BOOTSTRAP_NODELISTIMP_H_INCLUDED
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -34,8 +34,6 @@ class NodeListImp : public ObjectMixin<NodeListImp>
     std::deque<Node> list;
 
 public:
-    NodeListImp() {}
-
     void addItem(Node node) {
         list.push_back(node);
     }
@@ -64,4 +62,4 @@ public:
 
 }}}}  // org::w3c::dom::bootstrap
 
-#endif  // NODELIST_IMP_H
+#endif  // ORG_W3C_DOM_BOOTSTRAP_NODELISTIMP_H_INCLUDED
