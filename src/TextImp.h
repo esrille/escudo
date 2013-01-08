@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-#ifndef TEXT_IMP_H
-#define TEXT_IMP_H
+#ifndef ORG_W3C_DOM_BOOTSTRAP_TEXTIMP_H_INCLUDED
+#define ORG_W3C_DOM_BOOTSTRAP_TEXTIMP_H_INCLUDED
 
-#include <Object.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <org/w3c/dom/Text.h>
 
 #include "CharacterDataImp.h"
@@ -44,7 +47,6 @@ public:
     // Text
     virtual Text splitText(unsigned int offset);
     virtual std::u16string getWholeText();
-    virtual Text replaceWholeText(const std::u16string& data);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {
@@ -58,4 +60,4 @@ public:
 
 }}}}  // org::w3c::dom::bootstrap
 
-#endif  // TEXT_IMP_H
+#endif  // ORG_W3C_DOM_BOOTSTRAP_TEXTIMP_H_INCLUDED

@@ -271,11 +271,12 @@ interface Element : Node {
 };
 
 interface Attr {
+  readonly attribute DOMString name;
+           attribute DOMString value;
+
   readonly attribute DOMString? namespaceURI;
   readonly attribute DOMString? prefix;
   readonly attribute DOMString localName;
-  readonly attribute DOMString name;
-           attribute DOMString value;
 };
 
 interface DocumentType : Node {
@@ -292,12 +293,19 @@ interface CharacterData : Node {
   void insertData(unsigned long offset, DOMString data);
   void deleteData(unsigned long offset, unsigned long count);
   void replaceData(unsigned long offset, unsigned long count, DOMString data);
+
+#if 0
+  // NEW
+  void before((Node or DOMString)... nodes);
+  void after((Node or DOMString)... nodes);
+  void replace((Node or DOMString)... nodes);
+  void remove();
+#endif
 };
 
 interface Text : CharacterData {
   Text splitText(unsigned long offset);
   readonly attribute DOMString wholeText;
-  Text? replaceWholeText(DOMString data);
 };
 
 interface ProcessingInstruction : CharacterData {
@@ -418,6 +426,7 @@ callback interface NodeFilter {
 
 module dom {
 
+[ArrayClass]
 interface NodeList {
   getter Node? item(unsigned long index);
   readonly attribute unsigned long length;
@@ -437,6 +446,7 @@ interface HTMLCollection {
 
 module dom {
 
+[NoInterfaceObject]
 interface DOMStringList {
   readonly attribute unsigned long length;
   getter DOMString? item(unsigned long index);

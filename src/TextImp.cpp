@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,12 +35,6 @@ std::u16string TextImp::getWholeText()
 {
     // TODO: implement me!
     return u"";
-}
-
-Text TextImp::replaceWholeText(const std::u16string& data)
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
 }
 
 }}}}  // org::w3c::dom::bootstrap
