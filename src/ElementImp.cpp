@@ -24,9 +24,9 @@
 #include "AttrImp.h"
 #include "DocumentImp.h"
 #include "DOMTokenListImp.h"
-#include "NodeListImp.h"
 #include "MutationEventImp.h"
 #include "css/CSSSerialize.h"
+#include "html/HTMLCollectionImp.h"
 #include "html/HTMLTokenizer.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
@@ -345,40 +345,40 @@ html::HTMLCollection ElementImp::getChildren()
     return static_cast<Object*>(0);
 }
 
-NodeListImp* ElementImp::getElementsByTagName(ElementImp* element, const std::u16string& qualifiedName)
+HTMLCollectionImp* ElementImp::getElementsByTagName(ElementImp* element, const std::u16string& localName)
 {
-    NodeListImp* nodeList = new(std::nothrow) NodeListImp;
-    if (!nodeList)
+    HTMLCollectionImp* list = new(std::nothrow) HTMLCollectionImp;
+    if (!list)
         return 0;
 
-    if (qualifiedName == u"*") {
+    if (localName == u"*") {
         for (ElementImp* e = element; e; e = e->getNextElement())
-            nodeList->addItem(e);
+            list->addItem(e);
     } else {
         // TODO: Support non HTML document
         for (ElementImp* e = element; e; e = e->getNextElement()) {
-            if (e->getLocalName() == qualifiedName)
-                nodeList->addItem(e);
+            if (e->getLocalName() == localName)
+                list->addItem(e);
         }
     }
-    return nodeList;
+    return list;
 }
 
-NodeList ElementImp::getElementsByTagName(const std::u16string& qualifiedName)
+html::HTMLCollection ElementImp::getElementsByTagName(const std::u16string& localName)
 {
-    return getElementsByTagName(this, qualifiedName);
+    return getElementsByTagName(this, localName);
 }
 
-NodeList ElementImp::getElementsByTagNameNS(const std::u16string& _namespace, const std::u16string& localName)
+html::HTMLCollection ElementImp::getElementsByTagNameNS(const Nullable<std::u16string>& namespaceURI, const std::u16string& localName)
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-NodeListImp* ElementImp::getElementsByClassName(ElementImp* element, const std::u16string& classNames)
+HTMLCollectionImp* ElementImp::getElementsByClassName(ElementImp* element, const std::u16string& classNames)
 {
-    NodeListImp* nodeList = new(std::nothrow) NodeListImp;
-    if (!nodeList)
+    HTMLCollectionImp* list = new(std::nothrow) HTMLCollectionImp;
+    if (!list)
         return 0;
 
     std::vector<std::u16string> classes;
@@ -395,12 +395,12 @@ NodeListImp* ElementImp::getElementsByClassName(ElementImp* element, const std::
             }
         }
         if (!notFound)
-            nodeList->addItem(e);
+            list->addItem(e);
     }
-    return nodeList;
+    return list;
 }
 
-NodeList ElementImp::getElementsByClassName(const std::u16string& classNames)
+html::HTMLCollection ElementImp::getElementsByClassName(const std::u16string& classNames)
 {
     return getElementsByClassName(this, classNames);
 }

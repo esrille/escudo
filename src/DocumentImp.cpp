@@ -281,18 +281,18 @@ Element DocumentImp::getDocumentElement()
     return 0;
 }
 
-NodeList DocumentImp::getElementsByTagName(const std::u16string& qualifiedName)
+html::HTMLCollection DocumentImp::getElementsByTagName(const std::u16string& localName)
 {
-    return ElementImp::getElementsByTagName(dynamic_cast<ElementImp*>(getDocumentElement().self()), qualifiedName);
+    return ElementImp::getElementsByTagName(dynamic_cast<ElementImp*>(getDocumentElement().self()), localName);
 }
 
-NodeList DocumentImp::getElementsByTagNameNS(const std::u16string& _namespace, const std::u16string& localName)
+html::HTMLCollection DocumentImp::getElementsByTagNameNS(const Nullable<std::u16string>& _namespace, const std::u16string& localName)
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-NodeList DocumentImp::getElementsByClassName(const std::u16string& classNames)
+html::HTMLCollection DocumentImp::getElementsByClassName(const std::u16string& classNames)
 {
     return ElementImp::getElementsByClassName(dynamic_cast<ElementImp*>(getDocumentElement().self()), classNames);
 }
@@ -691,7 +691,7 @@ Any DocumentImp::getElement(const std::u16string& name)
         if (tag == u"form" || tag == u"iframe" || tag == u"img") {
             Nullable<std::u16string> n = i->getAttribute(u"name");
             if (n.hasValue() && name == n.value())
-                collection->addItem(name, i);
+                collection->addItem(i, name);
         }
         i = i->getNextElement();
     }

@@ -25,6 +25,7 @@
 
 #include <org/w3c/dom/Element.h>
 
+#include <deque>
 #include <map>
 
 namespace org
@@ -37,10 +38,13 @@ namespace bootstrap
 {
 class HTMLCollectionImp : public ObjectMixin<HTMLCollectionImp>
 {
-    std::multimap<const std::u16string, Element> map;
+    std::deque<Element> list;
+    std::map<const std::u16string, Element> map;
+
 public:
     virtual ~HTMLCollectionImp();
-    void addItem(const std::u16string& name, Element element);
+    void addItem(Element element);
+    void addItem(Element element, const std::u16string& name);
 
     // HTMLCollection
     virtual unsigned int getLength();

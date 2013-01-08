@@ -219,9 +219,9 @@ public:
     std::u16string getContentType();
     DocumentType getDoctype();
     Element getDocumentElement();
-    NodeList getElementsByTagName(const std::u16string& qualifiedName);
-    NodeList getElementsByTagNameNS(const std::u16string& _namespace, const std::u16string& localName);
-    NodeList getElementsByClassName(const std::u16string& classNames);
+    html::HTMLCollection getElementsByTagName(const std::u16string& localName);
+    html::HTMLCollection getElementsByTagNameNS(const Nullable<std::u16string>& _namespace, const std::u16string& localName);
+    html::HTMLCollection getElementsByClassName(const std::u16string& classNames);
     Element getElementById(const std::u16string& elementId);
     Element createElement(const std::u16string& localName);
     Element createElementNS(const std::u16string& _namespace, const std::u16string& qualifiedName);

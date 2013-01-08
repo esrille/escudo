@@ -41,7 +41,7 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
-class NodeListImp;
+class HTMLCollectionImp;
 
 class ElementImp : public ObjectMixin<ElementImp, NodeImp>
 {
@@ -87,9 +87,9 @@ public:
     virtual void removeAttributeNS(const std::u16string& _namespace, const std::u16string& localName);
     virtual bool hasAttribute(const std::u16string& qualifiedName);
     virtual bool hasAttributeNS(const std::u16string& _namespace, const std::u16string& localName);
-    virtual NodeList getElementsByTagName(const std::u16string& qualifiedName);
-    virtual NodeList getElementsByTagNameNS(const std::u16string& _namespace, const std::u16string& localName);
-    virtual NodeList getElementsByClassName(const std::u16string& classNames);
+    virtual html::HTMLCollection getElementsByTagName(const std::u16string& localName);
+    virtual html::HTMLCollection getElementsByTagNameNS(const Nullable<std::u16string>& _namespace, const std::u16string& localName);
+    virtual html::HTMLCollection getElementsByClassName(const std::u16string& classNames);
     virtual html::HTMLCollection getChildren();
     virtual Element getFirstElementChild();
     virtual Element getLastElementChild();
@@ -131,8 +131,8 @@ public:
         return Element::getMetaData();
     }
 
-    static NodeListImp* getElementsByTagName(ElementImp* element, const std::u16string& qualifiedName);
-    static NodeListImp* getElementsByClassName(ElementImp* element, const std::u16string& classNames);
+    static HTMLCollectionImp* getElementsByTagName(ElementImp* element, const std::u16string& qualifiedName);
+    static HTMLCollectionImp* getElementsByClassName(ElementImp* element, const std::u16string& classNames);
 };
 
 }}}}  // org::w3c::dom::bootstrap

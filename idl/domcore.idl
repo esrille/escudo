@@ -206,9 +206,9 @@ interface Document : Node {
 
   readonly attribute DocumentType? doctype;
   readonly attribute Element? documentElement;
-  NodeList getElementsByTagName(DOMString qualifiedName);
-  NodeList getElementsByTagNameNS(DOMString namespace, DOMString localName);
-  NodeList getElementsByClassName(DOMString classNames);
+  HTMLCollection getElementsByTagName(DOMString localName);
+  HTMLCollection getElementsByTagNameNS(DOMString? namespace, DOMString localName);
+  HTMLCollection getElementsByClassName(DOMString classNames);
   Element? getElementById(DOMString elementId);
 
   Element createElement([TreatNullAs=EmptyString] DOMString localName);
@@ -276,9 +276,9 @@ interface Element : Node {
   boolean hasAttribute(DOMString qualifiedName);
   boolean hasAttributeNS(DOMString namespace, DOMString localName);
 
-  NodeList getElementsByTagName(DOMString qualifiedName);
-  NodeList getElementsByTagNameNS(DOMString namespace, DOMString localName);
-  NodeList getElementsByClassName(DOMString classNames);
+  HTMLCollection getElementsByTagName(DOMString localName);
+  HTMLCollection getElementsByTagNameNS(DOMString? namespace, DOMString localName);
+  HTMLCollection getElementsByClassName(DOMString classNames);
 
   readonly attribute HTMLCollection children;
   readonly attribute Element? firstElementChild;
@@ -286,6 +286,16 @@ interface Element : Node {
   readonly attribute Element? previousElementSibling;
   readonly attribute Element? nextElementSibling;
   readonly attribute unsigned long childElementCount;
+
+#if 0
+  // NEW
+  void prepend((Node or DOMString)... nodes);
+  void append((Node or DOMString)... nodes);
+  void before((Node or DOMString)... nodes);
+  void after((Node or DOMString)... nodes);
+  void replace((Node or DOMString)... nodes);
+  void remove();
+#endif
 };
 
 interface Attr {

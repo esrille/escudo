@@ -15,6 +15,7 @@
  */
 
 #include "HTMLCollectionImp.h"
+#include "ElementImp.h"
 
 namespace org
 {
@@ -27,27 +28,47 @@ namespace bootstrap
 
 HTMLCollectionImp::~HTMLCollectionImp()
 {
-    map.clear();
 }
 
-void HTMLCollectionImp::addItem(const std::u16string& name, Element element)
+void HTMLCollectionImp::addItem(Element element)
 {
-    map.insert(std::pair<const std::u16string, Element>(name, element));
+    if (auto e = dynamic_cast<ElementImp*>(element.self())) {
+        list.push_back(e);
+        std::u16string id(e->getId());
+        if (map.find(id) == map.end())
+            map.insert({ id, element });
+        Nullable<std::u16string> uri = e->getNamespaceURI();
+        if (uri.hasValue() && uri.value() == u" http://www.w3.org/1999/xhtml") {
+            Nullable<std::u16string> name = e->getAttribute(u"name");
+            if (name.hasValue()) {
+                std::u16string n(name.value());
+                if (!n.empty() && map.find(n) == map.end())
+                    map.insert({ n, element });
+            }
+        }
+    }
+}
+
+void HTMLCollectionImp::addItem(Element element, const std::u16string& name)
+{
+    if (auto e = dynamic_cast<ElementImp*>(element.self())) {
+        list.push_back(e);
+        if (!name.empty() && map.find(name) == map.end())
+            map.insert({ name, element });
+    }
 }
 
 unsigned int HTMLCollectionImp::getLength()
 {
-    return map.size();
+    return list.size();
 }
 
 Element HTMLCollectionImp::item(unsigned int index)
 {
     if (getLength() <= index)
         return 0;
-    auto it = map.begin();
-    while (0 < index--)
-        ++it;
-    return it->second;
+    else
+        return list[index];
 }
 
 Object HTMLCollectionImp::namedItem(const std::u16string& name)
