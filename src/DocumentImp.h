@@ -27,20 +27,19 @@
 #include <org/w3c/dom/stylesheets/StyleSheet.h>
 #include <org/w3c/dom/css/CSSStyleDeclaration.h>
 #include <org/w3c/dom/CaretPosition.h>
-#include <org/w3c/dom/ranges/Range.h>
-#include <org/w3c/dom/traversal/NodeIterator.h>
-#include <org/w3c/dom/traversal/NodeFilter.h>
-#include <org/w3c/dom/traversal/TreeWalker.h>
-#include <org/w3c/dom/DOMException.h>
 #include <org/w3c/dom/events/Event.h>
 #include <org/w3c/dom/Node.h>
-#include <org/w3c/dom/DocumentFragment.h>
 #include <org/w3c/dom/DOMImplementation.h>
-#include <org/w3c/dom/Element.h>
+#include <org/w3c/dom/DocumentFragment.h>
 #include <org/w3c/dom/DocumentType.h>
-#include <org/w3c/dom/ProcessingInstruction.h>
+#include <org/w3c/dom/Element.h>
 #include <org/w3c/dom/Text.h>
+#include <org/w3c/dom/ProcessingInstruction.h>
 #include <org/w3c/dom/Comment.h>
+#include <org/w3c/dom/ranges/Range.h>
+#include <org/w3c/dom/traversal/NodeIterator.h>
+#include <org/w3c/dom/traversal/TreeWalker.h>
+#include <org/w3c/dom/traversal/NodeFilter.h>
 #include <org/w3c/dom/NodeList.h>
 #include <org/w3c/dom/html/HTMLCollection.h>
 #include <org/w3c/dom/DOMStringList.h>
@@ -66,6 +65,7 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 class DocumentImp : public ObjectMixin<DocumentImp, NodeImp>
 {
     std::u16string url;
+    std::u16string contentType;
     DocumentType doctype;
     int mode;
     std::u16string charset;
@@ -190,6 +190,8 @@ public:
     void resetStyleSheets();
 
     void setURL(const std::u16string& url);
+    void setContentType(const std::u16string& type);
+    void setDoctype(DocumentType type);
 
     ElementImp* getFocus() const {
         return activeElement;
@@ -224,14 +226,17 @@ public:
     html::HTMLCollection getElementsByClassName(const std::u16string& classNames);
     Element getElementById(const std::u16string& elementId);
     Element createElement(const std::u16string& localName);
-    Element createElementNS(const std::u16string& _namespace, const std::u16string& qualifiedName);
+    Element createElementNS(const Nullable<std::u16string>& _namespace, const std::u16string& qualifiedName);
     DocumentFragment createDocumentFragment();
     Text createTextNode(const std::u16string& data);
     Comment createComment(const std::u16string& data);
     ProcessingInstruction createProcessingInstruction(const std::u16string& target, const std::u16string& data);
-    Node importNode(Node node, bool deep);
+    Node importNode(Node node, bool deep = true);
     Node adoptNode(Node node);
     events::Event createEvent(const std::u16string& eventInterfaceName);
+    ranges::Range createRange();
+    traversal::NodeIterator createNodeIterator(Node root, unsigned int whatToShow = 0xFFFFFFFF, traversal::NodeFilter filter = 0);
+    traversal::TreeWalker createTreeWalker(Node root, unsigned int whatToShow = 0xFFFFFFFF, traversal::NodeFilter filter = 0);
     // DocumentCSS
     css::CSSStyleDeclaration getOverrideStyle(Element elt, const Nullable<std::u16string>& pseudoElt);
     // Document-47
@@ -401,7 +406,7 @@ public:
     void setOnwaiting(events::EventHandlerNonNull onwaiting);
     events::EventHandlerNonNull getOnreadystatechange();
     void setOnreadystatechange(events::EventHandlerNonNull onreadystatechange);
-    // Document-51
+    // Document-52
     std::u16string getFgColor();
     void setFgColor(const std::u16string& fgColor);
     std::u16string getLinkColor();
@@ -419,11 +424,6 @@ public:
     // NodeSelector
     Element querySelector(const std::u16string& selectors);
     NodeList querySelectorAll(const std::u16string& selectors);
-    // DocumentRange
-    ranges::Range createRange();
-    // DocumentTraversal
-    traversal::NodeIterator createNodeIterator(Node root, unsigned int whatToShow, traversal::NodeFilter filter, bool entityReferenceExpansion) throw(DOMException);
-    traversal::TreeWalker createTreeWalker(Node root, unsigned int whatToShow, traversal::NodeFilter filter, bool entityReferenceExpansion) throw(DOMException);
     // DocumentXBL
     html::HTMLCollection getBindingDocuments();
     Document loadBindingDocument(const std::u16string& documentURI);

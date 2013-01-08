@@ -197,6 +197,16 @@ void DocumentImp::setURL(const std::u16string& url)
     this->url = url;
 }
 
+void DocumentImp::setContentType(const std::u16string& type)
+{
+    contentType = type;
+}
+
+void DocumentImp::setDoctype(DocumentType type)
+{
+    doctype = type;
+}
+
 void DocumentImp::setFocus(ElementImp* element)
 {
     if (activeElement == element)
@@ -264,8 +274,7 @@ std::u16string DocumentImp::getCharacterSet()
 
 std::u16string DocumentImp::getContentType()
 {
-    // TODO: implement me!
-    return u"";
+    return contentType;
 }
 
 DocumentType DocumentImp::getDoctype()
@@ -509,7 +518,7 @@ Element DocumentImp::createElement(const std::u16string& localName)
     return new(std::nothrow) HTMLUnknownElementImp(this, name);
 }
 
-Element DocumentImp::createElementNS(const std::u16string& namespaceURI, const std::u16string& qualifiedName)
+Element DocumentImp::createElementNS(const Nullable<std::u16string>& namespaceURI, const std::u16string& qualifiedName)
 {
     std::u16string prefix;
     std::u16string localName;
@@ -1666,13 +1675,13 @@ ranges::Range DocumentImp::createRange()
     return static_cast<Object*>(0);
 }
 
-traversal::NodeIterator DocumentImp::createNodeIterator(Node root, unsigned int whatToShow, traversal::NodeFilter filter, bool entityReferenceExpansion) throw(DOMException)
+traversal::NodeIterator DocumentImp::createNodeIterator(Node root, unsigned int whatToShow, traversal::NodeFilter filter)
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-traversal::TreeWalker DocumentImp::createTreeWalker(Node root, unsigned int whatToShow, traversal::NodeFilter filter, bool entityReferenceExpansion) throw(DOMException)
+traversal::TreeWalker DocumentImp::createTreeWalker(Node root, unsigned int whatToShow, traversal::NodeFilter filter)
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
@@ -1729,4 +1738,37 @@ Node DocumentImp::appendChild(Node newChild) throw(DOMException)
     return NodeImp::appendChild(newChild);
 }
 
-}}}}  // org::w3c::dom::bootstrap
+}  // org::w3c::dom::bootstrap
+
+namespace {
+
+class Constructor : public Object
+{
+public:
+    // Object
+    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
+        bootstrap::DocumentImp* doc = 0;
+        switch (argc) {
+        case 0:
+            doc = new(std::nothrow) bootstrap::DocumentImp();
+            break;
+        default:
+            break;
+        }
+        return doc;
+    }
+    Constructor() :
+        Object(this) {
+    }
+};
+
+}  // namespace
+
+Object Document::getConstructor()
+{
+    static Constructor constructor;
+    return constructor.self();
+}
+
+}}}  // org::w3c::dom::bootstrap
+
