@@ -230,11 +230,11 @@ interface Document : Node {
 interface XMLDocument : Document {};
 
 interface DOMImplementation {
-  boolean hasFeature(DOMString feature, [TreatNullAs=EmptyString] DOMString version);
+  DocumentType createDocumentType(DOMString qualifiedName, DOMString publicId, DOMString systemId);
+  XMLDocument createDocument(DOMString? namespace, [TreatNullAs=EmptyString] DOMString qualifiedName, DocumentType? doctype);
+  Document createHTMLDocument(optional DOMString title);
 
-  DocumentType createDocumentType([TreatNullAs=EmptyString] DOMString qualifiedName, DOMString publicId, DOMString systemId);
-  Document createDocument([TreatNullAs=EmptyString] DOMString namespace, [TreatNullAs=EmptyString] DOMString qualifiedName, DocumentType? doctype);
-  Document createHTMLDocument(DOMString title);
+  boolean hasFeature(DOMString feature, [TreatNullAs=EmptyString] DOMString version);
 };
 
 interface Element : Node {

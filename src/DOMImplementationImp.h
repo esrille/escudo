@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@
 #include <org/w3c/dom/css/CSSStyleSheet.h>
 #include <org/w3c/dom/DOMException.h>
 #include <org/w3c/dom/Document.h>
+#include <org/w3c/dom/XMLDocument.h>
 #include <org/w3c/dom/DocumentType.h>
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
@@ -49,12 +50,13 @@ public:
     }
 
     // DOMImplementation
-    virtual bool hasFeature(const std::u16string& feature, const std::u16string& version);
-    virtual DocumentType createDocumentType(const std::u16string& qualifiedName, const std::u16string& publicId, const std::u16string& systemId);
-    virtual Document createDocument(const std::u16string& _namespace, const std::u16string& qualifiedName, DocumentType doctype);
-    virtual Document createHTMLDocument(const std::u16string& title);
+    DocumentType createDocumentType(const std::u16string& qualifiedName, const std::u16string& publicId, const std::u16string& systemId);
+    XMLDocument createDocument(const Nullable<std::u16string>& _namespace, const std::u16string& qualifiedName, DocumentType doctype);
+    Document createHTMLDocument();
+    Document createHTMLDocument(const std::u16string& title);
+    bool hasFeature(const std::u16string& feature, const std::u16string& version);
     // DOMImplementationCSS
-    virtual css::CSSStyleSheet createCSSStyleSheet(const std::u16string& title, const std::u16string& media) throw(DOMException);
+    css::CSSStyleSheet createCSSStyleSheet(const std::u16string& title, const std::u16string& media) throw(DOMException);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,31 +17,37 @@
 #include <new>
 
 #include "DOMImplementationImp.h"
-#include "DocumentImp.h"
 #include "DocumentTypeImp.h"
+#include "XMLDocumentImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
-bool DOMImplementationImp::hasFeature(const std::u16string& feature, const std::u16string& version)
-{
-    // TODO: implement me!
-    return 0;
-}
-
 DocumentType DOMImplementationImp::createDocumentType(const std::u16string& qualifiedName, const std::u16string& publicId, const std::u16string& systemId)
 {
-    return new(std::nothrow) DocumentTypeImp(qualifiedName, publicId, systemId);
+    return new(std::nothrow) DocumentTypeImp(qualifiedName, publicId, systemId); // TODO: set node document
 }
 
-Document DOMImplementationImp::createDocument(const std::u16string& namespaceURI, const std::u16string& qualifiedName, DocumentType doctype)
+XMLDocument DOMImplementationImp::createDocument(const Nullable<std::u16string>& _namespace, const std::u16string& qualifiedName, DocumentType doctype)
 {
-    return new(std::nothrow) DocumentImp();
+    return new(std::nothrow) XMLDocumentImp();
+}
+
+Document DOMImplementationImp::createHTMLDocument()
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
 }
 
 Document DOMImplementationImp::createHTMLDocument(const std::u16string& title)
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
+}
+
+bool DOMImplementationImp::hasFeature(const std::u16string& feature, const std::u16string& version)
+{
+    // TODO: implement me!
+    return 0;
 }
 
 css::CSSStyleSheet DOMImplementationImp::createCSSStyleSheet(const std::u16string& title, const std::u16string& media) throw(DOMException)
