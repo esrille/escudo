@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Esrille Inc.
+ * Copyright 2012, 2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,9 @@
 #endif
 
 #include <org/w3c/dom/ProcessingInstruction.h>
-#include "NodeImp.h"
+#include "CharacterDataImp.h"
 
 #include <org/w3c/dom/stylesheets/StyleSheet.h>
-#include <org/w3c/dom/Node.h>
 
 namespace org
 {
@@ -35,15 +34,13 @@ namespace dom
 {
 namespace bootstrap
 {
-class ProcessingInstructionImp : public ObjectMixin<ProcessingInstructionImp, NodeImp>
+class ProcessingInstructionImp : public ObjectMixin<ProcessingInstructionImp, CharacterDataImp>
 {
 public:
     // Node - override
     virtual bool isEqualNode(Node arg);
     // ProcessingInstruction
     std::u16string getTarget();
-    std::u16string getData();
-    void setData(const std::u16string& data);
     // LinkStyle
     stylesheets::StyleSheet getSheet();
     // Object

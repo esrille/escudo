@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Esrille Inc.
+ * Copyright 2012, 2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,17 +43,6 @@ std::u16string ProcessingInstructionImp::getTarget()
 {
     // TODO: implement me!
     return u"";
-}
-
-std::u16string ProcessingInstructionImp::getData()
-{
-    // TODO: implement me!
-    return u"";
-}
-
-void ProcessingInstructionImp::setData(const std::u16string& data)
-{
-    // TODO: implement me!
 }
 
 stylesheets::StyleSheet ProcessingInstructionImp::getSheet()

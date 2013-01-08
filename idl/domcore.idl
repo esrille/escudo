@@ -284,11 +284,6 @@ interface DocumentType : Node {
   readonly attribute DOMString systemId;
 };
 
-interface ProcessingInstruction : Node {
-  readonly attribute DOMString target;
-           attribute DOMString data;
-};
-
 interface CharacterData : Node {
   [TreatNullAs=EmptyString] attribute DOMString data;
   readonly attribute unsigned long length;
@@ -303,6 +298,10 @@ interface Text : CharacterData {
   Text splitText(unsigned long offset);
   readonly attribute DOMString wholeText;
   Text? replaceWholeText(DOMString data);
+};
+
+interface ProcessingInstruction : CharacterData {
+  readonly attribute DOMString target;
 };
 
 interface Comment : CharacterData {
