@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Esrille Inc.
+ * Copyright 2012, 2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ unsigned int HTMLTableRowElementImp::getCellCount()
     // TODO: Better to keep the result
     unsigned int count = 0;
     for (Element child = getFirstElementChild(); child; child = child.getNextElementSibling()) {
-        if (HTMLTableCellElementImp* cell = dynamic_cast<HTMLTableCellElementImp*>(child.self()))
+        if (dynamic_cast<HTMLTableCellElementImp*>(child.self()))
             ++count;
     }
     return count;
