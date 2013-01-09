@@ -575,6 +575,9 @@ Any ProxyObject::message_(uint32_t selector, const char* id, int argc, Any* argv
         }
         }
         break;
+    case IS_KIND_OF_:
+        return true;    // TODO: check more conditions
+        break;
     default: {
         assert(0 <= argc);
         if (callback) {

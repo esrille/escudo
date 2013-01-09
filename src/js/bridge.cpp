@@ -696,6 +696,9 @@ Any ProxyObject::message_(uint32_t selector, const char* id, int argc, Any* argv
         if (JS_CallFunctionName(jscontext, jsobject, "toString", 0, 0, &result) == JS_TRUE)
             return convert(jscontext, result);
         break;
+    case IS_KIND_OF_:
+        return true;    // TODO: check more conditions
+        break;
     default: {
         assert(0 <= argc);
         jsval arguments[0 < argc ? argc : 1];
