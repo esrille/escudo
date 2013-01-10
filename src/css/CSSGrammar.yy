@@ -16,8 +16,8 @@
 
 %name-prefix "CSS"
 
-%parse-param {CSSParser* parser}
-%lex-param   {CSSParser* parser}
+%parse-param {org::w3c::dom::bootstrap::CSSParser* parser}
+%lex-param   {org::w3c::dom::bootstrap::CSSParser* parser}
 
 %{
 
@@ -33,6 +33,9 @@
 #include "css/CSSStyleDeclarationImp.h"
 #include "css/CSSStyleRuleImp.h"
 #include "css/CSSStyleSheetImp.h"
+
+class org::w3c::dom::bootstrap::CSSParser;
+
 #include "CSSGrammar.h"
 
 #include <org/w3c/dom/stylesheets/MediaList.h>

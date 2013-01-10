@@ -330,6 +330,6 @@ inline int CSSlex(CSSParser* parser)
 
 }}}}  // org::w3c::dom::bootstrap
 
-extern "C" int CSSparse(org::w3c::dom::bootstrap::CSSParser* parser);
+int CSSparse(org::w3c::dom::bootstrap::CSSParser* parser);
 
 #endif  // ES_CSSPARSER_H
