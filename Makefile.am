@@ -260,7 +260,6 @@ generated_headers = \
 	org/w3c/dom/html/WindowTimers.h \
 	org/w3c/dom/ranges/RangeException.h \
 	org/w3c/dom/ranges/Range.h \
-	org/w3c/dom/stylesheets/LinkStyle.h \
 	org/w3c/dom/stylesheets/MediaList.h \
 	org/w3c/dom/stylesheets/StyleSheet.h \
 	org/w3c/dom/svg/SVGMatrix.h \
@@ -508,7 +507,6 @@ generated_sources = \
 	org/w3c/dom/html/WindowModal.cpp \
 	org/w3c/dom/html/WindowTimers.cpp \
 	org/w3c/dom/ranges/Range.cpp \
-	org/w3c/dom/stylesheets/LinkStyle.cpp \
 	org/w3c/dom/stylesheets/MediaList.cpp \
 	org/w3c/dom/stylesheets/StyleSheet.cpp \
 	org/w3c/dom/svg/SVGMatrix.cpp \
@@ -663,6 +661,7 @@ libeshtml5_a_SOURCES = \
 	src/html/HTMLInputStream.h \
 	src/html/HTMLParser.cpp \
 	src/html/HTMLParser.h \
+	src/html/HTMLReplacedElementImp.h \
 	src/html/HTMLTokenizer.cpp \
 	src/html/HTMLTokenizer.h \
 	src/css/Bmp.cpp \
@@ -1380,6 +1379,7 @@ EXTRA_DIST = \
 	idl/url.idl \
 	idl/webdatabase.idl \
 	idl/webgl.idl \
+	idl/webmessaging.idl \
 	idl/webnotifications.idl \
 	idl/webstorage.idl \
 	idl/websocket.idl \

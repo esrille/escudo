@@ -250,7 +250,6 @@
 #include "RangeImp.h"
 
 // stylesheets
-#include "LinkStyleImp.h"
 #include "MediaListImp.h"
 #include "StyleSheetImp.h"
 
@@ -546,7 +545,6 @@ void registerClasses(JSContext* cx, JSObject* global)
     VideoTrackListImp::setStaticPrivate(new NativeClass(cx, global, VideoTrackListImp::getMetaData()));
     WindowImp::setStaticPrivate(new NativeClass(cx, global, WindowImp::getMetaData()));
     RangeImp::setStaticPrivate(new NativeClass(cx, global, RangeImp::getMetaData()));
-    LinkStyleImp::setStaticPrivate(new NativeClass(cx, global, LinkStyleImp::getMetaData()));
 //    MediaListImp::setStaticPrivate(new NativeClass(cx, global, MediaListImp::getMetaData()));
 //    StyleSheetImp::setStaticPrivate(new NativeClass(cx, global, StyleSheetImp::getMetaData()));
     SVGMatrixImp::setStaticPrivate(new NativeClass(cx, global, SVGMatrixImp::getMetaData()));

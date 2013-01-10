@@ -249,7 +249,6 @@
 #include "RangeImp.h"
 
 // stylesheets
-#include "LinkStyleImp.h"
 #include "MediaListImp.h"
 #include "StyleSheetImp.h"
 
@@ -533,7 +532,6 @@ void registerClasses(v8::Handle<v8::ObjectTemplate> global)
     VideoTrackListImp::setStaticPrivate(new NativeClass(global, VideoTrackListImp::getMetaData()));
     WindowImp::setStaticPrivate(new NativeClass(global, WindowImp::getMetaData()));
     RangeImp::setStaticPrivate(new NativeClass(global, RangeImp::getMetaData()));
-    LinkStyleImp::setStaticPrivate(new NativeClass(global, LinkStyleImp::getMetaData()));
 //    MediaListImp::setStaticPrivate(new NativeClass(global, MediaListImp::getMetaData()));
 //    StyleSheetImp::setStaticPrivate(new NativeClass(global, StyleSheetImp::getMetaData()));
     SVGMatrixImp::setStaticPrivate(new NativeClass(global, SVGMatrixImp::getMetaData()));
