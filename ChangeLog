@@ -1,3 +1,141 @@
+2013-01-10 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (ProxyObject::message_) : Check IS_KIND_OF_
+
+2013-01-08 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Element) : Update from W3C Working Draft 6 December 2012
+
+2013-01-08 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CharacterDataImp::setTextContent, ElementImp::setTextContent) : Reflect the IDL definition change
+
+2013-01-08 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Document) : Update from W3C Working Draft 6 December 2012
+
+2013-01-08 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLTableRowElementImp::getCellCount) : Fix a warning
+
+2013-01-08 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Document, Element) : Update from W3C Working Draft 6 December 2012 (HTMLCollectionImp) : Refine
+
+2013-01-08 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLCollection) : Update from W3C Working Draft 6 December 2012
+
+2013-01-08 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Text) : Update from W3C Working Draft 6 December 2012
+
+2013-01-08 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (DOMImplementation) : Update from W3C Working Draft 6 December 2012
+
+2013-01-08 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (NodeListImp) : Clean up
+
+2013-01-08 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (ProcessingInstruction) : Update from W3C Working Draft 6 December 2012
+
+2013-01-08 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (XMLDocument, Range, NodeIterator, TreeWalker, NodeFilter) : Update from W3C Working Draft 6 December 2012
+
+2013-01-08 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (DOMElementMap) : Remove
+
+2013-01-08 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (MutationObserver, MutationCallback, MutationObserverInit, MutationRecord) : Update from W3C Working Draft 6 December 2012
+
+2013-01-08 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Event, EventTarget, EventListener) : Update from W3C Working Draft 6 December 2012
+
+2013-01-08 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (DOMException) : Update from W3C Working Draft 6 December 2012
+
+2013-01-08 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Node) : Update from W3C Working Draft 6 December 2012
+
+2013-01-08 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSRuleListImp::insertRule) : Fix a warning
+
+2013-01-08 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSQuotesValueImp::getOpenQuote, CSSQuotesValueImp::getCloseQuote) : Fix warnings
+
+2013-01-08 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Box::getTargetNode) : Fix a warning
+
+2013-01-07 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (recordTime) : Fix warnings
+
+2013-01-06 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (TextTrackImp::setMode) : Regenerate by esidl
+
+2013-01-06 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Remove CSSStyleDeclarationValue interface which has been dropped from CSSOM View
+
+	* Makefile.am : Remove CSSStyleDeclarationValue and CSSStyleDeclarationValueImp
+	* css/CSSStyleDeclarationImp.h : Refine
+	* Script.cpp, ScriptV8.cpp (registerClasses) : Remove CSSStyleDeclarationValue interface
+
+2013-01-04 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* idl/cssomview.idl : Update to Editor's Draft 3 August 2012
+
+2013-01-04 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* idl/cssom.idl : Update to Editor's Draft 28 October 2012 (CSS2Properties) : Move back to dom2css.idl from cssom.idl
+
+2013-01-04 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* Delete obsoleted interface implementations.
+
+2013-01-04 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Update Web IDL definitions of HTML 5 and others.
+
+	* idl/2dcontext.idl : Update to Candidate Recommendation 17 December 2012
+	* idl/html5.idl : Update to Candidate Recommendation 17 December 2012
+	* idl/dom3events.idl : Update to Working Draft 06 September 2012
+	* idl/file.idl : Update Working to Draft 25 October 2012
+	* idl/typedarray.idl : Update to the latest
+	* idl/xhr2.idl : Update to Working Draft 6 December 2012
+	* idl/cssom.idl : Update
+	* idl/domcore.idl : Update
+	* idl/webmessaging.idl : New
+
+2013-01-03 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (AC_INIT) : Set version to 0.3.0
+
+2012-12-29 Constellation <utatane.tea@gmail.com>
+
+	* (NativeClass::NativeClass) : Add missing braces
+
+2012-12-27 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* DIST_COMMON : Updated
+
+2012-12-27 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* README : New
+
 2012-12-23 03:30  Shiki.Okasaka@gmail.com
 
 	* data/escort/escort.html: (init) : Set the initial value to the
