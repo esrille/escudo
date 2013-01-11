@@ -1,0 +1,70 @@
+New in 0.3.0 [2013-01-11]:
+
+* Update Web IDL definitions from the following specifications:
+
+  - HTML5 W3C Candidate Recommendation 17 December 2012
+  - HTML Canvas 2D Context W3C Candidate Recommendation 17 December 2012
+  - DOM 4 W3C Working Draft 6 December 2012
+  - XMLHttpRequest W3C Working Draft 6 December 2012
+  - CSSOM Editor's Draft 28 October 2012
+  - File API W3C Working Draft 25 October 2012
+  - DOM Level 3 Events Specification W3C Working Draft 06 September 2012
+  - CSSOM View Module Editor's Draft 3 August 2012
+  - HTML5 Web Messaging W3C Candidate Recommendation 01 May 2012
+
+* Built with esidl Web IDL compiler 0.3.0
+
+* Support Fedora 18
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+New in 0.2.4 [2012-12-23]:
+
+* Implemented more operations and attributes of the Node and Element
+  interfaces from DOM Living Standard
+
+* The async and defer attributes of the script element are now functioning
+
+* Flow root boxes are place adjacent to floats if there is sufficient space
+
+  - Escort 0.2.4 passes about 91.6% of the html4 tests in the CSS 2.1
+    Conformance Test Suite
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+New in 0.2.3 [2012-12-02]:
+
+* Support the incremental reflow with its CSS rendering engine.
+
+  - Escort 0.2.3 performs the reflow substantially faster than the previous
+    versions when a DOM tree is dynamically modified, for instance, when a
+    character is inserted in a text input field via the keyboard.
+
+* Support Ubuntu 12.10
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+New in 0.2.2 [2012/08/11]:
+
+* Enhanced the implementation of the CSS 2.1 specification
+
+  - Escort 0.2.2 passes about 90.8% of the html4 tests in the CSS 2.1
+    Conformance Test Suite
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+New in 0.2.1 [2012/07/24]:
+
+* Fixed several known bugs in the previous version
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+New in 0.2.0 [2012/07/01]:
+
+* The first alpha release
+
+* Support Fedora 17
+
+-----
+
+Copyright 2010-2013 Esrille Inc.

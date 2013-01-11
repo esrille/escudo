@@ -81,7 +81,7 @@ DIST_COMMON = README $(am__configure_deps) $(dist_aboutdata_DATA) \
 	$(srcdir)/escort.spec.in $(top_srcdir)/configure \
 	$(top_srcdir)/data/escort/about/index.html.in \
 	$(top_srcdir)/debian/changelog.in CSSGrammar.cc CSSGrammar.h \
-	ChangeLog depcomp install-sh missing ylwrap
+	ChangeLog NEWS depcomp install-sh missing ylwrap
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_compare_version.m4 \
 	$(top_srcdir)/configure.ac
