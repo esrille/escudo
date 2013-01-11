@@ -1,3 +1,32 @@
+2013-01-11 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* NEWS : New
+
+2013-01-11 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* implement-report-Escort-Fedora.data : Update
+
+2013-01-11 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (about:) : Update copyright notice
+
+2013-01-11 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Fix build problems on fc18
+
+	* depcomp install-sh missing ylwrap data/Makefile.in: New
+
+2013-01-10 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Fix build problems with mock
+
+	* Makefile.am: Add src/html/HTMLReplacedElementImp.h and idl/webmessaging.idl to the file lists, and remove LinkStyle
+	* src/js/Script.cpp, src/v8/ScriptV8.cpp (registerClasses): Remove LinkStyle
+
+2013-01-10 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* NOTICE : Update
+
 2013-01-10 Shiki Okasaka <Shiki.Okasaka@gmail.com>
 
 	* (ProxyObject::message_) : Check IS_KIND_OF_
