@@ -44,85 +44,77 @@ Node HTMLBodyElementImp::cloneNode(bool deep)
 
 events::EventHandlerNonNull HTMLBodyElementImp::getOnafterprint()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return getOwnerDocument().getDefaultView().getOnafterprint();
 }
 
 void HTMLBodyElementImp::setOnafterprint(events::EventHandlerNonNull onafterprint)
 {
-    // TODO: implement me!
+    getOwnerDocument().getDefaultView().setOnafterprint(onafterprint);
 }
 
 events::EventHandlerNonNull HTMLBodyElementImp::getOnbeforeprint()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return getOwnerDocument().getDefaultView().getOnbeforeprint();
 }
 
 void HTMLBodyElementImp::setOnbeforeprint(events::EventHandlerNonNull onbeforeprint)
 {
-    // TODO: implement me!
+    getOwnerDocument().getDefaultView().setOnbeforeprint(onbeforeprint);
 }
 
 events::EventHandlerNonNull HTMLBodyElementImp::getOnbeforeunload()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return getOwnerDocument().getDefaultView().getOnbeforeunload();
 }
 
 void HTMLBodyElementImp::setOnbeforeunload(events::EventHandlerNonNull onbeforeunload)
 {
-    // TODO: implement me!
+    getOwnerDocument().getDefaultView().setOnbeforeunload(onbeforeunload);
 }
 
 events::EventHandlerNonNull HTMLBodyElementImp::getOnblur()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return getOwnerDocument().getDefaultView().getOnblur();
 }
 
 void HTMLBodyElementImp::setOnblur(events::EventHandlerNonNull onblur)
 {
-    // TODO: implement me!
+    getOwnerDocument().getDefaultView().setOnblur(onblur);
 }
 
 events::OnErrorEventHandlerNonNull HTMLBodyElementImp::getOnerror()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return getOwnerDocument().getDefaultView().getOnerror();
 }
 
 void HTMLBodyElementImp::setOnerror(events::OnErrorEventHandlerNonNull onerror)
 {
-    // TODO: implement me!
+    getOwnerDocument().getDefaultView().setOnerror(onerror);
 }
 
 events::EventHandlerNonNull HTMLBodyElementImp::getOnfocus()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return getOwnerDocument().getDefaultView().getOnfocus();
 }
 
 void HTMLBodyElementImp::setOnfocus(events::EventHandlerNonNull onfocus)
 {
-    // TODO: implement me!
+    getOwnerDocument().getDefaultView().setOnfocus(onfocus);
 }
 
 events::EventHandlerNonNull HTMLBodyElementImp::getOnhashchange()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return getOwnerDocument().getDefaultView().getOnhashchange();
 }
 
 void HTMLBodyElementImp::setOnhashchange(events::EventHandlerNonNull onhashchange)
 {
-    // TODO: implement me!
+    getOwnerDocument().getDefaultView().setOnhashchange(onhashchange);
 }
 
 events::EventHandlerNonNull HTMLBodyElementImp::getOnload()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return getOwnerDocument().getDefaultView().getOnload();
 }
 
 void HTMLBodyElementImp::setOnload(events::EventHandlerNonNull onload)
@@ -132,112 +124,102 @@ void HTMLBodyElementImp::setOnload(events::EventHandlerNonNull onload)
 
 events::EventHandlerNonNull HTMLBodyElementImp::getOnmessage()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return getOwnerDocument().getDefaultView().getOnmessage();
 }
 
 void HTMLBodyElementImp::setOnmessage(events::EventHandlerNonNull onmessage)
 {
-    // TODO: implement me!
+    getOwnerDocument().getDefaultView().setOnmessage(onmessage);
 }
 
 events::EventHandlerNonNull HTMLBodyElementImp::getOnoffline()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return getOwnerDocument().getDefaultView().getOnoffline();
 }
 
 void HTMLBodyElementImp::setOnoffline(events::EventHandlerNonNull onoffline)
 {
-    // TODO: implement me!
+    getOwnerDocument().getDefaultView().setOnoffline(onoffline);
 }
 
 events::EventHandlerNonNull HTMLBodyElementImp::getOnonline()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return getOwnerDocument().getDefaultView().getOnonline();
 }
 
 void HTMLBodyElementImp::setOnonline(events::EventHandlerNonNull ononline)
 {
-    // TODO: implement me!
+    getOwnerDocument().getDefaultView().setOnonline(ononline);
 }
 
 events::EventHandlerNonNull HTMLBodyElementImp::getOnpopstate()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return getOwnerDocument().getDefaultView().getOnpopstate();
 }
 
 void HTMLBodyElementImp::setOnpopstate(events::EventHandlerNonNull onpopstate)
 {
-    // TODO: implement me!
+    getOwnerDocument().getDefaultView().setOnpopstate(onpopstate);
 }
 
 events::EventHandlerNonNull HTMLBodyElementImp::getOnpagehide()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return getOwnerDocument().getDefaultView().getOnpagehide();
 }
 
 void HTMLBodyElementImp::setOnpagehide(events::EventHandlerNonNull onpagehide)
 {
-    // TODO: implement me!
+    getOwnerDocument().getDefaultView().setOnpagehide(onpagehide);
 }
 
 events::EventHandlerNonNull HTMLBodyElementImp::getOnpageshow()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return getOwnerDocument().getDefaultView().getOnpageshow();
 }
 
 void HTMLBodyElementImp::setOnpageshow(events::EventHandlerNonNull onpageshow)
 {
-    // TODO: implement me!
+    getOwnerDocument().getDefaultView().setOnpageshow(onpageshow);
 }
 
 events::EventHandlerNonNull HTMLBodyElementImp::getOnresize()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return getOwnerDocument().getDefaultView().getOnresize();
 }
 
 void HTMLBodyElementImp::setOnresize(events::EventHandlerNonNull onresize)
 {
-    // TODO: implement me!
+    getOwnerDocument().getDefaultView().setOnresize(onresize);
 }
 
 events::EventHandlerNonNull HTMLBodyElementImp::getOnscroll()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return getOwnerDocument().getDefaultView().getOnscroll();
 }
 
-void HTMLBodyElementImp::setOnscroll(events::EventHandlerNonNull onscroll)
+void HTMLBodyElementImp::setOnscroll(events::EventHandlerNonNull setOnscroll)
 {
-    // TODO: implement me!
+    getOwnerDocument().getDefaultView().setOnscroll(setOnscroll);
 }
 
 events::EventHandlerNonNull HTMLBodyElementImp::getOnstorage()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return getOwnerDocument().getDefaultView().getOnstorage();
 }
 
 void HTMLBodyElementImp::setOnstorage(events::EventHandlerNonNull onstorage)
 {
-    // TODO: implement me!
+    getOwnerDocument().getDefaultView().setOnstorage(onstorage);
 }
 
 events::EventHandlerNonNull HTMLBodyElementImp::getOnunload()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return getOwnerDocument().getDefaultView().getOnunload();
 }
 
 void HTMLBodyElementImp::setOnunload(events::EventHandlerNonNull onunload)
 {
-    // TODO: implement me!
+    getOwnerDocument().getDefaultView().setOnunload(onunload);
 }
 
 std::u16string HTMLBodyElementImp::getText()
