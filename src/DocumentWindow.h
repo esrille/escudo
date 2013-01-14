@@ -50,8 +50,8 @@ class DocumentWindow : public EventTargetImp
     DocumentWindow(const DocumentWindow& window) = delete;
     DocumentWindow& operator=(const DocumentWindow&) = delete;
 
-    void handleClick(events::Event event);
-    void handleMouseMove(events::Event event);
+    void handleClick(EventListenerImp* listener, events::Event event);
+    void handleMouseMove(EventListenerImp* listener, events::Event event);
     void notify();
 
 public:
@@ -74,6 +74,8 @@ public:
 
     void activate();
     void activate(WindowImp* proxy);
+
+    void setEventHandler(const std::u16string& type, Object handler);
 
     HttpRequest* preload(const std::u16string& base, const std::u16string& url);
 

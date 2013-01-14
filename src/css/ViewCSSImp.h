@@ -85,13 +85,13 @@ class ViewCSSImp
 
     void removeComputedStyle(Element element);
 
-    void handleMutation(events::Event event);
+    void handleMutation(EventListenerImp* listener, events::Event event);
     void findDeclarations(CSSRuleListImp::RuleSet& set, Element element, css::CSSRuleList list, unsigned importance);
     Element updateStyleRules(Element element, CSSStyleDeclarationImp* style, CSSStyleDeclarationImp* parentStyle);
 
 public:
     ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyleSheet, css::CSSStyleSheet userStyleSheet = 0);
-    ~ViewCSSImp();
+    virtual ~ViewCSSImp();
 
     Document getDocument() const {
         return window->getDocument();

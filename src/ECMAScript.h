@@ -17,12 +17,17 @@
 #ifndef ES_ECMASCRIPT_H
 #define ES_ECMASCRIPT_H
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <boost/scoped_ptr.hpp>
-#include <Object.h>
 #include <org/w3c/dom/html/BeforeUnloadEvent.h>
 #include <org/w3c/dom/events/Event.h>
 #include <org/w3c/dom/events/EventTarget.h>
 #include <org/w3c/dom/events/EventHandlerNonNull.h>
+
+#include "EventListenerImp.h"
 
 Any callFunction(Object thisObject, Object functionObject, int argc, Any* argv);
 
@@ -47,20 +52,7 @@ public:
     Object* compileFunction(const std::u16string& body);
     Any callFunction(Object thisObject, Object functionObject, int argc, Any* argv);
 
-    void dispatchEvent(Function function, org::w3c::dom::events::Event event)
-    {
-        Any arg(event);
-        Any result = callFunction(event.getCurrentTarget(), function, 1, &arg);
-        if (event.getType() == u"mouseover") {
-            if (result.toBoolean())
-                event.preventDefault();
-        } else if (org::w3c::dom::html::BeforeUnloadEvent::hasInstance(event)) {
-            org::w3c::dom::html::BeforeUnloadEvent unloadEvent = interface_cast<org::w3c::dom::html::BeforeUnloadEvent>(event);
-            if (unloadEvent.getReturnValue().empty() && result.isString())
-                unloadEvent.setReturnValue(result.toString());
-        } else if (!result.toBoolean())
-            event.preventDefault();
-    }
+    void dispatchEvent(org::w3c::dom::bootstrap::EventListenerImp* listener, org::w3c::dom::events::Event event);
 
     Object* xblCreateImplementation(Object object, Object prototype, Object boundElement, Object shadowTree);
 

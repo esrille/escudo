@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,25 +33,25 @@ void EventTargetImp::invoke(EventImp* event)
     auto found = map.find(event->getType());
     if (found == map.end())
         return;
-    std::list<Listener>& listeners = found->second;  // TODO listeners should be a static copy
+    std::list<Listener>& listeners = found->second;
     for (auto i = listeners.begin(); i != listeners.end(); ++i) {
         if (event->getStopImmediatePropagationFlag())
             return;
         switch (event->getEventPhase()) {
         case events::Event::CAPTURING_PHASE:
-            if (i->useCapture && !i->useDefault)
+            if (i->useCapture() && !i->useDefault())
                 i->listener.handleEvent(event);
             break;
         case events::Event::BUBBLING_PHASE:
-            if (!i->useCapture && !i->useDefault)
+            if (!i->useCapture() && !i->useDefault())
                 i->listener.handleEvent(event);
             break;
         case events::Event::AT_TARGET:
-            if (!i->useDefault)
+            if (!i->useDefault())
                 i->listener.handleEvent(event);
             break;
         case EventImp::DEFAULT_PHASE:
-            if (i->useDefault)
+            if (i->useDefault())
                 i->listener.handleEvent(event);
         default:
             break;
@@ -59,12 +59,34 @@ void EventTargetImp::invoke(EventImp* event)
     }
 }
 
+EventListenerImp* EventTargetImp::getEventHandlerListener(const std::u16string& type)
+{
+    auto found = map.find(type);
+    if (found == map.end())
+        return 0;
+    std::list<Listener>& listeners = found->second;
+    for (auto i = listeners.begin(); i != listeners.end(); ++i) {
+        if (i->useEventHandler())
+            return dynamic_cast<EventListenerImp*>(i->listener.self());
+    }
+    return 0;
+}
+
+Object EventTargetImp::getEventHandler(const std::u16string& type)
+{
+    if (EventListenerImp* listener = getEventHandlerListener(type))
+        return listener->getEventHandler();
+    return 0;
+}
+
 // EventTarget
-void EventTargetImp::addEventListener(const std::u16string&  type, events::EventListener listener, bool useCapture, bool useDefault)
+void EventTargetImp::addEventListener(const std::u16string&  type, events::EventListener listener, bool useCapture, unsigned flags)
 {
     if (!listener)
         return;
-    Listener item{ listener, useCapture, useDefault };
+    if (useCapture)
+        flags |= UseCapture;
+    Listener item{ listener, flags };
 
     auto found = map.find(type);
     if (found == map.end()) {
@@ -82,11 +104,13 @@ void EventTargetImp::addEventListener(const std::u16string&  type, events::Event
     listeners.push_back(item);
 }
 
-void EventTargetImp::removeEventListener(const std::u16string&  type, events::EventListener listener, bool useCapture, bool useDefault)
+void EventTargetImp::removeEventListener(const std::u16string&  type, events::EventListener listener, bool useCapture, unsigned flags)
 {
     if (!listener)
         return;
-    Listener item{ listener, useCapture, useDefault };
+    if (useCapture)
+        flags |= UseCapture;
+    Listener item{ listener, flags };
 
     auto found = map.find(type);
     if (found == map.end())

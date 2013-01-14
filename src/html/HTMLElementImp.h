@@ -55,14 +55,16 @@ class HTMLElementImp : public ObjectMixin<HTMLElementImp, ElementImp>
     Retained<EventListenerImp> clickListener;
     Retained<EventListenerImp> mouseMoveListener;
 
+    void handleClick(EventListenerImp* listener, events::Event event);
+    void handleMouseMove(EventListenerImp* listener, events::Event event);
+
+    virtual void setEventHandler(const std::u16string& type, Object handler);
+
     // XBL 2.0
     Object bindingImplementation;
     html::HTMLTemplateElement shadowTree;
     events::EventTarget shadowTarget;
     xbl2::XBLImplementation shadowImplementation;
-
-    void handleClick(events::Event event);
-    void handleMouseMove(events::Event event);
 
     void invokeShadowTarget(EventImp* event);
 

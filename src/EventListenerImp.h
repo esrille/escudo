@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,16 +37,26 @@ namespace bootstrap
 {
 class EventListenerImp : public ObjectMixin<EventListenerImp>
 {
-    boost::function<void (events::Event)> handler;
+    boost::function<void (EventListenerImp*, events::Event)> handler;
+    Object functionObject;
+
 public:
-    EventListenerImp(boost::function<void (events::Event)> handler) :
+    EventListenerImp(boost::function<void (EventListenerImp*, events::Event)> handler) :
         handler(handler)
     {
     }
+
+    Object getEventHandler() const {
+        return functionObject;
+    }
+    void setEventHandler(Object handler) {
+        functionObject = handler;
+    }
+
     // EventListener
     void handleEvent(events::Event event) {
         if (handler)
-            handler(event);
+            handler(this, event);
     }
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)

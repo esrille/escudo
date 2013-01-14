@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,23 +35,23 @@ namespace bootstrap
 
 HTMLAnchorElementImp::HTMLAnchorElementImp(HTMLAnchorElementImp* org, bool deep) :
     ObjectMixin(org, deep),
-    clickListener(boost::bind(&HTMLAnchorElementImp::handleClick, this, _1))
+    clickListener(boost::bind(&HTMLAnchorElementImp::handleClick, this, _1, _2))
 {
-    addEventListener(u"click", &clickListener, false, true);
+    addEventListener(u"click", &clickListener, false, EventTargetImp::UseDefault);
 }
 
 HTMLAnchorElementImp::HTMLAnchorElementImp(DocumentImp* ownerDocument) :
     ObjectMixin(ownerDocument, u"a"),
-    clickListener(boost::bind(&HTMLAnchorElementImp::handleClick, this, _1))
+    clickListener(boost::bind(&HTMLAnchorElementImp::handleClick, this, _1, _2))
 {
-    addEventListener(u"click", &clickListener, false, true);
+    addEventListener(u"click", &clickListener, false, EventTargetImp::UseDefault);
 }
 
 HTMLAnchorElementImp::~HTMLAnchorElementImp()
 {
 }
 
-void HTMLAnchorElementImp::handleClick(events::Event event)
+void HTMLAnchorElementImp::handleClick(EventListenerImp* listener, events::Event event)
 {
     events::MouseEvent mouse = interface_cast<events::MouseEvent>(event);
     std::u16string href = getHref();

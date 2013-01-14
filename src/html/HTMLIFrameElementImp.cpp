@@ -33,7 +33,7 @@ namespace bootstrap
 HTMLIFrameElementImp::HTMLIFrameElementImp(DocumentImp* ownerDocument) :
     ObjectMixin(ownerDocument, u"iframe"),
     window(0),
-    blurListener(boost::bind(&HTMLIFrameElementImp::handleBlur, this, _1))
+    blurListener(boost::bind(&HTMLIFrameElementImp::handleBlur, this, _1, _2))
 {
     if (ownerDocument)
         window = new WindowImp(dynamic_cast<WindowImp*>(ownerDocument->getDefaultView().self()), this);
@@ -42,7 +42,7 @@ HTMLIFrameElementImp::HTMLIFrameElementImp(DocumentImp* ownerDocument) :
 HTMLIFrameElementImp::HTMLIFrameElementImp(HTMLIFrameElementImp* org, bool deep) :
     ObjectMixin(org, deep),
     window(org->window),
-    blurListener(boost::bind(&HTMLIFrameElementImp::handleBlur, this, _1))
+    blurListener(boost::bind(&HTMLIFrameElementImp::handleBlur, this, _1, _2))
 {
 }
 
@@ -60,11 +60,11 @@ void HTMLIFrameElementImp::eval()
     HTMLElementImp::evalMarginHeight(this);
     HTMLElementImp::evalMarginWidth(this);
     setTabIndex(0);
-    addEventListener(u"blur", &blurListener, false, true);
+    addEventListener(u"blur", &blurListener, false, EventTargetImp::UseDefault);
     setSrc(getSrc());
 }
 
-void HTMLIFrameElementImp::handleBlur(events::Event event)
+void HTMLIFrameElementImp::handleBlur(EventListenerImp* listener, events::Event event)
 {
     if (auto imp = dynamic_cast<DocumentImp*>(window.getDocument().self()))
         imp->setFocus(0);

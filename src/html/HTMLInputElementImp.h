@@ -84,8 +84,8 @@ class HTMLInputElementImp : public ObjectMixin<HTMLInputElementImp, HTMLElementI
     size_t cursor;
     bool checked;
 
-    void handleKeydown(events::Event event);
-    void handleClick(events::Event event);
+    void handleKeydown(EventListenerImp* listener, events::Event event);
+    void handleClick(EventListenerImp* listener, events::Event event);
 
 public:
     HTMLInputElementImp(DocumentImp* ownerDocument);

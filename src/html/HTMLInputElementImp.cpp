@@ -70,8 +70,8 @@ HTMLInputElementImp::HTMLInputElementImp(DocumentImp* ownerDocument) :
     ObjectMixin(ownerDocument, u"input"),
     type(Text),
     form(0),
-    clickListener(boost::bind(&HTMLInputElementImp::handleClick, this, _1)),
-    keydownListener(boost::bind(&HTMLInputElementImp::handleKeydown, this, _1)),
+    clickListener(boost::bind(&HTMLInputElementImp::handleClick, this, _1, _2)),
+    keydownListener(boost::bind(&HTMLInputElementImp::handleKeydown, this, _1, _2)),
     cursor(0),
     checked(false)
 {
@@ -81,8 +81,8 @@ HTMLInputElementImp::HTMLInputElementImp(HTMLInputElementImp* org, bool deep) :
     ObjectMixin(org, deep),
     type(org->type),
     form(0),
-    clickListener(boost::bind(&HTMLInputElementImp::handleClick, this, _1)),
-    keydownListener(boost::bind(&HTMLInputElementImp::handleKeydown, this, _1)),
+    clickListener(boost::bind(&HTMLInputElementImp::handleClick, this, _1, _2)),
+    keydownListener(boost::bind(&HTMLInputElementImp::handleKeydown, this, _1, _2)),
     cursor(0),
     checked(org->checked)
 {
@@ -128,7 +128,7 @@ void HTMLInputElementImp::eval()
     }
 }
 
-void HTMLInputElementImp::handleClick(events::Event event)
+void HTMLInputElementImp::handleClick(EventListenerImp* listener, events::Event event)
 {
     if (type == SubmitButton) {
         html::HTMLFormElement form = getForm();
@@ -137,7 +137,7 @@ void HTMLInputElementImp::handleClick(events::Event event)
     }
 }
 
-void HTMLInputElementImp::handleKeydown(events::Event event)
+void HTMLInputElementImp::handleKeydown(EventListenerImp* listener, events::Event event)
 {
     if (type == Text) {
         bool modified = false;
@@ -197,7 +197,7 @@ void HTMLInputElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
             element->appendChild(text, true);
             style->setCssText(u"display: inline-block; white-space: pre; background-color: white; border: 2px inset; text-align: left; padding: 1px; min-height: 1em;");
             setShadowTree(element);
-            addEventListener(u"keydown", &keydownListener, false, true);
+            addEventListener(u"keydown", &keydownListener, false, EventTargetImp::UseDefault);
         }
         break;
     }
@@ -208,7 +208,7 @@ void HTMLInputElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
             element->appendChild(text, true);
             style->setCssText(u"display: inline-block; border: 2px outset; padding: 1px; text-align: center; min-height: 1em;");
             setShadowTree(element);
-            addEventListener(u"click", &clickListener, false, true);
+            addEventListener(u"click", &clickListener, false, EventTargetImp::UseDefault);
         }
         break;
     }
@@ -226,7 +226,7 @@ void HTMLInputElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
         HTMLElementImp::generateShadowContent(style);
         switch (type) {
         case SubmitButton:
-            addEventListener(u"click", &clickListener, false, true);
+            addEventListener(u"click", &clickListener, false, EventTargetImp::UseDefault);
             break;
         default:
             break;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,7 +68,7 @@ ViewCSSImp::ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyle
     window(window),
     dpi(96),
     zoom(1.0f),
-    mutationListener(boost::bind(&ViewCSSImp::handleMutation, this, _1)),
+    mutationListener(boost::bind(&ViewCSSImp::handleMutation, this, _1, _2)),
     defaultStyleSheet(defaultStyleSheet),
     userStyleSheet(userStyleSheet),
     overflow(CSSOverflowValueImp::Auto),
@@ -84,10 +84,10 @@ ViewCSSImp::ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyle
     setMediumFontSize(16);
     DocumentImp* document = dynamic_cast<DocumentImp*>(getDocument().self());
     if (document) {
-        document->addEventListener(u"DOMAttrModified", &mutationListener, false, true);
-        document->addEventListener(u"DOMCharacterDataModified", &mutationListener, false, true);
-        document->addEventListener(u"DOMNodeInserted", &mutationListener, false, true);
-        document->addEventListener(u"DOMNodeRemoved", &mutationListener, false, true);
+        document->addEventListener(u"DOMAttrModified", &mutationListener, false, EventTargetImp::UseDefault);
+        document->addEventListener(u"DOMCharacterDataModified", &mutationListener, false, EventTargetImp::UseDefault);
+        document->addEventListener(u"DOMNodeInserted", &mutationListener, false, EventTargetImp::UseDefault);
+        document->addEventListener(u"DOMNodeRemoved", &mutationListener, false, EventTargetImp::UseDefault);
     }
 }
 
@@ -95,10 +95,10 @@ ViewCSSImp::~ViewCSSImp()
 {
     DocumentImp* document = dynamic_cast<DocumentImp*>(getDocument().self());
     if (document) {
-        document->removeEventListener(u"DOMAttrModified", &mutationListener, false, true);
-        document->removeEventListener(u"DOMCharacterDataModified", &mutationListener, false, true);
-        document->removeEventListener(u"DOMNodeInserted", &mutationListener, false, true);
-        document->removeEventListener(u"DOMNodeRemoved", &mutationListener, false, true);
+        document->removeEventListener(u"DOMAttrModified", &mutationListener, false, EventTargetImp::UseDefault);
+        document->removeEventListener(u"DOMCharacterDataModified", &mutationListener, false, EventTargetImp::UseDefault);
+        document->removeEventListener(u"DOMNodeInserted", &mutationListener, false, EventTargetImp::UseDefault);
+        document->removeEventListener(u"DOMNodeRemoved", &mutationListener, false, EventTargetImp::UseDefault);
     }
 }
 
@@ -131,7 +131,7 @@ void ViewCSSImp::removeComputedStyle(Element element)
     }
 }
 
-void ViewCSSImp::handleMutation(events::Event event)
+void ViewCSSImp::handleMutation(EventListenerImp* listener, events::Event event)
 {
     if (!boxTree)
         return;

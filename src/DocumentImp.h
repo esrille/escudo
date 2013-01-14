@@ -84,6 +84,8 @@ class DocumentImp : public ObjectMixin<DocumentImp, NodeImp>
     ElementImp* activeElement;
     int error;
 
+    virtual void setEventHandler(const std::u16string& type, Object handler);
+
     // XBL 2.0
     std::map<const std::u16string, html::Window> bindingDocuments;
 

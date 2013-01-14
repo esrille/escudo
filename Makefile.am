@@ -621,6 +621,7 @@ libeshtml5_a_SOURCES = \
 	src/Variadic.h \
 	src/nullable.h \
 	src/sequence.h \
+	src/ECMAScript.cpp \
 	src/ECMAScript.h \
 	src/utf.h \
 	src/utf.cpp \

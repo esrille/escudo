@@ -20,6 +20,7 @@
 #include <new>
 #include <vector>
 #include <boost/algorithm/string.hpp>
+#include <boost/bind.hpp>
 
 #include <org/w3c/dom/events/MouseEvent.h>
 
@@ -104,8 +105,8 @@
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 DocumentImp::DocumentImp(const std::u16string& url) :
-    url(url),
     ObjectMixin(static_cast<DocumentImp*>(0) /*nullptr */),
+    url(url),
     doctype(0),
     mode(NoQuirksMode),
     readyState(u"loading"),
@@ -122,6 +123,24 @@ DocumentImp::DocumentImp(const std::u16string& url) :
 
 DocumentImp::~DocumentImp()
 {
+}
+
+void DocumentImp::setEventHandler(const std::u16string& type, Object handler)
+{
+    if (!defaultView)
+        return;
+
+    EventListenerImp* listener = getEventHandlerListener(type);
+    if (listener) {
+        listener->setEventHandler(handler);
+        return;
+    }
+    DocumentWindowPtr window = activate();
+    listener = new(std::nothrow) EventListenerImp(boost::bind(&ECMAScriptContext::dispatchEvent, window->getContext(), _1, _2));
+    if (listener) {
+        listener->setEventHandler(handler);
+        addEventListener(type, listener, false, EventTargetImp::UseEventHandler);
+    }
 }
 
 bool DocumentImp::processScripts(std::list<html::HTMLScriptElement>& scripts)
@@ -965,618 +984,562 @@ html::HTMLCollection DocumentImp::getCommands()
 
 events::EventHandlerNonNull DocumentImp::getOnabort()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"abort"));
 }
 
 void DocumentImp::setOnabort(events::EventHandlerNonNull onabort)
 {
-    // TODO: implement me!
+    setEventHandler(u"abort", onabort);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnblur()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"blur"));
 }
 
 void DocumentImp::setOnblur(events::EventHandlerNonNull onblur)
 {
-    // TODO: implement me!
+    setEventHandler(u"blur", onblur);
 }
 
 events::EventHandlerNonNull DocumentImp::getOncancel()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"cancel"));
 }
 
 void DocumentImp::setOncancel(events::EventHandlerNonNull oncancel)
 {
-    // TODO: implement me!
+    setEventHandler(u"cancel", oncancel);
 }
 
 events::EventHandlerNonNull DocumentImp::getOncanplay()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"canplay"));
 }
 
 void DocumentImp::setOncanplay(events::EventHandlerNonNull oncanplay)
 {
-    // TODO: implement me!
+    setEventHandler(u"canplay", oncanplay);
 }
 
 events::EventHandlerNonNull DocumentImp::getOncanplaythrough()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"canplaythrough"));
 }
 
 void DocumentImp::setOncanplaythrough(events::EventHandlerNonNull oncanplaythrough)
 {
-    // TODO: implement me!
+    setEventHandler(u"canplaythrough", oncanplaythrough);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnchange()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"change"));
 }
 
 void DocumentImp::setOnchange(events::EventHandlerNonNull onchange)
 {
-    // TODO: implement me!
+    setEventHandler(u"change", onchange);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnclick()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"click"));
 }
 
 void DocumentImp::setOnclick(events::EventHandlerNonNull onclick)
 {
-    // TODO: implement me!
+    setEventHandler(u"click", onclick);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnclose()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"close"));
 }
 
 void DocumentImp::setOnclose(events::EventHandlerNonNull onclose)
 {
-    // TODO: implement me!
+    setEventHandler(u"close", onclose);
 }
 
 events::EventHandlerNonNull DocumentImp::getOncontextmenu()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"contextmenu"));
 }
 
 void DocumentImp::setOncontextmenu(events::EventHandlerNonNull oncontextmenu)
 {
-    // TODO: implement me!
+    setEventHandler(u"contextmenu", oncontextmenu);
 }
 
 events::EventHandlerNonNull DocumentImp::getOncuechange()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"cuechange"));
 }
 
 void DocumentImp::setOncuechange(events::EventHandlerNonNull oncuechange)
 {
-    // TODO: implement me!
+    setEventHandler(u"cuechange", oncuechange);
 }
 
 events::EventHandlerNonNull DocumentImp::getOndblclick()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"dblclick"));
 }
 
 void DocumentImp::setOndblclick(events::EventHandlerNonNull ondblclick)
 {
-    // TODO: implement me!
+    setEventHandler(u"dblclick", ondblclick);
 }
 
 events::EventHandlerNonNull DocumentImp::getOndrag()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"drag"));
 }
 
 void DocumentImp::setOndrag(events::EventHandlerNonNull ondrag)
 {
-    // TODO: implement me!
+    setEventHandler(u"drag", ondrag);
 }
 
 events::EventHandlerNonNull DocumentImp::getOndragend()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"dragend"));
 }
 
 void DocumentImp::setOndragend(events::EventHandlerNonNull ondragend)
 {
-    // TODO: implement me!
+    setEventHandler(u"dragend", ondragend);
 }
 
 events::EventHandlerNonNull DocumentImp::getOndragenter()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"dragenter"));
 }
 
 void DocumentImp::setOndragenter(events::EventHandlerNonNull ondragenter)
 {
-    // TODO: implement me!
+    setEventHandler(u"dragenter", ondragenter);
 }
 
 events::EventHandlerNonNull DocumentImp::getOndragleave()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"dragleave"));
 }
 
 void DocumentImp::setOndragleave(events::EventHandlerNonNull ondragleave)
 {
-    // TODO: implement me!
+    setEventHandler(u"dragleave", ondragleave);
 }
 
 events::EventHandlerNonNull DocumentImp::getOndragover()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"dragover"));
 }
 
 void DocumentImp::setOndragover(events::EventHandlerNonNull ondragover)
 {
-    // TODO: implement me!
+    setEventHandler(u"dragover", ondragover);
 }
 
 events::EventHandlerNonNull DocumentImp::getOndragstart()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"dragstart"));
 }
 
 void DocumentImp::setOndragstart(events::EventHandlerNonNull ondragstart)
 {
-    // TODO: implement me!
+    setEventHandler(u"dragstart", ondragstart);
 }
 
 events::EventHandlerNonNull DocumentImp::getOndrop()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"drop"));
 }
 
 void DocumentImp::setOndrop(events::EventHandlerNonNull ondrop)
 {
-    // TODO: implement me!
+    setEventHandler(u"drop", ondrop);
 }
 
 events::EventHandlerNonNull DocumentImp::getOndurationchange()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"durationchange"));
 }
 
 void DocumentImp::setOndurationchange(events::EventHandlerNonNull ondurationchange)
 {
-    // TODO: implement me!
+    setEventHandler(u"durationchange", ondurationchange);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnemptied()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"emptied"));
 }
 
 void DocumentImp::setOnemptied(events::EventHandlerNonNull onemptied)
 {
-    // TODO: implement me!
+    setEventHandler(u"emptied", onemptied);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnended()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"ended"));
 }
 
 void DocumentImp::setOnended(events::EventHandlerNonNull onended)
 {
-    // TODO: implement me!
+    setEventHandler(u"ended", onended);
 }
 
 events::OnErrorEventHandlerNonNull DocumentImp::getOnerror()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::OnErrorEventHandlerNonNull>(getEventHandler(u"error"));
 }
 
 void DocumentImp::setOnerror(events::OnErrorEventHandlerNonNull onerror)
 {
-    // TODO: implement me!
+    setEventHandler(u"error", onerror);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnfocus()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"focus"));
 }
 
 void DocumentImp::setOnfocus(events::EventHandlerNonNull onfocus)
 {
-    // TODO: implement me!
+    setEventHandler(u"focus", onfocus);
 }
 
 events::EventHandlerNonNull DocumentImp::getOninput()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"input"));
 }
 
 void DocumentImp::setOninput(events::EventHandlerNonNull oninput)
 {
-    // TODO: implement me!
+    setEventHandler(u"input", oninput);
 }
 
 events::EventHandlerNonNull DocumentImp::getOninvalid()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"invalid"));
 }
 
 void DocumentImp::setOninvalid(events::EventHandlerNonNull oninvalid)
 {
-    // TODO: implement me!
+    setEventHandler(u"invalid", oninvalid);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnkeydown()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"keydown"));
 }
 
 void DocumentImp::setOnkeydown(events::EventHandlerNonNull onkeydown)
 {
-    // TODO: implement me!
+    setEventHandler(u"keydown", onkeydown);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnkeypress()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"keypress"));
 }
 
 void DocumentImp::setOnkeypress(events::EventHandlerNonNull onkeypress)
 {
-    // TODO: implement me!
+    setEventHandler(u"keypress", onkeypress);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnkeyup()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"keyup"));
 }
 
 void DocumentImp::setOnkeyup(events::EventHandlerNonNull onkeyup)
 {
-    // TODO: implement me!
+    setEventHandler(u"keyup", onkeyup);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnload()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"load"));
 }
 
 void DocumentImp::setOnload(events::EventHandlerNonNull onload)
 {
-    // TODO: implement me!
+    setEventHandler(u"load", onload);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnloadeddata()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"loadeddata"));
 }
 
 void DocumentImp::setOnloadeddata(events::EventHandlerNonNull onloadeddata)
 {
-    // TODO: implement me!
+    setEventHandler(u"loadeddata", onloadeddata);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnloadedmetadata()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"loadedmetadata"));
 }
 
 void DocumentImp::setOnloadedmetadata(events::EventHandlerNonNull onloadedmetadata)
 {
-    // TODO: implement me!
+    setEventHandler(u"loadedmetadata", onloadedmetadata);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnloadstart()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"loadstart"));
 }
 
 void DocumentImp::setOnloadstart(events::EventHandlerNonNull onloadstart)
 {
-    // TODO: implement me!
+    setEventHandler(u"loadstart", onloadstart);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnmousedown()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"mousedown"));
 }
 
 void DocumentImp::setOnmousedown(events::EventHandlerNonNull onmousedown)
 {
-    // TODO: implement me!
+    setEventHandler(u"mousedown", onmousedown);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnmousemove()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"mousemove"));
 }
 
 void DocumentImp::setOnmousemove(events::EventHandlerNonNull onmousemove)
 {
-    // TODO: implement me!
+    setEventHandler(u"mousemove", onmousemove);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnmouseout()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"mouseout"));
 }
 
 void DocumentImp::setOnmouseout(events::EventHandlerNonNull onmouseout)
 {
-    // TODO: implement me!
+    setEventHandler(u"mouseout", onmouseout);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnmouseover()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"mouseover"));
 }
 
 void DocumentImp::setOnmouseover(events::EventHandlerNonNull onmouseover)
 {
-    // TODO: implement me!
+    setEventHandler(u"mouseover", onmouseover);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnmouseup()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"mouseup"));
 }
 
 void DocumentImp::setOnmouseup(events::EventHandlerNonNull onmouseup)
 {
-    // TODO: implement me!
+    setEventHandler(u"mouseup", onmouseup);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnmousewheel()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"mousewheel"));
 }
 
 void DocumentImp::setOnmousewheel(events::EventHandlerNonNull onmousewheel)
 {
-    // TODO: implement me!
+    setEventHandler(u"mousewheel", onmousewheel);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnpause()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"pause"));
 }
 
 void DocumentImp::setOnpause(events::EventHandlerNonNull onpause)
 {
-    // TODO: implement me!
+    setEventHandler(u"pause", onpause);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnplay()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"play"));
 }
 
 void DocumentImp::setOnplay(events::EventHandlerNonNull onplay)
 {
-    // TODO: implement me!
+    setEventHandler(u"play", onplay);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnplaying()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"playing"));
 }
 
 void DocumentImp::setOnplaying(events::EventHandlerNonNull onplaying)
 {
-    // TODO: implement me!
+    setEventHandler(u"playing", onplaying);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnprogress()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"progress"));
 }
 
 void DocumentImp::setOnprogress(events::EventHandlerNonNull onprogress)
 {
-    // TODO: implement me!
+    setEventHandler(u"progress", onprogress);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnratechange()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"ratechange"));
 }
 
 void DocumentImp::setOnratechange(events::EventHandlerNonNull onratechange)
 {
-    // TODO: implement me!
+    setEventHandler(u"ratechange", onratechange);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnreset()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"reset"));
 }
 
 void DocumentImp::setOnreset(events::EventHandlerNonNull onreset)
 {
-    // TODO: implement me!
+    setEventHandler(u"reset", onreset);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnscroll()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"scroll"));
 }
 
 void DocumentImp::setOnscroll(events::EventHandlerNonNull onscroll)
 {
-    // TODO: implement me!
+    setEventHandler(u"scroll", onscroll);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnseeked()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"seeked"));
 }
 
 void DocumentImp::setOnseeked(events::EventHandlerNonNull onseeked)
 {
-    // TODO: implement me!
+    setEventHandler(u"seeked", onseeked);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnseeking()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"seeking"));
 }
 
 void DocumentImp::setOnseeking(events::EventHandlerNonNull onseeking)
 {
-    // TODO: implement me!
+    setEventHandler(u"seeking", onseeking);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnselect()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"select"));
 }
 
 void DocumentImp::setOnselect(events::EventHandlerNonNull onselect)
 {
-    // TODO: implement me!
+    setEventHandler(u"select", onselect);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnshow()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"show"));
 }
 
 void DocumentImp::setOnshow(events::EventHandlerNonNull onshow)
 {
-    // TODO: implement me!
+    setEventHandler(u"show", onshow);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnstalled()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"stalled"));
 }
 
 void DocumentImp::setOnstalled(events::EventHandlerNonNull onstalled)
 {
-    // TODO: implement me!
+    setEventHandler(u"stalled", onstalled);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnsubmit()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"submit"));
 }
 
 void DocumentImp::setOnsubmit(events::EventHandlerNonNull onsubmit)
 {
-    // TODO: implement me!
+    setEventHandler(u"submit", onsubmit);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnsuspend()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"suspend"));
 }
 
 void DocumentImp::setOnsuspend(events::EventHandlerNonNull onsuspend)
 {
-    // TODO: implement me!
+    setEventHandler(u"suspend", onsuspend);
 }
 
 events::EventHandlerNonNull DocumentImp::getOntimeupdate()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"timeupdate"));
 }
 
 void DocumentImp::setOntimeupdate(events::EventHandlerNonNull ontimeupdate)
 {
-    // TODO: implement me!
+    setEventHandler(u"timeupdate", ontimeupdate);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnvolumechange()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"volumechange"));
 }
 
 void DocumentImp::setOnvolumechange(events::EventHandlerNonNull onvolumechange)
 {
-    // TODO: implement me!
+    setEventHandler(u"volumechange", onvolumechange);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnwaiting()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"waiting"));
 }
 
 void DocumentImp::setOnwaiting(events::EventHandlerNonNull onwaiting)
 {
-    // TODO: implement me!
+    setEventHandler(u"waiting", onwaiting);
 }
 
 events::EventHandlerNonNull DocumentImp::getOnreadystatechange()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"readystatechange"));
 }
 
 void DocumentImp::setOnreadystatechange(events::EventHandlerNonNull onreadystatechange)
 {
-    // TODO: implement me!
+    setEventHandler(u"readystatechange", onreadystatechange);
 }
 
 std::u16string DocumentImp::getFgColor()

@@ -38,15 +38,15 @@ HTMLElementImp::HTMLElementImp(DocumentImp* ownerDocument, const std::u16string&
     tabIndex(-1),
     scrollTop(0),
     scrollLeft(0),
-    clickListener(boost::bind(&HTMLElementImp::handleClick, this, _1)),
-    mouseMoveListener(boost::bind(&HTMLElementImp::handleMouseMove, this, _1)),
+    clickListener(boost::bind(&HTMLElementImp::handleClick, this, _1, _2)),
+    mouseMoveListener(boost::bind(&HTMLElementImp::handleMouseMove, this, _1, _2)),
     bindingImplementation(0),
     shadowTree(0),
     shadowTarget(0),
     shadowImplementation(0)
 {
-    addEventListener(u"click", &clickListener, false, true);
-    addEventListener(u"mousemove", &mouseMoveListener, false, true);
+    addEventListener(u"click", &clickListener, false, EventTargetImp::UseDefault);
+    addEventListener(u"mousemove", &mouseMoveListener, false, EventTargetImp::UseDefault);
 }
 
 HTMLElementImp::HTMLElementImp(HTMLElementImp* org, bool deep) :
@@ -55,8 +55,8 @@ HTMLElementImp::HTMLElementImp(HTMLElementImp* org, bool deep) :
     tabIndex(org->tabIndex),
     scrollTop(0),
     scrollLeft(0),
-    clickListener(boost::bind(&HTMLElementImp::handleClick, this, _1)),
-    mouseMoveListener(boost::bind(&HTMLElementImp::handleMouseMove, this, _1)),
+    clickListener(boost::bind(&HTMLElementImp::handleClick, this, _1, _2)),
+    mouseMoveListener(boost::bind(&HTMLElementImp::handleMouseMove, this, _1, _2)),
     bindingImplementation(0), // TODO: clone
     shadowTree(0),            // TODO: clone
     shadowTarget(0),          // TODO: clone
@@ -69,15 +69,15 @@ HTMLElementImp::HTMLElementImp(HTMLElementImp* org, bool deep) :
             style = imp;
         }
     }
-    addEventListener(u"click", &clickListener, false, true);
-    addEventListener(u"mousemove", &mouseMoveListener, false, true);
+    addEventListener(u"click", &clickListener, false, EventTargetImp::UseDefault);
+    addEventListener(u"mousemove", &mouseMoveListener, false, EventTargetImp::UseDefault);
 }
 
 HTMLElementImp::~HTMLElementImp()
 {
 }
 
-void HTMLElementImp::handleClick(events::Event event)
+void HTMLElementImp::handleClick(EventListenerImp* listener, events::Event event)
 {
     events::MouseEvent mouse = interface_cast<events::MouseEvent>(event);
     switch (mouse.getButton()) {
@@ -91,7 +91,7 @@ void HTMLElementImp::handleClick(events::Event event)
     }
 }
 
-void HTMLElementImp::handleMouseMove(events::Event event)
+void HTMLElementImp::handleMouseMove(EventListenerImp* listener, events::Event event)
 {
     events::MouseEvent mouse = interface_cast<events::MouseEvent>(event);
     unsigned short buttons = mouse.getButtons();
@@ -137,6 +137,21 @@ Box* HTMLElementImp::getBox()
     if (!imp)
         return 0;
     return imp->getBox();
+}
+
+void HTMLElementImp::setEventHandler(const std::u16string& type, Object handler)
+{
+    EventListenerImp* listener = getEventHandlerListener(type);
+    if (listener) {
+        listener->setEventHandler(handler);
+        return;
+    }
+    DocumentWindowPtr window = getOwnerDocumentImp()->activate();
+    listener = new(std::nothrow) EventListenerImp(boost::bind(&ECMAScriptContext::dispatchEvent, window->getContext(), _1, _2));
+    if (listener) {
+        listener->setEventHandler(handler);
+        addEventListener(type, listener, false, EventTargetImp::UseEventHandler);
+    }
 }
 
 // XBL 2.0 internal
@@ -551,610 +566,552 @@ css::CSSStyleDeclaration HTMLElementImp::getStyle()
 
 events::EventHandlerNonNull HTMLElementImp::getOnabort()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"abort"));
 }
 
 void HTMLElementImp::setOnabort(events::EventHandlerNonNull onabort)
 {
-    // TODO: implement me!
+    setEventHandler(u"abort", onabort);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnblur()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"blur"));
 }
 
 void HTMLElementImp::setOnblur(events::EventHandlerNonNull onblur)
 {
-    // TODO: implement me!
+    setEventHandler(u"blur", onblur);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOncancel()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"cancel"));
 }
 
 void HTMLElementImp::setOncancel(events::EventHandlerNonNull oncancel)
 {
-    // TODO: implement me!
+    setEventHandler(u"cancel", oncancel);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOncanplay()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"canplay"));
 }
 
 void HTMLElementImp::setOncanplay(events::EventHandlerNonNull oncanplay)
 {
-    // TODO: implement me!
+    setEventHandler(u"canplay", oncanplay);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOncanplaythrough()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"canplaythrough"));
 }
 
 void HTMLElementImp::setOncanplaythrough(events::EventHandlerNonNull oncanplaythrough)
 {
-    // TODO: implement me!
+    setEventHandler(u"canplaythrough", oncanplaythrough);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnchange()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"change"));
 }
 
 void HTMLElementImp::setOnchange(events::EventHandlerNonNull onchange)
 {
-    // TODO: implement me!
+    setEventHandler(u"change", onchange);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnclick()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"click"));
 }
 
 void HTMLElementImp::setOnclick(events::EventHandlerNonNull onclick)
 {
-    DocumentImp* document = getOwnerDocumentImp();
-    DocumentWindowPtr window = document->activate();
-    addEventListener(u"click",
-                     new(std::nothrow) EventListenerImp(boost::bind(&ECMAScriptContext::dispatchEvent, window->getContext(), onclick, _1)));
+    setEventHandler(u"click", onclick);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnclose()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"close"));
 }
 
 void HTMLElementImp::setOnclose(events::EventHandlerNonNull onclose)
 {
-    // TODO: implement me!
+    setEventHandler(u"close", onclose);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOncontextmenu()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"contextmenu"));
 }
 
 void HTMLElementImp::setOncontextmenu(events::EventHandlerNonNull oncontextmenu)
 {
-    // TODO: implement me!
+    setEventHandler(u"contextmenu", oncontextmenu);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOncuechange()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"cuechange"));
 }
 
 void HTMLElementImp::setOncuechange(events::EventHandlerNonNull oncuechange)
 {
-    // TODO: implement me!
+    setEventHandler(u"cuechange", oncuechange);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOndblclick()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"dblclick"));
 }
 
 void HTMLElementImp::setOndblclick(events::EventHandlerNonNull ondblclick)
 {
-    // TODO: implement me!
+    setEventHandler(u"dblclick", ondblclick);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOndrag()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"drag"));
 }
 
 void HTMLElementImp::setOndrag(events::EventHandlerNonNull ondrag)
 {
-    // TODO: implement me!
+    setEventHandler(u"drag", ondrag);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOndragend()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"dragend"));
 }
 
 void HTMLElementImp::setOndragend(events::EventHandlerNonNull ondragend)
 {
-    // TODO: implement me!
+    setEventHandler(u"dragend", ondragend);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOndragenter()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"dragenter"));
 }
 
 void HTMLElementImp::setOndragenter(events::EventHandlerNonNull ondragenter)
 {
-    // TODO: implement me!
+    setEventHandler(u"dragenter", ondragenter);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOndragleave()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"dragleave"));
 }
 
 void HTMLElementImp::setOndragleave(events::EventHandlerNonNull ondragleave)
 {
-    // TODO: implement me!
+    setEventHandler(u"dragleave", ondragleave);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOndragover()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"dragover"));
 }
 
 void HTMLElementImp::setOndragover(events::EventHandlerNonNull ondragover)
 {
-    // TODO: implement me!
+    setEventHandler(u"dragover", ondragover);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOndragstart()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"dragstart"));
 }
 
 void HTMLElementImp::setOndragstart(events::EventHandlerNonNull ondragstart)
 {
-    // TODO: implement me!
+    setEventHandler(u"dragstart", ondragstart);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOndrop()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"drop"));
 }
 
 void HTMLElementImp::setOndrop(events::EventHandlerNonNull ondrop)
 {
-    // TODO: implement me!
+    setEventHandler(u"drop", ondrop);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOndurationchange()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"durationchange"));
 }
 
 void HTMLElementImp::setOndurationchange(events::EventHandlerNonNull ondurationchange)
 {
-    // TODO: implement me!
+    setEventHandler(u"durationchange", ondurationchange);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnemptied()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"emptied"));
 }
 
 void HTMLElementImp::setOnemptied(events::EventHandlerNonNull onemptied)
 {
-    // TODO: implement me!
+    setEventHandler(u"emptied", onemptied);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnended()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"ended"));
 }
 
 void HTMLElementImp::setOnended(events::EventHandlerNonNull onended)
 {
-    // TODO: implement me!
+    setEventHandler(u"ended", onended);
 }
 
 events::OnErrorEventHandlerNonNull HTMLElementImp::getOnerror()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::OnErrorEventHandlerNonNull>(getEventHandler(u"error"));
 }
 
 void HTMLElementImp::setOnerror(events::OnErrorEventHandlerNonNull onerror)
 {
-    // TODO: implement me!
+    setEventHandler(u"error", onerror);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnfocus()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"focus"));
 }
 
 void HTMLElementImp::setOnfocus(events::EventHandlerNonNull onfocus)
 {
-    // TODO: implement me!
+    setEventHandler(u"focus", onfocus);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOninput()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"input"));
 }
 
 void HTMLElementImp::setOninput(events::EventHandlerNonNull oninput)
 {
-    // TODO: implement me!
+    setEventHandler(u"input", oninput);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOninvalid()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"invalid"));
 }
 
 void HTMLElementImp::setOninvalid(events::EventHandlerNonNull oninvalid)
 {
-    // TODO: implement me!
+    setEventHandler(u"invalid", oninvalid);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnkeydown()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"keydown"));
 }
 
 void HTMLElementImp::setOnkeydown(events::EventHandlerNonNull onkeydown)
 {
-    // TODO: implement me!
+    setEventHandler(u"keydown", onkeydown);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnkeypress()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"keypress"));
 }
 
 void HTMLElementImp::setOnkeypress(events::EventHandlerNonNull onkeypress)
 {
-    // TODO: implement me!
+    setEventHandler(u"keypress", onkeypress);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnkeyup()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"keyup"));
 }
 
 void HTMLElementImp::setOnkeyup(events::EventHandlerNonNull onkeyup)
 {
-    // TODO: implement me!
+    setEventHandler(u"keyup", onkeyup);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnload()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"load"));
 }
 
 void HTMLElementImp::setOnload(events::EventHandlerNonNull onload)
 {
-    // TODO: implement me!
+    setEventHandler(u"load", onload);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnloadeddata()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"loadeddata"));
 }
 
 void HTMLElementImp::setOnloadeddata(events::EventHandlerNonNull onloadeddata)
 {
-    // TODO: implement me!
+    setEventHandler(u"loadeddata", onloadeddata);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnloadedmetadata()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"loadedmetadata"));
 }
 
 void HTMLElementImp::setOnloadedmetadata(events::EventHandlerNonNull onloadedmetadata)
 {
-    // TODO: implement me!
+    setEventHandler(u"loadedmetadata", onloadedmetadata);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnloadstart()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"loadstart"));
 }
 
 void HTMLElementImp::setOnloadstart(events::EventHandlerNonNull onloadstart)
 {
-    // TODO: implement me!
+    setEventHandler(u"loadstart", onloadstart);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnmousedown()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"mousedown"));
 }
 
 void HTMLElementImp::setOnmousedown(events::EventHandlerNonNull onmousedown)
 {
-    // TODO: implement me!
+    setEventHandler(u"mousedown", onmousedown);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnmousemove()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"mousemove"));
 }
 
 void HTMLElementImp::setOnmousemove(events::EventHandlerNonNull onmousemove)
 {
-    // TODO: implement me!
+    setEventHandler(u"mousemove", onmousemove);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnmouseout()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"mouseout"));
 }
 
 void HTMLElementImp::setOnmouseout(events::EventHandlerNonNull onmouseout)
 {
-    // TODO: implement me!
+    setEventHandler(u"mouseout", onmouseout);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnmouseover()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"mouseover"));
 }
 
 void HTMLElementImp::setOnmouseover(events::EventHandlerNonNull onmouseover)
 {
-    // TODO: implement me!
+    setEventHandler(u"mouseover", onmouseover);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnmouseup()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"mouseup"));
 }
 
 void HTMLElementImp::setOnmouseup(events::EventHandlerNonNull onmouseup)
 {
-    // TODO: implement me!
+    setEventHandler(u"mouseup", onmouseup);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnmousewheel()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"mousewheel"));
 }
 
 void HTMLElementImp::setOnmousewheel(events::EventHandlerNonNull onmousewheel)
 {
-    // TODO: implement me!
+    setEventHandler(u"mousewheel", onmousewheel);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnpause()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"pause"));
 }
 
 void HTMLElementImp::setOnpause(events::EventHandlerNonNull onpause)
 {
-    // TODO: implement me!
+    setEventHandler(u"pause", onpause);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnplay()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"play"));
 }
 
 void HTMLElementImp::setOnplay(events::EventHandlerNonNull onplay)
 {
-    // TODO: implement me!
+    setEventHandler(u"play", onplay);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnplaying()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"playing"));
 }
 
 void HTMLElementImp::setOnplaying(events::EventHandlerNonNull onplaying)
 {
-    // TODO: implement me!
+    setEventHandler(u"playing", onplaying);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnprogress()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"progress"));
 }
 
 void HTMLElementImp::setOnprogress(events::EventHandlerNonNull onprogress)
 {
-    // TODO: implement me!
+    setEventHandler(u"progress", onprogress);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnratechange()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"ratechange"));
 }
 
 void HTMLElementImp::setOnratechange(events::EventHandlerNonNull onratechange)
 {
-    // TODO: implement me!
+    setEventHandler(u"ratechange", onratechange);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnreset()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"reset"));
 }
 
 void HTMLElementImp::setOnreset(events::EventHandlerNonNull onreset)
 {
-    // TODO: implement me!
+    setEventHandler(u"reset", onreset);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnscroll()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"scroll"));
 }
 
 void HTMLElementImp::setOnscroll(events::EventHandlerNonNull onscroll)
 {
-    // TODO: implement me!
+    setEventHandler(u"scroll", onscroll);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnseeked()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"seeked"));
 }
 
 void HTMLElementImp::setOnseeked(events::EventHandlerNonNull onseeked)
 {
-    // TODO: implement me!
+    setEventHandler(u"seeked", onseeked);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnseeking()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"seeking"));
 }
 
 void HTMLElementImp::setOnseeking(events::EventHandlerNonNull onseeking)
 {
-    // TODO: implement me!
+    setEventHandler(u"seeking", onseeking);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnselect()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"select"));
 }
 
 void HTMLElementImp::setOnselect(events::EventHandlerNonNull onselect)
 {
-    // TODO: implement me!
+    setEventHandler(u"select", onselect);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnshow()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"show"));
 }
 
 void HTMLElementImp::setOnshow(events::EventHandlerNonNull onshow)
 {
-    // TODO: implement me!
+    setEventHandler(u"show", onshow);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnstalled()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"stalled"));
 }
 
 void HTMLElementImp::setOnstalled(events::EventHandlerNonNull onstalled)
 {
-    // TODO: implement me!
+    setEventHandler(u"stalled", onstalled);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnsubmit()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"submit"));
 }
 
 void HTMLElementImp::setOnsubmit(events::EventHandlerNonNull onsubmit)
 {
-    // TODO: implement me!
+    setEventHandler(u"submit", onsubmit);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnsuspend()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"suspend"));
 }
 
 void HTMLElementImp::setOnsuspend(events::EventHandlerNonNull onsuspend)
 {
-    // TODO: implement me!
+    setEventHandler(u"suspend", onsuspend);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOntimeupdate()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"timeupdate"));
 }
 
 void HTMLElementImp::setOntimeupdate(events::EventHandlerNonNull ontimeupdate)
 {
-    // TODO: implement me!
+    setEventHandler(u"timeupdate", ontimeupdate);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnvolumechange()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"volumechange"));
 }
 
 void HTMLElementImp::setOnvolumechange(events::EventHandlerNonNull onvolumechange)
 {
-    // TODO: implement me!
+    setEventHandler(u"volumechange", onvolumechange);
 }
 
 events::EventHandlerNonNull HTMLElementImp::getOnwaiting()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(getEventHandler(u"waiting"));
 }
 
 void HTMLElementImp::setOnwaiting(events::EventHandlerNonNull onwaiting)
 {
-    // TODO: implement me!
+    setEventHandler(u"waiting", onwaiting);
 }
 
 Element HTMLElementImp::getOffsetParent()

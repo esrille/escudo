@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,11 +32,11 @@ DocumentWindow::DocumentWindow() :
     global(0),
     scrollX(0),
     scrollY(0),
-    clickListener(boost::bind(&DocumentWindow::handleClick, this, _1)),
-    mouseMoveListener(boost::bind(&DocumentWindow::handleMouseMove, this, _1))
+    clickListener(boost::bind(&DocumentWindow::handleClick, this, _1, _2)),
+    mouseMoveListener(boost::bind(&DocumentWindow::handleMouseMove, this, _1, _2))
 {
-    addEventListener(u"click", &clickListener, false, true);
-    addEventListener(u"mousemove", &mouseMoveListener, false, true);
+    addEventListener(u"click", &clickListener, false, EventTargetImp::UseDefault);
+    addEventListener(u"mousemove", &mouseMoveListener, false, EventTargetImp::UseDefault);
 }
 
 DocumentWindow::~DocumentWindow()
@@ -61,6 +61,20 @@ void DocumentWindow::activate(WindowImp* proxy)
 {
     if (proxy && global)
         global->activate(proxy);
+}
+
+void DocumentWindow::setEventHandler(const std::u16string& type, Object handler)
+{
+    EventListenerImp* listener = getEventHandlerListener(type);
+    if (listener) {
+        listener->setEventHandler(handler);
+        return;
+    }
+    listener = new(std::nothrow) EventListenerImp(boost::bind(&ECMAScriptContext::dispatchEvent, getContext(), _1, _2));
+    if (listener) {
+        listener->setEventHandler(handler);
+        addEventListener(type, listener, false, EventTargetImp::UseEventHandler);
+    }
 }
 
 HttpRequest* DocumentWindow::preload(const std::u16string& base, const std::u16string& urlString)
@@ -99,7 +113,7 @@ void DocumentWindow::scroll(int x, int y)
     scrollY = y;
 }
 
-void DocumentWindow::handleClick(events::Event event)
+void DocumentWindow::handleClick(EventListenerImp* listener, events::Event event)
 {
     if (event.getDefaultPrevented())
         return;
@@ -141,7 +155,7 @@ void DocumentWindow::handleClick(events::Event event)
     }
 }
 
-void DocumentWindow::handleMouseMove(events::Event event)
+void DocumentWindow::handleMouseMove(EventListenerImp* listener, events::Event event)
 {
     if (event.getDefaultPrevented())
         return;

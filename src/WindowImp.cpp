@@ -256,7 +256,7 @@ bool WindowImp::poll()
             recordTime("%*shttp request done", windowDepth * 2, "");
             // TODO: Check header
             Document newDocument = getDOMImplementation()->createDocument(u"", u"", 0);
-            if (document = dynamic_cast<DocumentImp*>(newDocument.self())) {
+            if ((document = dynamic_cast<DocumentImp*>(newDocument.self()))) {
                 // TODO: Fire a simple unload event.
                 window->setDocument(newDocument);
                 document->setDefaultView(this);
@@ -470,7 +470,7 @@ void WindowImp::mouse(const EventTask& task)
     Element target = Box::getContainingElement(box->getTargetNode());
 
     // mousedown, mousemove
-    if (imp = new(std::nothrow) MouseEventImp) {
+    if ((imp = new(std::nothrow) MouseEventImp)) {
         event = imp;
         if (!up) {
             clickTarget = target;
@@ -490,7 +490,7 @@ void WindowImp::mouse(const EventTask& task)
         return;
 
     // click
-    if (imp = new(std::nothrow) MouseEventImp) {
+    if ((imp = new(std::nothrow) MouseEventImp)) {
         event = imp;
         imp->initMouseEvent(u"click",
                             true, true, this, detail, x, y, x, y,
@@ -523,7 +523,7 @@ void WindowImp::mouseMove(const EventTask& task)
     // mousemove
     events::MouseEvent event(0);
     MouseEventImp* imp = 0;
-    if (imp = new(std::nothrow) MouseEventImp) {
+    if ((imp = new(std::nothrow) MouseEventImp)) {
         event = imp;
         if (target != clickTarget)
             detail = 0;
@@ -974,753 +974,682 @@ Any WindowImp::showModalDialog(const std::u16string& url, Any argument)
 
 events::EventHandlerNonNull WindowImp::getOnabort()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"abort"));
 }
 
 void WindowImp::setOnabort(events::EventHandlerNonNull onabort)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"abort", onabort);
 }
 
 events::EventHandlerNonNull WindowImp::getOnafterprint()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"afterprint"));
 }
 
 void WindowImp::setOnafterprint(events::EventHandlerNonNull onafterprint)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"afterprint", onafterprint);
 }
 
 events::EventHandlerNonNull WindowImp::getOnbeforeprint()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"beforeprint"));
 }
 
 void WindowImp::setOnbeforeprint(events::EventHandlerNonNull onbeforeprint)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"beforeprint", onbeforeprint);
 }
 
 events::EventHandlerNonNull WindowImp::getOnbeforeunload()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"beforeunload"));
 }
 
 void WindowImp::setOnbeforeunload(events::EventHandlerNonNull onbeforeunload)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"beforeunload", onbeforeunload);
 }
 
 events::EventHandlerNonNull WindowImp::getOnblur()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"blur"));
 }
 
 void WindowImp::setOnblur(events::EventHandlerNonNull onblur)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"blur", onblur);
 }
 
 events::EventHandlerNonNull WindowImp::getOncancel()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"cancel"));
 }
 
 void WindowImp::setOncancel(events::EventHandlerNonNull oncancel)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"cancel", oncancel);
 }
 
 events::EventHandlerNonNull WindowImp::getOncanplay()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"canplay"));
 }
 
 void WindowImp::setOncanplay(events::EventHandlerNonNull oncanplay)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"canplay", oncanplay);
 }
 
 events::EventHandlerNonNull WindowImp::getOncanplaythrough()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"canplaythrough"));
 }
 
 void WindowImp::setOncanplaythrough(events::EventHandlerNonNull oncanplaythrough)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"canplaythrough", oncanplaythrough);
 }
 
 events::EventHandlerNonNull WindowImp::getOnchange()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"change"));
 }
 
 void WindowImp::setOnchange(events::EventHandlerNonNull onchange)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"change", onchange);
 }
 
 events::EventHandlerNonNull WindowImp::getOnclick()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"click"));
 }
 
 void WindowImp::setOnclick(events::EventHandlerNonNull onclick)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"click", onclick);
 }
 
 events::EventHandlerNonNull WindowImp::getOnclose()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"close"));
 }
 
 void WindowImp::setOnclose(events::EventHandlerNonNull onclose)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"close", onclose);
 }
 
 events::EventHandlerNonNull WindowImp::getOncontextmenu()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"contextmenu"));
 }
 
 void WindowImp::setOncontextmenu(events::EventHandlerNonNull oncontextmenu)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"contextmenu", oncontextmenu);
 }
 
 events::EventHandlerNonNull WindowImp::getOncuechange()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"cuechange"));
 }
 
 void WindowImp::setOncuechange(events::EventHandlerNonNull oncuechange)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"cuechange", oncuechange);
 }
 
 events::EventHandlerNonNull WindowImp::getOndblclick()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"dblclick"));
 }
 
 void WindowImp::setOndblclick(events::EventHandlerNonNull ondblclick)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"dblclick", ondblclick);
 }
 
 events::EventHandlerNonNull WindowImp::getOndrag()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"drag"));
 }
 
 void WindowImp::setOndrag(events::EventHandlerNonNull ondrag)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"drag", ondrag);
 }
 
 events::EventHandlerNonNull WindowImp::getOndragend()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"dragend"));
 }
 
 void WindowImp::setOndragend(events::EventHandlerNonNull ondragend)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"dragend", ondragend);
 }
 
 events::EventHandlerNonNull WindowImp::getOndragenter()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"dragenter"));
 }
 
 void WindowImp::setOndragenter(events::EventHandlerNonNull ondragenter)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"dragenter", ondragenter);
 }
 
 events::EventHandlerNonNull WindowImp::getOndragleave()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"dragleave"));
 }
 
 void WindowImp::setOndragleave(events::EventHandlerNonNull ondragleave)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"dragleave", ondragleave);
 }
 
 events::EventHandlerNonNull WindowImp::getOndragover()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"dragover"));
 }
 
 void WindowImp::setOndragover(events::EventHandlerNonNull ondragover)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"dragover", ondragover);
 }
 
 events::EventHandlerNonNull WindowImp::getOndragstart()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"dragstart"));
 }
 
 void WindowImp::setOndragstart(events::EventHandlerNonNull ondragstart)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"dragstart", ondragstart);
 }
 
 events::EventHandlerNonNull WindowImp::getOndrop()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"drop"));
 }
 
 void WindowImp::setOndrop(events::EventHandlerNonNull ondrop)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"drop", ondrop);
 }
 
 events::EventHandlerNonNull WindowImp::getOndurationchange()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"durationchange"));
 }
 
 void WindowImp::setOndurationchange(events::EventHandlerNonNull ondurationchange)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"durationchange", ondurationchange);
 }
 
 events::EventHandlerNonNull WindowImp::getOnemptied()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"emptied"));
 }
 
 void WindowImp::setOnemptied(events::EventHandlerNonNull onemptied)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"emptied", onemptied);
 }
 
 events::EventHandlerNonNull WindowImp::getOnended()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"ended"));
 }
 
 void WindowImp::setOnended(events::EventHandlerNonNull onended)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"ended", onended);
 }
 
 events::OnErrorEventHandlerNonNull WindowImp::getOnerror()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::OnErrorEventHandlerNonNull>(window->getEventHandler(u"error"));
 }
 
 void WindowImp::setOnerror(events::OnErrorEventHandlerNonNull onerror)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"error", onerror);
 }
 
 events::EventHandlerNonNull WindowImp::getOnfocus()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"focus"));
 }
 
 void WindowImp::setOnfocus(events::EventHandlerNonNull onfocus)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"focus", onfocus);
 }
 
 events::EventHandlerNonNull WindowImp::getOnhashchange()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"hashchange"));
 }
 
 void WindowImp::setOnhashchange(events::EventHandlerNonNull onhashchange)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"hashchange", onhashchange);
 }
 
 events::EventHandlerNonNull WindowImp::getOninput()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"input"));
 }
 
 void WindowImp::setOninput(events::EventHandlerNonNull oninput)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"input", oninput);
 }
 
 events::EventHandlerNonNull WindowImp::getOninvalid()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"invalid"));
 }
 
 void WindowImp::setOninvalid(events::EventHandlerNonNull oninvalid)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"invalid", oninvalid);
 }
 
 events::EventHandlerNonNull WindowImp::getOnkeydown()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"keydown"));
 }
 
 void WindowImp::setOnkeydown(events::EventHandlerNonNull onkeydown)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"keydown", onkeydown);
 }
 
 events::EventHandlerNonNull WindowImp::getOnkeypress()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"keypress"));
 }
 
 void WindowImp::setOnkeypress(events::EventHandlerNonNull onkeypress)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"keypress", onkeypress);
 }
 
 events::EventHandlerNonNull WindowImp::getOnkeyup()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"keyup"));
 }
 
 void WindowImp::setOnkeyup(events::EventHandlerNonNull onkeyup)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"keyup", onkeyup);
 }
 
 events::EventHandlerNonNull WindowImp::getOnload()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"load"));
 }
 
 void WindowImp::setOnload(events::EventHandlerNonNull onload)
 {
-    if (!window)
-        return;
-    window->addEventListener(u"load",
-                             new(std::nothrow) EventListenerImp(boost::bind(&ECMAScriptContext::dispatchEvent, window->getContext(), onload, _1)));
+    window->setEventHandler(u"load", onload);
 }
 
 events::EventHandlerNonNull WindowImp::getOnloadeddata()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"loadeddata"));
 }
 
 void WindowImp::setOnloadeddata(events::EventHandlerNonNull onloadeddata)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"loadeddata", onloadeddata);
 }
 
 events::EventHandlerNonNull WindowImp::getOnloadedmetadata()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"loadedmetadata"));
 }
 
 void WindowImp::setOnloadedmetadata(events::EventHandlerNonNull onloadedmetadata)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"loadedmetadata", onloadedmetadata);
 }
 
 events::EventHandlerNonNull WindowImp::getOnloadstart()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"loadstart"));
 }
 
 void WindowImp::setOnloadstart(events::EventHandlerNonNull onloadstart)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"loadstart", onloadstart);
 }
 
 events::EventHandlerNonNull WindowImp::getOnmessage()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"message"));
 }
 
 void WindowImp::setOnmessage(events::EventHandlerNonNull onmessage)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"message", onmessage);
 }
 
 events::EventHandlerNonNull WindowImp::getOnmousedown()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"mousedown"));
 }
 
 void WindowImp::setOnmousedown(events::EventHandlerNonNull onmousedown)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"mousedown", onmousedown);
 }
 
 events::EventHandlerNonNull WindowImp::getOnmousemove()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"mousemove"));
 }
 
 void WindowImp::setOnmousemove(events::EventHandlerNonNull onmousemove)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"mousemove", onmousemove);
 }
 
 events::EventHandlerNonNull WindowImp::getOnmouseout()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"mouseout"));
 }
 
 void WindowImp::setOnmouseout(events::EventHandlerNonNull onmouseout)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"mouseout", onmouseout);
 }
 
 events::EventHandlerNonNull WindowImp::getOnmouseover()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"mouseover"));
 }
 
 void WindowImp::setOnmouseover(events::EventHandlerNonNull onmouseover)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"mouseover", onmouseover);
 }
 
 events::EventHandlerNonNull WindowImp::getOnmouseup()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"mouseup"));
 }
 
 void WindowImp::setOnmouseup(events::EventHandlerNonNull onmouseup)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"mouseup", onmouseup);
 }
 
 events::EventHandlerNonNull WindowImp::getOnmousewheel()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"mousewheel"));
 }
 
 void WindowImp::setOnmousewheel(events::EventHandlerNonNull onmousewheel)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"mousewheel", onmousewheel);
 }
 
 events::EventHandlerNonNull WindowImp::getOnoffline()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"offline"));
 }
 
 void WindowImp::setOnoffline(events::EventHandlerNonNull onoffline)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"offline", onoffline);
 }
 
 events::EventHandlerNonNull WindowImp::getOnonline()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"online"));
 }
 
 void WindowImp::setOnonline(events::EventHandlerNonNull ononline)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"online", ononline);
 }
 
 events::EventHandlerNonNull WindowImp::getOnpause()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"pause"));
 }
 
 void WindowImp::setOnpause(events::EventHandlerNonNull onpause)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"pause", onpause);
 }
 
 events::EventHandlerNonNull WindowImp::getOnplay()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"play"));
 }
 
 void WindowImp::setOnplay(events::EventHandlerNonNull onplay)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"play", onplay);
 }
 
 events::EventHandlerNonNull WindowImp::getOnplaying()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"playing"));
 }
 
 void WindowImp::setOnplaying(events::EventHandlerNonNull onplaying)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"playing", onplaying);
 }
 
 events::EventHandlerNonNull WindowImp::getOnpagehide()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"pagehide"));
 }
 
 void WindowImp::setOnpagehide(events::EventHandlerNonNull onpagehide)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"pagehide", onpagehide);
 }
 
 events::EventHandlerNonNull WindowImp::getOnpageshow()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"pageshow"));
 }
 
 void WindowImp::setOnpageshow(events::EventHandlerNonNull onpageshow)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"pageshow", onpageshow);
 }
 
 events::EventHandlerNonNull WindowImp::getOnpopstate()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"popstate"));
 }
 
 void WindowImp::setOnpopstate(events::EventHandlerNonNull onpopstate)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"popstate", onpopstate);
 }
 
 events::EventHandlerNonNull WindowImp::getOnprogress()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"progress"));
 }
 
 void WindowImp::setOnprogress(events::EventHandlerNonNull onprogress)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"progress", onprogress);
 }
 
 events::EventHandlerNonNull WindowImp::getOnratechange()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"ratechange"));
 }
 
 void WindowImp::setOnratechange(events::EventHandlerNonNull onratechange)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"ratechange", onratechange);
 }
 
 events::EventHandlerNonNull WindowImp::getOnreset()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"reset"));
 }
 
 void WindowImp::setOnreset(events::EventHandlerNonNull onreset)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"reset", onreset);
 }
 
 events::EventHandlerNonNull WindowImp::getOnresize()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"resize"));
 }
 
 void WindowImp::setOnresize(events::EventHandlerNonNull onresize)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"resize", onresize);
 }
 
 events::EventHandlerNonNull WindowImp::getOnscroll()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"scroll"));
 }
 
 void WindowImp::setOnscroll(events::EventHandlerNonNull onscroll)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"scroll", onscroll);
 }
 
 events::EventHandlerNonNull WindowImp::getOnseeked()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"seeked"));
 }
 
 void WindowImp::setOnseeked(events::EventHandlerNonNull onseeked)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"seeked", onseeked);
 }
 
 events::EventHandlerNonNull WindowImp::getOnseeking()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"seeking"));
 }
 
 void WindowImp::setOnseeking(events::EventHandlerNonNull onseeking)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"seeking", onseeking);
 }
 
 events::EventHandlerNonNull WindowImp::getOnselect()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"select"));
 }
 
 void WindowImp::setOnselect(events::EventHandlerNonNull onselect)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"select", onselect);
 }
 
 events::EventHandlerNonNull WindowImp::getOnshow()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"show"));
 }
 
 void WindowImp::setOnshow(events::EventHandlerNonNull onshow)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"show", onshow);
 }
 
 events::EventHandlerNonNull WindowImp::getOnstalled()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"stalled"));
 }
 
 void WindowImp::setOnstalled(events::EventHandlerNonNull onstalled)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"stalled", onstalled);
 }
 
 events::EventHandlerNonNull WindowImp::getOnstorage()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"storage"));
 }
 
 void WindowImp::setOnstorage(events::EventHandlerNonNull onstorage)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"storage", onstorage);
 }
 
 events::EventHandlerNonNull WindowImp::getOnsubmit()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"submit"));
 }
 
 void WindowImp::setOnsubmit(events::EventHandlerNonNull onsubmit)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"submit", onsubmit);
 }
 
 events::EventHandlerNonNull WindowImp::getOnsuspend()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"suspend"));
 }
 
 void WindowImp::setOnsuspend(events::EventHandlerNonNull onsuspend)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"suspend", onsuspend);
 }
 
 events::EventHandlerNonNull WindowImp::getOntimeupdate()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"timeupdate"));
 }
 
 void WindowImp::setOntimeupdate(events::EventHandlerNonNull ontimeupdate)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"timeupdate", ontimeupdate);
 }
 
 events::EventHandlerNonNull WindowImp::getOnunload()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"unload"));
 }
 
 void WindowImp::setOnunload(events::EventHandlerNonNull onunload)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"unload", onunload);
 }
 
 events::EventHandlerNonNull WindowImp::getOnvolumechange()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"volumechange"));
 }
 
 void WindowImp::setOnvolumechange(events::EventHandlerNonNull onvolumechange)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"volumechange", onvolumechange);
 }
 
 events::EventHandlerNonNull WindowImp::getOnwaiting()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"waiting"));
 }
 
 void WindowImp::setOnwaiting(events::EventHandlerNonNull onwaiting)
 {
-    // TODO: implement me!
+    window->setEventHandler(u"waiting", onwaiting);
 }
 
 css::CSSStyleDeclaration WindowImp::getComputedStyle(Element elt)
