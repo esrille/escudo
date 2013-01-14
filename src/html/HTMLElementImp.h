@@ -58,8 +58,6 @@ class HTMLElementImp : public ObjectMixin<HTMLElementImp, ElementImp>
     void handleClick(EventListenerImp* listener, events::Event event);
     void handleMouseMove(EventListenerImp* listener, events::Event event);
 
-    virtual void setEventHandler(const std::u16string& type, Object handler);
-
     // XBL 2.0
     Object bindingImplementation;
     html::HTMLTemplateElement shadowTree;
@@ -67,6 +65,9 @@ class HTMLElementImp : public ObjectMixin<HTMLElementImp, ElementImp>
     xbl2::XBLImplementation shadowImplementation;
 
     void invokeShadowTarget(EventImp* event);
+
+protected:
+    virtual void setEventHandler(const std::u16string& type, Object handler);
 
 public:
     HTMLElementImp(DocumentImp* ownerDocument, const std::u16string& localName);
