@@ -525,7 +525,7 @@ generated_scanners = \
 	src/css/CSSPropertyNames.cpp \
 	src/css/CSSTokenizer.cpp \
 	src/css/CSSColor.cpp \
-	CSSGrammar.cc CSSGrammar.h
+	CSSGrammar.cc CSSGrammar.hh
 
 BUILT_SOURCES = $(generated_headers) $(generated_scanners) $(generated_sources)
 
@@ -613,6 +613,7 @@ nodist_libeshtml5_a_SOURCES = $(generated_sources) $(generated_headers) $(genera
 
 libeshtml5_a_SOURCES = \
 	org/w3c/dom/ObjectArray.h \
+	src/one_at_a_time.hpp \
 	src/Object.h \
 	src/ObjectArrayImp.h \
 	src/Reflect.h \
@@ -1325,7 +1326,7 @@ clean-local:
 	rm -rf $(generated_sources) $(generated_headers) $(generated_scanners) *.output
 
 dist-hook:
-	-rm -f $(distdir)/CSSGrammar.cc $(distdir)/CSSGrammar.h
+	-rm -f $(distdir)/CSSGrammar.cc $(distdir)/CSSGrammar.hh
 
 EXTRA_DIST = \
 	m4/ax_compare_version.m4 \
