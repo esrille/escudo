@@ -59,10 +59,6 @@ public:
 
 void ElementImp::setAttributes(const std::deque<Attr>& attributes)
 {
-    if (this->attributes.empty()) {
-        this->attributes = attributes;
-        return;
-    }
     for (auto i = attributes.begin(); i != attributes.end(); ++i) {
         Attr attr = *i;
         setAttributeNS(attr.getNamespaceURI(), attr.getName(), attr.getValue());
@@ -252,9 +248,13 @@ void ElementImp::setAttribute(const std::u16string& name, const std::u16string& 
             return;
         }
     }
-    Attr attr = new(std::nothrow) AttrImp(Nullable<std::u16string>(), Nullable<std::u16string>(), n, value);
-    if (attr)
+    if (Attr attr = new(std::nothrow) AttrImp(Nullable<std::u16string>(), Nullable<std::u16string>(), n, value)) {
         attributes.push_back(attr);
+        events::MutationEvent event = new(std::nothrow) MutationEventImp;
+        event.initMutationEvent(u"DOMAttrModified",
+                                true, false, attr, u"", value, n, events::MutationEvent::ADDITION);
+        this->dispatchEvent(event);
+    }
 }
 
 void ElementImp::setAttributeNS(const Nullable<std::u16string>& namespaceURI, const std::u16string& name, const std::u16string& value)
@@ -269,27 +269,38 @@ void ElementImp::setAttributeNS(const Nullable<std::u16string>& namespaceURI, co
         localName = name.substr(pos + 1);
     } else
         localName = name;
+/* TODO: The following code is only necessary in XML.
+ *       cf. http://www.whatwg.org/specs/web-apps/current-work/multipage/elements.html#global-attributes
     if (prefix.hasValue()) {
         if (static_cast<std::u16string>(namespaceURI).empty())
             throw DOMException{DOMException::NAMESPACE_ERR};
         if (prefix.value() == u"xml" && namespaceURI != u"http://www.w3.org/XML/1998/namespace")
             throw DOMException{DOMException::NAMESPACE_ERR};
     }
-    if ((name == u"xmlns" || prefix.hasValue() && prefix.value() == u"xmlns") &&
-        namespaceURI != u"http://www.w3.org/2000/xmlns") {
+    if ((name == u"xmlns" || prefix.hasValue() && prefix.value() == u"xmlns") && namespaceURI != u"http://www.w3.org/2000/xmlns")
         throw DOMException{DOMException::NAMESPACE_ERR};
-    }
+ */
     for (auto i = attributes.begin(); i != attributes.end(); ++i) {
         Attr attr = *i;
         if (static_cast<std::u16string>(attr.getNamespaceURI()) == static_cast<std::u16string>(namespaceURI) && attr.getLocalName() == localName) {
+            std::u16string prevValue = attr.getValue();
             attr.setValue(value);
             // TODO: set prefix, too.
+
+            events::MutationEvent event = new(std::nothrow) MutationEventImp;
+            event.initMutationEvent(u"DOMAttrModified",
+                                    true, false, attr, prevValue, value, localName, events::MutationEvent::MODIFICATION);
+            this->dispatchEvent(event);
             return;
         }
     }
-    Attr attr = new(std::nothrow) AttrImp(namespaceURI, prefix, localName, value);
-    if (attr)
+    if (Attr attr = new(std::nothrow) AttrImp(namespaceURI, prefix, localName, value)) {
         attributes.push_back(attr);
+        events::MutationEvent event = new(std::nothrow) MutationEventImp;
+        event.initMutationEvent(u"DOMAttrModified",
+                                true, false, attr, u"", value, localName, events::MutationEvent::ADDITION);
+        this->dispatchEvent(event);
+    }
 }
 
 void ElementImp::removeAttribute(const std::u16string& name)
