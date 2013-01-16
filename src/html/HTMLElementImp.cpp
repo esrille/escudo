@@ -23,7 +23,7 @@
 
 #include "one_at_a_time.hpp"
 
-constexpr auto Intern= &one_at_a_time::hash<char16_t>;
+constexpr auto Intern = &one_at_a_time::hash<char16_t>;
 
 #include "DocumentImp.h"
 #include "EventImp.h"
