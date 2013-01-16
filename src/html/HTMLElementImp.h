@@ -54,9 +54,11 @@ class HTMLElementImp : public ObjectMixin<HTMLElementImp, ElementImp>
     int moveY;
     Retained<EventListenerImp> clickListener;
     Retained<EventListenerImp> mouseMoveListener;
+    Retained<EventListenerImp> mutationListener;
 
     void handleClick(EventListenerImp* listener, events::Event event);
     void handleMouseMove(EventListenerImp* listener, events::Event event);
+    void handleMutation(EventListenerImp* listener, events::Event event);
 
     // XBL 2.0
     Object bindingImplementation;

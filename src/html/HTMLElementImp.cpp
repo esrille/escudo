@@ -19,6 +19,11 @@
 #include <boost/bind.hpp>
 
 #include <org/w3c/dom/events/MouseEvent.h>
+#include <org/w3c/dom/events/MutationEvent.h>
+
+#include "one_at_a_time.hpp"
+
+constexpr auto Intern= &one_at_a_time::hash<char16_t>;
 
 #include "DocumentImp.h"
 #include "EventImp.h"
@@ -40,6 +45,7 @@ HTMLElementImp::HTMLElementImp(DocumentImp* ownerDocument, const std::u16string&
     scrollLeft(0),
     clickListener(boost::bind(&HTMLElementImp::handleClick, this, _1, _2)),
     mouseMoveListener(boost::bind(&HTMLElementImp::handleMouseMove, this, _1, _2)),
+    mutationListener(boost::bind(&HTMLElementImp::handleMutation, this, _1, _2)),
     bindingImplementation(0),
     shadowTree(0),
     shadowTarget(0),
@@ -47,6 +53,7 @@ HTMLElementImp::HTMLElementImp(DocumentImp* ownerDocument, const std::u16string&
 {
     addEventListener(u"click", &clickListener, false, EventTargetImp::UseDefault);
     addEventListener(u"mousemove", &mouseMoveListener, false, EventTargetImp::UseDefault);
+    addEventListener(u"DOMAttrModified", &mutationListener, false, EventTargetImp::UseDefault);
 }
 
 HTMLElementImp::HTMLElementImp(HTMLElementImp* org, bool deep) :
@@ -57,6 +64,7 @@ HTMLElementImp::HTMLElementImp(HTMLElementImp* org, bool deep) :
     scrollLeft(0),
     clickListener(boost::bind(&HTMLElementImp::handleClick, this, _1, _2)),
     mouseMoveListener(boost::bind(&HTMLElementImp::handleMouseMove, this, _1, _2)),
+    mutationListener(boost::bind(&HTMLElementImp::handleMutation, this, _1, _2)),
     bindingImplementation(0), // TODO: clone
     shadowTree(0),            // TODO: clone
     shadowTarget(0),          // TODO: clone
@@ -71,6 +79,7 @@ HTMLElementImp::HTMLElementImp(HTMLElementImp* org, bool deep) :
     }
     addEventListener(u"click", &clickListener, false, EventTargetImp::UseDefault);
     addEventListener(u"mousemove", &mouseMoveListener, false, EventTargetImp::UseDefault);
+    addEventListener(u"DOMAttrModified", &mutationListener, false, EventTargetImp::UseDefault);
 }
 
 HTMLElementImp::~HTMLElementImp()
@@ -107,6 +116,196 @@ void HTMLElementImp::handleMouseMove(EventListenerImp* listener, events::Event e
     moveY = mouse.getScreenY();
 }
 
+void HTMLElementImp::handleMutation(EventListenerImp* listener, events::Event event)
+{
+    if (event.getCurrentTarget() != event.getTarget())
+        return;
+
+    events::MutationEvent mutation(interface_cast<events::MutationEvent>(event));
+    DocumentWindowPtr window = getOwnerDocumentImp()->activate();
+    std::u16string value = mutation.getNewValue();
+    bool compile = false;
+    if (!value.empty()) {
+        switch (mutation.getAttrChange()) {
+        case events::MutationEvent::MODIFICATION:
+        case events::MutationEvent::ADDITION:
+            compile = true;
+            break;
+        default:
+            break;
+        }
+    }
+    switch (Intern(mutation.getAttrName().c_str())) {
+    case Intern(u"onabort"):
+        setOnabort(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onblur"):
+        setOnblur(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"oncancel"):
+        setOncancel(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"oncanplay"):
+        setOncanplay(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"oncanplaythrough"):
+        setOncanplaythrough(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onchange"):
+        setOnchange(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onclick"):
+        setOnclick(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onclose"):
+        setOnclose(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"oncontextmenu"):
+        setOncontextmenu(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"oncuechange"):
+        setOncuechange(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"ondblclick"):
+        setOndblclick(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"ondrag"):
+        setOndrag(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"ondragend"):
+        setOndragend(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"ondragenter"):
+        setOndragenter(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"ondragleave"):
+        setOndragleave(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"ondragover"):
+        setOndragover(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"ondragstart"):
+        setOndragstart(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"ondrop"):
+        setOndrop(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"ondurationchange"):
+        setOndurationchange(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onemptied"):
+        setOnemptied(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onended"):
+        setOnended(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onerror"):
+        setOnerror(interface_cast<events::OnErrorEventHandlerNonNull>(compile ? window->getContext()->compileFunction(value) : 0));
+        break;
+    case Intern(u"onfocus"):
+        setOnfocus(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"oninput"):
+        setOninput(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"oninvalid"):
+        setOninvalid(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onkeydown"):
+        setOnkeydown(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onkeypress"):
+        setOnkeypress(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onkeyup"):
+        setOnkeyup(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onload"):
+        setOnload(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onloadeddata"):
+        setOnloadeddata(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onloadedmetadata"):
+        setOnloadedmetadata(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onloadstart"):
+        setOnloadstart(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onmousedown"):
+        setOnmousedown(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onmousemove"):
+        setOnmousemove(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onmouseout"):
+        setOnmouseout(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onmouseover"):
+        setOnmouseover(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onmouseup"):
+        setOnmouseup(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onmousewheel"):
+        setOnmousewheel(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onpause"):
+        setOnpause(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onplay"):
+        setOnplay(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onplaying"):
+        setOnplaying(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onprogress"):
+        setOnprogress(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onratechange"):
+        setOnratechange(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onreset"):
+        setOnreset(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onscroll"):
+        setOnscroll(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onseeked"):
+        setOnseeked(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onseeking"):
+        setOnseeking(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onselect"):
+        setOnselect(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onshow"):
+        setOnshow(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onstalled"):
+        setOnstalled(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onsubmit"):
+        setOnsubmit(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onsuspend"):
+        setOnsuspend(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"ontimeupdate"):
+        setOntimeupdate(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onvolumechange"):
+        setOnvolumechange(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onwaiting"):
+        setOnwaiting(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    default:
+        break;
+    }
+}
+
 void HTMLElementImp::eval()
 {
     DocumentWindowPtr window = getOwnerDocumentImp()->activate();
@@ -116,12 +315,6 @@ void HTMLElementImp::eval()
         style = parser.parseDeclarations(attr.value());
         parser.getStyleDeclaration()->setOwner(this);
     }
-    attr = getAttribute(u"onclick");
-    if (attr.hasValue())
-        setOnclick(window->getContext()->compileFunction(attr.value()));
-    attr = getAttribute(u"onload");
-    if (attr.hasValue())
-        setOnload(window->getContext()->compileFunction(attr.value()));
 }
 
 Box* HTMLElementImp::getBox()

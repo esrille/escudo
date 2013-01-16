@@ -1,18 +1,16 @@
 <html>
 <head>
 <title>HTML Test: 6.1.6.1 Event handlers</title>
+</head>
+<body>
+<button id="test">Start Demo</button>
 <script>
-function doTest() {
  var button = document.getElementById('test');
  button.addEventListener('click', function () { alert('ONE') }, false);
  button.setAttribute('onclick', "alert('NOT CALLED')"); // event handler listener is registered here
  button.addEventListener('click', function () { alert('THREE') }, false);
  button.onclick = function () { alert('TWO'); };
  button.addEventListener('click', function () { alert('FOUR') }, false);
-}
 </script>
-</head>
-<body onload="doTest()">
-<button id="test">Start Demo</button>
 </body>
 </html>
