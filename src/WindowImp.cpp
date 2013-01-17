@@ -261,6 +261,7 @@ bool WindowImp::poll()
                 window->setDocument(newDocument);
                 document->setDefaultView(this);
                 document->setURL(request.getRequestMessage().getURL());
+                document->setLastModified(request.getLastModified());
                 if (!request.getError())
                     history.update(window);
                 else

@@ -16,11 +16,14 @@
 
 #include "DocumentImp.h"
 
+#include <time.h>
+
 #include <algorithm>
 #include <new>
 #include <vector>
-#include <boost/algorithm/string.hpp>
 #include <boost/bind.hpp>
+#include <boost/format.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include <org/w3c/dom/events/MouseEvent.h>
 
@@ -114,6 +117,7 @@ DocumentImp::DocumentImp(const std::u16string& url) :
     compatMode(u"CSS1Compat"),
     loadEventDelayCount(1),
     contentLoaded(false),
+    lastModified(0),
     pendingParsingBlockingScript(0),
     defaultView(0),
     activeElement(0),
@@ -695,8 +699,14 @@ void DocumentImp::setCookie(const std::u16string& cookie)
 
 std::u16string DocumentImp::getLastModified()
 {
-    // TODO: implement me!
-    return u"";
+    time_t t = lastModified;
+    if (t <= 0)
+        time(&t);
+    tm lm;
+    localtime_r(&t, &lm);
+    // MM/DD/YYYY hh:mm:ss
+    boost::format fmt("%02u/%02u/%04u %2u:%02u:%02u");
+    return utfconv((fmt % (lm.tm_mon + 1) % lm.tm_mday % (1900 + lm.tm_year) % lm.tm_hour % lm.tm_min % lm.tm_sec).str());
 }
 
 std::u16string DocumentImp::getReadyState()

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,6 +58,7 @@ private:
     int fdContent;
     HttpCache* cache;
     boost::function<void (void)> handler;
+    long long lastModified;
 
     std::deque<boost::function<void (void)>> callbackList;
 
@@ -110,6 +111,10 @@ public:
     }
     void setError(bool error) {
         errorFlag = error;
+    }
+
+    long long getLastModified() const {
+        return lastModified;
     }
 
     BoxImage* getBoxImage(unsigned repeat);

@@ -75,6 +75,7 @@ class DocumentImp : public ObjectMixin<DocumentImp, NodeImp>
     unsigned loadEventDelayCount;
     bool contentLoaded;
 
+    long long lastModified; // in GMT
     HTMLScriptElementImp* pendingParsingBlockingScript;
     std::list<html::HTMLScriptElement> deferScripts;
     std::list<html::HTMLScriptElement> asyncScripts;
@@ -112,6 +113,10 @@ public:
     }
     void setMode(int value) {
         mode = value;
+    }
+
+    void setLastModified(long long t) {
+        lastModified = t;
     }
 
     void addDeferScript(HTMLScriptElementImp* script) {

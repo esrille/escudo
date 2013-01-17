@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,10 @@
  */
 
 #include "HTTPRequest.h"
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include <iostream>
 #include <string>
@@ -140,7 +144,9 @@ bool HttpRequest::redirect(const HttpResponseMessage& res)
 bool HttpRequest::complete(bool error)
 {
     errorFlag = error;
-    if (error)
+    if (!error)
+        response.getLastModifiedValue(lastModified);
+    else
         response.setStatus(404);
     readyState = (cache || handler || !callbackList.empty()) ? COMPLETE : DONE;
     return readyState == COMPLETE;
@@ -196,6 +202,7 @@ bool HttpRequest::constructResponseFromCache(bool sync)
 
     response.update(cache->getResponseMessage());
     response.updateStatus(cache->getResponseMessage());
+    response.getLastModifiedValue(lastModified);
 
     // TODO: deal with partial...
     int fd = cache->getContentDescriptor();
@@ -297,6 +304,9 @@ bool HttpRequest::send()
             return notify(true);
         std::string path = utfconv(request.getURL().getPathname());
         fdContent = ::open(path.c_str(), O_RDONLY);
+        struct stat status;
+        if (fstat(fdContent, &status) == 0)
+            lastModified = status.st_mtime;
         return notify(fdContent == -1);
     }
 
@@ -309,6 +319,9 @@ bool HttpRequest::send()
         else
             path = aboutPath + "/about/" + path;
         fdContent = ::open(path.c_str(), O_RDONLY);
+        struct stat status;
+        if (fstat(fdContent, &status) == 0)
+            lastModified = status.st_mtime;
         return notify(fdContent == -1);
     }
 
@@ -370,6 +383,7 @@ HttpRequest::HttpRequest(const std::u16string& base) :
     fdContent(-1),
     cache(0),
     handler(0),
+    lastModified(0),
     boxImage(0)
 {
 }
