@@ -250,9 +250,9 @@ unsigned HttpResponseMessage::getAgeValue() const
     return age;
 }
 
-unsigned HttpResponseMessage::getDateValue() const
+long long HttpResponseMessage::getDateValue() const
 {
-    unsigned date = 0;
+    long long date = 0;
     std::string value;
     if (headers.get("Date", value))
         parseTime(value.c_str(), value.c_str() + value.length(), date);
@@ -267,7 +267,7 @@ bool HttpResponseMessage::isChunked() const
     return hasToken(value, "chunked", 7);
 }
 
-bool HttpResponseMessage::getExpiresValue(unsigned& expiresValue) const
+bool HttpResponseMessage::getExpiresValue(long long& expiresValue) const
 {
     std::string value;
     if (headers.get("Expires", value)) {
@@ -290,7 +290,7 @@ bool HttpResponseMessage::getMaxAgeValue(unsigned& maxAge) const
     return true;
 }
 
-bool HttpResponseMessage::getLastModifiedValue(unsigned& lastModifiedValue) const
+bool HttpResponseMessage::getLastModifiedValue(long long& lastModifiedValue) const
 {
     std::string value;
     if (headers.get("Last-Modified", value)) {
@@ -358,43 +358,43 @@ std::string HttpResponseMessage::toString() const
 }
 
 // current_age = max(max(0, now - date_value), age_value) + now - request_time
-unsigned HttpResponseMessage::getCurrentAge(unsigned now, unsigned requestTime) const
+long long HttpResponseMessage::getCurrentAge(long long now, long long requestTime) const
 {
-    unsigned currentAge = 0;
-    unsigned dateValue = getDateValue();
+    long long currentAge = 0;
+    long long dateValue = getDateValue();
     if (dateValue && dateValue < now)
         currentAge = now - dateValue;
-    currentAge = std::max(currentAge, getAgeValue());
+    currentAge = std::max(currentAge, static_cast<long long>(getAgeValue()));
     currentAge += now;
     currentAge -= requestTime;
     return currentAge;
 }
 
-unsigned HttpResponseMessage::getFreshnessLifetime(unsigned now) const
+long long HttpResponseMessage::getFreshnessLifetime(long long now) const
 {
     unsigned lifetime = 0;
     if (getMaxAgeValue(lifetime))
         return lifetime;
 
-    unsigned dateValue = getDateValue();
+    long long dateValue = getDateValue();
     if (dateValue == 0)
         dateValue = now;
 
-    unsigned expiresValue = 0;
+    long long expiresValue = 0;
     if (getExpiresValue(expiresValue)) {
         if (dateValue < expiresValue)
             return expiresValue - dateValue;
         return 0;
     }
 
-    unsigned lastModifiedValue = 0;
+    long long lastModifiedValue = 0;
     if (getLastModifiedValue(lastModifiedValue)) {
         if (lastModifiedValue <= dateValue)
             return (dateValue - lastModifiedValue) / 10;
     }
 
     if (status == 300 || status == 301)
-        return UINT_MAX;
+        return LLONG_MAX;
 
     return 0;
 }
@@ -417,8 +417,9 @@ bool HttpResponseMessage::isCacheable() const
             cacheable = true;
         break;
     default: {
-            unsigned value = 0;
-            if (getMaxAgeValue(value) || getExpiresValue(value))
+            unsigned maxAge;
+            long long expires;
+            if (getMaxAgeValue(maxAge) || getExpiresValue(expires))
                 cacheable = true;
         }
         break;
@@ -426,13 +427,13 @@ bool HttpResponseMessage::isCacheable() const
     return cacheable;
 }
 
-bool HttpResponseMessage::isFresh(unsigned requestTime) const
+bool HttpResponseMessage::isFresh(long long requestTime) const
 {
-    unsigned now = time(0);
+    long long now = time(0);
     // TODO: if (url.hasSearch()) ...
-    unsigned freshnessLifetime = getFreshnessLifetime(now);
-    unsigned currentAge = getCurrentAge(now, requestTime);
-    return freshnessLifetime > currentAge;
+    long long freshnessLifetime = getFreshnessLifetime(now);
+    long long currentAge = getCurrentAge(now, requestTime);
+    return currentAge < freshnessLifetime;
 }
 
 void HttpResponseMessage::clear()

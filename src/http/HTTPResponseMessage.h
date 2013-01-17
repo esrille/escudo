@@ -103,14 +103,14 @@ public:
     std::string toString() const;
 
     unsigned getAgeValue() const;
-    unsigned getDateValue() const;
+    long long getDateValue() const;
 
-    bool getExpiresValue(unsigned& expiresValue) const;
+    bool getExpiresValue(long long& expiresValue) const;
     bool getMaxAgeValue(unsigned& maxAge) const;
-    bool getLastModifiedValue(unsigned& lastModifiedValue) const;
+    bool getLastModifiedValue(long long& lastModifiedValue) const;
 
-    unsigned getCurrentAge(unsigned now, unsigned requestTime) const;
-    unsigned getFreshnessLifetime(unsigned now) const;
+    long long getCurrentAge(long long now, long long requestTime) const;
+    long long getFreshnessLifetime(long long now) const;
 
     bool isNoCache() const {
         return noCache;
@@ -119,7 +119,7 @@ public:
         return noStore;
     }
     bool isCacheable() const;
-    bool isFresh(unsigned requestTime) const;
+    bool isFresh(long long requestTime) const;
 
     bool isChunked() const;
 

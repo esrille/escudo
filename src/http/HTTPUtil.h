@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ const char* parseDigits(const char* start, const char* const end, unsigned long 
 const char* parseDigits(const char* start, const char* const end, unsigned& digits);
 const char* parseDigits(const char* start, const char* const end, int& digits);
 const char* parseMonth(const char* start, const char* const end, int& m);
-const char* parseTime(const char* start, const char* const end, unsigned& t);
+const char* parseTime(const char* start, const char* const end, long long& t);
 // parseCRLF(): if start begins with CRLF, the result points to LF.
 const char* parseCRLF(const char* start, const char* const end);
 

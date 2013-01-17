@@ -33,17 +33,12 @@ class HttpCache
     unsigned long long contentLength;
     int fdContent;  // for content
 
-    unsigned requestTime;
+    long long requestTime;
 
     std::string etag;
     bool range;
     bool mustRevalidate;
     int hitCount;
-    unsigned lm;  // Last modified
-    unsigned expires;
-    unsigned freshnessLifetime;
-    unsigned responseTime;
-    unsigned correctedInitialAge;
 
     std::list<HttpRequest*> requests;
     HttpRequest* current;
@@ -78,11 +73,6 @@ public:
         range(false),
         mustRevalidate(false),
         hitCount(0),
-        lm(0),
-        expires(0),
-        freshnessLifetime(0),
-        responseTime(0),
-        correctedInitialAge(0),
         current(0)
     {
     }

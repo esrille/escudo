@@ -94,10 +94,10 @@ HttpCache* HttpCache::send(HttpRequest* request)
         std::string lastModified = response.getResponseHeader("Last-Modified");
         if (!lastModified.empty()) {
             // Use only strong validator here
-            unsigned date = response.getDateValue();
+            long long date = response.getDateValue();
             if (date == 0)
                 date = requestTime;
-            unsigned lastModifiedValue;
+            long long lastModifiedValue;
             if (response.getLastModifiedValue(lastModifiedValue) && 60 <= date - lastModifiedValue)
                 requestMessage.setHeader("If-Modified-Since", lastModified);
         }

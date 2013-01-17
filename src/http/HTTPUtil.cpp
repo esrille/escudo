@@ -252,7 +252,7 @@ const char* parseMonth(const char* start, const char* const end, int& m)
     return start;
 }
 
-const char* parseTime(const char* start, const char* const end, unsigned& t)
+const char* parseTime(const char* start, const char* const end, long long& t)
 {
     t = 0;
     tm tm;
