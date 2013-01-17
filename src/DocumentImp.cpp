@@ -66,6 +66,7 @@
 #include "html/HTMLLIElementImp.h"
 #include "html/HTMLLinkElementImp.h"
 #include "html/HTMLMapElementImp.h"
+#include "html/HTMLMarqueeElementImp.h"
 #include "html/HTMLMenuElementImp.h"
 #include "html/HTMLMetaElementImp.h"
 #include "html/HTMLMeterElementImp.h"
@@ -533,6 +534,8 @@ Element DocumentImp::createElement(const std::u16string& localName)
         return new(std::nothrow) HTMLDivElementImp(this, name);
     if (name == u"font")
         return new(std::nothrow) HTMLFontElementImp(this);
+    if (name == u"marquee")
+        return new(std::nothrow) HTMLMarqueeElementImp(this);
 
     return new(std::nothrow) HTMLUnknownElementImp(this, name);
 }

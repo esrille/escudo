@@ -25,6 +25,20 @@ namespace dom
 namespace bootstrap
 {
 
+HTMLMarqueeElementImp::HTMLMarqueeElementImp(DocumentImp* ownerDocument) :
+    ObjectMixin(ownerDocument, u"marquee")
+{
+}
+
+HTMLMarqueeElementImp::HTMLMarqueeElementImp(HTMLMarqueeElementImp* org, bool deep) :
+    ObjectMixin(org, deep)
+{
+}
+
+HTMLMarqueeElementImp::~HTMLMarqueeElementImp()
+{
+}
+
 std::u16string HTMLMarqueeElementImp::getBehavior()
 {
     // TODO: implement me!
