@@ -47,6 +47,7 @@ public:
     {}
 
     virtual void eval();
+    virtual void handleMutation(events::MutationEvent mutation);
 
     // Node
     virtual Node cloneNode(bool deep = true);

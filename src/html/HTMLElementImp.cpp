@@ -120,8 +120,11 @@ void HTMLElementImp::handleMutation(EventListenerImp* listener, events::Event ev
 {
     if (event.getCurrentTarget() != event.getTarget())
         return;
+    handleMutation(interface_cast<events::MutationEvent>(event));
+}
 
-    events::MutationEvent mutation(interface_cast<events::MutationEvent>(event));
+void HTMLElementImp::handleMutation(events::MutationEvent mutation)
+{
     DocumentWindowPtr window = getOwnerDocumentImp()->activate();
     std::u16string value = mutation.getNewValue();
     bool compile = false;
@@ -200,7 +203,7 @@ void HTMLElementImp::handleMutation(EventListenerImp* listener, events::Event ev
         setOnended(compile ? window->getContext()->compileFunction(value) : 0);
         break;
     case Intern(u"onerror"):
-        setOnerror(interface_cast<events::OnErrorEventHandlerNonNull>(compile ? window->getContext()->compileFunction(value) : 0));
+        setOnerror(compile ? window->getContext()->compileFunction(value) : 0);
         break;
     case Intern(u"onfocus"):
         setOnfocus(compile ? window->getContext()->compileFunction(value) : 0);

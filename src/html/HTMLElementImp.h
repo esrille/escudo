@@ -31,6 +31,7 @@
 #include <org/w3c/dom/DOMStringMap.h>
 #include <org/w3c/dom/css/CSSStyleDeclaration.h>
 #include <org/w3c/dom/events/EventHandlerNonNull.h>
+#include <org/w3c/dom/events/MutationEvent.h>
 #include <org/w3c/dom/events/OnErrorEventHandlerNonNull.h>
 #include <org/w3c/dom/html/HTMLMenuElement.h>
 #include <org/w3c/dom/xbl2/XBLImplementation.h>
@@ -77,6 +78,8 @@ public:
     ~HTMLElementImp();
 
     virtual void eval();
+    virtual void handleMutation(events::MutationEvent mutation);
+
     Box* getBox();
 
     // XBL 2.0 internal

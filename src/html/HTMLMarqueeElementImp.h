@@ -42,6 +42,8 @@ public:
     HTMLMarqueeElementImp(HTMLMarqueeElementImp* org, bool deep);
     ~HTMLMarqueeElementImp();
 
+    virtual void handleMutation(events::MutationEvent mutation);
+
     // HTMLMarqueeElement
     std::u16string getBehavior();
     void setBehavior(const std::u16string& behavior);

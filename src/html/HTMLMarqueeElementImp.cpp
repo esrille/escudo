@@ -16,6 +16,12 @@
 
 #include "HTMLMarqueeElementImp.h"
 
+#include "one_at_a_time.hpp"
+
+constexpr auto Intern = &one_at_a_time::hash<char16_t>;
+
+#include "DocumentImp.h"
+
 namespace org
 {
 namespace w3c
@@ -37,6 +43,37 @@ HTMLMarqueeElementImp::HTMLMarqueeElementImp(HTMLMarqueeElementImp* org, bool de
 
 HTMLMarqueeElementImp::~HTMLMarqueeElementImp()
 {
+}
+
+void HTMLMarqueeElementImp::handleMutation(events::MutationEvent mutation)
+{
+    DocumentWindowPtr window = getOwnerDocumentImp()->activate();
+    std::u16string value = mutation.getNewValue();
+    bool compile = false;
+    if (!value.empty()) {
+        switch (mutation.getAttrChange()) {
+        case events::MutationEvent::MODIFICATION:
+        case events::MutationEvent::ADDITION:
+            compile = true;
+            break;
+        default:
+            break;
+        }
+    }
+    switch (Intern(mutation.getAttrName().c_str())) {
+    case Intern(u"onbounce"):
+        setOnbounce(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onfinish"):
+        setOnfinish(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    case Intern(u"onstart"):
+        setOnstart(compile ? window->getContext()->compileFunction(value) : 0);
+        break;
+    default:
+        HTMLElementImp::handleMutation(mutation);
+        break;
+    }
 }
 
 std::u16string HTMLMarqueeElementImp::getBehavior()
