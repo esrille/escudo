@@ -339,6 +339,8 @@ void HTMLElementImp::setEventHandler(const std::u16string& type, Object handler)
         listener->setEventHandler(handler);
         return;
     }
+    if (!handler)
+        return;
     DocumentWindowPtr window = getOwnerDocumentImp()->activate();
     listener = new(std::nothrow) EventListenerImp(boost::bind(&ECMAScriptContext::dispatchEvent, window->getContext(), _1, _2));
     if (listener) {
