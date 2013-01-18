@@ -212,10 +212,7 @@ bool HTMLScriptElementImp::getAsync()
 {
     if (forceAsync)
         return true;
-    Nullable<std::u16string> value = getAttribute(u"async");
-    if (!value.hasValue())
-        return false;
-    return value.value().empty() || !compareIgnoreCase(value.value(), u"async");
+    return hasAttribute(u"async");
 }
 
 void HTMLScriptElementImp::setAsync(bool async)
@@ -229,10 +226,7 @@ void HTMLScriptElementImp::setAsync(bool async)
 
 bool HTMLScriptElementImp::getDefer()
 {
-    Nullable<std::u16string> value = getAttribute(u"defer");
-    if (!value.hasValue())
-        return false;
-    return value.value().empty() || !compareIgnoreCase(value.value(), u"defer");
+    return hasAttribute(u"defer");
 }
 
 void HTMLScriptElementImp::setDefer(bool defer)
