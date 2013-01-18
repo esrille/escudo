@@ -148,6 +148,19 @@ void HTMLElementImp::handleMutation(events::MutationEvent mutation)
     case Intern(u"dir"):
     case Intern(u"hidden"):
         break;
+    // Style
+    case Intern(u"style"):
+        if (CSSStyleDeclarationImp* imp = dynamic_cast<CSSStyleDeclarationImp*>(getStyle().self())) {
+            if (!imp->isMutated()) {
+                imp->clearProperties();
+                if (!value.empty()) {
+                    CSSParser parser;
+                    parser.setStyleDeclaration(imp);
+                    parser.parseDeclarations(value);
+                }
+            }
+        }
+        break;
     // Event handlers
     case Intern(u"onabort"):
         setOnabort(compile ? window->getContext()->compileFunction(value) : 0);
@@ -321,13 +334,6 @@ void HTMLElementImp::handleMutation(events::MutationEvent mutation)
 
 void HTMLElementImp::eval()
 {
-    DocumentWindowPtr window = getOwnerDocumentImp()->activate();
-    Nullable<std::u16string> attr = getAttribute(u"style");
-    if (attr.hasValue()) {
-        CSSParser parser;
-        style = parser.parseDeclarations(attr.value());
-        parser.getStyleDeclaration()->setOwner(this);
-    }
 }
 
 Box* HTMLElementImp::getBox()

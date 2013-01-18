@@ -284,6 +284,7 @@ public:
     enum flags {
         Computed = 0x01,
         Resolved = 0x02,
+        Mutated = 0x4000000,
         NeedSelectorMatching = 0x8000000
     };
 
@@ -458,6 +459,8 @@ public:
     CSSStyleDeclarationImp(CSSStyleDeclarationImp* org);  // for cloneNode()
     ~CSSStyleDeclarationImp();
 
+    void clearProperties();
+
     void resetComputedStyle();
     void restoreComputedValues(CSSStyleDeclarationBoard& board);
 
@@ -481,6 +484,9 @@ public:
     }
     bool isResolved() const {
         return flags & Resolved;
+    }
+    bool isMutated() const {
+        return flags & Mutated;
     }
 
     int appendProperty(const std::u16string& property, CSSParserExpr* expr, const std::u16string& prio = u"");

@@ -2416,13 +2416,11 @@ void CSSStyleDeclarationImp::setProperty(int id, Nullable<std::u16string> value,
         setProperty(id, expr, prio);
         delete expr;
         if (owner && html::HTMLElement::hasInstance(owner)) {
-            events::EventTarget target(owner);
-            events::MutationEvent event = new(std::nothrow) MutationEventImp;
-            event.initMutationEvent(u"DOMAttrModified",
-                                    true, false, 0, // TODO: Attr node (obsolte)
-                                    u"", u"",       // TODO: prev, new
-                                    u"style", events::MutationEvent::MODIFICATION);
-            target.dispatchEvent(event);
+            html::HTMLElement element(owner);
+            // Note the mutation event triggered by the following operation must be ignored in the element.
+            setFlags(Mutated);
+            element.setAttribute(u"style", getCssText());
+            clearFlags(Mutated);
         }
     }
 }
@@ -3785,8 +3783,7 @@ void CSSStyleDeclarationImp::initialize()
 
         HtmlAlign
     };
-    for (unsigned i = 1; i < MaxProperties; ++i)
-        inheritSet.reset(i);
+    inheritSet.reset();
     for (unsigned i = 0; i < sizeof defaultInherit / sizeof defaultInherit[0]; ++i)
         setInherit(defaultInherit[i]);
     if (!parentStyle) {
@@ -3794,6 +3791,13 @@ void CSSStyleDeclarationImp::initialize()
         overflow.setValue();
         background.reset(this);
     }
+}
+
+void CSSStyleDeclarationImp::clearProperties()
+{
+    propertySet.reset();
+    importantSet.reset();
+    initialize();
 }
 
 void CSSStyleDeclarationImp::resetComputedStyle()

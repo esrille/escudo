@@ -1,0 +1,19 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>HTML Test</title>
+</head>
+<body>
+<button id='test'>Start Test</button>
+<br>
+<span id='t'>Test passes if the color of this line is changed to blue.</span>
+<script>
+ var button = document.getElementById('test');
+ button.onclick = function () {
+  var t = document.getElementById('t');
+  t.setAttribute('style', 'color: blue');
+ };
+</script>
+</body>
+</html>
