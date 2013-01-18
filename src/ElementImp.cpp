@@ -239,12 +239,13 @@ void ElementImp::setAttribute(const std::u16string& name, const std::u16string& 
         Attr attr = *i;
         if (attr.getName() == n) {
             std::u16string prevValue = attr.getValue();
-            attr.setValue(value);
-
-            events::MutationEvent event = new(std::nothrow) MutationEventImp;
-            event.initMutationEvent(u"DOMAttrModified",
-                                    true, false, attr, prevValue, value, n, events::MutationEvent::MODIFICATION);
-            this->dispatchEvent(event);
+            if (prevValue != value) {
+                attr.setValue(value);
+                events::MutationEvent event = new(std::nothrow) MutationEventImp;
+                event.initMutationEvent(u"DOMAttrModified",
+                                        true, false, attr, prevValue, value, n, events::MutationEvent::MODIFICATION);
+                this->dispatchEvent(event);
+            }
             return;
         }
     }
@@ -284,13 +285,15 @@ void ElementImp::setAttributeNS(const Nullable<std::u16string>& namespaceURI, co
         Attr attr = *i;
         if (static_cast<std::u16string>(attr.getNamespaceURI()) == static_cast<std::u16string>(namespaceURI) && attr.getLocalName() == localName) {
             std::u16string prevValue = attr.getValue();
-            attr.setValue(value);
-            // TODO: set prefix, too.
+            if (prevValue != value) {
+                attr.setValue(value);
+                // TODO: set prefix, too.
 
-            events::MutationEvent event = new(std::nothrow) MutationEventImp;
-            event.initMutationEvent(u"DOMAttrModified",
-                                    true, false, attr, prevValue, value, localName, events::MutationEvent::MODIFICATION);
-            this->dispatchEvent(event);
+                events::MutationEvent event = new(std::nothrow) MutationEventImp;
+                event.initMutationEvent(u"DOMAttrModified",
+                                        true, false, attr, prevValue, value, localName, events::MutationEvent::MODIFICATION);
+                dispatchEvent(event);
+            }
             return;
         }
     }
@@ -299,7 +302,7 @@ void ElementImp::setAttributeNS(const Nullable<std::u16string>& namespaceURI, co
         events::MutationEvent event = new(std::nothrow) MutationEventImp;
         event.initMutationEvent(u"DOMAttrModified",
                                 true, false, attr, u"", value, localName, events::MutationEvent::ADDITION);
-        this->dispatchEvent(event);
+        dispatchEvent(event);
     }
 }
 
