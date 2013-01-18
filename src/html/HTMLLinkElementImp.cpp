@@ -55,8 +55,6 @@ HTMLLinkElementImp::~HTMLLinkElementImp()
 
 void HTMLLinkElementImp::eval()
 {
-    HTMLElementImp::eval();
-
     std::u16string href = getHref();
     if (href.empty())
         return;

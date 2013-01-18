@@ -42,7 +42,6 @@ HTMLObjectElementImp::HTMLObjectElementImp(HTMLObjectElementImp* org, bool deep)
 
 void HTMLObjectElementImp::eval()
 {
-    HTMLElementImp::eval();
     HTMLElementImp::evalBorder(this);
     HTMLElementImp::evalHeight(this);
     HTMLElementImp::evalWidth(this);

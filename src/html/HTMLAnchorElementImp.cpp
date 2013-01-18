@@ -61,8 +61,6 @@ void HTMLAnchorElementImp::handleClick(EventListenerImp* listener, events::Event
 
 void HTMLAnchorElementImp::eval()
 {
-    HTMLElementImp::eval();
-
     std::u16string href = getHref();
     if (href.empty())
         return;

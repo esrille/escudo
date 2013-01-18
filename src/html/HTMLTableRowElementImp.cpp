@@ -52,7 +52,6 @@ Element HTMLTableRowElementImp::Cells::item(unsigned int index)
 
 void HTMLTableRowElementImp::eval()
 {
-    HTMLElementImp::eval();
     HTMLElementImp::evalBackground(this);
     HTMLElementImp::evalBgcolor(this);
     HTMLElementImp::evalValign(this);

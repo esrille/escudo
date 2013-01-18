@@ -27,7 +27,6 @@ namespace bootstrap
 
 void HTMLEmbedElementImp::eval()
 {
-    HTMLElementImp::eval();
     HTMLElementImp::evalHeight(this);
     HTMLElementImp::evalWidth(this);
     HTMLElementImp::evalHspace(this);

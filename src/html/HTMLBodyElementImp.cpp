@@ -28,7 +28,6 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 void HTMLBodyElementImp::eval()
 {
-    HTMLElementImp::eval();
     HTMLElementImp::evalBackground(this);
     HTMLElementImp::evalBgcolor(this);
     HTMLElementImp::evalColor(this, u"text", u"color");

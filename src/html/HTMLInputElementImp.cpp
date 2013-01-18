@@ -91,7 +91,6 @@ HTMLInputElementImp::HTMLInputElementImp(HTMLInputElementImp* org, bool deep) :
 
 void HTMLInputElementImp::eval()
 {
-    HTMLElementImp::eval();
     HTMLElementImp::evalHspace(this);
     HTMLElementImp::evalVspace(this);
 

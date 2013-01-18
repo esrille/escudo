@@ -27,8 +27,6 @@ namespace bootstrap
 
 void HTMLButtonElementImp::eval()
 {
-    HTMLElementImp::eval();
-
     if (!getDisabled())
         setTabIndex(0);
 }
