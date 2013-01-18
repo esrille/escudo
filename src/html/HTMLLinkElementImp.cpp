@@ -21,9 +21,14 @@
 #include <boost/iostreams/stream.hpp>
 #include <boost/iostreams/device/file_descriptor.hpp>
 
+#include "one_at_a_time.hpp"
+
+constexpr auto Intern = &one_at_a_time::hash<char16_t>;
+
 #include "DocumentImp.h"
 #include "DOMTokenListImp.h"
 #include "WindowImp.h"
+#include "HTMLUtil.h"
 #include "css/BoxImage.h"
 #include "css/CSSInputStream.h"
 #include "css/CSSParser.h"
@@ -53,12 +58,27 @@ HTMLLinkElementImp::~HTMLLinkElementImp()
     delete request;
 }
 
+void HTMLLinkElementImp::handleMutation(events::MutationEvent mutation)
+{
+    switch (Intern(mutation.getAttrName().c_str())) {
+    case Intern(u"href"):
+        handleMutationHref(mutation);
+        break;
+    case Intern(u"tabindex"):
+        if (!toInteger(mutation.getNewValue(), tabIndex))
+            tabIndex = getHref().empty() ? -1 : 0;
+        break;
+    default:
+        HTMLElementImp::handleMutation(mutation);
+        break;
+    }
+}
+
 void HTMLLinkElementImp::eval()
 {
     std::u16string href = getHref();
     if (href.empty())
         return;
-    setTabIndex(0);
 
     std::u16string rel = getRel();
     if (::contains(rel, u"stylesheet")) {

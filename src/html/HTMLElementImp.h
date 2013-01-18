@@ -48,7 +48,6 @@ class HTMLTemplateElementImp;
 class HTMLElementImp : public ObjectMixin<HTMLElementImp, ElementImp>
 {
     css::CSSStyleDeclaration style;
-    int tabIndex;
     int scrollTop;
     int scrollLeft;
     int moveX;
@@ -70,6 +69,8 @@ class HTMLElementImp : public ObjectMixin<HTMLElementImp, ElementImp>
     void invokeShadowTarget(EventImp* event);
 
 protected:
+    int tabIndex;
+
     virtual void setEventHandler(const std::u16string& type, Object handler);
 
 public:
@@ -281,6 +282,9 @@ public:
     {
         return html::HTMLElement::getMetaData();
     }
+
+    // Extra
+    void handleMutationHref(events::MutationEvent mutation);
 
     static bool toUnsigned(std::u16string& value);
     static bool toPx(std::u16string& value);  // for cellspacing, cellpadding, etc.

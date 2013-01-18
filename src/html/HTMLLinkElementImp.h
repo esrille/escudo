@@ -39,7 +39,9 @@ public:
     HTMLLinkElementImp(HTMLLinkElementImp* org, bool deep);
     ~HTMLLinkElementImp();
 
+    virtual void handleMutation(events::MutationEvent mutation);
     virtual void eval();
+
     void linkStyleSheet();
     void linkIcon();
     bool setFavicon(DocumentImp* document);

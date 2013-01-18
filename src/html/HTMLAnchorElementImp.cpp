@@ -21,8 +21,14 @@
 
 #include <org/w3c/dom/events/MouseEvent.h>
 
-#include "DOMTokenListImp.h"
+#include "one_at_a_time.hpp"
+
+constexpr auto Intern = &one_at_a_time::hash<char16_t>;
+
 #include "utf.h"
+
+#include "DOMTokenListImp.h"
+#include "HTMLUtil.h"
 
 namespace org
 {
@@ -59,12 +65,20 @@ void HTMLAnchorElementImp::handleClick(EventListenerImp* listener, events::Event
         getOwnerDocument().setLocation(href);
 }
 
-void HTMLAnchorElementImp::eval()
+void HTMLAnchorElementImp::handleMutation(events::MutationEvent mutation)
 {
-    std::u16string href = getHref();
-    if (href.empty())
-        return;
-    setTabIndex(0);
+    switch (Intern(mutation.getAttrName().c_str())) {
+    case Intern(u"href"):
+        handleMutationHref(mutation);
+        break;
+    case Intern(u"tabindex"):
+        if (!toInteger(mutation.getNewValue(), tabIndex))
+            tabIndex = getHref().empty() ? -1 : 0;
+        break;
+    default:
+        HTMLElementImp::handleMutation(mutation);
+        break;
+    }
 }
 
 std::u16string HTMLAnchorElementImp::getHref()

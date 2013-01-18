@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>HTML Test</title>
+<script>
+function doTest() {
+  var t = document.getElementById('t');
+  if (document.getElementById('a').tabIndex != -1)
+    return;
+  if (document.getElementById('b').tabIndex != 0)
+    return;
+  if (document.getElementById('c').tabIndex != 1)
+    return;
+  if (document.getElementById('d').tabIndex != -1)
+    return;
+  if (document.getElementById('e').tabIndex != 100)
+    return;
+  var f = document.getElementById('f');
+  if (f.tabIndex != -1)
+    return;
+  f.tabIndex = 5;
+  if (f.tabIndex != 5)
+    return;
+  if (f.getAttribute('tabindex') != '5')
+    return;
+  t.textContent = 'PASS';
+}
+</script>
+</head>
+<body onload="doTest()">
+<span id='t'>FAIL</span>
+<div id='a' tabindex='-1'></div>
+<div id='b' tabindex=' 0 '></div>
+<div id='c' tabindex='1'></div>
+<div id='d' tabindex='   ###'></div>
+<div id='e' tabindex='   100###'></div>
+<div id='f'></div>
+</body>
+</html>

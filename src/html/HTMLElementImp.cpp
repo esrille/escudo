@@ -43,7 +43,6 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 HTMLElementImp::HTMLElementImp(DocumentImp* ownerDocument, const std::u16string& localName) :
     ObjectMixin(ownerDocument, localName, u"http://www.w3.org/1999/xhtml"),
     style(0),
-    tabIndex(-1),
     scrollTop(0),
     scrollLeft(0),
     clickListener(boost::bind(&HTMLElementImp::handleClick, this, _1, _2)),
@@ -52,7 +51,8 @@ HTMLElementImp::HTMLElementImp(DocumentImp* ownerDocument, const std::u16string&
     bindingImplementation(0),
     shadowTree(0),
     shadowTarget(0),
-    shadowImplementation(0)
+    shadowImplementation(0),
+    tabIndex(-1)
 {
     addEventListener(u"click", &clickListener, false, EventTargetImp::UseDefault);
     addEventListener(u"mousemove", &mouseMoveListener, false, EventTargetImp::UseDefault);
@@ -62,7 +62,6 @@ HTMLElementImp::HTMLElementImp(DocumentImp* ownerDocument, const std::u16string&
 HTMLElementImp::HTMLElementImp(HTMLElementImp* org, bool deep) :
     ObjectMixin(org, deep),
     style(0),
-    tabIndex(org->tabIndex),
     scrollTop(0),
     scrollLeft(0),
     clickListener(boost::bind(&HTMLElementImp::handleClick, this, _1, _2)),
@@ -71,7 +70,8 @@ HTMLElementImp::HTMLElementImp(HTMLElementImp* org, bool deep) :
     bindingImplementation(0), // TODO: clone
     shadowTree(0),            // TODO: clone
     shadowTarget(0),          // TODO: clone
-    shadowImplementation(0)   // TODO: clone
+    shadowImplementation(0),  // TODO: clone
+    tabIndex(org->tabIndex)
 {
     if (auto orgStyle = dynamic_cast<CSSStyleDeclarationImp*>(org->style.self())) {
         CSSStyleDeclarationImp* imp = new(std::nothrow) CSSStyleDeclarationImp(orgStyle);
@@ -142,13 +142,6 @@ void HTMLElementImp::handleMutation(events::MutationEvent mutation)
         }
     }
     switch (Intern(mutation.getAttrName().c_str())) {
-    case Intern(u"title"):
-    case Intern(u"lang"):
-    case Intern(u"translate"):
-    case Intern(u"dir"):
-    case Intern(u"hidden"):
-        break;
-    // Style
     case Intern(u"style"):
         if (CSSStyleDeclarationImp* imp = dynamic_cast<CSSStyleDeclarationImp*>(getStyle().self())) {
             if (!imp->isMutated()) {
@@ -160,6 +153,10 @@ void HTMLElementImp::handleMutation(events::MutationEvent mutation)
                 }
             }
         }
+        break;
+    case Intern(u"tabindex"):
+        if (!toInteger(value, tabIndex))
+            tabIndex = -1;
         break;
     // Event handlers
     case Intern(u"onabort"):
@@ -327,6 +324,11 @@ void HTMLElementImp::handleMutation(events::MutationEvent mutation)
     case Intern(u"onwaiting"):
         setOnwaiting(compile ? window->getContext()->compileFunction(value) : 0);
         break;
+    case Intern(u"title"):
+    case Intern(u"lang"):
+    case Intern(u"translate"):
+    case Intern(u"dir"):
+    case Intern(u"hidden"):
     default:
         break;
     }
@@ -661,9 +663,9 @@ int HTMLElementImp::getTabIndex()
     return tabIndex;
 }
 
-void HTMLElementImp::setTabIndex(int tabIndex)
+void HTMLElementImp::setTabIndex(int index)
 {
-    this->tabIndex = tabIndex;
+    setAttribute(u"tabindex", toString(index));
 }
 
 void HTMLElementImp::focus()
@@ -1538,6 +1540,24 @@ bool HTMLElementImp::evalValign(HTMLElementImp* element)
         return true;
     }
     return false;
+}
+
+void HTMLElementImp::handleMutationHref(events::MutationEvent mutation)
+{
+    Nullable<std::u16string> tabindex = getAttribute(u"tabindex");
+    if (tabindex.hasValue() && toInteger(tabindex.value(), tabIndex))
+        return;
+
+    switch (mutation.getAttrChange()) {
+    case events::MutationEvent::MODIFICATION:
+    case events::MutationEvent::ADDITION:
+        tabIndex = 0;
+        break;
+    case events::MutationEvent::REMOVAL:
+    default:
+        tabIndex = -1;
+        break;
+    }
 }
 
 }}}}  // org::w3c::dom::bootstrap

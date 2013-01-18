@@ -44,6 +44,56 @@ inline int findKeyword(const std::u16string& keyword, std::initializer_list<cons
     return -1;
 }
 
+template<class Ch>
+inline const Ch* skipSpace(const Ch* input, const Ch* end)
+{
+    while (input < end) {
+        if (!isSpace(*input))
+            break;
+        ++input;
+    }
+    return input;
+}
+
+template<class Ch>
+inline const Ch* parseInt(const Ch* input, const Ch* end, int& value)
+{
+    int sign = 1;
+    input = skipSpace(input, end);
+    if (end <= input)
+        return 0;
+    Ch c = *input;
+    if (c == '+')
+        ++input;
+    else if (c == '-') {
+        sign = -1;
+        ++input;
+    }
+    if (end <= input)
+        return 0;
+    c = *input;
+    if (!isDigit(c))
+        return 0;
+    value = 0;
+    do {
+        value *= 10;
+        value += c - '0';
+        if (end <= ++input)
+            break;
+        c = *input;
+    } while (isDigit(c));
+    value *= sign;
+    return input;
+}
+
+// cf. http://www.w3.org/TR/html5/infrastructure.html#valid-integer
+inline bool toInteger(const std::u16string& value, int& output)
+{
+    const char16_t* input = value.c_str();
+    const char16_t* end = input + value.length();
+    return parseInt(input, end, output);    // Do not care what follows after digits.
+}
+
 }
 }
 }
