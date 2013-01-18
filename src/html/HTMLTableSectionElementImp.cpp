@@ -16,6 +16,10 @@
 
 #include "HTMLTableSectionElementImp.h"
 
+#include "one_at_a_time.hpp"
+
+constexpr auto Intern = &one_at_a_time::hash<char16_t>;
+
 namespace org
 {
 namespace w3c
@@ -25,9 +29,21 @@ namespace dom
 namespace bootstrap
 {
 
+void HTMLTableSectionElementImp::handleMutation(events::MutationEvent mutation)
+{
+    switch (Intern(mutation.getAttrName().c_str())) {
+    // Styles
+    case Intern(u"background"):
+        handleMutationBackground(mutation);
+        break;
+    default:
+        HTMLElementImp::handleMutation(mutation);
+        break;
+    }
+}
+
 void HTMLTableSectionElementImp::eval()
 {
-    HTMLElementImp::evalBackground(this);
     HTMLElementImp::evalValign(this);
 }
 

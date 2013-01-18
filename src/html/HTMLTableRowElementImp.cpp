@@ -16,6 +16,10 @@
 
 #include "HTMLTableRowElementImp.h"
 
+#include "one_at_a_time.hpp"
+
+constexpr auto Intern = &one_at_a_time::hash<char16_t>;
+
 #include "HTMLTableCellElementImp.h"
 #include "HTMLTableDataCellElementImp.h"
 
@@ -50,9 +54,21 @@ Element HTMLTableRowElementImp::Cells::item(unsigned int index)
 // HTMLTableRowElementImp
 //
 
+void HTMLTableRowElementImp::handleMutation(events::MutationEvent mutation)
+{
+    switch (Intern(mutation.getAttrName().c_str())) {
+    // Styles
+    case Intern(u"background"):
+        handleMutationBackground(mutation);
+        break;
+    default:
+        HTMLElementImp::handleMutation(mutation);
+        break;
+    }
+}
+
 void HTMLTableRowElementImp::eval()
 {
-    HTMLElementImp::evalBackground(this);
     HTMLElementImp::evalBgcolor(this);
     HTMLElementImp::evalValign(this);
 }

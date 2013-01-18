@@ -16,6 +16,10 @@
 
 #include "HTMLTableCellElementImp.h"
 
+#include "one_at_a_time.hpp"
+
+constexpr auto Intern = &one_at_a_time::hash<char16_t>;
+
 #include "HTMLTableElementImp.h"
 #include "css/CSSTokenizer.h"
 
@@ -30,9 +34,21 @@ namespace dom
 namespace bootstrap
 {
 
+void HTMLTableCellElementImp::handleMutation(events::MutationEvent mutation)
+{
+    switch (Intern(mutation.getAttrName().c_str())) {
+    // Styles
+    case Intern(u"background"):
+        handleMutationBackground(mutation);
+        break;
+    default:
+        HTMLElementImp::handleMutation(mutation);
+        break;
+    }
+}
+
 void HTMLTableCellElementImp::eval()
 {
-    HTMLElementImp::evalBackground(this);
     HTMLElementImp::evalBgcolor(this);
     HTMLElementImp::evalHeight(this);
     HTMLElementImp::evalWidth(this);

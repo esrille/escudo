@@ -1427,15 +1427,18 @@ bool HTMLElementImp::toPxOrPercentage(std::u16string& value)
     return false;
 }
 
-bool HTMLElementImp::evalBackground(HTMLElementImp* element)
+void HTMLElementImp::handleMutationBackground(events::MutationEvent mutation)
 {
-    Nullable<std::u16string> attr = element->getAttribute(u"background");
-    if (attr.hasValue()) {
-        css::CSSStyleDeclaration style = element->getStyle();
-        style.setProperty(u"background-image", u"url(" + attr.value() + u")", u"non-css");
-        return true;
+    switch (mutation.getAttrChange()) {
+    case events::MutationEvent::MODIFICATION:
+    case events::MutationEvent::ADDITION:
+        getStyle().setProperty(u"background-image", u"url(" + mutation.getNewValue() + u")", u"non-css");
+        break;
+    case events::MutationEvent::REMOVAL:
+    default:
+        getStyle().setProperty(u"background-image", u"", u"non-css");
+        break;
     }
-    return false;
 }
 
 bool HTMLElementImp::evalColor(HTMLElementImp* element, const std::u16string& attr, const std::u16string& prop)
