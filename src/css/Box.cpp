@@ -549,8 +549,10 @@ void Block::resolveBackground(ViewCSSImp* view)
 {
     assert(style);
     backgroundColor = style->backgroundColor.getARGB();
-    if (style->backgroundImage.isNone())
+    if (style->backgroundImage.isNone()) {
+        backgroundImage = 0;
         return;
+    }
     DocumentImp* document = dynamic_cast<DocumentImp*>(view->getDocument().self());
     if (backgroundRequest && backgroundRequest->getRequestMessage().getURL() != URL(document->getDocumentURI(), style->backgroundImage.getValue())) {
         delete backgroundRequest;   // TODO: check notifyBackground has been called
