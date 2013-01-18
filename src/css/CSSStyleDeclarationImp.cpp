@@ -2400,28 +2400,29 @@ std::u16string CSSStyleDeclarationImp::getPropertyPriority(const std::u16string&
 
 void CSSStyleDeclarationImp::setProperty(int id, Nullable<std::u16string> value, const std::u16string& prio)
 {
-    if (!value.hasValue()) {
+    if (!value.hasValue())
         removeProperty(id);
-        return;
-    }
-    std::u16string v = value.value();
-    stripLeadingAndTrailingWhitespace(v);
-    if (v.empty()) {
-        removeProperty(id);
-        return;
-    }
-    CSSParser parser;
-    CSSParserExpr* expr = parser.parseExpression(v);
-    if (expr) {
-        setProperty(id, expr, prio);
-        delete expr;
-        if (owner && html::HTMLElement::hasInstance(owner)) {
-            html::HTMLElement element(owner);
-            // Note the mutation event triggered by the following operation must be ignored in the element.
-            setFlags(Mutated);
-            element.setAttribute(u"style", getCssText());
-            clearFlags(Mutated);
+    else {
+        std::u16string v = value.value();
+        stripLeadingAndTrailingWhitespace(v);
+        if (v.empty())
+            removeProperty(id);
+        else {
+            CSSParser parser;
+            CSSParserExpr* expr = parser.parseExpression(v);
+            if (!expr)
+                return;
+            setProperty(id, expr, prio);
+            delete expr;
         }
+    }
+
+    if (owner && html::HTMLElement::hasInstance(owner)) {
+        html::HTMLElement element(owner);
+        // Note the mutation event triggered by the following operation must be ignored in the element.
+        setFlags(Mutated);
+        element.setAttribute(u"style", getCssText());
+        clearFlags(Mutated);
     }
 }
 
@@ -2455,7 +2456,15 @@ std::u16string CSSStyleDeclarationImp::removeProperty(int id)
 
 std::u16string CSSStyleDeclarationImp::removeProperty(const std::u16string& property)
 {
-    return removeProperty(getPropertyID(property));
+    std::u16string result = removeProperty(getPropertyID(property));
+    if (owner && html::HTMLElement::hasInstance(owner)) {
+        html::HTMLElement element(owner);
+        // Note the mutation event triggered by the following operation must be ignored in the element.
+        setFlags(Mutated);
+        element.setAttribute(u"style", getCssText());
+        clearFlags(Mutated);
+    }
+    return result;
 }
 
 css::CSSRule CSSStyleDeclarationImp::getParentRule()
