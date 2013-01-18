@@ -16,6 +16,10 @@
 
 #include "HTMLHRElementImp.h"
 
+#include "one_at_a_time.hpp"
+
+constexpr auto Intern = &one_at_a_time::hash<char16_t>;
+
 namespace org
 {
 namespace w3c
@@ -25,9 +29,21 @@ namespace dom
 namespace bootstrap
 {
 
+void HTMLHRElementImp::handleMutation(events::MutationEvent mutation)
+{
+    switch (Intern(mutation.getAttrName().c_str())) {
+    // Styles
+    case Intern(u"color"):
+        handleMutationColor(mutation, u"border-color");
+        break;
+    default:
+        HTMLElementImp::handleMutation(mutation);
+        break;
+    }
+}
+
 void HTMLHRElementImp::eval()
 {
-    HTMLElementImp::evalColor(this, u"color", u"border-color");
     HTMLElementImp::evalWidth(this);
 }
 

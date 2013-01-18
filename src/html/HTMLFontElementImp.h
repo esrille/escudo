@@ -44,7 +44,7 @@ public:
         ObjectMixin(org, deep)
     {}
 
-    virtual void eval();
+    virtual void handleMutation(events::MutationEvent mutation);
 
     // HTMLFontElement
     std::u16string getColor();

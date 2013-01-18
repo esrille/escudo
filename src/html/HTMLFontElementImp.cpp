@@ -16,6 +16,10 @@
 
 #include "HTMLFontElementImp.h"
 
+#include "one_at_a_time.hpp"
+
+constexpr auto Intern = &one_at_a_time::hash<char16_t>;
+
 namespace org
 {
 namespace w3c
@@ -25,9 +29,17 @@ namespace dom
 namespace bootstrap
 {
 
-void HTMLFontElementImp::eval()
+void HTMLFontElementImp::handleMutation(events::MutationEvent mutation)
 {
-    HTMLElementImp::evalColor(this, u"color", u"color");
+    switch (Intern(mutation.getAttrName().c_str())) {
+    // Styles
+    case Intern(u"color"):
+        handleMutationColor(mutation, u"color");
+        break;
+    default:
+        HTMLElementImp::handleMutation(mutation);
+        break;
+    }
 }
 
 std::u16string HTMLFontElementImp::getColor()

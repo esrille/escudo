@@ -286,15 +286,12 @@ public:
     // Extra
     void handleMutationBackground(events::MutationEvent mutation);
     void handleMutationHref(events::MutationEvent mutation);
+    void handleMutationColor(events::MutationEvent mutation, const std::u16string& prop);
 
     static bool toUnsigned(std::u16string& value);
     static bool toPx(std::u16string& value);  // for cellspacing, cellpadding, etc.
     static bool toPxOrPercentage(std::u16string& value);  // for width, heigth, etc.
 
-    static bool evalColor(HTMLElementImp* element, const std::u16string& attr, const std::u16string& prop);
-    static bool evalBgcolor(HTMLElementImp* element) {
-        return evalColor(element, u"bgcolor", u"background-color");
-    }
     static bool evalBorder(HTMLElementImp* element);
     static bool evalPx(HTMLElementImp* element, const std::u16string& attr, const std::u16string& prop);
     static bool evalPxOrPercentage(HTMLElementImp* element, const std::u16string& attr, const std::u16string& prop);

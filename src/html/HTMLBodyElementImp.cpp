@@ -28,8 +28,6 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 void HTMLBodyElementImp::eval()
 {
-    HTMLElementImp::evalBgcolor(this);
-    HTMLElementImp::evalColor(this, u"text", u"color");
     HTMLElementImp::evalPx(this, u"margintop", u"margin-top");
     HTMLElementImp::evalPx(this, u"marginright", u"margin-right");
     HTMLElementImp::evalPx(this, u"marginbottom", u"margin-bottom");
@@ -57,6 +55,12 @@ void HTMLBodyElementImp::handleMutation(events::MutationEvent mutation)
     // Styles
     case Intern(u"background"):
         handleMutationBackground(mutation);
+        break;
+    case Intern(u"bgcolor"):
+        handleMutationColor(mutation, u"background-color");
+        break;
+    case Intern(u"text"):
+        handleMutationColor(mutation, u"color");
         break;
     // Event handlers
     case Intern(u"onafterprint"):

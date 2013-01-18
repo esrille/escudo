@@ -61,6 +61,9 @@ void HTMLTableRowElementImp::handleMutation(events::MutationEvent mutation)
     case Intern(u"background"):
         handleMutationBackground(mutation);
         break;
+    case Intern(u"bgcolor"):
+        handleMutationColor(mutation, u"background-color");
+        break;
     default:
         HTMLElementImp::handleMutation(mutation);
         break;
@@ -69,7 +72,6 @@ void HTMLTableRowElementImp::handleMutation(events::MutationEvent mutation)
 
 void HTMLTableRowElementImp::eval()
 {
-    HTMLElementImp::evalBgcolor(this);
     HTMLElementImp::evalValign(this);
 }
 

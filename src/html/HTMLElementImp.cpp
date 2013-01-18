@@ -1441,15 +1441,18 @@ void HTMLElementImp::handleMutationBackground(events::MutationEvent mutation)
     }
 }
 
-bool HTMLElementImp::evalColor(HTMLElementImp* element, const std::u16string& attr, const std::u16string& prop)
+void HTMLElementImp::handleMutationColor(events::MutationEvent mutation, const std::u16string& prop)
 {
-    Nullable<std::u16string> value = element->getAttribute(attr);
-    if (value.hasValue()) {
-        css::CSSStyleDeclaration style = element->getStyle();
-        style.setProperty(prop, value.value(), u"non-css");
-        return true;
+    switch (mutation.getAttrChange()) {
+    case events::MutationEvent::MODIFICATION:
+    case events::MutationEvent::ADDITION:
+        getStyle().setProperty(prop, mutation.getNewValue(), u"non-css");
+        break;
+    case events::MutationEvent::REMOVAL:
+    default:
+        getStyle().setProperty(prop, u"", u"non-css");
+        break;
     }
-    return false;
 }
 
 bool HTMLElementImp::evalPx(HTMLElementImp* element, const std::u16string& attr, const std::u16string& prop)
