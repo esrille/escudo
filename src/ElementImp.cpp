@@ -313,9 +313,13 @@ void ElementImp::removeAttribute(const std::u16string& name)
         toLower(n);
     for (auto i = attributes.begin(); i != attributes.end();) {
         Attr attr = *i;
-        if (attr.getName() == n)
+        if (attr.getName() == n) {
+            events::MutationEvent event = new(std::nothrow) MutationEventImp;
+            event.initMutationEvent(u"DOMAttrModified",
+                                    true, false, attr, attr.getValue(), u"", n, events::MutationEvent::REMOVAL);
+            this->dispatchEvent(event);
             i = attributes.erase(i);
-        else
+        } else
             ++i;
     }
 }
@@ -324,9 +328,13 @@ void ElementImp::removeAttributeNS(const Nullable<std::u16string>& namespaceURI,
 {
     for (auto i = attributes.begin(); i != attributes.end();) {
         Attr attr = *i;
-        if (static_cast<std::u16string>(attr.getNamespaceURI()) == static_cast<std::u16string>(namespaceURI) && attr.getLocalName() == localName)
+        if (static_cast<std::u16string>(attr.getNamespaceURI()) == static_cast<std::u16string>(namespaceURI) && attr.getLocalName() == localName) {
+            events::MutationEvent event = new(std::nothrow) MutationEventImp;
+            event.initMutationEvent(u"DOMAttrModified",
+                                    true, false, attr, attr.getValue(), u"", localName, events::MutationEvent::REMOVAL);
+            this->dispatchEvent(event);
             i = attributes.erase(i);
-        else
+        } else
             ++i;
     }
 }
