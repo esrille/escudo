@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>HTML Test</title>
+<script>
+function doTest() {
+  var t = document.getElementById('t');
+  if (!t.translate) {
+    t.textContent = 'FAIL';
+    return;
+  }
+  t.translate = false;
+  if (t.translate) {
+    t.textContent = 'FAIL';
+    return;
+  }
+  var u = document.getElementById('u');
+  if (u.translate) {
+    t.textContent = 'FAIL';
+    return;
+  }
+  t.textContent = 'PASS';
+}
+</script>
+</head>
+<body onload="doTest()">
+<span id='t' translate='yes'><span id='u'></span></span>
+</body>
+</html>

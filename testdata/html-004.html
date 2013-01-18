@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>HTML Test</title>
+<script>
+function doTest() {
+  var t = document.getElementById('t');
+  if (t.dir != 'ltr') {
+    t.textContent = 'FAIL';
+    return;
+  }
+  t.dir = 'rTL';
+  if (t.dir != 'rtl') {
+    t.textContent = 'FAIL';
+    return;
+  }
+  t.dir = 'auto';
+  if (t.dir != 'auto') {
+    t.textContent = 'FAIL';
+    return;
+  }
+  t.dir = 'invalid';
+  if (t.dir != '') {
+    t.textContent = 'FAIL';
+    return;
+  }
+  t.textContent = 'PASS';
+}
+</script>
+</head>
+<body onload="doTest()">
+<span id='t' dir='Ltr'></span>
+</body>
+</html>

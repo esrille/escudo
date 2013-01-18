@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>HTML Test</title>
+<script>
+function doTest() {
+  var t = document.getElementById('t');
+  var u = document.getElementById('u');
+  if (!u.hidden) {
+    t.textContent = 'FAIL';
+    return;
+  }
+  u.hidden = false;
+  if (u.hidden) {
+    t.textContent = 'FAIL';
+    return;
+  }
+  u.setAttribute('hidden', 'true');
+  if (!u.hidden) {
+    t.textContent = 'FAIL';
+    return;
+  }
+  u.setAttribute('hidden', 'false');
+  if (!u.hidden) {
+    t.textContent = 'FAIL';
+    return;
+  }
+  t.textContent = 'PASS';
+}
+</script>
+</head>
+<body onload="doTest()">
+<span id='t' translate='yes'><span id='u' hidden></span></span>
+</body>
+</html>

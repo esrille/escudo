@@ -25,6 +25,8 @@
 
 constexpr auto Intern = &one_at_a_time::hash<char16_t>;
 
+#include "utf.h"
+
 #include "DocumentImp.h"
 #include "EventImp.h"
 #include "ECMAScript.h"
@@ -34,6 +36,7 @@ constexpr auto Intern = &one_at_a_time::hash<char16_t>;
 #include "css/CSSStyleDeclarationImp.h"
 #include "HTMLBindingElementImp.h"
 #include "HTMLTemplateElementImp.h"
+#include "HTMLUtil.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -139,6 +142,13 @@ void HTMLElementImp::handleMutation(events::MutationEvent mutation)
         }
     }
     switch (Intern(mutation.getAttrName().c_str())) {
+    case Intern(u"title"):
+    case Intern(u"lang"):
+    case Intern(u"translate"):
+    case Intern(u"dir"):
+    case Intern(u"hidden"):
+        break;
+    // Event handlers
     case Intern(u"onabort"):
         setOnabort(compile ? window->getContext()->compileFunction(value) : 0);
         break;
@@ -578,18 +588,37 @@ void HTMLElementImp::setLang(const std::u16string& lang)
 
 bool HTMLElementImp::getTranslate()
 {
-    // TODO: implement me!
-    return 0;
+    Nullable<std::u16string> value = getAttribute(u"translate");
+    if (value.hasValue()) {
+        std::u16string translate = value.value();
+        toLower(translate);
+        switch (findKeyword(translate, { u"", u"yes", u"no" })) {
+        case 0: // ""
+        case 1: // "yes"
+            return true;
+        case 2: // "no"
+            return false;
+        default:
+            break;
+        }
+    }
+    if (html::HTMLElement parent = interface_cast<html::HTMLElement>(getParentElement()))
+        return parent.getTranslate();
+    return true;
 }
 
 void HTMLElementImp::setTranslate(bool translate)
 {
-    // TODO: implement me!
+    setAttribute(u"translate", translate ? u"yes" : u"no");
 }
 
 std::u16string HTMLElementImp::getDir()
 {
-    return getAttribute(u"dir");
+    std::u16string dir = getAttribute(u"dir");
+    toLower(dir);
+    if (0 <= findKeyword(dir, {u"ltr", u"rtl", u"auto"}))
+        return dir;
+    return u"";
 }
 
 void HTMLElementImp::setDir(const std::u16string& dir)
@@ -605,13 +634,15 @@ DOMStringMap HTMLElementImp::getDataset()
 
 bool HTMLElementImp::getHidden()
 {
-    // TODO: implement me!
-    return 0;
+    return hasAttribute(u"hidden");
 }
 
 void HTMLElementImp::setHidden(bool hidden)
 {
-    // TODO: implement me!
+    if (hidden)
+        setAttribute(u"hidden", u"");
+    else
+        removeAttribute(u"hidden");
 }
 
 void HTMLElementImp::click()

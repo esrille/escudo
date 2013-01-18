@@ -666,6 +666,8 @@ libeshtml5_a_SOURCES = \
 	src/html/HTMLReplacedElementImp.h \
 	src/html/HTMLTokenizer.cpp \
 	src/html/HTMLTokenizer.h \
+	src/html/HTMLUtil.cpp \
+	src/html/HTMLUtil.h \
 	src/css/Bmp.cpp \
 	src/css/Bmp.h \
 	src/css/Box.cpp \
