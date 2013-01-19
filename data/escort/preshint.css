@@ -1,0 +1,3 @@
+/* cf. http://www.w3.org/TR/html5/rendering.html#the-css-user-agent-style-sheet-and-presentational-hints */
+
+td[nowrap], th[nowrap] { white-space: nowrap; }

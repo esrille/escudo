@@ -47,8 +47,6 @@ class ViewCSSImp
 
     static const unsigned MaxFontSizes = 8;
 
-    css::CSSStyleSheet defaultStyleSheet;
-    css::CSSStyleSheet userStyleSheet;
     Retained<ContainingBlock> initialContainingBlock;
 
     DocumentWindowPtr window;
@@ -90,7 +88,7 @@ class ViewCSSImp
     Element updateStyleRules(Element element, CSSStyleDeclarationImp* style, CSSStyleDeclarationImp* parentStyle);
 
 public:
-    ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyleSheet, css::CSSStyleSheet userStyleSheet = 0);
+    ViewCSSImp(DocumentWindowPtr window);
     virtual ~ViewCSSImp();
 
     Document getDocument() const {

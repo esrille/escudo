@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,12 +82,18 @@ int main(int argc, char* argv[])
     std::string defaultSheet = profile.getProfilePath() + "/default.css";
     if (!profile.hasFile(defaultSheet))
         defaultSheet = std::string(argv[1]) + "/default.css";
-    getDOMImplementation()->setDefaultCSSStyleSheet(loadStyleSheet(defaultSheet.c_str()));
+    getDOMImplementation()->setDefaultStyleSheet(loadStyleSheet(defaultSheet.c_str()));
+
+    // Load the presentational hints
+    std::string presHints = profile.getProfilePath() + "/preshint.css";
+    if (!profile.hasFile(presHints))
+        presHints = std::string(argv[1]) + "/preshint.css";
+    getDOMImplementation()->setPresentationalHints(loadStyleSheet(presHints.c_str()));
 
     // Load the user style sheet
     std::string userSheet = profile.getProfilePath() + "/user.css";
     if (profile.hasFile(userSheet))
-        getDOMImplementation()->setUserCSSStyleSheet(loadStyleSheet(userSheet.c_str()));
+        getDOMImplementation()->setUserStyleSheet(loadStyleSheet(userSheet.c_str()));
 
     HttpRequest::setAboutPath(argv[1]);
     std::thread httpService(std::ref(HttpConnectionManager::getInstance()));

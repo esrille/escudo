@@ -1716,6 +1716,7 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
         CSSStyleDeclarationImp* elementDecl(0);
         if (htmlElement)
             elementDecl = dynamic_cast<CSSStyleDeclarationImp*>(htmlElement.getStyle().self());
+        // Normal declarations
         for (auto i = ruleSet.begin(); i != ruleSet.end(); ++i) {
             if (CSSStyleDeclarationImp* pseudo = createPseudoElementStyle(i->getPseudoElementID())) {
                 if (i->isActive(element, view))
@@ -1724,6 +1725,7 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
         }
         if (elementDecl)
             specify(elementDecl);
+        // Author important declarations
         for (auto i = ruleSet.begin(); i != ruleSet.end(); ++i) {
             if (CSSStyleDeclarationImp* pseudo = createPseudoElementStyle(i->getPseudoElementID())) {
                 if (i->isActive(element, view) && !i->isUserStyle())
@@ -1732,6 +1734,7 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
         }
         if (elementDecl)
             specifyImportant(elementDecl);
+        // User important declarations
         for (auto i = ruleSet.begin(); i != ruleSet.end(); ++i) {
             if (CSSStyleDeclarationImp* pseudo = createPseudoElementStyle(i->getPseudoElementID())) {
                 if (i->isActive(element, view) && i->isUserStyle())

@@ -19,8 +19,46 @@
 #include "DOMImplementationImp.h"
 #include "DocumentTypeImp.h"
 #include "XMLDocumentImp.h"
+#include "css/CSSStyleSheetImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
+
+DOMImplementationImp::DOMImplementationImp() :
+    defaultStyleSheet(0),
+    presHintsStyleSheet(0),
+    userStyleSheet(0)
+{
+}
+
+CSSStyleSheetImp* DOMImplementationImp::getDefaultStyleSheet() const
+{
+    return dynamic_cast<CSSStyleSheetImp*>(defaultStyleSheet.self());
+}
+
+void DOMImplementationImp::setDefaultStyleSheet(css::CSSStyleSheet sheet)
+{
+    defaultStyleSheet = sheet;
+}
+
+CSSStyleSheetImp* DOMImplementationImp::getPresentationalHints() const
+{
+    return dynamic_cast<CSSStyleSheetImp*>(presHintsStyleSheet.self());
+}
+
+void DOMImplementationImp::setPresentationalHints(css::CSSStyleSheet sheet)
+{
+    presHintsStyleSheet = sheet;
+}
+
+CSSStyleSheetImp* DOMImplementationImp::getUserStyleSheet() const
+{
+    return dynamic_cast<CSSStyleSheetImp*>(userStyleSheet.self());
+}
+
+void DOMImplementationImp::setUserStyleSheet(css::CSSStyleSheet sheet)
+{
+    userStyleSheet = sheet;
+}
 
 DocumentType DOMImplementationImp::createDocumentType(const std::u16string& qualifiedName, const std::u16string& publicId, const std::u16string& systemId)
 {
@@ -54,12 +92,6 @@ css::CSSStyleSheet DOMImplementationImp::createCSSStyleSheet(const std::u16strin
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
-}
-
-DOMImplementationImp::DOMImplementationImp() :
-    defaultCSSStyleSheet(0),
-    userCSSStyleSheet(0)
-{
 }
 
 DOMImplementationImp* getDOMImplementation()

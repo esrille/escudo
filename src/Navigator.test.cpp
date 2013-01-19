@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,11 +80,16 @@ int main(int argc, char* argv[])
     // Load the default CSS file
     std::string defaultSheet = argv[1];
     defaultSheet += "/default.css";
-    getDOMImplementation()->setDefaultCSSStyleSheet(loadStyleSheet(defaultSheet.c_str()));
+    getDOMImplementation()->setDefaultStyleSheet(loadStyleSheet(defaultSheet.c_str()));
+
+    // Load the presentational hints
+    std::string presHints = argv[1];
+    presHints += "/preshint.css";
+    getDOMImplementation()->setPresentationalHints(loadStyleSheet(presHints.c_str()));
 
     // Load the user CSS file
     if (3 <= argc)
-        getDOMImplementation()->setUserCSSStyleSheet(loadStyleSheet(argv[2]));
+        getDOMImplementation()->setUserStyleSheet(loadStyleSheet(argv[2]));
 
     HttpRequest::setAboutPath(profile.getProfilePath());
     std::thread httpService(std::ref(HttpConnectionManager::getInstance()));

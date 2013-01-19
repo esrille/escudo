@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,12 +49,25 @@ int main(int argc, char* argv[])
     initLogLevel(&argc, argv);
     initFonts(&argc, argv);
 
+    const char* presHints = 0;
+    for (int i = 1; i < argc; ++i) {
+        if (strncmp(argv[i], "--preshints", 11) == 0) {
+            if (argv[i][11] == '=')
+                presHints = argv[i] + 12;
+            for (int j = i; j < argc; ++j)
+                argv[j] = argv[j + 1];
+            --argc;
+        }
+    }
+    if (presHints)
+        getDOMImplementation()->setPresentationalHints(loadStyleSheet(presHints));
+
     // Load the default CSS file
-    getDOMImplementation()->setDefaultCSSStyleSheet(loadStyleSheet(argv[1]));
+    getDOMImplementation()->setDefaultStyleSheet(loadStyleSheet(argv[1]));
 
     // Load the user CSS file
     if (4 <= argc)
-        getDOMImplementation()->setUserCSSStyleSheet(loadStyleSheet(argv[2]));
+        getDOMImplementation()->setUserStyleSheet(loadStyleSheet(argv[2]));
 
     std::thread httpService(std::ref(HttpConnectionManager::getInstance()));
 

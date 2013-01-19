@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Esrille Inc.
+ * Copyright 2012, 2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,7 +90,7 @@ void WindowImp::BackgroundTask::operator()()
             state = Cascading;
             recordTime("%*sselector matching begin", window->windowDepth * 2, "");
             if (!view)
-                view = new(std::nothrow) ViewCSSImp(window->getDocumentWindow(), getDOMImplementation()->getDefaultCSSStyleSheet(), getDOMImplementation()->getUserCSSStyleSheet());
+                view = new(std::nothrow) ViewCSSImp(window->getDocumentWindow());
             if (view) {
                 view->constructComputedStyles();
                 state = Cascaded;

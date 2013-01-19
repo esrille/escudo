@@ -1528,16 +1528,6 @@ bool HTMLElementImp::evalVspace(HTMLElementImp* element, const std::u16string& p
     return false;
 }
 
-bool HTMLElementImp::evalNoWrap(HTMLElementImp* element)
-{
-    Nullable<std::u16string> value = element->getAttribute(u"nowrap");
-    if (value.hasValue()) {
-        element->getStyle().setProperty(u"white-space", u"nowrap", u"non-css");
-        return true;
-    }
-    return false;
-}
-
 bool HTMLElementImp::evalValign(HTMLElementImp* element)
 {
     Nullable<std::u16string> value = element->getAttribute(u"valign");

@@ -27,27 +27,23 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
+class CSSStyleSheetImp;
+
 class DOMImplementationImp : public ObjectMixin<DOMImplementationImp>
 {
-    css::CSSStyleSheet defaultCSSStyleSheet;
-    css::CSSStyleSheet userCSSStyleSheet;
+    css::CSSStyleSheet defaultStyleSheet;
+    css::CSSStyleSheet presHintsStyleSheet;
+    css::CSSStyleSheet userStyleSheet;
 
 public:
     DOMImplementationImp();
 
-    css::CSSStyleSheet getDefaultCSSStyleSheet() {
-        return defaultCSSStyleSheet;
-    }
-    void setDefaultCSSStyleSheet(css::CSSStyleSheet sheet) {
-        defaultCSSStyleSheet = sheet;
-    }
-
-    css::CSSStyleSheet getUserCSSStyleSheet() {
-        return userCSSStyleSheet;
-    }
-    void setUserCSSStyleSheet(css::CSSStyleSheet sheet) {
-        userCSSStyleSheet = sheet;
-    }
+    CSSStyleSheetImp* getDefaultStyleSheet() const;
+    void setDefaultStyleSheet(css::CSSStyleSheet sheet);
+    CSSStyleSheetImp* getPresentationalHints() const;
+    void setPresentationalHints(css::CSSStyleSheet sheet);
+    CSSStyleSheetImp* getUserStyleSheet() const;
+    void setUserStyleSheet(css::CSSStyleSheet sheet);
 
     // DOMImplementation
     DocumentType createDocumentType(const std::u16string& qualifiedName, const std::u16string& publicId, const std::u16string& systemId);

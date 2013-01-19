@@ -33,6 +33,7 @@
 #include "CSSStyleDeclarationImp.h"
 #include "CSSStyleSheetImp.h"
 #include "DocumentImp.h"
+#include "DOMImplementationImp.h"
 #include "MediaListImp.h"
 #include "html/HTMLElementImp.h"
 #include "html/HTMLTemplateElementImp.h"
@@ -64,13 +65,11 @@ Block* getCurrentBox(CSSStyleDeclarationImp* style, bool asTablePart)
 
 }
 
-ViewCSSImp::ViewCSSImp(DocumentWindowPtr window, css::CSSStyleSheet defaultStyleSheet, css::CSSStyleSheet userStyleSheet) :
+ViewCSSImp::ViewCSSImp(DocumentWindowPtr window) :
     window(window),
     dpi(96),
     zoom(1.0f),
     mutationListener(boost::bind(&ViewCSSImp::handleMutation, this, _1, _2)),
-    defaultStyleSheet(defaultStyleSheet),
-    userStyleSheet(userStyleSheet),
     overflow(CSSOverflowValueImp::Auto),
     stackingContexts(0),
     hovered(0),
@@ -227,24 +226,23 @@ Element ViewCSSImp::updateStyleRules(Element element, CSSStyleDeclarationImp* st
         elementDecl = dynamic_cast<CSSStyleDeclarationImp*>(htmlElement.getStyle().self());
     }
 
-    if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(defaultStyleSheet.self()))
+    if (CSSStyleSheetImp* sheet = getDOMImplementation()->getDefaultStyleSheet())
         findDeclarations(style->ruleSet, element, sheet->getCssRules(), CSSRuleListImp::UserAgent);
-    if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(userStyleSheet.self()))
+    if (CSSStyleSheetImp* sheet = getDOMImplementation()->getUserStyleSheet())
         findDeclarations(style->ruleSet, element, sheet->getCssRules(), CSSRuleListImp::User);
     if (elementDecl) {
-        CSSStyleDeclarationImp* nonCSS = elementDecl->getPseudoElementStyle(CSSPseudoElementSelector::NonCSS);
-        if (nonCSS) {
+        if (CSSStyleDeclarationImp* nonCSS = elementDecl->getPseudoElementStyle(CSSPseudoElementSelector::NonCSS)) {
             // TODO: emplace() seems to be not ready yet with libstdc++.
-            CSSRuleListImp::PrioritizedRule rule(CSSRuleListImp::User, nonCSS);
+            CSSRuleListImp::PrioritizedRule rule(CSSRuleListImp::Presentational, nonCSS);
             style->ruleSet.insert(rule);
         }
     }
-    unsigned importance = CSSRuleListImp::Author;
+    if (CSSStyleSheetImp* sheet = getDOMImplementation()->getPresentationalHints())
+        findDeclarations(style->ruleSet, element, sheet->getCssRules(), CSSRuleListImp::Presentational);
     stylesheets::StyleSheetList styleSheetList(getDocument().getStyleSheets());
     for (unsigned i = 0; i < styleSheetList.getLength(); ++i) {
         CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(styleSheetList.getElement(i).self());
-        findDeclarations(style->ruleSet, element, sheet->getCssRules(), importance++);
-        // TODO: Check overflow of importance
+        findDeclarations(style->ruleSet, element, sheet->getCssRules(), CSSRuleListImp::Author);
     }
 
     style->compute(this, parentStyle, element);

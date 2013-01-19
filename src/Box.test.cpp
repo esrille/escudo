@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,7 +87,7 @@ int main(int argc, char** argv)
             return EXIT_FAILURE;
         }
         defaultStyleSheet = loadStyleSheet(stream);
-        getDOMImplementation()->setDefaultCSSStyleSheet(defaultStyleSheet);
+        getDOMImplementation()->setDefaultStyleSheet(defaultStyleSheet);
     }
 
     document = loadDocument(htmlDocument);
@@ -102,7 +102,7 @@ int main(int argc, char** argv)
     // create the default view
     DocumentWindowPtr window = new(std::nothrow) DocumentWindow;
     window->setDocument(document);
-    ViewCSSImp* view = new ViewCSSImp(window, defaultStyleSheet);
+    ViewCSSImp* view = new ViewCSSImp(window);
     view->setSize(8.5f * 96, 11.0f * 96);  // US letter size, 96 DPI
     view->constructComputedStyles();
     view->calculateComputedStyles();

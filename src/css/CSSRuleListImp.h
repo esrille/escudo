@@ -47,7 +47,8 @@ public:
     {
         UserAgent = (1 << 24),
         User = (2 << 24),
-        Author = (4 << 24)
+        Presentational = (4 << 24), // for non-CSS presentational hints; should be treated like Author
+        Author = (8 << 24)
     };
 
     struct PrioritizedRule
@@ -56,10 +57,13 @@ public:
         unsigned priority;
         CSSRuleListImp::Rule rule;
     public:
-        PrioritizedRule(unsigned priority, const CSSRuleListImp::Rule& rule) :
-            priority(priority | rule.selector->getSpecificity()),
+        PrioritizedRule(unsigned prio, const CSSRuleListImp::Rule& rule) :
+            priority(prio),
             rule(rule)
-        {}
+        {
+            if ((priority & 0xff000000) != Presentational)
+                priority |= rule.selector->getSpecificity();
+        }
         PrioritizedRule(unsigned priority, CSSStyleDeclarationImp* decl) :
             priority(priority)
         {

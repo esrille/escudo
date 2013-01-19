@@ -1316,7 +1316,8 @@ dist_escortdata_DATA =  \
 	data/escort/go-next.png \
 	data/escort/go-previous.png \
 	data/escort/view-refresh.png \
-	data/escort/process-stop.png
+	data/escort/process-stop.png \
+	data/escort/preshint.css
 
 dist_aboutdata_DATA =  \
 	data/escort/about/blank \
