@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>HTML Test</title>
+</head>
+<body background='blue15x15.png'>
+<button id='test'>Start Test</button>
+<br>
+<span id='t'>Test passes if the background of this page is changed from blue to white.</span>
+<script>
+ var button = document.getElementById('test');
+ button.onclick = function () {
+  document.body.removeAttribute('background');
+ };
+</script>
+</body>
+</html>
