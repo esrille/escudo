@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -187,32 +187,37 @@ bool CSSAttributeSelector::match(Element& e, ViewCSSImp* view, bool dynamic)
     Nullable<std::u16string> attr = e.getAttribute(name);
     if (!attr.hasValue())
         return false;
+    std::u16string v = attr.value();
+    if (flags == u"i")
+        toLower(v);
     switch (op) {
     case None:
         return true;
     case Equals:
-        return attr.value() == value;
+        return v == value;
+        break;
     case Includes:
-        if (attr.value().length() == 0 || contains(attr.value(), u" "))
+        if (v.length() == 0 || contains(v, u" "))
             return false;
-        return contains(attr.value(), value);
+        return contains(v, value);
     case DashMatch:
-        return dashMatch(attr.value(), value);
+        return dashMatch(v, value);
     case PrefixMatch:
-        if (attr.value().length() == 0)
+        if (v.length() == 0)
             return false;
-        return startsWith(attr.value(), value);
+        return startsWith(v, value);
     case SuffixMatch:
-        if (attr.value().length() == 0)
+        if (v.length() == 0)
             return false;
-        return endsWith(attr.value(), value);
+        return endsWith(v, value);
     case SubstringMatch:
-        if (attr.value().length() == 0)
+        if (v.length() == 0)
             return false;
-        return find(attr.value(), value);
+        return find(v, value);
     default:
-        return false;
+        break;
     }
+    return false;
 }
 
 bool CSSSelector::match(Element& element, ViewCSSImp* view, bool dynamic)

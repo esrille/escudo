@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -227,26 +227,37 @@ private:
     int op;
     std::u16string value;
     std::u16string namespacePrefix;
+    std::u16string flags;
 public:
     CSSAttributeSelector(const std::u16string& ident) :
         CSSSimpleSelector(ident),
-        op(None) {
+        op(None)
+    {
     }
-    CSSAttributeSelector(const std::u16string& ident, int op, const std::u16string& value) :
+    CSSAttributeSelector(const std::u16string& ident, int op, const std::u16string& value, const std::u16string& flags = u"") :
         CSSSimpleSelector(ident),
         op(op),
-        value(value) {
+        value(value),
+        flags(flags)
+    {
+        if (flags == u"i")
+            toLower(this->value);
     }
     CSSAttributeSelector(const std::u16string& namespacePrefix, const std::u16string& ident) :
         CSSSimpleSelector(ident),
         op(None),
-        namespacePrefix(namespacePrefix) {
+        namespacePrefix(namespacePrefix)
+    {
     }
-    CSSAttributeSelector(const std::u16string& namespacePrefix, const std::u16string& ident, int op, const std::u16string& value) :
+    CSSAttributeSelector(const std::u16string& namespacePrefix, const std::u16string& ident, int op, const std::u16string& value, const std::u16string& flags = u"") :
         CSSSimpleSelector(ident),
         op(op),
         value(value),
-        namespacePrefix(namespacePrefix) {
+        namespacePrefix(namespacePrefix),
+        flags(flags)
+    {
+        if (flags == u"i")
+            toLower(this->value);
     }
     virtual void serialize(std::u16string& text);
     virtual CSSSpecificity getSpecificity() {

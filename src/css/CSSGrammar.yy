@@ -119,6 +119,7 @@ using namespace org::w3c::dom::css;
 %type <text> property;
 %type <text> prio;
 %type <text> uri_term;
+%type <text> attrib_flag;
 %type <integer> combinator
 %type <integer> attrib_op
 %type <integer> unary_operator
@@ -405,14 +406,14 @@ element_name
   : IDENT
   ;
 attrib
-  : '[' optional_space namespace_prefix IDENT optional_space attrib_op optional_space ident_term optional_space ']' {
-        $$ = new(std::nothrow) CSSAttributeSelector($3, $4.toString(parser->getCaseSensitivity()), $6, $8.toString(true));
+  : '[' optional_space namespace_prefix IDENT optional_space attrib_op optional_space ident_term optional_space attrib_flag ']' {
+        $$ = new(std::nothrow) CSSAttributeSelector($3, $4.toString(parser->getCaseSensitivity()), $6, $8.toString(true), $10.toString(true));
     }
   | '[' optional_space namespace_prefix IDENT optional_space                                                    ']' {
         $$ = new(std::nothrow) CSSAttributeSelector($3, $4.toString(parser->getCaseSensitivity()));
     }
-  | '[' optional_space                  IDENT optional_space attrib_op optional_space ident_term optional_space ']' {
-        $$ = new(std::nothrow) CSSAttributeSelector($3.toString(parser->getCaseSensitivity()), $5, $7.toString(true));
+  | '[' optional_space                  IDENT optional_space attrib_op optional_space ident_term optional_space attrib_flag ']' {
+        $$ = new(std::nothrow) CSSAttributeSelector($3.toString(parser->getCaseSensitivity()), $5, $7.toString(true), $9.toString(true));
     }
   | '[' optional_space                  IDENT optional_space                                                    ']' {
         $$ = new(std::nothrow) CSSAttributeSelector($3.toString(parser->getCaseSensitivity()));
@@ -863,6 +864,13 @@ attrib_op
         $$ = CSSAttributeSelector::DashMatch;
     }
   ;
+attrib_flag
+  : /* empty */ {
+        $$.clear();
+    }
+  | IDENT optional_space {
+        $$ = $1;
+    }
 optional_sgml
   : /* empty */
   | optional_sgml S
