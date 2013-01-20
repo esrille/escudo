@@ -1,3 +1,20 @@
 /* cf. http://www.w3.org/TR/html5/rendering.html#the-css-user-agent-style-sheet-and-presentational-hints */
 
+thead[valign=top i], tbody[valign=top i], tfoot[valign=top i],
+tr[valign=top i], td[valign=top i], th[valign=top i] {
+  vertical-align: top;
+}
+thead[valign=middle i], tbody[valign=middle i], tfoot[valign=middle i],
+tr[valign=middle i], td[valign=middle i], th[valign=middle i] {
+  vertical-align: middle;
+}
+thead[valign=bottom i], tbody[valign=bottom i], tfoot[valign=bottom i],
+tr[valign=bottom i], td[valign=bottom i], th[valign=bottom i] {
+  vertical-align: bottom;
+}
+thead[valign=baseline i], tbody[valign=baseline i], tfoot[valign=baseline i],
+tr[valign=baseline i], td[valign=baseline i], th[valign=baseline i] {
+  vertical-align: baseline;
+}
+
 td[nowrap], th[nowrap] { white-space: nowrap; }

@@ -42,11 +42,6 @@ void HTMLTableSectionElementImp::handleMutation(events::MutationEvent mutation)
     }
 }
 
-void HTMLTableSectionElementImp::eval()
-{
-    HTMLElementImp::evalValign(this);
-}
-
 html::HTMLCollection HTMLTableSectionElementImp::getRows()
 {
     // TODO: implement me!

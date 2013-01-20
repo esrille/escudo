@@ -39,7 +39,6 @@ class HTMLTableSectionElementImp : public ObjectMixin<HTMLTableSectionElementImp
 {
 public:
     virtual void handleMutation(events::MutationEvent mutation);
-    virtual void eval();
 
     // HTMLTableSectionElement
     html::HTMLCollection getRows();

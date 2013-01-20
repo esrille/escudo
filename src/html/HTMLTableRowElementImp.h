@@ -64,7 +64,6 @@ public:
     {}
 
     virtual void handleMutation(events::MutationEvent mutation);
-    virtual void eval();
 
     // Utilities for Rows
     unsigned int getCellCount();

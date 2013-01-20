@@ -54,7 +54,6 @@ void HTMLTableCellElementImp::eval()
 {
     HTMLElementImp::evalHeight(this);
     HTMLElementImp::evalWidth(this);
-    HTMLElementImp::evalValign(this);
 
     for (Element e = getParentElement(); e; e = e.getParentElement()) {
         if (auto table = dynamic_cast<HTMLTableElementImp*>(e.self())) {

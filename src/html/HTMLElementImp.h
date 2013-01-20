@@ -309,7 +309,6 @@ public:
     static bool evalMarginWidth(HTMLElementImp* element) {
         return evalHspace(element, u"marginwidth");
     }
-    static bool evalValign(HTMLElementImp* element);
 
     // xblEnteredDocument() should be called after view->constructComputedStyles().
     static void xblEnteredDocument(Node node);

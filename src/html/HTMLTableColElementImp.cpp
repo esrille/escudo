@@ -32,7 +32,6 @@ namespace bootstrap
 void HTMLTableColElementImp::eval()
 {
     HTMLElementImp::evalWidth(this);
-    HTMLElementImp::evalValign(this);
 }
 
 unsigned int HTMLTableColElementImp::getSpan()

@@ -70,11 +70,6 @@ void HTMLTableRowElementImp::handleMutation(events::MutationEvent mutation)
     }
 }
 
-void HTMLTableRowElementImp::eval()
-{
-    HTMLElementImp::evalValign(this);
-}
-
 unsigned int HTMLTableRowElementImp::getCellCount()
 {
     // TODO: Better to keep the result

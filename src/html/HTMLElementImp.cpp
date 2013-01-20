@@ -1528,16 +1528,6 @@ bool HTMLElementImp::evalVspace(HTMLElementImp* element, const std::u16string& p
     return false;
 }
 
-bool HTMLElementImp::evalValign(HTMLElementImp* element)
-{
-    Nullable<std::u16string> value = element->getAttribute(u"valign");
-    if (value.hasValue()) {
-        element->getStyle().setProperty(u"vertical-align", value.value(), u"non-css");
-        return true;
-    }
-    return false;
-}
-
 void HTMLElementImp::handleMutationHref(events::MutationEvent mutation)
 {
     Nullable<std::u16string> tabindex = getAttribute(u"tabindex");
