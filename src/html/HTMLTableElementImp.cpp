@@ -75,6 +75,7 @@ void HTMLTableElementImp::eval()
 {
     HTMLElementImp::evalHeight(this);
     HTMLElementImp::evalWidth(this);
+    HTMLElementImp::evalPx(this, u"cellspacing", u"border-spacing");
 
     std::u16string border = getBorder();
     if (!border.empty()) {
@@ -84,15 +85,6 @@ void HTMLTableElementImp::eval()
         else {
             style.setProperty(u"border-width", border + u"px", u"non-css");
             style.setProperty(u"border-style", u"outset", u"non-css");
-        }
-    }
-
-    Nullable<std::u16string> attr = getAttribute(u"cellspacing");
-    if (attr.hasValue()) {
-        std::u16string value = attr.value();
-        if (toPx(value)) {
-            css::CSSStyleDeclaration style = getStyle();
-            style.setBorderSpacing(value);
         }
     }
 }
