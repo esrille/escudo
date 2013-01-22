@@ -40,8 +40,10 @@ HTMLIFrameElementImp::HTMLIFrameElementImp(DocumentImp* ownerDocument) :
     window(0),
     blurListener(boost::bind(&HTMLIFrameElementImp::handleBlur, this, _1, _2))
 {
+    tabIndex = 0;
     if (ownerDocument)
         window = new WindowImp(dynamic_cast<WindowImp*>(ownerDocument->getDefaultView().self()), this);
+    addEventListener(u"blur", &blurListener, false, EventTargetImp::UseDefault);
 }
 
 HTMLIFrameElementImp::HTMLIFrameElementImp(HTMLIFrameElementImp* org, bool deep) :
@@ -49,6 +51,8 @@ HTMLIFrameElementImp::HTMLIFrameElementImp(HTMLIFrameElementImp* org, bool deep)
     window(org->window),
     blurListener(boost::bind(&HTMLIFrameElementImp::handleBlur, this, _1, _2))
 {
+    tabIndex = org->tabIndex;
+    addEventListener(u"blur", &blurListener, false, EventTargetImp::UseDefault);
 }
 
 HTMLIFrameElementImp::~HTMLIFrameElementImp()
@@ -90,8 +94,6 @@ void HTMLIFrameElementImp::handleMutation(events::MutationEvent mutation)
 
 void HTMLIFrameElementImp::eval()
 {
-    setTabIndex(0);
-    addEventListener(u"blur", &blurListener, false, EventTargetImp::UseDefault);
     setSrc(getSrc());
 }
 
