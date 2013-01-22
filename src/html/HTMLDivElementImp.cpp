@@ -29,6 +29,9 @@ namespace bootstrap
 
 void HTMLDivElementImp::eval()
 {
+    if (getLocalName() == u"center")
+        setAlign(u"center");
+
     // TODO: MVC violation
     std::u16string align = getAlign();
     if (!align.empty()) {

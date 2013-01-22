@@ -40,8 +40,6 @@ public:
     HTMLDivElementImp(DocumentImp* ownerDocument, const std::u16string& localName = u"div") :
         ObjectMixin(ownerDocument, localName)
     {
-        if (localName == u"center")
-            setAlign(u"center");
     }
     HTMLDivElementImp(HTMLDivElementImp* org, bool deep) :
         ObjectMixin(org, deep)
