@@ -44,6 +44,21 @@ void HTMLImageElementImp::handleMutation(events::MutationEvent mutation)
     css::CSSStyleDeclaration style(getStyle());
 
     switch (Intern(mutation.getAttrName().c_str())) {
+    case Intern(u"src"):
+        if (DocumentImp* document = getOwnerDocumentImp()) {
+            if (request)
+                request->abort();
+            else
+                request = new(std::nothrow) HttpRequest(document->getDocumentURI());
+            if (request) {
+                request->open(u"GET", getSrc());
+                request->setHandler(boost::bind(&HTMLImageElementImp::notify, this));
+                document->incrementLoadEventDelayCount();
+                request->send();
+            } else
+                active = false;
+        }
+        break;
     // Styles
     case Intern(u"border"):
         handleMutationBorder(mutation);
@@ -72,19 +87,6 @@ void HTMLImageElementImp::handleMutation(events::MutationEvent mutation)
         HTMLElementImp::handleMutation(mutation);
         break;
     }
-}
-
-void HTMLImageElementImp::eval()
-{
-    DocumentImp* document = getOwnerDocumentImp();
-    request = new(std::nothrow) HttpRequest(document->getDocumentURI());
-    if (request) {
-        request->open(u"GET", getSrc());
-        request->setHandler(boost::bind(&HTMLImageElementImp::notify, this));
-        document->incrementLoadEventDelayCount();
-        request->send();
-    } else
-        active = false;
 }
 
 void HTMLImageElementImp::notify()
@@ -146,23 +148,12 @@ void HTMLImageElementImp::setAlt(const std::u16string& alt)
 
 std::u16string HTMLImageElementImp::getSrc()
 {
-    return getAttribute(u"src");
+    return getAttributeAsURL(u"src");
 }
 
 void HTMLImageElementImp::setSrc(const std::u16string& src)
 {
     setAttribute(u"src", src);
-    DocumentImp* document = getOwnerDocumentImp();
-    if (request)
-        request->abort();
-    else
-        request = new(std::nothrow) HttpRequest(document->getDocumentURI());
-    if (request) {
-        request->open(u"GET", getSrc());
-        request->setHandler(boost::bind(&HTMLImageElementImp::notify, this));
-        document->incrementLoadEventDelayCount();
-        request->send();
-    }
 }
 
 std::u16string HTMLImageElementImp::getCrossOrigin()

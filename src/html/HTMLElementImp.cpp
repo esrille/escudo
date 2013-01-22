@@ -1434,4 +1434,19 @@ void HTMLElementImp::handleMutationHref(events::MutationEvent mutation)
     }
 }
 
+// cf. http://www.w3.org/TR/html5/infrastructure.html#reflect
+std::u16string HTMLElementImp::getAttributeAsURL(const std::u16string& name)
+{
+    std::u16string value(getAttribute(name));
+    if (value.empty())
+        return value;
+    if (DocumentImp* document = getOwnerDocumentImp()) {
+        URL base(document->getDocumentURI());
+        URL url(base, value);
+        value = url;
+    } else
+        value.clear();
+    return value;
+}
+
 }}}}  // org::w3c::dom::bootstrap

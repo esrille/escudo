@@ -107,16 +107,7 @@ void HTMLIFrameElementImp::handleBlur(EventListenerImp* listener, events::Event 
 
 std::u16string HTMLIFrameElementImp::getSrc()
 {
-    std::u16string src(getAttribute(u"src"));
-    if (src.empty())
-        return src;
-    if (DocumentImp* document = getOwnerDocumentImp()) {
-        URL base(document->getDocumentURI());
-        URL url(base, src);
-        src = url;
-    } else
-        src.clear();
-    return src;
+    return getAttributeAsURL(u"src");
 }
 
 void HTMLIFrameElementImp::setSrc(const std::u16string& src)

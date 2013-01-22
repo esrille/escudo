@@ -289,6 +289,8 @@ public:
     void handleMutationColor(events::MutationEvent mutation, const std::u16string& prop);
     void handleMutationBorder(events::MutationEvent mutation);
 
+    std::u16string getAttributeAsURL(const std::u16string& name);
+
     // xblEnteredDocument() should be called after view->constructComputedStyles().
     static void xblEnteredDocument(Node node);
 };

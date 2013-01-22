@@ -37,7 +37,6 @@ public:
     HTMLImageElementImp(HTMLImageElementImp* org, bool deep);
 
     virtual void handleMutation(events::MutationEvent mutation);
-    virtual void eval();
     void notify();
 
     // TODO: Refine this interface as this is only for CSS
