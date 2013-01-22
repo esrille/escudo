@@ -40,6 +40,20 @@ bool toUnsigned(const std::u16string& value, unsigned& output)
     return 0 <= s;
 }
 
+bool mapToInteger(std::u16string& value)
+{
+    if (stripLeadingWhitespace(value).empty())
+        return false;
+    const char16_t* input = value.c_str();
+    const char16_t* end = input + value.length();
+    int u;
+    end = parseInt(input, end, u);
+    if (!end)
+        return false;
+    value.erase(end - input);
+    return true;
+}
+
 bool mapToPixelLength(std::u16string& value)
 {
     if (stripLeadingWhitespace(value).empty())

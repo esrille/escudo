@@ -16,6 +16,12 @@
 
 #include "HTMLOListElementImp.h"
 
+#include "one_at_a_time.hpp"
+
+constexpr auto Intern = &one_at_a_time::hash<char16_t>;
+
+#include "HTMLUtil.h"
+
 namespace org
 {
 namespace w3c
@@ -25,12 +31,27 @@ namespace dom
 namespace bootstrap
 {
 
-void HTMLOListElementImp::eval()
+void HTMLOListElementImp::handleMutation(events::MutationEvent mutation)
 {
-    Nullable<std::u16string> attr = getAttribute(u"start");
-    if (attr.hasValue()) {
-        getStyle().setProperty(u"counter-reset", u"list-item " + attr.value(), u"non-css");
-        getStyle().setProperty(u"counter-increment", u"list-item -1");
+    std::u16string value = mutation.getNewValue();
+    css::CSSStyleDeclaration style(getStyle());
+
+    switch (Intern(mutation.getAttrName().c_str())) {
+    // Styles
+    case Intern(u"start"):
+        if (mutation.getAttrChange() == events::MutationEvent::REMOVAL) {
+            style.setProperty(u"counter-reset", u"", u"non-css");
+            style.setProperty(u"counter-increment", u"", u"non-css");
+        } else {
+            if (!mapToInteger(value))
+                value = u"1";
+            style.setProperty(u"counter-reset", u"list-item " + value, u"non-css");
+            style.setProperty(u"counter-increment", u"list-item -1", u"non-css");
+        }
+        break;
+    default:
+        HTMLElementImp::handleMutation(mutation);
+        break;
     }
 }
 
