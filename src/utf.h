@@ -121,15 +121,20 @@ inline void toLower(std::u16string& s)
         *i = toLower(*i);
 }
 
-inline void stripLeadingAndTrailingWhitespace(std::u16string& s)
+inline std::u16string& stripLeadingWhitespace(std::u16string& s)
 {
     size_t pos = 0;
     while (isSpace(s[pos]))
         ++pos;
     if (0 < pos)
         s.erase(0, pos);
-    if (0 < s.length()) {
-        pos = s.length() - 1;
+    return s;
+}
+
+inline std::u16string& stripLeadingAndTrailingWhitespace(std::u16string& s)
+{
+    if (!stripLeadingWhitespace(s).empty()) {
+        size_t pos = s.length() - 1;
         if (isSpace(s[pos])) {
             while (0 < pos) {
                 --pos;
@@ -141,6 +146,7 @@ inline void stripLeadingAndTrailingWhitespace(std::u16string& s)
             s.erase(pos);
         }
     }
+    return s;
 }
 
 inline std::ostream& operator<<(std::ostream& stream, const std::u16string& string)

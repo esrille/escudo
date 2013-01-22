@@ -86,13 +86,11 @@ inline const Ch* parseInt(const Ch* input, const Ch* end, int& value)
     return input;
 }
 
-// cf. http://www.w3.org/TR/html5/infrastructure.html#valid-integer
-inline bool toInteger(const std::u16string& value, int& output)
-{
-    const char16_t* input = value.c_str();
-    const char16_t* end = input + value.length();
-    return parseInt(input, end, output);    // Do not care what follows after digits.
-}
+bool toInteger(const std::u16string& value, int& output);
+bool toUnsigned(const std::u16string& value, unsigned& output);
+
+bool mapToPixelLength(std::u16string& value);
+bool mapToDimension(std::u16string& value);
 
 }
 }
