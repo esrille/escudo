@@ -22,7 +22,7 @@
 #endif
 
 #include <org/w3c/dom/html/HTMLButtonElement.h>
-#include "HTMLElementImp.h"
+#include "HTMLFormControlImp.h"
 
 #include <org/w3c/dom/html/HTMLElement.h>
 #include <org/w3c/dom/NodeList.h>
@@ -37,39 +37,18 @@ namespace dom
 {
 namespace bootstrap
 {
-class HTMLButtonElementImp : public ObjectMixin<HTMLButtonElementImp, HTMLElementImp>
+class HTMLButtonElementImp : public ObjectMixin<HTMLButtonElementImp, HTMLFormControlImp>
 {
 public:
-    virtual void eval();
+    HTMLButtonElementImp(DocumentImp* ownerDocument) :
+        ObjectMixin(ownerDocument, u"button") {
+    }
+    HTMLButtonElementImp(HTMLButtonElementImp* org, bool deep) :
+        ObjectMixin(org, deep) {
+    }
 
-    // HTMLButtonElement
-    bool getAutofocus();
-    void setAutofocus(bool autofocus);
-    bool getDisabled();
-    void setDisabled(bool disabled);
-    html::HTMLFormElement getForm();
-    std::u16string getFormAction();
-    void setFormAction(const std::u16string& formAction);
-    std::u16string getFormEnctype();
-    void setFormEnctype(const std::u16string& formEnctype);
-    std::u16string getFormMethod();
-    void setFormMethod(const std::u16string& formMethod);
-    bool getFormNoValidate();
-    void setFormNoValidate(bool formNoValidate);
-    std::u16string getFormTarget();
-    void setFormTarget(const std::u16string& formTarget);
-    std::u16string getName();
-    void setName(const std::u16string& name);
-    std::u16string getType();
-    void setType(const std::u16string& type);
-    std::u16string getValue();
-    void setValue(const std::u16string& value);
-    bool getWillValidate();
-    html::ValidityState getValidity();
-    std::u16string getValidationMessage();
-    bool checkValidity();
-    void setCustomValidity(const std::u16string& error);
-    NodeList getLabels();
+    virtual void handleMutation(events::MutationEvent mutation);
+
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {
@@ -78,12 +57,6 @@ public:
     static const char* const getMetaData()
     {
         return html::HTMLButtonElement::getMetaData();
-    }
-    HTMLButtonElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"button") {
-    }
-    HTMLButtonElementImp(HTMLButtonElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
     }
 };
 

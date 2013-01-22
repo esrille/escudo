@@ -112,13 +112,14 @@ am_libeshtml5_a_OBJECTS = Any.$(OBJEXT) ECMAScript.$(OBJEXT) \
 	HTTPCache.$(OBJEXT) HTTPConnection.$(OBJEXT) \
 	HTTPHeader.$(OBJEXT) HTTPRequest.$(OBJEXT) \
 	HTTPRequestMessage.$(OBJEXT) HTTPResponseMessage.$(OBJEXT) \
-	HTTPUtil.$(OBJEXT) HTMLInputStream.$(OBJEXT) \
-	HTMLParser.$(OBJEXT) HTMLTokenizer.$(OBJEXT) \
-	HTMLUtil.$(OBJEXT) Bmp.$(OBJEXT) Box.$(OBJEXT) BoxGL.$(OBJEXT) \
-	BoxImage.$(OBJEXT) Ico.$(OBJEXT) FormattingContext.$(OBJEXT) \
-	LineBox.$(OBJEXT) StackingContext.$(OBJEXT) \
-	CSSPropertyValueImp.$(OBJEXT) CSSSerialize.$(OBJEXT) \
-	CSSGrammar.$(OBJEXT) CSSSelector.$(OBJEXT) CSSParser.$(OBJEXT) \
+	HTTPUtil.$(OBJEXT) HTMLFormControlImp.$(OBJEXT) \
+	HTMLInputStream.$(OBJEXT) HTMLParser.$(OBJEXT) \
+	HTMLTokenizer.$(OBJEXT) HTMLUtil.$(OBJEXT) Bmp.$(OBJEXT) \
+	Box.$(OBJEXT) BoxGL.$(OBJEXT) BoxImage.$(OBJEXT) Ico.$(OBJEXT) \
+	FormattingContext.$(OBJEXT) LineBox.$(OBJEXT) \
+	StackingContext.$(OBJEXT) CSSPropertyValueImp.$(OBJEXT) \
+	CSSSerialize.$(OBJEXT) CSSGrammar.$(OBJEXT) \
+	CSSSelector.$(OBJEXT) CSSParser.$(OBJEXT) \
 	CSSValueParser.$(OBJEXT) CSSInputStream.$(OBJEXT) \
 	Replaced.$(OBJEXT) Table.$(OBJEXT) TableGL.$(OBJEXT) \
 	ViewCSSImp.$(OBJEXT) ViewCSSImpGL.$(OBJEXT) AttrImp.$(OBJEXT) \
@@ -1313,7 +1314,8 @@ libeshtml5_a_SOURCES = org/w3c/dom/ObjectArray.h src/one_at_a_time.hpp \
 	src/http/HTTPRequestMessage.h src/http/HTTPRequestMessage.cpp \
 	src/http/HTTPResponseMessage.h \
 	src/http/HTTPResponseMessage.cpp src/http/HTTPUtil.h \
-	src/http/HTTPUtil.cpp src/html/HTMLInputStream.cpp \
+	src/http/HTTPUtil.cpp src/html/HTMLFormControlImp.cpp \
+	src/html/HTMLFormControlImp.h src/html/HTMLInputStream.cpp \
 	src/html/HTMLInputStream.h src/html/HTMLParser.cpp \
 	src/html/HTMLParser.h src/html/HTMLReplacedElementImp.h \
 	src/html/HTMLTokenizer.cpp src/html/HTMLTokenizer.h \
@@ -2249,6 +2251,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HTMLFieldSetElementImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HTMLFontElement.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HTMLFontElementImp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HTMLFormControlImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HTMLFormControlsCollection.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HTMLFormControlsCollectionImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/HTMLFormElement.Po@am__quote@
@@ -2897,6 +2900,20 @@ HTTPUtil.obj: src/http/HTTPUtil.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/http/HTTPUtil.cpp' object='HTTPUtil.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTTPUtil.obj `if test -f 'src/http/HTTPUtil.cpp'; then $(CYGPATH_W) 'src/http/HTTPUtil.cpp'; else $(CYGPATH_W) '$(srcdir)/src/http/HTTPUtil.cpp'; fi`
+
+HTMLFormControlImp.o: src/html/HTMLFormControlImp.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTMLFormControlImp.o -MD -MP -MF $(DEPDIR)/HTMLFormControlImp.Tpo -c -o HTMLFormControlImp.o `test -f 'src/html/HTMLFormControlImp.cpp' || echo '$(srcdir)/'`src/html/HTMLFormControlImp.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/HTMLFormControlImp.Tpo $(DEPDIR)/HTMLFormControlImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/html/HTMLFormControlImp.cpp' object='HTMLFormControlImp.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTMLFormControlImp.o `test -f 'src/html/HTMLFormControlImp.cpp' || echo '$(srcdir)/'`src/html/HTMLFormControlImp.cpp
+
+HTMLFormControlImp.obj: src/html/HTMLFormControlImp.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTMLFormControlImp.obj -MD -MP -MF $(DEPDIR)/HTMLFormControlImp.Tpo -c -o HTMLFormControlImp.obj `if test -f 'src/html/HTMLFormControlImp.cpp'; then $(CYGPATH_W) 'src/html/HTMLFormControlImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/html/HTMLFormControlImp.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/HTMLFormControlImp.Tpo $(DEPDIR)/HTMLFormControlImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/html/HTMLFormControlImp.cpp' object='HTMLFormControlImp.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o HTMLFormControlImp.obj `if test -f 'src/html/HTMLFormControlImp.cpp'; then $(CYGPATH_W) 'src/html/HTMLFormControlImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/html/HTMLFormControlImp.cpp'; fi`
 
 HTMLInputStream.o: src/html/HTMLInputStream.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT HTMLInputStream.o -MD -MP -MF $(DEPDIR)/HTMLInputStream.Tpo -c -o HTMLInputStream.o `test -f 'src/html/HTMLInputStream.cpp' || echo '$(srcdir)/'`src/html/HTMLInputStream.cpp

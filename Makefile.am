@@ -659,6 +659,8 @@ libeshtml5_a_SOURCES = \
 	src/http/HTTPResponseMessage.cpp \
 	src/http/HTTPUtil.h \
 	src/http/HTTPUtil.cpp \
+	src/html/HTMLFormControlImp.cpp \
+	src/html/HTMLFormControlImp.h \
 	src/html/HTMLInputStream.cpp \
 	src/html/HTMLInputStream.h \
 	src/html/HTMLParser.cpp \

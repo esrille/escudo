@@ -16,6 +16,12 @@
 
 #include "HTMLButtonElementImp.h"
 
+#include "one_at_a_time.hpp"
+
+constexpr auto Intern = &one_at_a_time::hash<char16_t>;
+
+#include "HTMLUtil.h"
+
 namespace org
 {
 namespace w3c
@@ -25,160 +31,20 @@ namespace dom
 namespace bootstrap
 {
 
-void HTMLButtonElementImp::eval()
+void HTMLButtonElementImp::handleMutation(events::MutationEvent mutation)
 {
-    if (!getDisabled())
-        setTabIndex(0);
-}
-
-bool HTMLButtonElementImp::getAutofocus()
-{
-    // TODO: implement me!
-    return 0;
-}
-
-void HTMLButtonElementImp::setAutofocus(bool autofocus)
-{
-    // TODO: implement me!
-}
-
-bool HTMLButtonElementImp::getDisabled()
-{
-    // TODO: implement me!
-    return 0;
-}
-
-void HTMLButtonElementImp::setDisabled(bool disabled)
-{
-    // TODO: implement me!
-}
-
-html::HTMLFormElement HTMLButtonElementImp::getForm()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-std::u16string HTMLButtonElementImp::getFormAction()
-{
-    // TODO: implement me!
-    return u"";
-}
-
-void HTMLButtonElementImp::setFormAction(const std::u16string& formAction)
-{
-    // TODO: implement me!
-}
-
-std::u16string HTMLButtonElementImp::getFormEnctype()
-{
-    // TODO: implement me!
-    return u"";
-}
-
-void HTMLButtonElementImp::setFormEnctype(const std::u16string& formEnctype)
-{
-    // TODO: implement me!
-}
-
-std::u16string HTMLButtonElementImp::getFormMethod()
-{
-    // TODO: implement me!
-    return u"";
-}
-
-void HTMLButtonElementImp::setFormMethod(const std::u16string& formMethod)
-{
-    // TODO: implement me!
-}
-
-bool HTMLButtonElementImp::getFormNoValidate()
-{
-    // TODO: implement me!
-    return 0;
-}
-
-void HTMLButtonElementImp::setFormNoValidate(bool formNoValidate)
-{
-    // TODO: implement me!
-}
-
-std::u16string HTMLButtonElementImp::getFormTarget()
-{
-    // TODO: implement me!
-    return u"";
-}
-
-void HTMLButtonElementImp::setFormTarget(const std::u16string& formTarget)
-{
-    // TODO: implement me!
-}
-
-std::u16string HTMLButtonElementImp::getName()
-{
-    return getAttribute(u"name");
-}
-
-void HTMLButtonElementImp::setName(const std::u16string& name)
-{
-    setAttribute(u"name", name);
-}
-
-std::u16string HTMLButtonElementImp::getType()
-{
-    // TODO: see http://www.whatwg.org/specs/web-apps/current-work/multipage/common-microsyntaxes.html#enumerated-attribute
-    return getAttribute(u"type");
-}
-
-void HTMLButtonElementImp::setType(const std::u16string& type)
-{
-    setAttribute(u"type", type);
-}
-
-std::u16string HTMLButtonElementImp::getValue()
-{
-    // TODO: implement me!
-    return u"";
-}
-
-void HTMLButtonElementImp::setValue(const std::u16string& value)
-{
-    // TODO: implement me!
-}
-
-bool HTMLButtonElementImp::getWillValidate()
-{
-    // TODO: implement me!
-    return 0;
-}
-
-html::ValidityState HTMLButtonElementImp::getValidity()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
-}
-
-std::u16string HTMLButtonElementImp::getValidationMessage()
-{
-    // TODO: implement me!
-    return u"";
-}
-
-bool HTMLButtonElementImp::checkValidity()
-{
-    // TODO: implement me!
-    return 0;
-}
-
-void HTMLButtonElementImp::setCustomValidity(const std::u16string& error)
-{
-    // TODO: implement me!
-}
-
-NodeList HTMLButtonElementImp::getLabels()
-{
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    switch (Intern(mutation.getAttrName().c_str())) {
+    case Intern(u"disabled"):
+    case Intern(u"tabindex"):
+        if (getDisabled())
+            tabIndex = -1;
+        else if (!toInteger(getAttribute(u"tabindex"), tabIndex))
+            tabIndex = 0;
+        break;
+    default:
+        HTMLFormControlImp::handleMutation(mutation);
+        break;
+    }
 }
 
 }
