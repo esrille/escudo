@@ -291,6 +291,10 @@ public:
 
     std::u16string getAttributeAsURL(const std::u16string& name);
 
+    bool getAttributeAsBoolean(const std::u16string& name);
+    void setAttributeAsBoolean(const std::u16string& name, bool on);
+
+
     // xblEnteredDocument() should be called after view->constructComputedStyles().
     static void xblEnteredDocument(Node node);
 };

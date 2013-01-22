@@ -642,15 +642,12 @@ DOMStringMap HTMLElementImp::getDataset()
 
 bool HTMLElementImp::getHidden()
 {
-    return hasAttribute(u"hidden");
+    return getAttributeAsBoolean(u"hidden");
 }
 
 void HTMLElementImp::setHidden(bool hidden)
 {
-    if (hidden)
-        setAttribute(u"hidden", u"");
-    else
-        removeAttribute(u"hidden");
+    setAttributeAsBoolean(u"hidden", hidden);
 }
 
 void HTMLElementImp::click()
@@ -1447,6 +1444,19 @@ std::u16string HTMLElementImp::getAttributeAsURL(const std::u16string& name)
     } else
         value.clear();
     return value;
+}
+
+bool HTMLElementImp::getAttributeAsBoolean(const std::u16string& name)
+{
+    return hasAttribute(name);
+}
+
+void HTMLElementImp::setAttributeAsBoolean(const std::u16string& name, bool on)
+{
+    if (on)
+        setAttribute(name, u"");
+    else
+        removeAttribute(name);
 }
 
 }}}}  // org::w3c::dom::bootstrap

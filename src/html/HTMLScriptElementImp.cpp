@@ -212,29 +212,23 @@ bool HTMLScriptElementImp::getAsync()
 {
     if (forceAsync)
         return true;
-    return hasAttribute(u"async");
+    return getAttributeAsBoolean(u"async");
 }
 
 void HTMLScriptElementImp::setAsync(bool async)
 {
     forceAsync = false;
-    if (async)
-        setAttribute(u"async", u"");
-    else
-        removeAttribute(u"async");
+    setAttributeAsBoolean(u"async", async);
 }
 
 bool HTMLScriptElementImp::getDefer()
 {
-    return hasAttribute(u"defer");
+    return getAttributeAsBoolean(u"defer");
 }
 
 void HTMLScriptElementImp::setDefer(bool defer)
 {
-    if (defer)
-        setAttribute(u"defer", u"");
-    else
-        removeAttribute(u"defer");
+    setAttributeAsBoolean(u"defer", defer);
 }
 
 std::u16string HTMLScriptElementImp::getType()

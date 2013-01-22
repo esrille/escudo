@@ -42,28 +42,22 @@ void HTMLFormControlImp::handleMutation(events::MutationEvent mutation)
 
 bool HTMLFormControlImp::getAutofocus()
 {
-    return hasAttribute(u"autofocus");
+    return getAttributeAsBoolean(u"autofocus");
 }
 
 void HTMLFormControlImp::setAutofocus(bool autofocus)
 {
-    if (autofocus)
-        setAttribute(u"autofocus", u"");
-    else
-        removeAttribute(u"autofocus");
+    setAttributeAsBoolean(u"autofocus", autofocus);
 }
 
 bool HTMLFormControlImp::getDisabled()
 {
-    return hasAttribute(u"disabled");
+    return getAttributeAsBoolean(u"disabled");
 }
 
 void HTMLFormControlImp::setDisabled(bool disabled)
 {
-    if (disabled)
-        setAttribute(u"disabled", u"");
-    else
-        removeAttribute(u"disabled");
+    setAttributeAsBoolean(u"disabled", disabled);
 }
 
 html::HTMLFormElement HTMLFormControlImp::getForm()

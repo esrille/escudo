@@ -260,15 +260,12 @@ void HTMLFormElementImp::setName(const std::u16string& name)
 
 bool HTMLFormElementImp::getNoValidate()
 {
-    return hasAttribute(u"novalidate");
+    return getAttributeAsBoolean(u"novalidate");
 }
 
 void HTMLFormElementImp::setNoValidate(bool noValidate)
 {
-    if (noValidate)
-        setAttribute(u"novalidate", u"");
-    else
-        removeAttribute(u"novalidate");
+    setAttributeAsBoolean(u"novalidate", noValidate);
 }
 
 std::u16string HTMLFormElementImp::getTarget()
