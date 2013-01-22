@@ -72,8 +72,11 @@ void HTMLAnchorElementImp::handleMutation(events::MutationEvent mutation)
         handleMutationHref(mutation);
         break;
     case Intern(u"tabindex"):
-        if (!toInteger(mutation.getNewValue(), tabIndex))
-            tabIndex = getHref().empty() ? -1 : 0;
+        if (hasAttribute(u"href")) {
+            if (!toInteger(mutation.getNewValue(), tabIndex))
+                tabIndex = 0;
+        } else
+            tabIndex = -1;
         break;
     default:
         HTMLElementImp::handleMutation(mutation);

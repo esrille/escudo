@@ -1421,14 +1421,11 @@ void HTMLElementImp::handleMutationBorder(events::MutationEvent mutation)
 
 void HTMLElementImp::handleMutationHref(events::MutationEvent mutation)
 {
-    Nullable<std::u16string> tabindex = getAttribute(u"tabindex");
-    if (tabindex.hasValue() && toInteger(tabindex.value(), tabIndex))
-        return;
-
     switch (mutation.getAttrChange()) {
     case events::MutationEvent::MODIFICATION:
     case events::MutationEvent::ADDITION:
-        tabIndex = 0;
+        if (!toInteger(getAttribute(u"tabindex"), tabIndex))
+            tabIndex = 0;
         break;
     case events::MutationEvent::REMOVAL:
     default:
