@@ -65,6 +65,9 @@ void HTMLIFrameElementImp::handleMutation(events::MutationEvent mutation)
     css::CSSStyleDeclaration style(getStyle());
 
     switch (Intern(mutation.getAttrName().c_str())) {
+    case Intern(u"src"):
+        window.open(getSrc(), u"_self");
+        break;
     // Styles
     case Intern(u"height"):
         if (mapToDimension(value))
@@ -92,11 +95,6 @@ void HTMLIFrameElementImp::handleMutation(events::MutationEvent mutation)
     }
 }
 
-void HTMLIFrameElementImp::eval()
-{
-    setSrc(getSrc());
-}
-
 void HTMLIFrameElementImp::handleBlur(EventListenerImp* listener, events::Event event)
 {
     if (auto imp = dynamic_cast<DocumentImp*>(window.getDocument().self()))
@@ -109,22 +107,21 @@ void HTMLIFrameElementImp::handleBlur(EventListenerImp* listener, events::Event 
 
 std::u16string HTMLIFrameElementImp::getSrc()
 {
-    return getAttribute(u"src");
+    std::u16string src(getAttribute(u"src"));
+    if (src.empty())
+        return src;
+    if (DocumentImp* document = getOwnerDocumentImp()) {
+        URL base(document->getDocumentURI());
+        URL url(base, src);
+        src = url;
+    } else
+        src.clear();
+    return src;
 }
 
 void HTMLIFrameElementImp::setSrc(const std::u16string& src)
 {
-    std::u16string s(src);
-    if (!s.empty()) {
-        if (DocumentImp* document = getOwnerDocumentImp()) {
-            URL base(document->getDocumentURI());
-            URL url(base, s);
-            s = url;
-        } else
-            s.clear();
-        // TODO: Check what should be done if s is still empty (i.e. invalid)
-    }
-    window.open(s, u"_self");
+    setAttribute(u"src", src);
 }
 
 std::u16string HTMLIFrameElementImp::getSrcdoc()

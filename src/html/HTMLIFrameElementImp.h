@@ -52,7 +52,6 @@ public:
     ~HTMLIFrameElementImp();
 
     virtual void handleMutation(events::MutationEvent mutation);
-    virtual void eval();
 
     // HTMLIFrameElement
     std::u16string getSrc();
