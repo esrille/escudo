@@ -1,5 +1,5 @@
-# Escort 0.3.0 (2013-01-11 b47fd51) Fedora Linux 17
-# Escort/0.3.0
+# Escort 0.3.1 (2013-01-21 ee6c041) Fedora Linux 18
+# Escort/0.3.1
 # http://test.csswg.org/suites/css2.1/20110323/
 # See http://wiki.csswg.org/test/implementation-report for instructions
 testname    result  comment
@@ -5031,7 +5031,7 @@ html4/first-line-001.htm	pass
 html4/first-line-floats-001.htm	pass
 html4/first-line-floats-002.htm	fail
 html4/first-line-floats-003.htm	pass
-html4/first-line-floats-004.htm	fail
+html4/first-line-floats-004.htm	pass
 html4/first-line-inherit-001.htm	fail
 html4/first-line-inherit-002.htm	fail
 html4/first-line-inherit-003.htm	pass
@@ -5691,7 +5691,7 @@ html4/html-attribute-003.htm	pass
 html4/html-attribute-004.htm	pass
 html4/html-attribute-005.htm	pass
 html4/html-attribute-006.htm	pass
-html4/html-attribute-007.htm	fail
+html4/html-attribute-007.htm	pass
 html4/html-attribute-008.htm	pass
 html4/html-attribute-009.htm	pass
 html4/html-attribute-010.htm	pass
@@ -5716,7 +5716,7 @@ html4/html-case-sensitivity-001.htm	pass
 html4/html-precedence-001.htm	pass
 html4/html-precedence-002.htm	pass
 #userstyle /var/www/html/suites/css2.1/20110323/html4/support/html-precedence-003.css
-html4/html-precedence-003.htm	fail
+html4/html-precedence-003.htm	pass
 #userstyle
 html4/id-000.htm	pass
 html4/id-001.htm	pass
