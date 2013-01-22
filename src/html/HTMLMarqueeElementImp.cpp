@@ -21,6 +21,7 @@
 constexpr auto Intern = &one_at_a_time::hash<char16_t>;
 
 #include "DocumentImp.h"
+#include "HTMLUtil.h"
 
 namespace org
 {
@@ -48,6 +49,7 @@ HTMLMarqueeElementImp::~HTMLMarqueeElementImp()
 void HTMLMarqueeElementImp::handleMutation(events::MutationEvent mutation)
 {
     DocumentWindowPtr window = getOwnerDocumentImp()->activate();
+    css::CSSStyleDeclaration style(getStyle());
     std::u16string value = mutation.getNewValue();
     bool compile = false;
     if (!value.empty()) {
@@ -61,6 +63,28 @@ void HTMLMarqueeElementImp::handleMutation(events::MutationEvent mutation)
         }
     }
     switch (Intern(mutation.getAttrName().c_str())) {
+    // Styles
+    case Intern(u"height"):
+        if (mapToDimension(value = mutation.getNewValue()))
+            style.setProperty(u"height", value, u"non-css");
+        break;
+    case Intern(u"hspace"):
+        if (mapToDimension(value)) {
+            style.setProperty(u"margin-left", value, u"non-css");
+            style.setProperty(u"margin-right", value, u"non-css");
+        }
+        break;
+    case Intern(u"vspace"):
+        if (mapToDimension(value)) {
+            style.setProperty(u"margin-top", value, u"non-css");
+            style.setProperty(u"margin-bottom", value, u"non-css");
+        }
+        break;
+    case Intern(u"width"):
+        if (mapToDimension(value = mutation.getNewValue()))
+            style.setProperty(u"width", value, u"non-css");
+        break;
+    // Event handlers
     case Intern(u"onbounce"):
         setOnbounce(compile ? window->getContext()->compileFunction(value) : 0);
         break;

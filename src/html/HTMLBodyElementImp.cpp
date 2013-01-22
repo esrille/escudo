@@ -23,17 +23,40 @@
 constexpr auto Intern = &one_at_a_time::hash<char16_t>;
 
 #include "DocumentImp.h"
+#include "HTMLUtil.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
-void HTMLBodyElementImp::eval()
+void HTMLBodyElementImp::handleMutationMarginHeight()
 {
-    HTMLElementImp::evalPx(this, u"margintop", u"margin-top");
-    HTMLElementImp::evalPx(this, u"marginright", u"margin-right");
-    HTMLElementImp::evalPx(this, u"marginbottom", u"margin-bottom");
-    HTMLElementImp::evalPx(this, u"marginleft", u"margin-left");
-    HTMLElementImp::evalMarginHeight(this);
-    HTMLElementImp::evalMarginWidth(this);
+    // TODO: Check container frame element's marginheight
+    std::u16string value;
+    css::CSSStyleDeclaration style(getStyle());
+    if (mapToPixelLength(value = getAttribute(u"marginheight"))) {
+        style.setProperty(u"margin-top", value, u"non-css");
+        style.setProperty(u"margin-bottom", value, u"non-css");
+    } else {
+        if (mapToPixelLength(value = getAttribute(u"topmargin")))
+            style.setProperty(u"margin-top", value, u"non-css");
+        if (mapToPixelLength(value = getAttribute(u"bottommargin")))
+            style.setProperty(u"margin-bottom", value, u"non-css");
+    }
+}
+
+void HTMLBodyElementImp::handleMutationMarginWidth()
+{
+    // TODO: Check container frame element's marginwidth
+    std::u16string value;
+    css::CSSStyleDeclaration style(getStyle());
+    if (mapToPixelLength(value = getAttribute(u"marginwidth"))) {
+        style.setProperty(u"margin-left", value, u"non-css");
+        style.setProperty(u"margin-right", value, u"non-css");
+    } else {
+        if (mapToPixelLength(value = getAttribute(u"leftmargin")))
+            style.setProperty(u"margin-left", value, u"non-css");
+        if (mapToPixelLength(value = getAttribute(u"rightmargin")))
+            style.setProperty(u"margin-right", value, u"non-css");
+    }
 }
 
 void HTMLBodyElementImp::handleMutation(events::MutationEvent mutation)
@@ -58,6 +81,16 @@ void HTMLBodyElementImp::handleMutation(events::MutationEvent mutation)
         break;
     case Intern(u"bgcolor"):
         handleMutationColor(mutation, u"background-color");
+        break;
+    case Intern(u"marginheight"):
+    case Intern(u"topmargin"):
+    case Intern(u"bottommargin"):
+        handleMutationMarginHeight();
+        break;
+    case Intern(u"marginwidth"):
+    case Intern(u"leftmargin"):
+    case Intern(u"rightmargin"):
+        handleMutationMarginWidth();
         break;
     case Intern(u"text"):
         handleMutationColor(mutation, u"color");

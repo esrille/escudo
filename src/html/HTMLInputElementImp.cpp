@@ -22,9 +22,14 @@
 #include <org/w3c/dom/events/KeyboardEvent.h>
 #include <org/w3c/dom/html/HTMLTemplateElement.h>
 
+#include "one_at_a_time.hpp"
+
+constexpr auto Intern = &one_at_a_time::hash<char16_t>;
+
 #include "utf.h"
 #include "DocumentImp.h"
 #include "HTMLTemplateElementImp.h"
+#include "HTMLUtil.h"
 #include "css/CSSStyleDeclarationImp.h"     // TODO: only for XBL; isolate this later.
 
 namespace org
@@ -89,11 +94,42 @@ HTMLInputElementImp::HTMLInputElementImp(HTMLInputElementImp* org, bool deep) :
     // TODO: check event listeners.
 }
 
+void HTMLInputElementImp::handleMutation(events::MutationEvent mutation)
+{
+    std::u16string value = mutation.getNewValue();
+    css::CSSStyleDeclaration style(getStyle());
+
+    // TODO: Check type
+    switch (Intern(mutation.getAttrName().c_str())) {
+    // Styles
+    case Intern(u"height"):
+        if (mapToDimension(value))
+            style.setProperty(u"height", value, u"non-css");
+        break;
+    case Intern(u"hspace"):
+        if (mapToDimension(value)) {
+            style.setProperty(u"margin-left", value, u"non-css");
+            style.setProperty(u"margin-right", value, u"non-css");
+        }
+        break;
+    case Intern(u"vspace"):
+        if (mapToDimension(value)) {
+            style.setProperty(u"margin-top", value, u"non-css");
+            style.setProperty(u"margin-bottom", value, u"non-css");
+        }
+        break;
+    case Intern(u"width"):
+        if (mapToDimension(value))
+            style.setProperty(u"width", value, u"non-css");
+        break;
+    default:
+        HTMLElementImp::handleMutation(mutation);
+        break;
+    }
+}
+
 void HTMLInputElementImp::eval()
 {
-    HTMLElementImp::evalHspace(this);
-    HTMLElementImp::evalVspace(this);
-
     setType(getAttribute(u"type"));
 
     if (!getDisabled() && type != Hidden)
@@ -113,7 +149,8 @@ void HTMLInputElementImp::eval()
         std::u16string length(u"20em");
         if (size.hasValue()) {
             std::u16string length(size.value());
-            if (toUnsigned(length))
+            unsigned u;
+            if (toUnsigned(length, u))
                 length += u"em";
             else
                 length = u"20em";

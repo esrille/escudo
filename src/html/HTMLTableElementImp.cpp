@@ -23,6 +23,7 @@ constexpr auto Intern = &one_at_a_time::hash<char16_t>;
 #include "HTMLTableCaptionElementImp.h"
 #include "HTMLTableRowElementImp.h"
 #include "HTMLTableSectionElementImp.h"
+#include "HTMLUtil.h"
 
 namespace org
 {
@@ -57,6 +58,9 @@ Element HTMLTableElementImp::Rows::item(unsigned int index)
 
 void HTMLTableElementImp::handleMutation(events::MutationEvent mutation)
 {
+    std::u16string value = mutation.getNewValue();
+    css::CSSStyleDeclaration style(getStyle());
+
     switch (Intern(mutation.getAttrName().c_str())) {
     // Styles
     case Intern(u"background"):
@@ -65,27 +69,39 @@ void HTMLTableElementImp::handleMutation(events::MutationEvent mutation)
     case Intern(u"bgcolor"):
         handleMutationColor(mutation, u"background-color");
         break;
+    case Intern(u"border"):
+        if (mapToPixelLength(value) && value != u"0") {
+            style.setProperty(u"border-width", value, u"non-css");
+            style.setProperty(u"border-style", u"outset", u"non-css");
+        }
+        break;
+    case Intern(u"cellspacing"):
+        if (mapToPixelLength(value))
+            style.setProperty(u"border-spacing", value, u"non-css");
+        break;
+    case Intern(u"height"):
+        if (mapToDimension(value))
+            style.setProperty(u"height", value, u"non-css");
+        break;
+    case Intern(u"hspace"):
+        if (mapToDimension(value)) {
+            style.setProperty(u"margin-left", value, u"non-css");
+            style.setProperty(u"margin-right", value, u"non-css");
+        }
+        break;
+    case Intern(u"vspace"):
+        if (mapToDimension(value)) {
+            style.setProperty(u"margin-top", value, u"non-css");
+            style.setProperty(u"margin-bottom", value, u"non-css");
+        }
+        break;
+    case Intern(u"width"):
+        if (mapToDimension(value))
+            style.setProperty(u"width", value, u"non-css");
+        break;
     default:
         HTMLElementImp::handleMutation(mutation);
         break;
-    }
-}
-
-void HTMLTableElementImp::eval()
-{
-    HTMLElementImp::evalHeight(this);
-    HTMLElementImp::evalWidth(this);
-    HTMLElementImp::evalPx(this, u"cellspacing", u"border-spacing");
-
-    std::u16string border = getBorder();
-    if (!border.empty()) {
-        css::CSSStyleDeclaration style = getStyle();
-        if (border == u"0")
-            style.setProperty(u"border-style", u"none", u"non-css");
-        else {
-            style.setProperty(u"border-width", border + u"px", u"non-css");
-            style.setProperty(u"border-style", u"outset", u"non-css");
-        }
     }
 }
 
@@ -303,12 +319,9 @@ void HTMLTableElementImp::setBgColor(const std::u16string& bgColor)
 
 std::u16string HTMLTableElementImp::getBorder()
 {
-    Nullable<std::u16string> value = getAttribute(u"border");
-    if (value.hasValue()) {
-        std::u16string px = value.value();
-        if (toPx(px))
-            return px.substr(0, px.length() - 2);
-    }
+    std::u16string value = getAttribute(u"border");
+    if (mapToPixelLength(value))
+        return (value == u"0") ? value : value.erase(value.length() - 2);
     return u"";
 }
 
@@ -376,3 +389,4 @@ void HTMLTableElementImp::setWidth(const std::u16string& width)
 }
 }
 }
+

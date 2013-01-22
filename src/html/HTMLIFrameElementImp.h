@@ -51,6 +51,7 @@ public:
     HTMLIFrameElementImp(HTMLIFrameElementImp* org, bool deep);
     ~HTMLIFrameElementImp();
 
+    virtual void handleMutation(events::MutationEvent mutation);
     virtual void eval();
 
     // HTMLIFrameElement

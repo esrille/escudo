@@ -21,6 +21,7 @@
 constexpr auto Intern = &one_at_a_time::hash<char16_t>;
 
 #include "HTMLTableElementImp.h"
+#include "HTMLUtil.h"
 #include "css/CSSTokenizer.h"
 
 #include "utf.h"
@@ -36,6 +37,9 @@ namespace bootstrap
 
 void HTMLTableCellElementImp::handleMutation(events::MutationEvent mutation)
 {
+    std::u16string value;
+    css::CSSStyleDeclaration style(getStyle());
+
     switch (Intern(mutation.getAttrName().c_str())) {
     // Styles
     case Intern(u"background"):
@@ -43,6 +47,14 @@ void HTMLTableCellElementImp::handleMutation(events::MutationEvent mutation)
         break;
     case Intern(u"bgcolor"):
         handleMutationColor(mutation, u"background-color");
+        break;
+    case Intern(u"height"):
+        if (mapToDimension(value = mutation.getNewValue()))
+            style.setProperty(u"height", value, u"non-css");
+        break;
+    case Intern(u"width"):
+        if (mapToDimension(value = mutation.getNewValue()))
+            style.setProperty(u"width", value, u"non-css");
         break;
     default:
         HTMLElementImp::handleMutation(mutation);
@@ -52,21 +64,15 @@ void HTMLTableCellElementImp::handleMutation(events::MutationEvent mutation)
 
 void HTMLTableCellElementImp::eval()
 {
-    HTMLElementImp::evalHeight(this);
-    HTMLElementImp::evalWidth(this);
-
     for (Element e = getParentElement(); e; e = e.getParentElement()) {
         if (auto table = dynamic_cast<HTMLTableElementImp*>(e.self())) {
             std::u16string border = table->getBorder();
-            if (!border.empty()) {
+            if (!border.empty() && border != u"0") {
                 css::CSSStyleDeclaration style = getStyle();
-                if (border == u"0")
-                    style.setProperty(u"border-style", u"none", u"non-css");
-                else {
-                    style.setProperty(u"border-width", u"1px", u"non-css");
-                    style.setProperty(u"border-style", u"inset", u"non-css");
-                }
+                style.setProperty(u"border-width", u"1px", u"non-css");
+                style.setProperty(u"border-style", u"inset", u"non-css");
             }
+            // TOOD: Check "cellpadding"
         }
     }
 }

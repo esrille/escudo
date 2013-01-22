@@ -22,6 +22,7 @@ constexpr auto Intern = &one_at_a_time::hash<char16_t>;
 
 #include "HTMLTableCellElementImp.h"
 #include "HTMLTableDataCellElementImp.h"
+#include "HTMLUtil.h"
 
 namespace org
 {
@@ -56,6 +57,9 @@ Element HTMLTableRowElementImp::Cells::item(unsigned int index)
 
 void HTMLTableRowElementImp::handleMutation(events::MutationEvent mutation)
 {
+    std::u16string value;
+    css::CSSStyleDeclaration style(getStyle());
+
     switch (Intern(mutation.getAttrName().c_str())) {
     // Styles
     case Intern(u"background"):
@@ -63,6 +67,11 @@ void HTMLTableRowElementImp::handleMutation(events::MutationEvent mutation)
         break;
     case Intern(u"bgcolor"):
         handleMutationColor(mutation, u"background-color");
+        break;
+    // Styles
+    case Intern(u"height"):
+        if (mapToDimension(value = mutation.getNewValue()))
+            style.setProperty(u"height", value, u"non-css");
         break;
     default:
         HTMLElementImp::handleMutation(mutation);

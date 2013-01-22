@@ -16,6 +16,12 @@
 
 #include "HTMLPreElementImp.h"
 
+#include "one_at_a_time.hpp"
+
+constexpr auto Intern = &one_at_a_time::hash<char16_t>;
+
+#include "HTMLUtil.h"
+
 namespace org
 {
 namespace w3c
@@ -25,9 +31,21 @@ namespace dom
 namespace bootstrap
 {
 
-void HTMLPreElementImp::eval()
+void HTMLPreElementImp::handleMutation(events::MutationEvent mutation)
 {
-    HTMLElementImp::evalWidth(this);
+    std::u16string value = mutation.getNewValue();
+    css::CSSStyleDeclaration style(getStyle());
+
+    switch (Intern(mutation.getAttrName().c_str())) {
+    // Styles
+    case Intern(u"width"):
+        if (mapToDimension(value))
+            style.setProperty(u"width", value, u"non-css");
+        break;
+    default:
+        HTMLElementImp::handleMutation(mutation);
+        break;
+    }
 }
 
 unsigned int HTMLPreElementImp::getWidth()

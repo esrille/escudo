@@ -91,7 +91,9 @@ public:
     HTMLInputElementImp(DocumentImp* ownerDocument);
     HTMLInputElementImp(HTMLInputElementImp* org, bool deep);
 
+    virtual void handleMutation(events::MutationEvent mutation);
     virtual void eval();
+
     bool isButton() const {
         switch (type) {
         case SubmitButton:

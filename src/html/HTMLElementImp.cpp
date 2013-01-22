@@ -1381,52 +1381,6 @@ int HTMLElementImp::getOffsetHeight()
     return 0;
 }
 
-bool HTMLElementImp::toUnsigned(std::u16string& value)
-{
-    stripLeadingAndTrailingWhitespace(value);
-    if (value.empty())
-        return false;
-    const char16_t* s = value.c_str();
-    while (*s) {
-        if (!isDigit(*s))
-            return false;
-        ++s;
-    }
-    return true;
-}
-
-bool HTMLElementImp::toPx(std::u16string& value)
-{
-    if (toUnsigned(value)) {
-        value += u"px";
-        return true;
-    }
-    return false;
-}
-
-bool HTMLElementImp::toPxOrPercentage(std::u16string& value)
-{
-    stripLeadingAndTrailingWhitespace(value);
-    if (value.empty())
-        return false;
-    const char16_t* s = value.c_str();
-    while (*s) {
-        if (*s == '%')
-            break;
-        if (!isDigit(*s))
-            return false;
-        ++s;
-    }
-    if (!*s) {
-        value += u"px";
-        return true;
-    }
-    assert(*s == '%');
-    if (!s[1] && 1 < value.length())
-        return true;
-    return false;
-}
-
 void HTMLElementImp::handleMutationBackground(events::MutationEvent mutation)
 {
     switch (mutation.getAttrChange()) {
@@ -1455,77 +1409,14 @@ void HTMLElementImp::handleMutationColor(events::MutationEvent mutation, const s
     }
 }
 
-bool HTMLElementImp::evalPx(HTMLElementImp* element, const std::u16string& attr, const std::u16string& prop)
+void HTMLElementImp::handleMutationBorder(events::MutationEvent mutation)
 {
-    Nullable<std::u16string> value = element->getAttribute(attr);
-    if (value.hasValue()) {
-        std::u16string length = value.value();
-        if (toPx(length)) {
-            css::CSSStyleDeclaration style = element->getStyle();
-            style.setProperty(prop, length, u"non-css");
-            return true;
-        }
+    std::u16string value = mutation.getNewValue();
+    css::CSSStyleDeclaration style(getStyle());
+    if (mapToPixelLength(value) && value != u"0") {
+        style.setProperty(u"border-width", value, u"non-css");
+        style.setProperty(u"border-style", u"solid", u"non-css");
     }
-    return false;
-}
-
-bool HTMLElementImp::evalPxOrPercentage(HTMLElementImp* element, const std::u16string& attr, const std::u16string& prop)
-{
-    Nullable<std::u16string> value = element->getAttribute(attr);
-    if (value.hasValue()) {
-        std::u16string length = value.value();
-        if (toPxOrPercentage(length)) {
-            css::CSSStyleDeclaration style = element->getStyle();
-            style.setProperty(prop, length, u"non-css");
-            return true;
-        }
-    }
-    return false;
-}
-
-bool HTMLElementImp::evalBorder(HTMLElementImp* element)
-{
-    Nullable<std::u16string> value = element->getAttribute(u"border");
-    if (value.hasValue()) {
-        std::u16string px = value.value();
-        if (toPx(px)) {
-            css::CSSStyleDeclaration style = element->getStyle();
-            style.setProperty(u"border-width", px, u"non-css");
-            style.setProperty(u"border-style", u"solid", u"non-css");
-            return true;
-        }
-    }
-    return false;
-}
-
-bool HTMLElementImp::evalHspace(HTMLElementImp* element, const std::u16string& prop)
-{
-    Nullable<std::u16string> value = element->getAttribute(prop);
-    if (value.hasValue()) {
-        std::u16string px = value.value();
-        if (toPx(px)) {
-            css::CSSStyleDeclaration style = element->getStyle();
-            style.setProperty(u"margin-left", px, u"non-css");
-            style.setProperty(u"margin-right", px, u"non-css");
-            return true;
-        }
-    }
-    return false;
-}
-
-bool HTMLElementImp::evalVspace(HTMLElementImp* element, const std::u16string& prop)
-{
-    Nullable<std::u16string> value = element->getAttribute(prop);
-    if (value.hasValue()) {
-        std::u16string px = value.value();
-        if (toPx(px)) {
-            css::CSSStyleDeclaration style = element->getStyle();
-            style.setProperty(u"margin-top", px, u"non-css");
-            style.setProperty(u"margin-bottom", px, u"non-css");
-            return true;
-        }
-    }
-    return false;
 }
 
 void HTMLElementImp::handleMutationHref(events::MutationEvent mutation)

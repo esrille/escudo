@@ -287,28 +287,7 @@ public:
     void handleMutationBackground(events::MutationEvent mutation);
     void handleMutationHref(events::MutationEvent mutation);
     void handleMutationColor(events::MutationEvent mutation, const std::u16string& prop);
-
-    static bool toUnsigned(std::u16string& value);
-    static bool toPx(std::u16string& value);  // for cellspacing, cellpadding, etc.
-    static bool toPxOrPercentage(std::u16string& value);  // for width, heigth, etc.
-
-    static bool evalBorder(HTMLElementImp* element);
-    static bool evalPx(HTMLElementImp* element, const std::u16string& attr, const std::u16string& prop);
-    static bool evalPxOrPercentage(HTMLElementImp* element, const std::u16string& attr, const std::u16string& prop);
-    static bool evalHeight(HTMLElementImp* element) {
-        return evalPxOrPercentage(element, u"height", u"height");
-    }
-    static bool evalWidth(HTMLElementImp* element) {
-        return evalPxOrPercentage(element, u"width", u"width");
-    }
-    static bool evalHspace(HTMLElementImp* element, const std::u16string& prop = u"hspace");
-    static bool evalVspace(HTMLElementImp* element, const std::u16string& prop = u"vspace");
-    static bool evalMarginHeight(HTMLElementImp* element) {
-        return evalVspace(element, u"marginheight");
-    }
-    static bool evalMarginWidth(HTMLElementImp* element) {
-        return evalHspace(element, u"marginwidth");
-    }
+    void handleMutationBorder(events::MutationEvent mutation);
 
     // xblEnteredDocument() should be called after view->constructComputedStyles().
     static void xblEnteredDocument(Node node);

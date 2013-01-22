@@ -1,5 +1,5 @@
 /*
- * Copyright 2012, 2013 Esrille Inc.
+ * Copyright 2012-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,8 @@ public:
     HTMLObjectElementImp(DocumentImp* ownerDocument);
     HTMLObjectElementImp(HTMLObjectElementImp* org, bool deep);
 
-    void eval();
+    virtual void handleMutation(events::MutationEvent mutation);
+    virtual void eval();
     void notify();
 
     // TODO: Refine this interface as this is only for CSS

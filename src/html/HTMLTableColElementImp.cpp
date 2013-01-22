@@ -16,8 +16,13 @@
 
 #include "HTMLTableColElementImp.h"
 
+#include "one_at_a_time.hpp"
+
+constexpr auto Intern = &one_at_a_time::hash<char16_t>;
+
 #include "utf.h"
 
+#include "HTMLUtil.h"
 #include "css/CSSTokenizer.h"
 
 namespace org
@@ -29,9 +34,21 @@ namespace dom
 namespace bootstrap
 {
 
-void HTMLTableColElementImp::eval()
+void HTMLTableColElementImp::handleMutation(events::MutationEvent mutation)
 {
-    HTMLElementImp::evalWidth(this);
+    std::u16string value;
+    css::CSSStyleDeclaration style(getStyle());
+
+    switch (Intern(mutation.getAttrName().c_str())) {
+    // Styles
+    case Intern(u"width"):
+        if (mapToDimension(value = mutation.getNewValue()))
+            style.setProperty(u"width", value, u"non-css");
+        break;
+    default:
+        HTMLElementImp::handleMutation(mutation);
+        break;
+    }
 }
 
 unsigned int HTMLTableColElementImp::getSpan()

@@ -36,6 +36,7 @@ public:
     HTMLImageElementImp(DocumentImp* ownerDocument);
     HTMLImageElementImp(HTMLImageElementImp* org, bool deep);
 
+    virtual void handleMutation(events::MutationEvent mutation);
     virtual void eval();
     void notify();
 

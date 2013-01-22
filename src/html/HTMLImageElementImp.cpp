@@ -18,7 +18,12 @@
 
 #include <boost/bind.hpp>
 
+#include "one_at_a_time.hpp"
+
+constexpr auto Intern = &one_at_a_time::hash<char16_t>;
+
 #include "DocumentImp.h"
+#include "HTMLUtil.h"
 #include "css/Box.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
@@ -33,14 +38,44 @@ HTMLImageElementImp::HTMLImageElementImp(HTMLImageElementImp* org, bool deep) :
 {
 }
 
+void HTMLImageElementImp::handleMutation(events::MutationEvent mutation)
+{
+    std::u16string value = mutation.getNewValue();
+    css::CSSStyleDeclaration style(getStyle());
+
+    switch (Intern(mutation.getAttrName().c_str())) {
+    // Styles
+    case Intern(u"border"):
+        handleMutationBorder(mutation);
+        break;
+    case Intern(u"height"):
+        if (mapToDimension(value))
+            style.setProperty(u"height", value, u"non-css");
+        break;
+    case Intern(u"hspace"):
+        if (mapToDimension(value)) {
+            style.setProperty(u"margin-left", value, u"non-css");
+            style.setProperty(u"margin-right", value, u"non-css");
+        }
+        break;
+    case Intern(u"vspace"):
+        if (mapToDimension(value)) {
+            style.setProperty(u"margin-top", value, u"non-css");
+            style.setProperty(u"margin-bottom", value, u"non-css");
+        }
+        break;
+    case Intern(u"width"):
+        if (mapToDimension(value))
+            style.setProperty(u"width", value, u"non-css");
+        break;
+    default:
+        HTMLElementImp::handleMutation(mutation);
+        break;
+    }
+}
+
 void HTMLImageElementImp::eval()
 {
-    HTMLElementImp::evalBorder(this);
-    HTMLElementImp::evalHeight(this);
-    HTMLElementImp::evalWidth(this);
-    HTMLElementImp::evalHspace(this);
-    HTMLElementImp::evalVspace(this);
-
     DocumentImp* document = getOwnerDocumentImp();
     request = new(std::nothrow) HttpRequest(document->getDocumentURI());
     if (request) {

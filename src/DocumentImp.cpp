@@ -38,6 +38,7 @@
 #include "WindowImp.h"
 #include "css/CSSSerialize.h"
 #include "html/HTMLAnchorElementImp.h"
+#include "html/HTMLAppletElementImp.h"
 #include "html/HTMLAreaElementImp.h"
 #include "html/HTMLAudioElementImp.h"
 #include "html/HTMLBaseElementImp.h"
@@ -534,6 +535,8 @@ Element DocumentImp::createElement(const std::u16string& localName)
         return new(std::nothrow) HTMLScriptElementImp(this, name);
 
     // Deprecated elements
+    if (name == u"applet")
+        return new(std::nothrow) HTMLAppletElementImp(this);
     if (name == u"center")   // shorthand for DIV align=center
         return new(std::nothrow) HTMLDivElementImp(this, name);
     if (name == u"font")

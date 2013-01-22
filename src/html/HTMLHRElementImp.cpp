@@ -20,6 +20,8 @@
 
 constexpr auto Intern = &one_at_a_time::hash<char16_t>;
 
+#include "HTMLUtil.h"
+
 namespace org
 {
 namespace w3c
@@ -31,20 +33,22 @@ namespace bootstrap
 
 void HTMLHRElementImp::handleMutation(events::MutationEvent mutation)
 {
+    std::u16string value;
+    css::CSSStyleDeclaration style(getStyle());
+
     switch (Intern(mutation.getAttrName().c_str())) {
     // Styles
     case Intern(u"color"):
         handleMutationColor(mutation, u"border-color");
         break;
+    case Intern(u"width"):
+        if (mapToDimension(value = mutation.getNewValue()))
+            style.setProperty(u"width", value, u"non-css");
+        break;
     default:
         HTMLElementImp::handleMutation(mutation);
         break;
     }
-}
-
-void HTMLHRElementImp::eval()
-{
-    HTMLElementImp::evalWidth(this);
 }
 
 std::u16string HTMLHRElementImp::getAlign()

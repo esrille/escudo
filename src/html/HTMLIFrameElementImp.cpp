@@ -18,8 +18,13 @@
 
 #include <boost/bind.hpp>
 
-#include "WindowImp.h"
+#include "one_at_a_time.hpp"
+
+constexpr auto Intern = &one_at_a_time::hash<char16_t>;
+
 #include "DocumentImp.h"
+#include "HTMLUtil.h"
+#include "WindowImp.h"
 
 namespace org
 {
@@ -50,14 +55,41 @@ HTMLIFrameElementImp::~HTMLIFrameElementImp()
 {
 }
 
+void HTMLIFrameElementImp::handleMutation(events::MutationEvent mutation)
+{
+    std::u16string value = mutation.getNewValue();
+    css::CSSStyleDeclaration style(getStyle());
+
+    switch (Intern(mutation.getAttrName().c_str())) {
+    // Styles
+    case Intern(u"height"):
+        if (mapToDimension(value))
+            style.setProperty(u"height", value, u"non-css");
+        break;
+    case Intern(u"hspace"):
+        if (mapToDimension(value)) {
+            style.setProperty(u"margin-left", value, u"non-css");
+            style.setProperty(u"margin-right", value, u"non-css");
+        }
+        break;
+    case Intern(u"vspace"):
+        if (mapToDimension(value)) {
+            style.setProperty(u"margin-top", value, u"non-css");
+            style.setProperty(u"margin-bottom", value, u"non-css");
+        }
+        break;
+    case Intern(u"width"):
+        if (mapToDimension(value))
+            style.setProperty(u"width", value, u"non-css");
+        break;
+    default:
+        HTMLElementImp::handleMutation(mutation);
+        break;
+    }
+}
+
 void HTMLIFrameElementImp::eval()
 {
-    HTMLElementImp::evalHeight(this);
-    HTMLElementImp::evalWidth(this);
-    HTMLElementImp::evalHspace(this);
-    HTMLElementImp::evalVspace(this);
-    HTMLElementImp::evalMarginHeight(this);
-    HTMLElementImp::evalMarginWidth(this);
     setTabIndex(0);
     addEventListener(u"blur", &blurListener, false, EventTargetImp::UseDefault);
     setSrc(getSrc());

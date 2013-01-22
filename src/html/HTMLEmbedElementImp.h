@@ -46,7 +46,7 @@ public:
     {
     }
 
-    void eval();
+    virtual void handleMutation(events::MutationEvent mutation);
 
     // HTMLEmbedElement
     std::u16string getSrc();

@@ -38,7 +38,6 @@ class HTMLHRElementImp : public ObjectMixin<HTMLHRElementImp, HTMLElementImp>
 {
 public:
     virtual void handleMutation(events::MutationEvent mutation);
-    virtual void eval();
 
     // HTMLHRElement
     // HTMLHRElement-14

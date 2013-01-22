@@ -38,6 +38,9 @@ namespace bootstrap
 {
 class HTMLBodyElementImp : public ObjectMixin<HTMLBodyElementImp, HTMLElementImp>
 {
+    void handleMutationMarginHeight();
+    void handleMutationMarginWidth();
+
 public:
     HTMLBodyElementImp(DocumentImp* ownerDocument) :
         ObjectMixin(ownerDocument, u"body")
@@ -46,7 +49,6 @@ public:
         ObjectMixin(org, deep)
     {}
 
-    virtual void eval();
     virtual void handleMutation(events::MutationEvent mutation);
 
     // Node
