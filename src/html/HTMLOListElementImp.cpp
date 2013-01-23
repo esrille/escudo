@@ -16,6 +16,9 @@
 
 #include "HTMLOListElementImp.h"
 
+#include <boost/bind.hpp>
+#include <boost/lexical_cast.hpp>
+
 #include "one_at_a_time.hpp"
 
 constexpr auto Intern = &one_at_a_time::hash<char16_t>;
@@ -31,6 +34,53 @@ namespace dom
 namespace bootstrap
 {
 
+HTMLOListElementImp::HTMLOListElementImp(DocumentImp* ownerDocument) :
+    ObjectMixin(ownerDocument, u"ol"),
+    mutationListener(boost::bind(&HTMLOListElementImp::handleMutation, this, _1, _2))
+{
+    addEventListener(u"DOMNodeInserted", &mutationListener, false, EventTargetImp::UseDefault);
+    addEventListener(u"DOMNodeRemoved", &mutationListener, false, EventTargetImp::UseDefault);
+}
+
+HTMLOListElementImp::HTMLOListElementImp(HTMLOListElementImp* org, bool deep) :
+    ObjectMixin(org, deep),
+    mutationListener(boost::bind(&HTMLOListElementImp::handleMutation, this, _1, _2))
+{
+    addEventListener(u"DOMNodeInserted", &mutationListener, false, EventTargetImp::UseDefault);
+    addEventListener(u"DOMNodeRemoved", &mutationListener, false, EventTargetImp::UseDefault);
+}
+
+int HTMLOListElementImp::getStart(const std::u16string& value)
+{
+    int start;
+    if (toInteger(value, start))
+        return start;
+    if (!getReversed())
+        return 1;
+    // return the number of child li elements
+    start = 0;
+    for (auto i = getFirstElementChild(); i; i = i.getNextElementSibling()) {
+        if (i.getTagName() == u"li")
+            ++start;
+    }
+    return start;
+}
+
+void HTMLOListElementImp::handleMutation(EventListenerImp* listener, events::Event event)
+{
+    events::MutationEvent mutation(interface_cast<events::MutationEvent>(event));
+    if (this != mutation.getRelatedNode())
+        return;
+    Node child = interface_cast<Node>(event.getTarget());
+    if (!Element::hasInstance(child))
+        return;
+
+    int start = getStart();
+    if (mutation.getType() == u"DOMNodeRemoved" && interface_cast<Element>(child).getLocalName() == u"li")
+        --start;
+    getStyle().setProperty(u"counter-reset", u"list-item " + boost::lexical_cast<std::u16string>(start), u"non-css");
+}
+
 void HTMLOListElementImp::handleMutation(events::MutationEvent mutation)
 {
     std::u16string value = mutation.getNewValue();
@@ -38,16 +88,13 @@ void HTMLOListElementImp::handleMutation(events::MutationEvent mutation)
 
     switch (Intern(mutation.getAttrName().c_str())) {
     // Styles
+    case Intern(u"reversed"):
+        style.setProperty(u"counter-reset", u"list-item " + boost::lexical_cast<std::u16string>(getStart()), u"non-css");
+        style.setProperty(u"counter-increment", (mutation.getAttrChange() != events::MutationEvent::REMOVAL) ? u"list-item" : u"list-item -1", u"non-css");
+        break;
     case Intern(u"start"):
-        if (mutation.getAttrChange() == events::MutationEvent::REMOVAL) {
-            style.setProperty(u"counter-reset", u"", u"non-css");
-            style.setProperty(u"counter-increment", u"", u"non-css");
-        } else {
-            if (!mapToInteger(value))
-                value = u"1";
-            style.setProperty(u"counter-reset", u"list-item " + value, u"non-css");
-            style.setProperty(u"counter-increment", u"list-item -1", u"non-css");
-        }
+        style.setProperty(u"counter-reset", u"list-item " + boost::lexical_cast<std::u16string>(getStart(value)), u"non-css");
+        style.setProperty(u"counter-increment", getReversed() ? u"list-item" : u"list-item -1", u"non-css");
         break;
     default:
         HTMLElementImp::handleMutation(mutation);
@@ -57,24 +104,22 @@ void HTMLOListElementImp::handleMutation(events::MutationEvent mutation)
 
 bool HTMLOListElementImp::getReversed()
 {
-    // TODO: implement me!
-    return 0;
+    return getAttributeAsBoolean(u"reversed");
 }
 
 void HTMLOListElementImp::setReversed(bool reversed)
 {
-    // TODO: implement me!
+    setAttributeAsBoolean(u"reversed", reversed);
 }
 
 int HTMLOListElementImp::getStart()
 {
-    // TODO: implement me!
-    return 0;
+    return getStart(getAttribute(u"start"));
 }
 
 void HTMLOListElementImp::setStart(int start)
 {
-    // TODO: implement me!
+    setAttributeAsInteger(u"start", start);
 }
 
 bool HTMLOListElementImp::getCompact()

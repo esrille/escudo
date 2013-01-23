@@ -7,19 +7,16 @@
 <body>
 <button id='test'>Start Test</button>
 <br>
-<ol id='t' start='5'>
-<li> Five
-<li> Six
-<li> Seven
+<ol reversed>
+<li id='t'> Three
+<li> Two
+<li> One
 </ol>
 <script>
  var button = document.getElementById('test');
  button.onclick = function () {
   var t = document.getElementById('t');
-  if (t.start == 5)
-    t.start = 20;
-  else
-    t.start = 5;
+  t.parentElement.removeChild(t);
  };
 </script>
 </body>

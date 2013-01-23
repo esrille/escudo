@@ -94,6 +94,9 @@ li::marker {
 	text-align: end;
 	/* 'position' implied by list-style-position */
 }
+ol[reversed] > li {
+	counter-increment: list-item -2;
+}
 
 /* XBL 2.0 */
 binding, implementation, template, content, inherited { display: none; }

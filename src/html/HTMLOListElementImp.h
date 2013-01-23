@@ -37,15 +37,15 @@ namespace bootstrap
 
 class HTMLOListElementImp : public ObjectMixin<HTMLOListElementImp, HTMLElementImp>
 {
+    Retained<EventListenerImp> mutationListener;
+
+    int getStart(const std::u16string& value);
+
+    void handleMutation(EventListenerImp* listener, events::Event event);
+
 public:
-    HTMLOListElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"ol")
-    {
-    }
-    HTMLOListElementImp(HTMLOListElementImp* org, bool deep) :
-        ObjectMixin(org, deep)
-    {
-    }
+    HTMLOListElementImp(DocumentImp* ownerDocument);
+    HTMLOListElementImp(HTMLOListElementImp* org, bool deep);
 
     virtual void handleMutation(events::MutationEvent mutation);
 

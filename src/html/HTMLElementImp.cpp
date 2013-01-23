@@ -17,6 +17,7 @@
 #include "HTMLElementImp.h"
 
 #include <boost/bind.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include <org/w3c/dom/events/MouseEvent.h>
 #include <org/w3c/dom/events/MutationEvent.h>
@@ -1457,6 +1458,19 @@ void HTMLElementImp::setAttributeAsBoolean(const std::u16string& name, bool on)
         setAttribute(name, u"");
     else
         removeAttribute(name);
+}
+
+int HTMLElementImp::getAttributeAsInteger(const std::u16string& name, int defaultValue)
+{
+    int value;
+    if (toInteger(name, value))
+        return value;
+    return defaultValue;
+}
+
+void HTMLElementImp::setAttributeAsInteger(const std::u16string& name, int value)
+{
+    setAttribute(name, boost::lexical_cast<std::u16string>(value));
 }
 
 }}}}  // org::w3c::dom::bootstrap
