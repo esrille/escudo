@@ -44,6 +44,15 @@ inline int findKeyword(const std::u16string& keyword, std::initializer_list<cons
     return -1;
 }
 
+inline int findKeyword(const std::u16string& keyword, const char16_t** const list, size_t size)
+{
+    for (auto i = list; i < list + size; ++i) {
+        if (keyword == *i)
+            return i - list;
+    }
+    return -1;
+}
+
 template<class Ch>
 inline const Ch* skipSpace(const Ch* input, const Ch* end)
 {

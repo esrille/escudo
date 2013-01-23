@@ -99,8 +99,13 @@ void HTMLInputElementImp::handleMutation(events::MutationEvent mutation)
     std::u16string value = mutation.getNewValue();
     css::CSSStyleDeclaration style(getStyle());
 
-    // TODO: Check type
     switch (Intern(mutation.getAttrName().c_str())) {
+    case Intern(u"type"):
+        toLower(value);
+        type = findKeyword(value, typeKeywords, TypeMax);
+        if (type < 0)
+            type = Text;
+        break;
     // Styles
     case Intern(u"height"):
         if (mapToDimension(value))
@@ -130,8 +135,6 @@ void HTMLInputElementImp::handleMutation(events::MutationEvent mutation)
 
 void HTMLInputElementImp::eval()
 {
-    setType(getAttribute(u"type"));
-
     if (!getDisabled() && type != Hidden)
         setTabIndex(0);
 
@@ -596,15 +599,7 @@ std::u16string HTMLInputElementImp::getType()
 
 void HTMLInputElementImp::setType(const std::u16string& type)
 {
-    std::u16string t(type);
-    toLower(t);
-    for (const char16_t** i = typeKeywords; i < typeKeywords + TypeMax; ++i) {
-        if (t.compare(*i) == 0) {
-            this->type = i - typeKeywords;
-            return;
-        }
-    }
-    this->type = Text;
+    setAttribute(u"type", type);
 }
 
 std::u16string HTMLInputElementImp::getDefaultValue()
