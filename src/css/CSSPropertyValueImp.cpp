@@ -461,6 +461,15 @@ void CSSWordSpacingValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* s
     length.compute(view, style);
 }
 
+bool CSSAutoNumberingValueImp::operator==(const CSSAutoNumberingValueImp& other)
+{
+    if (defaultNumber != other.defaultNumber)
+        return false;
+    if (contents.size() != other.contents.size())
+        return false;
+    return getCssText() == other.getCssText();    // TODO: Refine
+}
+
 bool CSSAutoNumberingValueImp::CounterContext::hasCounter(const std::u16string& name) const
 {
     for (auto i = counters.begin(); i != counters.end(); ++i) {

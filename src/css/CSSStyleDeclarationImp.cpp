@@ -381,6 +381,10 @@ unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
     // Secondly, check properties that do not require style resolutions.
     if (style->clear != clear)
         flags |= Box::NEED_REFLOW;
+    if (style->counterIncrement != counterIncrement)
+        flags |= Box::NEED_REFLOW;
+    if (style->counterReset != counterReset)
+        flags |= Box::NEED_REFLOW;
     if (style->direction != direction)
         flags |= Box::NEED_REFLOW;
     if (style->fontFamily != fontFamily)

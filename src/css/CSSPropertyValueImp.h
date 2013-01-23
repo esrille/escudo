@@ -617,7 +617,11 @@ public:
         clearContents();
     }
     virtual bool setValue(CSSStyleDeclarationImp* decl, CSSValueParser* parser);
-    virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) const;
+    virtual std::u16string getCssText(CSSStyleDeclarationImp* decl = 0) const;
+    bool operator==(const CSSAutoNumberingValueImp& other);
+    bool operator!=(const CSSAutoNumberingValueImp& other) {
+        return !(*this == other);
+    }
     void specify(const CSSAutoNumberingValueImp& specified) {
         reset();
         for (auto i = specified.contents.begin(); i != specified.contents.end(); ++i) {
