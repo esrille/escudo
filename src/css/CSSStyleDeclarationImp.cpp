@@ -2314,8 +2314,10 @@ CSSStyleDeclarationImp* CSSStyleDeclarationImp::createPseudoElementStyle(int id)
     assert(0 <= id && id < CSSPseudoElementSelector::MaxPseudoElements);
     CSSStyleDeclarationImp* style = pseudoElements[id].get();
     if (!style) {
-        if (style = new(std::nothrow) CSSStyleDeclarationImp(id))
+        if (style = new(std::nothrow) CSSStyleDeclarationImp(id)) {
+            style->setOwner(owner);
             pseudoElements[id] = style;
+        }
     }
     return style;
 }
