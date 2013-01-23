@@ -2318,10 +2318,8 @@ CSSStyleDeclarationImp* CSSStyleDeclarationImp::createPseudoElementStyle(int id)
     assert(0 <= id && id < CSSPseudoElementSelector::MaxPseudoElements);
     CSSStyleDeclarationImp* style = pseudoElements[id].get();
     if (!style) {
-        if (style = new(std::nothrow) CSSStyleDeclarationImp(id)) {
-            style->setOwner(owner);
+        if (style = new(std::nothrow) CSSStyleDeclarationImp(id))
             pseudoElements[id] = style;
-        }
     }
     return style;
 }
@@ -2427,6 +2425,7 @@ void CSSStyleDeclarationImp::setProperty(int id, Nullable<std::u16string> value,
     }
 
     if (owner && html::HTMLElement::hasInstance(owner)) {
+        assert(getPseudoElementSelectorType() == CSSPseudoElementSelector::NonPseudo);
         html::HTMLElement element(owner);
         // Note the mutation event triggered by the following operation must be ignored in the element.
         setFlags(Mutated);
@@ -2446,8 +2445,12 @@ void CSSStyleDeclarationImp::setProperty(const std::u16string& property, const s
 void CSSStyleDeclarationImp::setProperty(const std::u16string& property, const std::u16string& value, const std::u16string& priority)
 {
     if (priority == u"non-css") {  // ES extension
-        if (CSSStyleDeclarationImp* nonCSS = createPseudoElementStyle(CSSPseudoElementSelector::NonCSS))
+        if (CSSStyleDeclarationImp* nonCSS = createPseudoElementStyle(CSSPseudoElementSelector::NonCSS)) {
             nonCSS->setProperty(property, value);
+            assert(owner);
+            requestReconstruct(Box::NEED_STYLE_RECALCULATION);
+            clearFlags(CSSStyleDeclarationImp::Computed);
+        }
         return;
     }
 
