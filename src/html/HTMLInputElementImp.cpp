@@ -100,6 +100,13 @@ void HTMLInputElementImp::handleMutation(events::MutationEvent mutation)
     css::CSSStyleDeclaration style(getStyle());
 
     switch (Intern(mutation.getAttrName().c_str())) {
+    case Intern(u"checked"):
+        // TODO: process dirty checkedness flag
+        if (mutation.getType() == u"DOMNodeRemoved")
+            checked = false;
+        else
+            checked = true;
+        break;
     case Intern(u"disabled"):
         if (mutation.getType() == u"DOMNodeRemoved")
             tabIndex = -1;
@@ -149,9 +156,6 @@ void HTMLInputElementImp::handleMutation(events::MutationEvent mutation)
 
 void HTMLInputElementImp::eval()
 {
-    if (hasAttribute(u"checked"))
-        checked = true;
-
     switch (type) {
     case Text:
     case Search:
@@ -319,13 +323,12 @@ void HTMLInputElementImp::setAutocomplete(const std::u16string& autocomplete)
 
 bool HTMLInputElementImp::getAutofocus()
 {
-    // TODO: implement me!
-    return 0;
+    return getAttributeAsBoolean(u"autofocus");
 }
 
 void HTMLInputElementImp::setAutofocus(bool autofocus)
 {
-    // TODO: implement me!
+    setAttributeAsBoolean(u"autofocus", autofocus);
 }
 
 bool HTMLInputElementImp::getDefaultChecked()
@@ -341,13 +344,14 @@ void HTMLInputElementImp::setDefaultChecked(bool defaultChecked)
 
 bool HTMLInputElementImp::getChecked()
 {
+    // TODO: process dirty checkedness flag
     return checked;
 }
 
 void HTMLInputElementImp::setChecked(bool checked)
 {
-    this->checked = checked;
-    // TODO: dispatch an event
+    // TODO: process dirty checkedness flag
+    setAttributeAsBoolean(u"checked", checked);
 }
 
 std::u16string HTMLInputElementImp::getDirName()
@@ -363,13 +367,12 @@ void HTMLInputElementImp::setDirName(const std::u16string& dirName)
 
 bool HTMLInputElementImp::getDisabled()
 {
-    // TODO: implement me!
-    return 0;
+    return getAttributeAsBoolean(u"disabled");
 }
 
 void HTMLInputElementImp::setDisabled(bool disabled)
 {
-    // TODO: implement me!
+    setAttributeAsBoolean(u"disabled", disabled);
 }
 
 html::HTMLFormElement HTMLInputElementImp::getForm()
