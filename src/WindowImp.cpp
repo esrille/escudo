@@ -854,7 +854,7 @@ void WindowImp::setOpener(html::Window opener)
 
 html::Window WindowImp::getParent()
 {
-    return parent;
+    return parent ? parent : this;
 }
 
 Element WindowImp::getFrameElement()
