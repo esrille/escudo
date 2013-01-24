@@ -43,6 +43,7 @@ HTMLAnchorElementImp::HTMLAnchorElementImp(HTMLAnchorElementImp* org, bool deep)
     ObjectMixin(org, deep),
     clickListener(boost::bind(&HTMLAnchorElementImp::handleClick, this, _1, _2))
 {
+    tabIndex = -1;
     addEventListener(u"click", &clickListener, false, EventTargetImp::UseDefault);
 }
 
@@ -72,11 +73,8 @@ void HTMLAnchorElementImp::handleMutation(events::MutationEvent mutation)
         handleMutationHref(mutation);
         break;
     case Intern(u"tabindex"):
-        if (hasAttribute(u"href")) {
-            if (!toInteger(mutation.getNewValue(), tabIndex))
-                tabIndex = 0;
-        } else
-            tabIndex = -1;
+        if (hasAttribute(u"href") && !toInteger(mutation.getNewValue(), tabIndex))
+            tabIndex = 0;
         break;
     default:
         HTMLElementImp::handleMutation(mutation);

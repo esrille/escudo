@@ -33,12 +33,17 @@ namespace bootstrap
 
 void HTMLButtonElementImp::handleMutation(events::MutationEvent mutation)
 {
+    std::u16string value = mutation.getNewValue();
+
     switch (Intern(mutation.getAttrName().c_str())) {
     case Intern(u"disabled"):
-    case Intern(u"tabindex"):
-        if (getDisabled())
+        if (mutation.getType() == u"DOMNodeRemoved")
             tabIndex = -1;
         else if (!toInteger(getAttribute(u"tabindex"), tabIndex))
+            tabIndex = 0;
+        break;
+    case Intern(u"tabindex"):
+        if (!getDisabled() && !toInteger(value, tabIndex))
             tabIndex = 0;
         break;
     default:

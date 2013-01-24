@@ -80,6 +80,7 @@ HTMLInputElementImp::HTMLInputElementImp(DocumentImp* ownerDocument) :
     cursor(0),
     checked(false)
 {
+    tabIndex = 0;
 }
 
 HTMLInputElementImp::HTMLInputElementImp(HTMLInputElementImp* org, bool deep) :
@@ -91,7 +92,6 @@ HTMLInputElementImp::HTMLInputElementImp(HTMLInputElementImp* org, bool deep) :
     cursor(0),
     checked(org->checked)
 {
-    // TODO: check event listeners.
 }
 
 void HTMLInputElementImp::handleMutation(events::MutationEvent mutation)
@@ -100,11 +100,25 @@ void HTMLInputElementImp::handleMutation(events::MutationEvent mutation)
     css::CSSStyleDeclaration style(getStyle());
 
     switch (Intern(mutation.getAttrName().c_str())) {
+    case Intern(u"disabled"):
+        if (mutation.getType() == u"DOMNodeRemoved")
+            tabIndex = -1;
+        else if (type != Hidden && !toInteger(getAttribute(u"tabindex"), tabIndex))
+            tabIndex = 0;
+        break;
+    case Intern(u"tabindex"):
+        if (!getDisabled() && type != Hidden && !toInteger(getAttribute(u"tabindex"), tabIndex))
+            tabIndex = 0;
+        break;
     case Intern(u"type"):
         toLower(value);
         type = findKeyword(value, typeKeywords, TypeMax);
         if (type < 0)
             type = Text;
+        if (type == Hidden)
+            tabIndex = -1;
+        else if (!getDisabled() && !toInteger(getAttribute(u"tabindex"), tabIndex))
+            tabIndex = 0;
         break;
     // Styles
     case Intern(u"height"):
@@ -135,9 +149,6 @@ void HTMLInputElementImp::handleMutation(events::MutationEvent mutation)
 
 void HTMLInputElementImp::eval()
 {
-    if (!getDisabled() && type != Hidden)
-        setTabIndex(0);
-
     if (hasAttribute(u"checked"))
         checked = true;
 

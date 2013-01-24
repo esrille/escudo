@@ -41,10 +41,13 @@ class HTMLFormControlImp : public HTMLElementImp
 {
 public:
     HTMLFormControlImp(DocumentImp* ownerDocument, const std::u16string& localName) :
-        HTMLElementImp(ownerDocument, localName) {
+        HTMLElementImp(ownerDocument, localName)
+    {
+        tabIndex = 0;
     }
     HTMLFormControlImp(HTMLFormControlImp* org, bool deep) :
-        HTMLElementImp(org, deep) {
+        HTMLElementImp(org, deep)
+    {
     }
 
     virtual void handleMutation(events::MutationEvent mutation);

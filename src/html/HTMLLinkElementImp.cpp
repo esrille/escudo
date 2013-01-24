@@ -44,6 +44,7 @@ HTMLLinkElementImp::HTMLLinkElementImp(DocumentImp* ownerDocument) :
     request(0),
     styleSheet(0)
 {
+    tabIndex = -1;
 }
 
 HTMLLinkElementImp::HTMLLinkElementImp(HTMLLinkElementImp* org, bool deep) :
@@ -65,11 +66,8 @@ void HTMLLinkElementImp::handleMutation(events::MutationEvent mutation)
         handleMutationHref(mutation);
         break;
     case Intern(u"tabindex"):
-        if (hasAttribute(u"href")) {
-            if (!toInteger(mutation.getNewValue(), tabIndex))
-                tabIndex = 0;
-        } else
-            tabIndex = -1;
+        if (hasAttribute(u"href") && !toInteger(mutation.getNewValue(), tabIndex))
+            tabIndex = 0;
         break;
     default:
         HTMLElementImp::handleMutation(mutation);
