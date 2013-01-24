@@ -74,6 +74,8 @@ void HTMLOListElementImp::handleMutation(EventListenerImp* listener, events::Eve
     Node child = interface_cast<Node>(event.getTarget());
     if (!Element::hasInstance(child))
         return;
+    if (!getReversed())
+        return;
 
     int start = getStart();
     if (mutation.getType() == u"DOMNodeRemoved" && interface_cast<Element>(child).getLocalName() == u"li")

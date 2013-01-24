@@ -24,6 +24,7 @@
 #include "MutationEventImp.h"
 #include "Table.h"
 #include "ViewCSSImp.h"
+#include "WindowImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -2448,8 +2449,16 @@ void CSSStyleDeclarationImp::setProperty(const std::u16string& property, const s
         if (CSSStyleDeclarationImp* nonCSS = createPseudoElementStyle(CSSPseudoElementSelector::NonCSS)) {
             nonCSS->setProperty(property, value);
             assert(owner);
-            requestReconstruct(Box::NEED_STYLE_RECALCULATION);
-            clearFlags(CSSStyleDeclarationImp::Computed);
+            html::Window window = interface_cast<Element>(owner).getOwnerDocument().getDefaultView();
+            if (!window)
+                return;
+            css::CSSStyleDeclaration style = window.getComputedStyle(interface_cast<Element>(owner));
+            if (!style)
+                return;
+            if (CSSStyleDeclarationImp* imp = dynamic_cast<CSSStyleDeclarationImp*>(style.self())) {
+                imp->requestReconstruct(Box::NEED_STYLE_RECALCULATION);
+                imp->clearFlags(CSSStyleDeclarationImp::Computed);
+            }
         }
         return;
     }
