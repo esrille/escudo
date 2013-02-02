@@ -131,14 +131,15 @@ am_libeshtml5_a_OBJECTS = Any.$(OBJEXT) ECMAScript.$(OBJEXT) \
 	CustomEventInitImp.$(OBJEXT) DocumentFragmentImp.$(OBJEXT) \
 	DocumentImp.$(OBJEXT) DocumentTypeImp.$(OBJEXT) \
 	DOMErrorImp.$(OBJEXT) DOMImplementationImp.$(OBJEXT) \
-	DOMSettableTokenListImp.$(OBJEXT) DOMStringListImp.$(OBJEXT) \
-	DOMStringMapImp.$(OBJEXT) DOMTokenListImp.$(OBJEXT) \
-	DragEventImp.$(OBJEXT) DragEventInitImp.$(OBJEXT) \
-	ElementImp.$(OBJEXT) EventHandlerNonNullImp.$(OBJEXT) \
-	EventImp.$(OBJEXT) EventInitImp.$(OBJEXT) \
-	EventListenerImp.$(OBJEXT) EventSourceImp.$(OBJEXT) \
-	EventTargetImp.$(OBJEXT) ExternalImp.$(OBJEXT) \
-	FocusEventImp.$(OBJEXT) FocusEventInitImp.$(OBJEXT) \
+	DOMParserImp.$(OBJEXT) DOMSettableTokenListImp.$(OBJEXT) \
+	DOMStringListImp.$(OBJEXT) DOMStringMapImp.$(OBJEXT) \
+	DOMTokenListImp.$(OBJEXT) DragEventImp.$(OBJEXT) \
+	DragEventInitImp.$(OBJEXT) ElementImp.$(OBJEXT) \
+	EventHandlerNonNullImp.$(OBJEXT) EventImp.$(OBJEXT) \
+	EventInitImp.$(OBJEXT) EventListenerImp.$(OBJEXT) \
+	EventSourceImp.$(OBJEXT) EventTargetImp.$(OBJEXT) \
+	ExternalImp.$(OBJEXT) FocusEventImp.$(OBJEXT) \
+	FocusEventInitImp.$(OBJEXT) \
 	FunctionStringCallbackImp.$(OBJEXT) \
 	HashChangeEventImp.$(OBJEXT) HashChangeEventInitImp.$(OBJEXT) \
 	HistoryImp.$(OBJEXT) KeyboardEventImp.$(OBJEXT) \
@@ -162,16 +163,17 @@ am_libeshtml5_a_OBJECTS = Any.$(OBJEXT) ECMAScript.$(OBJEXT) \
 	TreeWalkerImp.$(OBJEXT) UIEventImp.$(OBJEXT) \
 	UIEventInitImp.$(OBJEXT) WheelEventImp.$(OBJEXT) \
 	WheelEventInitImp.$(OBJEXT) WindowImp.$(OBJEXT) \
-	XMLDocumentImp.$(OBJEXT) CounterImp.$(OBJEXT) \
-	CSS2PropertiesImp.$(OBJEXT) CSSCharsetRuleImp.$(OBJEXT) \
-	CSSFontFaceRuleImp.$(OBJEXT) CSSImportRuleImp.$(OBJEXT) \
-	CSSMediaRuleImp.$(OBJEXT) CSSNamespaceRuleImp.$(OBJEXT) \
-	CSSPageRuleImp.$(OBJEXT) CSSPrimitiveValueImp.$(OBJEXT) \
-	CSSRuleImp.$(OBJEXT) CSSRuleListImp.$(OBJEXT) \
-	CSSStyleDeclarationImp.$(OBJEXT) CSSStyleRuleImp.$(OBJEXT) \
-	CSSStyleSheetImp.$(OBJEXT) CSSUnknownRuleImp.$(OBJEXT) \
-	CSSValueImp.$(OBJEXT) CSSValueListImp.$(OBJEXT) \
-	RectImp.$(OBJEXT) RGBColorImp.$(OBJEXT) BlobImp.$(OBJEXT) \
+	XMLDocumentImp.$(OBJEXT) XMLSerializerImp.$(OBJEXT) \
+	CounterImp.$(OBJEXT) CSS2PropertiesImp.$(OBJEXT) \
+	CSSCharsetRuleImp.$(OBJEXT) CSSFontFaceRuleImp.$(OBJEXT) \
+	CSSImportRuleImp.$(OBJEXT) CSSMediaRuleImp.$(OBJEXT) \
+	CSSNamespaceRuleImp.$(OBJEXT) CSSPageRuleImp.$(OBJEXT) \
+	CSSPrimitiveValueImp.$(OBJEXT) CSSRuleImp.$(OBJEXT) \
+	CSSRuleListImp.$(OBJEXT) CSSStyleDeclarationImp.$(OBJEXT) \
+	CSSStyleRuleImp.$(OBJEXT) CSSStyleSheetImp.$(OBJEXT) \
+	CSSUnknownRuleImp.$(OBJEXT) CSSValueImp.$(OBJEXT) \
+	CSSValueListImp.$(OBJEXT) RectImp.$(OBJEXT) \
+	RGBColorImp.$(OBJEXT) BlobImp.$(OBJEXT) \
 	BlobPropertyBagImp.$(OBJEXT) FileCallbackImp.$(OBJEXT) \
 	FileImp.$(OBJEXT) FileListImp.$(OBJEXT) \
 	FileReaderImp.$(OBJEXT) FileReaderSyncImp.$(OBJEXT) \
@@ -260,28 +262,28 @@ am__objects_1 = ArrayBuffer.$(OBJEXT) ArrayBufferView.$(OBJEXT) \
 	Comment.$(OBJEXT) DataView.$(OBJEXT) \
 	DocumentFragment.$(OBJEXT) Document.$(OBJEXT) \
 	DocumentType.$(OBJEXT) DOMError.$(OBJEXT) \
-	DOMImplementation.$(OBJEXT) DOMSettableTokenList.$(OBJEXT) \
-	DOMStringList.$(OBJEXT) DOMStringMap.$(OBJEXT) \
-	DOMTokenList.$(OBJEXT) Element.$(OBJEXT) \
-	Float32Array.$(OBJEXT) Float64Array.$(OBJEXT) \
-	FormData.$(OBJEXT) Int16Array.$(OBJEXT) Int32Array.$(OBJEXT) \
-	Int8Array.$(OBJEXT) Node.$(OBJEXT) NodeList.$(OBJEXT) \
-	ProcessingInstruction.$(OBJEXT) Text.$(OBJEXT) \
-	Uint16Array.$(OBJEXT) Uint32Array.$(OBJEXT) \
+	DOMImplementation.$(OBJEXT) DOMParser.$(OBJEXT) \
+	DOMSettableTokenList.$(OBJEXT) DOMStringList.$(OBJEXT) \
+	DOMStringMap.$(OBJEXT) DOMTokenList.$(OBJEXT) \
+	Element.$(OBJEXT) Float32Array.$(OBJEXT) \
+	Float64Array.$(OBJEXT) FormData.$(OBJEXT) Int16Array.$(OBJEXT) \
+	Int32Array.$(OBJEXT) Int8Array.$(OBJEXT) Node.$(OBJEXT) \
+	NodeList.$(OBJEXT) ProcessingInstruction.$(OBJEXT) \
+	Text.$(OBJEXT) Uint16Array.$(OBJEXT) Uint32Array.$(OBJEXT) \
 	Uint8Array.$(OBJEXT) Uint8ClampedArray.$(OBJEXT) \
 	XMLHttpRequestEventTarget.$(OBJEXT) XMLHttpRequest.$(OBJEXT) \
 	XMLHttpRequestOptions.$(OBJEXT) XMLHttpRequestUpload.$(OBJEXT) \
-	Counter.$(OBJEXT) CSS2Properties.$(OBJEXT) \
-	CSSCharsetRule.$(OBJEXT) CSSFontFaceRule.$(OBJEXT) \
-	CSSImportRule.$(OBJEXT) CSSMediaRule.$(OBJEXT) \
-	CSSNamespaceRule.$(OBJEXT) CSSPageRule.$(OBJEXT) \
-	CSSPrimitiveValue.$(OBJEXT) CSSRule.$(OBJEXT) \
-	CSSStyleDeclaration.$(OBJEXT) CSSStyleRule.$(OBJEXT) \
-	CSSStyleSheet.$(OBJEXT) CSSUnknownRule.$(OBJEXT) \
-	CSSValue.$(OBJEXT) CSSValueList.$(OBJEXT) \
-	DocumentCSS.$(OBJEXT) DOMImplementationCSS.$(OBJEXT) \
-	ElementCSSInlineStyle.$(OBJEXT) Rect.$(OBJEXT) \
-	RGBColor.$(OBJEXT) CompositionEvent.$(OBJEXT) \
+	XMLSerializer.$(OBJEXT) Counter.$(OBJEXT) \
+	CSS2Properties.$(OBJEXT) CSSCharsetRule.$(OBJEXT) \
+	CSSFontFaceRule.$(OBJEXT) CSSImportRule.$(OBJEXT) \
+	CSSMediaRule.$(OBJEXT) CSSNamespaceRule.$(OBJEXT) \
+	CSSPageRule.$(OBJEXT) CSSPrimitiveValue.$(OBJEXT) \
+	CSSRule.$(OBJEXT) CSSStyleDeclaration.$(OBJEXT) \
+	CSSStyleRule.$(OBJEXT) CSSStyleSheet.$(OBJEXT) \
+	CSSUnknownRule.$(OBJEXT) CSSValue.$(OBJEXT) \
+	CSSValueList.$(OBJEXT) DocumentCSS.$(OBJEXT) \
+	DOMImplementationCSS.$(OBJEXT) ElementCSSInlineStyle.$(OBJEXT) \
+	Rect.$(OBJEXT) RGBColor.$(OBJEXT) CompositionEvent.$(OBJEXT) \
 	CompositionEventInit.$(OBJEXT) CustomEvent.$(OBJEXT) \
 	CustomEventInit.$(OBJEXT) Event.$(OBJEXT) \
 	EventHandlerNonNull.$(OBJEXT) EventInit.$(OBJEXT) \
@@ -735,6 +737,7 @@ idl_files = \
 	dom2css.idl \
 	dom3events.idl \
 	domcore.idl \
+	domparsing.idl \
 	eventsource.idl \
 	file.idl \
 	html5.idl \
@@ -758,6 +761,7 @@ generated_headers = \
 	org/w3c/dom/DocumentType.h \
 	org/w3c/dom/DOMError.h \
 	org/w3c/dom/DOMException.h \
+	org/w3c/dom/DOMParser.h \
 	org/w3c/dom/DOMImplementation.h \
 	org/w3c/dom/DOMSettableTokenList.h \
 	org/w3c/dom/DOMStringList.h \
@@ -782,6 +786,7 @@ generated_headers = \
 	org/w3c/dom/XMLHttpRequest.h \
 	org/w3c/dom/XMLHttpRequestOptions.h \
 	org/w3c/dom/XMLHttpRequestUpload.h \
+	org/w3c/dom/XMLSerializer.h \
 	org/w3c/dom/css/Counter.h \
 	org/w3c/dom/css/CSS2Properties.h \
 	org/w3c/dom/css/CSSCharsetRule.h \
@@ -1007,6 +1012,7 @@ generated_sources = \
 	org/w3c/dom/DocumentType.cpp \
 	org/w3c/dom/DOMError.cpp \
 	org/w3c/dom/DOMImplementation.cpp \
+	org/w3c/dom/DOMParser.cpp \
 	org/w3c/dom/DOMSettableTokenList.cpp \
 	org/w3c/dom/DOMStringList.cpp \
 	org/w3c/dom/DOMStringMap.cpp \
@@ -1030,6 +1036,7 @@ generated_sources = \
 	org/w3c/dom/XMLHttpRequest.cpp \
 	org/w3c/dom/XMLHttpRequestOptions.cpp \
 	org/w3c/dom/XMLHttpRequestUpload.cpp \
+	org/w3c/dom/XMLSerializer.cpp \
 	org/w3c/dom/css/Counter.cpp \
 	org/w3c/dom/css/CSS2Properties.cpp \
 	org/w3c/dom/css/CSSCharsetRule.cpp \
@@ -1351,6 +1358,7 @@ libeshtml5_a_SOURCES = org/w3c/dom/ObjectArray.h src/one_at_a_time.hpp \
 	src/DocumentImp.cpp src/DocumentImp.h src/DocumentTypeImp.cpp \
 	src/DocumentTypeImp.h src/DOMErrorImp.cpp src/DOMErrorImp.h \
 	src/DOMImplementationImp.cpp src/DOMImplementationImp.h \
+	src/DOMParserImp.cpp src/DOMParserImp.h \
 	src/DOMSettableTokenListImp.cpp src/DOMSettableTokenListImp.h \
 	src/DOMStringListImp.cpp src/DOMStringListImp.h \
 	src/DOMStringMapImp.cpp src/DOMStringMapImp.h \
@@ -1409,7 +1417,8 @@ libeshtml5_a_SOURCES = org/w3c/dom/ObjectArray.h src/one_at_a_time.hpp \
 	src/WheelEventImp.cpp src/WheelEventImp.h \
 	src/WheelEventInitImp.cpp src/WheelEventInitImp.h \
 	src/WindowImp.cpp src/WindowImp.h src/XMLDocumentImp.cpp \
-	src/XMLDocumentImp.h src/css/CounterImp.cpp \
+	src/XMLDocumentImp.h src/XMLSerializerImp.cpp \
+	src/XMLSerializerImp.h src/css/CounterImp.cpp \
 	src/css/CounterImp.h src/css/CSS2PropertiesImp.cpp \
 	src/css/CSS2PropertiesImp.h src/css/CSSCharsetRuleImp.cpp \
 	src/css/CSSCharsetRuleImp.h src/css/CSSFontFaceRuleImp.cpp \
@@ -1759,6 +1768,7 @@ EXTRA_DIST = \
 	idl/dom3validation.idl \
 	idl/dom3xpath.idl \
 	idl/domcore.idl \
+	idl/domparsing.idl \
 	idl/elementtraversal.idl \
 	idl/eventsource.idl \
 	idl/file.idl \
@@ -2128,6 +2138,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMImplementation.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMImplementationCSS.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMImplementationImp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMParser.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMParserImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMSettableTokenList.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMSettableTokenListImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMStringList.Po@am__quote@
@@ -2571,6 +2583,8 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XMLHttpRequestOptionsImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XMLHttpRequestUpload.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XMLHttpRequestUploadImp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XMLSerializer.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XMLSerializerImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bridge.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bridgeV8.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/escort-Escort.Po@am__quote@
@@ -3461,6 +3475,20 @@ DOMImplementationImp.obj: src/DOMImplementationImp.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMImplementationImp.obj `if test -f 'src/DOMImplementationImp.cpp'; then $(CYGPATH_W) 'src/DOMImplementationImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/DOMImplementationImp.cpp'; fi`
 
+DOMParserImp.o: src/DOMParserImp.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMParserImp.o -MD -MP -MF $(DEPDIR)/DOMParserImp.Tpo -c -o DOMParserImp.o `test -f 'src/DOMParserImp.cpp' || echo '$(srcdir)/'`src/DOMParserImp.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/DOMParserImp.Tpo $(DEPDIR)/DOMParserImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/DOMParserImp.cpp' object='DOMParserImp.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMParserImp.o `test -f 'src/DOMParserImp.cpp' || echo '$(srcdir)/'`src/DOMParserImp.cpp
+
+DOMParserImp.obj: src/DOMParserImp.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMParserImp.obj -MD -MP -MF $(DEPDIR)/DOMParserImp.Tpo -c -o DOMParserImp.obj `if test -f 'src/DOMParserImp.cpp'; then $(CYGPATH_W) 'src/DOMParserImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/DOMParserImp.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/DOMParserImp.Tpo $(DEPDIR)/DOMParserImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/DOMParserImp.cpp' object='DOMParserImp.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMParserImp.obj `if test -f 'src/DOMParserImp.cpp'; then $(CYGPATH_W) 'src/DOMParserImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/DOMParserImp.cpp'; fi`
+
 DOMSettableTokenListImp.o: src/DOMSettableTokenListImp.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMSettableTokenListImp.o -MD -MP -MF $(DEPDIR)/DOMSettableTokenListImp.Tpo -c -o DOMSettableTokenListImp.o `test -f 'src/DOMSettableTokenListImp.cpp' || echo '$(srcdir)/'`src/DOMSettableTokenListImp.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/DOMSettableTokenListImp.Tpo $(DEPDIR)/DOMSettableTokenListImp.Po
@@ -4314,6 +4342,20 @@ XMLDocumentImp.obj: src/XMLDocumentImp.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/XMLDocumentImp.cpp' object='XMLDocumentImp.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XMLDocumentImp.obj `if test -f 'src/XMLDocumentImp.cpp'; then $(CYGPATH_W) 'src/XMLDocumentImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/XMLDocumentImp.cpp'; fi`
+
+XMLSerializerImp.o: src/XMLSerializerImp.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XMLSerializerImp.o -MD -MP -MF $(DEPDIR)/XMLSerializerImp.Tpo -c -o XMLSerializerImp.o `test -f 'src/XMLSerializerImp.cpp' || echo '$(srcdir)/'`src/XMLSerializerImp.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/XMLSerializerImp.Tpo $(DEPDIR)/XMLSerializerImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/XMLSerializerImp.cpp' object='XMLSerializerImp.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XMLSerializerImp.o `test -f 'src/XMLSerializerImp.cpp' || echo '$(srcdir)/'`src/XMLSerializerImp.cpp
+
+XMLSerializerImp.obj: src/XMLSerializerImp.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XMLSerializerImp.obj -MD -MP -MF $(DEPDIR)/XMLSerializerImp.Tpo -c -o XMLSerializerImp.obj `if test -f 'src/XMLSerializerImp.cpp'; then $(CYGPATH_W) 'src/XMLSerializerImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/XMLSerializerImp.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/XMLSerializerImp.Tpo $(DEPDIR)/XMLSerializerImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/XMLSerializerImp.cpp' object='XMLSerializerImp.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XMLSerializerImp.obj `if test -f 'src/XMLSerializerImp.cpp'; then $(CYGPATH_W) 'src/XMLSerializerImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/XMLSerializerImp.cpp'; fi`
 
 CounterImp.o: src/css/CounterImp.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT CounterImp.o -MD -MP -MF $(DEPDIR)/CounterImp.Tpo -c -o CounterImp.o `test -f 'src/css/CounterImp.cpp' || echo '$(srcdir)/'`src/css/CounterImp.cpp
@@ -6737,6 +6779,20 @@ DOMImplementation.obj: org/w3c/dom/DOMImplementation.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMImplementation.obj `if test -f 'org/w3c/dom/DOMImplementation.cpp'; then $(CYGPATH_W) 'org/w3c/dom/DOMImplementation.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/DOMImplementation.cpp'; fi`
 
+DOMParser.o: org/w3c/dom/DOMParser.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMParser.o -MD -MP -MF $(DEPDIR)/DOMParser.Tpo -c -o DOMParser.o `test -f 'org/w3c/dom/DOMParser.cpp' || echo '$(srcdir)/'`org/w3c/dom/DOMParser.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/DOMParser.Tpo $(DEPDIR)/DOMParser.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/DOMParser.cpp' object='DOMParser.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMParser.o `test -f 'org/w3c/dom/DOMParser.cpp' || echo '$(srcdir)/'`org/w3c/dom/DOMParser.cpp
+
+DOMParser.obj: org/w3c/dom/DOMParser.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMParser.obj -MD -MP -MF $(DEPDIR)/DOMParser.Tpo -c -o DOMParser.obj `if test -f 'org/w3c/dom/DOMParser.cpp'; then $(CYGPATH_W) 'org/w3c/dom/DOMParser.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/DOMParser.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/DOMParser.Tpo $(DEPDIR)/DOMParser.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/DOMParser.cpp' object='DOMParser.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMParser.obj `if test -f 'org/w3c/dom/DOMParser.cpp'; then $(CYGPATH_W) 'org/w3c/dom/DOMParser.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/DOMParser.cpp'; fi`
+
 DOMSettableTokenList.o: org/w3c/dom/DOMSettableTokenList.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMSettableTokenList.o -MD -MP -MF $(DEPDIR)/DOMSettableTokenList.Tpo -c -o DOMSettableTokenList.o `test -f 'org/w3c/dom/DOMSettableTokenList.cpp' || echo '$(srcdir)/'`org/w3c/dom/DOMSettableTokenList.cpp
 @am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/DOMSettableTokenList.Tpo $(DEPDIR)/DOMSettableTokenList.Po
@@ -7058,6 +7114,20 @@ XMLHttpRequestUpload.obj: org/w3c/dom/XMLHttpRequestUpload.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/XMLHttpRequestUpload.cpp' object='XMLHttpRequestUpload.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XMLHttpRequestUpload.obj `if test -f 'org/w3c/dom/XMLHttpRequestUpload.cpp'; then $(CYGPATH_W) 'org/w3c/dom/XMLHttpRequestUpload.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/XMLHttpRequestUpload.cpp'; fi`
+
+XMLSerializer.o: org/w3c/dom/XMLSerializer.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XMLSerializer.o -MD -MP -MF $(DEPDIR)/XMLSerializer.Tpo -c -o XMLSerializer.o `test -f 'org/w3c/dom/XMLSerializer.cpp' || echo '$(srcdir)/'`org/w3c/dom/XMLSerializer.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/XMLSerializer.Tpo $(DEPDIR)/XMLSerializer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/XMLSerializer.cpp' object='XMLSerializer.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XMLSerializer.o `test -f 'org/w3c/dom/XMLSerializer.cpp' || echo '$(srcdir)/'`org/w3c/dom/XMLSerializer.cpp
+
+XMLSerializer.obj: org/w3c/dom/XMLSerializer.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT XMLSerializer.obj -MD -MP -MF $(DEPDIR)/XMLSerializer.Tpo -c -o XMLSerializer.obj `if test -f 'org/w3c/dom/XMLSerializer.cpp'; then $(CYGPATH_W) 'org/w3c/dom/XMLSerializer.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/XMLSerializer.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/XMLSerializer.Tpo $(DEPDIR)/XMLSerializer.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/XMLSerializer.cpp' object='XMLSerializer.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XMLSerializer.obj `if test -f 'org/w3c/dom/XMLSerializer.cpp'; then $(CYGPATH_W) 'org/w3c/dom/XMLSerializer.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/XMLSerializer.cpp'; fi`
 
 Counter.o: org/w3c/dom/css/Counter.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Counter.o -MD -MP -MF $(DEPDIR)/Counter.Tpo -c -o Counter.o `test -f 'org/w3c/dom/css/Counter.cpp' || echo '$(srcdir)/'`org/w3c/dom/css/Counter.cpp

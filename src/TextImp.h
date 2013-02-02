@@ -47,6 +47,9 @@ public:
     // Text
     virtual Text splitText(unsigned int offset);
     virtual std::u16string getWholeText();
+    // Text-51
+    bool getSerializeAsCDATA();
+    void setSerializeAsCDATA(bool serializeAsCDATA);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {

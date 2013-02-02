@@ -37,4 +37,15 @@ std::u16string TextImp::getWholeText()
     return u"";
 }
 
+bool TextImp::getSerializeAsCDATA()
+{
+    // TODO: implement me!
+    return 0;
+}
+
+void TextImp::setSerializeAsCDATA(bool serializeAsCDATA)
+{
+    // TODO: implement me!
+}
+
 }}}}  // org::w3c::dom::bootstrap

@@ -112,6 +112,13 @@ public:
     virtual int getClientLeft();
     virtual int getClientWidth();
     virtual int getClientHeight();
+    // Element-50
+    virtual std::u16string getInnerHTML();
+    virtual void setInnerHTML(const std::u16string& innerHTML);
+    virtual std::u16string getOuterHTML();
+    virtual void setOuterHTML(const std::u16string& outerHTML);
+    virtual void insertAdjacentHTML(const insertAdjacentHTMLPosition& position, const std::u16string& text);
+    // NodeSelector
     // NodeSelector
     virtual Element querySelector(const std::u16string& selectors);
     virtual NodeList querySelectorAll(const std::u16string& selectors);

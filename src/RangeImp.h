@@ -57,7 +57,9 @@ public:
     short comparePoint(Node node, unsigned int offset);
     bool intersectsNode(Node node);
     std::u16string toString();
-    // Range-53
+    // Range-52
+    DocumentFragment createContextualFragment(const std::u16string& fragment);
+    // Range-56
     views::ClientRectList getClientRects();
     views::ClientRect getBoundingClientRect();
     // Object

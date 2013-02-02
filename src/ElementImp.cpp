@@ -557,6 +557,33 @@ int ElementImp::getClientHeight()
     return 0;
 }
 
+std::u16string ElementImp::getInnerHTML()
+{
+    // TODO: implement me!
+    return u"";
+}
+
+void ElementImp::setInnerHTML(const std::u16string& innerHTML)
+{
+    // TODO: implement me!
+}
+
+std::u16string ElementImp::getOuterHTML()
+{
+    // TODO: implement me!
+    return u"";
+}
+
+void ElementImp::setOuterHTML(const std::u16string& outerHTML)
+{
+    // TODO: implement me!
+}
+
+void ElementImp::insertAdjacentHTML(const insertAdjacentHTMLPosition& position, const std::u16string& text)
+{
+    // TODO: implement me!
+}
+
 Element ElementImp::querySelector(const std::u16string& selectors)
 {
     // TODO: implement me!

@@ -15,6 +15,7 @@ idl_files = \
 	dom2css.idl \
 	dom3events.idl \
 	domcore.idl \
+	domparsing.idl \
 	eventsource.idl \
 	file.idl \
 	html5.idl \
@@ -38,6 +39,7 @@ generated_headers = \
 	org/w3c/dom/DocumentType.h \
 	org/w3c/dom/DOMError.h \
 	org/w3c/dom/DOMException.h \
+	org/w3c/dom/DOMParser.h \
 	org/w3c/dom/DOMImplementation.h \
 	org/w3c/dom/DOMSettableTokenList.h \
 	org/w3c/dom/DOMStringList.h \
@@ -62,6 +64,7 @@ generated_headers = \
 	org/w3c/dom/XMLHttpRequest.h \
 	org/w3c/dom/XMLHttpRequestOptions.h \
 	org/w3c/dom/XMLHttpRequestUpload.h \
+	org/w3c/dom/XMLSerializer.h \
 	org/w3c/dom/css/Counter.h \
 	org/w3c/dom/css/CSS2Properties.h \
 	org/w3c/dom/css/CSSCharsetRule.h \
@@ -287,6 +290,7 @@ generated_sources = \
 	org/w3c/dom/DocumentType.cpp \
 	org/w3c/dom/DOMError.cpp \
 	org/w3c/dom/DOMImplementation.cpp \
+	org/w3c/dom/DOMParser.cpp \
 	org/w3c/dom/DOMSettableTokenList.cpp \
 	org/w3c/dom/DOMStringList.cpp \
 	org/w3c/dom/DOMStringMap.cpp \
@@ -310,6 +314,7 @@ generated_sources = \
 	org/w3c/dom/XMLHttpRequest.cpp \
 	org/w3c/dom/XMLHttpRequestOptions.cpp \
 	org/w3c/dom/XMLHttpRequestUpload.cpp \
+	org/w3c/dom/XMLSerializer.cpp \
 	org/w3c/dom/css/Counter.cpp \
 	org/w3c/dom/css/CSS2Properties.cpp \
 	org/w3c/dom/css/CSSCharsetRule.cpp \
@@ -747,6 +752,8 @@ libeshtml5_a_SOURCES += \
 	src/DOMErrorImp.h \
 	src/DOMImplementationImp.cpp \
 	src/DOMImplementationImp.h \
+	src/DOMParserImp.cpp \
+	src/DOMParserImp.h \
 	src/DOMSettableTokenListImp.cpp \
 	src/DOMSettableTokenListImp.h \
 	src/DOMStringListImp.cpp \
@@ -869,6 +876,8 @@ libeshtml5_a_SOURCES += \
 	src/WindowImp.h \
 	src/XMLDocumentImp.cpp \
 	src/XMLDocumentImp.h \
+	src/XMLSerializerImp.cpp \
+	src/XMLSerializerImp.h \
 	src/css/CounterImp.cpp \
 	src/css/CounterImp.h \
 	src/css/CSS2PropertiesImp.cpp \
@@ -1368,6 +1377,7 @@ EXTRA_DIST = \
 	idl/dom3validation.idl \
 	idl/dom3xpath.idl \
 	idl/domcore.idl \
+	idl/domparsing.idl \
 	idl/elementtraversal.idl \
 	idl/eventsource.idl \
 	idl/file.idl \

@@ -1,0 +1,52 @@
+/*
+ * domparsing.idl
+ *
+ * DOM Parsing and Serialization
+ *
+ * Original W3C Working Draft 20 September 2012:
+ *
+ *   http://www.w3.org/TR/2012/WD-DOM-Parsing-20120920/
+ */
+
+module dom {
+
+enum SupportedType {
+    "text/html",
+    "text/xml",
+    "application/xml",
+    "application/xhtml+xml",
+    "image/svg+xml"
+};
+
+[Constructor]
+interface DOMParser {
+    Document parseFromString (DOMString str, SupportedType type);
+};
+
+[Constructor]
+interface XMLSerializer {
+    DOMString serializeToString (Node root);
+};
+
+enum insertAdjacentHTMLPosition {
+    "beforebegin",
+    "afterbegin",
+    "beforeend",
+    "afterend"
+};
+
+partial interface Element {
+             attribute DOMString innerHTML;
+             attribute DOMString outerHTML;
+    void insertAdjacentHTML (insertAdjacentHTMLPosition position, DOMString text);
+};
+
+partial interface Text {
+             attribute boolean serializeAsCDATA;
+};
+
+partial interface Range {
+    DocumentFragment createContextualFragment (DOMString fragment);
+};
+
+};

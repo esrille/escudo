@@ -163,6 +163,12 @@ std::u16string RangeImp::toString()
     return u"";
 }
 
+DocumentFragment RangeImp::createContextualFragment(const std::u16string& fragment)
+{
+    // TODO: implement me!
+    return static_cast<Object*>(0);
+}
+
 views::ClientRectList RangeImp::getClientRects()
 {
     // TODO: implement me!
