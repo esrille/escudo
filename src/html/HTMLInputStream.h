@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,12 @@
 #include "U16InputStream.h"
 
 // cf. 10.2.2 The input stream
-class HTMLInputStream : public U16InputStream
+class HTMLInputStream : public U16ConverterInputStream
 {
     static const char* getAttr(const char* p, std::string& name, std::string& value);
     static const char* handleTag(const char* p);
     static std::string handleContentType(const char* p);
+
     const char* handleMeta(const char* p);
     virtual bool detect(const char* p);
 public:

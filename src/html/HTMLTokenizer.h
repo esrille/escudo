@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@
 #include <stack>
 #include <string>
 
-#include "HTMLInputStream.h"
+#include "U16InputStream.h"
 
 class Attribute
 {
@@ -690,7 +690,7 @@ class HTMLTokenizer
     std::u16string temporaryBuffer;
     std::u16string appropriateTagName;
 
-    HTMLInputStream* stream;
+    U16InputStream* stream;
     bool fromAttribute;
     State* state;
     std::stack<char16_t> charStack;
@@ -720,14 +720,14 @@ class HTMLTokenizer
             charStack.pop();
             return ch;
         }
-        return stream->getChar();
+        return stream->get();
     }
 
     int peekChar()
     {
         if (!charStack.empty())
             return charStack.top();
-        return stream->peekChar();
+        return stream->peek();
     }
 
     void setState(State* state)
@@ -755,7 +755,7 @@ class HTMLTokenizer
     }
 
 public:
-    HTMLTokenizer(HTMLInputStream* stream) :
+    HTMLTokenizer(U16InputStream* stream) :
         stream(stream),
         fromAttribute(false),
         state(&dataState)

@@ -57,6 +57,7 @@
 #include "HistoryImp.h"
 #include "LocationImp.h"
 #include "NavigatorImp.h"
+#include "html/HTMLInputStream.h"
 #include "html/HTMLParser.h"
 #include "http/HTTPRequest.h"
 

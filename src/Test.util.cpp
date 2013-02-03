@@ -30,6 +30,7 @@
 
 #include "DOMImplementationImp.h"
 #include "NodeImp.h"
+#include "html/HTMLInputStream.h"
 #include "html/HTMLParser.h"
 #include "css/Box.h"
 #include "css/CSSInputStream.h"

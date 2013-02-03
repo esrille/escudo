@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,60 @@
 #ifndef ES_U16INPUTSTREAM_H
 #define ES_U16INPUTSTREAM_H
 
-#include <iostream>
+#include <sstream>
 #include <string>
 
 struct UConverter;
 
 class U16InputStream
+{
+public:
+    virtual ~U16InputStream() {}
+
+    virtual explicit operator bool( ) const = 0;
+    virtual bool operator!() const = 0;
+    virtual int peek() = 0;
+    virtual U16InputStream& get(char16_t& c) = 0;
+
+    int get() {
+        char16_t c;
+        get(c);
+        return !*this ? -1 : c;
+    }
+    operator std::u16string()
+    {
+        std::u16string text;
+        char16_t c;
+        while (get(c))
+            text += c;
+        return text;
+    }
+};
+
+class U16TrivialInputStream : public U16InputStream
+{
+    std::basic_istream<char16_t>& stream;
+
+public:
+    U16TrivialInputStream(std::basic_istream<char16_t>& stream) :
+        stream(stream)
+    {}
+    virtual explicit operator bool( ) const {
+        return stream;
+    }
+    virtual bool operator! () const {
+        return !stream;
+    }
+    virtual int peek() {
+        return stream.peek();
+    }
+    virtual U16TrivialInputStream& get(char16_t& c) {
+        stream.get(c);
+        return *this;
+    }
+};
+
+class U16ConverterInputStream : public U16InputStream
 {
 public:
     static const size_t ChunkSize = 512;
@@ -92,34 +140,17 @@ private:
     void readChunk();
 
 public:
-    U16InputStream(std::istream& stream, const std::string& optionalEncoding = "");
-    virtual ~U16InputStream();
+    U16ConverterInputStream(std::istream& stream, const std::string& optionalEncoding = "");
+    virtual ~U16ConverterInputStream();
 
-    enum Confidence getConfidence() const {
-        return confidence;
+    virtual explicit operator bool( ) const {
+        return !eof;
     }
-
-    const std::string& getEncoding()
-    {
-        if (!converter) {
-            char16_t c;
-            peekChar(c);
-        }
-        return encoding;
-    }
-
-    operator void* ( ) const
-    {
-        return eof ? 0 : const_cast<U16InputStream*>(this);
-    }
-
-    bool operator! () const
-    {
+    virtual bool operator! () const {
         return eof;
     }
-
-    U16InputStream& peekChar(char16_t& c)
-    {
+    virtual int peek() {
+        int c;
         while (!eof) {
             while (nextChar < target) {
                 c = *nextChar;
@@ -142,38 +173,35 @@ public:
                 default:
                     break;
                 }
-                return *this;
+                return c;
             }
             if (!flush)
                 readChunk();
             else
                 eof = true;
         }
-        return *this;
+        return -1;
     }
-
-    U16InputStream& getChar(char16_t& c)
+    virtual U16ConverterInputStream& get(char16_t& c)
     {
-        if (peekChar(c)) {
+        int ch = peek();
+        if (!eof) {
             lastChar = *nextChar;
             ++nextChar;
+            c = static_cast<char16_t>(ch);
         }
         return *this;
     }
 
-    int getChar()
-    {
-        char16_t c;
-        return (getChar(c)) ? c : EOF;
+    enum Confidence getConfidence() const {
+        return confidence;
     }
 
-    int peekChar()
-    {
-        char16_t c;
-        return (peekChar(c)) ? c : EOF;
+    const std::string& getEncoding() {
+        if (!converter)
+            peek();
+        return encoding;
     }
-
-    operator std::u16string();
 
     static std::string checkEncoding(std::string value);
 };

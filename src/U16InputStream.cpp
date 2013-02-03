@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@
 
 #include <algorithm>
 
-const char* U16InputStream::DefaultEncoding = "utf-8";
+const char* U16ConverterInputStream::DefaultEncoding = "utf-8";
 
 namespace {
 
@@ -52,7 +52,7 @@ Override overrides[] = {
 
 }  // namespace
 
-U16InputStream::U16InputStream(std::istream& stream, const std::string& optionalEncoding) :
+U16ConverterInputStream::U16ConverterInputStream(std::istream& stream, const std::string& optionalEncoding) :
     confidence(Certain),
     encoding(optionalEncoding),
     stream(stream)
@@ -63,13 +63,13 @@ U16InputStream::U16InputStream(std::istream& stream, const std::string& optional
         confidence = Tentative;
 }
 
-U16InputStream::~U16InputStream()
+U16ConverterInputStream::~U16ConverterInputStream()
 {
     if (converter)
         ucnv_close(converter);
 }
 
-const char* U16InputStream::skipSpace(const char* p)
+const char* U16ConverterInputStream::skipSpace(const char* p)
 {
     while (*p) {
         if (strchr(" \t\r\n\f", *p) == 0)
@@ -77,10 +77,9 @@ const char* U16InputStream::skipSpace(const char* p)
         ++p;
     }
     return p;
-};
+}
 
-
-const char* U16InputStream::skipOver(const char* p, const char* target, size_t length)
+const char* U16ConverterInputStream::skipOver(const char* p, const char* target, size_t length)
 {
     while (*p) {
         if (strncmp(p, target, length) == 0)
@@ -88,9 +87,9 @@ const char* U16InputStream::skipOver(const char* p, const char* target, size_t l
         ++p;
     }
     return p;
-};
+}
 
-bool U16InputStream::detect(const char* p)
+bool U16ConverterInputStream::detect(const char* p)
 {
     if (confidence != Tentative)
         return true;
@@ -113,7 +112,7 @@ bool U16InputStream::detect(const char* p)
     return true;
 }
 
-std::string U16InputStream::checkEncoding(std::string value)
+std::string U16ConverterInputStream::checkEncoding(std::string value)
 {
     // Remove any leading or trailing space characters
     std::string::iterator i = value.begin();
@@ -140,7 +139,7 @@ std::string U16InputStream::checkEncoding(std::string value)
     return value;
 }
 
-void U16InputStream::setEncoding(std::string value, bool useDefault)
+void U16ConverterInputStream::setEncoding(std::string value, bool useDefault)
 {
     value = checkEncoding(value);
     if (value.empty()) {
@@ -165,7 +164,7 @@ void U16InputStream::setEncoding(std::string value, bool useDefault)
     encoding = value;
 }
 
-void U16InputStream::initializeConverter()
+void U16ConverterInputStream::initializeConverter()
 {
     flush = false;
     eof = !stream;
@@ -176,7 +175,7 @@ void U16InputStream::initializeConverter()
     lastChar = 0;
 }
 
-void U16InputStream::updateSource()
+void U16ConverterInputStream::updateSource()
 {
     assert(!flush);
     size_t count = sourceLimit - source;
@@ -202,7 +201,7 @@ void U16InputStream::updateSource()
     }
 }
 
-void U16InputStream::readChunk()
+void U16ConverterInputStream::readChunk()
 {
     nextChar = target = targetBuffer;
     updateSource();
@@ -212,13 +211,4 @@ void U16InputStream::readChunk()
                    reinterpret_cast<UChar*>(targetBuffer) + ChunkSize,
                    const_cast<const char**>(&source),
                    sourceLimit, 0, flush, &err);
-}
-
-U16InputStream::operator std::u16string()
-{
-    std::u16string text;
-    char16_t c;
-    while (getChar(c))
-        text += c;
-    return text;
 }
