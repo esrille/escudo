@@ -121,6 +121,19 @@ inline void toLower(std::u16string& s)
         *i = toLower(*i);
 }
 
+inline char16_t toUpper(char16_t c)
+{
+    if ('a' <= c && c <= 'z')
+        return c - ('a' - 'A');
+    return c;
+}
+
+inline void toUpper(std::u16string& s)
+{
+    for (auto i = s.begin(); i != s.end(); ++i)
+        *i = toUpper(*i);
+}
+
 inline std::u16string& stripLeadingWhitespace(std::u16string& s)
 {
     size_t pos = 0;
