@@ -28,6 +28,7 @@
 #include "DocumentImp.h"
 #include "DOMTokenListImp.h"
 #include "MutationEventImp.h"
+#include "NodeListImp.h"
 #include "XMLDocumentImp.h"
 #include "css/CSSSerialize.h"
 #include "html/HTMLCollectionImp.h"
@@ -614,7 +615,7 @@ Element ElementImp::querySelector(const std::u16string& selectors)
 NodeList ElementImp::querySelectorAll(const std::u16string& selectors)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return new(std::nothrow) NodeListImp;
 }
 
 xbl2::XBLImplementationList ElementImp::getXblImplementations()

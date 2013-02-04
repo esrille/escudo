@@ -1652,7 +1652,7 @@ Element DocumentImp::querySelector(const std::u16string& selectors)
 NodeList DocumentImp::querySelectorAll(const std::u16string& selectors)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return new(std::nothrow) NodeListImp;
 }
 
 ranges::Range DocumentImp::createRange()
