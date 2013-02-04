@@ -23,6 +23,7 @@
 
 constexpr auto Intern = &one_at_a_time::hash<char16_t>;
 
+#include "HTMLLIElementImp.h"
 #include "HTMLUtil.h"
 
 namespace org
@@ -60,7 +61,7 @@ int HTMLOListElementImp::getStart(const std::u16string& value)
     // return the number of child li elements
     start = 0;
     for (auto i = getFirstElementChild(); i; i = i.getNextElementSibling()) {
-        if (i.getTagName() == u"li")
+        if (dynamic_cast<HTMLLIElementImp*>(i.self()))
             ++start;
     }
     return start;

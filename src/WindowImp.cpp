@@ -255,7 +255,7 @@ bool WindowImp::poll()
         if (!document) {
             recordTime("%*shttp request done", windowDepth * 2, "");
             // TODO: Check header
-            Document newDocument = getDOMImplementation()->createDocument(u"", u"", 0);
+            Document newDocument = getDOMImplementation()->createDocument(u"", u"", 0); // TODO: Create HTML document
             if ((document = dynamic_cast<DocumentImp*>(newDocument.self()))) {
                 // TODO: Fire a simple unload event.
                 window->setDocument(newDocument);
@@ -636,11 +636,9 @@ void WindowImp::setFavicon()
         if (!head)
             continue;
         for (auto i = head.getFirstElementChild(); i; i = i.getNextElementSibling()) {
-            if (i.getTagName() == u"link") {
-                if (auto link = dynamic_cast<HTMLLinkElementImp*>(i.self())) {
-                    if (link->setFavicon(document))
-                        return;
-                }
+            if (auto link = dynamic_cast<HTMLLinkElementImp*>(i.self())) {
+                if (link->setFavicon(document))
+                    return;
             }
         }
     }

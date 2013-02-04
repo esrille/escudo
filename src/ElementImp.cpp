@@ -21,10 +21,13 @@
 #include <vector>
 #include <boost/algorithm/string.hpp>
 
+#include "utf.h"
+
 #include "AttrImp.h"
 #include "DocumentImp.h"
 #include "DOMTokenListImp.h"
 #include "MutationEventImp.h"
+#include "XMLDocumentImp.h"
 #include "css/CSSSerialize.h"
 #include "html/HTMLCollectionImp.h"
 #include "html/HTMLTokenizer.h"
@@ -170,9 +173,7 @@ std::u16string ElementImp::getLocalName()
 
 std::u16string ElementImp::getTagName()
 {
-    if (0 < prefix.length())
-        return prefix + u':' + localName;
-    return localName;
+    return nodeName;
 }
 
 std::u16string ElementImp::getId()
@@ -624,7 +625,13 @@ ElementImp::ElementImp(DocumentImp* ownerDocument, const std::u16string& localNa
     prefix(prefix),
     localName(localName)
 {
-    nodeName = getTagName();
+    // Set tagName to nodeName; cf. http://dom.spec.whatwg.org/#dom-node-nodename
+    if (0 < prefix.length())
+        nodeName = prefix + u':' + localName;
+    else
+        nodeName = localName;
+    if (namespaceURI == u"http://www.w3.org/1999/xhtml" && ownerDocument && !dynamic_cast<XMLDocumentImp*>(ownerDocument))
+        toUpper(nodeName);
 }
 
 ElementImp::ElementImp(ElementImp* org, bool deep) :

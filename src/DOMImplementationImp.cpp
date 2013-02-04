@@ -67,7 +67,7 @@ DocumentType DOMImplementationImp::createDocumentType(const std::u16string& qual
 
 XMLDocument DOMImplementationImp::createDocument(const Nullable<std::u16string>& _namespace, const std::u16string& qualifiedName, DocumentType doctype)
 {
-    return new(std::nothrow) XMLDocumentImp();
+    return new(std::nothrow) DocumentImp;   // TODO: Create XMLDocumentImp once createHTMLDocument is supported
 }
 
 Document DOMImplementationImp::createHTMLDocument()

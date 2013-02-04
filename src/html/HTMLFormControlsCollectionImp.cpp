@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,12 @@ namespace bootstrap
 
 namespace {
 
-bool isListedElement(const std::u16string& tag)
+bool isListedElement(ElementImp* element)
 {
+    auto e = dynamic_cast<HTMLElementImp*>(element);
+    if (!e)
+        return false;
+    std::u16string tag = e->getLocalName();
     if (tag == u"button" ||
         tag == u"fieldset" ||
         tag == u"input" ||
@@ -55,8 +59,7 @@ HTMLFormControlsCollectionImp::HTMLFormControlsCollectionImp(HTMLFormElementImp*
 {
     ElementImp* i = form;
     while (i = i->getNextElement(form)) {
-        std::u16string tag = i->getTagName();
-        if (isListedElement(tag)) {
+        if (isListedElement(i)) {
             std::u16string name;
             Nullable<std::u16string> a = i->getAttribute(u"name");
             if (a.hasValue())

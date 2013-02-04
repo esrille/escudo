@@ -36,6 +36,7 @@
 #include "ObjectArrayImp.h"
 #include "TextImp.h"
 #include "WindowImp.h"
+#include "XMLDocumentImp.h"
 #include "css/CSSSerialize.h"
 #include "html/HTMLAnchorElementImp.h"
 #include "html/HTMLAppletElementImp.h"
@@ -346,7 +347,8 @@ Element DocumentImp::getElementById(const std::u16string& elementId)
 Element DocumentImp::createElement(const std::u16string& localName)
 {
     std::u16string name(localName);
-    toLower(name);  // TODO: if html
+    if (!dynamic_cast<XMLDocumentImp*>(this))
+        toLower(name);
 
     // Checked in the order of descriptions in the HTML specification
     if (name == u"html")
@@ -722,22 +724,20 @@ Any DocumentImp::getElement(const std::u16string& name)
     Element e = getDocumentElement();
     if (!e)
         return 0;
-    ElementImp* i = dynamic_cast<ElementImp*>(e.self());
-    if (!i)
-        return 0;
     HTMLCollectionImp* collection = new(std::nothrow) HTMLCollectionImp;
     if (!collection)
         return 0;
     std::u16string tag;
-    while (i) {
-        tag = i->getTagName();
-        // TODO: check applet, embed, and object, too.
-        if (tag == u"form" || tag == u"iframe" || tag == u"img") {
-            Nullable<std::u16string> n = i->getAttribute(u"name");
-            if (n.hasValue() && name == n.value())
-                collection->addItem(i, name);
+    for (ElementImp* i = dynamic_cast<ElementImp*>(e.self()); i; i = i->getNextElement()) {
+        if (HTMLElementImp* e = dynamic_cast<HTMLElementImp*>(i)) {
+            tag = e->getLocalName();
+            // TODO: check applet, embed, and object, too.
+            if (tag == u"form" || tag == u"iframe" || tag == u"img") {
+                Nullable<std::u16string> n = i->getAttribute(u"name");
+                if (n.hasValue() && name == n.value())
+                    collection->addItem(i, name);
+            }
         }
-        i = i->getNextElement();
     }
     switch (collection->getLength()) {
     case 0:
@@ -761,9 +761,8 @@ std::u16string DocumentImp::getTitle()
     if (!head)
         return u"";
     for (auto i = head.getFirstElementChild(); i; i = i.getNextElementSibling()) {
-        if (i.getTagName() == u"title") {
-            html::HTMLTitleElement t(interface_cast<html::HTMLTitleElement>(i));
-            std::u16string title = t.getText();
+        if (auto t = dynamic_cast<HTMLTitleElementImp*>(i.self())) {
+            std::u16string title = t->getText();
             size_t spacePos;
             size_t spaceLen = 0;
             for (size_t i = 0; i < title.length(); ++i) {
@@ -795,9 +794,8 @@ void DocumentImp::setTitle(const std::u16string& title)
     if (!head)
         return;
     for (auto i = head.getFirstElementChild(); i; i = i.getNextElementSibling()) {
-        if (i.getTagName() == u"title") {
-            html::HTMLTitleElement t(interface_cast<html::HTMLTitleElement>(i));
-            t.setText(title);
+        if (auto t = dynamic_cast<HTMLTitleElementImp*>(i.self())) {
+            t->setText(title);
             return;
         }
     }
@@ -823,7 +821,7 @@ html::HTMLElement DocumentImp::getBody()
     // TODO: refine.
     Element e = getDocumentElement();
     for (auto i = e.getFirstElementChild(); i; i = i.getNextElementSibling()) {
-        if (i.getTagName() == u"body")
+        if (dynamic_cast<HTMLBodyElementImp*>(i.self()))
             return interface_cast<html::HTMLElement>(i);
     }
     return 0;
@@ -839,7 +837,7 @@ html::HTMLHeadElement DocumentImp::getHead()
     // TODO: refine.
     Element e = getDocumentElement();
     for (auto i = e.getFirstElementChild(); i; i = i.getNextElementSibling()) {
-        if (i.getTagName() == u"head")
+        if (dynamic_cast<HTMLHeadElementImp*>(i.self()))
             return interface_cast<html::HTMLHeadElement>(i);
     }
     return 0;

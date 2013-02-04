@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1960,7 +1960,7 @@ void Block::dump(std::string indent)
     if (isAnonymous())
         std::cout << " [anonymous]";
     else {
-        std::cout << " [" << node.getNodeName() << ']';
+        std::cout << " [" << interface_cast<Element>(node).getLocalName() << ']';
         resolveRelativeOffset(relativeX, relativeY);
     }
     if (3 <= getLogLevel())

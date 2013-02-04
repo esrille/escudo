@@ -129,7 +129,7 @@ html::HTMLTableRowElement HTMLTableElementImp::getRow(unsigned int index)
     // thead
     for (Element child = getFirstElementChild(); child; child = child.getNextElementSibling()) {
         if (HTMLTableSectionElementImp* section = dynamic_cast<HTMLTableSectionElementImp*>(child.self())) {
-            if (section->getTagName() == u"thead") {
+            if (section->getLocalName() == u"thead") {
                 for (Element child = section->getFirstElementChild(); child; child = child.getNextElementSibling()) {
                     if (HTMLTableRowElementImp* row = dynamic_cast<HTMLTableRowElementImp*>(child.self())) {
                         if (count == index)
@@ -147,7 +147,7 @@ html::HTMLTableRowElement HTMLTableElementImp::getRow(unsigned int index)
                 return row;
             ++count;
         } else if (HTMLTableSectionElementImp* section = dynamic_cast<HTMLTableSectionElementImp*>(child.self())) {
-            if (section->getTagName() == u"tbody") {
+            if (section->getLocalName() == u"tbody") {
                 for (Element child = section->getFirstElementChild(); child; child = child.getNextElementSibling()) {
                     if (HTMLTableRowElementImp* row = dynamic_cast<HTMLTableRowElementImp*>(child.self())) {
                         if (count == index)
@@ -162,7 +162,7 @@ html::HTMLTableRowElement HTMLTableElementImp::getRow(unsigned int index)
     // tfoot
     for (Element child = getFirstElementChild(); child; child = child.getNextElementSibling()) {
         if (HTMLTableSectionElementImp* section = dynamic_cast<HTMLTableSectionElementImp*>(child.self())) {
-            if (section->getTagName() == u"tfoot") {
+            if (section->getLocalName() == u"tfoot") {
                 for (Element child = section->getFirstElementChild(); child; child = child.getNextElementSibling()) {
                     if (HTMLTableRowElementImp* row = dynamic_cast<HTMLTableRowElementImp*>(child.self())) {
                         if (count == index)
