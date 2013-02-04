@@ -74,8 +74,9 @@ NodeImp* NodeImp::appendChild(NodeImp* item)
 
 void NodeImp::setOwnerDocument(DocumentImp* document)
 {
-    assert(!ownerDocument);
     ownerDocument = document;
+    for (NodeImp* child = firstChild; child; child = child->nextSibling)
+        child->setOwnerDocument(document);
 }
 
 // Node

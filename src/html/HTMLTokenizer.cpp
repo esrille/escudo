@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,9 @@
 
 #include "utf.h"
 
-#include "css/CSSSerialize.h"
 #include "AttrImp.h"
+#include "css/CSSSerialize.h"
+#include "html/HTMLUtil.h"
 
 #include <algorithm>
 
@@ -4442,4 +4443,22 @@ Token HTMLTokenizer::getToken()
     Token token = peekToken();
     tokenQueue.pop();
     return token;
+}
+
+void HTMLTokenizer::setContext(org::w3c::dom::Element context)
+{
+    setState(&dataState);
+    if (context.getNamespaceURI() == u"http://www.w3.org/1999/xhtml") {
+        std::u16string tag = context.getLocalName();
+        if (0 <= findKeyword(tag, {u"title", u"textarea"}))
+            setState(&rcdataState);
+        else if (0 <= findKeyword(tag, {u"style", u"xmp", u"iframe", u"noembed", u"noframes"}))
+            setState(&rawtextState);
+        else if (tag == u"script")
+            setState(&scriptDataState);
+        else if (tag == u"noscript")
+            setState(&dataState);    // TODO: check the scripting flag
+        else if (tag == u"plaintext")
+            setState(&plaintextState);
+    }
 }

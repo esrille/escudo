@@ -19,6 +19,7 @@
 
 #include <Object.h>
 #include <org/w3c/dom/Attr.h>
+#include <org/w3c/dom/Element.h>
 
 #include <deque>
 #include <iostream>
@@ -764,6 +765,8 @@ public:
 
     Token peekToken();
     Token getToken();
+
+    void setContext(org::w3c::dom::Element context);
 
     friend class HTMLParser;
 };

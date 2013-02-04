@@ -22,6 +22,7 @@
 #include <boost/algorithm/string.hpp>
 
 #include "utf.h"
+#include "Test.util.h"
 
 #include "AttrImp.h"
 #include "DocumentImp.h"
@@ -566,7 +567,26 @@ std::u16string ElementImp::getInnerHTML()
 
 void ElementImp::setInnerHTML(const std::u16string& innerHTML)
 {
-    // TODO: implement me!
+    Document document = new(std::nothrow) DocumentImp;
+    if (!document)
+        return;
+    HTMLParser::parseFragment(document, innerHTML, this);
+    Element root = document.getDocumentElement();
+    if (!root)
+        return;
+
+    dumpTree(std::cout, document);
+
+    // TODO: Set suppress observers flag
+    for (auto i = getFirstChild(); i; i = i.getNextSibling())
+        removeChild(i);
+    while (root.hasChildNodes()) {
+        // Replace all
+        auto i = root.getFirstChild();
+        getOwnerDocumentImp()->adoptNode(i);
+        appendChild(i);
+    }
+    // TODO: Unset suppress observers flag and queue events
 }
 
 std::u16string ElementImp::getOuterHTML()

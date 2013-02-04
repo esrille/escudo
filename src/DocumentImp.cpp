@@ -593,8 +593,17 @@ Node DocumentImp::importNode(Node node, bool deep)
 
 Node DocumentImp::adoptNode(Node node)
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    auto n = dynamic_cast<NodeImp*>(node.self());
+    if (!n)
+        return node;    // TODO: throw NotSupportedError
+    if (n->getNodeType() == Node::DOCUMENT_NODE)
+        return node;    // TODO: throw NotSupportedError
+    Node parent = n->getParentNode();
+    if (parent)
+        parent.removeChild(node);
+    n->setOwnerDocument(this);
+    // TODO: Change base URL for elements
+    return node;
 }
 
 events::Event DocumentImp::createEvent(const std::u16string& eventInterfaceName)

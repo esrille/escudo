@@ -31,6 +31,7 @@
 #include "DocumentImp.h"
 #include "DOMImplementationImp.h"
 #include "ElementImp.h"
+#include "HTMLFormElementImp.h"
 #include "HTMLScriptElementImp.h"
 
 using namespace org::w3c::dom::bootstrap;
@@ -328,14 +329,15 @@ void HTMLParser::parseError(const char* message)
     // TODO: implement me
 }
 
-void HTMLParser::resetInsertionMode()
+void HTMLParser::resetInsertionMode(Element context)
 {
     bool last = false;
     for (auto i = openElementStack.rbegin(); i != openElementStack.rend(); ++i) {
         Element node = *i;
         if (node == openElementStack.front()) {
             last = true;
-            // TODO:  set node to the context element
+            if (context)
+                node = context;
         }
         if (node.getLocalName() == u"select") {
             setInsertionMode(&inSelect);
@@ -354,6 +356,10 @@ void HTMLParser::resetInsertionMode()
             break;
         }
         if (node.getLocalName() == u"caption") {
+            setInsertionMode(&inCaption);
+            break;
+        }
+        if (node.getLocalName() == u"colgroup") {
             setInsertionMode(&inColumnGroup);
             break;
         }
@@ -377,12 +383,10 @@ void HTMLParser::resetInsertionMode()
             setInsertionMode(&beforeHead);
             break;
         }
-        // TODO: MathML or SVG
         if (last) {
             setInsertionMode(&inBody);
             break;
         }
-
         if (enableXBL) {
             if (node.getLocalName() == u"binding") {
                 setInsertionMode(&inBinding);
@@ -2885,11 +2889,33 @@ bool HTMLParser::processToken(Token& token)
     return insertionMode->processToken(this, token);
 }
 
-bool HTMLParser::mainLoop()
+void HTMLParser::mainLoop()
 {
     Token token;
     do {
         token = tokenizer->getToken();
         processToken(token);
     } while (token.getType() != Token::Type::EndOfFile);
+}
+
+void HTMLParser::parseFragment(Document document, const std::u16string& markup, Element context)
+{
+    std::basic_stringstream<char16_t> sstream(markup);
+    U16TrivialInputStream stream(sstream);
+    HTMLTokenizer tokenizer(&stream);
+    HTMLParser parser(document, &tokenizer);
+
+    if (context)
+        tokenizer.setContext(context);
+    Element root = document.createElement(u"html");
+    document.appendChild(root);
+    parser.pushElement(root);
+    parser.resetInsertionMode(context);
+    for (auto i = context; i; i = i.getParentElement()) {
+        if (auto form = dynamic_cast<HTMLFormElementImp*>(i.self())) {
+            parser.formElement = form;
+            break;
+        }
+    }
+    parser.mainLoop();
 }
