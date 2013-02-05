@@ -551,6 +551,7 @@ Element DocumentImp::createElement(const std::u16string& localName)
 
 Element DocumentImp::createElementNS(const Nullable<std::u16string>& namespaceURI, const std::u16string& qualifiedName)
 {
+    // TODO: Check name productions
     std::u16string prefix;
     std::u16string localName;
     size_t pos = qualifiedName.find(u':');
@@ -559,7 +560,16 @@ Element DocumentImp::createElementNS(const Nullable<std::u16string>& namespaceUR
         localName = qualifiedName.substr(pos + 1);
     } else
         localName = qualifiedName;
-    // TODO: several more checks
+    if (!prefix.empty() && !namespaceURI.hasValue())
+        throw DOMException{DOMException::NAMESPACE_ERR};
+    if (prefix == u"xml" && namespaceURI != u"http://www.w3.org/XML/1998/namespace")
+        throw DOMException{DOMException::NAMESPACE_ERR};
+    if (namespaceURI == u"http://www.w3.org/2000/xmlns/" && prefix != u"xmlns" && qualifiedName != u"xmlns")
+        throw DOMException{DOMException::NAMESPACE_ERR};
+
+    if (namespaceURI == u"http://www.w3.org/1999/xhtml" && prefix.empty())  // TODO: Check prefix
+        return createElement(localName);
+
     return new(std::nothrow) ElementImp(this, localName, namespaceURI, prefix);
 }
 
