@@ -329,15 +329,15 @@ void HTMLParser::parseError(const char* message)
     // TODO: implement me
 }
 
-void HTMLParser::resetInsertionMode(Element context)
+void HTMLParser::resetInsertionMode()
 {
     bool last = false;
     for (auto i = openElementStack.rbegin(); i != openElementStack.rend(); ++i) {
         Element node = *i;
         if (node == openElementStack.front()) {
             last = true;
-            if (context)
-                node = context;
+            if (contextElement)
+                node = contextElement;
         }
         if (node.getLocalName() == u"select") {
             setInsertionMode(&inSelect);
@@ -2880,7 +2880,8 @@ HTMLParser::HTMLParser(Document document, HTMLTokenizer* tokenizer, bool enableX
     framesetOkFlag(false),
     insertFromTable(false),
     innerHTML(false),
-    enableXBL(enableXBL)
+    enableXBL(enableXBL),
+    contextElement(0)
 {
 }
 
@@ -2905,12 +2906,14 @@ void HTMLParser::parseFragment(Document document, const std::u16string& markup, 
     HTMLTokenizer tokenizer(&stream);
     HTMLParser parser(document, &tokenizer);
 
-    if (context)
+    if (context) {
+        parser.contextElement = context;
         tokenizer.setContext(context);
+    }
     Element root = document.createElement(u"html");
     document.appendChild(root);
     parser.pushElement(root);
-    parser.resetInsertionMode(context);
+    parser.resetInsertionMode();
     for (auto i = context; i; i = i.getParentElement()) {
         if (auto form = dynamic_cast<HTMLFormElementImp*>(i.self())) {
             parser.formElement = form;

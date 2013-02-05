@@ -425,7 +425,7 @@ class HTMLParser
         return processToken(token);
     }
 
-    void resetInsertionMode(Element context = 0);
+    void resetInsertionMode();
 
     //
     // open element stack
@@ -494,6 +494,10 @@ class HTMLParser
     bool innerHTML;   // true if this parser was originally created as part of the HTML fragment parsing algorithm
 
     bool enableXBL;   // true if parse elements defined in XBL 2.0.
+
+    // fragment case
+    // cf. http://www.whatwg.org/specs/web-apps/current-work/multipage/the-end.html#fragment-case
+    Element contextElement;
 
     bool stopParsing();
 
