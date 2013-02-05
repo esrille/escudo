@@ -1493,7 +1493,6 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
 
     // Note the table cell's 'height' property does not increase the height of the cell box.
     // cf. http://www.w3.org/TR/CSS21/tables.html#height-layout
-    float h = 0.0f;
     if ((style->height.isAuto() && !intrinsic) || isAnonymous() || cell) {
         float totalClearance = 0.0f;
         height = 0.0f;
