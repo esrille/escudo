@@ -705,7 +705,7 @@ Any ProxyObject::message_(uint32_t selector, const char* id, int argc, Any* argv
         for (int i = 0; i < argc; ++i)
             arguments[i] = convert(jscontext, argv[i]);
         if (callback &&
-            JS_CallFunctionValue(jscontext, JS_GetGlobalObject(jscontext), OBJECT_TO_JSVAL(jsobject), argc, arguments, &result) == JS_TRUE)
+            JS_CallFunctionValue(jscontext, JS_GetGlobalForObject(jscontext, jsobject), OBJECT_TO_JSVAL(jsobject), argc, arguments, &result) == JS_TRUE)
             return convert(jscontext, result);
         if (JS_CallFunctionName(jscontext, jsobject, id, argc, arguments, &result) == JS_TRUE)
             return convert(jscontext, result);
