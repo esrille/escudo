@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>DOM Test</title>
+</head>
+<body>
+<div id='t'>FAIL</div>
+<script>
+var t = document.getElementById('t');
+var html = "<table>"
+  + "<tbody>"
+  + "<tr><td>"
+  + "Pass"
+  + "</td></tr>"
+  + "</tbody></table>";
+t.innerHTML = html;
+</script>
+</body>
+</html>
