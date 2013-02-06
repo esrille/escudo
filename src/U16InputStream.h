@@ -62,6 +62,7 @@ public:
         return !stream;
     }
     virtual int peek() {
+        // TODO: Process '\r', etc.
         return stream.peek();
     }
     virtual U16TrivialInputStream& get(char16_t& c) {
