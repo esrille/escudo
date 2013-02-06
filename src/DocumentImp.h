@@ -60,6 +60,8 @@
 #include "WindowImp.h"
 #include "html/HTMLScriptElementImp.h"
 
+class HTMLTokenizer;
+
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class DocumentImp : public ObjectMixin<DocumentImp, NodeImp>
@@ -74,6 +76,7 @@ class DocumentImp : public ObjectMixin<DocumentImp, NodeImp>
     std::deque<stylesheets::StyleSheet> styleSheets;
     unsigned loadEventDelayCount;
     bool contentLoaded;
+    HTMLTokenizer* insertionPoint;
 
     long long lastModified; // in GMT
     HTMLScriptElementImp* pendingParsingBlockingScript;
@@ -91,6 +94,7 @@ class DocumentImp : public ObjectMixin<DocumentImp, NodeImp>
     std::map<const std::u16string, html::Window> bindingDocuments;
 
     bool processScripts(std::list<html::HTMLScriptElement>& scripts);
+    void write(const Variadic<std::u16string>& text, bool linefeed);
 
 public:
     DocumentImp(const std::u16string& url = u"about:blank");
@@ -117,6 +121,15 @@ public:
 
     void setLastModified(long long t) {
         lastModified = t;
+    }
+
+    HTMLTokenizer* getInsertionPoint() const {
+        return insertionPoint;
+    }
+    HTMLTokenizer* setInsertionPoint(HTMLTokenizer* point) {
+        HTMLTokenizer* old = insertionPoint;
+        insertionPoint = point;
+        return old;
     }
 
     void addDeferScript(HTMLScriptElementImp* script) {

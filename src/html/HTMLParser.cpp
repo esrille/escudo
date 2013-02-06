@@ -396,6 +396,16 @@ void HTMLParser::resetInsertionMode()
     }
 }
 
+bool HTMLParser::setInsertionPoint(bool defined)
+{
+    DocumentImp* imp = dynamic_cast<DocumentImp*>(document.self());
+    assert(imp);
+
+    HTMLTokenizer* old = imp->getInsertionPoint();
+    imp->setInsertionPoint(defined ? tokenizer : 0);
+    return old;
+}
+
 std::list<Element>::iterator HTMLParser::elementInActiveFormattingElements(const std::u16string name)
 {
     auto i = activeFormattingElements.end();
@@ -1709,14 +1719,13 @@ bool HTMLParser::Text::processEndTag(HTMLParser* parser, Token& token)
         Element script = parser->currentNode();
         parser->popElement();
         parser->setInsertionMode(parser->originalInsertionMode);
-        // TODO: Let the old insertion point have the same value as the current insertion point.
-        //       Let the insertion point be just before the next input character.
+        bool old = parser->setInsertionPoint();
         ++(parser->scriptNestingLevel);
         if (HTMLScriptElementImp* imp = dynamic_cast<HTMLScriptElementImp*>(script.self()))
             imp->prepare();
         if (--(parser->scriptNestingLevel) == 0)
             parser->pauseFlag = false;
-        // TODO: Let the insertion point have the value of the old insertion point.
+        parser->setInsertionPoint(old);
         // TODO: if there is a pending parsing-blocking script
             // more TODOs
         return true;

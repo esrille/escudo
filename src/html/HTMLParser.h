@@ -427,6 +427,8 @@ class HTMLParser
 
     void resetInsertionMode();
 
+    bool setInsertionPoint(bool defined = true);
+
     //
     // open element stack
     //

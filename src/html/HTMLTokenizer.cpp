@@ -4445,6 +4445,12 @@ Token HTMLTokenizer::getToken()
     return token;
 }
 
+void HTMLTokenizer::insertString(const std::u16string& s)
+{
+    for (auto i = s.rbegin(); i < s.rend(); ++i)
+        ungetChar(*i);
+}
+
 void HTMLTokenizer::setContext(org::w3c::dom::Element context)
 {
     setState(&dataState);

@@ -709,8 +709,7 @@ class HTMLTokenizer
 
     void ungetString(const std::string& s)
     {
-        std::string::const_reverse_iterator i;
-        for (i = s.rbegin(); i < s.rend(); ++i)
+        for (auto i = s.rbegin(); i < s.rend(); ++i)
             ungetChar(*i);
     }
 
@@ -765,6 +764,8 @@ public:
 
     Token peekToken();
     Token getToken();
+
+    void insertString(const std::u16string& s);
 
     void setContext(org::w3c::dom::Element context);
 

@@ -119,6 +119,7 @@ DocumentImp::DocumentImp(const std::u16string& url) :
     compatMode(u"CSS1Compat"),
     loadEventDelayCount(1),
     contentLoaded(false),
+    insertionPoint(0),
     lastModified(0),
     pendingParsingBlockingScript(0),
     defaultView(0),
@@ -922,14 +923,30 @@ void DocumentImp::close()
     // TODO: implement me!
 }
 
+void DocumentImp::write(const Variadic<std::u16string>& text, bool linefeed)
+{
+    if (dynamic_cast<XMLDocumentImp*>(this))
+        throw DOMException{DOMException::INVALID_STATE_ERR};
+    HTMLTokenizer* insertionPoint = getInsertionPoint();
+    if (!insertionPoint) {
+        // TODO: more items...
+        return;
+    }
+    if (linefeed)
+        insertionPoint->insertString(u"\n");
+    for (size_t i = text.size(); 0 < i; )
+        insertionPoint->insertString(text[--i]);
+    // TODO: more items...
+}
+
 void DocumentImp::write(Variadic<std::u16string> text)
 {
-    // TODO: implement me!
+    write(text, false);
 }
 
 void DocumentImp::writeln(Variadic<std::u16string> text)
 {
-    // TODO: implement me!
+    write(text, true);
 }
 
 html::Window DocumentImp::getDefaultView()
