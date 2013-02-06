@@ -1712,7 +1712,6 @@ bool HTMLParser::Text::processEndTag(HTMLParser* parser, Token& token)
         // TODO: Let the old insertion point have the same value as the current insertion point.
         //       Let the insertion point be just before the next input character.
         ++(parser->scriptNestingLevel);
-        // TODO: Prepare the script.
         if (HTMLScriptElementImp* imp = dynamic_cast<HTMLScriptElementImp*>(script.self()))
             imp->prepare();
         if (--(parser->scriptNestingLevel) == 0)
