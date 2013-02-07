@@ -762,7 +762,7 @@ Any DocumentImp::getElement(const std::u16string& name)
     switch (collection->getLength()) {
     case 0:
         delete collection;
-        return 0;
+        return Any();   // Return 'undefined' so that JSAPI bridge can call the default property stub.
     case 1:
         e = collection->item(0);
         delete collection;

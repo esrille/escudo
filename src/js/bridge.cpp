@@ -194,6 +194,8 @@ JSBool specialOp(JSContext* cx, JSObject* obj, jsid id, jsval* vp, int argc)
     } else
         return JS_PropertyStub(cx, obj, id, vp);
     Any result = native->message_(0, 0, argc, &argument);
+    if (result.isUndefined())   // A workaround for [OverrideBuiltins]
+        return JS_PropertyStub(cx, obj, id, vp);
     JS_SET_RVAL(cx, vp, convert(cx, result));
     return JS_TRUE;
 }
