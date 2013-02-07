@@ -170,6 +170,10 @@ class WindowImp : public ObjectMixin<WindowImp>
         const std::string& getEncoding() {
             return htmlInputStream.getEncoding();
         }
+
+        bool processPendingParsingBlockingScript() {
+            return parser.processPendingParsingBlockingScript();
+        }
     };
 
     HttpRequest request;

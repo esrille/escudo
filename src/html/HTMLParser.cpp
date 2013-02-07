@@ -1726,8 +1726,7 @@ bool HTMLParser::Text::processEndTag(HTMLParser* parser, Token& token)
         if (--(parser->scriptNestingLevel) == 0)
             parser->pauseFlag = false;
         parser->setInsertionPoint(old);
-        // TODO: if there is a pending parsing-blocking script
-            // more TODOs
+        // Note pending parsing-blocking scripts are processed in WindowImp::poll().
         return true;
     }
     // Any other end tag
@@ -2905,6 +2904,26 @@ void HTMLParser::mainLoop()
         token = tokenizer->getToken();
         processToken(token);
     } while (token.getType() != Token::Type::EndOfFile);
+}
+
+bool HTMLParser::processPendingParsingBlockingScript()
+{
+    DocumentImp* imp = dynamic_cast<DocumentImp*>(document.self());
+    assert(imp);
+    HTMLScriptElementImp* script = imp->getPendingParsingBlockingScript();
+    if (!script)
+        return true;
+    if (!script->isReadyToBeParserExecuted())
+        return false;
+    bool old = setInsertionPoint();
+    ++scriptNestingLevel;
+    script->execute();
+    if (--scriptNestingLevel == 0)
+        pauseFlag = false;
+    setInsertionPoint(old);
+    imp->setPendingParsingBlockingScript(0);
+    // TODO: Support nesting pending parsing blocking scripts
+    return true;
 }
 
 void HTMLParser::parseFragment(Document document, const std::u16string& markup, Element context)

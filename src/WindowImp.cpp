@@ -278,13 +278,8 @@ bool WindowImp::poll()
             // in the background.
             activate();
 
-            HTMLScriptElementImp* script = document->getPendingParsingBlockingScript();
-            if (script) {
-                if (!script->isReadyToBeParserExecuted())
-                    break;
-                script->execute();
-                document->setPendingParsingBlockingScript(0);
-            }
+            if (!parser->processPendingParsingBlockingScript())
+                break;
 
             // TODO: run this in the background
             Token token;

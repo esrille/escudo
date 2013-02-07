@@ -509,6 +509,8 @@ public:
 
     bool processToken(Token& token);
 
+    bool processPendingParsingBlockingScript();
+
     static void parseFragment(Document document, const std::u16string& markup, Element context);
 };
 
