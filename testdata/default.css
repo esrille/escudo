@@ -105,20 +105,32 @@ binding, implementation, template, content, inherited { display: none; }
 button { binding: button; }
 details { binding: details; }
 input { binding: input-textfield; }
-input[type=password] { binding: input-password; } /* case-insensitive */
-input[type=datetime] { binding: input-datetime; } /* case-insensitive */
-input[type=date] { binding: input-date; } /* case-insensitive */
-input[type=month] { binding: input-month; } /* case-insensitive */
-input[type=week] { binding: input-week; } /* case-insensitive */
-input[type=time] { binding: input-time; } /* case-insensitive */
-input[type=datetime-local] { binding: input-datetime-local; } /* case-insensitive */
-input[type=number] { binding: input-number; } /* case-insensitive */
-input[type=range] { binding: input-range; } /* case-insensitive */
-input[type=color] { binding: input-color; } /* case-insensitive */
-input[type=checkbox] { binding: input-checkbox; } /* case-insensitive */
-input[type=radio] { binding: input-radio; } /* case-insensitive */
-input[type=file] { binding: input-file; } /* case-insensitive */
-input[type=submit], input[type=reset], input[type=button] { /* case-insensitive */
+input[type=password i] { binding: input-password; }
+input[type=datetime i] { binding: input-datetime; }
+input[type=date i] { binding: input-date; }
+input[type=month i] { binding: input-month; }
+input[type=week i] { binding: input-week; }
+input[type=time i] { binding: input-time; }
+input[type=datetime-local i] { binding: input-datetime-local; }
+input[type=number i] { binding: input-number; }
+input[type=range i] { binding: input-range; }
+input[type=color i] { binding: input-color; }
+input[type=checkbox i] {
+    binding: input-checkbox;
+    font-family: "DejaVu Sans Mono";
+    display: inline-block;
+    border-style: none;
+    padding: 2px;
+}
+input[type=radio i] {
+    binding: input-radio;
+    font-family: "DejaVu Sans Mono";
+    display: inline-block;
+    border-style: none;
+    padding: 2px;
+}
+input[type=file i] { binding: input-file; }
+input[type=submit i], input[type=reset i], input[type=button i] {
   binding: input-button;
 }
 marquee { binding: marquee; }

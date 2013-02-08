@@ -104,6 +104,22 @@
   })
 </implementation>
 </binding>
+<binding id="input-checkbox">
+<template><span></span></template>
+<implementation>
+  ({
+    xblEnteredDocument: function() {
+        this.boundElement.tabIndex = 0;
+        var button = document.createTextNode(this.boundElement.checked ? '☑' : '☐');
+        this.shadowTree.firstChild.appendChild(button);
+        this.addEventListener('click', function(event) {
+            event.currentTarget.checked = !event.currentTarget.checked;
+            button.data = event.currentTarget.checked ? '☑' : '☐';
+        }, false);
+    }
+  })
+</implementation>
+</binding>
 <binding id="input-button">
 <template></template>
 <implementation>
