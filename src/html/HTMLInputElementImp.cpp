@@ -276,6 +276,16 @@ void HTMLInputElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
         }
         break;
     }
+    case CSSBindingValueImp::InputCheckbox: {
+        HTMLTemplateElementImp* element = new(std::nothrow) HTMLTemplateElementImp(document);
+        if (element) {
+            dom::Text text = document->createTextNode(getChecked() ? u"\u2611" : u"\u2610");
+            element->appendChild(text, true);
+            style->setCssText(u"display: inline-block; border-style: none; padding: 2px;");
+            setShadowTree(element);
+        }
+        break;
+    }
     default:
         HTMLElementImp::generateShadowContent(style);
         switch (type) {
