@@ -102,13 +102,13 @@ void HTMLInputElementImp::handleMutation(events::MutationEvent mutation)
     switch (Intern(mutation.getAttrName().c_str())) {
     case Intern(u"checked"):
         // TODO: process dirty checkedness flag
-        if (mutation.getType() == u"DOMNodeRemoved")
+        if (mutation.getAttrChange() == events::MutationEvent::REMOVAL)
             checked = false;
         else
             checked = true;
         break;
     case Intern(u"disabled"):
-        if (mutation.getType() == u"DOMNodeRemoved")
+        if (mutation.getAttrChange() != events::MutationEvent::REMOVAL)
             tabIndex = -1;
         else if (type != Hidden && !toInteger(getAttribute(u"tabindex"), tabIndex))
             tabIndex = 0;
@@ -271,7 +271,6 @@ void HTMLInputElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
         if (element) {
             dom::Text text = document->createTextNode(getChecked() ? u"\u25c9" : u"\u25cb");
             element->appendChild(text, true);
-            style->setCssText(u"display: inline-block; border-style: none; padding: 2px;");
             setShadowTree(element);
         }
         break;
@@ -281,7 +280,6 @@ void HTMLInputElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
         if (element) {
             dom::Text text = document->createTextNode(getChecked() ? u"\u2611" : u"\u2610");
             element->appendChild(text, true);
-            style->setCssText(u"display: inline-block; border-style: none; padding: 2px;");
             setShadowTree(element);
         }
         break;

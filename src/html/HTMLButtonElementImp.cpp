@@ -37,7 +37,7 @@ void HTMLButtonElementImp::handleMutation(events::MutationEvent mutation)
 
     switch (Intern(mutation.getAttrName().c_str())) {
     case Intern(u"disabled"):
-        if (mutation.getType() == u"DOMNodeRemoved")
+        if (mutation.getAttrChange() != events::MutationEvent::REMOVAL)
             tabIndex = -1;
         else if (!toInteger(getAttribute(u"tabindex"), tabIndex))
             tabIndex = 0;
