@@ -30,7 +30,7 @@ namespace {
 struct AdditiveGlyph
 {
     int weight;
-    char16_t* glyph;
+    const char16_t* glyph;
 };
 
 // 1 4999
@@ -170,7 +170,7 @@ std::u16string convertToRoman(int n, AdditiveGlyph* glyphList, int min = 1, int 
     return value;
 }
 
-std::u16string convertAlphabetic(int n, char16_t* alphabet, size_t glyphCount)
+std::u16string convertAlphabetic(int n, const char16_t* alphabet, size_t glyphCount)
 {
     if (n < 0)
         return toString(n);
