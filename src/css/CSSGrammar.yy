@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-%name-prefix "CSS"
+%name-prefix = "CSS"
 
 %parse-param {org::w3c::dom::bootstrap::CSSParser* parser}
 %lex-param   {org::w3c::dom::bootstrap::CSSParser* parser}
