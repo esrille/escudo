@@ -46,6 +46,9 @@ start:
     case StartMediaList:
         mode = Normal;
         return START_MEDIA_LIST;
+    case StartSelectorsGroup:
+        mode = Normal;
+        return START_SELECTORS_GROUP;
     case End:
         if (!openConstructs.empty()) {
             int token = openConstructs.front();

@@ -41,7 +41,10 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
+class CSSSelectorsGroup;
 class HTMLCollectionImp;
+class NodeListImp;
+class ViewCSSImp;
 
 class ElementImp : public ObjectMixin<ElementImp, NodeImp>
 {
@@ -53,6 +56,9 @@ private:
     std::u16string namespaceURI;
     std::u16string prefix;
     std::u16string localName;
+
+    Element querySelector(CSSSelectorsGroup* selectorsGroup, ViewCSSImp* view);
+    void querySelectorAll(NodeListImp* nodeList, CSSSelectorsGroup* selectorsGroup, ViewCSSImp* view);
 
 public:
     ElementImp(DocumentImp* ownerDocument, const std::u16string& localName, const std::u16string& namespaceURI, const std::u16string& prefix = u"");

@@ -285,9 +285,10 @@ bool CSSPseudoClassSelector::match(Element& element, ViewCSSImp* view, bool dyna
             // During the selector matching, every dynamic pseudo class is treated as "on".
             // It it the responsibility of the reflow and repaint operation to actually
             // check the status of each element.
-            view->hoverList.push_back(element.self());
+            if (view)
+                view->hoverList.push_back(element.self());
             return true;
-        } else
+        } else if (view)
             return view->isHovered(element);
         break;
     case FirstChild:
@@ -309,7 +310,8 @@ bool CSSPseudoClassSelector::match(Element& element, ViewCSSImp* view, bool dyna
             Document document = element.getOwnerDocument();
             return document.hasFocus() && document.getActiveElement() == element;
         }
-        return view->isHovered(element);
+        if (view)
+            return view->isHovered(element);
         break;
     default:
         break;

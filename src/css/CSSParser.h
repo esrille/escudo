@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ extern int getLogLevel();
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class DocumentImp;
+class CSSSelectorsGroup;
 class CSSStyleRuleImp;
 class CSSStyleSheetImp;
 class CSSStyleDeclarationImp;
@@ -241,6 +242,7 @@ class CSSParser
     CSSStyleSheetImp* styleSheet;
     CSSStyleDeclarationImp* styleDeclaration;
     CSSParserExpr* styleExpression;
+    CSSSelectorsGroup* selectorsGroup;
     CSSMediaRuleImp* mediaRule;
     bool caseSensitive;  // for element names and attribute names.
     bool importable;
@@ -256,6 +258,7 @@ public:
         styleSheet(0),
         styleDeclaration(0),
         styleExpression(0),
+        selectorsGroup(0),
         mediaRule(0),
         caseSensitive(false),
         importable(true)
@@ -266,6 +269,7 @@ public:
     css::CSSStyleDeclaration parseDeclarations(const std::u16string& cssDecl);
     CSSParserExpr* parseExpression(const std::u16string& cssExpr);
     MediaListImp* parseMediaList(const std::u16string& mediaText);
+    CSSSelectorsGroup* parseSelectorsGroup(const std::u16string& selectors);
 
     DocumentImp* getDocument() const {
         return document;
@@ -289,6 +293,13 @@ public:
     }
     CSSParserExpr* getExpression() {
         return styleExpression;
+    }
+
+    void setSelectorsGroup(CSSSelectorsGroup* selectorsGroup) {
+        this->selectorsGroup = selectorsGroup;
+    }
+    CSSSelectorsGroup* getSelectorsGroup() {
+        return selectorsGroup;
     }
 
     void setMediaRule(CSSMediaRuleImp* mediaRule) {

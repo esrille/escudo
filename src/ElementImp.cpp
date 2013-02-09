@@ -17,6 +17,7 @@
 #include "ElementImp.h"
 
 #include <algorithm>
+#include <memory>
 #include <new>
 #include <vector>
 #include <boost/algorithm/string.hpp>
@@ -606,16 +607,62 @@ void ElementImp::insertAdjacentHTML(const insertAdjacentHTMLPosition& position, 
     // TODO: implement me!
 }
 
+Element ElementImp::querySelector(CSSSelectorsGroup* selectorsGroup, ViewCSSImp* view)
+{
+    if (selectorsGroup->evaluate(this, view))
+        return this;
+    for (auto i = getFirstElementChild(); i; i = i.getNextElementSibling()) {
+        if (auto imp = dynamic_cast<ElementImp*>(i.self())) {
+            if (Element e = imp->querySelector(selectorsGroup, view))
+                return e;
+        }
+    }
+    return 0;
+}
+
 Element ElementImp::querySelector(const std::u16string& selectors)
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    CSSParser parser;
+    std::unique_ptr<CSSSelectorsGroup> selectorsGroup(parser.parseSelectorsGroup(selectors));
+    if (!selectorsGroup)
+        return 0;
+
+    if (!getOwnerDocumentImp())
+        return 0;
+    WindowImp* window = getOwnerDocumentImp()->getDefaultWindow();
+    if (!window)
+        return 0;
+    return querySelector(selectorsGroup.get(), window->getView());
+}
+
+void ElementImp::querySelectorAll(NodeListImp* nodeList, CSSSelectorsGroup* selectorsGroup, ViewCSSImp* view)
+{
+    if (selectorsGroup->evaluate(this, view))
+        nodeList->addItem(this);
+    for (auto i = getFirstElementChild(); i; i = i.getNextElementSibling()) {
+        if (auto imp = dynamic_cast<ElementImp*>(i.self()))
+            imp->querySelectorAll(nodeList, selectorsGroup, view);
+    }
 }
 
 NodeList ElementImp::querySelectorAll(const std::u16string& selectors)
 {
-    // TODO: implement me!
-    return new(std::nothrow) NodeListImp;
+    NodeListImp* nodeList = new(std::nothrow) NodeListImp;
+    if (!nodeList)
+        return 0;
+
+    CSSParser parser;
+    std::unique_ptr<CSSSelectorsGroup> selectorsGroup(parser.parseSelectorsGroup(selectors));
+    if (!selectorsGroup)
+        return nodeList;
+
+    if (!getOwnerDocumentImp())
+        return nodeList;
+    WindowImp* window = getOwnerDocumentImp()->getDefaultWindow();
+    if (!window)
+        return nodeList;
+    querySelectorAll(nodeList, selectorsGroup.get(), window->getView());
+    return nodeList;
 }
 
 xbl2::XBLImplementationList ElementImp::getXblImplementations()

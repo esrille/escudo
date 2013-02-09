@@ -3,18 +3,26 @@
  *
  * Selectors API Level 1
  *
- * Original W3C Candidate Recommendation 22 December 2009:
+ * Original W3C Proposed Recommendation 13 December 2012:
  *
- *   http://www.w3.org/TR/2009/CR-selectors-api-20091222/
+ *   http://www.w3.org/TR/2012/PR-selectors-api-20121213/
  */
 
 module dom {
-  [Supplemental, NoInterfaceObject]
-  interface NodeSelector {
-    Element   querySelector(in DOMString selectors);
-    NodeList  querySelectorAll(in DOMString selectors);
-  };
-  Document implements NodeSelector;
-  DocumentFragment implements NodeSelector;
-  Element implements NodeSelector;
+
+partial interface Document {
+  Element?  querySelector(DOMString selectors);
+  NodeList  querySelectorAll(DOMString selectors);
+};
+
+partial interface DocumentFragment {
+  Element?  querySelector(DOMString selectors);
+  NodeList  querySelectorAll(DOMString selectors);
+};
+
+partial interface Element {
+  Element?  querySelector(DOMString selectors);
+  NodeList  querySelectorAll(DOMString selectors);
+};
+
 };

@@ -493,6 +493,14 @@ public:
         }
         return true;
     }
+
+    bool evaluate(Element element, ViewCSSImp* view) {
+        for (auto i = selectors.begin(); i != selectors.end(); ++i) {
+            if ((*i)->match(element, view, true))
+                return true;
+        }
+        return false;
+    }
 };
 
 }}}}  // org::w3c::dom::bootstrap

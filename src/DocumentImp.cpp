@@ -1672,13 +1672,15 @@ html::HTMLAllCollection DocumentImp::getAll()
 
 Element DocumentImp::querySelector(const std::u16string& selectors)
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    if (ElementImp* e = dynamic_cast<ElementImp*>(getDocumentElement().self()))
+        return e->querySelector(selectors);
+    return 0;
 }
 
 NodeList DocumentImp::querySelectorAll(const std::u16string& selectors)
 {
-    // TODO: implement me!
+    if (ElementImp* e = dynamic_cast<ElementImp*>(getDocumentElement().self()))
+        return e->querySelectorAll(selectors);
     return new(std::nothrow) NodeListImp;
 }
 

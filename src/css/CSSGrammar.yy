@@ -64,6 +64,7 @@ using namespace org::w3c::dom::css;
 %token START_DECLARATION_LIST
 %token START_EXPRESSION
 %token START_MEDIA_LIST
+%token START_SELECTORS_GROUP
 
 %token END 0 "end of file"
 %token <number> ANGLE_DEG
@@ -140,6 +141,7 @@ using namespace org::w3c::dom::css;
 %type <cssRule> media
 %type <cssRule> page
 %type <cssRule> font_face
+%type <selectorsGroup> dom_selectors_group
 %type <selectorsGroup> selectors_group
 %type <selector> selector
 %type <primarySelector> type_selector
@@ -161,6 +163,16 @@ start
         parser->setExpression($2);
     }
   | START_MEDIA_LIST medium_list
+  | START_SELECTORS_GROUP dom_selectors_group {
+        parser->setSelectorsGroup($2);
+    }
+  ;
+
+/* Selectors API */
+dom_selectors_group
+  : optional_space selectors_group optional_space {
+        $$ = $2;
+    }
   ;
 
 stylesheet
