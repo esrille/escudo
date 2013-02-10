@@ -292,12 +292,21 @@
 #include "xhr/XMLHttpRequestOptionsImp.h"
 #include "xhr/XMLHttpRequestUploadImp.h"
 
+#include "utf.h"
+
 using namespace org::w3c::dom::bootstrap;
 using namespace org::w3c::dom;
 
 // JSAPI bridge
 
 namespace {
+
+void reportError(v8::Handle<v8::Message> message, v8::Handle<v8::Value> data)
+{
+    v8::String::Value s(message->Get());
+    std::u16string m(reinterpret_cast<const char16_t*>(*s));
+    std::cerr << message->GetLineNumber() << ": " << m << '\n';
+}
 
 void registerClasses(v8::Handle<v8::ObjectTemplate> global)
 {
@@ -581,6 +590,9 @@ ECMAScriptContext::Impl::Impl()
     const char* extensionNames[] = {
         "v8/gc",
     };
+
+    v8::V8::AddMessageListener(reportError);
+
     v8::ExtensionConfiguration extensions(1, extensionNames);
     context = v8::Context::New(&extensions, getGlobalTemplate());
     context->Enter();
