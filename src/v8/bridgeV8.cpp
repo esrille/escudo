@@ -179,6 +179,20 @@ v8::Handle<v8::Value> operation(const v8::Arguments& args)
     return convert(result);
 }
 
+v8::Handle<v8::Integer> indexedPropertyQuery(uint32_t index, const v8::AccessorInfo& info)
+{
+    v8::Local<v8::Object> self = info.This();
+    if (self == v8::Context::GetCurrent()->Global())
+        self = self->GetPrototype().As<v8::Object>();
+    auto wrap = v8::Local<v8::External>::Cast(self->GetInternalField(0));
+    ObjectImp* imp = static_cast<ObjectImp*>(wrap->Value());
+    Any argument(index);
+    Any result = imp->message_(0x957e2539, "length", Object::GETTER_, 0);
+    if (index < result.toArrayIndex())
+        return v8::Integer::New(v8::None);     // TODO:
+    return v8::Handle<v8::Integer>();  // return an empty handle
+}
+
 v8::Handle<v8::Integer> namedPropertyQuery(v8::Local<v8::String> property, const v8::AccessorInfo& info)
 {
     v8::String::Value value(property);
@@ -484,7 +498,7 @@ NativeClass::NativeClass(v8::Handle<v8::ObjectTemplate> global, const char* meta
             if (prop.isDeleter())
                 namedDeleter = namedPropertyDeleter;
             if (namedGetter)
-                prototypeTemplate->SetNamedPropertyHandler(namedGetter, namedSetter, 0 /* query */, namedDeleter, 0 /* enumerator */, v8::Uint32::New(hash));
+                instanceTemplate->SetNamedPropertyHandler(namedGetter, namedSetter, namedPropertyQuery, namedDeleter, 0 /* enumerator */, v8::Uint32::New(hash));
 
             if (prop.isGetter())
                 indexedGetter = indexedPropertyGetter;
@@ -493,7 +507,7 @@ NativeClass::NativeClass(v8::Handle<v8::ObjectTemplate> global, const char* meta
             if (prop.isDeleter())
                 indexedDeleter = indexedPropertyDeleter;
             if (indexedGetter)
-                prototypeTemplate->SetIndexedPropertyHandler(indexedGetter, indexedSetter, 0 /* query */, indexedDeleter, 0 /* enumerator */, v8::Uint32::New(hash));
+                instanceTemplate->SetIndexedPropertyHandler(indexedGetter, indexedSetter, indexedPropertyQuery, indexedDeleter, 0 /* enumerator */, v8::Uint32::New(hash));
 
             if (prop.isCaller())
                 instanceTemplate->SetCallAsFunctionHandler(caller, v8::Uint32::New(hash));
