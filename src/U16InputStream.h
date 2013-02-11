@@ -56,7 +56,7 @@ public:
         stream(stream)
     {}
     virtual explicit operator bool( ) const {
-        return stream;
+        return bool(stream);
     }
     virtual bool operator! () const {
         return !stream;
