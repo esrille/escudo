@@ -17,14 +17,42 @@
 #include "esv8api.h"
 
 #include <assert.h>
+
+#include <alloca.h>
+
 #include <iostream>
+#include <memory>
 
 #include "ScriptV8.h"
+
+#define ARGUMENTS(type, name, n)\
+    type* name(static_cast<type*>(alloca(sizeof(type) * (n))));\
+    AllocaOwner<type> alloca_owner_##name(name, (n))
 
 std::map<std::string, v8::Persistent<v8::FunctionTemplate>> NativeClass::interfaceMap;
 std::map<ObjectImp*, v8::Persistent<v8::Object>> NativeClass::wrapperMap;
 
 namespace {
+
+template <typename T>
+class AllocaOwner {
+public:
+    AllocaOwner(T* array, size_t size) :
+        array(array),
+        size(size)
+    {
+        std::uninitialized_fill<T*, T>(array, array + size, T());
+    }
+    ~AllocaOwner()
+    {
+        for (auto it = array, last = array + size; it != last; ++it) {
+            it->~T();
+        }
+    }
+private:
+    T* array;
+    size_t size;
+};
 
 // a public domain hash function.
 // cf. http://burtleburtle.net/bob/hash/doobs.html
@@ -154,7 +182,7 @@ v8::Handle<v8::Value> caller(const v8::Arguments& args)
     if (self == v8::Context::GetCurrent()->Global())
         self = self->GetPrototype().As<v8::Object>();
     auto wrap = v8::Local<v8::External>::Cast(self->GetInternalField(0));
-    Any arguments[(0 < argc) ? argc : 1];
+    ARGUMENTS(Any, arguments, (0 < argc) ? argc : 1);
     for (int i = 0; i < argc; ++i)
         arguments[i] = convert(args[i]);
     ObjectImp* imp = static_cast<ObjectImp*>(wrap->Value());
@@ -172,7 +200,7 @@ v8::Handle<v8::Value> operation(const v8::Arguments& args)
     uint32_t hash = data->Uint32Value();
     auto wrap = v8::Local<v8::External>::Cast(self->GetInternalField(0));
     ObjectImp* imp = static_cast<ObjectImp*>(wrap->Value());
-    Any arguments[(0 < argc) ? argc : 1];
+    ARGUMENTS(Any, arguments, (0 < argc) ? argc : 1);
     for (int i = 0; i < argc; ++i)
         arguments[i] = convert(args[i]);
     Any result = imp->message_(hash, 0, argc, arguments);
@@ -320,7 +348,7 @@ v8::Handle<v8::Value> NativeClass::staticOperation(const v8::Arguments& args)
     std::u16string name(reinterpret_cast<const char16_t*>(*value));
     uint32_t hash = uc_one_at_a_time(name.c_str(), name.length());
 
-    Any arguments[(0 < argc) ? argc : 1];
+    ARGUMENTS(Any, arguments, (0 < argc) ? argc : 1);
     for (int i = 0; i < argc; ++i)
         arguments[i] = convert(args[i]);
     if (getConstructor) {
@@ -354,7 +382,7 @@ v8::Handle<v8::Value> NativeClass::constructor(const v8::Arguments& args)
     auto data = v8::Handle<v8::External>::Cast(args.Data());
     Object (*getConstructor)() = reinterpret_cast<Object (*)()>(data->Value());
     if (getConstructor) {
-        Any arguments[argc];
+        ARGUMENTS(Any, arguments, argc);
         for (int i = 0; i < argc; ++i)
             arguments[i] = convert(args[i]);
         Any result = getConstructor().message_(0, "", argc, arguments).toObject();
@@ -402,7 +430,7 @@ void setter(v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8
 Any call(v8::Handle<v8::Object> self, v8::Handle<v8::Function> func, int argc, Any* argv)
 {
     assert(0 <= argc);
-    v8::Handle<v8::Value> arguments[0 < argc ? argc : 1];
+    ARGUMENTS(v8::Handle<v8::Value>, arguments, (0 < argc) ? argc : 1);
     for (int i = 0; i < argc; ++i)
         arguments[i] = convert(argv[i]);
     return convert(func->Call(self, argc, arguments));
@@ -595,7 +623,7 @@ Any ProxyObject::message_(uint32_t selector, const char* id, int argc, Any* argv
     default: {
         assert(0 <= argc);
         if (callback) {
-            v8::Handle<v8::Value> arguments[0 < argc ? argc : 1];
+            ARGUMENTS(v8::Handle<v8::Value>, arguments, (0 < argc) ? argc : 1);
             for (int i = 0; i < argc; ++i)
                 arguments[i] = convert(argv[i]);
             return convert(jsobject->CallAsFunction(jsobject, argc, arguments));
