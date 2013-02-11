@@ -40,7 +40,11 @@ class Any
         uint64_t u64;
         float    f32;
         double   f64;
+#if defined(__APPLE__)
+        char     s128[32];
+#else
         char     s128[16];  // TODO: This is for Object on x86_64.
+#endif
     };
 
     // The virtual table for non-primitive types
@@ -91,34 +95,13 @@ private:
 #endif
 
     template<typename T>
-    void initialize(T const& value, typename std::enable_if<!std::is_base_of<Object, T>::value>::type* =0) {
-        vtable = &TypeErasure<T>::vtable;
-        static_assert(sizeof(T) <= sizeof(heap), "size mismatch");
-        new(&heap) T(value);
-        type = Dynamic;
-    }
+    void initialize(T const& value, typename std::enable_if<!std::is_base_of<Object, T>::value>::type* =0);
 
     template<typename T>
-    void initialize(T const& value, typename std::enable_if<std::is_base_of<Object, T>::value>::type* =0) {
-        if (!value)
-            type = Null;
-        else {
-            vtable = &TypeErasure<Object>::vtable;
-            new(&heap) Object(value.self());
-            type = Dynamic;
-        }
-    }
+    void initialize(T const& value, typename std::enable_if<std::is_base_of<Object, T>::value>::type* =0);
 
     template<typename T>
-    void initialize(T* value, typename std::enable_if<std::is_base_of<Object, T>::value>::type* =0) {
-        if (!value)
-            type = Null;
-        else {
-            vtable = &TypeErasure<Object>::vtable;
-            new(&heap) Object(value);
-            type = Dynamic;
-        }
-    }
+    void initialize(T* value, typename std::enable_if<std::is_base_of<Object, T>::value>::type* =0);
 
     template <typename T>
     void initialize(const Nullable<T> nullable) {

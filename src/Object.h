@@ -227,4 +227,38 @@ public:
 template <typename T, typename B>
 void* ObjectMixin<T, B>::staticPrivate = 0;
 
+
+template<typename T>
+void Any::initialize(T const& value, typename std::enable_if<!std::is_base_of<Object, T>::value>::type*)
+{
+    vtable = &TypeErasure<T>::vtable;
+    static_assert(sizeof(T) <= sizeof(heap), "size mismatch");
+    new(&heap) T(value);
+    type = Dynamic;
+}
+
+template<typename T>
+void Any::initialize(T const& value, typename std::enable_if<std::is_base_of<Object, T>::value>::type*)
+{
+    if (!value)
+        type = Null;
+    else {
+        vtable = &TypeErasure<Object>::vtable;
+        new(&heap) Object(value.self());
+        type = Dynamic;
+    }
+}
+
+template<typename T>
+void Any::initialize(T* value, typename std::enable_if<std::is_base_of<Object, T>::value>::type*)
+{
+    if (!value)
+        type = Null;
+    else {
+        vtable = &TypeErasure<Object>::vtable;
+        new(&heap) Object(value);
+        type = Dynamic;
+    }
+}
+
 #endif  // ES_OBJECT_H
