@@ -545,11 +545,10 @@ noinst_LIBRARIES = libeshtml5.a libesfontmanager.a libesjsapi.a libesv8api.a
 
 LDADD = libeshtml5.a libesfontmanager.a \
 	$(ICU_LIBS) $(FREETYPE_LIBS) \
-	-lboost_regex -lboost_system -lboost_iostreams \
 	-ljpeg -lpng -lgif \
 	-lglut -lGLEW -lGLU -lGL -lXext -lX11 -lXmu \
 	-lssl -lcrypto \
-	-lm -lrt -lssl -lcrypto
+	-lm -lssl -lcrypto
 
 AM_CPPFLAGS = \
 	-std=gnu++0x \

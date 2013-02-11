@@ -42,6 +42,26 @@ AX_COMPARE_VERSION([$ESIDL_VERSION], [lt], [0.3.0],
 # check systems not following FHS (http://www.pathname.com/fhs)
 AM_CONDITIONAL([HAVE_LIBEXEC], [test -d /usr/libexec])
 
+# check for boost libraries
+AC_CHECK_LIB(boost_regex-mt, main, , [
+  AC_CHECK_LIB(boost_regex, main, , [
+    AC_MSG_ERROR([Cannot find Boost.Regex library. Boost library is needed])
+  ])
+])
+AC_CHECK_LIB(boost_system-mt, main, , [
+  AC_CHECK_LIB(boost_system, main, , [
+    AC_MSG_ERROR([Cannot find Boost.System library. Boost library is needed])
+  ])
+])
+AC_CHECK_LIB(boost_iostreams-mt, main, , [
+  AC_CHECK_LIB(boost_iostreams, main, , [
+    AC_MSG_ERROR([Cannot find Boost.DateTime library. Boost library is needed])
+  ])
+])
+
+# check for librt
+AC_CHECK_LIB(rt, main)
+
 # check for icu-config
 AC_PATH_PROG(icu_config, icu-config, no)
 if test "$icu_config" = "no"; then

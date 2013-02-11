@@ -4164,6 +4164,305 @@ else
 fi
 
 
+# check for boost libraries
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lboost_regex-mt" >&5
+$as_echo_n "checking for main in -lboost_regex-mt... " >&6; }
+if ${ac_cv_lib_boost_regex_mt_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lboost_regex-mt  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_boost_regex_mt_main=yes
+else
+  ac_cv_lib_boost_regex_mt_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_boost_regex_mt_main" >&5
+$as_echo "$ac_cv_lib_boost_regex_mt_main" >&6; }
+if test "x$ac_cv_lib_boost_regex_mt_main" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBBOOST_REGEX_MT 1
+_ACEOF
+
+  LIBS="-lboost_regex-mt $LIBS"
+
+else
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lboost_regex" >&5
+$as_echo_n "checking for main in -lboost_regex... " >&6; }
+if ${ac_cv_lib_boost_regex_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lboost_regex  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_boost_regex_main=yes
+else
+  ac_cv_lib_boost_regex_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_boost_regex_main" >&5
+$as_echo "$ac_cv_lib_boost_regex_main" >&6; }
+if test "x$ac_cv_lib_boost_regex_main" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBBOOST_REGEX 1
+_ACEOF
+
+  LIBS="-lboost_regex $LIBS"
+
+else
+
+    as_fn_error $? "Cannot find Boost.Regex library. Boost library is needed" "$LINENO" 5
+
+fi
+
+
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lboost_system-mt" >&5
+$as_echo_n "checking for main in -lboost_system-mt... " >&6; }
+if ${ac_cv_lib_boost_system_mt_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lboost_system-mt  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_boost_system_mt_main=yes
+else
+  ac_cv_lib_boost_system_mt_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_boost_system_mt_main" >&5
+$as_echo "$ac_cv_lib_boost_system_mt_main" >&6; }
+if test "x$ac_cv_lib_boost_system_mt_main" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBBOOST_SYSTEM_MT 1
+_ACEOF
+
+  LIBS="-lboost_system-mt $LIBS"
+
+else
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lboost_system" >&5
+$as_echo_n "checking for main in -lboost_system... " >&6; }
+if ${ac_cv_lib_boost_system_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lboost_system  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_boost_system_main=yes
+else
+  ac_cv_lib_boost_system_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_boost_system_main" >&5
+$as_echo "$ac_cv_lib_boost_system_main" >&6; }
+if test "x$ac_cv_lib_boost_system_main" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBBOOST_SYSTEM 1
+_ACEOF
+
+  LIBS="-lboost_system $LIBS"
+
+else
+
+    as_fn_error $? "Cannot find Boost.System library. Boost library is needed" "$LINENO" 5
+
+fi
+
+
+fi
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lboost_iostreams-mt" >&5
+$as_echo_n "checking for main in -lboost_iostreams-mt... " >&6; }
+if ${ac_cv_lib_boost_iostreams_mt_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lboost_iostreams-mt  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_boost_iostreams_mt_main=yes
+else
+  ac_cv_lib_boost_iostreams_mt_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_boost_iostreams_mt_main" >&5
+$as_echo "$ac_cv_lib_boost_iostreams_mt_main" >&6; }
+if test "x$ac_cv_lib_boost_iostreams_mt_main" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBBOOST_IOSTREAMS_MT 1
+_ACEOF
+
+  LIBS="-lboost_iostreams-mt $LIBS"
+
+else
+
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lboost_iostreams" >&5
+$as_echo_n "checking for main in -lboost_iostreams... " >&6; }
+if ${ac_cv_lib_boost_iostreams_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lboost_iostreams  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_boost_iostreams_main=yes
+else
+  ac_cv_lib_boost_iostreams_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_boost_iostreams_main" >&5
+$as_echo "$ac_cv_lib_boost_iostreams_main" >&6; }
+if test "x$ac_cv_lib_boost_iostreams_main" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBBOOST_IOSTREAMS 1
+_ACEOF
+
+  LIBS="-lboost_iostreams $LIBS"
+
+else
+
+    as_fn_error $? "Cannot find Boost.DateTime library. Boost library is needed" "$LINENO" 5
+
+fi
+
+
+fi
+
+
+# check for librt
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for main in -lrt" >&5
+$as_echo_n "checking for main in -lrt... " >&6; }
+if ${ac_cv_lib_rt_main+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lrt  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+return main ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ac_cv_lib_rt_main=yes
+else
+  ac_cv_lib_rt_main=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_rt_main" >&5
+$as_echo "$ac_cv_lib_rt_main" >&6; }
+if test "x$ac_cv_lib_rt_main" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBRT 1
+_ACEOF
+
+  LIBS="-lrt $LIBS"
+
+fi
+
+
 # check for icu-config
 # Extract the first word of "icu-config", so it can be a program name with args.
 set dummy icu-config; ac_word=$2
@@ -4265,7 +4564,6 @@ FREETYPE_LIBS=`$freetype_config --libs`
 
 
 # check for SpiderMonkey 1.8.5
-
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing JS_NewCompartmentAndGlobalObject" >&5
 $as_echo_n "checking for library containing JS_NewCompartmentAndGlobalObject... " >&6; }
 if ${ac_cv_search_JS_NewCompartmentAndGlobalObject+:} false; then :
