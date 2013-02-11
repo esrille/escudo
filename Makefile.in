@@ -1277,7 +1277,7 @@ LDADD = libeshtml5.a libesfontmanager.a \
 	-ljpeg -lpng -lgif \
 	-lglut -lGLEW -lGLU -lGL -lXext -lX11 -lXmu \
 	-lssl -lcrypto \
-	-lm -lrt -lssl -lcrypto
+	-lm -lssl -lcrypto
 
 AM_CPPFLAGS = \
 	$(STD_CXX11_CPPFLAGS) \

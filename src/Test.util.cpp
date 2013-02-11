@@ -20,6 +20,8 @@
 #include <time.h>
 
 #include <sstream>
+#include <chrono>
+#include <ratio>
 
 #include <GL/freeglut.h>
 
@@ -49,6 +51,8 @@ namespace
     // 2: Harness
     // 3: Debug
     int logLevel = 3;
+
+    typedef std::chrono::duration<unsigned long long, std::centi> Ticks;
 }
 
 std::ostream& operator<<(std::ostream& stream, Node node)
@@ -172,39 +176,36 @@ Document loadDocument(const char* html)
 
 unsigned recordTime(const char* msg, ...)
 {
-    static timespec epoc{ 0, 0 };
+    typedef std::chrono::high_resolution_clock Clock;
+    typedef Clock::time_point Point;
+    static Point epoch(Point::min());
 
     if (logLevel == 0)
         return 0.0;
-    timespec tick;
-    clock_gettime(CLOCK_REALTIME, &tick);
-    if (epoc.tv_sec == 0 && epoc.tv_nsec == 0)
-        epoc = tick;
-    if (epoc.tv_nsec <= tick.tv_nsec)
-        tick.tv_nsec -= epoc.tv_nsec ;
-    else {
-        --tick.tv_sec;
-        tick.tv_nsec += 1000000000 - epoc.tv_nsec;
-    }
-    tick.tv_sec -= epoc.tv_sec;
+    auto point = Clock::now();
+    if (epoch == Point::min())
+        epoch = point;
+    auto duration = point - epoch;
     if (msg) {
         va_list ap;
         va_start(ap, msg);
         printf("%02lu:%02lu:%02lu.%06lu: ",
-               tick.tv_sec / (60*60*60), tick.tv_sec / 60 % 60, tick.tv_sec % 60,
-               tick.tv_nsec / 1000);
+               static_cast<unsigned long>(std::chrono::duration_cast<std::chrono::hours>(duration).count() % 60),
+               static_cast<unsigned long>(std::chrono::duration_cast<std::chrono::minutes>(duration).count() % 60),
+               static_cast<unsigned long>(std::chrono::duration_cast<std::chrono::seconds>(duration).count() % 60),
+               static_cast<unsigned long>(std::chrono::duration_cast<std::chrono::microseconds>(duration).count() % 1000000));
         vprintf(msg, ap);
         printf("\n");
         va_end(ap);
     }
-    return tick.tv_sec * 100 + tick.tv_nsec / 10000000;
+    return std::chrono::duration_cast<Ticks>(duration).count();
 }
 
 unsigned getTick()
 {
-    timespec ts;
-    clock_gettime(CLOCK_REALTIME, &ts);
-    return ts.tv_sec * 100 + ts.tv_nsec / 10000000;
+    auto p = std::chrono::high_resolution_clock::now();
+    auto duration = p.time_since_epoch();
+    return std::chrono::duration_cast<Ticks>(duration).count();
 }
 
 void initLogLevel(int* argc, char* argv[], int defaultLevel)

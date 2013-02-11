@@ -74,6 +74,10 @@ AC_CHECK_LIB(boost_iostreams-mt, main, , [
   ])
 ])
 
+# check for rt library
+# MacOSX doesn't have librt.
+AC_CHECK_LIB(rt, main)
+
 # check for icu-config
 AC_PATH_PROG(icu_config, icu-config, no)
 if test "$icu_config" = "no"; then
