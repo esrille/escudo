@@ -90,12 +90,20 @@ AC_CHECK_LIB(boost_iostreams-mt, main, , [
 AC_CHECK_LIB(rt, main)
 
 # check for icu-config
-AC_PATH_PROG(icu_config, icu-config, no)
-if test "$icu_config" = "no"; then
-	AC_MSG_ERROR([Cannot find icu-config. ICU library is needed.])
-fi
-ICU_CPPFLAGS=`$icu_config --cppflags`
-ICU_LIBS=`$icu_config --ldflags`
+case "$host" in
+  *-*-darwin*)
+    ICU_CPPFLAGS="-Isrc/third_party/icu"
+    ICU_LIBS="-licucore"
+    ;;
+  *)
+    AC_PATH_PROG(icu_config, icu-config, no)
+    if test "$icu_config" = "no"; then
+      AC_MSG_ERROR([Cannot find icu-config. ICU library is needed.])
+    fi
+    ICU_CPPFLAGS=`$icu_config --cppflags`
+    ICU_LIBS=`$icu_config --ldflags`
+    ;;
+esac
 AC_SUBST([ICU_CPPFLAGS])
 AC_SUBST([ICU_LIBS])
 
