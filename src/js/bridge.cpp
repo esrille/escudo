@@ -18,9 +18,36 @@
 
 #include <assert.h>
 
+#include <alloca.h>
+
 #include <iostream>
+#include <memory>
+
+#define ARGUMENTS(type, name, n)\
+    type* name(static_cast<type*>(alloca(sizeof(type) * (n))));\
+    AllocaOwner<type> alloca_owner_##name(name, (n))
 
 namespace {
+
+template <typename T>
+class AllocaOwner {
+public:
+    AllocaOwner(T* array, size_t size) :
+        array(array),
+        size(size)
+    {
+        std::uninitialized_fill<T*, T>(array, array + size, T());
+    }
+    ~AllocaOwner()
+    {
+        for (auto it = array, last = array + size; it != last; ++it) {
+            it->~T();
+        }
+    }
+private:
+    T* array;
+    size_t size;
+};
 
 // a public domain hash function.
 // cf. http://burtleburtle.net/bob/hash/doobs.html
@@ -135,7 +162,7 @@ JSBool caller(JSContext* cx, uintN argc, jsval* vp)
     JSObject* obj = JSVAL_TO_OBJECT(JS_CALLEE(cx, vp));
     ObjectImp* native = static_cast<ObjectImp*>(JS_GetPrivate(cx, obj));
     if (native) {
-        Any arguments[argc];
+        ARGUMENTS(Any, arguments, argc);
         for (unsigned i = 0; i < argc; ++i)
             arguments[i] = convert(cx, JS_ARGV(cx, vp)[i]);
         Any result = native->message_(0, 0, argc, arguments);
@@ -150,7 +177,7 @@ JSBool operation(JSContext* cx, uintN argc, jsval* vp)
 {
     if (JSObject* obj = JS_THIS_OBJECT(cx, vp)) {
         ObjectImp* native = static_cast<ObjectImp*>(JS_GetPrivate(cx, obj));
-        Any arguments[argc];
+        ARGUMENTS(Any, arguments, argc);
         for (unsigned i = 0; i < argc; ++i)
             arguments[i] = convert(cx, JS_ARGV(cx, vp)[i]);
         Any result = native->message_(NativeClass::getHash(cx, vp, N), 0, argc, arguments);
@@ -271,7 +298,7 @@ JSBool NativeClass::staticOperation(JSContext* cx, uintN argc, jsval* vp)
         }
         if (!hash)
             return JS_FALSE;
-        Any arguments[argc];
+        ARGUMENTS(Any, arguments, argc);
         for (unsigned i = 0; i < argc; ++i)
             arguments[i] = convert(cx, JS_ARGV(cx, vp)[i]);
         Any result = getConstructor().message_(hash, "", argc, arguments).toObject();
@@ -286,7 +313,7 @@ JSBool NativeClass::constructor(JSContext* cx, uintN argc, jsval* vp)
 {
     Object (*getConstructor)() = NativeClass::constructorGetters[N];
     if (getConstructor) {
-        Any arguments[argc];
+        ARGUMENTS(Any, arguments, argc);
         for (unsigned i = 0; i < argc; ++i)
             arguments[i] = convert(cx, JS_ARGV(cx, vp)[i]);
         Any result = getConstructor().message_(0, "", argc, arguments).toObject();
