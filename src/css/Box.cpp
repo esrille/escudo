@@ -990,7 +990,7 @@ float Block::getBaseline(const Box* box) const
             baseline = h + table->getBaseline() + table->offsetV;
         else if (Block* block = dynamic_cast<Block*>(i)) {
             float x = getBaseline(block);
-            if (!isnanf(x))
+            if (!isnan(x))
                 baseline = h + x + block->offsetV;
         } else if (LineBox* lineBox = dynamic_cast<LineBox*>(i)) {
             if (lineBox->hasInlineBox())
@@ -1007,7 +1007,7 @@ float Block::getBaseline(const Box* box) const
 float Block::getBaseline() const
 {
     float x = getBaseline(this);
-    return isnanf(x) ? getTotalHeight() : x;
+    return isnan(x) ? getTotalHeight() : x;
 }
 
 bool Block::isCollapsableInside() const
@@ -1529,14 +1529,14 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
                 float h;
                 while (0 < (h = parentContext->shiftDown(&leftover))) {
                     parentContext->updateRemainingHeight(h);
-                    if (isnanf(clearance))
+                    if (isnan(clearance))
                         clearance = h;
                     else
                         clearance += h;
                     if (width <= leftover)
                         break;
                 }
-                if (!isnanf(clearance)) {
+                if (!isnan(clearance)) {
                     // TODO: Adjust clearance and set margins to the original values
                     resolveWidth(containingBlock->width, parentContext, width);
                     updateFormattingContext(parentContext);

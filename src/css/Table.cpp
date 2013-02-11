@@ -79,7 +79,7 @@ float CellBox::getBaseline(const Box* box) const
             return baseline + table->getBaseline();
         else if (Block* block = dynamic_cast<Block*>(i)) {
             float x = getBaseline(block);
-            if (!isnanf(x))
+            if (!isnan(x))
                 return baseline + x;
         } else if (LineBox* lineBox = dynamic_cast<LineBox*>(i)) {
             if (lineBox->hasInlineBox())
@@ -95,7 +95,7 @@ float CellBox::getBaseline(const Box* box) const
 float CellBox::getBaseline() const
 {
     float x = getBaseline(this);
-    return !isnanf(x) ? x : (getBlankTop() + height);
+    return !isnan(x) ? x : (getBlankTop() + height);
 }
 
 float CellBox::adjustWidth()
@@ -106,9 +106,9 @@ float CellBox::adjustWidth()
         collapseBorder(wrapper);
     else
         separateBorders(wrapper->getStyle(), wrapper->getColumnCount(), wrapper->getRowCount());
-    float w = isnanf(columnWidth) ? getTotalWidth() : columnWidth;
+    float w = isnan(columnWidth) ? getTotalWidth() : columnWidth;
     width = w - getBlankLeft() - getBlankRight();
-    if (fixedLayout || isnanf(columnWidth))
+    if (fixedLayout || isnan(columnWidth))
         return columnWidth;
 
     width = columnWidth - getBlankLeft() - getBlankRight();
@@ -1735,14 +1735,14 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
                 float h;
                 while (0 < (h = parentContext->shiftDown(&leftover))) {
                     parentContext->updateRemainingHeight(h);
-                    if (isnanf(clearance))
+                    if (isnan(clearance))
                         clearance = h;
                     else
                         clearance += h;
                     if (width <= leftover)
                         break;
                 }
-                if (!isnanf(clearance)) {
+                if (!isnan(clearance)) {
                     // TODO: Adjust clearance and set margins to the original values
                     resolveWidth(containingBlock->width, parentContext, width);
                     updateFormattingContext(parentContext);
