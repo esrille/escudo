@@ -4160,6 +4160,9 @@ ac_config_files="$ac_config_files escort.spec debian/changelog Makefile data/Mak
 
 
 
+# generate char16_t stubs
+
+
 # check C++11
 case "$host" in
   *-*-darwin*)
