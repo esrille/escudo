@@ -103,7 +103,7 @@ start:
     re2c:indent:top      = 1;
     re2c:indent:string = "    " ;
 
-    [ \t\r\n\f]+        {return S;}
+    [ \t\r\n\f]+        {return SPACE;}
 
     "/*" [^\X0000*]* "*"+ ([^\X0000/*][^\X0000*]* "*"+)* "/"   {goto start;}
     "/*" [^\X0000*]* "*"* "\X0000"  {
@@ -250,21 +250,21 @@ start:
                         }
     'url(' w string w ")"   {
                             parseURL(yytext, yyin - yytext, &CSSlval.text);
-                            return URI;
+                            return TOKEN_URI;
                         }
     'url(' w url w ")"  {
                             parseURL(yytext, yyin - yytext, &CSSlval.text);
-                            return URI;
+                            return TOKEN_URI;
                         }
     'url(' w eof_string {
                             mode = End;
                             parseURL(yytext, yylimit + 2 - yytext, &CSSlval.text);
-                            return URI;
+                            return TOKEN_URI;
                         }
     'url(' w url "\X0000"   {
                             mode = End;
                             parseURL(yytext, yyin - yytext, &CSSlval.text);
-                            return URI;
+                            return TOKEN_URI;
                         }
     ident "("           {
                             openConstructs.push_front(')');
