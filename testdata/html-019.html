@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>HTML Test</title>
+</head>
+<body>
+<span id='t''>FAIL</span>
+<script>
+function x(a) {
+  var t = document.getElementById('t');
+  t.textContent = a;
+}
+window['y'] = x;
+y('PASS');
+</script>
+</body>
+</html>
