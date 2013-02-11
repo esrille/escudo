@@ -1,5 +1,26 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* Define to 1 if you have the `boost_iostreams' library (-lboost_iostreams).
+   */
+#undef HAVE_LIBBOOST_IOSTREAMS
+
+/* Define to 1 if you have the `boost_iostreams-mt' library
+   (-lboost_iostreams-mt). */
+#undef HAVE_LIBBOOST_IOSTREAMS_MT
+
+/* Define to 1 if you have the `boost_regex' library (-lboost_regex). */
+#undef HAVE_LIBBOOST_REGEX
+
+/* Define to 1 if you have the `boost_regex-mt' library (-lboost_regex-mt). */
+#undef HAVE_LIBBOOST_REGEX_MT
+
+/* Define to 1 if you have the `boost_system' library (-lboost_system). */
+#undef HAVE_LIBBOOST_SYSTEM
+
+/* Define to 1 if you have the `boost_system-mt' library (-lboost_system-mt).
+   */
+#undef HAVE_LIBBOOST_SYSTEM_MT
+
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT
 
