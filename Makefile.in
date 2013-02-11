@@ -1262,7 +1262,7 @@ LDADD = libeshtml5.a libesfontmanager.a \
 	-ljpeg -lpng -lgif \
 	-lglut -lGLEW -lGLU -lGL -lXext -lX11 -lXmu \
 	-lssl -lcrypto \
-	-lm -lrt -lssl -lcrypto
+	-lm -lssl -lcrypto
 
 AM_CPPFLAGS = \
 	-std=gnu++0x \

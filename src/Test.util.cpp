@@ -28,6 +28,11 @@
 #include <org/w3c/dom/DocumentType.h>
 #include <org/w3c/dom/Text.h>
 
+#if defined(__APPLE__)
+#include <mach/mach.h>
+#include <mach/clock.h>
+#endif
+
 #include "DOMImplementationImp.h"
 #include "NodeImp.h"
 #include "html/HTMLInputStream.h"
@@ -170,6 +175,21 @@ Document loadDocument(const char* html)
     return loadDocument(stream);
 }
 
+void clockGettime(struct timespec* spec)
+{
+#if defined(__APPLE__)
+    clock_serv_t service;
+    mach_timespec_t mts;
+    host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &service);
+    clock_get_time(service, &mts);
+    mach_port_deallocate(mach_task_self(), service);
+    spec->tv_sec = mts.tv_sec;
+    spec->tv_nsec = mts.tv_nsec;
+#else
+    clock_gettime(CLOCK_REALTIME, spec);
+#endif
+}
+
 unsigned recordTime(const char* msg, ...)
 {
     static timespec epoc{ 0, 0 };
@@ -177,7 +197,7 @@ unsigned recordTime(const char* msg, ...)
     if (logLevel == 0)
         return 0.0;
     timespec tick;
-    clock_gettime(CLOCK_REALTIME, &tick);
+    clockGettime(&tick);
     if (epoc.tv_sec == 0 && epoc.tv_nsec == 0)
         epoc = tick;
     if (epoc.tv_nsec <= tick.tv_nsec)
@@ -203,7 +223,7 @@ unsigned recordTime(const char* msg, ...)
 unsigned getTick()
 {
     timespec ts;
-    clock_gettime(CLOCK_REALTIME, &ts);
+    clockGettime(&ts);
     return ts.tv_sec * 100 + ts.tv_nsec / 10000000;
 }
 
