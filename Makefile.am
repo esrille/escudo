@@ -544,14 +544,14 @@ org/w3c/dom/Node.h : $(idl_files)
 noinst_LIBRARIES = libeshtml5.a libesfontmanager.a libesjsapi.a libesv8api.a
 
 LDADD = libeshtml5.a libesfontmanager.a \
-	$(ICU_LIBS) $(FREETYPE_LIBS) \
+	$(ICU_LIBS) $(FREETYPE_LIBS) $(STD_CXX11_LIBS) \
 	-ljpeg -lpng -lgif \
 	-lglut -lGLEW -lGLU -lGL -lXext -lX11 -lXmu \
 	-lssl -lcrypto \
 	-lm -lrt -lssl -lcrypto
 
 AM_CPPFLAGS = \
-	-std=gnu++0x \
+	$(STD_CXX11_CPPFLAGS) \
 	-I $(srcdir) -I $(srcdir)/src \
 	-isystem $(builddir) \
 	$(ICU_CPPFLAGS) \
