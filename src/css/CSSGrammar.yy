@@ -101,7 +101,7 @@ using namespace org::w3c::dom::css;
 %token <number> PERCENTAGE
 %token PREFIXMATCH
 %token <number> PX
-%token S
+%token SPACE
 %token <text> STRING
 %token <text> BAD_STRING
 %token SUBSTRINGMATCH
@@ -109,7 +109,7 @@ using namespace org::w3c::dom::css;
 %token <number> TIME_MS
 %token <number> TIME_S
 %token <text> UNICODERANGE
-%token <text> URI
+%token <text> TOKEN_URI
 
 %type <text> class;
 %type <text> id;
@@ -494,7 +494,7 @@ term
         $$.unit = CSSPrimitiveValue::CSS_IDENT;
         $$.text = $1;
     }
-  | URI          optional_space {
+  | TOKEN_URI    optional_space {
         $$.unit = CSSPrimitiveValue::CSS_URI;
         $$.text = $1;
     }
@@ -686,7 +686,7 @@ optional_namespaces
   ;
 uri_term
   : STRING
-  | URI
+  | TOKEN_URI
   ;
 optional_rulesets
   : /* empty */
@@ -885,13 +885,13 @@ attrib_flag
     }
 optional_sgml
   : /* empty */
-  | optional_sgml S
+  | optional_sgml SPACE
   | optional_sgml CDO
   | optional_sgml CDC
   ;
 optional_space
   : /* empty */
-  | optional_space S
+  | optional_space SPACE
   ;
 invalid_construct
   : '{' error invalid_construct_list error '}'
