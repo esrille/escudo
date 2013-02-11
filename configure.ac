@@ -8,6 +8,7 @@ AC_PROG_CXX
 AC_PROG_CC
 AM_PROG_AS
 AC_PROG_RANLIB
+AC_CANONICAL_HOST
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_FILES([
 escort.spec
@@ -29,6 +30,20 @@ AH_BOTTOM([#include <Object.h>])
 AH_BOTTOM([#if 4 < __GNUC__ || __GNUC__ == 4 && 6 <= __GNUC_MINOR__
 #define HAVE_NULLPTR 1
 #endif])
+
+# check C++11
+case "$host" in
+  *-*-darwin*)
+    STD_CXX11_CPPFLAGS="-std=c++11 -stdlib=libc++"
+    STD_CXX11_LIBS="-lc++"
+    ;;
+  *)
+    STD_CXX12_CPPFLAGS="-std=gnu++0x"
+    STD_CXX11_LIBS=""
+    ;;
+esac
+AC_SUBST([STD_CXX11_CPPFLAGS])
+AC_SUBST([STD_CXX11_LIBS])
 
 # Check for esidl 0.3.0 or later
 AC_CHECK_PROG(HAVE_ESIDL, esidl, [`esidl --version`], [no], [])

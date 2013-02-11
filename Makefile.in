@@ -52,6 +52,8 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
+build_triplet = @build@
+host_triplet = @host@
 @HAVE_LIBERATON_TRUE@am__append_1 = -DLIBERATON_TTF=\"$(LIBERATON_TTF)\"
 @HAVE_DEJAVU_TRUE@am__append_2 = -DDEJAVU_TTF=\"$(DEJAVU_TTF)\"
 @HAVE_IPA_GOTHIC_TRUE@am__append_3 = -DHAVE_IPA_GOTHIC=\"$(HAVE_IPA_GOTHIC)\"
@@ -80,7 +82,8 @@ DIST_COMMON = README $(am__configure_deps) $(dist_aboutdata_DATA) \
 	$(srcdir)/escort.spec.in $(top_srcdir)/configure \
 	$(top_srcdir)/data/escort/about/index.html.in \
 	$(top_srcdir)/debian/changelog.in CSSGrammar.cc CSSGrammar.hh \
-	ChangeLog NEWS depcomp install-sh missing ylwrap
+	ChangeLog NEWS config.guess config.sub depcomp install-sh \
+	missing ylwrap
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_compare_version.m4 \
 	$(top_srcdir)/configure.ac
@@ -400,7 +403,8 @@ am_Any_test_OBJECTS = Any.test.$(OBJEXT)
 Any_test_OBJECTS = $(am_Any_test_OBJECTS)
 am__DEPENDENCIES_1 =
 am__DEPENDENCIES_2 = libeshtml5.a libesfontmanager.a \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 am__DEPENDENCIES_3 = $(am__DEPENDENCIES_2) libesjsapi.a
 Any_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
 am_Box_test_OBJECTS = Box.test.$(OBJEXT)
@@ -460,7 +464,8 @@ am_Profile_test_OBJECTS = Profile.test.$(OBJEXT)
 Profile_test_OBJECTS = $(am_Profile_test_OBJECTS)
 Profile_test_LDADD = $(LDADD)
 Profile_test_DEPENDENCIES = libeshtml5.a libesfontmanager.a \
-	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
+	$(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1) \
+	$(am__DEPENDENCIES_1)
 am_Script_test_OBJECTS = Script_test-Script.test.$(OBJEXT)
 Script_test_OBJECTS = $(am_Script_test_OBJECTS)
 Script_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
@@ -678,6 +683,8 @@ PATH_SEPARATOR = @PATH_SEPARATOR@
 RANLIB = @RANLIB@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
+STD_CXX11_CPPFLAGS = @STD_CXX11_CPPFLAGS@
+STD_CXX11_LIBS = @STD_CXX11_LIBS@
 STRIP = @STRIP@
 VERSION = @VERSION@
 YACC = @YACC@
@@ -694,7 +701,11 @@ am__quote = @am__quote@
 am__tar = @am__tar@
 am__untar = @am__untar@
 bindir = @bindir@
+build = @build@
 build_alias = @build_alias@
+build_cpu = @build_cpu@
+build_os = @build_os@
+build_vendor = @build_vendor@
 builddir = @builddir@
 datadir = @datadir@
 datarootdir = @datarootdir@
@@ -702,7 +713,11 @@ docdir = @docdir@
 dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 freetype_config = @freetype_config@
+host = @host@
 host_alias = @host_alias@
+host_cpu = @host_cpu@
+host_os = @host_os@
+host_vendor = @host_vendor@
 htmldir = @htmldir@
 icu_config = @icu_config@
 includedir = @includedir@
@@ -1258,7 +1273,7 @@ BUILT_SOURCES = $(generated_headers) $(generated_scanners) $(generated_sources)
 nobase_nodist_noinst_HEADERS = $(generated_headers)
 noinst_LIBRARIES = libeshtml5.a libesfontmanager.a libesjsapi.a libesv8api.a
 LDADD = libeshtml5.a libesfontmanager.a \
-	$(ICU_LIBS) $(FREETYPE_LIBS) \
+	$(ICU_LIBS) $(FREETYPE_LIBS) $(STD_CXX11_LIBS) \
 	-lboost_regex -lboost_system -lboost_iostreams \
 	-ljpeg -lpng -lgif \
 	-lglut -lGLEW -lGLU -lGL -lXext -lX11 -lXmu \
@@ -1266,7 +1281,7 @@ LDADD = libeshtml5.a libesfontmanager.a \
 	-lm -lrt -lssl -lcrypto
 
 AM_CPPFLAGS = \
-	-std=gnu++0x \
+	$(STD_CXX11_CPPFLAGS) \
 	-I $(srcdir) -I $(srcdir)/src \
 	-isystem $(builddir) \
 	$(ICU_CPPFLAGS) \
