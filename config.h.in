@@ -21,6 +21,9 @@
    */
 #undef HAVE_LIBBOOST_SYSTEM_MT
 
+/* Define to 1 if you have the `rt' library (-lrt). */
+#undef HAVE_LIBRT
+
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT
 
