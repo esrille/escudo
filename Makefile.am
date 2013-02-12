@@ -1343,6 +1343,7 @@ dist-hook:
 
 EXTRA_DIST = \
 	m4/ax_compare_version.m4 \
+	m4/bison.m4 \
 	escort.spec.in \
 	escort.spec \
 	debian/changelog \
