@@ -17,6 +17,7 @@
 #ifndef ES_U16INPUTSTREAM_H
 #define ES_U16INPUTSTREAM_H
 
+#include "config.h"
 #include <sstream>
 #include <string>
 
