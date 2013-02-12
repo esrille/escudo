@@ -57,6 +57,10 @@ template<>
 class ctype<char16_t> : public ctype<wchar_t> { };
 template<>
 class numpunct<char16_t> : public numpunct<wchar_t> { };
+template<>
+class num_get<char16_t> : public num_get<wchar_t> { };
+template<>
+class num_put<char16_t> : public num_put<wchar_t> { };
 }
 #endif
 #endif
