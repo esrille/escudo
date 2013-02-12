@@ -119,7 +119,7 @@ AC_SUBST([X11_CPPFLAGS])
 # check for icu-config
 case "$host" in
   *-*-darwin*)
-    ICU_CPPFLAGS="-Isrc/third_party/icu"
+    ICU_CPPFLAGS="-I$srcdir/src/third_party/icu"
     ICU_LIBS="-licucore"
     ;;
   *)
