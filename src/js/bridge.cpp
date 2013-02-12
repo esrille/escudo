@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,30 +23,34 @@
 #include <iostream>
 #include <memory>
 
-#define ARGUMENTS(type, name, n)\
-    type* name(static_cast<type*>(alloca(sizeof(type) * (n))));\
-    AllocaOwner<type> alloca_owner_##name(name, (n))
-
 namespace {
 
-template <typename T>
-class AllocaOwner {
-public:
-    AllocaOwner(T* array, size_t size) :
-        array(array),
-        size(size)
-    {
-        std::uninitialized_fill<T*, T>(array, array + size, T());
-    }
-    ~AllocaOwner()
-    {
-        for (auto it = array, last = array + size; it != last; ++it) {
-            it->~T();
-        }
-    }
-private:
+template<typename T>
+class TemporaryBuffer
+{
     T* array;
-    size_t size;
+    size_t length;
+public:
+    TemporaryBuffer(void* buffer, size_t length) :
+        array(static_cast<T*>(buffer)),
+        length(length)
+    {
+        std::uninitialized_fill<T*, T>(array, array + length, T());
+    }
+    ~TemporaryBuffer()
+    {
+        for (auto it = array, last = array + length; it != last; ++it)
+            it->~T();
+    }
+    T& operator[](size_t pos) {
+        return array[pos];
+    }
+    const T& operator[](size_t pos) const {
+        return array[pos];
+    }
+    operator T*() {
+        return array;
+    }
 };
 
 // a public domain hash function.
@@ -162,7 +166,7 @@ JSBool caller(JSContext* cx, uintN argc, jsval* vp)
     JSObject* obj = JSVAL_TO_OBJECT(JS_CALLEE(cx, vp));
     ObjectImp* native = static_cast<ObjectImp*>(JS_GetPrivate(cx, obj));
     if (native) {
-        ARGUMENTS(Any, arguments, argc);
+        TemporaryBuffer<Any> arguments(alloca(sizeof(Any) * argc), argc);
         for (unsigned i = 0; i < argc; ++i)
             arguments[i] = convert(cx, JS_ARGV(cx, vp)[i]);
         Any result = native->message_(0, 0, argc, arguments);
@@ -177,7 +181,7 @@ JSBool operation(JSContext* cx, uintN argc, jsval* vp)
 {
     if (JSObject* obj = JS_THIS_OBJECT(cx, vp)) {
         ObjectImp* native = static_cast<ObjectImp*>(JS_GetPrivate(cx, obj));
-        ARGUMENTS(Any, arguments, argc);
+        TemporaryBuffer<Any> arguments(alloca(sizeof(Any) * argc), argc);
         for (unsigned i = 0; i < argc; ++i)
             arguments[i] = convert(cx, JS_ARGV(cx, vp)[i]);
         Any result = native->message_(NativeClass::getHash(cx, vp, N), 0, argc, arguments);
@@ -298,7 +302,7 @@ JSBool NativeClass::staticOperation(JSContext* cx, uintN argc, jsval* vp)
         }
         if (!hash)
             return JS_FALSE;
-        ARGUMENTS(Any, arguments, argc);
+        TemporaryBuffer<Any> arguments(alloca(sizeof(Any) * argc), argc);
         for (unsigned i = 0; i < argc; ++i)
             arguments[i] = convert(cx, JS_ARGV(cx, vp)[i]);
         Any result = getConstructor().message_(hash, "", argc, arguments).toObject();
@@ -313,7 +317,7 @@ JSBool NativeClass::constructor(JSContext* cx, uintN argc, jsval* vp)
 {
     Object (*getConstructor)() = NativeClass::constructorGetters[N];
     if (getConstructor) {
-        ARGUMENTS(Any, arguments, argc);
+        TemporaryBuffer<Any> arguments(alloca(sizeof(Any) * argc), argc);
         for (unsigned i = 0; i < argc; ++i)
             arguments[i] = convert(cx, JS_ARGV(cx, vp)[i]);
         Any result = getConstructor().message_(0, "", argc, arguments).toObject();
