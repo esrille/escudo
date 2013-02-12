@@ -550,10 +550,14 @@ LDADD = libeshtml5.a libesfontmanager.a \
 	-lssl -lcrypto \
 	-lm -lssl -lcrypto
 
+AM_LDFLAGS = \
+	$(X11_LDFLAGS)
+
 AM_CPPFLAGS = \
 	$(STD_CXX11_CPPFLAGS) \
 	-I $(srcdir) -I $(srcdir)/src \
 	-isystem $(builddir) \
+	$(X11_CPPFLAGS) \
 	$(ICU_CPPFLAGS) \
 	$(FREETYPE_CPPFLAGS) \
 	-DXP_UNIX \

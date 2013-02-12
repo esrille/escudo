@@ -614,6 +614,8 @@ freetype_config
 ICU_LIBS
 ICU_CPPFLAGS
 icu_config
+X11_CPPFLAGS
+X11_LDFLAGS
 HAVE_LIBEXEC_FALSE
 HAVE_LIBEXEC_TRUE
 HAVE_ESIDL
@@ -4612,6 +4614,62 @@ _ACEOF
   LIBS="-lrt $LIBS"
 
 fi
+
+
+# check X11 libraries for OSX
+X11_LDFLAGS=""
+X11_CPPFLAGS=""
+case "$host" in
+  *-*-darwin*)
+    X11_ROOT="no"
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for /opt/X11" >&5
+$as_echo_n "checking for /opt/X11... " >&6; }
+if ${ac_cv_file__opt_X11+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "/opt/X11"; then
+  ac_cv_file__opt_X11=yes
+else
+  ac_cv_file__opt_X11=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__opt_X11" >&5
+$as_echo "$ac_cv_file__opt_X11" >&6; }
+if test "x$ac_cv_file__opt_X11" = xyes; then :
+  X11_ROOT="/opt/X11"
+fi
+
+    if test "$X11_ROOT" = "no"; then
+      { $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/X11" >&5
+$as_echo_n "checking for /usr/X11... " >&6; }
+if ${ac_cv_file__usr_X11+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "/usr/X11"; then
+  ac_cv_file__usr_X11=yes
+else
+  ac_cv_file__usr_X11=no
+fi
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_file__usr_X11" >&5
+$as_echo "$ac_cv_file__usr_X11" >&6; }
+if test "x$ac_cv_file__usr_X11" = xyes; then :
+  X11_ROOT="/usr/X11"
+fi
+
+    fi
+    if test "$X11_ROOT" = "no"; then
+      as_fn_error $? "Cannot find XQuartz / X11. XQuartz / X11 is needed" "$LINENO" 5
+    fi
+    X11_LDFLAGS="-L$X11_ROOT/lib"
+    X11_CPPFLAGS="-I$X11_ROOT/include"
+    ;;
+esac
+
 
 
 # check for icu-config

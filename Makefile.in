@@ -688,6 +688,8 @@ STD_CXX11_CPPFLAGS = @STD_CXX11_CPPFLAGS@
 STD_CXX11_LIBS = @STD_CXX11_LIBS@
 STRIP = @STRIP@
 VERSION = @VERSION@
+X11_CPPFLAGS = @X11_CPPFLAGS@
+X11_LDFLAGS = @X11_LDFLAGS@
 YACC = @YACC@
 YFLAGS = @YFLAGS@
 abs_builddir = @abs_builddir@
@@ -1280,10 +1282,14 @@ LDADD = libeshtml5.a libesfontmanager.a \
 	-lssl -lcrypto \
 	-lm -lssl -lcrypto
 
+AM_LDFLAGS = \
+	$(X11_LDFLAGS)
+
 AM_CPPFLAGS = \
 	$(STD_CXX11_CPPFLAGS) \
 	-I $(srcdir) -I $(srcdir)/src \
 	-isystem $(builddir) \
+	$(X11_CPPFLAGS) \
 	$(ICU_CPPFLAGS) \
 	$(FREETYPE_CPPFLAGS) \
 	-DXP_UNIX \

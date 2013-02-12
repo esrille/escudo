@@ -92,6 +92,26 @@ AC_CHECK_LIB(boost_iostreams-mt, main, , [
 # MacOSX doesn't have librt.
 AC_CHECK_LIB(rt, main)
 
+# check X11 libraries for OSX
+X11_LDFLAGS=""
+X11_CPPFLAGS=""
+case "$host" in
+  *-*-darwin*)
+    X11_ROOT="no"
+    AC_CHECK_FILE(/opt/X11, X11_ROOT="/opt/X11")
+    if test "$X11_ROOT" = "no"; then
+      AC_CHECK_FILE(/usr/X11, X11_ROOT="/usr/X11")
+    fi
+    if test "$X11_ROOT" = "no"; then
+      AC_MSG_ERROR([Cannot find XQuartz / X11. XQuartz / X11 is needed])
+    fi
+    X11_LDFLAGS="-L$X11_ROOT/lib"
+    X11_CPPFLAGS="-I$X11_ROOT/include"
+    ;;
+esac
+AC_SUBST([X11_LDFLAGS])
+AC_SUBST([X11_CPPFLAGS])
+
 # check for icu-config
 case "$host" in
   *-*-darwin*)
