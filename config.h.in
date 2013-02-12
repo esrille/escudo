@@ -49,6 +49,8 @@
 #endif
 
 #ifdef __APPLE__
+#ifndef ESCORT_CHAR16_T_STUBS
+#define ESCORT_CHAR16_T_STUBS
 #include <locale>
 namespace std {
 template<>
@@ -56,4 +58,5 @@ class ctype<char16_t> : public ctype<wchar_t> { };
 template<>
 class numpunct<char16_t> : public numpunct<wchar_t> { };
 }
+#endif
 #endif
