@@ -33,6 +33,8 @@ AH_BOTTOM([#if 4 < __GNUC__ || __GNUC__ == 4 && 6 <= __GNUC_MINOR__
 
 # generate char16_t stubs
 AH_BOTTOM([#ifdef __APPLE__
+#ifndef ESCORT_CHAR16_T_STUBS
+#define ESCORT_CHAR16_T_STUBS
 #include <locale>
 namespace std {
 template<>
@@ -40,6 +42,7 @@ class ctype<char16_t> : public ctype<wchar_t> { };
 template<>
 class numpunct<char16_t> : public numpunct<wchar_t> { };
 }
+#endif
 #endif])
 
 # check C++11
