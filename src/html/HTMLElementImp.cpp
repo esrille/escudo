@@ -426,11 +426,13 @@ void HTMLElementImp::xblEnteredDocument(Node node)
     while (node) {
         if (auto element = dynamic_cast<HTMLElementImp*>(node.self())) {
             if (element->shadowTarget && !element->shadowImplementation) {
-                DocumentImp* document = element->getOwnerDocumentImp();
+                DocumentImp* document = dynamic_cast<HTMLTemplateElementImp*>(element->shadowTree.self())->getOwnerDocumentImp();
+                assert(document);
                 DocumentWindowPtr window = document->activate();
                 ECMAScriptContext* context = window->getContext();
                 element->shadowImplementation = context->xblCreateImplementation(element->shadowTarget, element->bindingImplementation, element, element->shadowTree);
                 element->shadowImplementation.xblEnteredDocument();
+                element->getOwnerDocumentImp()->activate();
             }
         }
         if (node.hasChildNodes())
@@ -442,7 +444,7 @@ void HTMLElementImp::xblEnteredDocument(Node node)
 void HTMLElementImp::invokeShadowTarget(EventImp* event)
 {
     auto currentWindow = static_cast<WindowImp*>(ECMAScriptContext::getCurrent());
-    if (auto shadowDocument = dynamic_cast<DocumentImp*>(shadowTree.getOwnerDocument().self()))
+    if (auto shadowDocument = dynamic_cast<HTMLTemplateElementImp*>(shadowTree.self())->getOwnerDocumentImp())
         shadowDocument->activate();
     dynamic_cast<EventTargetImp*>(shadowTarget.self())->invoke(event);
     if (currentWindow)
