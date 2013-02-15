@@ -66,6 +66,7 @@ public:
         if (global)
             delete global;
         global = new(std::nothrow) ECMAScriptContext;
+        activate();
     }
 
     ECMAScriptContext* getContext() {

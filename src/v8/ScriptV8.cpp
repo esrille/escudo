@@ -610,20 +610,22 @@ ECMAScriptContext::Impl::Impl()
 
 ECMAScriptContext::Impl::~Impl()
 {
-    v8::Local<v8::Context> current = v8::Context::GetCurrent();
-    if (current == context)
-        current->Exit();
+    if (v8::Context::GetCurrent() == context)
+        context->Exit();
     context.Dispose();
     context.Clear();
-
 }
 
 void ECMAScriptContext::Impl::activate(ObjectImp* window)
 {
-    v8::Local<v8::Context> current = v8::Context::GetCurrent();
-    if (current != context)
-        current->Exit();
-    context->Enter();
+    if (v8::Context::InContext()) {
+        v8::Local<v8::Context> current = v8::Context::GetCurrent();
+        if (current != context) {
+            current->Exit();
+            context->Enter();
+        }
+    } else
+        context->Enter();
     v8::Handle<v8::Object> globalProxy = context->Global();
     v8::Handle<v8::Object> global = globalProxy->GetPrototype().As<v8::Object>();
     global->SetInternalField(0, v8::External::New(window));
