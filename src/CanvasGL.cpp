@@ -35,17 +35,32 @@ void Canvas::Impl::setup(int w, int h)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
-    // Setup renderBuffer
-    glGenRenderbuffers(1, &renderBuffer);
-    glBindRenderbuffer(GL_RENDERBUFFER, renderBuffer);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_STENCIL, width, height);
+    if (GLEW_ARB_framebuffer_object) {
+        // Setup renderBuffer
+        glGenRenderbuffers(1, &renderBuffer);
+        glBindRenderbuffer(GL_RENDERBUFFER, renderBuffer);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_STENCIL, width, height);
 
-    // Setup frameBuffer
-    glGenFramebuffers(1, &frameBuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, renderBuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        // Setup frameBuffer
+        glGenFramebuffers(1, &frameBuffer);
+        glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+        glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, renderBuffer);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    } else {
+        // Setup renderBuffer
+        glGenRenderbuffersEXT(1, &renderBuffer);
+        glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, renderBuffer);
+        glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_STENCIL_EXT, width, height);
+
+        // Setup frameBuffer
+        glGenFramebuffersEXT(1, &frameBuffer);
+        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, frameBuffer);
+        glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, texture, 0);
+        glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, renderBuffer);
+        glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, renderBuffer);
+        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+    }
 }
 
 void Canvas::Impl::shutdown()
@@ -53,8 +68,13 @@ void Canvas::Impl::shutdown()
     if (width == 0 && height == 0)
         return;
 
-    glDeleteFramebuffers(1, &frameBuffer);
-    glDeleteRenderbuffers(1, &renderBuffer);
+    if (GLEW_ARB_framebuffer_object) {
+        glDeleteFramebuffers(1, &frameBuffer);
+        glDeleteRenderbuffers(1, &renderBuffer);
+    } else {
+        glDeleteFramebuffersEXT(1, &frameBuffer);
+        glDeleteRenderbuffersEXT(1, &renderBuffer);
+    }
     glDeleteTextures(1, &texture);
 
     frameBuffer = 0;
@@ -71,7 +91,10 @@ void Canvas::Impl::beginRender(unsigned backgroundColor)
 
     savedFrameBuffer = currentFrameBuffer;
     currentFrameBuffer = frameBuffer;
-    glBindFramebuffer(GL_FRAMEBUFFER, currentFrameBuffer);
+    if (GLEW_ARB_framebuffer_object)
+        glBindFramebuffer(GL_FRAMEBUFFER, currentFrameBuffer);
+    else
+        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, currentFrameBuffer);
 
     GLfloat m[16];
     glGetFloatv(GL_MODELVIEW_MATRIX, m);
@@ -101,7 +124,10 @@ void Canvas::Impl::endRender()
     glPopMatrix();
 
     currentFrameBuffer = savedFrameBuffer;
-    glBindFramebuffer(GL_FRAMEBUFFER, currentFrameBuffer);
+    if (GLEW_ARB_framebuffer_object)
+        glBindFramebuffer(GL_FRAMEBUFFER, currentFrameBuffer);
+    else
+        glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, currentFrameBuffer);
 }
 
 void Canvas::Impl::render(int w, int h)

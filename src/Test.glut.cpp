@@ -212,11 +212,11 @@ void init(int* argc, char* argv[], int width, int height)
         std::cout << "error: " << glewGetErrorString(err) << "\n";
         exit(EXIT_FAILURE);
     }
-    if (!GLEW_ARB_framebuffer_object) {
-        std::cout << "error: ARB_framebuffer_object extension is not supported by the installed OpenGL driver.\n";
+
+    if (!GLEW_EXT_framebuffer_object && !GLEW_ARB_framebuffer_object) {
+        std::cout << "error: Neither EXT_framebuffer_object nor ARB_framebuffer_object extension is supported by the installed OpenGL driver.\n";
         exit(EXIT_FAILURE);
     }
-
     glutReshapeFunc(reshape);
     glutDisplayFunc(display);
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
