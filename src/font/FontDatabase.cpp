@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,20 @@ namespace {
 
 const char* fontList[] =
 {
+#ifdef __APPLE__
+    "/Library/Fonts/Arial Bold Italic.ttf",
+    "/Library/Fonts/Arial Bold.ttf",
+    "/Library/Fonts/Arial Italic.ttf",
+    "/Library/Fonts/Arial.ttf",
+    "/Library/Fonts/Times New Roman Bold Italic.ttf",
+    "/Library/Fonts/Times New Roman Bold.ttf",
+    "/Library/Fonts/Times New Roman Italic.ttf",
+    "/Library/Fonts/Times New Roman.ttf",
+    "/Library/Fonts/Courier New Bold Italic.ttf",
+    "/Library/Fonts/Courier New Bold.ttf",
+    "/Library/Fonts/Courier New Italic.ttf",
+    "/Library/Fonts/Courier New.ttf",
+#endif
 #ifdef LIBERATON_TTF
     // LiberationSans
     LIBERATON_TTF "/LiberationSans-BoldItalic.ttf",
