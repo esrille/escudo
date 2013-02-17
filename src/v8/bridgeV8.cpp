@@ -24,6 +24,7 @@
 #include <memory>
 
 #include "ScriptV8.h"
+#include "WindowImp.h"
 
 std::map<std::string, v8::Persistent<v8::FunctionTemplate>> NativeClass::interfaceMap;
 std::map<ObjectImp*, v8::Persistent<v8::Object>> NativeClass::wrapperMap;
@@ -447,6 +448,17 @@ v8::Handle<v8::Object> NativeClass::createJSObject(ObjectImp* imp)
     v8::HandleScope handleScope;
 
     assert(imp);
+    if (dynamic_cast<org::w3c::dom::bootstrap::WindowImp*>(imp)) {
+        assert(v8::Context::InContext());
+        v8::Local<v8::Context> context = v8::Context::GetCurrent();
+        v8::Handle<v8::Object> globalProxy = context->Global();
+        v8::Handle<v8::Object> global = globalProxy->GetPrototype().As<v8::Object>();
+        assert(global->InternalFieldCount() == 1);
+        v8::Handle<v8::Object> x(static_cast<v8::Object*>(imp->getPrivate()));
+        if (x == global)
+            return globalProxy;
+    }
+
     if (0 < wrapperMap.count(imp))
         return wrapperMap[imp];
 

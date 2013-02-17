@@ -628,8 +628,9 @@ void ECMAScriptContext::Impl::activate(ObjectImp* window)
         context->Enter();
     v8::Handle<v8::Object> globalProxy = context->Global();
     v8::Handle<v8::Object> global = globalProxy->GetPrototype().As<v8::Object>();
+    assert(global->InternalFieldCount() == 1);
     global->SetInternalField(0, v8::External::New(window));
-    window->setPrivate(*context->Global());
+    window->setPrivate(*global);
 }
 
 void ECMAScriptContext::Impl::shutDown()
