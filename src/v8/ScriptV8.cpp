@@ -595,7 +595,8 @@ ECMAScriptContext::Impl::Impl()
 
     v8::ExtensionConfiguration extensions(1, extensionNames);
     context = v8::Context::New(&extensions, getGlobalTemplate());
-    context->Enter();
+    v8::Context::Scope scope(context);
+    v8::HandleScope handleScope;
     v8::Handle<v8::Object> globalProxy = context->Global();
     v8::Handle<v8::Object> global = globalProxy->GetPrototype().As<v8::Object>();
     assert(global->InternalFieldCount() == 1);
@@ -619,18 +620,19 @@ ECMAScriptContext::Impl::~Impl()
 void ECMAScriptContext::Impl::activate(ObjectImp* window)
 {
     if (v8::Context::InContext()) {
-        v8::Local<v8::Context> current = v8::Context::GetCurrent();
-        if (current != context) {
-            current->Exit();
+        if (ECMAScriptContext::getCurrent() != window) {
+            v8::Context::GetCurrent()->Exit();
             context->Enter();
         }
     } else
         context->Enter();
+
+    v8::HandleScope handleScope;
+
     v8::Handle<v8::Object> globalProxy = context->Global();
     v8::Handle<v8::Object> global = globalProxy->GetPrototype().As<v8::Object>();
     assert(global->InternalFieldCount() == 1);
     global->SetInternalField(0, v8::External::New(window));
-    window->setPrivate(*global);
 }
 
 void ECMAScriptContext::Impl::shutDown()
@@ -650,8 +652,8 @@ ECMAScriptContext::~ECMAScriptContext()
 
 void ECMAScriptContext::activate(ObjectImp* window)
 {
-    current = window;
     pimpl->activate(window);
+    current = window;
 }
 
 Object* ECMAScriptContext::compileFunction(const std::u16string& body)

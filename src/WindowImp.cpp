@@ -258,10 +258,10 @@ bool WindowImp::poll()
             Document newDocument = getDOMImplementation()->createDocument(u"", u"", 0); // TODO: Create HTML document
             if ((document = dynamic_cast<DocumentImp*>(newDocument.self()))) {
                 // TODO: Fire a simple unload event.
-                window->setDocument(newDocument);
                 document->setDefaultView(this);
                 document->setURL(request.getRequestMessage().getURL());
                 document->setLastModified(request.getLastModified());
+                window->setDocument(newDocument);
                 if (!request.getError())
                     history.update(window);
                 else
