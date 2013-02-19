@@ -248,7 +248,8 @@ public:
         return scrollHeight;
     }
 
-    DocumentWindowPtr activate();
+    void enter();
+    void exit();
 
     void enableZoom(bool value);
     float getZoom() const;

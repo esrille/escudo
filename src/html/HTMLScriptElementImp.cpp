@@ -182,8 +182,7 @@ bool HTMLScriptElementImp::execute()
         if (3 <= script.length() && script.compare(script.length() - 3, 3, u"-->") == 0)
             script.erase(script.length() - 3);
     }
-    DocumentWindowPtr window = getOwnerDocumentImp()->activate();
-    Any result = window->getContext()->evaluate(script);
+    Any result = getOwnerDocumentImp()->getContext()->evaluate(script);
     if (auto binding = dynamic_cast<HTMLBindingElementImp*>(getParentElement().self())) {
         if (result.isObject() && !binding->getImplementation())
             binding->setImplementation(result.toObject());

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,20 +61,14 @@ public:
     Document getDocument() const {
         return document;
     }
-    void setDocument(const Document& document) {
-        this->document = document;
-        if (global)
-            delete global;
-        global = new(std::nothrow) ECMAScriptContext;
-        activate();
-    }
+    void setDocument(const Document& document);
 
     ECMAScriptContext* getContext() {
         return global;
     }
 
-    void activate();
-    void activate(WindowImp* proxy);
+    void enter(WindowImp* proxy);
+    void exit(WindowImp* proxy);
 
     void setEventHandler(const std::u16string& type, Object handler);
 

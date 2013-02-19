@@ -664,6 +664,8 @@ Any ECMAScriptContext::callFunction(Object thisObject, Object functionObject, in
 
 Any ECMAScriptContext::evaluate(const std::u16string& source)
 {
+    assert(getCurrentContext() == this);
+
     v8::HandleScope handleScope;
 
     v8::Handle<v8::String> string = v8::String::New(reinterpret_cast<const uint16_t*>(source.c_str()), source.length());

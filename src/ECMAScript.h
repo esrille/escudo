@@ -47,7 +47,9 @@ public:
     ECMAScriptContext();
     ~ECMAScriptContext();
 
-    void activate(ObjectImp* window);
+    void enter(ObjectImp* windowProxy);
+    void exit(ObjectImp* windowProxy);
+
     Any evaluate(const std::u16string& script);
     Object* compileFunction(const std::u16string& body);
     Any callFunction(Object thisObject, Object functionObject, int argc, Any* argv);

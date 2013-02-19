@@ -112,6 +112,21 @@ public:
     }
     void setDefaultView(WindowImp* view);
 
+    void enter() {
+        if (defaultView)
+            defaultView->enter();
+    }
+    void exit() {
+        if (defaultView)
+            defaultView->exit();
+    }
+
+    ECMAScriptContext* getContext() const {
+        if (defaultView)
+            return defaultView->getDocumentWindow()->getContext();
+        return 0;
+    }
+
     int getMode() const {
         return mode;
     }
@@ -217,8 +232,6 @@ public:
         return activeElement;
     }
     void setFocus(ElementImp* element);
-
-    DocumentWindowPtr activate();
 
     unsigned incrementLoadEventDelayCount() {
         return ++loadEventDelayCount;

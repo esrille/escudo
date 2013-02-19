@@ -110,13 +110,16 @@ void WindowImp::setFlags(unsigned f)
         viewFlags |= f;
 }
 
-DocumentWindowPtr WindowImp::activate()
+void WindowImp::enter()
 {
-    if (window) {
-        window->activate(this);
-        return window;
-    }
-    return 0;
+    assert(window);
+    window->enter(this);
+}
+
+void WindowImp::exit()
+{
+    assert(window);
+    window->exit(this);
 }
 
 void WindowImp::enableZoom(bool value)
@@ -266,7 +269,9 @@ bool WindowImp::poll()
                     history.update(window);
                 else
                     document->setError(request.getError());
+                document->enter();
                 parser = new(std::nothrow) Parser(document, request.getContentDescriptor(), request.getResponseMessage().getContentCharset());
+                document->exit();
                 if (!parser)
                     break;  // TODO: error handling
             } else
@@ -276,24 +281,32 @@ bool WindowImp::poll()
             // TODO: Note white it would be nice to parse the HTML docucment in
             // the background task, firstly we need to check if we can run JS
             // in the background.
-            activate();
 
-            if (!parser->processPendingParsingBlockingScript())
+            document->enter();
+
+            if (!parser->processPendingParsingBlockingScript()) {
+                document->exit();
                 break;
-
+            }
             // TODO: run this in the background
             Token token;
             do {
                 token = parser->getToken();
                 parser->processToken(token);
             } while (token.getType() != Token::Type::EndOfFile && !document->getPendingParsingBlockingScript());
-            if (document->getPendingParsingBlockingScript())
+
+            if (document->getPendingParsingBlockingScript()) {
+                document->exit();
                 break;
+            }
             document->setCharacterSet(utfconv(parser->getEncoding()));
 
             // TODO: Check if the parser has been aborted.
             NodeImp::evalTree(document);
             document->resetStyleSheets();
+
+            document->exit();
+
             recordTime("%*shtml parsed", windowDepth * 2, "");
             if (4 <= getLogLevel())
                 dumpTree(std::cerr, document);

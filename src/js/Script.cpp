@@ -640,10 +640,14 @@ ECMAScriptContext::~ECMAScriptContext()
 {
 }
 
-void ECMAScriptContext::activate(ObjectImp* window)
+void ECMAScriptContext::enter(ObjectImp* window)
 {
-    current = window;
     pimpl->activate(window);
+    current = window;
+}
+
+void ECMAScriptContext::exit(ObjectImp* window)
+{
 }
 
 Any ECMAScriptContext::evaluate(const std::u16string& script)

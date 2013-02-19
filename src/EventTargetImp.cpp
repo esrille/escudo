@@ -137,11 +137,12 @@ bool EventTargetImp::dispatchEvent(events::Event evt)
     event->setTarget(this);
 
     if (NodeImp* node = dynamic_cast<NodeImp*>(this)) {
-        DocumentImp* document = 0;
-        if (document = dynamic_cast<DocumentImp*>(node))
-            document->activate();
-        else if (document = node->getOwnerDocumentImp())
-            document->activate();
+        DocumentImp* document = dynamic_cast<DocumentImp*>(node);
+        if (!document)
+            document = node->getOwnerDocumentImp();
+        assert(document);
+
+        document->enter();
 
         std::list<EventTargetImp*> eventPath;
         for (NodeImp* ancestor = node->parentNode; ancestor; ancestor = ancestor->parentNode) {
@@ -192,7 +193,6 @@ bool EventTargetImp::dispatchEvent(events::Event evt)
             }
         }
 
-
         if (!event->getDefaultPrevented()) {
             // TODO: Call default actions;
             // cf. http://www.w3.org/TR/DOM-Level-3-Events/#event-flow-default-cancel
@@ -210,18 +210,19 @@ bool EventTargetImp::dispatchEvent(events::Event evt)
             }
         }
 
+        document->exit();
+
     } else if (DocumentWindow* window = dynamic_cast<DocumentWindow*>(this)) {
-        window->activate();
+        auto proxy = dynamic_cast<WindowImp*>(window->getDocument().getDefaultView().self());
+        window->enter(proxy);
         event->setEventPhase(events::Event::AT_TARGET);
         event->setCurrentTarget(this);
         invoke(event);
+        window->exit(proxy);
     }
     event->setDispatchFlag(false);
     event->setEventPhase(events::Event::AT_TARGET);
     event->setCurrentTarget(0);
-
-    if (currentWindow)
-        currentWindow->activate();
 
     return !event->getDefaultPrevented();
 }

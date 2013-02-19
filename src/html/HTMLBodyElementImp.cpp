@@ -61,7 +61,7 @@ void HTMLBodyElementImp::handleMutationMarginWidth()
 
 void HTMLBodyElementImp::handleMutation(events::MutationEvent mutation)
 {
-    DocumentWindowPtr window = getOwnerDocumentImp()->activate();
+    ECMAScriptContext* context = getOwnerDocumentImp()->getContext();
     std::u16string value = mutation.getNewValue();
     bool compile = false;
     if (!value.empty()) {
@@ -97,55 +97,55 @@ void HTMLBodyElementImp::handleMutation(events::MutationEvent mutation)
         break;
     // Event handlers
     case Intern(u"onafterprint"):
-        setOnafterprint(compile ? window->getContext()->compileFunction(value) : 0);
+        setOnafterprint(compile ? context->compileFunction(value) : 0);
         break;
     case Intern(u"onbeforeprint"):
-        setOnbeforeprint(compile ? window->getContext()->compileFunction(value) : 0);
+        setOnbeforeprint(compile ? context->compileFunction(value) : 0);
         break;
     case Intern(u"onbeforeunload"):
-        setOnbeforeunload(compile ? window->getContext()->compileFunction(value) : 0);
+        setOnbeforeunload(compile ? context->compileFunction(value) : 0);
         break;
     case Intern(u"onblur"):
-        setOnblur(compile ? window->getContext()->compileFunction(value) : 0);
+        setOnblur(compile ? context->compileFunction(value) : 0);
         break;
     case Intern(u"onerror"):
-        setOnerror(compile ? window->getContext()->compileFunction(value) : 0);
+        setOnerror(compile ? context->compileFunction(value) : 0);
         break;
     case Intern(u"onfocus"):
-        setOnfocus(compile ? window->getContext()->compileFunction(value) : 0);
+        setOnfocus(compile ? context->compileFunction(value) : 0);
         break;
     case Intern(u"onhashchange"):
-        setOnhashchange(compile ? window->getContext()->compileFunction(value) : 0);
+        setOnhashchange(compile ? context->compileFunction(value) : 0);
         break;
     case Intern(u"onload"):
-        setOnload(compile ? window->getContext()->compileFunction(value) : 0);
+        setOnload(compile ? context->compileFunction(value) : 0);
         break;
     case Intern(u"onmessage"):
-        setOnmessage(compile ? window->getContext()->compileFunction(value) : 0);
+        setOnmessage(compile ? context->compileFunction(value) : 0);
         break;
     case Intern(u"onoffline"):
-        setOnoffline(compile ? window->getContext()->compileFunction(value) : 0);
+        setOnoffline(compile ? context->compileFunction(value) : 0);
         break;
     case Intern(u"ononline"):
-        setOnonline(compile ? window->getContext()->compileFunction(value) : 0);
+        setOnonline(compile ? context->compileFunction(value) : 0);
         break;
     case Intern(u"onpopstate"):
-        setOnpopstate(compile ? window->getContext()->compileFunction(value) : 0);
+        setOnpopstate(compile ? context->compileFunction(value) : 0);
         break;
     case Intern(u"onpagehide"):
-        setOnpagehide(compile ? window->getContext()->compileFunction(value) : 0);
+        setOnpagehide(compile ? context->compileFunction(value) : 0);
         break;
     case Intern(u"onresize"):
-        setOnresize(compile ? window->getContext()->compileFunction(value) : 0);
+        setOnresize(compile ? context->compileFunction(value) : 0);
         break;
     case Intern(u"onscroll"):
-        setOnscroll(compile ? window->getContext()->compileFunction(value) : 0);
+        setOnscroll(compile ? context->compileFunction(value) : 0);
         break;
     case Intern(u"onstorage"):
-        setOnstorage(compile ? window->getContext()->compileFunction(value) : 0);
+        setOnstorage(compile ? context->compileFunction(value) : 0);
         break;
     case Intern(u"onunload"):
-        setOnunload(compile ? window->getContext()->compileFunction(value) : 0);
+        setOnunload(compile ? context->compileFunction(value) : 0);
         break;
     default:
         HTMLElementImp::handleMutation(mutation);

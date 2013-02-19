@@ -52,15 +52,24 @@ DocumentWindow::~DocumentWindow()
     }
 }
 
-void DocumentWindow::activate()
+void DocumentWindow::setDocument(const Document& document)
 {
-    activate(dynamic_cast<WindowImp*>(document.getDefaultView().self()));
+    this->document = document;
+    if (global)
+        delete global;
+    global = new(std::nothrow) ECMAScriptContext;
 }
 
-void DocumentWindow::activate(WindowImp* proxy)
+void DocumentWindow::enter(WindowImp* proxy)
 {
-    if (proxy && global)
-        global->activate(proxy);
+    if (global)
+        global->enter(proxy);
+}
+
+void DocumentWindow::exit(WindowImp* proxy)
+{
+    if (global)
+        global->exit(proxy);
 }
 
 void DocumentWindow::setEventHandler(const std::u16string& type, Object handler)
@@ -128,7 +137,6 @@ void DocumentWindow::handleClick(EventListenerImp* listener, events::Event event
         return;
 
     events::MouseEvent mouse = interface_cast<events::MouseEvent>(event);
-    unsigned short buttons = mouse.getButtons();
 
     switch (mouse.getButton()) {
     case 0:

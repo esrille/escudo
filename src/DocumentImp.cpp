@@ -143,8 +143,7 @@ void DocumentImp::setEventHandler(const std::u16string& type, Object handler)
         listener->setEventHandler(handler);
         return;
     }
-    DocumentWindowPtr window = activate();
-    listener = new(std::nothrow) EventListenerImp(boost::bind(&ECMAScriptContext::dispatchEvent, window->getContext(), _1, _2));
+    listener = new(std::nothrow) EventListenerImp(boost::bind(&ECMAScriptContext::dispatchEvent, getContext(), _1, _2));
     if (listener) {
         listener->setEventHandler(handler);
         addEventListener(type, listener, false, EventTargetImp::UseEventHandler);
@@ -249,13 +248,6 @@ void DocumentImp::setFocus(ElementImp* element)
         event.initEvent(u"focus", false, false);
         activeElement->dispatchEvent(event);
     }
-}
-
-DocumentWindowPtr DocumentImp::activate()
-{
-    if (defaultView)
-        return defaultView->activate();
-    return 0;
 }
 
 unsigned DocumentImp::decrementLoadEventDelayCount() {

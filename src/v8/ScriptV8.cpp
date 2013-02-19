@@ -611,28 +611,28 @@ ECMAScriptContext::Impl::Impl()
 
 ECMAScriptContext::Impl::~Impl()
 {
-    if (v8::Context::GetCurrent() == context)
+    if (v8::Context::InContext() && v8::Context::GetCurrent() == context)
         context->Exit();
     context.Dispose();
     context.Clear();
 }
 
-void ECMAScriptContext::Impl::activate(ObjectImp* window)
+void ECMAScriptContext::Impl::enter(ObjectImp* windowProxy)
 {
-    if (v8::Context::InContext()) {
-        if (ECMAScriptContext::getCurrent() != window) {
-            v8::Context::GetCurrent()->Exit();
-            context->Enter();
-        }
-    } else
-        context->Enter();
+    context->Enter();
 
     v8::HandleScope handleScope;
 
     v8::Handle<v8::Object> globalProxy = context->Global();
     v8::Handle<v8::Object> global = globalProxy->GetPrototype().As<v8::Object>();
     assert(global->InternalFieldCount() == 1);
-    global->SetInternalField(0, v8::External::New(window));
+    global->SetInternalField(0, v8::External::New(windowProxy));
+}
+
+void ECMAScriptContext::Impl::exit(ObjectImp* windowProxy)
+{
+    assert(v8::Context::GetCurrent() == context);
+    context->Exit();
 }
 
 void ECMAScriptContext::Impl::shutDown()
@@ -650,19 +650,26 @@ ECMAScriptContext::~ECMAScriptContext()
 {
 }
 
-void ECMAScriptContext::activate(ObjectImp* window)
+void ECMAScriptContext::enter(ObjectImp* window)
 {
-    pimpl->activate(window);
+    pimpl->enter(window);
     current = window;
+}
+
+void ECMAScriptContext::exit(ObjectImp* window)
+{
+    pimpl->exit(window);
 }
 
 Object* ECMAScriptContext::compileFunction(const std::u16string& body)
 {
+    assert(getCurrentContext() == this);
     return pimpl->compileFunction(body);
 }
 
 Object* ECMAScriptContext::xblCreateImplementation(Object object, Object prototype, Object boundElement, Object shadowTree)
 {
+    assert(getCurrentContext() == this);
     return pimpl->xblCreateImplementation(object, prototype, boundElement, shadowTree);
 }
 

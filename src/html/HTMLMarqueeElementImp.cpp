@@ -48,7 +48,7 @@ HTMLMarqueeElementImp::~HTMLMarqueeElementImp()
 
 void HTMLMarqueeElementImp::handleMutation(events::MutationEvent mutation)
 {
-    DocumentWindowPtr window = getOwnerDocumentImp()->activate();
+    ECMAScriptContext* context = getOwnerDocumentImp()->getContext();
     css::CSSStyleDeclaration style(getStyle());
     std::u16string value = mutation.getNewValue();
     bool compile = false;
@@ -86,13 +86,13 @@ void HTMLMarqueeElementImp::handleMutation(events::MutationEvent mutation)
         break;
     // Event handlers
     case Intern(u"onbounce"):
-        setOnbounce(compile ? window->getContext()->compileFunction(value) : 0);
+        setOnbounce(compile ? context->compileFunction(value) : 0);
         break;
     case Intern(u"onfinish"):
-        setOnfinish(compile ? window->getContext()->compileFunction(value) : 0);
+        setOnfinish(compile ? context->compileFunction(value) : 0);
         break;
     case Intern(u"onstart"):
-        setOnstart(compile ? window->getContext()->compileFunction(value) : 0);
+        setOnstart(compile ? context->compileFunction(value) : 0);
         break;
     default:
         HTMLElementImp::handleMutation(mutation);
