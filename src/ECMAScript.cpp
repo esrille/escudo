@@ -16,6 +16,9 @@
 
 #include "ECMAScript.h"
 
+#include "DocumentWindow.h"
+#include "WindowImp.h"
+
 void ECMAScriptContext::dispatchEvent(org::w3c::dom::bootstrap::EventListenerImp* listener, org::w3c::dom::events::Event event)
 {
     assert(listener);
@@ -33,4 +36,12 @@ void ECMAScriptContext::dispatchEvent(org::w3c::dom::bootstrap::EventListenerImp
             unloadEvent.setReturnValue(result.toString());
     } else if (!result.toBoolean())
         event.preventDefault();
+}
+
+ECMAScriptContext* ECMAScriptContext::getCurrentContext()
+{
+    auto window = dynamic_cast<org::w3c::dom::bootstrap::WindowImp*>(current);
+    if (!window)
+        return 0;
+    return window->getDocumentWindow()->getContext();
 }

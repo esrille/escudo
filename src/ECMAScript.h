@@ -59,6 +59,7 @@ public:
     static ObjectImp* getCurrent() {
         return current;
     }
+    static ECMAScriptContext* getCurrentContext();
     static void shutDown();
 };
 
