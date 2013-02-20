@@ -1853,6 +1853,16 @@ void WindowImp::clearInterval(int handle)
     // TODO: implement me!
 }
 
+void WindowImp::postMessage(Any message, const std::u16string& targetOrigin)
+{
+    // TODO: implement me!
+}
+
+void WindowImp::postMessage(Any message, const std::u16string& targetOrigin, Sequence<html::Transferable> transfer)
+{
+    // TODO: implement me!
+}
+
 std::u16string WindowImp::toNativeLineEndings(const std::u16string& string)
 {
     // TODO: implement me!

@@ -43,4 +43,8 @@ interface MessagePort : EventTarget {
 };
 MessagePort implements Transferable;
 
+partial interface Window {
+  void postMessage(any message, DOMString targetOrigin, optional sequence<Transferable> transfer);
+};
+
 };

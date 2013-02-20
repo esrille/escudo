@@ -37,6 +37,7 @@
 #include <org/w3c/dom/html/ApplicationCache.h>
 #include <org/w3c/dom/html/Navigator.h>
 #include <org/w3c/dom/html/External.h>
+#include <org/w3c/dom/html/Transferable.h>
 #include <org/w3c/dom/Document.h>
 
 #include <condition_variable>
@@ -524,6 +525,9 @@ public:
     int setInterval(const std::u16string& handler);
     int setInterval(const std::u16string& handler, int timeout, Variadic<Any> arguments = Variadic<Any>());
     void clearInterval(int handle);
+    // Window-35
+    void postMessage(Any message, const std::u16string& targetOrigin);
+    void postMessage(Any message, const std::u16string& targetOrigin, Sequence<html::Transferable> transfer);
     // LineEndings
     std::u16string toNativeLineEndings(const std::u16string& string);
     // Object
