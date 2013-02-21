@@ -342,7 +342,8 @@ void ViewCSSImp::calculateComputedStyle(Element element, CSSStyleDeclarationImp*
         style->compute(this, parentStyle, element);
         unsigned comp = board.compare(style);
         if (comp & Box::NEED_TABLE_REFLOW) {
-            for (Box* box = getCurrentBox(style, true); box; box = box->getParentBox()) {
+            for (CSSStyleDeclarationImp* s = style; s; s = s->getParentStyle()) {
+                Box* box = getCurrentBox(s, true);
                 if (dynamic_cast<TableWrapperBox*>(box)) {
                     box->setFlags(Box::NEED_EXPANSION);
                     break;

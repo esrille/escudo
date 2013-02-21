@@ -19,9 +19,10 @@
 #include <org/w3c/dom/Element.h>
 #include <org/w3c/dom/html/HTMLBodyElement.h>
 
-#include "StackingContext.h"
+#include "CSSPropertyValueImp.h"
 #include "CSSValueParser.h"
 #include "MutationEventImp.h"
+#include "StackingContext.h"
 #include "Table.h"
 #include "ViewCSSImp.h"
 #include "WindowImp.h"
@@ -297,8 +298,11 @@ unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
             style->marker = 0;
     }
 
-    if (style->display != display)
+    if (style->display != display) {
         flags |= Box::NEED_EXPANSION;
+        if (CSSDisplayValueImp::isProperTableChild(style->display.getValue()) || CSSDisplayValueImp::isProperTableChild(display.getValue()))
+            flags |= Box::NEED_TABLE_REFLOW;
+    }
     if (style->float_ != float_)
         flags |= Box::NEED_EXPANSION;
     if (style->position != position)
