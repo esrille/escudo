@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Partial reflow test</title>
+<style type="text/css">
+table
+{
+    border-collapse: collapse;
+    table-layout: auto;
+    width: 320px;
+}
+td
+{
+    border: 2px solid black;
+    height: 3em;
+}
+</style>
+<script type="text/javascript">
+function doTest() {
+  this.addEventListener('keydown', function(event) {
+    if (event.keyCode == 13) {
+      var t = document.getElementById('t');
+      var s = getComputedStyle(t);
+      if (s.display == 'table-row')
+          t.style.display = 'none';
+      else
+          t.style.display = 'table-row';
+    }
+  }, false);
+}
+</script>
+</head>
+<body onload="doTest()">
+<p>Press [Enter] to toggle the 'display' property of the 2nd row in the table below:</p>
+<table>
+    <tr>
+        <td>1st</td>
+        <td>Filler Text</td>
+        <td>Filler Text</td>
+    </tr>
+    <tr id='t'>
+        <td>2nd</td>
+        <td>Filler Text</td>
+        <td>Filler Text</td>
+    </tr>
+    <tr>
+        <td>3rd</td>
+        <td>Filler Text</td>
+        <td>Filler Text</td>
+    </tr>
+</table>
+</body>
+</html>
