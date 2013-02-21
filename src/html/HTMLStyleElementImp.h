@@ -28,12 +28,17 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class HTMLStyleElementImp : public ObjectMixin<HTMLStyleElementImp, HTMLElementImp>
 {
+    Retained<EventListenerImp> mutationListener;
     std::u16string type;
     std::u16string media;
     bool scoped;
     stylesheets::StyleSheet styleSheet;
+
 public:
-    virtual void eval();
+    HTMLStyleElementImp(DocumentImp* ownerDocument);
+    HTMLStyleElementImp(HTMLStyleElementImp* org, bool deep);
+
+    virtual void handleMutation(EventListenerImp* listener, events::Event event);
 
     // Node
     virtual Node cloneNode(bool deep = true);
@@ -58,21 +63,6 @@ public:
     static const char* const getMetaData()
     {
         return html::HTMLStyleElement::getMetaData();
-    }
-
-    HTMLStyleElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"style"),
-        type(u"text/css"),
-        media(u"all"),
-        scoped(false),
-        styleSheet(0) {
-    }
-    HTMLStyleElementImp(HTMLStyleElementImp* org, bool deep) :
-        ObjectMixin(org, deep),
-        type(org->type),
-        media(org->media),
-        scoped(org->scoped),
-        styleSheet(org->styleSheet) {  // TODO: make a clone sheet, too?
     }
 };
 
