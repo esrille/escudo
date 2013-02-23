@@ -227,7 +227,37 @@ JSBool specialOp(JSContext* cx, JSObject* obj, jsid id, jsval* vp, int argc)
     Any result = native->message_(0, 0, argc, &argument);
     if (result.isUndefined())   // A workaround for [OverrideBuiltins]
         return JS_PropertyStub(cx, obj, id, vp);
+    if (JSID_IS_INT(id)) {
+        JSBool found;
+        if (JS_AlreadyHasOwnPropertyById(cx, obj, id, &found) && found)
+            JS_DeletePropertyById(cx, obj, id);
+    }
     JS_SET_RVAL(cx, vp, convert(cx, result));
+    return JS_TRUE;
+}
+
+JSBool specialResolver(JSContext* cx, JSObject* obj, jsid id)
+{
+    ObjectImp* native = static_cast<ObjectImp*>(JS_GetPrivate(cx, obj));
+    if (!native)
+        return JS_TRUE;
+    Any argument;
+    if (JSID_IS_INT(id))
+        argument = JSID_TO_INT(id);
+    else if (JSID_IS_STRING(id)) {
+        std::u16string name = toString(cx, id);
+        if (hasProperty(native, name))
+            return JS_ResolveStub(cx, obj, id);
+        argument = name;
+    } else
+        return JS_ResolveStub(cx, obj, id);
+    Any result = native->message_(0, 0, Object::SPECIAL_GETTER_, &argument);
+    if (result.isUndefined())
+        return JS_ResolveStub(cx, obj, id);
+    if (JSID_IS_INT(id)) {
+        jsval val = convert(cx, result);
+        JS_SetPropertyById(cx, obj, id, &val);  // A workaround for hasOwnProperty on NodeList
+    }
     return JS_TRUE;
 }
 
@@ -519,7 +549,7 @@ NativeClass::NativeClass(JSContext* cx, JSObject* global, const char* metadata, 
 
     JSObject* parentProto = 0;
     std::string parentName = Reflect::getIdentifier(meta.getExtends());
-    if (0 < parentName.length()) {
+    if (!parentName.empty()) {
         // Look up parentProto
         jsval val;
         if (JS_GetProperty(cx, global, parentName.c_str(), &val) && JSVAL_IS_OBJECT(val)) {
@@ -588,8 +618,10 @@ NativeClass::NativeClass(JSContext* cx, JSObject* global, const char* metadata, 
                     ++propertyNumber;
                 }
             }
-            if (prop.isGetter())
+            if (prop.isGetter()) {
                 jsclass.getProperty = specialGetter;
+                jsclass.resolve = specialResolver;
+            }
             if (prop.isSetter() || prop.isCreator())
                 jsclass.setProperty = specialSetter;
             if (prop.isDeleter())
