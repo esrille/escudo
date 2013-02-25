@@ -1466,6 +1466,10 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
         }
     }
 
+    if (flags & NEED_REFLOW) {
+        if (getFirstChild() && dynamic_cast<Block*>(getFirstChild()))
+            getFirstChild()->setFlags(Box::NEED_REFLOW);
+    }
     layOutChildren(view, context);
     if (!isAnonymous()) {
         if ((style->width.isAuto() || style->marginLeft.isAuto() || style->marginRight.isAuto()) &&
