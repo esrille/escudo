@@ -19,8 +19,13 @@
 #include "DocumentWindow.h"
 #include "WindowImp.h"
 
+#include "Test.util.h"
+
 void ECMAScriptContext::dispatchEvent(org::w3c::dom::bootstrap::EventListenerImp* listener, org::w3c::dom::events::Event event)
 {
+    if (!isMainThread())
+        return;
+
     assert(listener);
     Object functionObject(listener->getEventHandler());
     if (!functionObject)

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,12 @@
 #ifndef TEST_UTIL_H
 #define TEST_UTIL_H
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <iostream>
 
-#include <Object.h>
 #include <org/w3c/dom/Node.h>
 #include <org/w3c/dom/Element.h>
 #include <org/w3c/dom/css/CSSStyleSheet.h>
@@ -61,6 +64,7 @@ std::string getFileURL(const std::string& path);
 // Test.glut.cpp
 //
 void init(int* argc, char* argv[], int width = -1, int height = -1);
+bool isMainThread();
 
 //
 // Test.x11.cpp

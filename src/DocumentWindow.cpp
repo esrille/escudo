@@ -25,6 +25,8 @@
 #include "WindowImp.h"
 #include "css/ViewCSSImp.h"
 
+#include "Test.util.h"
+
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 DocumentWindow::DocumentWindow() :
@@ -62,13 +64,13 @@ void DocumentWindow::setDocument(const Document& document)
 
 void DocumentWindow::enter(WindowImp* proxy)
 {
-    if (global)
+    if (global && isMainThread())
         global->enter(proxy);
 }
 
 void DocumentWindow::exit(WindowImp* proxy)
 {
-    if (global)
+    if (global && isMainThread())
         global->exit(proxy);
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,14 @@ using namespace org::w3c::dom::bootstrap;
 using namespace org::w3c::dom;
 
 html::Window window(0);
+
+namespace
+{
+    enum {
+        MainThread = 1
+    };
+    __thread unsigned threadFlags;
+}
 
 void reshape(int w, int h)
 {
@@ -196,6 +204,8 @@ void timer(int value)
 
 void init(int* argc, char* argv[], int width, int height)
 {
+    threadFlags = MainThread;
+
     glutInit(argc, argv);
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH | GLUT_STENCIL);
     if (width <= 0 || height <= 0) {
@@ -246,4 +256,9 @@ void init(int* argc, char* argv[], int width, int height)
         std::cout << "error: The number of the OpenGL stencil bits needs to be greater than or equal to 8. Current: " << stencilBits << ".\n";
         exit(EXIT_FAILURE);
     }
+}
+
+bool isMainThread()
+{
+    return threadFlags & MainThread;
 }
