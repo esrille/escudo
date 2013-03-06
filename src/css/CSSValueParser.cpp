@@ -758,7 +758,7 @@ bool CSSValueRule::isValid(CSSValueParser* parser, unsigned propertyID) const
     }
     case Function:
         pos = parser->getPos();
-        if (term.unit == CSSParserTerm::CSS_TERM_FUNCTION && term.text == text) {
+        if (term.unit == CSSParserTerm::CSS_TERM_FUNCTION && term.text == text && term.expr) {
             CSSParserExpr* prev = parser->switchExpression(term.expr);
             const CSSValueRule& expr = list.front();
             if (expr.isValid(parser, propertyID) && parser->getToken().unit == CSSParserTerm::CSS_TERM_END) {
