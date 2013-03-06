@@ -385,8 +385,8 @@ bool WindowImp::poll()
 
 void WindowImp::render(ViewCSSImp* parentView)
 {
-    recordTime("%*srepaint begin: %s (%s)", windowDepth * 2, "", utfconv(window->getDocument().getReadyState()).c_str(), view ? "render" : "canvas");
     if (view) {
+        recordTime("%*srepaint begin: %s (%s)", windowDepth * 2, "", utfconv(window->getDocument().getReadyState()).c_str(), view ? "render" : "canvas");
         if (view->gatherFlags() & Box::NEED_REPAINT) {
             view->clearFlags(Box::NEED_REPAINT);
             canvas.shutdown();
@@ -409,9 +409,9 @@ void WindowImp::render(ViewCSSImp* parentView)
             std::cout << "##\n";
             std::cout.flush();
         }
+        recordTime("%*srepaint end", windowDepth * 2, "");
     }
     canvas.render(width, height);
-    recordTime("%*srepaint end", windowDepth * 2, "");
 }
 
 void WindowImp::mouse(int button, int up, int x, int y, int modifiers)
