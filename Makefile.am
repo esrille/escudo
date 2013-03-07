@@ -570,29 +570,29 @@ libesfontmanager_a_CPPFLAGS = $(AM_CPPFLAGS)
 
 if HAVE_LIBERATON
 libesfontmanager_a_CPPFLAGS += -DLIBERATON_TTF=\"$(LIBERATON_TTF)\"
-endif	
+endif
 if HAVE_DEJAVU
 libesfontmanager_a_CPPFLAGS += -DDEJAVU_TTF=\"$(DEJAVU_TTF)\"
-endif	
+endif
 if HAVE_IPA_GOTHIC
 libesfontmanager_a_CPPFLAGS += -DHAVE_IPA_GOTHIC=\"$(HAVE_IPA_GOTHIC)\"
-endif	
+endif
 if HAVE_IPA_MINCHO
 libesfontmanager_a_CPPFLAGS += -DHAVE_IPA_MINCHO=\"$(HAVE_IPA_MINCHO)\"
-endif	
+endif
 if HAVE_IPA_PGOTHIC
 libesfontmanager_a_CPPFLAGS += -DHAVE_IPA_PGOTHIC=\"$(HAVE_IPA_PGOTHIC)\"
-endif	
+endif
 if HAVE_IPA_PMINCHO
 libesfontmanager_a_CPPFLAGS += -DHAVE_IPA_PMINCHO=\"$(HAVE_IPA_PMINCHO)\"
-endif	
+endif
 if HAVE_AEGEAN
 libesfontmanager_a_CPPFLAGS += -DHAVE_AEGEAN=\"$(HAVE_AEGEAN)\"
-endif	
+endif
 if TEST_FONTS
 libesfontmanager_a_CPPFLAGS += -DTEST_FONTS=\"$(TEST_FONTS)\"
-endif	
-	
+endif
+
 libesfontmanager_a_SOURCES = \
 	src/font/FontManager.cpp \
 	src/font/FontManager.h \
@@ -716,7 +716,7 @@ libeshtml5_a_SOURCES = \
 	src/css/ViewCSSImp.cpp \
 	src/css/ViewCSSImp.h \
 	src/css/ViewCSSImpGL.cpp
-	
+
 # third party
 libeshtml5_a_SOURCES += \
 	src/picojson.h
