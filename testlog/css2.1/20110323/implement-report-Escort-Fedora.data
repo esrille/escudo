@@ -1,4 +1,4 @@
-# Escort 0.3.1 (2013-01-21 ee6c041) Fedora Linux 18
+# Escort 0.3.1 (2013-03-08 7dfab4b) Fedora Linux 18
 # Escort/0.3.1
 # http://test.csswg.org/suites/css2.1/20110323/
 # See http://wiki.csswg.org/test/implementation-report for instructions
@@ -3547,7 +3547,7 @@ html4/cascade-009.htm	pass
 #userstyle /var/www/html/suites/css2.1/20110323/html4/support/cascade.css
 html4/cascade-010.htm	pass
 html4/cascade-011.htm	pass
-#userstyle 
+#userstyle
 html4/cascade-precedence-001.htm	pass
 html4/cascade-precedence-002.htm	pass
 html4/case-sensitive-000.htm	pass
@@ -4574,7 +4574,7 @@ html4/first-child-selector-001.htm	pass
 html4/first-child-selector-002.htm	pass
 html4/first-letter-000.htm	pass
 html4/first-letter-001.htm	pass
-html4/first-letter-dynamic-001.htm	fail
+html4/first-letter-dynamic-001.htm	pass
 html4/first-letter-dynamic-002.htm	fail
 html4/first-letter-dynamic-003a.htm	pass
 html4/first-letter-dynamic-003b.htm	pass
@@ -8176,8 +8176,8 @@ html4/table-anonymous-objects-037.htm	pass
 html4/table-anonymous-objects-038.htm	pass
 html4/table-anonymous-objects-039.htm	pass
 html4/table-anonymous-objects-040.htm	pass
-html4/table-anonymous-objects-041.htm	fail
-html4/table-anonymous-objects-042.htm	fail
+html4/table-anonymous-objects-041.htm	pass
+html4/table-anonymous-objects-042.htm	pass
 html4/table-anonymous-objects-043.htm	pass
 html4/table-anonymous-objects-044.htm	pass
 html4/table-anonymous-objects-051.htm	pass
@@ -8219,7 +8219,7 @@ html4/table-anonymous-objects-086.htm	pass
 html4/table-anonymous-objects-087.htm	pass
 html4/table-anonymous-objects-088.htm	pass
 html4/table-anonymous-objects-089.htm	fail (check)
-html4/table-anonymous-objects-090.htm	fail (check)
+html4/table-anonymous-objects-090.htm	pass (if there's enough width)
 html4/table-anonymous-objects-091.htm	pass (when no wrap)
 html4/table-anonymous-objects-092.htm	pass (when no wrap)
 html4/table-anonymous-objects-093.htm	pass
@@ -9108,7 +9108,7 @@ html4/white-space-normal-009.htm	pass
 html4/white-space-nowrap-001.htm	pass
 html4/white-space-nowrap-005.htm	pass
 html4/white-space-nowrap-006.htm	pass
-html4/white-space-nowrap-attribute-001.htm	pass
+html4/white-space-nowrap-attribute-001.htm	fail
 html4/white-space-p-element-001.htm	pass
 html4/white-space-pre-001.htm	pass
 html4/white-space-pre-002.htm	pass
