@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -336,25 +336,29 @@ void HttpConnection::readHead(const boost::system::error_code& err)
     // TODO: handle every status code
     switch (responseMessage.getStatus()) {
     case 304:   // Not Modified
-        HttpConnectionManager::getInstance().done(this, false);
-        if (!err) {
-            state = CloseWait;
-            asyncRead(response, boost::asio::transfer_at_least(1), boost::bind(&HttpConnection::handleRead, this, boost::asio::placeholders::error));
-        }
         return;
     default:
+        octetCount = 0;
+        if (responseMessage.isChunked()) {
+            chunkCRLF = 0;
+            contentLength = 0;
+            state = ReadChunk;
+            readChunk(err);
+            return;
+        }
+        contentLength = responseMessage.getContentLength();
+        if (0 < contentLength) {
+            state = ReadContent;
+            readContent(err);
+            return;
+        }
         break;
     }
-    if (responseMessage.isChunked()) {
-        chunkCRLF = 0;
-        octetCount = contentLength = 0;
-        state = ReadChunk;
-        readChunk(err);
-    } else {
-        octetCount = 0;
-        contentLength = responseMessage.getContentLength();
-        state = ReadContent;
-        readContent(err);
+
+    HttpConnectionManager::getInstance().done(this, false);
+    if (!err) {
+        state = CloseWait;
+        asyncRead(response, boost::asio::transfer_at_least(1), boost::bind(&HttpConnection::handleRead, this, boost::asio::placeholders::error));
     }
 }
 
