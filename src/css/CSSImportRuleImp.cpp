@@ -120,7 +120,7 @@ void CSSImportRuleImp::notify()
     document->decrementLoadEventDelayCount();
 
     if (WindowImp* view = document->getDefaultWindow())
-        view->setFlags(1);
+        view->setFlags(Box::NEED_SELECTOR_REMATCHING);
 }
 
 }
