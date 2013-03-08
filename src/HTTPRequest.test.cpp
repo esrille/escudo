@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,11 +51,7 @@ int test(std::u16string urlString)
 
     std::cerr << request.getResponseMessage().toString() << "----\n";
     std::cerr << request.getResponseMessage().getContentCharset() << "----\n";
-#if 104400 <= BOOST_VERSION
-    boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request.getContentDescriptor(), boost::iostreams::never_close_handle);
-#else
-    boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request.getContentDescriptor(), false);
-#endif
+    boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request.getContentDescriptor(), boost::iostreams::close_handle);
     while (stream) {
         char c = stream.get();
         if (stream.good())

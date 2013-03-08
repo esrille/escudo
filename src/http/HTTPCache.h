@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,8 @@ class HttpCache
     URL url;
     HttpResponseMessage response;
     unsigned long long contentLength;
-    int fdContent;  // for content
+
+    std::string filePath;
 
     long long requestTime;
 
@@ -51,8 +52,8 @@ public:
         return current;
     }
 
-    int getContentDescriptor() {
-        return fdContent;
+    const std::string& getFilePath() const {
+        return filePath;
     }
 
     void notify(HttpRequest* request, bool error);
@@ -68,7 +69,6 @@ public:
     HttpCache(const URL& url) :
         url(url),
         contentLength(0),
-        fdContent(-1),
         requestTime(0),
         range(false),
         mustRevalidate(false),
@@ -79,8 +79,8 @@ public:
 
     ~HttpCache()
     {
-        if (0 <= fdContent)
-            close(fdContent);
+        if (!filePath.empty())
+            remove(filePath.c_str());
     }
 };
 
@@ -88,9 +88,13 @@ class HttpCacheManager
 {
     std::list<HttpCache*> lru;
 public:
+    ~HttpCacheManager();
+
     HttpCache* getCache(const URL& url);
     HttpCache* send(HttpRequest* request);
     void remove(HttpCache* cache);
+
+    void dump();
 
     static HttpCacheManager& getInstance()
     {

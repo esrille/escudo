@@ -34,6 +34,7 @@ class HttpCache;
 
 class HttpRequest
 {
+    friend class HttpCacheManager;
     friend class HttpConnectionManager;
 
 public:
@@ -45,17 +46,23 @@ public:
     static const unsigned short COMPLETE = 4;
     static const unsigned short DONE = 5;
 
+    // flags
+    static const unsigned short DONT_REMOVE = 1;    // Do not remove filePath upon destruction
+
 private:
     static std::string aboutPath;
     static std::string cachePath;
 
     std::u16string base;
     unsigned short readyState;
+    unsigned short flags;
     bool errorFlag;
     HttpRequestMessage request;
     HttpResponseMessage response;
+
+    std::string filePath;
     std::fstream content;
-    int fdContent;
+
     HttpCache* cache;
     boost::function<void (void)> handler;
     long long lastModified;
@@ -77,6 +84,17 @@ public:
     HttpResponseMessage& getResponseMessage() {
         return response;
     }
+
+    const std::string& getFilePath() const {
+        return filePath;
+    }
+    void removeFile() {
+        if (!filePath.empty()) {
+            remove(filePath.c_str());
+            filePath.clear();
+        }
+    }
+
     int getContentDescriptor();
     std::fstream& getContent();
     std::FILE* openFile();

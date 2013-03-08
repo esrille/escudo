@@ -168,7 +168,7 @@ bool HTMLScriptElementImp::execute()
     std::u16string script;
     if (request) {
         assert(request->getStatus() == 200);
-        boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request->getContentDescriptor(), boost::iostreams::never_close_handle);
+        boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request->getContentDescriptor(), boost::iostreams::close_handle);
         U16ConverterInputStream u16stream(stream, "utf-8");  // TODO detect encode
         script = u16stream;
     } else {

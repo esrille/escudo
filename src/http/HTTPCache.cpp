@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,8 @@
 #include "url/URI.h"
 #include "http/HTTPConnection.h"
 
+#include "utf.h"
+
 // "expiration" mechanism
 // "validation" mechanism
 
@@ -39,16 +41,14 @@ void HttpCache::notify(HttpRequest* request, bool error)
         response.update(request->getResponseMessage());
         // TODO: deal with partial...
         unsigned short status = request->getResponseMessage().getStatus();
-        if (status == 304)  // Not Modified?
+        if (status == 304) {  // Not Modified?
+            request->removeFile();
             request->constructResponseFromCache(false);
-        else {
+        } else {
+            if (!filePath.empty())
+                remove(filePath.c_str());
             response.updateStatus(request->getResponseMessage());
-            int fd = request->getContentDescriptor();
-            if (0 <= fd) {
-                if (0 <= fdContent)
-                    close(fdContent);
-                fdContent = dup(fd);
-            }
+            filePath = request->getFilePath();
         }
     }
 
@@ -72,8 +72,10 @@ void HttpCache::invalidate()
 {
     response.clear();
     contentLength = 0;
-    close(fdContent);
-    fdContent = -1;
+    if (!filePath.empty()) {
+        remove(filePath.c_str());
+        filePath.clear();
+    }
     requestTime = 0;
 }
 
@@ -150,7 +152,7 @@ HttpCache* HttpCacheManager::send(HttpRequest* request)
             if (cache->response.isCacheable() && cache->response.isFresh(cache->requestTime)) {
                 if (request->redirect(cache->response))
                     continue;
-                if (code == HttpRequestMessage::HEAD || 0 <= cache->fdContent)
+                if (code == HttpRequestMessage::HEAD || !cache->filePath.empty())
                     return cache;
             }
             return cache->send(request);
@@ -160,6 +162,7 @@ HttpCache* HttpCacheManager::send(HttpRequest* request)
 
     // No need for going through the cache
     // TODO: call cache->invlidate();
+    request->flags &= ~HttpRequest::DONT_REMOVE;
     HttpConnectionManager& manager(HttpConnectionManager::getInstance());
     manager.send(request);
     return 0;
@@ -168,6 +171,22 @@ HttpCache* HttpCacheManager::send(HttpRequest* request)
 void HttpCacheManager::remove(HttpCache* cache)
 {
     lru.remove(cache);
+}
+
+void HttpCacheManager::dump() {
+    for (auto i = lru.begin(); i != lru.end(); ++i) {
+        HttpCache* cache = *i;
+        std::cout << static_cast<std::u16string>(cache->url) << ' ' << cache->response.getStatus() << ' ' << cache->filePath << '\n';
+    }
+}
+
+HttpCacheManager::~HttpCacheManager()
+{
+    while (!lru.empty()) {
+        HttpCache* cache = lru.front();
+        remove(cache);
+        delete cache;
+    }
 }
 
 }}}}  // org::w3c::dom::bootstrap

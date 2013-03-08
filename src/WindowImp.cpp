@@ -40,12 +40,11 @@
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 WindowImp::Parser::Parser(DocumentImp* document, int fd, const std::string& optionalEncoding) :
-    stream(fd, boost::iostreams::never_close_handle),   // TODO: never_close_handle?
+    stream(fd, boost::iostreams::close_handle),
     htmlInputStream(stream, optionalEncoding),
     tokenizer(&htmlInputStream),
     parser(document, &tokenizer)
 {
-    stream.seekg(0, std::ios::beg);
 }
 
 WindowImp::WindowImp(WindowImp* parent, ElementImp* frameElement) :

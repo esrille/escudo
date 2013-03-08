@@ -45,18 +45,16 @@ std::string HttpRequest::cachePath("/tmp");
 
 int HttpRequest::getContentDescriptor()
 {
-    return fdContent;  // TODO: call dup internally?
+    if (filePath.empty())
+        return -1;
+    return ::open(filePath.c_str(), O_RDONLY, 0);
 }
 
 std::FILE* HttpRequest::openFile()
 {
-    if (fdContent == -1)
+    if (filePath.empty())
         return 0;
-    std::FILE* file = fdopen(dup(fdContent), "rb");
-    if (!file)
-        return 0;
-    rewind(file);
-    return file;
+    return fopen(filePath.c_str(), "rb");
 }
 
 std::fstream& HttpRequest::getContent()
@@ -64,17 +62,17 @@ std::fstream& HttpRequest::getContent()
     if (content.is_open())
         return content;
 
-    char filename[PATH_MAX];
+    char tempPath[PATH_MAX];
     if (PATH_MAX <= cachePath.length() + 9)
         return content;
-    strcpy(filename, cachePath.c_str());
-    strcat(filename, "/esXXXXXX");
-    fdContent = mkstemp(filename);
-    if (fdContent == -1)
+    strcpy(tempPath, cachePath.c_str());
+    strcat(tempPath, "/esrille-XXXXXX");
+    int fd = mkstemp(tempPath);
+    if (fd == -1)
         return content;
-    content.open(filename, std::ios_base::trunc | std::ios_base::in | std::ios_base::out | std::ios::binary);
-    remove(filename);
-
+    filePath = tempPath;
+    content.open(tempPath, std::ios_base::trunc | std::ios_base::in | std::ios_base::out | std::ios::binary);
+    close(fd);
     return content;
 }
 
@@ -131,10 +129,7 @@ bool HttpRequest::redirect(const HttpResponseMessage& res)
     // Redirect to location
     if (content.is_open())
         content.close();
-    if (0 <= fdContent) {
-        close(fdContent);
-        fdContent = -1;
-    }
+    filePath.clear();
     cache = 0;
     readyState = OPENED;
     return true;
@@ -205,11 +200,7 @@ bool HttpRequest::constructResponseFromCache(bool sync)
     response.getLastModifiedValue(lastModified);
 
     // TODO: deal with partial...
-    int fd = cache->getContentDescriptor();
-    if (0 <= fd) {
-        fdContent = dup(fd);
-        lseek(fdContent, 0, SEEK_SET);
-    }
+    filePath = cache->getFilePath();
 
     cache = 0;
     if (sync)
@@ -274,6 +265,7 @@ bool HttpRequest::constructResponseFromData()
         notify(true);
         return errorFlag;
     }
+    flags &= ~DONT_REMOVE;
     if (!base64) {
         end += 1;
         std::string decoded(URI::percentDecode(URI::percentDecode(data, end, data.length() - end)));
@@ -296,33 +288,37 @@ bool HttpRequest::send()
     if (request.getURL().isEmpty())
         return notify(false);
 
+    flags |= DONT_REMOVE;
+
     if (request.getURL().testProtocol(u"file")) {
         if (request.getMethodCode() != HttpRequestMessage::GET)
             return notify(true);
         std::u16string host = request.getURL().getHostname();
         if (!host.empty() && host != u"localhost")  // TODO: maybe allow local host IP addresses?
             return notify(true);
-        std::string path = utfconv(request.getURL().getPathname());
-        fdContent = ::open(path.c_str(), O_RDONLY);
+        filePath = utfconv(request.getURL().getPathname());
         struct stat status;
-        if (fstat(fdContent, &status) == 0)
+        if (stat(filePath.c_str(), &status) == 0 && S_ISREG(status.st_mode)) {
             lastModified = status.st_mtime;
-        return notify(fdContent == -1);
+            return notify(false);
+        }
+        return notify(true);
     }
 
     if (request.getURL().testProtocol(u"about")) {
         if (aboutPath.empty() || request.getMethodCode() != HttpRequestMessage::GET)
             return notify(true);
-        std::string path = utfconv(request.getURL().getPathname());
-        if (path.empty())
-            path = aboutPath + "/about/index.html";
+        filePath = utfconv(request.getURL().getPathname());
+        if (filePath.empty())
+            filePath = aboutPath + "/about/index.html";
         else
-            path = aboutPath + "/about/" + path;
-        fdContent = ::open(path.c_str(), O_RDONLY);
+            filePath = aboutPath + "/about/" + filePath;
         struct stat status;
-        if (fstat(fdContent, &status) == 0)
+        if (stat(filePath.c_str(), &status) == 0 && S_ISREG(status.st_mode)) {
             lastModified = status.st_mtime;
-        return notify(fdContent == -1);
+            return notify(false);
+        }
+        return notify(true);
     }
 
     if (request.getURL().testProtocol(u"data"))
@@ -349,10 +345,7 @@ void HttpRequest::abort()
     response.clear();
     if (content.is_open())
         content.close();
-    if (0 <= fdContent) {
-        close(fdContent);
-        fdContent = -1;
-    }
+    filePath.clear();   // TODO: Check if we should remove file now
     cache = 0;
 }
 
@@ -379,8 +372,8 @@ const std::string& HttpRequest::getAllResponseHeaders() const
 HttpRequest::HttpRequest(const std::u16string& base) :
     base(base),
     readyState(UNSENT),
+    flags(DONT_REMOVE),
     errorFlag(false),
-    fdContent(-1),
     cache(0),
     handler(0),
     lastModified(0),
@@ -390,6 +383,8 @@ HttpRequest::HttpRequest(const std::u16string& base) :
 
 HttpRequest::~HttpRequest()
 {
+    if (!(flags & DONT_REMOVE))
+        removeFile();
     abort();
     delete boxImage;
 }

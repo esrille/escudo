@@ -104,11 +104,7 @@ css::CSSStyleSheet CSSImportRuleImp::getStyleSheet()
 void CSSImportRuleImp::notify()
 {
     if (request->getStatus() == 200) {
-#if 104400 <= BOOST_VERSION
-        boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request->getContentDescriptor(), boost::iostreams::never_close_handle);
-#else
-        boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request->getContentDescriptor(), false);
-#endif
+        boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request->getContentDescriptor(), boost::iostreams::close_handle);
         CSSParser parser;
         CSSInputStream cssStream(stream, request->getResponseMessage().getContentCharset(), utfconv(document->getCharacterSet()));
         styleSheet = parser.parse(document, cssStream);
