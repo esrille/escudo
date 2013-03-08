@@ -67,11 +67,9 @@ void HTMLStyleElementImp::handleMutation(EventListenerImp* listener, events::Eve
     if (!document)
         return;
 
-    if (mutation.getType() == u"DOMNodeRemoved" && event.getTarget().self() == this) {
+    if (mutation.getType() == u"DOMNodeRemoved" && event.getTarget().self() == this)
         styleSheet = 0;
-        if (WindowImp* view = document->getDefaultWindow())
-            view->setFlags(Box::NEED_SELECTOR_REMATCHING);
-    } else {
+    else {
         std::u16string content;
         for (Node node = getFirstChild(); node; node = node.getNextSibling()) {
             if (TextImp* text = dynamic_cast<TextImp*>(node.self()))  // TODO better to avoid imp call?
@@ -79,13 +77,14 @@ void HTMLStyleElementImp::handleMutation(EventListenerImp* listener, events::Eve
         }
         CSSParser parser;
         styleSheet = parser.parse(document, content);
-        if (auto imp = dynamic_cast<CSSStyleSheetImp*>(styleSheet.self()))
+        if (auto imp = dynamic_cast<CSSStyleSheetImp*>(styleSheet.self())) {
             imp->setOwnerNode(this);
-        if (4 <= getLogLevel())
-            dumpStyleSheet(std::cerr, styleSheet.self());
-        if (WindowImp* view = document->getDefaultWindow())
-            view->setFlags(Box::NEED_SELECTOR_REMATCHING);
+            if (4 <= getLogLevel())
+                dumpStyleSheet(std::cerr, imp);
+        }
     }
+    if (WindowImp* view = document->getDefaultWindow())
+        view->setFlags(Box::NEED_SELECTOR_REMATCHING);
     document->resetStyleSheets();
 }
 
