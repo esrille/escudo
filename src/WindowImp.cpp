@@ -58,7 +58,6 @@ WindowImp::WindowImp(WindowImp* parent, ElementImp* frameElement) :
     viewFlags(0),
     parent(parent),
     frameElement(frameElement),
-    parser(0),
     clickTarget(0),
     detail(0),
     buttons(0),
@@ -270,7 +269,7 @@ bool WindowImp::poll()
                 else
                     document->setError(request.getError());
                 document->enter();
-                parser = new(std::nothrow) Parser(document, request.getContentDescriptor(), request.getResponseMessage().getContentCharset());
+                parser.reset(new(std::nothrow) Parser(document, request.getContentDescriptor(), request.getResponseMessage().getContentCharset()));
                 document->exit();
                 if (!parser)
                     break;  // TODO: error handling
@@ -307,6 +306,7 @@ bool WindowImp::poll()
             if (WindowImp* view = document->getDefaultWindow())
                 view->setFlags(Box::NEED_SELECTOR_REMATCHING);
 
+            parser.reset();
             document->exit();
 
             recordTime("%*shtml parsed", windowDepth * 2, "");

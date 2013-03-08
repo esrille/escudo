@@ -193,7 +193,7 @@ class WindowImp : public ObjectMixin<WindowImp>
 
     std::deque<EventTask> eventQueue;
 
-    Parser* parser;
+    std::unique_ptr<Parser> parser;
 
     // for MouseEvent
     Element clickTarget;
