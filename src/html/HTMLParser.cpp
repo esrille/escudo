@@ -1681,8 +1681,24 @@ bool HTMLParser::InBody::processAnyOtherEndTag(HTMLParser* parser, Token& token)
 // HTMLParser::Text
 //
 
+void HTMLParser::Text::insertCharacter(Token& token)
+{
+    pendingCharacters += static_cast<char16_t>(token.getChar());
+}
+
+void HTMLParser::Text::commitPendingCharacters(HTMLParser* parser)
+{
+    assert(!parser->insertFromTable);
+    if (!pendingCharacters.empty()) {
+        parser->insertCharacter(pendingCharacters);
+        pendingCharacters.clear();
+    }
+}
+
 bool HTMLParser::Text::processEOF(HTMLParser* parser, Token& token)
 {
+    commitPendingCharacters(parser);
+
     parser->parseError();
     if (isOneOf(parser->currentNode().getLocalName(), { u"implementation", u"script" })) {
         // TODO: mark the script element as "already started".
@@ -1704,7 +1720,7 @@ bool HTMLParser::Text::processDoctype(HTMLParser* parser, Token& token)
 bool HTMLParser::Text::processCharacter(HTMLParser* parser, Token& token)
 {
     assert(token.getChar() != 0);
-    parser->insertCharacter(token);
+    insertCharacter(token);
     return true;
 }
 
@@ -1715,6 +1731,8 @@ bool HTMLParser::Text::processStartTag(HTMLParser* parser, Token& token)
 
 bool HTMLParser::Text::processEndTag(HTMLParser* parser, Token& token)
 {
+    commitPendingCharacters(parser);
+
     if (isOneOf(token.getName(), { u"implementation", u"script" })) {
         Element script = parser->currentNode();
         parser->popElement();

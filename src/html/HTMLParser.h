@@ -169,6 +169,11 @@ class HTMLParser
 
     class Text : public InsertionMode
     {
+        std::u16string pendingCharacters;
+
+        void insertCharacter(Token& token);
+        void commitPendingCharacters(HTMLParser* parser);
+
     public:
         virtual bool processEOF(HTMLParser* parser, Token& token);
         virtual bool processComment(HTMLParser* parser, Token& token);
