@@ -64,9 +64,11 @@ std::ostream& operator<<(std::ostream& stream, Node node)
     case Node::COMMENT_NODE:
         stream << "<!-- " << interface_cast<Comment>(node).getData() << " -->";
         break;
-    case Node::ELEMENT_NODE:
-        stream << '<' << node.getNodeName() << '>';
+    case Node::ELEMENT_NODE: {
+        std::u16string name = node.getNodeName();
+        stream << '<' << toLower(name) << '>';
         break;
+    }
     case Node::TEXT_NODE:
         stream << '"' << interface_cast<Text>(node).getData() << '"';
         break;

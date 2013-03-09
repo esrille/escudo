@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  * Copyright 2008 Google Inc.
  * Copyright 2006 Nintendo Co., Ltd.
  *
@@ -115,10 +115,11 @@ inline char16_t toLower(char16_t c)
     return c;
 }
 
-inline void toLower(std::u16string& s)
+inline std::u16string& toLower(std::u16string& s)
 {
     for (auto i = s.begin(); i != s.end(); ++i)
         *i = toLower(*i);
+    return s;
 }
 
 inline char16_t toUpper(char16_t c)
@@ -128,10 +129,11 @@ inline char16_t toUpper(char16_t c)
     return c;
 }
 
-inline void toUpper(std::u16string& s)
+inline std::u16string& toUpper(std::u16string& s)
 {
     for (auto i = s.begin(); i != s.end(); ++i)
         *i = toUpper(*i);
+    return s;
 }
 
 inline std::u16string& stripLeadingWhitespace(std::u16string& s)
