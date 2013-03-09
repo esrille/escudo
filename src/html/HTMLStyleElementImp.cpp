@@ -39,7 +39,6 @@ HTMLStyleElementImp::HTMLStyleElementImp(DocumentImp* ownerDocument) :
 {
     addEventListener(u"DOMNodeInserted", &mutationListener, false, EventTargetImp::UseDefault);
     addEventListener(u"DOMNodeRemoved", &mutationListener, false, EventTargetImp::UseDefault);
-    // TODO: The following code makes the html paser very slow...
     addEventListener(u"DOMCharacterDataModified", &mutationListener, false, EventTargetImp::UseDefault);
 }
 
@@ -53,7 +52,6 @@ HTMLStyleElementImp::HTMLStyleElementImp(HTMLStyleElementImp* org, bool deep) :
 {
     addEventListener(u"DOMNodeInserted", &mutationListener, false, EventTargetImp::UseDefault);
     addEventListener(u"DOMNodeRemoved", &mutationListener, false, EventTargetImp::UseDefault);
-    // TODO: The following code makes the the html paser very slow...
     addEventListener(u"DOMCharacterDataModified", &mutationListener, false, EventTargetImp::UseDefault);
 }
 
