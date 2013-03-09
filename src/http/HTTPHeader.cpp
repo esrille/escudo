@@ -120,28 +120,23 @@ const char* HttpHeaderList::parseLine(const char* start, const char* const end, 
     if (!colon || !isValidToken(name, colon))
         return 0;
     const char* field = start;
-    while (field < end) {
-        if (!isLWS(*field))
-            break;
-        ++field;
-    }
     const char* eol = field;
+    const char* eof = eol;
     while (eol < end) {
-        if (*eol == '\n')  // LF?
+        char c = *eol;
+        if (c == '\n')  // LF?
             break;
+        if (!isLWS(c)) {
+            eof = eol + 1;
+            if (field == start)
+                field = eol;
+        }
         ++eol;
     }
     if (*eol != '\n')
         return 0;
     start = eol + 1;
-    while (field < eol) {
-        if (!isLWS(*eol)) {
-            ++eol;
-            break;
-        }
-        --eol;
-    }
-    HttpHeader header(std::string(name, colon - name), std::string(field, eol - field));
+    HttpHeader header(std::string(name, colon - name), std::string(field, eof - field));
     set(header.header, header.value);
     if (p)
         *p = header;

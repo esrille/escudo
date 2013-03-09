@@ -32,7 +32,7 @@ const char* response1 =
     "Date: Wed, 15 Nov 1995 06:25:24 GMT\r\n"
     "Last-Modified: Wed, 15 Nov 1995 04:58:08 GMT\r\n"  // RFC 1123: Wkd, 00 Mon 0000 00:00:00 GMT
     "Content-Range: bytes 21010-47021/47022\r\n"
-    "Content-Length: 26012\r\n"
+    "Content-Length: 0\r\n"
     "Content-Type: text/html\r\n"
     "\r\n";
 
@@ -41,7 +41,7 @@ const char* response2 =
     "Date: Wednesday, 15-Nov-95 06:25:24 GMT\r\n"
     "Last-Modified: Wednesday, 15-Nov-95 04:58:08 GMT\r\n"  // RFC 850:  Weekday, 00-Mon-00 00:00:00 GMT
     "Content-Range: bytes 21010-47021/47022\r\n"
-    "Content-Length: 26012\r\n"
+    "Content-Length: 12\r\n"
     "Content-Type: text/html; charset=ISO-8859-1\r\n"
     "\r\n";
 
@@ -50,7 +50,7 @@ const char* response3 =
     "Date: Wed Nov 15 06:25:24 1995 GMT\r\n"
     "Last-Modified: Wed Nov 15 04:58:08 1995 GMT\r\n"  // asctime: Wkd Mon 00 00:00:00 0000 GMT
     "Content-Range: bytes 21010-47021/47022\r\n"
-    "Content-Length: 26012\r\n"
+    "Content-Length: 123\r\n"
     "Content-Type: text/html; charset=   \"ISO-8859-1\"  \r\n"
     "Cache-Control: no-store\r\n"
     "Pragma: no-cache\r\n"
@@ -61,7 +61,7 @@ const char* response4 =
     "Date: Wednesday, 15-Nov-11   06:25:24 GMT\r\n"
     "Last-Modified: Wednesday, 15-Nov-11    04:58:08 GMT\r\n"  // RFC 850:  Weekday, 00-Mon-00 00:00:00 GMT
     "Content-Range: bytes 21010-47021/47022\r\n"
-    "Content-Length: 26012\r\n"
+    "Content-Length:\r\n"  // broken
     "Content-Type: text/html;charset='ISO-8859-1'\r\n"
     "Cache-Control: no-cache\r\n"
     "\r\n";

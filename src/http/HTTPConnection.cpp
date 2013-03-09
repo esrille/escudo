@@ -347,7 +347,7 @@ void HttpConnection::readHead(const boost::system::error_code& err)
             return;
         }
         contentLength = responseMessage.getContentLength();
-        if (0 < contentLength) {
+        if (responseMessage.hasContentLengthHeader() && 0 < contentLength) {
             state = ReadContent;
             readContent(err);
             return;

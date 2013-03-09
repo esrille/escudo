@@ -302,8 +302,15 @@ bool HttpResponseMessage::getLastModifiedValue(long long& lastModifiedValue) con
 
 bool HttpResponseMessage::parseHeader(const HttpHeader& hdr)
 {
-    if (hdr == "Content-Length")
-        return parseContentLength(hdr.value);
+    if (hdr.value.empty())
+        return false;
+    if (hdr == "Content-Length") {
+        if (parseContentLength(hdr.value)) {
+            hasContentLength = true;
+            return true;
+        }
+        return false;
+    }
     if (hdr == "Content-Type")
         return parseContentType(hdr.value);
     if (hdr == "Cache-Control")
@@ -444,6 +451,7 @@ void HttpResponseMessage::clear()
     headers.clear();
     noCache = false;
     noStore = false;
+    hasContentLength = false;
     contentCharset.clear();
     contentLength = 0;
     contentType.clear();

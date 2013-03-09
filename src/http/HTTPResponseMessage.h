@@ -33,6 +33,7 @@ class HttpResponseMessage
 
     bool noCache;
     bool noStore;
+    bool hasContentLength;
     std::string contentCharset;
     unsigned long long contentLength;
     std::string contentType;
@@ -56,6 +57,9 @@ public:
 
     const std::string& getContentCharset() {
         return contentCharset;
+    }
+    bool hasContentLengthHeader() const {
+        return hasContentLength;
     }
     unsigned long long getContentLength() const {
         return contentLength;
