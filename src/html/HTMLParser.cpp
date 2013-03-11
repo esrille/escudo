@@ -406,7 +406,7 @@ bool HTMLParser::setInsertionPoint(bool defined)
     return old;
 }
 
-std::list<Element>::iterator HTMLParser::elementInActiveFormattingElements(const std::u16string name)
+std::list<Element>::iterator HTMLParser::elementInActiveFormattingElements(const std::u16string& name)
 {
     auto i = activeFormattingElements.end();
     if (activeFormattingElements.empty())
@@ -1544,7 +1544,7 @@ bool HTMLParser::InBody::processEndTag(HTMLParser* parser, Token& token)
     }
     if (isOneOf(token.getName(), { u"a", u"b", u"big", u"code", u"em", u"font", u"i", u"nobr",
                                    u"s", u"small", u"strike", u"strong", u"tt", u"u" })) {
-        for (int outerLoopCounter = 0; outerLoopCounter < 8; ++outerLoopCounter ) {
+        for (int outerLoopCounter = 0; outerLoopCounter < 8; ++outerLoopCounter) {
             // Step 4 paragraph 1
             auto bookmark = parser->elementInActiveFormattingElements(token.getName());
             if (bookmark == parser->activeFormattingElements.end())

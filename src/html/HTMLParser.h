@@ -480,7 +480,7 @@ class HTMLParser
 
     void reconstructActiveFormattingElements();
     void clearActiveFormattingElements();
-    std::list<Element>::iterator elementInActiveFormattingElements(const std::u16string name);
+    std::list<Element>::iterator elementInActiveFormattingElements(const std::u16string& name);
     Element addFormattingElement(Element element) {
         activeFormattingElements.push_back(element);
         return element;
