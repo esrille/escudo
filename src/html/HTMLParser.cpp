@@ -1613,9 +1613,11 @@ bool HTMLParser::InBody::processEndTag(HTMLParser* parser, Token& token)
                 lastNode = node;
             }
             // Step 10
-            if (isOneOf(commonAncestor.getLocalName(), { u"table", u"tbody", u"tfoot", u"thead", u"tr" }))
+            if (isOneOf(commonAncestor.getLocalName(), { u"table", u"tbody", u"tfoot", u"thead", u"tr" })) {
+                if (Node parent = (*lastNode).getParentNode())
+                    parent.removeChild(*lastNode);
                 parser->fosterNode(*lastNode);
-            else {
+            } else {
                 if (Node parent = (*lastNode).getParentNode())
                     parent.removeChild(*lastNode);
                 commonAncestor.appendChild(*lastNode);
