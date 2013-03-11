@@ -1634,7 +1634,10 @@ bool HTMLParser::InBody::processEndTag(HTMLParser* parser, Token& token)
             parser->activeFormattingElements.insert(bookmark, clone);
             parser->activeFormattingElements.remove(formattingElement);
             // Step 15
-            parser->openElementStack.insert(furthestBlock + 1, clone);
+            if (furthestBlock == parser->openElementStack.end())
+                parser->openElementStack.push_back(clone);
+            else
+                parser->openElementStack.insert(furthestBlock + 1, clone);
             parser->openElementStack.erase(it);
         }
    }
