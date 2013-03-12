@@ -17,6 +17,7 @@
 #include "HTMLInputElementImp.h"
 
 #include <boost/bind.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include <org/w3c/dom/Text.h>
 #include <org/w3c/dom/events/KeyboardEvent.h>
@@ -94,6 +95,58 @@ HTMLInputElementImp::HTMLInputElementImp(HTMLInputElementImp* org, bool deep) :
 {
 }
 
+css::CSSStyleDeclaration HTMLInputElementImp::getStyle()
+{
+    if (hasStyle())
+        return HTMLElementImp::getStyle();
+    css::CSSStyleDeclaration style = HTMLElementImp::getStyle();
+    if (CSSStyleDeclarationImp* imp = dynamic_cast<CSSStyleDeclarationImp*>(style.self())) {
+        switch (type) {
+        case Text:
+        case Search:
+        case Telephone:
+        case URL:
+        case Email:
+        case Password:
+            style.setProperty(u"width", boost::lexical_cast<std::u16string>(getSize()) + u"em", u"non-css");
+            break;
+        default:
+            break;
+        }
+    }
+    return style;
+}
+
+void HTMLInputElementImp::updateStyle()
+{
+    css::CSSStyleDeclaration style = HTMLElementImp::getStyle();
+    if (CSSStyleDeclarationImp* imp = dynamic_cast<CSSStyleDeclarationImp*>(style.self())) {
+        switch (type) {
+        case Text:
+        case Search:
+        case Telephone:
+        case URL:
+        case Email:
+        case Password:
+            style.setProperty(u"height", u"", u"non-css");
+            style.setProperty(u"width", boost::lexical_cast<std::u16string>(getSize()) + u"em", u"non-css");
+            break;
+        case ImageButton: {
+            std::u16string value;
+            value = getAttribute(u"height");
+            style.setProperty(u"height", mapToPixelLength(value) ? value : u"", u"non-css");
+            value = getAttribute(u"width");
+            style.setProperty(u"width", mapToPixelLength(value) ? value : u"", u"non-css");
+            break;
+        }
+        default:
+            style.setProperty(u"height", u"", u"non-css");
+            style.setProperty(u"width", u"", u"non-css");
+            break;
+        }
+    }
+}
+
 void HTMLInputElementImp::handleMutation(events::MutationEvent mutation)
 {
     std::u16string value = mutation.getNewValue();
@@ -126,58 +179,49 @@ void HTMLInputElementImp::handleMutation(events::MutationEvent mutation)
             tabIndex = -1;
         else if (!getDisabled() && !toInteger(getAttribute(u"tabindex"), tabIndex))
             tabIndex = 0;
+        updateStyle();
         break;
     // Styles
     case Intern(u"height"):
-        if (mapToDimension(value))
-            style.setProperty(u"height", value, u"non-css");
+        if (type == ImageButton)
+            style.setProperty(u"height", mapToPixelLength(value) ? value : u"", u"non-css");
         break;
     case Intern(u"hspace"):
-        if (mapToDimension(value)) {
-            style.setProperty(u"margin-left", value, u"non-css");
-            style.setProperty(u"margin-right", value, u"non-css");
+        if (!mapToDimension(value))
+            value = u"";
+        style.setProperty(u"margin-left", value, u"non-css");
+        style.setProperty(u"margin-right", value, u"non-css");
+        break;
+    case Intern(u"size"):
+        switch (type) {
+        case Text:
+        case Search:
+        case Telephone:
+        case URL:
+        case Email:
+        case Password: {
+            unsigned size;
+            if (!toUnsigned(value, size))
+                size = 20;
+            style.setProperty(u"width",  boost::lexical_cast<std::u16string>(size) + u"em", u"non-css");
+            break;
+        }
+        default:
+            break;
         }
         break;
     case Intern(u"vspace"):
-        if (mapToDimension(value)) {
-            style.setProperty(u"margin-top", value, u"non-css");
-            style.setProperty(u"margin-bottom", value, u"non-css");
-        }
+        if (!mapToDimension(value))
+            value = u"";
+        style.setProperty(u"margin-top", value, u"non-css");
+        style.setProperty(u"margin-bottom", value, u"non-css");
         break;
     case Intern(u"width"):
-        if (mapToDimension(value))
-            style.setProperty(u"width", value, u"non-css");
+        if (type == ImageButton)
+            style.setProperty(u"width", mapToPixelLength(value) ? value : u"", u"non-css");
         break;
     default:
         HTMLElementImp::handleMutation(mutation);
-        break;
-    }
-}
-
-void HTMLInputElementImp::eval()
-{
-    switch (type) {
-    case Text:
-    case Search:
-    case Telephone:
-    case URL:
-    case Email:
-    case Password: {
-        Nullable<std::u16string> size = getAttribute(u"size");
-        std::u16string length(u"20em");
-        if (size.hasValue()) {
-            std::u16string length(size.value());
-            unsigned u;
-            if (toUnsigned(length, u))
-                length += u"em";
-            else
-                length = u"20em";
-        }
-        css::CSSStyleDeclaration style = getStyle();
-        style.setProperty(u"width", length, u"non-css");
-        break;
-    }
-    default:
         break;
     }
 }
@@ -457,13 +501,13 @@ void HTMLInputElementImp::setFormTarget(const std::u16string& formTarget)
 
 unsigned int HTMLInputElementImp::getHeight()
 {
-    // TODO: implement me!
-    return 0;
+    // TODO: set defaultValue to the intrinsic length.
+    return getAttributeAsUnsigned(u"height");
 }
 
 void HTMLInputElementImp::setHeight(unsigned int height)
 {
-    // TODO: implement me!
+    setAttributeAsUnsigned(u"height", height);
 }
 
 bool HTMLInputElementImp::getIndeterminate()
@@ -583,13 +627,12 @@ void HTMLInputElementImp::setRequired(bool required)
 
 unsigned int HTMLInputElementImp::getSize()
 {
-    // TODO: implement me!
-    return 0;
+    return getAttributeAsUnsigned(u"size", 20);
 }
 
 void HTMLInputElementImp::setSize(unsigned int size)
 {
-    // TODO: implement me!
+    setAttributeAsUnsigned(u"size", size);
 }
 
 std::u16string HTMLInputElementImp::getSrc()
@@ -669,13 +712,13 @@ void HTMLInputElementImp::setValueAsNumber(double valueAsNumber)
 
 unsigned int HTMLInputElementImp::getWidth()
 {
-    // TODO: implement me!
-    return 0;
+    // TODO: set defaultValue to the intrinsic length.
+    return getAttributeAsUnsigned(u"width");
 }
 
 void HTMLInputElementImp::setWidth(unsigned int width)
 {
-    // TODO: implement me!
+    setAttributeAsUnsigned(u"width", width);
 }
 
 void HTMLInputElementImp::stepUp()

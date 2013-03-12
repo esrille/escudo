@@ -92,7 +92,6 @@ public:
     HTMLInputElementImp(HTMLInputElementImp* org, bool deep);
 
     virtual void handleMutation(events::MutationEvent mutation);
-    virtual void eval();
 
     bool isButton() const {
         switch (type) {
@@ -106,8 +105,13 @@ public:
         }
     }
 
+    void updateStyle();
+
     // XBL 2.0 internal
     virtual void generateShadowContent(CSSStyleDeclarationImp* style);
+
+    // HTMLElement
+    css::CSSStyleDeclaration getStyle();
 
     // HTMLInputElement
     std::u16string getAccept();
