@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2013 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,11 @@
  */
 
 #include "HTMLDivElementImp.h"
+#include <boost/concept_check.hpp>
+
+#include "one_at_a_time.hpp"
+
+constexpr auto Intern = &one_at_a_time::hash<char16_t>;
 
 #include "css/CSSStyleDeclarationImp.h"
 
@@ -27,18 +32,31 @@ namespace dom
 namespace bootstrap
 {
 
-void HTMLDivElementImp::eval()
+css::CSSStyleDeclaration HTMLDivElementImp::getStyle()
 {
-    if (getLocalName() == u"center")
-        setAlign(u"center");
+    if (hasStyle())
+        return HTMLElementImp::getStyle();
+    css::CSSStyleDeclaration s = HTMLElementImp::getStyle();
+    if (CSSStyleDeclarationImp* imp = dynamic_cast<CSSStyleDeclarationImp*>(s.self())) {
+        if (getLocalName() == u"center")
+            imp->setHTMLAlign(u"center");
+    }
+    return s;
+}
 
-    // TODO: MVC violation
-    std::u16string align = getAlign();
-    if (!align.empty()) {
-        css::CSSStyleDeclaration style = getStyle();
-        CSSStyleDeclarationImp* imp = dynamic_cast<CSSStyleDeclarationImp*>(style.self());
-        if (imp)
-            imp->setHTMLAlign(align);
+void HTMLDivElementImp::handleMutation(events::MutationEvent mutation)
+{
+    std::u16string value = mutation.getNewValue();
+    css::CSSStyleDeclaration style(getStyle());
+
+    switch (Intern(mutation.getAttrName().c_str())) {
+    case Intern(u"align"):
+        if (CSSStyleDeclarationImp* imp = dynamic_cast<CSSStyleDeclarationImp*>(style.self()))
+            imp->setHTMLAlign(value);
+        break;
+    default:
+        HTMLElementImp::handleMutation(mutation);
+        break;
     }
 }
 
@@ -50,7 +68,6 @@ std::u16string HTMLDivElementImp::getAlign()
 void HTMLDivElementImp::setAlign(const std::u16string& align)
 {
     setAttribute(u"align", align);
-    assert(getAlign() == align);
 }
 
 }

@@ -82,6 +82,9 @@ public:
     virtual void handleMutation(events::MutationEvent mutation);
 
     Box* getBox();
+    bool hasStyle() const {
+        return style;
+    }
 
     // XBL 2.0 internal
     virtual void invoke(EventImp* event);

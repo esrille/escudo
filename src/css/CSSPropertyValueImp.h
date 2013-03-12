@@ -2928,8 +2928,9 @@ public:
     enum {
         None,
         Left,
+        Right,
         Center,
-        Right
+        Justify,
     };
     HTMLAlignValueImp& setValue(unsigned value = None) {
         this->value = value;

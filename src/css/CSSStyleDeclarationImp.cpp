@@ -3758,12 +3758,14 @@ void CSSStyleDeclarationImp::setHTMLAlign(const Nullable<std::u16string>& align)
         toLower(value);
         if (value == u"left")
             a = HTMLAlignValueImp::Left;
-        else if (value == u"center")
-            a = HTMLAlignValueImp::Center;
         else if (value == u"right")
             a = HTMLAlignValueImp::Right;
+        else if (value == u"center" || value == u"middle")
+            a = HTMLAlignValueImp::Center;
+        else if (value == u"justify")
+            a = HTMLAlignValueImp::Justify;
         else
-            return;
+            a = HTMLAlignValueImp::None;
     }
     htmlAlign.setValue(a);
     resetInherit(HtmlAlign);

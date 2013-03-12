@@ -787,10 +787,10 @@ Nullable<bool> HTMLElementImp::getCommandChecked()
 css::CSSStyleDeclaration HTMLElementImp::getStyle()
 {
     if (!style) {
-        CSSStyleDeclarationImp* imp = new(std::nothrow) CSSStyleDeclarationImp;
-        if (imp)
+        if (CSSStyleDeclarationImp* imp = new(std::nothrow) CSSStyleDeclarationImp) {
             imp->setOwner(this);
-        style = imp;
+            style = imp;
+        }
     }
     return style;
 }
