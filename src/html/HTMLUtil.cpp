@@ -32,7 +32,7 @@ bool toInteger(const std::u16string& value, int& output)
     return parseInt(input, end, output);    // Do not care what follows after digits.
 }
 
-bool toUnsigned(const std::u16string& value, unsigned& output)
+bool toUnsigned(const std::u16string& value, unsigned int& output)
 {
     int s;
     if (!toInteger(value, s))

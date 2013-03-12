@@ -1469,4 +1469,17 @@ void HTMLElementImp::setAttributeAsInteger(const std::u16string& name, int value
     setAttribute(name, boost::lexical_cast<std::u16string>(value));
 }
 
+unsigned int HTMLElementImp::getAttributeAsUnsigned(const std::u16string& name, unsigned int defaultValue)
+{
+    unsigned int value;
+    if (toUnsigned(name, value))
+        return value;
+    return defaultValue;
+}
+
+void HTMLElementImp::setAttributeAsUnsigned(const std::u16string& name, unsigned int value)
+{
+    setAttribute(name, boost::lexical_cast<std::u16string>(value));
+}
+
 }}}}  // org::w3c::dom::bootstrap

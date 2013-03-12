@@ -96,7 +96,7 @@ inline const Ch* parseInt(const Ch* input, const Ch* end, int& value)
 }
 
 bool toInteger(const std::u16string& value, int& output);
-bool toUnsigned(const std::u16string& value, unsigned& output);
+bool toUnsigned(const std::u16string& value, unsigned int& output);
 
 bool mapToInteger(std::u16string& value);
 bool mapToPixelLength(std::u16string& value);

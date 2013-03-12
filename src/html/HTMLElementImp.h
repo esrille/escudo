@@ -298,6 +298,8 @@ public:
     void setAttributeAsBoolean(const std::u16string& name, bool on);
     int getAttributeAsInteger(const std::u16string& name, int defaultValue = 0);
     void setAttributeAsInteger(const std::u16string& name, int value);
+    unsigned int getAttributeAsUnsigned(const std::u16string& name, unsigned int defaultValue = 0);
+    void setAttributeAsUnsigned(const std::u16string& name, unsigned int value);
 
     // xblEnteredDocument() should be called after view->constructComputedStyles().
     static void xblEnteredDocument(Node node);
