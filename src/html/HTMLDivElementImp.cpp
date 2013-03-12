@@ -36,12 +36,12 @@ css::CSSStyleDeclaration HTMLDivElementImp::getStyle()
 {
     if (hasStyle())
         return HTMLElementImp::getStyle();
-    css::CSSStyleDeclaration s = HTMLElementImp::getStyle();
-    if (CSSStyleDeclarationImp* imp = dynamic_cast<CSSStyleDeclarationImp*>(s.self())) {
+    css::CSSStyleDeclaration style = HTMLElementImp::getStyle();
+    if (CSSStyleDeclarationImp* imp = dynamic_cast<CSSStyleDeclarationImp*>(style.self())) {
         if (getLocalName() == u"center")
             imp->setHTMLAlign(u"center");
     }
-    return s;
+    return style;
 }
 
 void HTMLDivElementImp::handleMutation(events::MutationEvent mutation)

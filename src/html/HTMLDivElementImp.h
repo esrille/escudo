@@ -48,6 +48,7 @@ public:
 
     virtual void handleMutation(events::MutationEvent mutation);
 
+    // HTMLElement
     css::CSSStyleDeclaration getStyle();
 
     // HTMLDivElement
