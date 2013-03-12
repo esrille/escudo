@@ -70,10 +70,9 @@ void HTMLTableElementImp::handleMutation(events::MutationEvent mutation)
         handleMutationColor(mutation, u"background-color");
         break;
     case Intern(u"border"):
-        if (mapToPixelLength(value) && value != u"0") {
-            style.setProperty(u"border-width", value, u"non-css");
-            style.setProperty(u"border-style", u"outset", u"non-css");
-        }
+        if (!mapToPixelLength(value))
+            value = u"1px";
+        style.setProperty(u"border-width", value, u"non-css");
         break;
     case Intern(u"cellspacing"):
         if (mapToPixelLength(value))

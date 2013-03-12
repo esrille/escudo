@@ -1,5 +1,8 @@
 /* cf. http://www.w3.org/TR/html5/rendering.html#the-css-user-agent-style-sheet-and-presentational-hints */
 
+table, td, th { border-color: gray; }
+thead, tbody, tfoot, tr { border-color: inherit; }
+
 thead[valign=top i], tbody[valign=top i], tfoot[valign=top i],
 tr[valign=top i], td[valign=top i], th[valign=top i] {
   vertical-align: top;
@@ -18,3 +21,26 @@ tr[valign=baseline i], td[valign=baseline i], th[valign=baseline i] {
 }
 
 td[nowrap], th[nowrap] { white-space: nowrap; }
+
+table[border] {
+  /* only if border is not equivalent to zero */
+  border-style: outset;
+}
+
+table[border] > tr > td, table[border] > tr > th,
+table[border] > thead > tr > td, table[border] > thead > tr > th,
+table[border] > tbody > tr > td, table[border] > tbody > tr > th,
+table[border] > tfoot > tr > td, table[border] > tfoot > tr > th {
+  /* only if border is not equivalent to zero */
+  border-width: 1px;
+  border-style: inset;
+}
+
+table[border='0'] { border-style: none; }
+
+table[border='0'] > tr > td, table[border='0'] > tr > th,
+table[border='0'] > thead > tr > td, table[border='0'] > thead > tr > th,
+table[border='0'] > tbody > tr > td, table[border='0'] > tbody > tr > th,
+table[border='0'] > tfoot > tr > td, table[border='0'] > tfoot > tr > th {
+  border-style: none;
+}

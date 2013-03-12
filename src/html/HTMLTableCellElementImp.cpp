@@ -62,21 +62,6 @@ void HTMLTableCellElementImp::handleMutation(events::MutationEvent mutation)
     }
 }
 
-void HTMLTableCellElementImp::eval()
-{
-    for (Element e = getParentElement(); e; e = e.getParentElement()) {
-        if (auto table = dynamic_cast<HTMLTableElementImp*>(e.self())) {
-            std::u16string border = table->getBorder();
-            if (!border.empty() && border != u"0") {
-                css::CSSStyleDeclaration style = getStyle();
-                style.setProperty(u"border-width", u"1px", u"non-css");
-                style.setProperty(u"border-style", u"inset", u"non-css");
-            }
-            // TOOD: Check "cellpadding"
-        }
-    }
-}
-
 unsigned int HTMLTableCellElementImp::getColSpan()
 {
     std::u16string value = getAttribute(u"colspan");
