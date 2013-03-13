@@ -82,6 +82,7 @@ void HTMLLinkElementImp::eval()
         return;
 
     std::u16string rel = getRel();
+    toLower(rel);
     if (::contains(rel, u"stylesheet")) {
         // TODO: check "type"
 
@@ -145,6 +146,7 @@ void HTMLLinkElementImp::linkIcon()
 bool HTMLLinkElementImp::setFavicon(DocumentImp* document)
 {
     std::u16string rel = getRel();
+    toLower(rel);
     if (!::contains(rel, u"icon"))
         return false;
     if (!request || request->getStatus() != 200)
@@ -203,20 +205,17 @@ std::u16string HTMLLinkElementImp::getHref()
 
 void HTMLLinkElementImp::setHref(const std::u16string& href)
 {
-    // TODO: implement me!
+    setAttribute(u"href", href);
 }
 
 std::u16string HTMLLinkElementImp::getRel()
 {
-    // cf. http://www.whatwg.org/specs/web-apps/current-work/multipage/links.html#linkTypes
-    std::u16string rel = getAttribute(u"rel");
-    toLower(rel);
-    return rel;
+    return getAttribute(u"rel");
 }
 
 void HTMLLinkElementImp::setRel(const std::u16string& rel)
 {
-    // TODO: implement me!
+    setAttribute(u"rel", rel);
 }
 
 DOMTokenList HTMLLinkElementImp::getRelList()
@@ -231,7 +230,7 @@ std::u16string HTMLLinkElementImp::getMedia()
 
 void HTMLLinkElementImp::setMedia(const std::u16string& media)
 {
-    // TODO: implement me!
+   setAttribute(u"media", media);
 }
 
 std::u16string HTMLLinkElementImp::getHreflang()
@@ -241,7 +240,7 @@ std::u16string HTMLLinkElementImp::getHreflang()
 
 void HTMLLinkElementImp::setHreflang(const std::u16string& hreflang)
 {
-    // TODO: implement me!
+   setAttribute(u"hreflang", hreflang);
 }
 
 std::u16string HTMLLinkElementImp::getType()
@@ -251,7 +250,7 @@ std::u16string HTMLLinkElementImp::getType()
 
 void HTMLLinkElementImp::setType(const std::u16string& type)
 {
-    // TODO: implement me!
+    setAttribute(u"type", type);
 }
 
 DOMSettableTokenList HTMLLinkElementImp::getSizes()
