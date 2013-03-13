@@ -2431,6 +2431,7 @@ bool HTMLParser::InSelect::processEndTag(HTMLParser* parser, Token& token)
 
     if (token.getName() == u"optgroup") {
         if (parser->currentNode().getLocalName() == u"option" &&
+            2 <= parser->openElementStack.size() &&
             parser->openElementStack[parser->openElementStack.size() - 2].getLocalName() == u"optgroup")
             processEndTag(parser, endTagOption);
         if (parser->currentNode().getLocalName() == u"optgroup")
