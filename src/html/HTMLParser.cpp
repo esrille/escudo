@@ -1090,7 +1090,7 @@ bool HTMLParser::InBody::processEOF(HTMLParser* parser, Token& token)
 {
     for (std::deque<Element>::iterator i = parser->openElementStack.begin(); i != parser->openElementStack.end(); ++i) {
         Element node = *i;
-        if (isOneOf(node.getLocalName(), { u"dd", u"dt", u"li", u"p", u"tbody", u"td", u"tfoot", u"th", u"thead", u"tr", u"body", u"html" }))
+        if (!isOneOf(node.getLocalName(), { u"dd", u"dt", u"li", u"p", u"tbody", u"td", u"tfoot", u"th", u"thead", u"tr", u"body", u"html" }))
             parser->parseError();
     }
     return parser->stopParsing();
