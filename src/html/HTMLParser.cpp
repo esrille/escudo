@@ -22,8 +22,6 @@
 #include <org/w3c/dom/Text.h>
 #include <org/w3c/dom/html/HTMLHtmlElement.h>
 
-#include <algorithm>
-
 #include <iostream>   // TODO: only for debugging
 
 #include "utf.h"
@@ -193,14 +191,28 @@ HTMLParser::AfterAfterBody HTMLParser::afterAfterBody;
 HTMLParser::AfterAfterFrameset HTMLParser::afterAfterFrameset;
 HTMLParser::InBinding HTMLParser::inBinding;
 
-Element HTMLParser::currentTable()
+Element HTMLParser::OpenElementStack::currentTable()
 {
-    // TODO: make this method faster if necessary.
-    for (auto i = openElementStack.rbegin(); i != openElementStack.rend(); ++i) {
+    for (auto i = stack.rbegin(); i != stack.rend(); ++i) {
         if ((*i).getLocalName() == u"table")
             return *i;
     }
-    return openElementStack.front();
+    return top();
+}
+
+Element HTMLParser::OpenElementStack::getFosterParent(Element& table)
+{
+    for (auto i = stack.rbegin(); i != stack.rend(); ++i) {
+        if ((*i).getLocalName() == u"table") {
+            Element fosterParent((*i).getParentElement());
+            if (fosterParent) {
+                table = *i;
+                return fosterParent;
+            }
+            return *--i;
+        }
+    }
+    return top();
 }
 
 Element HTMLParser::insertHtmlElement(const std::u16string& name)
@@ -211,7 +223,7 @@ Element HTMLParser::insertHtmlElement(const std::u16string& name)
             currentNode().appendChild(element);
         else
             fosterNode(element);
-        pushElement(element);  // Note the fostered element must also be pushed into the stack.
+        openElementStack.push(element);  // Note the fostered element must also be pushed into the stack.
     }
     return element;
 }
@@ -243,36 +255,29 @@ void HTMLParser::insertCharacter(const std::u16string& data)
     if (!insertFromTable)
         insertCharacter(currentNode(), data);
     else {
-        Element table = currentTable();
-        Element fosterParent(0);
-        if (table == openElementStack.front())
-            fosterParent = table;
-        else {
-            fosterParent = table.getParentElement();
-            if (fosterParent) {
-                Node prev = table.getPreviousSibling();
-                if (prev) {
-                    if (prev.getNodeType() == Node::TEXT_NODE) {
-                        org::w3c::dom::Text text = interface_cast<org::w3c::dom::Text>(prev);
-                        text.appendData(data);
+        Element table(0);
+        Element fosterParent = openElementStack.getFosterParent(table);
+        if (table) {
+            Node prev = table.getPreviousSibling();
+            if (prev) {
+                if (prev.getNodeType() == Node::TEXT_NODE) {
+                    org::w3c::dom::Text text = interface_cast<org::w3c::dom::Text>(prev);
+                    text.appendData(data);
+                    return;
+                }
+                if (prev.getNodeType() == Node::ELEMENT_NODE) {
+                    Element e = interface_cast<Element>(prev);
+                    if (!isOneOf(e.getLocalName(), { u"table", u"tbody", u"tfoot", u"thead", u"tr" })) {
+                        insertCharacter(prev, data);
                         return;
                     }
-                    if (prev.getNodeType() == Node::ELEMENT_NODE) {
-                        Element e = interface_cast<Element>(prev);
-                        if (!isOneOf(e.getLocalName(), { u"table", u"tbody", u"tfoot", u"thead", u"tr" })) {
-                            insertCharacter(prev, data);
-                            return;
-                        }
-                    }
                 }
-                org::w3c::dom::Text text = document.createTextNode(data);
-                fosterParent.insertBefore(text, table);
-                return;
             }
-            auto it = find(openElementStack.begin(), openElementStack.end(), table);
-            fosterParent = *--it;
-        }
-        insertCharacter(fosterParent, data);
+            org::w3c::dom::Text text = document.createTextNode(data);
+            fosterParent.insertBefore(text, table);
+            return;
+        } else
+            insertCharacter(fosterParent, data);
     }
 }
 
@@ -284,20 +289,12 @@ void HTMLParser::insertCharacter(Token& token)
 
 void HTMLParser::fosterNode(Node node)
 {
-    Element table = currentTable();
-    Element fosterParent(0);
-    if (table == openElementStack.front())
-        fosterParent = table;
-    else {
-        fosterParent = table.getParentElement();
-        if (fosterParent) {
-            fosterParent.insertBefore(node, table);
-            return;
-        }
-        auto it = find(openElementStack.begin(), openElementStack.end(), table);
-        fosterParent = *--it;
-    }
-    fosterParent.appendChild(node);
+    Element table(0);
+    Element fosterParent = openElementStack.getFosterParent(table);
+    if (table)
+        fosterParent.insertBefore(node, table);
+    else
+        fosterParent.appendChild(node);
 }
 
 // cf. http://www.whatwg.org/specs/web-apps/current-work/multipage/the-end.html#the-end
@@ -311,7 +308,7 @@ bool HTMLParser::stopParsing()
     // TODO: set the insertion point to undefined.
     // 2.
     while (!openElementStack.empty())
-        popElement();
+        openElementStack.pop();
     // The rest of the steps are executed in WindowImp::poll()
     return true;
 }
@@ -334,7 +331,7 @@ void HTMLParser::resetInsertionMode()
     bool last = false;
     for (auto i = openElementStack.rbegin(); i != openElementStack.rend(); ++i) {
         Element node = *i;
-        if (node == openElementStack.front()) {
+        if (node == openElementStack.top()) {
             last = true;
             if (contextElement)
                 node = contextElement;
@@ -434,14 +431,14 @@ void HTMLParser::reconstructActiveFormattingElements()
     --entry;
     if (!*entry)
         return;
-    if (find(openElementStack.begin(), openElementStack.end(), *entry) != openElementStack.end())
+    if (openElementStack.contains(*entry))
         return;
     // Step 4
     while (activeFormattingElements.begin() != entry) {
         // Step 5
         --entry;
         // Step 6
-        if (!*entry || find(openElementStack.begin(), openElementStack.end(), *entry) != openElementStack.end()) {
+        if (!*entry || openElementStack.contains(*entry)) {
             // Step 7
             ++entry;
             break;
@@ -452,7 +449,7 @@ void HTMLParser::reconstructActiveFormattingElements()
         Element newElement = interface_cast<Element>((*entry).cloneNode(false));
         // Step 9
         currentNode().appendChild(newElement);
-        pushElement(newElement);
+        openElementStack.push(newElement);
         // Step 10
         *entry = newElement;
         ++entry;
@@ -476,12 +473,13 @@ void HTMLParser::generateImpliedEndTags(const std::u16string& exclude)
         if (!isOneOf(current.getLocalName(), { u"dd", u"dt", u"li", u"option", u"optgroup", u"p", u"rp", u"rt" }) ||
             current.getLocalName() == exclude)
             break;
-        popElement();
+        openElementStack.pop();
     }
 }
 
-bool HTMLParser::elementInSpecificScope(Element target, const char16_t** const list, size_t size, bool except) {
-    for (auto i = openElementStack.rbegin(); i != openElementStack.rend(); ++i) {
+bool HTMLParser::OpenElementStack::inSpecificScope(Element target, const char16_t** const list, size_t size, bool except)
+{
+    for (auto i = stack.rbegin(); i != stack.rend(); ++i) {
         Element node = *i;
         if (node == target)
             return true;
@@ -491,8 +489,9 @@ bool HTMLParser::elementInSpecificScope(Element target, const char16_t** const l
     return false;
 }
 
-bool HTMLParser::elementInSpecificScope(const std::u16string& tagName, const char16_t** const list, size_t size, bool except) {
-    for (auto i = openElementStack.rbegin(); i != openElementStack.rend(); ++i) {
+bool HTMLParser::OpenElementStack::inSpecificScope(const std::u16string& tagName, const char16_t** const list, size_t size, bool except)
+{
+    for (auto i = stack.rbegin(); i != stack.rend(); ++i) {
         Element node = *i;
         if (node.getLocalName() == tagName)
             return true;
@@ -502,8 +501,9 @@ bool HTMLParser::elementInSpecificScope(const std::u16string& tagName, const cha
     return false;
 }
 
-bool HTMLParser::elementInSpecificScope(std::initializer_list<const char16_t*> targets, const char16_t** const list, size_t size, bool except) {
-    for (auto i = openElementStack.rbegin(); i != openElementStack.rend(); ++i) {
+bool HTMLParser::OpenElementStack::inSpecificScope(std::initializer_list<const char16_t*> targets, const char16_t** const list, size_t size, bool except)
+{
+    for (auto i = stack.rbegin(); i != stack.rend(); ++i) {
         Element node = *i;
         if (isOneOf(node.getLocalName(), targets))
             return true;
@@ -516,48 +516,37 @@ bool HTMLParser::elementInSpecificScope(std::initializer_list<const char16_t*> t
 template <typename T>
 bool HTMLParser::elementInScope(T target)
 {
-    return elementInSpecificScope(target, scopingElements, scopingElementCount);
+    return openElementStack.inSpecificScope(target, scopingElements, scopingElementCount);
 }
 
 template <typename T>
 bool HTMLParser::elementInListItemScope(T target)
 {
-    return elementInSpecificScope(target, listScopingElements, listScopingElementCount);
+    return openElementStack.inSpecificScope(target, listScopingElements, listScopingElementCount);
 }
 
 template <typename T>
 bool HTMLParser::elementInButtonScope(T target)
 {
-    return elementInSpecificScope(target, buttonScopingElements, buttonScopingElementCount);
+    return openElementStack.inSpecificScope(target, buttonScopingElements, buttonScopingElementCount);
 }
 
 template <typename T>
 bool HTMLParser::elementInTableScope(T target)
 {
-    return elementInSpecificScope(target, tableScopingElements, tableScopingElementCount);
+    return openElementStack.inSpecificScope(target, tableScopingElements, tableScopingElementCount);
 }
 
 template <typename T>
 bool HTMLParser::elementInTableScope(std::initializer_list<T> list)
 {
-    return elementInSpecificScope(list, tableScopingElements, tableScopingElementCount);
+    return openElementStack.inSpecificScope(list, tableScopingElements, tableScopingElementCount);
 }
 
 template <typename T>
 bool HTMLParser::elementInSelectScope(T target)
 {
-    return elementInSpecificScope(target, selectScopingElements, selectScopingElementCount, true);
-}
-
-Element HTMLParser::removeOpenElement(Element element)
-{
-    for (auto i = openElementStack.begin(); i != openElementStack.end(); ++i) {
-        if (*i == element) {
-            openElementStack.erase(i);
-            return element;
-        }
-    }
-    return 0;
+    return openElementStack.inSpecificScope(target, selectScopingElements, selectScopingElementCount, true);
 }
 
 //
@@ -721,7 +710,7 @@ Element HTMLParser::BeforeHtml::insertHtmlElement(HTMLParser* parser)
     Document document = parser->document;
     Element element = document.createElement(u"html");
     document.appendChild(element);
-    parser->pushElement(element);
+    parser->openElementStack.push(element);
     return element;
 }
 
@@ -835,7 +824,7 @@ bool HTMLParser::BeforeHead::processEndTag(HTMLParser* parser, Token& token)
 
 bool HTMLParser::InHead::anythingElse(HTMLParser* parser, Token& token)
 {
-    parser->popElement();
+    parser->openElementStack.pop();
     return parser->setInsertionMode(&parser->afterHead, token);
 }
 
@@ -872,13 +861,13 @@ bool HTMLParser::InHead::processStartTag(HTMLParser* parser, Token& token)
         return parser->inBody.processStartTag(parser, token);
     if (isOneOf(token.getName(), { u"base", u"basefont", u"bgsound", u"command", u"link" })) {
         parser->insertHtmlElement(token);
-        parser->popElement();
+        parser->openElementStack.pop();
         token.acknowledge();
         return true;
     }
     if (token.getName() == u"meta") {
         parser->insertHtmlElement(token);
-        parser->popElement();
+        parser->openElementStack.pop();
         token.acknowledge();
         // TODO: check encoding
         return true;
@@ -927,12 +916,12 @@ bool HTMLParser::InHead::processStartTag(HTMLParser* parser, Token& token)
 bool HTMLParser::InHead::processEndTag(HTMLParser* parser, Token& token)
 {
     if (token.getName() == u"head") {
-        parser->popElement();
+        parser->openElementStack.pop();
         parser->setInsertionMode(&parser->afterHead);
         return true;
     }
     if (isOneOf(token.getName(), { u"body", u"html", u"br" })) {
-        parser->popElement();
+        parser->openElementStack.pop();
         return parser->setInsertionMode(&parser->afterHead, token);
     }
     parser->parseError("unexpected-end-tag");
@@ -945,7 +934,7 @@ bool HTMLParser::InHead::processEndTag(HTMLParser* parser, Token& token)
 
 bool HTMLParser::InHeadNoscript::anythingElse(HTMLParser* parser, Token& token)
 {
-    parser->popElement();
+    parser->openElementStack.pop();
     return parser->setInsertionMode(&parser->inHead, token);
 }
 
@@ -991,13 +980,13 @@ bool HTMLParser::InHeadNoscript::processStartTag(HTMLParser* parser, Token& toke
 bool HTMLParser::InHeadNoscript::processEndTag(HTMLParser* parser, Token& token)
 {
     if (token.getName() == u"noscript") {
-        parser->popElement();
+        parser->openElementStack.pop();
         parser->setInsertionMode(&parser->inHead);
         return true;
     }
     if (token.getName() == u"br") {
         parser->parseError("unexpected-end-tag");
-        parser->popElement();
+        parser->openElementStack.pop();
         return parser->setInsertionMode(&parser->inHead, token);
     }
     parser->parseError("unexpected-end-tag");
@@ -1062,9 +1051,9 @@ bool HTMLParser::AfterHead::processStartTag(HTMLParser* parser, Token& token)
     if (isOneOf(token.getName(), { u"base", u"basefont", u"bgsound", u"binding", u"link",  u"meta", u"noframes", u"script", u"style", u"title" })) {
         assert(parser->headElement);
         parser->parseError("unexpected-start-tag");
-        parser->pushElement(parser->headElement);
+        parser->openElementStack.push(parser->headElement);
         parser->inHead.processStartTag(parser, token);
-        parser->removeOpenElement(parser->headElement);
+        parser->openElementStack.remove(parser->headElement);
         return true;
     }
     if (token.getName() == u"head") {
@@ -1088,7 +1077,7 @@ bool HTMLParser::AfterHead::processEndTag(HTMLParser* parser, Token& token)
 
 bool HTMLParser::InBody::processEOF(HTMLParser* parser, Token& token)
 {
-    for (std::deque<Element>::iterator i = parser->openElementStack.begin(); i != parser->openElementStack.end(); ++i) {
+    for (auto i = parser->openElementStack.rbegin(); i != parser->openElementStack.rend(); ++i) {
         Element node = *i;
         if (!isOneOf(node.getLocalName(), { u"dd", u"dt", u"li", u"p", u"tbody", u"td", u"tfoot", u"th", u"thead", u"tr", u"body", u"html" }))
             parser->parseError();
@@ -1154,7 +1143,7 @@ bool HTMLParser::InBody::processStartTag(HTMLParser* parser, Token& token)
         if (Node parent = parser->openElementStack[1].getParentNode())
             parent.removeChild(parser->openElementStack[1]);
         while (parser->currentNode().getLocalName() != u"html")
-            parser->popElement();
+            parser->openElementStack.pop();
         parser->insertHtmlElement(token);
         parser->setInsertionMode(&parser->inFrameset);
         return true;
@@ -1172,7 +1161,7 @@ bool HTMLParser::InBody::processStartTag(HTMLParser* parser, Token& token)
             processEndTag(parser, endTagP);
         if (isOneOf(parser->currentNode().getLocalName(), { u"h1", u"h2", u"h3", u"h4", u"h5", u"h6" })) {
             parser->parseError();
-            parser->popElement();
+            parser->openElementStack.pop();
         }
         parser->insertHtmlElement(token);
         return true;
@@ -1255,7 +1244,7 @@ bool HTMLParser::InBody::processStartTag(HTMLParser* parser, Token& token)
             parser->parseError();
             processEndTag(parser, endTagA);
             parser->activeFormattingElements.remove(element);
-            parser->removeOpenElement(element);
+            parser->openElementStack.remove(element);
         }
         parser->reconstructActiveFormattingElements();
         parser->addFormattingElement(parser->insertHtmlElement(token));
@@ -1295,14 +1284,14 @@ bool HTMLParser::InBody::processStartTag(HTMLParser* parser, Token& token)
     if (isOneOf(token.getName(), { u"area", u"br", u"embed", u"img", u"input", u"keygen", u"wbr" })) {
         parser->reconstructActiveFormattingElements();
         parser->insertHtmlElement(token);
-        parser->popElement();
+        parser->openElementStack.pop();
         token.acknowledge();
         parser->framesetOkFlag = false;
         return true;
     }
     if (isOneOf(token.getName(), { u"param", u"source", u"track" })) {
         parser->insertHtmlElement(token);
-        parser->popElement();
+        parser->openElementStack.pop();
         token.acknowledge();
         return true;
     }
@@ -1310,7 +1299,7 @@ bool HTMLParser::InBody::processStartTag(HTMLParser* parser, Token& token)
         if (parser->elementInButtonScope(u"p"))
             processEndTag(parser, endTagP);
         parser->insertHtmlElement(token);
-        parser->popElement();
+        parser->openElementStack.pop();
         token.acknowledge();
         parser->framesetOkFlag = false;
         return true;
@@ -1399,7 +1388,7 @@ bool HTMLParser::InBody::processStartTag(HTMLParser* parser, Token& token)
         if (parser->currentNode().getLocalName() != u"ruby") {
             parser->parseError();
             do {
-                parser->popElement();
+                parser->openElementStack.pop();
             } while (parser->currentNode().getLocalName() != u"ruby");
         }
         parser->insertHtmlElement(token);
@@ -1463,7 +1452,7 @@ bool HTMLParser::InBody::processEndTag(HTMLParser* parser, Token& token)
         parser->generateImpliedEndTags();
         if (parser->currentNode().getLocalName() != token.getName())
             parser->parseError();
-        while (parser->popElement().getLocalName() != token.getName())
+        while (parser->openElementStack.pop().getLocalName() != token.getName())
             ;
         return true;
     }
@@ -1476,15 +1465,10 @@ bool HTMLParser::InBody::processEndTag(HTMLParser* parser, Token& token)
         }
         parser->generateImpliedEndTags();
         if (parser->currentNode() == node)
-            parser->popElement();
+            parser->openElementStack.pop();
         else {
             parser->parseError();
-            for (auto i = parser->openElementStack.begin(); i != parser->openElementStack.end(); ++i) {
-                if (*i == node) {
-                    parser->openElementStack.erase(i);
-                    break;
-                }
-            }
+            parser->openElementStack.remove(node);
         }
         return true;
     }
@@ -1497,7 +1481,7 @@ bool HTMLParser::InBody::processEndTag(HTMLParser* parser, Token& token)
         parser->generateImpliedEndTags(token.getName());
         if (parser->currentNode().getLocalName() != token.getName())
             parser->parseError();
-        while (parser->popElement().getLocalName() != token.getName())
+        while (parser->openElementStack.pop().getLocalName() != token.getName())
             ;
         return true;
     }
@@ -1509,7 +1493,7 @@ bool HTMLParser::InBody::processEndTag(HTMLParser* parser, Token& token)
         parser->generateImpliedEndTags(token.getName());
         if (parser->currentNode().getLocalName() != token.getName())
             parser->parseError();
-        while (parser->popElement().getLocalName() != token.getName())
+        while (parser->openElementStack.pop().getLocalName() != token.getName())
             ;
         return true;
     }
@@ -1521,7 +1505,7 @@ bool HTMLParser::InBody::processEndTag(HTMLParser* parser, Token& token)
         parser->generateImpliedEndTags(token.getName());
         if (parser->currentNode().getLocalName() != token.getName())
             parser->parseError();
-        while (parser->popElement().getLocalName() != token.getName())
+        while (parser->openElementStack.pop().getLocalName() != token.getName())
             ;
         return true;
     }
@@ -1533,7 +1517,7 @@ bool HTMLParser::InBody::processEndTag(HTMLParser* parser, Token& token)
         parser->generateImpliedEndTags();
         if (parser->currentNode().getLocalName() != token.getName())
             parser->parseError();
-        while (!isOneOf(parser->popElement().getLocalName(), { u"h1", u"h2", u"h3", u"h4", u"h5", u"h6" }))
+        while (!isOneOf(parser->openElementStack.pop().getLocalName(), { u"h1", u"h2", u"h3", u"h4", u"h5", u"h6" }))
             ;
         return true;
 
@@ -1573,7 +1557,7 @@ bool HTMLParser::InBody::processEndTag(HTMLParser* parser, Token& token)
             }
             // Step 6
             if (furthestBlock == parser->openElementStack.end()) {
-                while (parser->popElement() != formattingElement)
+                while (parser->openElementStack.pop() != formattingElement)
                     ;
                 parser->activeFormattingElements.erase(bookmark);
                 return false;
@@ -1637,7 +1621,7 @@ bool HTMLParser::InBody::processEndTag(HTMLParser* parser, Token& token)
             parser->activeFormattingElements.remove(formattingElement);
             // Step 15
             if (furthestBlock == parser->openElementStack.end())
-                parser->openElementStack.push_back(clone);
+                parser->openElementStack.push(clone);
             else
                 parser->openElementStack.insert(furthestBlock + 1, clone);
             parser->openElementStack.erase(it);
@@ -1651,7 +1635,7 @@ bool HTMLParser::InBody::processEndTag(HTMLParser* parser, Token& token)
         parser->generateImpliedEndTags();
         if (parser->currentNode().getLocalName() != token.getName())
             parser->parseError();
-        while (parser->popElement().getLocalName() != token.getName())
+        while (parser->openElementStack.pop().getLocalName() != token.getName())
             ;
         parser->clearActiveFormattingElements();
         return true;
@@ -1671,7 +1655,7 @@ bool HTMLParser::InBody::processAnyOtherEndTag(HTMLParser* parser, Token& token)
             parser->generateImpliedEndTags(token.getName());
             if (token.getName() != parser->currentNode().getLocalName())
                 parser->parseError();
-            while (parser->popElement() != node)
+            while (parser->openElementStack.pop() != node)
                 ;
             return true;
         } else if (isSpecial(node.getLocalName())) {
@@ -1708,7 +1692,7 @@ bool HTMLParser::Text::processEOF(HTMLParser* parser, Token& token)
     if (isOneOf(parser->currentNode().getLocalName(), { u"implementation", u"script" })) {
         // TODO: mark the script element as "already started".
     }
-    parser->popElement();
+    parser->openElementStack.pop();
     return parser->setInsertionMode(parser->originalInsertionMode, token);
 }
 
@@ -1740,7 +1724,7 @@ bool HTMLParser::Text::processEndTag(HTMLParser* parser, Token& token)
 
     if (isOneOf(token.getName(), { u"implementation", u"script" })) {
         Element script = parser->currentNode();
-        parser->popElement();
+        parser->openElementStack.pop();
         parser->setInsertionMode(parser->originalInsertionMode);
         bool old = parser->setInsertionPoint();
         ++(parser->scriptNestingLevel);
@@ -1753,7 +1737,7 @@ bool HTMLParser::Text::processEndTag(HTMLParser* parser, Token& token)
         return true;
     }
     // Any other end tag
-    parser->popElement();
+    parser->openElementStack.pop();
     parser->setInsertionMode(parser->originalInsertionMode);
     return true;
 }
@@ -1775,7 +1759,7 @@ bool HTMLParser::InTable::anythingElse(HTMLParser* parser, Token& token)
 void HTMLParser::InTable::clearStackBackToTableContext(HTMLParser* parser)
 {
     while (!isOneOf(parser->currentNode().getLocalName(), { u"table", u"html" }))
-        parser->popElement();
+        parser->openElementStack.pop();
 }
 
 bool HTMLParser::InTable::processEOF(HTMLParser* parser, Token& token)
@@ -1853,7 +1837,7 @@ bool HTMLParser::InTable::processStartTag(HTMLParser* parser, Token& token)
             return anythingElse(parser, token);
         parser->parseError();
         parser->insertHtmlElement(token);
-        parser->popElement();
+        parser->openElementStack.pop();
         return true;
     }
     if (token.getName() == u"form") {
@@ -1861,7 +1845,7 @@ bool HTMLParser::InTable::processStartTag(HTMLParser* parser, Token& token)
         if (parser->formElement)
             return false;
         parser->formElement = parser->insertHtmlElement(token);
-        parser->popElement();
+        parser->openElementStack.pop();
         return true;
     }
     return anythingElse(parser, token);
@@ -1874,7 +1858,7 @@ bool HTMLParser::InTable::processEndTag(HTMLParser* parser, Token& token)
             parser->parseError();
             return false;
         }
-        while (parser->popElement().getLocalName() != u"table")
+        while (parser->openElementStack.pop().getLocalName() != u"table")
             ;
         parser->resetInsertionMode();
         return true;
@@ -1989,7 +1973,7 @@ bool HTMLParser::InCaption::processEndTag(HTMLParser* parser, Token& token)
         parser->generateImpliedEndTags();
         if (parser->currentNode().getLocalName() != u"caption")
             parser->parseError();
-        while (parser->popElement().getLocalName() != u"caption")
+        while (parser->openElementStack.pop().getLocalName() != u"caption")
             ;
         parser->clearActiveFormattingElements();
         parser->setInsertionMode(&parser->inTable);
@@ -2022,7 +2006,7 @@ bool HTMLParser::InColumnGroup::anythingElse(HTMLParser* parser, Token& token)
 
 bool HTMLParser::InColumnGroup::processEOF(HTMLParser* parser, Token& token)
 {
-    if (parser->currentNode() == parser->openElementStack.front())
+    if (parser->currentNode() == parser->openElementStack.top())
         return parser->stopParsing();
     return anythingElse(parser, token);
 }
@@ -2055,7 +2039,7 @@ bool HTMLParser::InColumnGroup::processStartTag(HTMLParser* parser, Token& token
         return parser->inBody.processStartTag(parser, token);
     if (token.getName() == u"col") {
         parser->insertHtmlElement(token);
-        parser->popElement();
+        parser->openElementStack.pop();
         token.acknowledge();
         return true;
     }
@@ -2065,11 +2049,11 @@ bool HTMLParser::InColumnGroup::processStartTag(HTMLParser* parser, Token& token
 bool HTMLParser::InColumnGroup::processEndTag(HTMLParser* parser, Token& token)
 {
     if (token.getName() == u"colgroup") {
-        if (parser->currentNode() == parser->openElementStack.front()) {
+        if (parser->currentNode() == parser->openElementStack.top()) {
             parser->parseError();
             return false;
         }
-        parser->popElement();
+        parser->openElementStack.pop();
         parser->setInsertionMode(&parser->inTable);
         return true;
     }
@@ -2087,7 +2071,7 @@ bool HTMLParser::InColumnGroup::processEndTag(HTMLParser* parser, Token& token)
 void HTMLParser::InTableBody::clearStackBackToTableBodyContext(HTMLParser* parser)
 {
     while (!isOneOf(parser->currentNode().getLocalName(), { u"tbody", u"tfoot", u"thead", u"html" }))
-        parser->popElement();
+        parser->openElementStack.pop();
 }
 
 bool HTMLParser::InTableBody::anythingElse(HTMLParser* parser, Token& token)
@@ -2151,7 +2135,7 @@ bool HTMLParser::InTableBody::processEndTag(HTMLParser* parser, Token& token)
             return false;
         }
         clearStackBackToTableBodyContext(parser);
-        parser->popElement();
+        parser->openElementStack.pop();
         parser->setInsertionMode(&parser->inTable);
         return true;
     }
@@ -2179,7 +2163,7 @@ bool HTMLParser::InTableBody::processEndTag(HTMLParser* parser, Token& token)
 void HTMLParser::InRow::clearStackBackToTableRowContext(HTMLParser* parser)
 {
     while (!isOneOf(parser->currentNode().getLocalName(), { u"tr", u"html" }))
-        parser->popElement();
+        parser->openElementStack.pop();
 }
 
 bool HTMLParser::InRow::anythingElse(HTMLParser* parser, Token& token)
@@ -2236,7 +2220,7 @@ bool HTMLParser::InRow::processEndTag(HTMLParser* parser, Token& token)
             return false;
         }
         clearStackBackToTableRowContext(parser);
-        parser->popElement();
+        parser->openElementStack.pop();
         parser->setInsertionMode(&parser->inTableBody);
         return true;
     }
@@ -2323,7 +2307,7 @@ bool HTMLParser::InCell::processEndTag(HTMLParser* parser, Token& token)
         parser->generateImpliedEndTags();
         if (parser->currentNode().getLocalName() != token.getName())
             parser->parseError();
-        while (parser->popElement().getLocalName() != token.getName())
+        while (parser->openElementStack.pop().getLocalName() != token.getName())
             ;
         parser->clearActiveFormattingElements();
         parser->setInsertionMode(&parser->inRow);
@@ -2435,7 +2419,7 @@ bool HTMLParser::InSelect::processEndTag(HTMLParser* parser, Token& token)
             parser->openElementStack[parser->openElementStack.size() - 2].getLocalName() == u"optgroup")
             processEndTag(parser, endTagOption);
         if (parser->currentNode().getLocalName() == u"optgroup")
-            parser->popElement();
+            parser->openElementStack.pop();
         else {
             parser->parseError();
             return false;
@@ -2444,7 +2428,7 @@ bool HTMLParser::InSelect::processEndTag(HTMLParser* parser, Token& token)
     }
     if (token.getName() == u"option") {
         if (parser->currentNode().getLocalName() == u"option")
-            parser->popElement();
+            parser->openElementStack.pop();
         else {
             parser->parseError();
             return false;
@@ -2456,7 +2440,7 @@ bool HTMLParser::InSelect::processEndTag(HTMLParser* parser, Token& token)
             parser->parseError();
             return false;
         }
-        while (parser->popElement().getLocalName() != u"select")
+        while (parser->openElementStack.pop().getLocalName() != u"select")
             ;
         parser->resetInsertionMode();
         return true;
@@ -2572,7 +2556,7 @@ bool HTMLParser::AfterBody::processEOF(HTMLParser* parser, Token& token)
 bool HTMLParser::AfterBody::processComment(HTMLParser* parser, Token& token)
 {
     Comment comment = parser->document.createComment(token.getName());
-    parser->openElementStack.front().appendChild(comment);
+    parser->openElementStack.top().appendChild(comment);
     return true;
 }
 
@@ -2656,7 +2640,7 @@ bool HTMLParser::InFrameset::processStartTag(HTMLParser* parser, Token& token)
     }
     if (token.getName() == u"frame") {
         parser->insertHtmlElement(token);
-        parser->popElement();
+        parser->openElementStack.pop();
         token.acknowledge();
         return true;
     }
@@ -2672,7 +2656,7 @@ bool HTMLParser::InFrameset::processEndTag(HTMLParser* parser, Token& token)
             parser->parseError();
             return false;
         }
-        parser->popElement();
+        parser->openElementStack.pop();
         if (!parser->innerHTML && parser->currentNode().getLocalName() != u"frameset")
             parser->setInsertionMode(&parser->afterFrameset);
         return true;
@@ -2884,7 +2868,7 @@ bool HTMLParser::InBinding::processEndTag(HTMLParser* parser, Token& token)
             parser->parseError();
             return false;
         }
-        while (parser->popElement().getLocalName() != u"binding")
+        while (parser->openElementStack.pop().getLocalName() != u"binding")
             ;
         parser->setInsertionMode(&parser->inHead);
         return true;
@@ -2963,7 +2947,7 @@ void HTMLParser::parseFragment(Document document, const std::u16string& markup, 
     }
     Element root = document.createElement(u"html");
     document.appendChild(root);
-    parser.pushElement(root);
+    parser.openElementStack.push(root);
     parser.resetInsertionMode();
     for (auto i = context; i; i = i.getParentElement()) {
         if (auto form = dynamic_cast<HTMLFormElementImp*>(i.self())) {

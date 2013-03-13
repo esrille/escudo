@@ -17,6 +17,7 @@
 #ifndef ES_HTMLPARSER_H
 #define ES_HTMLPARSER_H
 
+#include <algorithm>
 #include <initializer_list>
 #include <deque>
 #include <list>
@@ -435,31 +436,86 @@ class HTMLParser
     bool setInsertionPoint(bool defined = true);
 
     //
-    // open element stack
+    // open element stack - the stack grows downwards
     //
-    std::deque<Element> openElementStack;
+    class OpenElementStack {
+        std::deque<Element> stack;
+    public:
+        Element& operator[](size_t pos) {
+            return stack[pos];
+        }
+        bool empty() const {
+            return stack.empty();
+        }
+        size_t size() const {
+            return stack.size();
+        }
+        Element top() const {
+            assert(!empty());
+            return stack.front();
+        }
+        Element bottom() const {
+            assert(!empty());
+            return stack.back();
+        }
+        void push(Element element) {
+            if (element)
+                stack.push_back(element);
+        }
+        Element pop() {
+            assert(!empty());
+            if (empty())
+                return 0;
+            Element current(currentNode());
+            stack.pop_back();
+            return current;
+        }
+
+        std::deque<Element>::iterator begin() {
+            return stack.begin();
+        }
+        std::deque<Element>::iterator end() {
+            return stack.end();
+        }
+        std::deque<Element>::reverse_iterator rbegin() {
+            return stack.rbegin();
+        }
+        std::deque<Element>::reverse_iterator rend() {
+            return stack.rend();
+        }
+        std::deque<Element>::iterator insert(std::deque<Element>::iterator pos, Element value) {
+            return stack.insert(pos, value);
+        }
+        std::deque<Element>::iterator erase(std::deque<Element>::iterator pos) {
+            return stack.erase(pos);
+        }
+        void remove(Element element) {
+            for (auto i = begin(); i != end(); ++i) {
+                if (*i == element) {
+                    erase(i);
+                    break;
+                }
+            }
+        }
+        bool contains(Element e) const {
+            return find(stack.begin(), stack.end(), e) != stack.end();
+        }
+
+        Element currentNode() const {
+            return bottom();
+        }
+        Element currentTable();
+        Element getFosterParent(Element& table);
+
+        bool inSpecificScope(Element target, const char16_t** const list, size_t size, bool except = false);
+        bool inSpecificScope(const std::u16string& tagName, const char16_t** const list, size_t size, bool except = false);
+        bool inSpecificScope(std::initializer_list<const char16_t*> targets, const char16_t** const list, size_t size, bool except = false);
+    };
+    OpenElementStack openElementStack;
 
     Element currentNode() {
-        return openElementStack.back();
+        return openElementStack.currentNode();
     }
-    Element currentTable();
-    Element pushElement(Element element) {
-        if (element)
-            openElementStack.push_back(element);
-        return element;
-    }
-    Element popElement() {
-        assert(!openElementStack.empty());
-        if (openElementStack.empty())
-            return 0;
-        Element top = openElementStack.back();
-        openElementStack.pop_back();
-        return top;
-    }
-    Element removeOpenElement(Element element);
-    bool elementInSpecificScope(Element target, const char16_t** const list, size_t size, bool except = false);
-    bool elementInSpecificScope(const std::u16string& tagName, const char16_t** const list, size_t size, bool excpet = false);
-    bool elementInSpecificScope(std::initializer_list<const char16_t*> targets, const char16_t** const list, size_t size, bool except = false);
     template <typename T>
     bool elementInScope(T target);
     template <typename T>
