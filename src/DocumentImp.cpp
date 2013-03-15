@@ -174,7 +174,7 @@ void DocumentImp::setCharacterSet(const std::u16string& charset)
         this->charset = charset;
         return;
     }
-    // TODO: Change the  character encoding.
+    // TODO: Change the character encoding.
 }
 
 void DocumentImp::setReadyState(const std::u16string& readyState)

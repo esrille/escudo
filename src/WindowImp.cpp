@@ -45,6 +45,7 @@ WindowImp::Parser::Parser(DocumentImp* document, int fd, const std::string& opti
     tokenizer(&htmlInputStream),
     parser(document, &tokenizer)
 {
+    document->setCharacterSet(utfconv(htmlInputStream.getEncoding()));
 }
 
 WindowImp::WindowImp(WindowImp* parent, ElementImp* frameElement) :
@@ -297,7 +298,6 @@ bool WindowImp::poll()
                 document->exit();
                 break;
             }
-            document->setCharacterSet(utfconv(parser->getEncoding()));
 
             // TODO: Check if the parser has been aborted.
             NodeImp::evalTree(document);
