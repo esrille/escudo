@@ -1,0 +1,27 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'>
+<title>HTML Test</title>
+<link id='t' rel='stylesheet' href='html-022-green.css'>
+<script type="text/javascript">
+function doTest() {
+  this.addEventListener('keydown', function(event) {
+    if (event.keyCode == 13) {
+      var t = document.getElementById('t');
+alert(t.href);
+      if (t.href.match(/green\.css$/))
+        t.href = 'html-022-blue.css';
+      else
+        t.href = 'html-022-green.css';
+alert(t.href);
+    }
+  }, false);
+}
+</script>
+</head>
+<body onload='doTest()'>
+<p>Press [Enter] to dynamically change href of the link element.</p>
+<div>green or blue</div>
+</body>
+</html>
