@@ -200,7 +200,7 @@ void HTMLLinkElementImp::setDisabled(bool disabled)
 
 std::u16string HTMLLinkElementImp::getHref()
 {
-    return getAttribute(u"href");
+    return getAttributeAsURL(u"href");
 }
 
 void HTMLLinkElementImp::setHref(const std::u16string& href)
