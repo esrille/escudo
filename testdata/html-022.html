@@ -9,12 +9,10 @@ function doTest() {
   this.addEventListener('keydown', function(event) {
     if (event.keyCode == 13) {
       var t = document.getElementById('t');
-alert(t.href);
       if (t.href.match(/green\.css$/))
         t.href = 'html-022-blue.css';
       else
         t.href = 'html-022-green.css';
-alert(t.href);
     }
   }, false);
 }
