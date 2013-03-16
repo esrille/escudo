@@ -48,6 +48,7 @@ public:
 
     // flags
     static const unsigned short DONT_REMOVE = 1;    // Do not remove filePath upon destruction
+    static const unsigned short CANCELED = 2;
 
 private:
     static std::string aboutPath;
@@ -55,7 +56,7 @@ private:
 
     std::u16string base;
     unsigned short readyState;
-    unsigned short flags;
+    std::atomic_ushort flags;
     bool errorFlag;
     HttpRequestMessage request;
     HttpResponseMessage response;
@@ -118,6 +119,15 @@ public:
     void setTimeout(unsigned int timeout);
     bool send();
     void abort();
+
+    // cancel() does not abort the currently running request, but when notified
+    // the caller can test if the request has been canceled. If the request
+    // has been completed or not used at all, it is simply deleted.
+    void cancel();
+    bool isCanceled() const {
+        return flags & CANCELED;
+    }
+
     unsigned short getStatus() const;
     const std::string& getStatusText() const;
     const std::string getResponseHeader(std::u16string header) const;

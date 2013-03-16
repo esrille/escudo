@@ -157,7 +157,6 @@ void HttpRequest::notify()
         return;
     }
 
-    readyState = DONE;
     if (handler) {
         handler();
         handler.clear();
@@ -168,6 +167,8 @@ void HttpRequest::notify()
             *i = 0;
         }
     }
+
+    readyState = DONE;
 }
 
 bool HttpRequest::notify(bool error)
@@ -192,7 +193,7 @@ void HttpRequest::setRequestHeader(const std::u16string& header, const std::u16s
 bool HttpRequest::constructResponseFromCache(bool sync)
 {
     assert(cache);
-    readyState = DONE;
+    readyState = COMPLETE;
     errorFlag = false;
 
     response.update(cache->getResponseMessage());
@@ -207,6 +208,9 @@ bool HttpRequest::constructResponseFromCache(bool sync)
         notify();
     else
         HttpConnectionManager::getInstance().complete(this, errorFlag);
+
+    readyState = DONE;
+
     return errorFlag;
 }
 
@@ -347,6 +351,23 @@ void HttpRequest::abort()
         content.close();
     filePath.clear();   // TODO: Check if we should remove file now
     cache = 0;
+}
+
+void HttpRequest::cancel()
+{
+    // TODO: if the request has been sent but still remains in the request
+    // queue of the HTTP connection, it is better to remove the request from
+    // the queue.
+
+    flags |= CANCELED;
+    switch (readyState) {
+    case UNSENT:
+    case DONE:
+        delete this;
+        break;
+    default:
+        break;
+    }
 }
 
 unsigned short HttpRequest::getStatus() const
