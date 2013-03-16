@@ -312,6 +312,7 @@ bool WindowImp::poll()
             if (4 <= getLogLevel())
                 dumpTree(std::cerr, document);
         }
+
         switch (backgroundTask.getState()) {
         case BackgroundTask::Cascaded:
             HTMLElementImp::xblEnteredDocument(document);
@@ -319,6 +320,9 @@ bool WindowImp::poll()
             break;
         case BackgroundTask::Init:
         case BackgroundTask::Done: {
+
+            eventLoop();
+
             ViewCSSImp* next = backgroundTask.getView();
             updateView(next);
             if (document->getReadyState() == u"interactive") {

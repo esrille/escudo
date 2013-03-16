@@ -28,6 +28,7 @@
 #include "EventListenerImp.h"
 #include "EventTargetImp.h"
 #include "ECMAScript.h"
+#include "Task.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -38,6 +39,7 @@ class HttpRequest;
 class DocumentWindow : public EventTargetImp
 {
     Document document;
+    TaskQueue taskQueue;
     ECMAScriptContext* global;
     std::list<HttpRequest*> cache;
     int scrollX;
@@ -62,6 +64,10 @@ public:
         return document;
     }
     void setDocument(const Document& document);
+
+    TaskQueue& getTaskQueue() {
+        return taskQueue;
+    }
 
     ECMAScriptContext* getContext() {
         return global;

@@ -154,7 +154,8 @@ class WindowImp : public ObjectMixin<WindowImp>
         }
     };
 
-    class Parser {
+    class Parser
+    {
         boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream;
         HTMLInputStream htmlInputStream;
         HTMLTokenizer tokenizer;
@@ -247,6 +248,19 @@ public:
     }
     float getScrollHeight() const {
         return scrollHeight;
+    }
+
+    void putTask(const Task& task) {
+        if (window)
+            window->getTaskQueue().putTask(task);
+    }
+    void eventLoop() {
+        if (window) {
+            while (window->getTaskQueue()) {
+                Task task = window->getTaskQueue().getTask();
+                task.run();
+            }
+        }
     }
 
     void enter();
