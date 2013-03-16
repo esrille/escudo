@@ -41,7 +41,8 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 HTMLLinkElementImp::HTMLLinkElementImp(DocumentImp* ownerDocument) :
     ObjectMixin(ownerDocument, u"link"),
-    request(0),
+    dirty(false),
+    current(0),
     styleSheet(0)
 {
     tabIndex = -1;
@@ -49,25 +50,36 @@ HTMLLinkElementImp::HTMLLinkElementImp(DocumentImp* ownerDocument) :
 
 HTMLLinkElementImp::HTMLLinkElementImp(HTMLLinkElementImp* org, bool deep) :
     ObjectMixin(org, deep),
-    request(0),  // TODO: XXX
+    dirty(false),
+    current(0),
     styleSheet(org->styleSheet) // TODO: make a clone sheet, too?
 {
 }
 
 HTMLLinkElementImp::~HTMLLinkElementImp()
 {
-    delete request;
+    delete current;
+}
+
+void HTMLLinkElementImp::resetStyleSheet()
+{
+    if (styleSheet) {
+        styleSheet = 0;
+        if (auto document = getOwnerDocumentImp())
+            document->resetStyleSheets();
+    }
 }
 
 void HTMLLinkElementImp::handleMutation(events::MutationEvent mutation)
 {
     switch (Intern(mutation.getAttrName().c_str())) {
     case Intern(u"href"):
-        handleMutationHref(mutation);
-        break;
-    case Intern(u"tabindex"):
-        if (hasAttribute(u"href") && !toInteger(mutation.getNewValue(), tabIndex))
-            tabIndex = 0;
+    case Intern(u"rel"):
+    case Intern(u"media"):
+    case Intern(u"hreflang"):
+    case Intern(u"type"):
+    case Intern(u"sizes"):
+        requestRefresh();
         break;
     default:
         HTMLElementImp::handleMutation(mutation);
@@ -75,56 +87,83 @@ void HTMLLinkElementImp::handleMutation(events::MutationEvent mutation)
     }
 }
 
-void HTMLLinkElementImp::eval()
+void HTMLLinkElementImp::notify(NotificationType type)
 {
-    std::u16string href = getHref();
-    if (href.empty())
+    requestRefresh();
+}
+
+void HTMLLinkElementImp::requestRefresh()
+{
+    if (dirty)
         return;
+    dirty = true;
 
-    std::u16string rel = getRel();
-    toLower(rel);
-    if (::contains(rel, u"stylesheet")) {
-        // TODO: check "type"
-
-        if (!::contains(rel, u"alternate")) {
-            // Check "media"
-            std::u16string mediaText = getMedia();
-            Retained<MediaListImp> mediaList;
-            mediaList.setMediaText(mediaText);
-            if (mediaText.empty() || mediaList.hasMedium(MediaListImp::Screen)) {   // TODO: support other mediums, too.
-                DocumentImp* document = getOwnerDocumentImp();
-                request = new(std::nothrow) HttpRequest(document->getDocumentURI());
-                if (request) {
-                    request->open(u"GET", href);
-                    request->setHandler(boost::bind(&HTMLLinkElementImp::linkStyleSheet, this));
-                    document->incrementLoadEventDelayCount();
-                    request->send();
-                }
-            }
-        }
-    }
-    else if (::contains(rel, u"icon")) {
-        DocumentImp* document = getOwnerDocumentImp();
-        request = new(std::nothrow) HttpRequest(document->getDocumentURI());
-        if (request) {
-            request->open(u"GET", href);
-            request->setHandler(boost::bind(&HTMLLinkElementImp::linkIcon, this));
-            document->incrementLoadEventDelayCount();
-            request->send();
-        }
+    DocumentImp* owner = getOwnerDocumentImp();
+    assert(owner);
+    if (WindowImp* window = owner->getDefaultWindow()) {
+        Task task(this, boost::bind(&HTMLLinkElementImp::refresh, this));
+        window->putTask(task);
     }
 }
 
-void HTMLLinkElementImp::linkStyleSheet()
+void HTMLLinkElementImp::refresh()
 {
+    if (!dirty)
+        return;
+    dirty = false;
+
+    std::u16string href = getHref();
+    if (!href.empty()) {
+        DocumentImp* document = getOwnerDocumentImp();
+        std::u16string rel = getRel();
+        toLower(rel);
+        if (::contains(rel, u"stylesheet")) {
+            // TODO: check "type"
+            if (!::contains(rel, u"alternate")) {
+                std::u16string mediaText = getMedia();
+                Retained<MediaListImp> mediaList;
+                mediaList.setMediaText(mediaText);
+                if (mediaText.empty() || mediaList.hasMedium(MediaListImp::Screen)) {   // TODO: support other mediums, too.
+                    if (current)
+                        current->cancel();
+                    current = new(std::nothrow) HttpRequest(document->getDocumentURI());
+                    if (current) {
+                        current->open(u"GET", href);
+                        current->setHandler(boost::bind(&HTMLLinkElementImp::linkStyleSheet, this, current));
+                        document->incrementLoadEventDelayCount();
+                        current->send();
+                        return; // Do not reset styleSheet.
+                    }
+                }
+            }
+        } else if (::contains(rel, u"icon")) {
+            if (current)
+                current->cancel();
+            current = new(std::nothrow) HttpRequest(document->getDocumentURI());
+            if (current) {
+                current->open(u"GET", href);
+                current->setHandler(boost::bind(&HTMLLinkElementImp::linkIcon, this, current));
+                document->incrementLoadEventDelayCount();
+                current->send();
+            }
+        }
+    }
+    resetStyleSheet();
+}
+
+void HTMLLinkElementImp::linkStyleSheet(HttpRequest* request)
+{
+    if (current != request)
+        delete request;
+
     DocumentImp* document = getOwnerDocumentImp();
-    if (request->getStatus() == 200) {
-        boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request->getContentDescriptor(), boost::iostreams::close_handle);
+    if (current->getStatus() == 200) {
+        boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(current->getContentDescriptor(), boost::iostreams::close_handle);
         CSSParser parser;
-        CSSInputStream cssStream(stream, request->getResponseMessage().getContentCharset(), utfconv(document->getCharacterSet()));
+        CSSInputStream cssStream(stream, current->getResponseMessage().getContentCharset(), utfconv(document->getCharacterSet()));
         styleSheet = parser.parse(document, cssStream);
         if (auto imp = dynamic_cast<CSSStyleSheetImp*>(styleSheet.self())) {
-            imp->setHref(request->getRequestMessage().getURL());
+            imp->setHref(current->getRequestMessage().getURL());
             imp->setOwnerNode(this);
         }
         if (4 <= getLogLevel())
@@ -136,8 +175,11 @@ void HTMLLinkElementImp::linkStyleSheet()
     document->decrementLoadEventDelayCount();
 }
 
-void HTMLLinkElementImp::linkIcon()
+void HTMLLinkElementImp::linkIcon(HttpRequest* request)
 {
+    if (current != request)
+        delete request;
+
     DocumentImp* document = getOwnerDocumentImp();
     setFavicon(document);
     document->decrementLoadEventDelayCount();
@@ -149,10 +191,10 @@ bool HTMLLinkElementImp::setFavicon(DocumentImp* document)
     toLower(rel);
     if (!::contains(rel, u"icon"))
         return false;
-    if (!request || request->getStatus() != 200)
+    if (!current || current->getStatus() != 200)
         return false;
     bool result = false;
-    if (FILE* file = request->openFile()) {
+    if (FILE* file = current->openFile()) {
         std::u16string type = getType();
         if (type == u"image/vnd.microsoft.icon" || type.empty()) {
             IcoImage ico;

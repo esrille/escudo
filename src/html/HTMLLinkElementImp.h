@@ -31,19 +31,25 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class HTMLLinkElementImp : public ObjectMixin<HTMLLinkElementImp, HTMLElementImp>
 {
-    HttpRequest* request;
+    bool dirty;
+    HttpRequest* current;
     stylesheets::StyleSheet styleSheet;
+
+    void resetStyleSheet();
 
 public:
     HTMLLinkElementImp(DocumentImp* ownerDocument);
     HTMLLinkElementImp(HTMLLinkElementImp* org, bool deep);
     ~HTMLLinkElementImp();
 
+    virtual void notify(NotificationType type);
     virtual void handleMutation(events::MutationEvent mutation);
-    virtual void eval();
 
-    void linkStyleSheet();
-    void linkIcon();
+    void requestRefresh();
+    void refresh();
+
+    void linkStyleSheet(HttpRequest* request);
+    void linkIcon(HttpRequest* request);
     bool setFavicon(DocumentImp* document);
 
     // Node
