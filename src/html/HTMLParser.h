@@ -28,6 +28,7 @@
 #include <org/w3c/dom/Element.h>
 #include <org/w3c/dom/Document.h>
 
+#include "ElementImp.h"
 #include "HTMLTokenizer.h"
 
 using namespace org::w3c::dom;
@@ -440,6 +441,12 @@ class HTMLParser
     //
     class OpenElementStack {
         std::deque<Element> stack;
+
+        void notify(Element element, bootstrap::ElementImp::NotificationType type) {
+            if (auto imp = dynamic_cast<bootstrap::ElementImp*>(element.self()))
+                imp->notify(type);
+        }
+
     public:
         Element& operator[](size_t pos) {
             return stack[pos];
@@ -468,6 +475,7 @@ class HTMLParser
                 return 0;
             Element current(currentNode());
             stack.pop_back();
+            notify(current, bootstrap::ElementImp::NotificationType::Popped);
             return current;
         }
 
@@ -487,12 +495,16 @@ class HTMLParser
             return stack.insert(pos, value);
         }
         std::deque<Element>::iterator erase(std::deque<Element>::iterator pos) {
-            return stack.erase(pos);
+            Element element(*pos);
+            pos = stack.erase(pos);
+            notify(element, bootstrap::ElementImp::NotificationType::Popped);
+            return pos;
         }
         void remove(Element element) {
             for (auto i = begin(); i != end(); ++i) {
                 if (*i == element) {
                     erase(i);
+                    notify(element, bootstrap::ElementImp::NotificationType::Popped);
                     break;
                 }
             }

@@ -51,7 +51,6 @@ class ElementImp : public ObjectMixin<ElementImp, NodeImp>
     friend class AttrArray;
     friend class ViewCSSImp;
 
-private:
     std::deque<Attr> attributes;
     std::u16string namespaceURI;
     std::u16string prefix;
@@ -66,6 +65,14 @@ public:
 
     void setAttributes(const std::deque<Attr>& attributes);
     ElementImp* getNextElement(ElementImp* root = 0);
+
+    // notify() is called when conditions that are not handled by DOM events
+    // but still needed be processed occur; e.g., the element is popped off
+    // the stack of open elements of an HTML parser.
+    enum class NotificationType {
+        Popped, // popped off the stack of open elements
+    };
+    virtual void notify(NotificationType type) {}
 
     // Node
     virtual unsigned short getNodeType();
