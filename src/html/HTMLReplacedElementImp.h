@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Esrille Inc.
+ * Copyright 2012, 2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,7 @@ namespace bootstrap
 class HTMLReplacedElementImp : public HTMLElementImp
 {
 protected:
-    HttpRequest* request;
+    HttpRequest* current;
     bool active;
     BoxImage* image;
     unsigned imageStart;
@@ -48,7 +48,7 @@ protected:
 public:
     HTMLReplacedElementImp(DocumentImp* ownerDocument, const std::u16string& localName) :
         HTMLElementImp(ownerDocument, localName),
-        request(0),
+        current(0),
         active(true),
         image(0),
         imageStart(getTick())
@@ -56,7 +56,7 @@ public:
     }
     HTMLReplacedElementImp(HTMLReplacedElementImp* org, bool deep) :
         HTMLElementImp(org, deep),
-        request(0),     // TODO
+        current(0),     // TODO
         active(org->active),
         image(0),       // TODO
         imageStart(getTick())
@@ -64,7 +64,7 @@ public:
     }
     ~HTMLReplacedElementImp()
     {
-        delete request;
+        delete current;
         delete image;
     }
 

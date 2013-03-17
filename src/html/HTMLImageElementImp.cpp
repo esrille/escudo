@@ -46,15 +46,14 @@ void HTMLImageElementImp::handleMutation(events::MutationEvent mutation)
     switch (Intern(mutation.getAttrName().c_str())) {
     case Intern(u"src"):
         if (DocumentImp* document = getOwnerDocumentImp()) {
-            if (request)
-                request->abort();
-            else
-                request = new(std::nothrow) HttpRequest(document->getDocumentURI());
-            if (request) {
-                request->open(u"GET", getSrc());
-                request->setHandler(boost::bind(&HTMLImageElementImp::notify, this));
+            if (current)
+                current->cancel();
+            current = new(std::nothrow) HttpRequest(document->getDocumentURI());
+            if (current) {
+                current->open(u"GET", getSrc());
+                current->setHandler(boost::bind(&HTMLImageElementImp::notify, this, current));
                 document->incrementLoadEventDelayCount();
-                request->send();
+                current->send();
             } else
                 active = false;
         }
@@ -89,9 +88,12 @@ void HTMLImageElementImp::handleMutation(events::MutationEvent mutation)
     }
 }
 
-void HTMLImageElementImp::notify()
+void HTMLImageElementImp::notify(HttpRequest* request)
 {
-    if (request->getStatus() != 200)
+    if (current != request)
+        delete request;
+
+    if (current->getStatus() != 200)
         active = false;
     else {
         // TODO: Check type
@@ -100,7 +102,7 @@ void HTMLImageElementImp::notify()
         if (!image)
             active = false;
         else {
-            if (FILE* file = request->openFile()) {
+            if (FILE* file = current->openFile()) {
                 image->open(file);
                 fclose(file);
             }

@@ -36,12 +36,14 @@ namespace bootstrap
 {
 
 HTMLObjectElementImp::HTMLObjectElementImp(DocumentImp* ownerDocument) :
-    ObjectMixin(ownerDocument, u"object")
+    ObjectMixin(ownerDocument, u"object"),
+    dirty(false)
 {
 }
 
 HTMLObjectElementImp::HTMLObjectElementImp(HTMLObjectElementImp* org, bool deep) :
-    ObjectMixin(org, deep)
+    ObjectMixin(org, deep),
+    dirty(false)
 {
 }
 
@@ -51,6 +53,13 @@ void HTMLObjectElementImp::handleMutation(events::MutationEvent mutation)
     css::CSSStyleDeclaration style(getStyle());
 
     switch (Intern(mutation.getAttrName().c_str())) {
+    // Refresh
+    case Intern(u"classid"):
+    case Intern(u"data"):
+    case Intern(u"type"):
+        // TODO: Check more conditions
+        requestRefresh();
+        break;
     // Styles
     case Intern(u"border"):
         handleMutationBorder(mutation);
@@ -81,10 +90,30 @@ void HTMLObjectElementImp::handleMutation(events::MutationEvent mutation)
     }
 }
 
-void HTMLObjectElementImp::eval()
+void HTMLObjectElementImp::notify(NotificationType type)
 {
-    if (!active)
+    requestRefresh();
+}
+
+void HTMLObjectElementImp::requestRefresh()
+{
+    if (dirty)
         return;
+    dirty = true;
+
+    DocumentImp* owner = getOwnerDocumentImp();
+    assert(owner);
+    if (WindowImp* window = owner->getDefaultWindow()) {
+        Task task(this, boost::bind(&HTMLObjectElementImp::refresh, this));
+        window->putTask(task);
+    }
+}
+
+void HTMLObjectElementImp::refresh()
+{
+    if (!dirty)
+        return;
+    dirty = false;
 
     std::u16string classid = getAttribute(u"classid");
     if (!classid.empty()) {
@@ -100,27 +129,33 @@ void HTMLObjectElementImp::eval()
     // TODO: Check type is a supported one.
 
     DocumentImp* document = getOwnerDocumentImp();
-    request = new(std::nothrow) HttpRequest(document->getDocumentURI());
-    if (request) {
-        request->open(u"GET", data);
-        request->setHandler(boost::bind(&HTMLObjectElementImp::notify, this));
+    if (current)
+        current->cancel();
+    current = new(std::nothrow) HttpRequest(document->getDocumentURI());
+    if (current) {
+        current->open(u"GET", data);
+        current->setHandler(boost::bind(&HTMLObjectElementImp::handleRefresh, this, current));
         document->incrementLoadEventDelayCount();
-        request->send();
+        current->send();
     } else
         active = false;
 }
 
-void HTMLObjectElementImp::notify()
+void HTMLObjectElementImp::handleRefresh(HttpRequest* request)
 {
-    if (request->getStatus() != 200)
+    if (current != request)
+        delete request;
+
+    if (current->getStatus() != 200)
         active = false;
     else {
         // TODO: Check type
+        delete image;
         image = new(std::nothrow) BoxImage;
         if (!image)
             active = false;
         else {
-            if (FILE* file = request->openFile()) {
+            if (FILE* file = current->openFile()) {
                 image->open(file);
                 fclose(file);
             }
@@ -128,7 +163,8 @@ void HTMLObjectElementImp::notify()
                 active = false;
                 delete image;
                 image = 0;
-            }
+            } else
+                active = true;
         }
     }
     // TODO: fire 'load' or 'error' event

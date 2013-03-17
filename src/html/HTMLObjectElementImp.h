@@ -45,13 +45,18 @@ class BoxImage;
 
 class HTMLObjectElementImp : public ObjectMixin<HTMLObjectElementImp, HTMLReplacedElementImp>
 {
+    bool dirty;
+
 public:
     HTMLObjectElementImp(DocumentImp* ownerDocument);
     HTMLObjectElementImp(HTMLObjectElementImp* org, bool deep);
 
+    virtual void notify(NotificationType type);
     virtual void handleMutation(events::MutationEvent mutation);
-    virtual void eval();
-    void notify();
+
+    void requestRefresh();
+    void refresh();
+    void handleRefresh(HttpRequest* request);
 
     // TODO: Refine this interface as this is only for CSS
     bool getIntrinsicSize(float& w, float& h);
