@@ -150,16 +150,6 @@ css::CSSStyleSheet loadStyleSheet(const char* path)
     return sheet;
 }
 
-void eval(Node node)
-{
-    while (node) {
-        if (node.hasChildNodes())
-            eval(node.getFirstChild());
-        dynamic_cast<NodeImp*>(node.self())->eval();;
-        node = node.getNextSibling();
-    }
-}
-
 Document loadDocument(std::istream& stream)
 {
     HTMLInputStream htmlInputStream(stream, "utf-8");

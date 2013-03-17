@@ -39,8 +39,6 @@ void printComputedValues(org::w3c::dom::Node node, org::w3c::dom::bootstrap::Vie
 org::w3c::dom::css::CSSStyleSheet loadStyleSheet(std::istream& stream);
 org::w3c::dom::css::CSSStyleSheet loadStyleSheet(const char* path);
 
-void eval(org::w3c::dom::Node node);
-
 org::w3c::dom::Document loadDocument(std::istream& stream);
 org::w3c::dom::Document loadDocument(const char* html);
 

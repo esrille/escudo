@@ -78,7 +78,6 @@ public:
     HTMLElementImp(HTMLElementImp* org, bool deep);
     ~HTMLElementImp();
 
-    virtual void eval();
     virtual void handleMutation(events::MutationEvent mutation);
 
     Box* getBox();

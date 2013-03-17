@@ -93,10 +93,6 @@ int main(int argc, char** argv)
     document = loadDocument(htmlDocument);
     assert(document);
 
-    // Each HTML element will have a style attribute if there's the style content attribute.
-    // Each HTML style element will have a style sheet.
-    eval(document);
-
     dumpTree(std::cout, document);
 
     // create the default view

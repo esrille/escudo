@@ -65,8 +65,6 @@ public:
     NodeImp(NodeImp* org, bool deep);
     ~NodeImp();
 
-    virtual void eval() {}
-
     // Returns true if this is an ancestor of the node
     bool isAncestorOf(NodeImp* node) {
         for (NodeImp* parent = node->parentNode; parent; parent = parent->parentNode) {
@@ -126,15 +124,6 @@ public:
     }
     static const char* const getMetaData() {
         return Node::getMetaData();
-    }
-
-    static void evalTree(Node node) {
-        while (node) {
-            if (node.hasChildNodes())
-                evalTree(node.getFirstChild());
-            dynamic_cast<NodeImp*>(node.self())->eval();;
-            node = node.getNextSibling();
-        }
     }
 };
 

@@ -335,10 +335,6 @@ void HTMLElementImp::handleMutation(events::MutationEvent mutation)
     }
 }
 
-void HTMLElementImp::eval()
-{
-}
-
 Box* HTMLElementImp::getBox()
 {
     html::Window window = getOwnerDocument().getDefaultView();

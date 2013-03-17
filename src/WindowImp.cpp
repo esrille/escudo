@@ -300,7 +300,6 @@ bool WindowImp::poll()
             }
 
             // TODO: Check if the parser has been aborted.
-            NodeImp::evalTree(document);
             document->resetStyleSheets();
             if (WindowImp* view = document->getDefaultWindow())
                 view->setFlags(Box::NEED_SELECTOR_REMATCHING);
