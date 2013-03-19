@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@
 #include <iostream>
 #include "utf.h"
 
+#include "DocumentImp.h"
 #include "WindowImp.h"
 
 namespace org
@@ -32,7 +33,7 @@ namespace dom
 namespace bootstrap
 {
 
-void HistoryImp::update(const DocumentWindowPtr& window)
+void HistoryImp::removeAfterCurrent()
 {
     if (!sessionHistory.empty()) {
         if (!replace) {
@@ -44,6 +45,23 @@ void HistoryImp::update(const DocumentWindowPtr& window)
         }
         sessionHistory.erase(sessionHistory.begin() + currentSession + (replace ? 0 : 1), sessionHistory.end());
     }
+}
+
+void HistoryImp::update(const URL& url, const DocumentWindowPtr& window)
+{
+    removeAfterCurrent();
+    replace = false;
+    SessionHistoryEntry e(url, window);
+    sessionHistory.push_back(e);
+    currentSession = getLength() - 1;
+
+    if (DocumentImp* imp = dynamic_cast<DocumentImp*>(window->getDocument().self()))
+        imp->setURL(static_cast<std::u16string>(url));
+}
+
+void HistoryImp::update(const DocumentWindowPtr& window)
+{
+    removeAfterCurrent();
     replace = false;
     SessionHistoryEntry e(window);
     sessionHistory.push_back(e);

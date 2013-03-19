@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@
 #include <deque>
 
 #include "DocumentWindow.h"
+#include "url/URL.h"
 
 namespace org
 {
@@ -42,13 +43,23 @@ class HistoryImp : public ObjectMixin<HistoryImp>
 {
     struct SessionHistoryEntry
     {
+        URL url;
         DocumentWindowPtr window;
 
+        SessionHistoryEntry(const URL& url, const DocumentWindowPtr& window) :
+            url(url),
+            window(window)
+        {
+        }
         SessionHistoryEntry(const DocumentWindowPtr& window) :
-            window(window) {
+            url(window->getDocument().getURL()),
+            window(window)
+        {
         }
         SessionHistoryEntry(const SessionHistoryEntry& other) :
-            window(other.window) {
+            url(other.url),
+            window(other.window)
+        {
         }
     };
 
@@ -56,6 +67,8 @@ class HistoryImp : public ObjectMixin<HistoryImp>
     std::deque<SessionHistoryEntry> sessionHistory;
     int currentSession;
     bool replace;
+
+    void removeAfterCurrent();
 
 public:
     HistoryImp(WindowImp* window) :
@@ -70,6 +83,7 @@ public:
     }
 
     // Update the session history with the new page
+    void update(const URL& url, const DocumentWindowPtr& window);
     void update(const DocumentWindowPtr& window);
 
     // History

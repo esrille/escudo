@@ -221,6 +221,8 @@ class WindowImp : public ObjectMixin<WindowImp>
     void keydown(const EventTask& task);
     void keyup(const EventTask& task);
 
+    void navigateToFragmentIdentifier(URL target);
+
 public:
     WindowImp(WindowImp* parent = 0, ElementImp* frameElement = 0);
     ~WindowImp();

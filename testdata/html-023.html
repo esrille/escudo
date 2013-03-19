@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+<head>
+<meta charset='UTF-8'>
+<title>HTML Test</title>
+<script>
+function locationHashChanged() {
+  var h = location.hash.substring(1);
+  document.getElementById('t').textContent = h;
+  alert(location + ' ' + document.URL);
+}
+</script>
+</head>
+<body onhashchange='locationHashChanged()'>
+<span id='t'>_</span>
+<hr>
+<a href='#a'>a</a>
+<a href='#b'>b</a>
+<a href='#c'>c</a>
+</body>
+</html>

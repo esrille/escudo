@@ -24,6 +24,7 @@
 #include "BeforeUnloadEventImp.h"
 #include "DOMImplementationImp.h"
 #include "DocumentImp.h"
+#include "HashChangeEventImp.h"
 #include "KeyboardEventImp.h"
 #include "MouseEventImp.h"
 #include "NodeImp.h"
@@ -873,6 +874,31 @@ Element WindowImp::getFrameElement()
     return static_cast<Object*>(0);
 }
 
+void WindowImp::navigateToFragmentIdentifier(URL target)
+{
+    DocumentImp* document = dynamic_cast<DocumentImp*>(window->getDocument().self());
+    if (!document)
+        return;
+
+    std::u16string oldURL = document->getURL();
+
+    // cf. http://www.w3.org/TR/html5/browsers.html#scroll-to-fragid
+    history.update(target, window);
+
+    // TODO: Remove any tasks queued by the history traversal task source that
+    //       are associated with any Document objects in the top-level
+    //       browsing context's document family.
+
+    std::u16string hash = target.getHash();
+    if (hash[0] == '#')
+        hash.erase(0, 1);
+    if (Element element = document->getElementById(hash))
+        element.scrollIntoView(true);
+
+    html::HashChangeEvent event(new(std::nothrow) HashChangeEventImp(u"hashchange", oldURL, static_cast<std::u16string>(target)));    // TODO: set oldURL
+    window->dispatchEvent(event);
+}
+
 html::Window WindowImp::open(const std::u16string& url, const std::u16string& target, const std::u16string& features, bool replace)
 {
     if (window) {
@@ -880,13 +906,8 @@ html::Window WindowImp::open(const std::u16string& url, const std::u16string& ta
             URL base(document->getDocumentURI());
             URL link(base, url);
             if (base.isSameExceptFragments(link)) {
-                // cf. http://www.whatwg.org/specs/web-apps/current-work/multipage/history.html#scroll-to-fragid
-                // TODO: update history, etc.
-                std::u16string hash = link.getHash();
-                if (hash[0] == '#')
-                    hash.erase(0, 1);
-                if (Element element = document->getElementById(hash))
-                    element.scrollIntoView(true);
+                Task task(this, boost::bind(&WindowImp::navigateToFragmentIdentifier, this, link));
+                putTask(task);
                 return this;
             }
 
