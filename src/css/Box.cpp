@@ -422,13 +422,6 @@ bool Box::isFlowOf(const Block* flowRoot) const
     return false;
 }
 
-void Box::resolveRelativeOffset(float& x, float &y)
-{
-    if (isAnonymous() || !isRelative())
-        return;
-    getStyle()->resolveRelativeOffset(x, y);
-}
-
 float Box::shrinkTo()
 {
     return getTotalWidth();
@@ -1904,26 +1897,6 @@ void Block::layOutAbsoluteEnd(float left, float top)
     flags &= ~(NEED_REFLOW | NEED_CHILD_REFLOW | NEED_REPOSITION);
 }
 
-void Block::resolveRelativeOffset(float& x, float &y)
-{
-    if (dynamic_cast<InlineBox*>(getParentBox()))  // inline block?
-        return;
-
-    // cf. http://test.csswg.org/suites/css2.1/20110323/html4/inline-box-002.htm
-    Box::resolveRelativeOffset(x, y);
-    if (isAnonymous())
-        return;
-    CSSStyleDeclarationImp* s = getStyle();
-    if (!s)
-        return;
-    s = s->getParentStyle();
-    if (!s)
-        return;
-    if (!s->display.isInline())
-        return;
-    s->resolveRelativeOffset(x, y);
-}
-
 void Block::resolveXY(ViewCSSImp* view, float left, float top, Block* clip)
 {
     if (!isAnonymous() && style && style->float_.getValue() == CSSFloatValueImp::Right) {
@@ -1958,14 +1931,12 @@ void Block::resolveXY(ViewCSSImp* view, float left, float top, Block* clip)
 void Block::dump(std::string indent)
 {
     std::cout << indent << "* block-level box";
-    float relativeX = 0.0f;
-    float relativeY = 0.0f;
+    float relativeX = stackingContext->getRelativeX();
+    float relativeY = stackingContext->getRelativeY();
     if (isAnonymous())
         std::cout << " [anonymous]";
-    else {
+    else
         std::cout << " [" << interface_cast<Element>(node).getLocalName() << ']';
-        resolveRelativeOffset(relativeX, relativeY);
-    }
     if (3 <= getLogLevel())
         std::cout << " [" << std::hex << flags << ']' << std::dec;
     std::cout << " (" << x + relativeX << ", " << y + relativeY << ") " <<

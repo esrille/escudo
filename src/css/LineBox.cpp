@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -642,9 +642,8 @@ void LineBox::resolveXY(ViewCSSImp* view, float left, float top, Block* clip)
 
 void LineBox::dump(std::string indent)
 {
-    float relativeX = 0.0f;
-    float relativeY = 0.0f;
-    resolveRelativeOffset(relativeX, relativeY);
+    float relativeX = getParentBox()->stackingContext->getRelativeX();
+    float relativeY = getParentBox()->stackingContext->getRelativeY();
     std::cout << indent << "* line box";
     if (3 <= getLogLevel())
         std::cout << " [" << std::hex << flags << ']' << std::dec;
@@ -793,21 +792,6 @@ void InlineBox::resolveWidth()
     }
 }
 
-// To deal with nested inline elements in the document tree, resolveRelativeOffset
-// is repeatedly applied to this inline level box up to a non-inline element.
-void InlineBox::resolveRelativeOffset(float& x, float &y)
-{
-    CSSStyleDeclarationImp* s = getStyle();
-    if (!font) {
-        Box::resolveRelativeOffset(x, y);
-        s = s->getParentStyle();
-    }
-    while (s && s->display.isInline()) {
-        s->resolveRelativeOffset(x, y);
-        s = s->getParentStyle();
-    }
-}
-
 void InlineBox::resolveXY(ViewCSSImp* view, float left, float top, Block* clip)
 {
     left += offsetH;
@@ -826,10 +810,12 @@ void InlineBox::resolveXY(ViewCSSImp* view, float left, float top, Block* clip)
 
 void InlineBox::dump(std::string indent)
 {
+    float relativeX = stackingContext->getRelativeX();
+    float relativeY = stackingContext->getRelativeY();
     std::cout << indent << "* inline-level box";
     if (3 <= getLogLevel())
         std::cout << " [" << std::hex << flags << ']' << std::dec;
-    std::cout << " (" << x << ", " << y << ") " <<
+    std::cout << " (" << x + relativeX << ", " << y + relativeY << ") " <<
         "w:" << width << " h:" << height << ' ' <<
         "m:" << marginTop << ':' << marginRight << ':' << marginBottom << ':' << marginLeft << ' ' <<
         "p:" << paddingTop << ':' <<  paddingRight << ':'<< paddingBottom<< ':' << paddingLeft << ' ' <<
