@@ -1,4 +1,4 @@
-# Escort 0.3.1 (2013-03-08 7dfab4b) Fedora Linux 18
+# Escort 0.3.1 (2013-03-21 8d9709b74f) Fedora Linux 18
 # Escort/0.3.1
 # http://test.csswg.org/suites/css2.1/20110323/
 # See http://wiki.csswg.org/test/implementation-report for instructions
@@ -5784,8 +5784,8 @@ html4/inline-block-replaced-height-005.htm	pass
 html4/inline-block-replaced-height-007.htm	pass
 html4/inline-block-replaced-width-001.htm	pass
 html4/inline-block-replaced-width-006.htm	pass
-html4/inline-block-valign-001.htm	fail (border)
-html4/inline-block-valign-002.htm	fail (border)
+html4/inline-block-valign-001.htm	pass
+html4/inline-block-valign-002.htm	pass
 html4/inline-block-width-001a.htm	pass
 html4/inline-block-width-001b.htm	pass
 html4/inline-block-width-002a.htm	pass
@@ -5843,7 +5843,7 @@ html4/inline-table-002b.htm	pass
 html4/inline-table-003.htm	pass
 html4/inline-table-height-001.htm	pass
 html4/inline-table-height-002.htm	pass
-html4/inline-table-valign-001.htm	fail (border)
+html4/inline-table-valign-001.htm	pass
 html4/inline-table-width-001a.htm	pass
 html4/inline-table-width-001b.htm	pass
 html4/inline-table-width-002a.htm	pass
@@ -8162,8 +8162,8 @@ html4/table-anonymous-objects-023.htm	pass
 html4/table-anonymous-objects-024.htm	pass
 html4/table-anonymous-objects-025.htm	pass
 html4/table-anonymous-objects-026.htm	pass
-html4/table-anonymous-objects-027.htm	fail
-html4/table-anonymous-objects-028.htm	fail
+html4/table-anonymous-objects-027.htm	pass
+html4/table-anonymous-objects-028.htm	pass
 html4/table-anonymous-objects-029.htm	pass
 html4/table-anonymous-objects-030.htm	pass
 html4/table-anonymous-objects-031.htm	pass
@@ -8219,7 +8219,7 @@ html4/table-anonymous-objects-086.htm	pass
 html4/table-anonymous-objects-087.htm	pass
 html4/table-anonymous-objects-088.htm	pass
 html4/table-anonymous-objects-089.htm	fail (check)
-html4/table-anonymous-objects-090.htm	pass (if there's enough width)
+html4/table-anonymous-objects-090.htm	fail (check)
 html4/table-anonymous-objects-091.htm	pass (when no wrap)
 html4/table-anonymous-objects-092.htm	pass (when no wrap)
 html4/table-anonymous-objects-093.htm	pass
@@ -9108,7 +9108,7 @@ html4/white-space-normal-009.htm	pass
 html4/white-space-nowrap-001.htm	pass
 html4/white-space-nowrap-005.htm	pass
 html4/white-space-nowrap-006.htm	pass
-html4/white-space-nowrap-attribute-001.htm	fail
+html4/white-space-nowrap-attribute-001.htm	pass
 html4/white-space-p-element-001.htm	pass
 html4/white-space-pre-001.htm	pass
 html4/white-space-pre-002.htm	pass
