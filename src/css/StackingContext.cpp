@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -416,6 +416,28 @@ void StackingContext::layOutAbsolute(ViewCSSImp* view)
             }
         }
     } while (repeat);
+}
+
+Box* StackingContext::boxFromPoint(int x, int y)
+{
+    StackingContext* childContext;
+    for (childContext = getLastChild(); childContext && 0 <= childContext->zIndex; childContext = childContext->getPreviousSibling()) {
+        if (Box* target = childContext->boxFromPoint(x, y))
+            return target;
+    }
+    if (firstBase) {
+        int s = x - relativeX;
+        int t = y - relativeY;
+        for (Box* base = firstBase; base; base = base->nextBase) {
+            if (Box* target = base->boxFromPoint(s, t, this))
+                return target;
+        }
+    }
+    for (; childContext; childContext = childContext->getPreviousSibling()) {
+        if (Box* target = childContext->boxFromPoint(x, y))
+            return target;
+    }
+    return 0;
 }
 
 void StackingContext::dump(std::string indent)

@@ -447,18 +447,22 @@ public:
         return v < b;
     }
 
-    Box* boxFromPoint(int x, int y) {
-        // TODO: Check z-index and relative offset
-        if (!isAnonymous() && Element::hasInstance(node)) {
-            Element element = interface_cast<Element>(node);
-            x += element.getScrollLeft();
-            y += element.getScrollTop();
+    Box* boxFromPoint(int x, int y, StackingContext* context = 0) {
+        if (context && stackingContext != context)
+            return 0;
+        if (isInside(x, y)) {
+            if (!isAnonymous() && Element::hasInstance(node)) {
+                Element element = interface_cast<Element>(node);
+                x += element.getScrollLeft();
+                y += element.getScrollTop();
+            }
+            for (Box* box = getFirstChild(); box; box = box->getNextSibling()) {
+                if (Box* target = box->boxFromPoint(x, y, context))
+                    return target;
+            }
+            return this;
         }
-        for (Box* box = getFirstChild(); box; box = box->getNextSibling()) {
-            if (Box* target = box->boxFromPoint(x, y))
-                return target;
-        }
-        return isInside(x, y) ? this : 0;
+        return 0;
     }
 
     void updateScrollSize();

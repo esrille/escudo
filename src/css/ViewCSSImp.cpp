@@ -103,12 +103,12 @@ ViewCSSImp::~ViewCSSImp()
 
 Box* ViewCSSImp::boxFromPoint(int x, int y)
 {
-    if (!boxTree)
-        return 0;
-    x += window->getScrollX();
-    y += window->getScrollY();
-    if (Box* target = boxTree.get()->boxFromPoint(x, y))
-        return target;
+    if (stackingContexts) {
+        x += window->getScrollX();
+        y += window->getScrollY();
+        if (Box* target = stackingContexts->boxFromPoint(x, y))
+            return target;
+    }
     return boxTree.get();
 }
 
