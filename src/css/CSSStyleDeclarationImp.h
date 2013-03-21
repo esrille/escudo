@@ -562,6 +562,9 @@ public:
     bool isAbsolutelyPositioned() const {
         return position.isPositioned() && !position.isRelative();
     }
+    bool isRelativelyPositioned() const {
+        return position.isPositioned() && position.isRelative();
+    }
     bool isPositioned() const {
         return position.isPositioned();
     }
