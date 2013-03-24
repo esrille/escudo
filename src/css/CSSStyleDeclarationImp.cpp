@@ -150,6 +150,8 @@ const char16_t* CSSStyleDeclarationImp::PropertyNames[PropertyCount] = {
     u"z-index",
 
     u"binding",
+
+    u"opacity",
 };
 
 CSSStyleDeclarationBoard::CSSStyleDeclarationBoard(CSSStyleDeclarationImp* style) :
@@ -625,6 +627,8 @@ CSSPropertyValueImp* CSSStyleDeclarationImp::getProperty(unsigned id)
         return &zIndex;
     case Binding:
         return &binding;
+    case Opacity:
+        return &opacity;
     case HtmlAlign:
         return &htmlAlign;
     default:
@@ -1176,6 +1180,9 @@ void CSSStyleDeclarationImp::specify(const CSSStyleDeclarationImp* decl, unsigne
     case Binding:
         binding.specify(decl);
         break;
+    case Opacity:
+        opacity.specify(decl->opacity);
+        break;
     case HtmlAlign:
         htmlAlign.specify(decl->htmlAlign);
         break;
@@ -1540,6 +1547,9 @@ void CSSStyleDeclarationImp::reset(unsigned id)
     case Binding:
         binding.setValue();
         break;
+    case Opacity:
+        opacity.setValue(1.0f);
+        break;
     case HtmlAlign:
         htmlAlign.setValue();
     default:
@@ -1822,6 +1832,9 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     textIndent.compute(view, this);
     letterSpacing.compute(view, this);
     wordSpacing.compute(view, this);
+
+    opacity.compute(view, this);
+    opacity.clip(0.0f, 1.0f);
 
     if (isFloat() || isAbsolutelyPositioned() || !parentStyle || isInlineBlock())
         textDecorationContext.update(this);
@@ -3772,6 +3785,20 @@ void CSSStyleDeclarationImp::setHTMLAlign(const Nullable<std::u16string>& align)
     setProperty(HtmlAlign);
 }
 
+//
+// CSSStyleDeclaration-48
+//
+
+Nullable<std::u16string> CSSStyleDeclarationImp::getOpacity()
+{
+    return opacity.getCssText(this);
+}
+
+void CSSStyleDeclarationImp::setOpacity(const Nullable<std::u16string>& opacity)
+{
+    setProperty(Opacity, opacity);
+}
+
 void CSSStyleDeclarationImp::initialize()
 {
     const static int defaultInherit[] = {
@@ -3878,7 +3905,8 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp(int pseudoElementSelectorType) :
     marginBottom(0.0f, css::CSSPrimitiveValue::CSS_PX),
     minHeight(0.0f, css::CSSPrimitiveValue::CSS_PX),
     minWidth(0.0f, css::CSSPrimitiveValue::CSS_PX),
-    textIndent(0.0f, css::CSSPrimitiveValue::CSS_PX)
+    textIndent(0.0f, css::CSSPrimitiveValue::CSS_PX),
+    opacity(1.0f)
 {
     pseudoElements[CSSPseudoElementSelector::NonPseudo] = this;
     initialize();
@@ -3920,7 +3948,8 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp(CSSStyleDeclarationImp* org) :
     marginBottom(0.0f, css::CSSPrimitiveValue::CSS_PX),
     minHeight(0.0f, css::CSSPrimitiveValue::CSS_PX),
     minWidth(0.0f, css::CSSPrimitiveValue::CSS_PX),
-    textIndent(0.0f, css::CSSPrimitiveValue::CSS_PX)
+    textIndent(0.0f, css::CSSPrimitiveValue::CSS_PX),
+    opacity(1.0f)
 {
     pseudoElements[CSSPseudoElementSelector::NonPseudo] = this;
     for (int i = 1; i < CSSPseudoElementSelector::MaxPseudoElements; ++i)

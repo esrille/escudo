@@ -83,8 +83,8 @@ struct CSSStyleDeclarationBoard
     CSSAutoLengthValueImp marginLeft;                       // F         R
     CSSNoneLengthValueImp maxHeight;                        // F         R
     CSSNoneLengthValueImp maxWidth;                         // F         R
-    CSSNonNegativeValueImp minHeight;                       // F         R
-    CSSNonNegativeValueImp minWidth;                        // F         R
+    CSSNonNegativeLengthImp minHeight;                      // F         R
+    CSSNonNegativeLengthImp minWidth;                       // F         R
     CSSOverflowValueImp overflow;                           // F
     CSSPaddingWidthValueImp paddingTop;                     // F         R
     CSSPaddingWidthValueImp paddingRight;                   // F         R
@@ -250,6 +250,8 @@ public:
 
         Binding, // "binding" - Behavioral Extensions to CSS
 
+        Opacity,  // "opacity"
+
         MaxCSSProperties,
 
         HtmlAlign = MaxCSSProperties, // "align"
@@ -409,8 +411,8 @@ public:
     CSSMarginShorthandImp margin;                           //
     CSSNoneLengthValueImp maxHeight;                        // F
     CSSNoneLengthValueImp maxWidth;                         // F
-    CSSNonNegativeValueImp minHeight;                       // F
-    CSSNonNegativeValueImp minWidth;                        // F
+    CSSNonNegativeLengthImp minHeight;                      // F
+    CSSNonNegativeLengthImp minWidth;                       // F
 
     CSSOutlineColorValueImp outlineColor;                   // P
     CSSBorderStyleValueImp outlineStyle;                    // P
@@ -446,7 +448,9 @@ public:
     CSSAutoLengthValueImp width;                            // F
 
     CSSZIndexValueImp zIndex;                               // B
+
     CSSBindingValueImp binding;                             // B
+    CSSNumericValueImp opacity;                             // P
 
     HTMLAlignValueImp htmlAlign;                            // F
 
@@ -878,6 +882,10 @@ public:
 
     Nullable<std::u16string> getHTMLAlign();
     void setHTMLAlign(const Nullable<std::u16string>& align);
+
+    // CSSStyleDeclaration-48
+    Nullable<std::u16string> getOpacity();
+    void setOpacity(const Nullable<std::u16string>& opacity);
 
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)

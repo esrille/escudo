@@ -196,6 +196,10 @@ public:
     }
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize);
+    void clip(float min, float max) {
+        if (!isnan(resolved))
+            resolved = std::min(max, std::max(min, resolved));
+    }
 };
 
 class CSSPropertyValueImp
@@ -279,7 +283,7 @@ public:
         return *this;
     }
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) const {
-        return value.getCssText();
+        return value.getCssText(0, css::CSSPrimitiveValue::CSS_NUMBER);
     }
     bool operator==(const CSSNumericValueImp& n) {
         return value == n.value;
@@ -295,6 +299,7 @@ public:
     }
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize);
+    void clip(float min, float max);
     float getPx() const {
         return value.getPx();
     }
@@ -306,38 +311,41 @@ public:
     }
 };
 
-class CSSNonNegativeValueImp : public CSSNumericValueImp
+class CSSNonNegativeLengthImp : public CSSNumericValueImp
 {
 public:
-    CSSNonNegativeValueImp& setValue(float number = 0.0f, unsigned short unit = css::CSSPrimitiveValue::CSS_NUMBER) {
+    CSSNonNegativeLengthImp& setValue(float number = 0.0f, unsigned short unit = css::CSSPrimitiveValue::CSS_PX) {
         value.setValue(number, unit);
         return *this;
     }
-    CSSNonNegativeValueImp& setValue(CSSParserTerm* term) {
+    CSSNonNegativeLengthImp& setValue(CSSParserTerm* term) {
         value.setValue(term);
         return *this;
     }
-    bool operator==(const CSSNonNegativeValueImp& n) {
+    virtual std::u16string getCssText(CSSStyleDeclarationImp* decl) const {
+        return value.getCssText(0, css::CSSPrimitiveValue::CSS_PX);
+    }
+    bool operator==(const CSSNonNegativeLengthImp& n) {
         return value == n.value;
     }
-    bool operator!=(const CSSNonNegativeValueImp& n) {
+    bool operator!=(const CSSNonNegativeLengthImp& n) {
         return value != n.value;
     }
-    void specify(const CSSNonNegativeValueImp& specified) {
+    void specify(const CSSNonNegativeLengthImp& specified) {
         value.specify(specified.value);
     }
-    void inherit(const CSSNonNegativeValueImp& parent) {
+    void inherit(const CSSNonNegativeLengthImp& parent) {
         value.inheritLength(parent.value);
     }
-    CSSNonNegativeValueImp(float number = 0.0f, unsigned short unit = css::CSSPrimitiveValue::CSS_NUMBER) :
+    CSSNonNegativeLengthImp(float number = 0.0f, unsigned short unit = css::CSSPrimitiveValue::CSS_PX) :
         CSSNumericValueImp(number, unit) {
     }
 };
 
-class CSSPaddingWidthValueImp : public CSSNonNegativeValueImp
+class CSSPaddingWidthValueImp : public CSSNonNegativeLengthImp
 {
 public:
-    CSSPaddingWidthValueImp& setValue(float number = 0.0f, unsigned short unit = css::CSSPrimitiveValue::CSS_NUMBER) {
+    CSSPaddingWidthValueImp& setValue(float number = 0.0f, unsigned short unit = css::CSSPrimitiveValue::CSS_PX) {
         value.setValue(number, unit);
         return *this;
     }
@@ -360,8 +368,8 @@ public:
     void inherit(const CSSPaddingWidthValueImp& parent) {
         value.inheritLength(parent.value);
     }
-    CSSPaddingWidthValueImp(float number = 0.0f, unsigned short unit = css::CSSPrimitiveValue::CSS_NUMBER) :
-        CSSNonNegativeValueImp(number, unit) {
+    CSSPaddingWidthValueImp(float number = 0.0f, unsigned short unit = css::CSSPrimitiveValue::CSS_PX) :
+        CSSNonNegativeLengthImp(number, unit) {
     }
 };
 

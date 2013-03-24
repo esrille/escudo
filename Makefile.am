@@ -10,6 +10,7 @@ vpath %.idl = $(srcdir)/idl
 
 idl_files = \
 	2dcontext.idl \
+	css3color.idl \
 	cssom.idl \
 	cssomview.idl \
 	dom2css.idl \
@@ -1367,6 +1368,7 @@ EXTRA_DIST = \
 	idl/2dcontext.idl \
 	idl/arrays.idl \
 	idl/console.idl \
+	idl/css3color.idl \
 	idl/cssom.idl \
 	idl/cssomview.idl \
 	idl/dom2css.idl \

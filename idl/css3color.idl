@@ -1,0 +1,17 @@
+/*
+ * css3color.idl
+ *
+ * CSS Color Module Level 3
+ *
+ * W3C Recommendation 07 June 2011:
+ *
+ *   http://www.w3.org/TR/css3-color/
+ */
+
+module css {
+
+  partial interface CSSStyleDeclaration {
+    attribute DOMString? opacity;
+  };
+
+};
