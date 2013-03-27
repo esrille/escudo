@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Esrille Inc.
+ * Copyright 2012, 2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,6 +70,7 @@ public:
     }
 
     void render(int width, int height);
+    void alphaBlend(int width, int height, float alpha);
 };
 
 #endif  // ES_CANVAS_GL_H

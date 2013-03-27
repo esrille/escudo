@@ -55,7 +55,7 @@ void myDisplay()
     canvas.render(816, 1056);
     glPushMatrix();
     glTranslatef(50, 50, 0);
-    canvasSub.render(512, 512);
+    canvasSub.alphaBlend(512, 512, 0.5f);
     glPopMatrix();
 
     glutSwapBuffers();  // This would block until the sync happens
@@ -68,12 +68,12 @@ int main(int argc, char* argv[])
     glutDisplayFunc(myDisplay);
 
     canvas.setup(816, 1056);
-    canvas.beginRender(0xffffffff);
+    canvas.beginRender(0xffff0000);
     render(816, 1056);
     glPushMatrix();
         glTranslatef(50, 50, 0);
         canvasSub.setup(512, 512);
-        canvasSub.beginRender(0xffff0000);
+        canvasSub.beginRender(0xffffffff);
         render(512, 512, 10);
         canvasSub.endRender();
     glPopMatrix();

@@ -157,6 +157,36 @@ void Canvas::Impl::render(int w, int h)
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 }
 
+void Canvas::Impl::alphaBlend(int w, int h, float alpha)
+{
+    if (texture == 0)
+        return;
+
+    glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+
+    glMatrixMode(GL_TEXTURE);
+    glLoadIdentity();
+    glScalef(1.0f / width, 1.0f / height, 0.0f);
+    glMatrixMode(GL_MODELVIEW);
+
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glColor4f(alpha, alpha, alpha, alpha);
+    glBegin(GL_QUADS);
+        glTexCoord2f(0, h);
+        glVertex2f(0, 0);
+        glTexCoord2f(w, h);
+        glVertex2f(w, 0);
+        glTexCoord2f(w, 0);
+        glVertex2f(w, h);
+        glTexCoord2f(0, 0);
+        glVertex2f(0, h);
+    glEnd();
+    glDisable(GL_TEXTURE_2D);
+
+    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
+}
+
 Canvas::Canvas() :
     pimpl(new Impl())
 {
@@ -199,4 +229,9 @@ int Canvas::getHeight() const
 void Canvas::render(int width, int height)
 {
     return pimpl->render(width, height);
+}
+
+void Canvas::alphaBlend(int width, int height, float alpha)
+{
+    return pimpl->alphaBlend(width, height, alpha);
 }
