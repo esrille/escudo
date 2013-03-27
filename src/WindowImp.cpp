@@ -391,6 +391,7 @@ void WindowImp::render(ViewCSSImp* parentView)
         recordTime("%*srepaint begin: %s (%s)", windowDepth * 2, "", utfconv(window->getDocument().getReadyState()).c_str(), view ? "render" : "canvas");
         if (view->gatherFlags() & Box::NEED_REPAINT) {
             view->clearFlags(Box::NEED_REPAINT);
+            // TODO: if the size of the canvas has not been changed, reuse the same canvas.
             canvas.shutdown();
             canvas.setup(width, height);
             canvas.beginRender(view->getBackgroundColor());
