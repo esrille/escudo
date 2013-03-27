@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Esrille Inc.
+ * Copyright 2012, 2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,44 +21,42 @@
 
 void reshape(int w, int h);
 
-void render(int w, int h)
+Canvas canvas;
+Canvas canvasSub;
+
+void render(int w, int h, int s = 50)
 {
     glDisable(GL_TEXTURE_2D);
 
     reshape(w, h);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    unsigned color = 0xffff0000;
+    unsigned color = 0xff808080;
     glColor4ub(color >> 16, color >> 8, color, color >> 24);
-    glBegin(GL_QUADS);
-        glVertex2f(0, 0);
-        glVertex2f(w, 0);
-        glVertex2f(w, h);
-        glVertex2f(0, h);
-    glEnd();
-
-    color = 0xff00ffff;
-    glColor4ub(color >> 16, color >> 8, color, color >> 24);
-    glLineWidth(5);
+    glLineWidth(1);
     glBegin(GL_LINES);
-        glVertex2f(0, 0);
-        glVertex2f(w, h / 2);
-    glEnd();
-    glBegin(GL_LINES);
-        glVertex2f(w, h / 2);
-        glVertex2f(0, h);
+    for (int x = 0; x <= w; x += s) {
+        glVertex2i(x, 0);
+        glVertex2i(x, h);
+    }
+    for (int y = 0; y <= h; y += s) {
+        glVertex2i(0, y);
+        glVertex2i(w, y);
+    }
     glEnd();
 
     glFlush();
 }
-
-Canvas canvas;
 
 void myDisplay()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     canvas.render(816, 1056);
+    glPushMatrix();
+    glTranslatef(50, 50, 0);
+    canvasSub.render(512, 512);
+    glPopMatrix();
 
     glutSwapBuffers();  // This would block until the sync happens
 }
@@ -72,8 +70,17 @@ int main(int argc, char* argv[])
     canvas.setup(816, 1056);
     canvas.beginRender(0xffffffff);
     render(816, 1056);
+    glPushMatrix();
+        glTranslatef(50, 50, 0);
+        canvasSub.setup(512, 512);
+        canvasSub.beginRender(0xffff0000);
+        render(512, 512, 10);
+        canvasSub.endRender();
+    glPopMatrix();
     canvas.endRender();
 
+
+    glColor4ub(255, 255, 255, 255);
     glutMainLoop();
 
     canvas.shutdown();
