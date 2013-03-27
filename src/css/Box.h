@@ -124,6 +124,8 @@ protected:
     float offsetH;
     float offsetV;
 
+    unsigned visibility;
+
     StackingContextPtr stackingContext;
     Box* nextBase;
     Box* nextFloat;
@@ -132,8 +134,6 @@ protected:
 
     float x;  // in screen coord
     float y;  // in screen coord
-
-    unsigned visibility;
 
     Block* clipBox;
 
@@ -447,21 +447,18 @@ public:
     }
 
     Box* boxFromPoint(int x, int y, StackingContext* context = 0) {
-        if (context && stackingContext != context)
+        if (context && stackingContext && stackingContext != context)
             return 0;
-        if (isInside(x, y)) {
-            if (!isAnonymous() && Element::hasInstance(node)) {
-                Element element = interface_cast<Element>(node);
-                x += element.getScrollLeft();
-                y += element.getScrollTop();
-            }
-            for (Box* box = getFirstChild(); box; box = box->getNextSibling()) {
-                if (Box* target = box->boxFromPoint(x, y, context))
-                    return target;
-            }
-            return this;
+        if (!isAnonymous() && Element::hasInstance(node)) {
+            Element element = interface_cast<Element>(node);
+            x += element.getScrollLeft();
+            y += element.getScrollTop();
         }
-        return 0;
+        for (Box* box = getFirstChild(); box; box = box->getNextSibling()) {
+            if (Box* target = box->boxFromPoint(x, y, context))
+                return target;
+        }
+        return isInside(x, y) ? this : 0;
     }
 
     void updateScrollSize();
