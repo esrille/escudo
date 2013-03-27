@@ -21,7 +21,7 @@
 #include "config.h"
 #endif
 
-#include <boost/scoped_ptr.hpp>
+#include <memory>
 #include <org/w3c/dom/html/BeforeUnloadEvent.h>
 #include <org/w3c/dom/events/Event.h>
 #include <org/w3c/dom/events/EventTarget.h>
@@ -36,7 +36,7 @@ class ECMAScriptContext
     typedef org::w3c::dom::events::EventHandlerNonNull Function;
 
     class Impl;
-    boost::scoped_ptr<Impl> pimpl;
+    std::unique_ptr<Impl> pimpl;
     static ObjectImp* current;
 
     // ECMAScriptContext is not copyable.
