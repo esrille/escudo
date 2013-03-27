@@ -246,8 +246,7 @@ bool WindowImp::poll()
         }
     }
 
-    switch (request.getReadyState())
-    {
+    switch (request.getReadyState()) {
     case HttpRequest::UNSENT:
         break;
     case HttpRequest::OPENED:
