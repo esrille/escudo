@@ -110,6 +110,9 @@ public:
     bool isNaN() const {
         return isnan(resolved);
     }
+    float getValue() const {
+        return (!isNaN()) ? resolved : 0.0f;
+    }
     float getPx() const {
         return (!isNaN()) ? resolved : 0.0f;
     }
@@ -300,6 +303,9 @@ public:
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* style);
     void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* style, float fullSize);
     void clip(float min, float max);
+    float getValue() const {
+        return value.getValue();
+    }
     float getPx() const {
         return value.getPx();
     }
