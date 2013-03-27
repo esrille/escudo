@@ -17,12 +17,12 @@
 #ifndef ES_CANVAS_H
 #define ES_CANVAS_H
 
-#include <boost/scoped_ptr.hpp>
+#include <memory>
 
 class Canvas
 {
     class Impl;
-    boost::scoped_ptr<Impl> pimpl;
+    std::unique_ptr<Impl> pimpl;
 
 public:
     Canvas();
