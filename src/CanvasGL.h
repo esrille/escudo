@@ -29,6 +29,7 @@ class Canvas::Impl
     GLuint frameBuffer;
     GLuint renderBuffer;
     GLuint texture;
+    GLuint translucent;     // alpha blend texture
 
     GLuint savedFrameBuffer;
     static GLuint currentFrameBuffer;
@@ -39,7 +40,8 @@ public:
         height(0),
         frameBuffer(0),
         renderBuffer(0),
-        texture(0)
+        texture(0),
+        translucent(0)
     {}
 
     ~Impl() {
@@ -52,6 +54,9 @@ public:
 
     void beginRender(unsigned backgroundColor);
     void endRender();
+
+    void beginTranslucent();
+    void endTranslucent(float alpha);
 
     int getWidth() const {
         return width;
@@ -70,7 +75,7 @@ public:
     }
 
     void render(int width, int height);
-    void alphaBlend(int width, int height, float alpha);
+    void alphaBlend(int width, int height, float alpha, GLuint tex);
 };
 
 #endif  // ES_CANVAS_GL_H

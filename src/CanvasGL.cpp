@@ -75,11 +75,16 @@ void Canvas::Impl::shutdown()
         glDeleteFramebuffersEXT(1, &frameBuffer);
         glDeleteRenderbuffersEXT(1, &renderBuffer);
     }
-    glDeleteTextures(1, &texture);
-
+    if (texture) {
+        glDeleteTextures(1, &texture);
+        texture = 0;
+    }
+    if (translucent) {
+        glDeleteTextures(1, &translucent);
+        translucent = 0;
+    }
     frameBuffer = 0;
     renderBuffer = 0;
-    texture = 0;
     width = height = 0;
 }
 
@@ -103,7 +108,7 @@ void Canvas::Impl::beginRender(unsigned backgroundColor)
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
-    glTranslatef(x, viewportHeight - height, 0.0f);
+    glTranslatef(-x, viewportHeight - (y + height), 0.0f);
 
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
@@ -128,6 +133,38 @@ void Canvas::Impl::endRender()
         glBindFramebuffer(GL_FRAMEBUFFER, currentFrameBuffer);
     else
         glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, currentFrameBuffer);
+}
+
+void Canvas::Impl::beginTranslucent()
+{
+    glPushMatrix();
+    if (translucent == 0) {
+        glGenTextures(1, &translucent);
+        glBindTexture(GL_TEXTURE_2D, translucent);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+    }
+    glFlush();
+    if (GLEW_ARB_framebuffer_object)
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, translucent, 0);
+    else
+        glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, translucent, 0);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+}
+
+void Canvas::Impl::endTranslucent(float alpha)
+{
+    glPopMatrix();
+    glFlush();
+    if (GLEW_ARB_framebuffer_object)
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+    else
+        glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, texture, 0);
+    alphaBlend(width, height, alpha, translucent);
 }
 
 void Canvas::Impl::render(int w, int h)
@@ -157,9 +194,9 @@ void Canvas::Impl::render(int w, int h)
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 }
 
-void Canvas::Impl::alphaBlend(int w, int h, float alpha)
+void Canvas::Impl::alphaBlend(int w, int h, float alpha, GLuint tex)
 {
-    if (texture == 0)
+    if (tex == 0)
         return;
 
     glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
@@ -170,7 +207,7 @@ void Canvas::Impl::alphaBlend(int w, int h, float alpha)
     glMatrixMode(GL_MODELVIEW);
 
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    glBindTexture(GL_TEXTURE_2D, tex);
     glColor4f(alpha, alpha, alpha, alpha);
     glBegin(GL_QUADS);
         glTexCoord2f(0, h);
@@ -196,7 +233,7 @@ Canvas::~Canvas()
 {
 }
 
-void Canvas:: setup(int width, int height)
+void Canvas::setup(int width, int height)
 {
     pimpl->setup(width, height);
 }
@@ -216,6 +253,16 @@ void Canvas::endRender()
     pimpl->endRender();
 }
 
+void Canvas::beginTranslucent()
+{
+    pimpl->beginTranslucent();
+}
+
+void Canvas::endTranslucent(float alpha)
+{
+    pimpl->endTranslucent(alpha);
+}
+
 int Canvas::getWidth() const
 {
     return pimpl->getWidth();
@@ -233,5 +280,5 @@ void Canvas::render(int width, int height)
 
 void Canvas::alphaBlend(int width, int height, float alpha)
 {
-    return pimpl->alphaBlend(width, height, alpha);
+    return pimpl->alphaBlend(width, height, alpha, pimpl->getTexture());
 }

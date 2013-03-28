@@ -30,10 +30,16 @@ public:
 
     void setup(int width, int height);
     void shutdown();
+
     void beginRender(unsigned backgroundColor);
     void endRender();
+
+    void beginTranslucent();
+    void endTranslucent(float alpha);
+
     int getWidth() const;
     int getHeight() const;
+
     void render(int width, int height);
     void alphaBlend(int width, int height, float alpha);
 

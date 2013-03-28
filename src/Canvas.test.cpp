@@ -28,7 +28,6 @@ void render(int w, int h, int s = 50)
 {
     glDisable(GL_TEXTURE_2D);
 
-    reshape(w, h);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
     unsigned color = 0xff808080;
@@ -67,18 +66,32 @@ int main(int argc, char* argv[])
 
     glutDisplayFunc(myDisplay);
 
+    reshape(816, 1056);
     canvas.setup(816, 1056);
-    canvas.beginRender(0xffff0000);
+    canvas.beginRender(0xffffffff);
     render(816, 1056);
+
     glPushMatrix();
         glTranslatef(50, 50, 0);
         canvasSub.setup(512, 512);
-        canvasSub.beginRender(0xffffffff);
+        canvasSub.beginRender(0xffff0000);
         render(512, 512, 10);
         canvasSub.endRender();
     glPopMatrix();
-    canvas.endRender();
 
+    canvas.beginTranslucent(); {
+        glTranslatef(450, 450, 0);
+        unsigned color = 0xff0000ff;
+        glColor4ub(color >> 16, color >> 8, color, color >> 24);
+        glBegin(GL_QUADS);
+        glVertex2i(0, 0);
+        glVertex2i(150, 0);
+        glVertex2i(150, 150);
+        glVertex2i(0, 150);
+        glEnd();
+    }
+    canvas.endTranslucent(0.5f);
+    canvas.endRender();
 
     glColor4ub(255, 255, 255, 255);
     glutMainLoop();
