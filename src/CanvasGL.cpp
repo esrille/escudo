@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Esrille Inc.
+ * Copyright 2012, 2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,9 @@
  */
 
 #include "CanvasGL.h"
+#include <boost/concept_check.hpp>
+
+#include <assert.h>
 
 GLuint Canvas::Impl::currentFrameBuffer = 0;
 
@@ -79,9 +82,10 @@ void Canvas::Impl::shutdown()
         glDeleteTextures(1, &texture);
         texture = 0;
     }
-    if (translucent) {
-        glDeleteTextures(1, &translucent);
-        translucent = 0;
+    while (!translucents.empty()) {
+        GLuint tex = translucents.back();
+        glDeleteTextures(1, &tex);
+        translucents.pop_back();
     }
     frameBuffer = 0;
     renderBuffer = 0;
@@ -103,8 +107,8 @@ void Canvas::Impl::beginRender(unsigned backgroundColor)
 
     GLfloat m[16];
     glGetFloatv(GL_MODELVIEW_MATRIX, m);
-    float x = m[12];
-    float y = m[13];
+    x = m[12];
+    y = m[13];
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
@@ -137,34 +141,46 @@ void Canvas::Impl::endRender()
 
 void Canvas::Impl::beginTranslucent()
 {
+    GLuint tex;
+    glGenTextures(1, &tex);
+    glBindTexture(GL_TEXTURE_2D, tex);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+    translucents.push_back(tex);
+
     glPushMatrix();
-    if (translucent == 0) {
-        glGenTextures(1, &translucent);
-        glBindTexture(GL_TEXTURE_2D, translucent);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-    }
     glFlush();
     if (GLEW_ARB_framebuffer_object)
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, translucent, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex, 0);
     else
-        glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, translucent, 0);
+        glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, tex, 0);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
 void Canvas::Impl::endTranslucent(float alpha)
 {
-    glPopMatrix();
     glFlush();
+
+    assert(!translucents.empty());
+    GLuint tex = translucents.back();
+    translucents.pop_back();
+
+    GLuint next = translucents.empty() ? texture : translucents.back();
     if (GLEW_ARB_framebuffer_object)
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture, 0);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, next, 0);
     else
-        glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, texture, 0);
-    alphaBlend(width, height, alpha, translucent);
+        glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, next, 0);
+
+    glLoadIdentity();
+    glTranslatef(x, y, 0.0f);
+    alphaBlend(width, height, alpha, tex);
+    glPopMatrix();
+
+    glDeleteTextures(1, &tex);
 }
 
 void Canvas::Impl::render(int w, int h)

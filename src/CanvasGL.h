@@ -22,26 +22,31 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 
+#include <deque>
+
 class Canvas::Impl
 {
+    float x;
+    float y;
     int width;
     int height;
     GLuint frameBuffer;
     GLuint renderBuffer;
     GLuint texture;
-    GLuint translucent;     // alpha blend texture
+    std::deque<GLuint> translucents;    // alpha blend textures
 
     GLuint savedFrameBuffer;
     static GLuint currentFrameBuffer;
 
 public:
     Impl() :
+        x(0.0f),
+        y(0.0f),
         width(0),
         height(0),
         frameBuffer(0),
         renderBuffer(0),
-        texture(0),
-        translucent(0)
+        texture(0)
     {}
 
     ~Impl() {

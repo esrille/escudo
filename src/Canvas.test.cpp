@@ -85,9 +85,32 @@ int main(int argc, char* argv[])
         glColor4ub(color >> 16, color >> 8, color, color >> 24);
         glBegin(GL_QUADS);
         glVertex2i(0, 0);
-        glVertex2i(150, 0);
-        glVertex2i(150, 150);
-        glVertex2i(0, 150);
+        glVertex2i(250, 0);
+        glVertex2i(250, 250);
+        glVertex2i(0, 250);
+        glEnd();
+
+        canvas.beginTranslucent(); {
+            glTranslatef(150, 150, 0);
+            color = 0xffffff00;
+            glColor4ub(color >> 16, color >> 8, color, color >> 24);
+            glBegin(GL_QUADS);
+            glVertex2i(0, 0);
+            glVertex2i(200, 0);
+            glVertex2i(200, 200);
+            glVertex2i(0, 200);
+            glEnd();
+        }
+        canvas.endTranslucent(0.5f);
+
+        glTranslatef(100, 200, 0);
+        color = 0xff00ffff;
+        glColor4ub(color >> 16, color >> 8, color, color >> 24);
+        glBegin(GL_QUADS);
+        glVertex2i(0, 0);
+        glVertex2i(100, 0);
+        glVertex2i(100, 100);
+        glVertex2i(0, 100);
         glEnd();
     }
     canvas.endTranslucent(0.5f);
