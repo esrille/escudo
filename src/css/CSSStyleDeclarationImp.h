@@ -571,8 +571,8 @@ public:
         return value;
     }
     bool isAbsolutelyPositioned() const {
-        unsigned value = getUsedPosition();
-        return value == CSSPositionValueImp::Absolute || value != CSSPositionValueImp::Fixed;
+        unsigned value = position.getValue();
+        return value == CSSPositionValueImp::Absolute || value == CSSPositionValueImp::Fixed;
     }
     bool isRelativelyPositioned() const {
         return getUsedPosition() == CSSPositionValueImp::Relative;
