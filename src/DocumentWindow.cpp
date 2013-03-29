@@ -54,6 +54,13 @@ DocumentWindow::~DocumentWindow()
     }
 }
 
+WindowImp* DocumentWindow::getWindowImp() const
+{
+    if (auto imp = dynamic_cast<DocumentImp*>(document.self()))
+        return imp->getDefaultWindow();
+    return 0;
+}
+
 void DocumentWindow::setDocument(const Document& document)
 {
     this->document = document;

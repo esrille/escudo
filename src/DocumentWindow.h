@@ -60,6 +60,8 @@ public:
     DocumentWindow();
     ~DocumentWindow();
 
+    WindowImp* getWindowImp() const;
+
     Document getDocument() const {
         return document;
     }
