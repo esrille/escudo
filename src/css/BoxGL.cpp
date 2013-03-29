@@ -921,9 +921,10 @@ void InlineBox::render(ViewCSSImp* view, StackingContext* stackingContext)
         glTranslatef(x + getBlankLeft(), y + getBlankTop(), 0.0f);
         childWindow->render(view);
         glPopMatrix();
-    } else if (getFirstChild())  // for inline-block
-        getFirstChild()->render(view, stackingContext);
-    else if (font && isVisible()) {
+    } else if (getFirstChild()) { // for inline-block
+        if (getFirstChild()->stackingContext == stackingContext)
+            getFirstChild()->render(view, stackingContext);
+    } else if (font && isVisible()) {
         glPushMatrix();
             glTranslatef(x + getBlankLeft(), y + font->getAscender(point), 0.0f);
             LineBox* lineBox = dynamic_cast<LineBox*>(getParentBox());

@@ -75,6 +75,7 @@ class Box : public ContainingBlock
     friend class ViewCSSImp;
     friend class Block;
     friend class LineBox;
+    friend class InlineBox;
     friend class FormattingContext;
     friend class BoxImage;
     friend class StackingContext;
