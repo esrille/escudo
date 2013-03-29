@@ -1413,8 +1413,7 @@ void CSSDisplayValueImp::compute(CSSStyleDeclarationImp* decl, Element element)
 {
     if (original == None)
         return;
-    unsigned position = decl->position.getValue();
-    if (position == CSSPositionValueImp::Absolute || position == CSSPositionValueImp::Fixed)
+    if (decl->isAbsolutelyPositioned())
         decl->float_.setValue(CSSFloatValueImp::None);  // TOOD: keep original?
     else if (decl->float_.getValue() == CSSFloatValueImp::None && (!element || element.getParentElement()))
         return;

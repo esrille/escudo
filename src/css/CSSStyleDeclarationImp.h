@@ -563,14 +563,22 @@ public:
     bool isFloat() const {
         return float_.getValue() != CSSFloatValueImp::None;
     }
+
+    unsigned getUsedPosition() const {
+        unsigned value = position.getValue();
+        if (value == CSSPositionValueImp::Static && opacity.getValue() < 1.0f)
+            return CSSPositionValueImp::Relative;
+        return value;
+    }
     bool isAbsolutelyPositioned() const {
-        return position.isPositioned() && !position.isRelative();
+        unsigned value = getUsedPosition();
+        return value == CSSPositionValueImp::Absolute || value != CSSPositionValueImp::Fixed;
     }
     bool isRelativelyPositioned() const {
-        return position.isPositioned() && position.isRelative();
+        return getUsedPosition() == CSSPositionValueImp::Relative;
     }
     bool isPositioned() const {
-        return position.isPositioned();
+        return getUsedPosition() != CSSPositionValueImp::Static;
     }
 
     CSSStyleDeclarationImp* getParentStyle() const {

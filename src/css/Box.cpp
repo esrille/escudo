@@ -195,7 +195,7 @@ void Box::setStyle(CSSStyleDeclarationImp* style)
     if (style) {
         stackingContext = style->getStackingContext();
         if (!isAnonymous())
-            setPosition(style->position.getValue());
+            setPosition(style->getUsedPosition());
     }
 }
 
@@ -343,7 +343,7 @@ void Block::setContainingBlock(ViewCSSImp* view)
             CSSStyleDeclarationImp* style = view->getStyle(ancestor);
             if (!style)
                 continue;
-            if (style->position.getValue() != CSSPositionValueImp::Static) {
+            if (style->isPositioned()) {
                 // Now we need to find the corresponding box for this ancestor.
                 Box* box = style->getBox();
                 if (!box)   // cf. html4/tables-001

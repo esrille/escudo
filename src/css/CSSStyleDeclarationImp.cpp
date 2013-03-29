@@ -328,7 +328,7 @@ unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
     if (style->borderLeftWidth != borderLeftWidth)
         flags |= Box::NEED_REFLOW;
 
-    if (style->position.isPositioned() && !style->position.isRelative()) {
+    if (style->isAbsolutelyPositioned()) {
         if (style->top != top)
             flags |= Box::NEED_REPOSITION;
         if (style->right != right)
@@ -1776,7 +1776,10 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     color.compute();
     outlineColor.compute();
     outlineStyle.compute();
+
     visibility.compute();
+    opacity.compute(view, this);
+    opacity.clip(0.0f, 1.0f);
 
     display.compute(this, element);
     fontSize.compute(view, parentStyle);
@@ -1791,7 +1794,7 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     minWidth.compute(view, this);
     minHeight.compute(view, this);
 
-    if (position.isPositioned()) {
+    if (isPositioned()) {   // TODO: Check what to do if only 'opacity' is less than 1.0.
         top.compute(view, this);
         right.compute(view, this);
         bottom.compute(view, this);
@@ -1832,9 +1835,6 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     textIndent.compute(view, this);
     letterSpacing.compute(view, this);
     wordSpacing.compute(view, this);
-
-    opacity.compute(view, this);
-    opacity.clip(0.0f, 1.0f);
 
     if (isFloat() || isAbsolutelyPositioned() || !parentStyle || isInlineBlock())
         textDecorationContext.update(this);
@@ -1880,14 +1880,15 @@ void CSSStyleDeclarationImp::computeStackingContext(ViewCSSImp* view, CSSStyleDe
             stackingContext = view->getStackingContexts();
         }
     } else if (isPositioned()) {
+        bool isAuto = (opacity.getValue() < 1.0f) ? false : zIndex.isAuto();
         if (!stackingContext) {
-            if (zIndex.isAuto())
+            if (isAuto)
                 stackingContext = parentStyle->stackingContext->getAuto(this);
             else
                 stackingContext = parentStyle->stackingContext->addContext(zIndex.getValue(), this);
         } else {
             // Update z-index
-            stackingContext->setZIndex(zIndex.isAuto(), zIndex.getValue());
+            stackingContext->setZIndex(isAuto, zIndex.getValue());
         }
     } else
         stackingContext = parentStyle->stackingContext;
@@ -2040,7 +2041,7 @@ unsigned CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock
 // TODO: rtl
 bool CSSStyleDeclarationImp::resolveRelativeOffset(float& x, float &y)
 {
-    if (position.getValue() != CSSPositionValueImp::Relative)
+    if (getUsedPosition() != CSSPositionValueImp::Relative)
         return false;
 
     float h = 0.0f;
@@ -2159,7 +2160,7 @@ bool CSSStyleDeclarationImp::isFlowRoot() const
            overflow.getValue() != CSSOverflowValueImp::Visible ||
            display.isFlowRoot() ||
            binding.isInlineBlock() ||
-           position.getValue() != CSSPositionValueImp::Static && position.getValue() != CSSPositionValueImp::Relative;
+           isAbsolutelyPositioned();
            /* TODO || and more conditions... */
 }
 
