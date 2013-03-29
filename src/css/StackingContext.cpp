@@ -254,6 +254,9 @@ void StackingContext::render(ViewCSSImp* view)
         glTranslatef(relativeX - parent->relativeX, relativeY - parent->relativeY, 0.0f);
     else
         glTranslatef(relativeX, relativeY, 0.0f);
+    if (style->opacity.getValue() < 1.0f)
+        view->beginTranslucent();
+
     if (firstBase) {
         currentFloat = firstFloat = lastFloat = 0;
         GLfloat mtx[16];
@@ -301,6 +304,8 @@ void StackingContext::render(ViewCSSImp* view)
         glPopMatrix();
     }
 
+    if (style->opacity.getValue() < 1.0f)
+        view->endTranslucent(style->opacity.getValue());
     if (clipWidth != HUGE_VALF && clipHeight != HUGE_VALF)
         view->unclip(clipLeft, clipTop, clipWidth, clipHeight);
     glPopMatrix();

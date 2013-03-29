@@ -124,6 +124,8 @@ public:
     void resolveXY(float left, float top);
 
     // Repaint
+    void beginTranslucent();
+    void endTranslucent(float alpha);
     void render(unsigned clipCount);
     void renderCanvas(unsigned color);
     unsigned getBackgroundColor();

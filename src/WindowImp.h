@@ -238,7 +238,15 @@ public:
     bool isBindingDocumentWindow() const;
 
     bool poll();
+
+    void beginTranslucent() {
+        canvas.beginTranslucent();
+    }
+    void endTranslucent(float alpha) {
+        canvas.endTranslucent(alpha);
+    }
     void render(ViewCSSImp* parentView);
+
     DocumentWindowPtr getDocumentWindow() const {
         return window;
     }

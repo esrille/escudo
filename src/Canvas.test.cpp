@@ -79,6 +79,7 @@ int main(int argc, char* argv[])
         canvasSub.endRender();
     glPopMatrix();
 
+    glPushMatrix();
     canvas.beginTranslucent(); {
         glTranslatef(450, 450, 0);
         unsigned color = 0xff0000ff;
@@ -90,6 +91,7 @@ int main(int argc, char* argv[])
         glVertex2i(0, 250);
         glEnd();
 
+        glPushMatrix();
         canvas.beginTranslucent(); {
             glTranslatef(150, 150, 0);
             color = 0xffffff00;
@@ -102,6 +104,7 @@ int main(int argc, char* argv[])
             glEnd();
         }
         canvas.endTranslucent(0.5f);
+        glPopMatrix();
 
         glTranslatef(100, 200, 0);
         color = 0xff00ffff;
@@ -114,6 +117,8 @@ int main(int argc, char* argv[])
         glEnd();
     }
     canvas.endTranslucent(0.5f);
+    glPopMatrix();
+
     canvas.endRender();
 
     glColor4ub(255, 255, 255, 255);

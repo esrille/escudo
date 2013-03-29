@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,6 +86,18 @@ FontTexture* ViewCSSImp::selectAltFont(CSSStyleDeclarationImp* style, FontTextur
     if (FontFace* face = manager->getAltFontFace(g, s, w, current, u))
         return face->getFontTexture(Point, s, w);
     return 0;
+}
+
+void ViewCSSImp::beginTranslucent()
+{
+    if (auto imp = window->getWindowImp())
+        imp->beginTranslucent();
+}
+
+void ViewCSSImp::endTranslucent(float alpha)
+{
+    if (auto imp = window->getWindowImp())
+        imp->endTranslucent(alpha);
 }
 
 void ViewCSSImp::render(unsigned parentClipCount)

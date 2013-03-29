@@ -151,7 +151,6 @@ void Canvas::Impl::beginTranslucent()
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
     translucents.push_back(tex);
 
-    glPushMatrix();
     glFlush();
     if (GLEW_ARB_framebuffer_object)
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex, 0);
@@ -175,6 +174,7 @@ void Canvas::Impl::endTranslucent(float alpha)
     else
         glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, next, 0);
 
+    glPushMatrix();
     glLoadIdentity();
     glTranslatef(x, y, 0.0f);
     alphaBlend(width, height, alpha, tex);
