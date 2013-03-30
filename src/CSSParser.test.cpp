@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -150,6 +150,8 @@ int main(int argc, char** argv)
     test("h1 { pitch : 3kHz }");
     test("h1 { width : -10px }");
     test("h1 { color: #fff }");
+    test("h1 { color: rgb(10, 10, 10) }");
+    test("h1 { color: rgba(10, 10, 10, 0.5) }");
     test("body { font-family: \"New Century Schoolbook\" }");
     test("body { font-family: serif }");
     test("body { background-image: url(\"marble.png\") }");

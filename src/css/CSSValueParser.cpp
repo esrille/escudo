@@ -172,12 +172,11 @@ void CSSValueParser::initializeRules()
             [&CSSValueParser::rgb]
         | CSSValueRule(u"rgb", percentage + comma + percentage + comma + percentage)
             [&CSSValueParser::rgb]
+        | CSSValueRule(u"rgba", integer + comma + integer + comma + integer + comma + number)
+            [&CSSValueParser::rgba]
+        | CSSValueRule(u"rgba", percentage + comma + percentage + comma + percentage + comma + number)
+            [&CSSValueParser::rgba]
 #if 0
-        | CSSValueRule(u"rgba", (integer | percentage) + comma +
-                                (integer | percentage) + comma +
-                                (integer | percentage) + comma +
-                                number)
-            // TODO: [&CSSValueParser::rgba]
         | CSSValueRule(u"hsl", number + comma +
                                percentage + comma +
                                percentage)
@@ -951,6 +950,31 @@ bool CSSValueParser::rgb(const CSSValueRule& rule)
     }
     rgb |= 0xFF000000;
     stack.resize(stack.size() - 5);
+    getToken().unit = CSSPrimitiveValue::CSS_RGBCOLOR;
+    getToken().rgb = rgb;
+    // TODO: delete getToken().expr ??
+    return true;
+}
+
+bool CSSValueParser::rgba(const CSSValueRule& rule)
+{
+    unsigned rgb = 0;
+    for (int i = stack.size() - 7; i < stack.size() - 2; i += 2) {
+        CSSParserTerm* term = stack.at(i);
+        if (term->unit == CSSPrimitiveValue::CSS_NUMBER) {
+            rgb <<= 8;
+            rgb += static_cast<unsigned char>(std::max(0.0, std::min(255.0, term->getNumber())));
+        } else {
+            assert(term->unit == CSSPrimitiveValue::CSS_PERCENTAGE);
+            rgb <<= 8;
+            rgb += static_cast<unsigned char>(roundf(255.0f * (std::max(0.0, std::min(100.0, term->getNumber()) / 100.0f))));
+        }
+    }
+    CSSParserTerm* term = stack.at(6);
+    assert(term->unit == CSSPrimitiveValue::CSS_NUMBER);
+    float alpha = std::max(0.0, std::min(1.0, term->getNumber()));
+    rgb |= static_cast<unsigned>(roundf(255.0f * alpha)) << 24u;
+    stack.resize(stack.size() - 7);
     getToken().unit = CSSPrimitiveValue::CSS_RGBCOLOR;
     getToken().rgb = rgb;
     // TODO: delete getToken().expr ??
