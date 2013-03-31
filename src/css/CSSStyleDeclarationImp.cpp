@@ -1874,9 +1874,10 @@ void CSSStyleDeclarationImp::computeStackingContext(ViewCSSImp* view, CSSStyleDe
     if (wasPositioned ^ isPositioned())
         stackingContext = 0;
 
+    int zValue = (position.getValue() == CSSPositionValueImp::Static) ? 0 : zIndex.getValue();
     if (!parentStyle) {
         if (view->getStackingContexts() == 0) {
-            view->setStackingContexts(new(std::nothrow) StackingContext(false, zIndex.getValue(), this));
+            view->setStackingContexts(new(std::nothrow) StackingContext(false, zValue, this));
             stackingContext = view->getStackingContexts();
         }
     } else if (isPositioned()) {
@@ -1885,10 +1886,10 @@ void CSSStyleDeclarationImp::computeStackingContext(ViewCSSImp* view, CSSStyleDe
             if (isAuto)
                 stackingContext = parentStyle->stackingContext->getAuto(this);
             else
-                stackingContext = parentStyle->stackingContext->addContext(zIndex.getValue(), this);
+                stackingContext = parentStyle->stackingContext->addContext(zValue, this);
         } else {
             // Update z-index
-            stackingContext->setZIndex(isAuto, zIndex.getValue());
+            stackingContext->setZIndex(isAuto, zValue);
         }
     } else
         stackingContext = parentStyle->stackingContext;
