@@ -1460,8 +1460,11 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
     }
 
     if (flags & NEED_REFLOW) {
-        if (getFirstChild() && dynamic_cast<Block*>(getFirstChild()))
-            getFirstChild()->setFlags(Box::NEED_REFLOW);
+        if (getFirstChild() && dynamic_cast<Block*>(getFirstChild())) {
+            // Note to avoid NEED_CHILD_REFLOW flags are set back again
+            // to the ancestor boxes, do not use setFlags() here:
+            getFirstChild()->flags |= NEED_REFLOW;
+        }
     }
     layOutChildren(view, context);
     if (!isAnonymous()) {
