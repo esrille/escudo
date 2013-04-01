@@ -394,7 +394,12 @@ void WindowImp::render(ViewCSSImp* parentView)
             // TODO: if the size of the canvas has not been changed, reuse the same canvas.
             canvas.shutdown();
             canvas.setup(width, height);
-            canvas.beginRender(view->getBackgroundColor());
+
+            unsigned backgroundColor = view->getBackgroundColor();
+            if (backgroundColor == 0 && !parent)
+                backgroundColor = 0xffffffff;
+            canvas.beginRender(backgroundColor);
+
             view->render(parentView ? parentView->getClipCount() : 0);
             scrollWidth = view->getScrollWidth();
             scrollHeight = view->getScrollHeight();
