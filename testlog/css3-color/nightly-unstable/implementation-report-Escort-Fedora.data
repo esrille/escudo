@@ -1,4 +1,4 @@
-# Escort 0.3.1 (2013-03-31 2edcfd9307) Fedora Linux 18
+# Escort 0.3.1 (2013-04-01 2d833d7b4b) Fedora Linux 18
 # Escort/0.3.1
 # http://test.csswg.org/suites/css3-color/nightly-unstable/
 # See http://wiki.csswg.org/test/implementation-report for instructions
@@ -31,14 +31,14 @@ html4/t422-rgba-a0.6-a.htm	pass
 html4/t422-rgba-a1.0-a.htm	pass
 html4/t422-rgba-clamping-a0.0-b.htm	pass
 html4/t422-rgba-clamping-a1.0-b.htm	pass
-html4/t422-rgba-clip-outside-device-gamut-b.htm	fail
+html4/t422-rgba-clip-outside-device-gamut-b.htm	pass
 html4/t422-rgba-func-int-a.htm	pass
 html4/t422-rgba-func-no-mixed-f.htm	pass
 html4/t422-rgba-func-pct-a.htm	pass
 html4/t422-rgba-func-whitespace-b.htm	pass
-html4/t422-rgba-onscreen-b.htm	fail
+html4/t422-rgba-onscreen-b.htm	pass
 html4/t422-rgba-onscreen-multiple-boxes-c.htm	fail
-html4/t422-rgba-values-meaning-b.htm	fail
+html4/t422-rgba-values-meaning-b.htm	pass
 html4/t423-transparent-1-a.htm	pass
 html4/t423-transparent-2-a.htm	pass
 html4/t424-hsl-basic-a.htm	fail
