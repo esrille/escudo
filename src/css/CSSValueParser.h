@@ -343,6 +343,8 @@ public:
     bool colorKeyword(const CSSValueRule& rule);
     bool rgb(const CSSValueRule& rule);
     bool rgba(const CSSValueRule& rule);
+    bool hsl(const CSSValueRule& rule);
+    bool hsla(const CSSValueRule& rule);
 };
 
 unsigned CSSGetKeywordColor(const std::u16string& keyword);

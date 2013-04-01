@@ -176,17 +176,10 @@ void CSSValueParser::initializeRules()
             [&CSSValueParser::rgba]
         | CSSValueRule(u"rgba", percentage + comma + percentage + comma + percentage + comma + number)
             [&CSSValueParser::rgba]
-#if 0
-        | CSSValueRule(u"hsl", number + comma +
-                               percentage + comma +
-                               percentage)
-            // TODO: [&CSSValueParser::hsl]
-        | CSSValueRule(u"hsla", number + comma +
-                                percentage + comma +
-                                percentage + comma +
-                                number)
-            // TODO: [&CSSValueParser::hsla]
-#endif
+        | CSSValueRule(u"hsl", number + comma + percentage + comma + percentage)
+            [&CSSValueParser::hsl]
+        | CSSValueRule(u"hsla", number + comma + percentage + comma + percentage + comma + number)
+            [&CSSValueParser::hsla]
         ;
     lineHeight
         = (CSSValueRule(u"normal", CSSLineHeightValueImp::Normal)
@@ -970,13 +963,98 @@ bool CSSValueParser::rgba(const CSSValueRule& rule)
             rgb += static_cast<unsigned char>(roundf(255.0f * (std::max(0.0, std::min(100.0, term->getNumber()) / 100.0f))));
         }
     }
-    CSSParserTerm* term = stack.at(6);
+    CSSParserTerm* term = stack.at(stack.size() - 1);
     assert(term->unit == CSSPrimitiveValue::CSS_NUMBER);
     float alpha = std::max(0.0, std::min(1.0, term->getNumber()));
     rgb |= static_cast<unsigned>(roundf(255.0f * alpha)) << 24u;
     stack.resize(stack.size() - 7);
     getToken().unit = CSSPrimitiveValue::CSS_RGBCOLOR;
     getToken().rgb = rgb;
+    // TODO: delete getToken().expr ??
+    return true;
+}
+
+namespace {
+
+float toV(float m1, float m2, float h)
+{
+    if (h < 0.0f)
+        h += 1.0f;
+    else if (1.0f < h)
+        h -= 1.0f;
+    if (h * 6.0f < 1.0f)
+        return m1 + (m2 - m1) * h * 6.0f;
+    if (h * 2.0f < 1.0f)
+        return m2;
+    if (h * 3.0f < 2.0f)
+        return m1 + (m2 - m1) * (2.0f / 3.0f - h) * 6.0f;
+    return m1;
+}
+
+unsigned toRGB(float h, float s, float l)
+{
+    h = fmodf(fmodf(h, 360.0f) + 360.0f, 360.0f) / 360.0f;
+    s = std::max(0.0f, std::min(100.0f, s)) / 100.0f;
+    l = std::max(0.0f, std::min(100.0f, l)) / 100.0f;
+
+    float m2;
+    if (l <= 0.5f)
+        m2 = l * (s + 1.0f);
+    else
+        m2 = l + s - l * s;
+    float m1 = l * 2.0f - m2;
+    float r = toV(m1, m2, h + 1.0f / 3.0f);
+    float g = toV(m1, m2, h);
+    float b = toV(m1, m2, h - 1.0f / 3.0f);
+    return (static_cast<unsigned char>(roundf(r * 255.0)) << 16u) |
+           (static_cast<unsigned char>(roundf(g * 255.0)) << 8u) |
+           static_cast<unsigned char>(roundf(b * 255.0));
+}
+
+}
+
+bool CSSValueParser::hsl(const CSSValueRule& rule)
+{
+    CSSParserTerm* term = stack.at(stack.size() - 5);
+    assert(term->unit == CSSPrimitiveValue::CSS_NUMBER);
+    float h = term->getNumber();
+
+    term = stack.at(stack.size() - 3);
+    assert(term->unit == CSSPrimitiveValue::CSS_PERCENTAGE);
+    float s = term->getNumber();
+
+    term = stack.at(stack.size() - 1);
+    assert(term->unit == CSSPrimitiveValue::CSS_PERCENTAGE);
+    float l = term->getNumber();
+
+    stack.resize(stack.size() - 5);
+    getToken().unit = CSSPrimitiveValue::CSS_RGBCOLOR;
+    getToken().rgb = 0xFF000000 | toRGB(h, s, l);
+    // TODO: delete getToken().expr ??
+    return true;
+}
+
+bool CSSValueParser::hsla(const CSSValueRule& rule)
+{
+    CSSParserTerm* term = stack.at(stack.size() - 7);
+    assert(term->unit == CSSPrimitiveValue::CSS_NUMBER);
+    float h = term->getNumber();
+
+    term = stack.at(stack.size() - 5);
+    assert(term->unit == CSSPrimitiveValue::CSS_PERCENTAGE);
+    float s = term->getNumber();
+
+    term = stack.at(stack.size() - 3);
+    assert(term->unit == CSSPrimitiveValue::CSS_PERCENTAGE);
+    float l = term->getNumber();
+
+    term = stack.at(stack.size() - 1);
+    assert(term->unit == CSSPrimitiveValue::CSS_NUMBER);
+    float alpha = std::max(0.0, std::min(1.0, term->getNumber()));
+
+    stack.resize(stack.size() - 7);
+    getToken().unit = CSSPrimitiveValue::CSS_RGBCOLOR;
+    getToken().rgb = (static_cast<unsigned>(roundf(255.0f * alpha)) << 24u) | toRGB(h, s, l);
     // TODO: delete getToken().expr ??
     return true;
 }
