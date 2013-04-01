@@ -1,4 +1,4 @@
-# Escort 0.3.1 (2013-04-01 2d833d7b4b) Fedora Linux 18
+# Escort 0.3.1 (2013-04-01 85257e7ad4) Fedora Linux 18
 # Escort/0.3.1
 # http://test.csswg.org/suites/css3-color/nightly-unstable/
 # See http://wiki.csswg.org/test/implementation-report for instructions
@@ -41,18 +41,18 @@ html4/t422-rgba-onscreen-multiple-boxes-c.htm	fail
 html4/t422-rgba-values-meaning-b.htm	pass
 html4/t423-transparent-1-a.htm	pass
 html4/t423-transparent-2-a.htm	pass
-html4/t424-hsl-basic-a.htm	fail
-html4/t424-hsl-clip-outside-gamut-b.htm	fail
-html4/t424-hsl-h-rotating-b.htm	fail
-html4/t424-hsl-parsing-f.htm	fail
-html4/t424-hsl-values-b.htm	fail
-html4/t425-hsla-basic-a.htm	fail
-html4/t425-hsla-clip-outside-device-gamut-b.htm	fail
-html4/t425-hsla-h-rotating-b.htm	fail
-html4/t425-hsla-onscreen-b.htm	fail
+html4/t424-hsl-basic-a.htm	pass
+html4/t424-hsl-clip-outside-gamut-b.htm	pass
+html4/t424-hsl-h-rotating-b.htm	pass
+html4/t424-hsl-parsing-f.htm	pass
+html4/t424-hsl-values-b.htm	pass
+html4/t425-hsla-basic-a.htm	pass
+html4/t425-hsla-clip-outside-device-gamut-b.htm	pass
+html4/t425-hsla-h-rotating-b.htm	pass
+html4/t425-hsla-onscreen-b.htm	pass
 html4/t425-hsla-onscreen-multiple-boxes-c.htm	fail
-html4/t425-hsla-parsing-f.htm	fail
-html4/t425-hsla-values-b.htm	fail
+html4/t425-hsla-parsing-f.htm	pass
+html4/t425-hsla-values-b.htm	pass
 html4/t43-svg-keywords-a.htm	pass
 html4/t44-currentcolor-background-b.htm	fail
 html4/t44-currentcolor-border-b.htm	fail
