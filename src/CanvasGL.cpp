@@ -158,6 +158,7 @@ void Canvas::Impl::beginTranslucent()
         glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, tex, 0);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
+    glClearColor(1.0, 1.0, 1.0, 1.0);
 }
 
 void Canvas::Impl::endTranslucent(float alpha)
@@ -237,7 +238,7 @@ void Canvas::Impl::alphaBlend(int w, int h, float alpha, GLuint tex)
     glEnd();
     glDisable(GL_TEXTURE_2D);
 
-    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
+    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 Canvas::Canvas() :

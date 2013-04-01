@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,7 @@
 
 #include "Box.h"
 
-#include <GL/gl.h>
-#include <GL/glu.h>
+#include <GL/glew.h>
 
 #include <stdio.h>
 
@@ -145,6 +144,7 @@ unsigned BoxImage::render(ViewCSSImp* view, float x, float y, float width, float
 
     GLuint texname = getTexname(pixels + frame * (naturalWidth * naturalHeight * 4),
                                 naturalWidth, naturalHeight, repeat, format);
+
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, texname);
     glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
@@ -955,7 +955,7 @@ void InlineBox::render(ViewCSSImp* view, StackingContext* stackingContext)
                 glColor4ub(color >> 16, color >> 8, color, color >> 24);
                 glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
                 renderText(view, data, point);
-                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
             glPopMatrix();
             if (lineDecoration & CSSTextDecorationValueImp::LineThrough) {
                 glDisable(GL_TEXTURE_2D);

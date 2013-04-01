@@ -236,7 +236,7 @@ void init(int* argc, char* argv[], int width, int height)
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_ALPHA_TEST);
     glEnable(GL_BLEND);
-    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE);
+    glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
     glutKeyboardFunc(keyboard);
     glutKeyboardUpFunc(keyboardUp);
