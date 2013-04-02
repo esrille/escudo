@@ -1444,6 +1444,8 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
         }
     }
 
+    CSSAutoLengthValueImp originalWidth = style->width;
+    CSSAutoLengthValueImp originalHeight = style->height;
     if (!layOutReplacedElement(view, element, style.get())) {
         if (!intrinsic && style->display.isInline() && isReplacedElement(element)) {
             // An object fallback has occurred for an inline, replaced element.
@@ -1454,8 +1456,11 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
             style->height.setValue();
         }
         if (hasInline()) {
-            if (!layOutInline(view, context, before))
+            if (!layOutInline(view, context, before)) {
+                style->width = originalWidth;
+                style->height = originalHeight;
                 return false;
+            }
         }
     }
 
@@ -1560,6 +1565,8 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
     if (isInFlow() && 0.0f < paddingBottom + borderBottom)
         context->updateRemainingHeight(paddingBottom + borderBottom);
 
+    style->width = originalWidth;
+    style->height = originalHeight;
     return true;
 }
 

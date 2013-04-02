@@ -166,6 +166,13 @@ public:
     bool operator!=(const CSSNumericValue& value) const {
         return !(*this == value);
     }
+    CSSNumericValue& operator=(const CSSNumericValue& other) {
+        unit = other.unit;
+        index = other.index;
+        number = other.number;
+        resolved = other.resolved;
+        return *this;
+    }
 
     // Note on specify() vs inherit()
     // Properties like 'font-size' inherits the computed value, which is
@@ -434,6 +441,10 @@ public:
     }
     CSSAutoLengthValueImp(float number, unsigned short unit) :
         length(number, unit) {
+    }
+    CSSAutoLengthValueImp& operator=(const CSSAutoLengthValueImp& other) {
+        length = other.length;
+        return *this;
     }
     static const char16_t* Options[];
 };
