@@ -2279,6 +2279,13 @@ Block* CSSStyleDeclarationImp::revert(Element element)
         holder->setFlags(Box::NEED_REFLOW);
     }
     clearBox();
+
+    if (holder->isAnonymous()) {
+        holder = dynamic_cast<Block*>(holder->getParentBox());
+        assert(holder);
+        holder->clearInlines();
+    }
+
     return holder;
 }
 
