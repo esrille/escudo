@@ -157,7 +157,7 @@ unsigned char* readAsJpeg(FILE* file, unsigned& width, unsigned& height, unsigne
 
 uint16_t readUint16(const char* p)
 {
-    return static_cast<uint16_t >(p[0]) + (static_cast<uint16_t >(p[1]) << 8);
+    return static_cast<uint8_t>(p[0]) + (static_cast<uint8_t>(p[1]) << 8);
 }
 
 unsigned char* expandColors(unsigned char* dst, unsigned char* src, unsigned count, int transparentIndex, GifColorType* colors)
