@@ -247,9 +247,9 @@ bool StackingContext::hasClipBox()
 
 void StackingContext::render(ViewCSSImp* view)
 {
-    glPushMatrix();
     if (hasClipBox())
         view->clip(clipLeft, clipTop, clipWidth, clipHeight);
+    glPushMatrix();
     if (parent)
         glTranslatef(relativeX - parent->relativeX, relativeY - parent->relativeY, 0.0f);
     else
@@ -306,9 +306,9 @@ void StackingContext::render(ViewCSSImp* view)
 
     if (style->opacity.getValue() < 1.0f)
         view->endTranslucent(style->opacity.getValue());
+    glPopMatrix();
     if (clipWidth != HUGE_VALF && clipHeight != HUGE_VALF)
         view->unclip(clipLeft, clipTop, clipWidth, clipHeight);
-    glPopMatrix();
 }
 
 void StackingContext::renderFloats(ViewCSSImp* view, Box* last, Box* current)
