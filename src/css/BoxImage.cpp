@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -189,7 +189,7 @@ unsigned char* readAsGif(FILE* file, unsigned& width, unsigned& height, unsigned
     fseek(file, -(sizeof sig), SEEK_CUR);
     long pos = ftell(file);
 
-    int fd = dup(fileno(file));
+    int fd = fileno(file);
     lseek(fd, pos, SEEK_SET);
     GifFileType* gif = DGifOpenFileHandle(fd);
     if (!gif)
@@ -223,7 +223,7 @@ unsigned char* readAsGif(FILE* file, unsigned& width, unsigned& height, unsigned
             case GRAPHICS_EXT_FUNC_CODE:
                 if (ext->ByteCount == 4) {
                     if ((ext->Bytes[0] & 1))    // transparent?
-                        transparentIndex = ext->Bytes[3];
+                        transparentIndex = static_cast<unsigned char>(ext->Bytes[3]);
                     delays[frame] = readUint16(ext->Bytes + 1);
                 }
                 break;
