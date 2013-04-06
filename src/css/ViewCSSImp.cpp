@@ -112,7 +112,7 @@ Box* ViewCSSImp::boxFromPoint(int x, int y)
     return boxTree.get();
 }
 
-bool ViewCSSImp::isHovered(Node node)
+bool ViewCSSImp::isHovered(Element node)
 {
     // TODO: Check if we need to process forefront node only or not.
     for (Node i = hovered; i; i = i.getParentNode()) {

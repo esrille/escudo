@@ -66,7 +66,7 @@ class ViewCSSImp
     StackingContextPtr stackingContexts;
 
     // Reflow
-    Node hovered;
+    Element hovered;
     BlockPtr boxTree;       // A box tree under construction
     std::list<CounterImpPtr> counterList;
     int quotingDepth;
@@ -252,8 +252,8 @@ public:
         return clipCount;
     }
 
-    void setHovered(Node node);
-    bool isHovered(Node node);
+    Element setHovered(Element node);
+    bool isHovered(Element node);
 
     bool canScroll() const {
         // Note the 'visible' value is interpreted as 'auto' in the viewport.

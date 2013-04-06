@@ -537,20 +537,36 @@ void WindowImp::mouseMove(const EventTask& task)
     }
 
     Element target = Box::getContainingElement(box->getTargetNode());
-    view->setHovered(target);
+    Element prev = view->setHovered(target);
+    if (prev != target) {
+        // mouseout
+        if (MouseEventImp* imp = new(std::nothrow) MouseEventImp) {
+            imp->initMouseEvent(u"mouseout",
+                                true, true, this, 0, x, y, x, y,
+                                modifiers & 2, modifiers & 4, modifiers & 1, false, 0, 0);
+            imp->setButtons(buttons);
+            prev.dispatchEvent(imp);
+        }
+
+        // mouseover
+        if (MouseEventImp* imp = new(std::nothrow) MouseEventImp) {
+            imp->initMouseEvent(u"mouseover",
+                                true, true, this, 0, x, y, x, y,
+                                modifiers & 2, modifiers & 4, modifiers & 1, false, 0, 0);
+            imp->setButtons(buttons);
+            target.dispatchEvent(imp);
+        }
+    }
 
     // mousemove
-    events::MouseEvent event(0);
-    MouseEventImp* imp = 0;
-    if ((imp = new(std::nothrow) MouseEventImp)) {
-        event = imp;
+    if (MouseEventImp* imp = new(std::nothrow) MouseEventImp) {
         if (target != clickTarget)
             detail = 0;
         imp->initMouseEvent(u"mousemove",
                             true, true, this, detail, x, y, x, y,
                             modifiers & 2, modifiers & 4, modifiers & 1, false, 0, 0);
         imp->setButtons(buttons);
-        target.dispatchEvent(event);
+        target.dispatchEvent(imp);
     }
 }
 

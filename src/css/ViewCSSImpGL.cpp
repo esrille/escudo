@@ -204,15 +204,16 @@ const int cursorMap[CSSCursorValueImp::CursorsMax] = {
 
 }
 
-void ViewCSSImp::setHovered(Node node)
+Element ViewCSSImp::setHovered(Element target)
 {
     assert(boxTree);
-    if (hovered == node)
-        return;
-    CSSStyleDeclarationImp* next = getStyle(Box::getContainingElement(node));
-    CSSStyleDeclarationImp* curr = getStyle(Box::getContainingElement(hovered));
+    if (hovered == target)
+        return hovered;
+    CSSStyleDeclarationImp* next = getStyle(target);
+    CSSStyleDeclarationImp* curr = getStyle(hovered);
 
-    hovered = node; // TODO: Fix synchronization issues with the background thread.
+    Element prev = hovered;
+    hovered = target; // TODO: Fix synchronization issues with the background thread.
 
     if (next) {
         glutSetCursor(cursorMap[next->cursor.getValue()]);
@@ -226,6 +227,7 @@ void ViewCSSImp::setHovered(Node node)
             affected->clearFlags(CSSStyleDeclarationImp::Computed);
         }
     }
+    return prev;
 }
 
 }}}}  // org::w3c::dom::bootstrap
