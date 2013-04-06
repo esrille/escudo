@@ -1767,6 +1767,7 @@ void Block::layOutAbsolute(ViewCSSImp* view)
     const ContainingBlock* containingBlock = &absoluteBlock;
     flags |= style->resolve(view, containingBlock);
     visibility = style->visibility.getValue();
+    textAlign = style->textAlign.getValue();
 
     resolveBackground(view);
     updatePadding();
