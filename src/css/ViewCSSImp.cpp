@@ -239,10 +239,13 @@ Element ViewCSSImp::updateStyleRules(Element element, CSSStyleDeclarationImp* st
     }
     if (CSSStyleSheetImp* sheet = getDOMImplementation()->getPresentationalHints())
         findDeclarations(style->ruleSet, element, sheet->getCssRules(), CSSRuleListImp::Presentational);
+
+    unsigned importance = CSSRuleListImp::Author;
     stylesheets::StyleSheetList styleSheetList(getDocument().getStyleSheets());
     for (unsigned i = 0; i < styleSheetList.getLength(); ++i) {
         CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(styleSheetList.getElement(i).self());
-        findDeclarations(style->ruleSet, element, sheet->getCssRules(), CSSRuleListImp::Author);
+        findDeclarations(style->ruleSet, element, sheet->getCssRules(), importance++);
+        // TODO: Check overflow of importance
     }
 
     style->compute(this, parentStyle, element);
