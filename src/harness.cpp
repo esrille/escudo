@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,6 +68,13 @@ public:
     ForkStatus() : pid(-1), code(-1) {}
 };
 
+// The URL prefix for each test:
+//   If the specified report file contains a URL in a comment line,
+//   it will be used as the prefix.
+//   Note unless -x option is specified, 'localhost' is used as the
+//   host instead of the specified one such as 'test.csswg.org'.
+std::string prefix = "http://localhost/suites/css2.1/20110323/";
+
 size_t forkMax = 1;
 size_t forkTop = 0;
 size_t forkCount = 0;
@@ -112,8 +119,7 @@ int runTest(int argc, char* argv[], std::string userStyle, std::string testFonts
             argv[argi++] = strdup(userStyle.c_str());
         if (testFonts == "on")
             argv[argi++] = testfontsOption;
-        url = "http://localhost/suites/css2.1/20110323/" + url;
-        // url = "http://test.csswg.org/suites/css2.1/20110323/" + url;
+        url = prefix + url;
         argv[argi++] = strdup(url.c_str());
         argv[argi] = 0;
         if (timeout)
@@ -392,6 +398,7 @@ int main(int argc, char* argv[])
 {
     int mode = HEADLESS;
     unsigned timeout = 10;
+    bool useLocalhost = true;
 
     int argi = 1;
     while (*argv[argi] == '-') {
@@ -399,6 +406,9 @@ int main(int argc, char* argv[])
         case 'i':
             mode = INTERACTIVE;
             timeout = 0;
+            break;
+        case 'x':
+            useLocalhost = false;
             break;
         case 'g':
             mode = GENERATE;
@@ -422,7 +432,7 @@ int main(int argc, char* argv[])
     }
 
     if (argc < argi + 2) {
-        std::cout << "usage: " << argv[0] << " [-i] report.data command [argument ...]\n";
+        std::cout << "usage: " << argv[0] << " [options] report.data command [argument ...]\n";
         return EXIT_FAILURE;
     }
 
@@ -466,7 +476,18 @@ int main(int argc, char* argv[])
                 continue;
             }
             if (line[0] == '#') {
-                if (line.compare(1, 9, "userstyle") == 0) {
+                if (line.compare(1, 8, " http://") == 0) {
+                    std::string url = line.substr(2);
+                    if (useLocalhost) {
+                        size_t end = url.find('/', 7);
+                        if (end != std::string::npos)
+                            url.replace(7, end - 7, "localhost");
+                    }
+                    while (isspace(url[url.length() - 1]))
+                        url.erase(url.length() - 1);
+                    prefix = url;
+                }
+                else if (line.compare(1, 9, "userstyle") == 0) {
                     if (10 < line.length()) {
                         std::stringstream s(line.substr(10), std::stringstream::in);
                         s >> userStyle;
