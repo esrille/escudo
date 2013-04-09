@@ -65,9 +65,6 @@ inline std::u16string CSSSerializeHex(unsigned long n)
 
 inline std::u16string CSSSerializeRGB(unsigned argb)
 {
-    if (argb == 0x00000000)
-        return u"transparent";  // for CSS 2.1
-
     std::u16string text;
     char buf[32];
     if ((argb & 0xFF000000) == 0xFF000000)
