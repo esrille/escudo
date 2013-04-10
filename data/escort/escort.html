@@ -232,7 +232,7 @@ function forward(e) {
 }
 function reload(e) {
     var url = document.getElementById('location').value;
-    document.getElementById('main').src = url;
+    document.getElementById('main').contentWindow.location.href = url;
     e.preventDefault();
 }
 function stop(e) {
@@ -240,7 +240,7 @@ function stop(e) {
     e.preventDefault();
 }
 function settings(e) {
-    document.getElementById('main').src = 'about:';
+    document.getElementById('main').contentWindow.location.href = 'about:';
     e.preventDefault();
 }
 function complete(e) {
@@ -258,7 +258,7 @@ function complete(e) {
 function keypress(e) {
     if (e.keyCode == 13) {
         var url = document.getElementById('location').value;
-        document.getElementById('main').src = url;
+        document.getElementById('main').contentWindow.location.href = url;
         e.preventDefault();
     }
 }
