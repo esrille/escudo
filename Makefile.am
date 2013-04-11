@@ -860,6 +860,7 @@ libeshtml5_a_SOURCES += \
 	src/RangeImp.h \
 	src/StyleSheetImp.cpp \
 	src/StyleSheetImp.h \
+	src/Task.h \
 	src/TextImp.cpp \
 	src/TextImp.h \
 	src/TrackEventImp.cpp \

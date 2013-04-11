@@ -1431,11 +1431,12 @@ libeshtml5_a_SOURCES = org/w3c/dom/ObjectArray.h src/one_at_a_time.hpp \
 	src/PopStateEventInitImp.h src/ProcessingInstructionImp.cpp \
 	src/ProcessingInstructionImp.h src/ProgressEventImp.cpp \
 	src/ProgressEventImp.h src/RangeImp.cpp src/RangeImp.h \
-	src/StyleSheetImp.cpp src/StyleSheetImp.h src/TextImp.cpp \
-	src/TextImp.h src/TrackEventImp.cpp src/TrackEventImp.h \
-	src/TrackEventInitImp.cpp src/TrackEventInitImp.h \
-	src/TreeWalkerImp.cpp src/TreeWalkerImp.h src/UIEventImp.cpp \
-	src/UIEventImp.h src/UIEventInitImp.cpp src/UIEventInitImp.h \
+	src/StyleSheetImp.cpp src/StyleSheetImp.h src/Task.h \
+	src/TextImp.cpp src/TextImp.h src/TrackEventImp.cpp \
+	src/TrackEventImp.h src/TrackEventInitImp.cpp \
+	src/TrackEventInitImp.h src/TreeWalkerImp.cpp \
+	src/TreeWalkerImp.h src/UIEventImp.cpp src/UIEventImp.h \
+	src/UIEventInitImp.cpp src/UIEventInitImp.h \
 	src/WheelEventImp.cpp src/WheelEventImp.h \
 	src/WheelEventInitImp.cpp src/WheelEventInitImp.h \
 	src/WindowImp.cpp src/WindowImp.h src/XMLDocumentImp.cpp \
