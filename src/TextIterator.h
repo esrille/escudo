@@ -50,7 +50,7 @@ public:
             return;
         }
         current = ubrk_first(bi);
-        length = length;
+        this->length = length;
     }
     bool next() {
         if (current != UBRK_DONE)
