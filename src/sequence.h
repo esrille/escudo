@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  * Copyright 2010 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -92,22 +92,22 @@ class Sequence
             }
         }
 
-        virtual T& getElement(unsigned int index)
+        T& getElement(unsigned int index)
         {
             return sequence[index];
         }
 
-        virtual void setElement(unsigned int index, const T value)
+        void setElement(unsigned int index, const T value)
         {
             sequence[index] = value;
         }
 
-        virtual unsigned int getLength()
+        unsigned int getLength()
         {
             return length;
         }
 
-        virtual void setLength(unsigned int length)
+        void setLength(unsigned int length)
         {
             // TODO: Raise an exception
         }
@@ -137,7 +137,6 @@ public:
         rep = new Rep(size);
     }
 
-#ifdef __GXX_EXPERIMENTAL_CXX0X__
     Sequence(std::initializer_list<T> list)
     {
         rep = new Rep(list.size());
@@ -147,7 +146,6 @@ public:
             rep->setElement(index, *p);
         }
     }
-#endif
 
     // Copy-constructor
     Sequence(const Sequence& value)
