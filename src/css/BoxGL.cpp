@@ -631,7 +631,7 @@ void Block::renderNonInline(ViewCSSImp* view, StackingContext* stackingContext)
         }
     }
 
-    if (isClipped())
+    if (isClipped() && last != stackingContext->getLastFloat())
         stackingContext->renderFloats(view, last, this);
 }
 
