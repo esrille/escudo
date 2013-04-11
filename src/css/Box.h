@@ -31,7 +31,7 @@
 #include "FormattingContext.h"
 #include "StackingContext.h"
 
-class FontGlyph;
+struct FontGlyph;
 class FontTexture;
 
 namespace org { namespace w3c { namespace dom {
