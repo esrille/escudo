@@ -415,6 +415,8 @@ bool NativeClass::isNativeClass(JSClass* jsclass)
     return jsclass->finalize == finalize;
 }
 
+std::list<NativeClass*> NativeClass::nativeClassList;
+
 JSNative NativeClass::operations[MAX_METHOD_COUNT] =
 {
     &operation<0>, &operation<1>, &operation<2>, &operation<3>, &operation<4>,
@@ -524,7 +526,8 @@ JSStrictPropertyOp NativeClass::setters[MAX_RANK] =
 Object (*NativeClass::constructorGetters[MAX_CONSTRUCTOR_COUNT])();
 int NativeClass::constructorCount;
 
-NativeClass::NativeClass(JSContext* cx, JSObject* global, const char* metadata, Object (*getConstructor)()) :
+NativeClass::NativeClass(const char* metadata, Object (*getConstructor)()) :
+    metadata(metadata),
     proto(0),
     protoRank(0),
     jsclass {
@@ -540,46 +543,26 @@ NativeClass::NativeClass(JSContext* cx, JSObject* global, const char* metadata, 
     assert(identifier.length() + 1 < sizeof(name));
     strcpy(name, identifier.c_str());
 
-    JSBool found;
-    JS_HasProperty(cx, global, name, &found);
-    if (found) {
-        std::cerr << "error: Interface " << name << " has already been registered.\n";
-        return;
-    }
-
-    JSObject* parentProto = 0;
     std::string parentName = Reflect::getIdentifier(meta.getExtends());
     if (!parentName.empty()) {
-        // Look up parentProto
-        jsval val;
-        if (JS_GetProperty(cx, global, parentName.c_str(), &val) && JSVAL_IS_OBJECT(val)) {
-            JSObject* parent = JSVAL_TO_OBJECT(val);
-            if (JS_GetProperty(cx, parent, "prototype", &val) && JSVAL_IS_OBJECT(val)) {
-                parentProto = JSVAL_TO_OBJECT(val);
-                JSClass* jsclass = JS_GET_CLASS(cx, parentProto);
-                assert(jsclass);
-                proto = reinterpret_cast<NativeClass*>(reinterpret_cast<char*>(jsclass) - offsetof(NativeClass, jsclass));
-            }
-        } else {
-            std::cerr << "error: Interface " << parentName << " has not been initialized.\n";
+        proto = lookupNativeClass(parentName.c_str());
+        if (!proto) {
+            std::cerr << "error: Interface " << parentName << " has not been created.\n";
             return;
         }
+        protoRank = proto->protoRank + 1;
     }
-    for (auto chain = proto; chain; chain = chain->proto)
-        ++protoRank;
 
     const int attributeCount = meta.getAttributeCount() + 1;
     const int operationCount = meta.getOperationCount() + 2;  // +1 for stringifier
     const int staticOperationCount = meta.getStaticOperationCount() + 1;
-    std::unique_ptr<JSPropertySpec[]> ps(new JSPropertySpec[attributeCount]);
-    std::unique_ptr<JSFunctionSpec[]> fs(new JSFunctionSpec[operationCount]);
-    std::unique_ptr<JSFunctionSpec[]> sfs(new JSFunctionSpec[staticOperationCount]);
-    std::unique_ptr<char[]> stringHeap(new char[meta.getStringSize()]);
+    ps.reset(new JSPropertySpec[attributeCount]);
+    fs.reset(new JSFunctionSpec[operationCount]);
+    sfs.reset(new JSFunctionSpec[staticOperationCount]);
+    stringHeap.reset(new char[meta.getStringSize()]);
     size_t propertyCount = attributeCount + operationCount + staticOperationCount;
-    if (0 < propertyCount) {
-        auto table = std::unique_ptr<uint32_t[]>(new uint32_t[propertyCount]);
-        hashTable = std::move(table);
-    }
+    if (0 < propertyCount)
+        hashTable.reset(new uint32_t[propertyCount]);
 
     char* heap = stringHeap.get();
     JSPropertySpec* pps = ps.get();
@@ -587,10 +570,11 @@ NativeClass::NativeClass(JSContext* cx, JSObject* global, const char* metadata, 
     JSFunctionSpec* psfs = sfs.get();
     size_t propertyNumber = 0;
 
-    JSNative constructor = constructors[0];
+    ctor = constructors[0];
     JSNative sop = staticOperations[0];
     if (meta.hasConstructor() || 0 < meta.getStaticOperationCount()) {
-        constructor = constructors[++constructorCount];
+        assert(constructorCount < MAX_CONSTRUCTOR_COUNT - 1);
+        ctor = constructors[++constructorCount];
         sop = staticOperations[constructorCount];
         constructorGetters[constructorCount] = getConstructor;
     }
@@ -685,15 +669,44 @@ NativeClass::NativeClass(JSContext* cx, JSObject* global, const char* metadata, 
     assert(pfs - fs.get() <= operationCount);
     assert(heap - stringHeap.get() <= meta.getStringSize());
     assert(psfs - sfs.get() <= staticOperationCount);
-    JS_InitClass(cx, global,
-                 parentProto,
-                 &jsclass,
-                 constructor, 0,
-                 ps.get(), fs.get(),
-                 NULL, sfs.get());
+
+    nativeClassList.push_back(this);
+}
+
+JSObject* NativeClass::registerClass(JSContext* cx, JSObject* global)
+{
+    JSBool found;
+    JS_HasProperty(cx, global, name, &found);
+    if (found) {
+        std::cerr << "error: Interface " << name << " has already been registered.\n";
+        return 0;
+    }
+
+    JSObject* parentProto = 0;
+    if (proto) {
+        jsval val;
+        if (JS_GetProperty(cx, global, proto->name, &val) && JSVAL_IS_OBJECT(val)) {
+            JSObject* parent = JSVAL_TO_OBJECT(val);
+            if (JS_GetProperty(cx, parent, "prototype", &val) && JSVAL_IS_OBJECT(val)) {
+                parentProto = JSVAL_TO_OBJECT(val);
+                JSClass* jsclass = JS_GET_CLASS(cx, parentProto);
+                assert(jsclass == &proto->jsclass);
+            }
+        } else {
+            std::cerr << "error: Interface " << proto->name << " has not been registered.\n";
+            return 0;
+        }
+    }
+
+    JSObject* prototype = JS_InitClass(cx, global,
+                                       parentProto,
+                                       &jsclass, ctor, 0, ps.get(), fs.get(), NULL, sfs.get());
+    if (!prototype)
+        return 0;
 
     // Define constants
     jsval val;
+    Reflect::Interface meta(metadata);
     if (0 < meta.getConstantCount() && JS_GetProperty(cx, global, name, &val)) {
         assert(JSVAL_IS_OBJECT(val));
         JSObject* ctor = JSVAL_TO_OBJECT(val);
@@ -714,6 +727,8 @@ NativeClass::NativeClass(JSContext* cx, JSObject* global, const char* metadata, 
             prop.next();
         }
     }
+
+    return prototype;
 }
 
 Any ProxyObject::message_(uint32_t selector, const char* id, int argc, Any* argv)
