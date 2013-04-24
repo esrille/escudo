@@ -1,3 +1,1207 @@
+2013-04-20 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Refine JSAPI bridge to support multiple ECMAScript contexts
+
+	* src/js/Script.cpp (ECMAScriptContext::Impl::Impl): Refine
+	* src/js/Script.cpp (initializeClasses): New
+	* src/js/esjsapi.h (NativeClass): Refine
+
+2013-04-12 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (TextIterator::setText): Fix a bug
+
+2013-04-12 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/css/Box.h, src/css/FormattingContext.h: Clean up
+
+2013-04-12 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Sequence): Refine
+
+2013-04-12 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* Makefile.am (libeshtml5_a_SOURCES): Add src/Task.h
+
+2013-04-11 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* testlog/css2.1/20110323/implement-report-Escort-Fedora.data: Update
+
+2013-04-11 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Block::renderNonInline): Fix a bug
+
+2013-04-11 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* testdata/css-002.html: New
+
+2013-04-10 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	data/escort/escort.html: Fix bugs
+
+	Note the 'src' attribute value of an iframe element does not change
+	even if the contentDocument is navigated to the other URLs.
+
+2013-04-09 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSSerializeRGB): Refine
+
+2013-04-09 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* testlog/css2.1/20110323/implement-report-Escort-Fedora.data: Update
+
+2013-04-09 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[harness] Support multiple W3C test suites
+
+	If the specified report data file contains a URL in a comment line, it will
+	be used as the URL prefix for each test.
+	Note unless -x option is specified, 'localhost' is used as the host instead
+	of the specified one such as 'test.csswg.org'.
+	(src/harness.cpp): Refine
+
+2013-04-08 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (ViewCSSImp::updateStyleRules): Fix a regression in 04cd71924c1ee07df281c58d03eca84c88b946f9
+
+2013-04-06 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[DOM3-Events] Support the 'mouseover' and 'mouseout' event type.
+
+	* (WindowImp::mouseMove): Support the 'mouseover' and 'mouseout' event type
+	* (ViewCSSImp::setHovered): Refine to return the previously hovered element
+	* (ViewCSSImp::isHovered): Refine
+
+2013-04-06 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Block::layOutAbsolute): Fix a bug; cf. css-001.html
+
+2013-04-06 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* testdata/css-001.html: New
+
+2013-04-05 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (StackingContext::render): Fix a bug
+
+2013-04-05 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/css/BoxImage.cpp (readUint16): Fix a bug
+
+2013-04-05 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (readAsGif): Fix a bug
+
+2013-04-03 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSStyleDeclarationImp::revert): Fix a bug
+
+2013-04-02 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[CSS] When a replaced element recovers from the fallback, 'width' and 'height' must be recovered as well.
+
+	* (Block::layOut): Fix a bug
+	* (CSSNumericValue::operator=, CSSAutoLengthValueImp::operator=): New
+
+2013-04-02 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Block::layOut): Fix a bug
+
+2013-04-01 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* testlog/css3-color/nightly-unstable/implementation-report-Escort-Fedora.data: Update
+
+2013-04-01 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (WindowImp::render): Set the color of the top-level canvas to white if the corresponding 'background-color' is transparent; cf. t425-hsla-h-rotating-b
+
+2013-04-01 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[CSS3-color] Support HSL and HSLA color values
+
+	* (CSSValueParser::hsl, CSSValueParser::hsla): New
+	* (CSSValueRule CSSValueParser::color): Add hsl and hsla rules
+
+2013-04-01 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* testlog/css3-color/nightly-unstable/implementation-report-Escort-Fedora.data: Update
+
+2013-04-01 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[CSS3-color] Support RGBA color values; patch 2
+
+	* src/Test.glut.cpp: (init): Fix the alpha blending factors
+	* (Canvas::Impl::alphaBlend, InlineBox::render): Fix the alpha blending factors
+	* (Canvas::Impl::beginTranslucent): Restore the clear color
+
+2013-03-31 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* testlog/css3-color/nightly-unstable/implementation-report-Escort-Fedora.data: Update
+
+2013-03-31 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSStyleDeclarationImp::computeStackingContext): Fix a bug; cf. t32-opacity-zorder-c
+
+2013-03-31 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* testlog/css3-color/nightly-unstable/implementation-report-Escort-Fedora.data: New
+
+2013-03-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[CSS3-color] Support RGBA color values
+
+	* (CSSValueParser::rgba): New
+	* (CSSValueRule CSSValueParser::color): Add rgba rules
+	* src/CSSParser.test.cpp: Test rgba()
+
+2013-03-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Switch to the translucent mode when rendering a stacking context created for an element with opacity less than 1
+
+	* (StackingContext::render): Refine
+	* (ViewCSSImp::beginTranslucent, ViewCSSImp::endTranslucent): New
+	* (WindowImp::beginTranslucent, WindowImp::endTranslucent): New
+	* (Canvas::Impl::beginTranslucent, Canvas::Impl::endTranslucent): Refine
+
+2013-03-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSStyleDeclarationImp::isAbsolutelyPositioned): Fix a bug
+
+2013-03-29 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (InlineBox::render): Fix a bug
+
+2013-03-29 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Revise CSSStyleDeclarationImp::computeStackingContext to check 'opacity'.
+
+	* Note a new stacking context is created for each element with opacity less than 1 by this patch.
+	* (CSSStyleDeclarationImp::computeStackingContext, CSSStyleDeclarationImp::compute): Support 'opacity'
+	* (CSSStyleDeclarationImp::getUsedPosition): New
+	* (CSSStyleDeclarationImp::isAbsolutelyPositioned, CSSStyleDeclarationImp::isRelativelyPositioned, CSSStyleDeclarationImp::isPositioned): Refine
+	* (CSSStyleDeclarationImp::resolveRelativeOffset, CSSStyleDeclarationImp::isFlowRoot): Refine
+	* (Box::setStyle, Block::setContainingBlock): Refine
+	* (CSSDisplayValueImp::compute): Refine
+	* (CSSPositionValueImp::isPositioned, CSSPositionValueImp::isRelative): Remove
+
+2013-03-29 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (DocumentWindow::getWindowImp): New
+
+2013-03-28 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Refine Canvas to support simple alpha compositing; patch 3
+
+	* (Canvas::Impl::beginTranslucent, Canvas::Impl::endTranslucent): Allow nesting
+	* (Canvas::Impl::shutdown, Canvas::Impl::beginRender): Refine
+	* Canvas.test.cpp: Test nested simple alpha compositing
+
+2013-03-28 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Refine Canvas to support simple alpha compositing; patch 2
+
+	* (Canvas::beginTranslucent, Canvas::endTranslucent): New
+	* (Canvas::Impl::beginTranslucent, Canvas::Impl::endTranslucent): New
+	* (Canvas::alphaBlend, Canvas::Impl::shutdown, Canvas::Impl::alphaBlend): Refine
+	* (Canvas::Impl::beginRender): Fix a bug
+	* Canvas.test.cpp: Test beginTranslucent and endTranslucent
+
+2013-03-28 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Box::boxFromPoint): Fix a regression since 5de0982c44
+
+2013-03-27 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (ECMAScriptContext::pimpl): Switch over to unique_ptr
+
+2013-03-27 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Canvas::pimpl): Switch over to unique_ptr
+
+2013-03-27 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Refine Canvas to support simple alpha compositing.
+
+	* (Canvas::alphaBlend, Canvas::Impl::alphaBlend): New
+	* Canvas.test.cpp: Test simple alpha compositing
+
+2013-03-27 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* Canvas.test.cpp: Test nested canvas
+
+2013-03-27 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (WindowImp::render): Add a TODO
+
+2013-03-27 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSNumericValue::getValue, CSSNumericValueImp::getValue): New
+
+2013-03-27 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (WindowImp::poll): Clean up
+
+2013-03-24 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Add the 'opacity' property to CSSStyleDeclaration
+
+	* (CSSStyleDeclarationImp::getPropertyID): Add 'opacity'
+	* (CSSValueParser::CSSValueParser): Support 'opacity'
+	* (CSSStyleDeclarationImp::opacity, CSSStyleDeclarationImp::getOpacity, CSSStyleDeclarationImp::setOpacity): New
+	* (CSSStyleDeclarationImp::CSSStyleDeclarationImp, CSSStyleDeclarationImp::getProperty, CSSStyleDeclarationImp::specify, CSSStyleDeclarationImp::reset, CSSStyleDeclarationImp::compute): Support 'opacity'
+	* (CSSNumericValue::clip, CSSNumericValueImp::clip): New
+	* (CSSNumericValueImp::getCssText): Change the unit to CSS_NUMBER
+	* (CSSNonNegativeLengthImp): Rename from CSSNonNegativeValueImp to make it clear this property is for length values; all users changed
+	* Makefile.am (idl_files, EXTRA_DIST): Add css3color.idl
+	* idl/css3color.idl: New
+
+2013-03-21 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* testlog/css2.1/20110323/implement-report-Escort-Fedora.data: Update
+
+2013-03-21 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Block::dump, LineBox::dump, InlineBox::dump): Fix bugs (Box::resolveRelativeOffset): Remove
+
+2013-03-21 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[CSSOM View] document.elementFromPoint() should return the top-most element
+
+	* (StackingContext::boxFromPoint): New
+	* (ViewCSSImp::boxFromPoint, Box::boxFromPoint): Refine
+
+2013-03-21 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSStyleDeclarationImp::isRelativelyPositioned): New
+
+2013-03-21 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/css/CSSSerialize.h (CSSSerializeRGB): Fix a bug; note rgba is not valid in CSS 2.1
+
+2013-03-20 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* testdata/html-024.html: New for testing elementFromPoint()
+
+2013-03-19 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[HTML] Support the 'hashchange' event; patch 1
+
+	* Minor details are not fully implemented yet.
+	* (HashChangeEventImp): Add more details
+	* (SessionHistoryEntry): Keep url separately; cf. http://www.w3.org/TR/html5/dom.html#the-document%27s-address
+	* (HistoryImp::update): Refine
+	* (WindowImp::open): Queue a task for navigating to a fragment identifier
+	* (WindowImp::navigateToFragmentIdentifier): New
+
+2013-03-17 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[HTML] Remove the dependency on HTMLElementImp::eval(); patch 17
+
+	* (NodeImp::eval, HTMLElementImp::eval): Remove; all callers changed
+
+2013-03-17 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[HTML] Remove the dependency on HTMLElementImp::eval(); patch 16
+
+	* (HTMLObjectElementImp::notify, HTMLObjectElementImp::requestRefresh, HTMLObjectElementImp::refresh, HTMLObjectElementImp::handleRefresh): New
+	* (HTMLObjectElementImp::eval): Remove
+	* (HTMLElementImp::current): Rename from request
+	* (HTMLImageElementImp::handleMutation, HTMLImageElementImp::notify): Refine
+
+2013-03-16 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[HTML] Remove the dependency on HTMLElementImp::eval(); patch 15
+
+	* (HTMLLinkElementImp::notify, HTMLLinkElementImp::requestRefresh, HTMLLinkElementImp::refresh): New
+	* (HTMLLinkElementImp::eval): Remove
+	* (HTMLLinkElementImp::HTMLLinkElementImp, HTMLLinkElementImp::handleMutation, HTMLLinkElementImp::linkStyleSheet, HTMLLinkElementImp::linkIcon, HTMLLinkElementImp::setFavicon): Refine
+	* (HTMLLinkElementImp::resetStyleSheet): New
+
+2013-03-16 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Support event loops for reacting to DOM manipulation, etc.
+
+	* (Task): New
+	* (DocumentWindow::getTaskQueue): New
+	* (WindowImp::putTask, WindowImp::eventLoop): New
+	* (WindowImp::poll): Call eventLoop()
+
+2013-03-16 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Add notify method to ElementImp
+
+	* (ElementImp::notify): New
+	* (HTMLParser::OpenElementStack): Notify the popped element off the stack
+
+2013-03-16 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Add cancel method to HttpRequest
+
+	* (HttpRequest::cancel, HttpRequest::isCanceled): New
+	* (HttpRequest::notify, HttpRequest::constructResponseFromCache): Refine
+
+2013-03-16 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* testdata/html-022.html: Clean up
+
+2013-03-16 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* testdata/html-022.html: New
+
+2013-03-15 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLLinkElementImp::getHref): Fix a bug
+
+2013-03-15 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (WindowImp::Parser::Parser): Set the document character set at first so it can be used while parsing, and not after parsed
+
+2013-03-13 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLParser::OpenElementStack): New (HTMLParser): Refine
+
+2013-03-13 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLParser::InSelect::processEndTag): Fix a bug
+
+2013-03-13 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLParser::InBody::processEOF): Fix a bug
+
+2013-03-13 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLLinkElementImp): Add more details
+
+2013-03-12 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[HTML] Remove the dependency on HTMLElementImp::eval(); patch 14
+
+	* (HTMLTableCellElementImp::eval): Remove
+	* (HTMLTableElementImp::handleMutation): Fix a bug
+	* testdata/preshint.css: Add rules related to table[border]
+	* testdata/html-021.html: New
+
+2013-03-12 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[HTML] Remove the dependency on HTMLElementImp::eval(); patch 13
+
+	* (HTMLInputElementImp::handleMutation): Refine
+	* (HTMLInputElementImp::eval): Remove
+	* (HTMLInputElementImp::getStyle, HTMLInputElementImp::updateStyle): New
+	* (HTMLInputElementImp::getHeight, HTMLInputElementImp::setHeight): Add more details
+	* (HTMLInputElementImp::getSize, HTMLInputElementImp::setSize): Add more details
+	* (HTMLInputElementImp::getWidth, HTMLInputElementImp::setWidth): Add more details
+
+2013-03-12 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLElementImp::getAttributeAsUnsigned, HTMLElementImp::setAttributeAsUnsigned): New
+
+2013-03-12 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLDivElementImp): Clean up
+
+2013-03-12 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[HTML] Remove the dependency on HTMLElementImp::eval(); patch 12
+
+	* (HTMLDivElementImp::handleMutation, HTMLDivElementImp::getStyle): New
+	* (HTMLDivElementImp::eval): Remove
+	* (HTMLElementImp::hasStyle): New
+	* (HTMLElementImp::getStyle): Refine
+	* (CSSStyleDeclarationImp::setHTMLAlign): Refine
+
+2013-03-11 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLParser::InBody::processEndTag): Fix a bug
+
+2013-03-11 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLParser::elementInActiveFormattingElements, HTMLParser::InBody::processEndTag): Clean up
+
+2013-03-11 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLParser::InBody::processEndTag): Fix a bug detected by '<b>A<cite>B<div>C</b>D' in tests1.dat from html5lib
+
+2013-03-10 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HttpConnection::readHead): Fix a bug (HttpResponseMessage::hasContentLengthHeader): New (HttpResponseMessage::parseHeaderm, HttpResponseMessage::clear): Refine (HttpHeaderList::parseLine): Fix a bug src/HTTPHeader.test.cpp: Test more conditions
+
+2013-03-09 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLStyleElementImp::HTMLStyleElementImp): Refine comments
+
+2013-03-09 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLParser::Text): Insert characters by a single DOM operation so as not to trigger excessive mutation events.
+
+2013-03-09 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLScriptElementImp::execute): Refine so that this function can be called without a JS engine
+
+2013-03-09 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/Test.util.cpp (operator<<(std::ostream&, Node)): Output tag names in lowercase letters for using testdata in html5lib with HTMLParser.test src/utf.h (toLower, toUpper): Refine
+
+2013-03-08 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HttpConnection::readHead): Fix a bug to prevent lagging when Content-Length is zero
+
+2013-03-08 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* testlog/css2.1/20110323/implement-report-Escort-Fedora.data: Update
+
+2013-03-08 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[HTTP] Create a dedicated file table entry for each HttpRequest::getContentDescriptor()
+
+	* (HttpRequest): Refine
+	* (HttpRequest::getFilePath, HttpRequest::removeFile, HttpCache::getFilePath): New
+	* (HttpCache::notify, HttpCache::invalidate, HttpCache::~HttpCache): Refine
+	* (HttpCacheManager::send, HttpCacheManager::~HttpCacheManager): Refine
+	* (HttpCacheManager::dump): New
+	* (Parser::Parser, CSSImportRuleImp::notify, HTMLLinkElementImp::linkStyleSheet, HTMLScriptElementImp::execute): Refine
+
+2013-03-08 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLStyleElementImp::handleMutation): Clean up
+
+2013-03-08 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (WindowImp::parser): Fix a bug
+
+2013-03-08 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSImportRuleImp::notify): Fix a bug
+
+2013-03-08 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* Makefile.am: Clean up
+
+2013-03-06 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (WindowImp::render): Fix a bug when window is null
+
+2013-03-06 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSValueRule::isValid): Fix a bug for dealing with a　broken declaration like "background-color: rgb("
+
+2013-03-06 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Do not use ECMAScript contexts from other than the main thread
+
+	* (DocumentWindow::enter, DocumentWindow::exit, ECMAScriptContext::dispatchEvent): Check if called from the main thread
+	* src/Test.glut.cpp (isMainThread): New
+	* src/Test.glut.cpp (init): Set MainThread flag to the caller
+
+2013-02-25 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Block::layOut): Fix a bug; if the parent box has been changed, the formatting context for the first child might have been changed. testdata/partial-reflow-list-004.html: New
+
+2013-02-23 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Make hasOwnProperty() work with indexed properties
+
+	* src/js/bridge.cpp (NativeClass::NativeClass): Set jsclass.resolve
+	* src/js/bridge.cpp (specialResolver): New; if the specified indexed property is found, set it as a real JSObject property to make the JSAPI engine happy. Otherwise, the engine assumes the object doesn't have the specified own property.
+	* src/js/bridge.cpp (specialOp): If a real JSObject property created by specialResolver exists, remove it to support live host objects
+
+2013-02-21 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[HTML] Remove the dependency on HTMLElementImp::eval(); patch 11
+
+	* (HTMLStyleElementImp::eval): Remove
+	* (HTMLStyleElementImp::handleMutation): New
+	* (HTMLStyleElementImp::HTMLStyleElementImp): Refine
+	* (WindowImp::poll): Refine
+
+2013-02-21 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Fix bugs in the incremental reflow process with the table parts that do not directly generate boxes.
+
+	* cf. testdata/partial-reflow-table-011.html
+	* (ViewCSSImp::calculateComputedStyle): Fix a bug
+	* (CSSStyleDeclarationBoard::compare): Fix a bug
+
+2013-02-21 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* testdata/partial-reflow-table-011.html: New
+
+2013-02-20 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Add the missing idl definition for Window.postMessage
+
+	* idl/webmessaging.idl: Add partial Window interface for postMessage
+	* (WindowImp::postMessage): New
+
+2013-02-20 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Switch over to the V8 context model from the activation model
+
+	* (WindowImp::enter, WindowImp::exit): New
+	* (WindowImp::activate): Remove
+	* (WindowImp::poll): Switch over to the enter/exit model
+	* (DocumentWindow::enter, DocumentWindow::exit): New
+	* (DocumentWindow::activate): Remove
+	* (DocumentWindow::setDocument): Refine
+	* (DocumentImp::enter, DocumentImp::exit, DocumentImp::getContext): New
+	* (DocumentImp::activate): Remove
+	* (DocumentImp::setEventHandler): Refine
+	* (ECMAScriptContext::enter, ECMAScriptContext::exit): New
+	* (ECMAScriptContext::activate): Remove
+	* (EventTargetImp::dispatchEvent): Switch over to the enter/exit model
+	* (HTMLElementImp::xblEnteredDocument, HTMLElementImp::invokeShadowTarget): Switch over to the enter/exit model
+	* (HTMLElementImp::handleMutation, HTMLElementImp::setEventHandler): Refine
+	* (HTMLBodyElementImp::handleMutation, HTMLMarqueeElementImp::handleMutation, HTMLScriptElementImp::execute): Refine
+
+2013-02-19 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (ECMAScriptContext::getCurrentContext): New
+
+2013-02-18 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/v8/bridgeV8.cpp (NativeClass::createJSObject): Fix a bug src/v8/ScriptV8.cpp (ECMAScriptContext::Impl::Impl, ECMAScriptContext::Impl::activate, ECMAScriptContext::activate): Refine (WindowImp::poll): Fix a bug
+
+2013-02-18 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Fix V8 bridge bugs detected by testdata/html-019.html
+
+	* src/v8/bridgeV8.cpp (NativeClass::createJSObject): Return the global proxy for a window object
+	* src/v8/ScriptV8.cpp (ECMAScriptContext::Impl::activate): Refine
+
+2013-02-16 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (ECMAScriptContext::Impl::~Impl): Clean up (ECMAScriptContext::Impl::activate): Refine (DocumentWindow::setDocument): Refine
+
+2013-02-16 Shiki Okasaka <shiki@shiki-okasaka-no-macbook.local>
+
+	* src/font/FontDatabase.cpp (fontList): Add basic Mac OS X fonts
+
+2013-02-16 Shiki Okasaka <shiki@shiki-okasaka-no-macbook.local>
+
+	Use EXT_framebuffer_object if ARB_framebuffer_object is not supported (e.g. MacBook Late 2007)
+
+	* (Canvas::Impl): Refine
+	* src/Test.glut.cpp (init): Refine
+
+2013-02-14 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLElementImp::xblEnteredDocument): Fix a bug (HTMLElementImp::invokeShadowTarget): Refine
+
+2013-02-12 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* configure.ac (ICU_CPPFLAGS): Enable build out of the source directory
+
+2013-02-12 Yusuke Suzuki <utatane.tea@gmail.com>
+
+	Specialize std::num_get / std::num_put for debug build
+
+	* configure.ac: Add std::num_get / std::num_put specialization
+	* src/U16InputStream.h: Include config.h before sstream
+
+2013-02-12 Yusuke Suzuki <utatane.tea@gmail.com>
+
+	Add XQuartz / X11 CPPFLAGS and LDFLAGS
+
+	* Makefile.am: Add AM_LDFLAGS
+	* configure.ac: Add X11_CPPFLAGS and X11_LDFLAGS to search XQuartz
+
+2013-02-12 Yusuke Suzuki <utatane.tea@gmail.com>
+
+	Add ESCORT_CHAR16_T_STUB include guard to config.h
+
+	* configure.ac: Add ESCORT_CHAR16_T_STUB guard
+
+2013-02-12 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* NOTICE: Update the credits
+
+2013-02-12 Yusuke Suzuki <utatane.tea@gmail.com>
+
+	Use ICU library shipped by OSX
+
+	* OSX ships ICU library (libicucore.dylib) by default, but headers are not shipped.
+	* By including WebKit/Source/JavaScriptCore/icu & WebKit/Source/WebCore/icu headers, we can use OSX ICU library directly.
+	* configure.ac: Add OSX ICU library check
+	* src/third_party/icu/LICENSE: New
+	* src/third_party/icu/unicode/bytestream.h: New
+	* src/third_party/icu/unicode/chariter.h: New
+	* src/third_party/icu/unicode/localpointer.h: New
+	* src/third_party/icu/unicode/parseerr.h: New
+	* src/third_party/icu/unicode/platform.h: New
+	* src/third_party/icu/unicode/ptypes.h: New
+	* src/third_party/icu/unicode/putil.h: New
+	* src/third_party/icu/unicode/rep.h: New
+	* src/third_party/icu/unicode/std_string.h: New
+	* src/third_party/icu/unicode/strenum.h: New
+	* src/third_party/icu/unicode/stringpiece.h: New
+	* src/third_party/icu/unicode/ubrk.h: New
+	* src/third_party/icu/unicode/uchar.h: New
+	* src/third_party/icu/unicode/ucnv.h: New
+	* src/third_party/icu/unicode/ucnv_cb.h: New
+	* src/third_party/icu/unicode/ucnv_err.h: New
+	* src/third_party/icu/unicode/ucol.h: New
+	* src/third_party/icu/unicode/ucoleitr.h: New
+	* src/third_party/icu/unicode/uconfig.h: New
+	* src/third_party/icu/unicode/ucsdet.h: New
+	* src/third_party/icu/unicode/uenum.h: New
+	* src/third_party/icu/unicode/uidna.h: New
+	* src/third_party/icu/unicode/uiter.h: New
+	* src/third_party/icu/unicode/uloc.h: New
+	* src/third_party/icu/unicode/umachine.h: New
+	* src/third_party/icu/unicode/unistr.h: New
+	* src/third_party/icu/unicode/unorm.h: New
+	* src/third_party/icu/unicode/unorm2.h: New
+	* src/third_party/icu/unicode/uobject.h: New
+	* src/third_party/icu/unicode/urename.h: New
+	* src/third_party/icu/unicode/uscript.h: New
+	* src/third_party/icu/unicode/usearch.h: New
+	* src/third_party/icu/unicode/uset.h: New
+	* src/third_party/icu/unicode/ushape.h: New
+	* src/third_party/icu/unicode/ustring.h: New
+	* src/third_party/icu/unicode/utext.h: New
+	* src/third_party/icu/unicode/utf.h: New
+	* src/third_party/icu/unicode/utf16.h: New
+	* src/third_party/icu/unicode/utf8.h: New
+	* src/third_party/icu/unicode/utf_old.h: New
+	* src/third_party/icu/unicode/utypes.h: New
+	* src/third_party/icu/unicode/uvernum.h: New
+	* src/third_party/icu/unicode/uversion.h: New
+
+2013-02-12 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* Makefile.am (EXTRA_DIST): Add m4/bison.m4
+
+2013-02-12 Yusuke Suzuki <utatane.tea@gmail.com>
+
+	Add BISON version >= 2.5 guard
+
+	* configure.ac: Add AC_PROG_BISON check
+	* m4/bison.m4: New
+
+2013-02-12 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (TemporaryBuffer): New based on AllocaOwner
+
+2013-02-11 Yusuke Suzuki <utatane.tea@gmail.com>
+
+	Variable length array of non-POD element type is not valid
+
+	* src/js/bridge.cpp (NativeClass::staticOperation, NativeClass::constructor): Change invalid variadic arrays to alloca based implementation
+	* src/v8/bridgeV8.cpp (NativeClass::staticOperation, NativeClass::constructor, ProxyObject::message_): Change invalid variadic arrays to alloca based implementation
+
+2013-02-12 Yusuke Suzuki <utatane.tea@gmail.com>
+
+	Use chrono to gain high resolution time
+
+	* Makefile.am, configure.ac: Add librt check because some environment such as OSX doesn't have it
+	* (recordTime, getTick): Use C++11 chrono
+
+2013-02-11 Yusuke Suzuki <utatane.tea@gmail.com>
+
+	Move Any::initialize member functions to Object.h
+
+	* This chagne suppresses compile error with clang++.
+	* (Any): Extend Any heap size to accept libc++ u16string size
+	* (Any::initialize): Move them to Object.h
+
+2013-02-11 Yusuke Suzuki <utatane.tea@gmail.com>
+
+	* configure.ac: Add char16_t ctype / numpunct stubs
+
+2013-02-12 Yusuke Suzuki <utatane.tea@gmail.com>
+
+	Support clang++ and libc++ on darwin
+
+	* Makefile.am: Add STD_CXX11_LIBS and STD_CXX11_CPPFLAGS
+	* configure.ac: Add AC_CANONICAL_HOST, and clang++ and libc++ check
+
+2013-02-12 Yusuke Suzuki <utatane.tea@gmail.com>
+
+	Convert stream to boolean explicitly
+
+	* Because of "explicit" of explicit operator bool, clang++ rejects implicit boolean conversion.
+	* (U16TrivialInputStream::operator bool): Add explicit boolean conversion
+
+2013-02-11 Yusuke Suzuki <utatane.tea@gmail.com>
+
+	Add AC_CHECK_LIB for boost libraries
+
+	* configure.ac (AC_CHECK_LIB): Add boost libraries check
+	* Makefile.am: Remove explicit boost libraries link
+
+2013-02-11 Yusuke Suzuki <utatane.tea@gmail.com>
+
+	Change isnanf to isnan
+
+	* (Block::getBaseline, Block::layOut, CellBox::getBaseline, CellBox::adjustWidth, TableWrapperBox::layOut): Change isnanf to isnan
+
+2013-02-09 Yusuke Suzuki <utatane.tea@gmail.com>
+
+	Add signal.h directive
+
+	* This fixes compile error on darwin environment.
+
+2013-02-09 Yusuke Suzuki <utatane.tea@gmail.com>
+
+	Add const prefix to char16_t*
+
+	* (AdditiveGlyph): Add const prefix
+	* (convertAlphabetic): Add const prefix
+
+2013-02-11 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* testdata/html-019.html: Fix typo
+
+2013-02-11 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* testdata/html-019.html: New
+
+2013-02-10 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/v8/ScriptV8.cpp (reportError): New src/v8/ScriptV8.cpp (ECMAScriptContext::Impl::Impl): Add a message listener
+
+2013-02-10 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Make hasOwnProperty() work with indexed properties (V8)
+
+	* src/v8/bridgeV8.cpp (indexedPropertyQuery): New
+	* src/v8/bridgeV8.cpp (NativeClass::NativeClass): Set named/indexed property handler to the instance template; note IndexedPropertyQuery is not called if the handler is set to the prototype template.
+
+2013-02-09 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[selectors-api] Support Selectors API Level 1
+
+	* (DocumentImp::querySelector, DocumentImp::querySelectorAll, ElementImp::querySelector, ElementImp::querySelectorAll): Add more details
+	* (CSSParser::parseSelectorsGroup, CSSParser::getSelectorsGroup, CSSParser::setSelectorsGroup): New
+	* (CSSSelectorsGroup::evaluate): New
+	* (CSSPseudoClassSelector::match): Refine
+	* (CSSTokenizer::getToken): Support StartSelectorsGroup
+	* idl/selectors.idl: Update to W3C Proposed Recommendation 13 December 2012
+	* src/css/CSSGrammar.yy (dom_selectors_group, START_SELECTORS_GROUP): New
+
+2013-02-08 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Add an XBL2 binding for input[type=radio i]
+
+	* data/escort/escort.html (binding id="input-checkbox"): New
+	* data/escort/default.css: Refine
+	* testdata/default.css: Refine
+
+2013-02-08 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLButtonElementImp::handleMutation, HTMLInputElementImp::handleMutation): Fix bugs
+
+2013-02-08 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLInputElementImp::generateShadowContent): Support 'checkbox' for Script.test
+
+2013-02-07 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Refine the unnamed getter of the Document interface for the JSAPI bridge.
+
+	* (DocumentImp::getElement): Return 'undefined' if nothing found
+	* src/js/bridge.cpp (specialOp): Refine; if there's a better way, we should switch to it
+
+2013-02-07 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[HTML] Support document.write (non-trivial case)
+
+	* (WindowImp::poll): Refine
+	* (WindowImp::Parser::processPendingParsingBlockingScript): New
+	* (HTMLParser::processPendingParsingBlockingScript): New
+	* testdata/html-017.html, testdata/html-017.js: New
+
+2013-02-07 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[HTML] Support document.write (trivial case)
+
+	* (DocumentImp::write, DocumentImp::writeln): Add more details
+	* (DocumentImp::getInsertionPoint, DocumentImp::setInsertionPoint): New
+	* (HTMLParser::Text::processEndTag): Add more details
+	* (HTMLParser::setInsertionPoint): New
+	* (HTMLTokenizer::insertString): New
+
+2013-02-07 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (U16TrivialInputStream::peek): Add a TODO
+
+2013-02-07 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLParser::Text::processEndTag): Clean up
+
+2013-02-05 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/js/bridge.cpp (ProxyObject::message_): Use JS_GetGlobalForObject instead of the obsoleted JS_GetGlobalObject
+
+2013-02-05 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/js/Script.cpp (reportError): Use stderr
+
+2013-02-05 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (DocumentImp::createElementNS): Add more details
+
+2013-02-05 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* testdata/dom-011.html: New
+
+2013-02-05 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	(HTMLParser::parseFragment): Fix bugs
+
+	* Keep the context element in HTMLParser since the context element might be
+	* used later with resetInsertionMode while parsing.
+	* (HTMLParser::resetInsertionMode): Refine
+
+2013-02-05 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Block::layOut): Clean up
+
+2013-02-05 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	(FontTexture::FontTexture): Fix a bug
+
+	* sxHeight and sCapHeight fields in a TrueType OS/2 table are valid in the
+	* version 2 format or later. It appears DejaVuSans.ttf is provided in the
+	* version 1 format at this point.
+
+2013-02-05 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (querySelectorAll): Return an empty NodeList for now
+
+2013-02-05 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[DOM] Support Element.innerHTML setter
+
+	* (HTMLParser::parseFragment): New
+	* (HTMLParser::resetInsertionMode): Refine
+	* (HTMLTokenizer::setContext): New
+	* (DocumentImp::adoptNode): Add more details
+	* (ElementImp::setInnerHTML): Add more details
+	* (NodeImp::setOwnerDocument): Refine
+
+2013-02-04 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Return the tagName attribute in ASCII uppercase in HTML documents.
+
+	* (ElementImp::getTagName): Just return nodeName as the tag name
+	* (ElementImp::ElementImp): Generate the tag name to nodeName
+	* (DOMImplementationImp::createDocument): Create the normal document for now; add a TODO
+	* (DocumentImp::createElement): Refine
+
+2013-02-04 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (toUpper) : New
+
+2013-02-04 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Make U16InputStream an abstract interface for U16TrivialInputStream and U16ConverterInputStream
+
+	* (U16TrivialInputStream, U16ConverterInputStream): New
+	* (HTMLTokenizer::HTMLTokenizer): Take a pointer to U16InputStream as an argument instead of HTMLInputStream
+	* (CSSInputStream, HTMLInputStream): Extend from U16ConverterInputStream
+	* (HTMLScriptElementImp::execute): Refine
+
+2013-02-02 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Merge IDL definitions from DOM Parsing and Serialization
+
+	* idl/domparsing.idl: New
+	* (DOMParserImp, XMLSerializerImp): New; generated by esidl
+	* (ElementImp, RangeImp, TextImp): Incorporate new methods generated by esidl
+
+2013-01-24 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (WindowImp::getParent): Fix a bug; cf. http://www.w3.org/TR/html5/browsers.html#dom-parent
+
+2013-01-24 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLInputElementImp::handleMutation): Process the checked attribute (HTMLInputElementImp::eval, HTMLInputElementImp::getChecked, HTMLInputElementImp::setChecked): Refine
+
+2013-01-24 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLInputElementImp::handleMutation): Process the disabled, tabindex, and type attributes (HTMLInputElementImp::HTMLInputElementImp, HTMLInputElementImp::eval): Refine (HTMLFormControlImp::HTMLFormControlImp): Refine (HTMLButtonElementImp::handleMutation): Fix bugs (HTMLAnchorElementImp::HTMLAnchorElementImp, HTMLAnchorElementImp::handleMutation): Refine (HTMLLinkElementImp::HTMLLinkElementImp, HTMLLinkElementImp::handleMutation): Refine
+
+2013-01-24 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSStyleDeclarationImp::setProperty): Fix to use the computed style for requesting the render tree reconstruction (HTMLOListElementImp::handleMutation): Fix a bug testdata/html-013.html: Refine
+
+2013-01-23 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Fix the issue in 9b85de6
+
+	* (CSSStyleDeclarationImp::setProperty): Directly notify the view of the style recalculation when non-CSS presentational hints are changed
+	* (CSSStyleDeclarationImp::createPseudoElementStyle): Revert 9b85de6
+
+2013-01-23 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLInputElementImp::handleMutation, HTMLInputElementImp::eval) : Process the type attribute in handleMutation
+
+2013-01-23 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[HTML] Support the reversed and start attributes of the ol element
+
+	* (HTMLOListElementImp): Add more details
+	* (HTMLElementImp::getAttributeAsInteger, HTMLElementImp::setAttributeAsInteger): New
+	* default.css (ol[reversed] > li): New for supporting the reversed attribute; note list-item is implicitly incremented by one
+	* testdata/html-014.html testdata/html-015.html: New
+
+2013-01-23 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSStyleDeclarationBoard::compare): Check counterIncrement and counterReset (CSSAutoNumberingValueImp): Support == and !=
+
+2013-01-23 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSStyleDeclarationImp::createPseudoElementStyle): Set owner to each pseudo element style so it can be checked in setProperty
+
+2013-01-22 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLElementImp::getAttributeAsBoolean, HTMLElementImp::setAttributeAsBoolean): New
+
+2013-01-22 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[HTML] Remove the dependency on HTMLElementImp::eval() #10
+
+	* (HTMLOListElementImp::eval): Remove
+	* (HTMLOListElementImp::handleMutation): New
+	* html/HTMLUtil.cpp html/HTMLUtil.h (mapToInteger): New
+
+2013-01-22 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[HTML] Remove the dependency on HTMLElementImp::eval() #9
+
+	* (HTMLImageElementImp::eval): Remove
+	* (HTMLImageElementImp::handleMutation, HTMLImageElementImp::getSrc, HTMLImageElementImp::setSrc): Refine
+	* (HTMLIFrameElementImp::getSrc): Refine
+	* (HTMLElementImp::getAttributeAsURL): New
+
+2013-01-22 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[HTML] Remove the dependency on HTMLElementImp::eval() #8
+
+	* (HTMLIFrameElementImp::eval): Remove
+	* (HTMLIFrameElementImp::handleMutation, HTMLIFrameElementImp::getSrc, HTMLIFrameElementImp::setSrc): Refine
+
+2013-01-22 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLIFrameElementImp): Refine
+
+2013-01-22 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLDivElementImp::HTMLDivElementImp): Don't trigger events from the constructor testdata/html-012.html: New
+
+2013-01-22 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[HTML] Remove the dependency on HTMLElementImp::eval() #7
+
+	* (HTMLButtonElementImp::eval): Remove
+	* (HTMLFormControlImp): New
+
+2013-01-22 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLAnchorElementImp::handleMutation, HTMLElementImp::handleMutationHref, HTMLLinkElementImp::handleMutation): Fix bugs
+
+2013-01-22 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* implement-report-Escort-Fedora.data: Update
+
+2013-01-22 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[HTML] Remove the dependency on HTMLElementImp::eval() #6
+
+	* (HTMLBodyElementImp::eval): Remove
+	* (HTMLEmbedElementImp::eval): Remove
+	* (HTMLHRElementImp::eval): Remove
+	* (HTMLPreElementImp::eval): Remove
+	* (HTMLTableElementImp::eval): Remove
+	* (HTMLElementImp::handleMutationBorder): New
+	* (toUnsigned, toPx, toPxOrPercentage, evalBorder, evalPx, evalPxOrPercentage, evalHeight, evalWidth, evalHspace, evalVspace, evalMarginHeight, evalMarginWidth): Remove; all callers changed.
+	* (DocumentImp::createElement): Support the applet element
+
+2013-01-22 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* html/HTMLUtil.cpp html/HTMLUtil.h (toInteger, toUnsigned, mapToPixelLength, mapToDimension): New utf.h (stripLeadingWhitespace): New
+
+2013-01-22 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLTableElementImp::eval) : Refine
+
+2013-01-20 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[HTML] Remove the dependency on HTMLElementImp::eval() #5
+
+	* (HTMLElementImp::evalValign): Remove; all callers changed.
+	* preshint.css: Add valign rules
+
+2013-01-20 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[CSS] Support the attribute case-sensitivity flag from selectors4
+
+	* (CSSAttributeSelector::CSSAttributeSelector, CSSAttributeSelector::match) : Refine
+	* src/css/CSSGrammar.yy (attrib, attrib_flag): Refine
+
+2013-01-20 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[CSS] Support stylesheets for non-CSS presentational hints
+
+	* (ViewCSSImp::updateStyleRules): Check non-CSS presentational hints from the presentational hints stylesheet
+	* (ViewCSSImp::ViewCSSImp): Get stylesheets from DOMImplementationImp; all callers changed.
+	* (CSSRuleListImp::Importance::Presentational): New
+	* (CSSRuleListImp::PrioritizedRule::PrioritizedRule): Set specificity of presentational hints to zero
+	* (HTMLElementImp::evalNoWrap): Remove; nowrap attribute is handled by preshint.css
+	* (HTMLTableCellElementImp::eval): Refine
+	* data/escort/preshint.css: New
+	* testdata/preshint.css: New
+	* escort.spec.in: Update %files for escort/preshint.css
+	* src/Script.test.cpp: Support the --preshint=<path> option
+	* src/Navigator.test.cpp: Load presentational hints from profile
+	* src/Escort.cpp: Load presentational hints from profile
+
+2013-01-19 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* testdata/html-011.html: New
+
+2013-01-19 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* configure.ac (AC_INIT): Set version to 0.3.1
+
+2013-01-19 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[HTML] Remove the dependency on HTMLElementImp::eval() #4
+
+	* (HTMLElementImp::handleMutationColor): New
+	* (HTMLElementImp::evalColor, HTMLElementImp::evalBgcolor): Remove; all callers changed.
+
+2013-01-19 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[HTML] Remove the dependency on HTMLElementImp::eval() #3
+
+	* (HTMLElementImp::handleMutationBackground): New
+	* (HTMLElementImp::evalBackground): Remove; all callers changed.
+
+2013-01-19 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSStyleDeclarationImp::removeProperty): Refine (CSSStyleDeclarationImp::setProperty): Fix a bug
+
+2013-01-19 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (ElementImp::removeAttribute, ElementImp::removeAttributeNS) : Trigger REMOVAL DOMAttrModified events
+
+2013-01-18 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Block::resolveBackground) : Fix a bug
+
+2013-01-18 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[HTML] Remove the dependency on HTMLElementImp::eval() #2
+
+	* (HTMLElementImp::handleMutation) : Process 'tabindex' attribute
+	* (HTMLElementImp::setTabIndex) : Refine
+	* (HTMLElementImp::handleMutationHref) : New
+	* (HTMLAnchorElementImp::handleMutation) : New
+	* (HTMLAnchorElementImp::eval) : Remove
+	* (HTMLLinkElementImp::handleMutation) : New
+	* (HTMLLinkElementImp::eval) : Refine
+	* testdata/html-010.html: New for testing 'tabindex'
+
+2013-01-18 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (ElementImp::setAttribute, ElementImp::setAttributeNS): Don't trigger a mutation event if the attribute value is not changed
+
+2013-01-18 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* [HTML] Remove the dependency on HTMLElementImp::eval() #1
+
+2013-01-18 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[HTML] Synchronize the style content attribute and the style IDL attribute
+
+	* (HTMLElementImp::handleMutation): Process the 'style' attribute
+	* (HTMLElementImp::eval): Clean up
+	* (CSSStyleDeclarationImp::setProperty): Refine
+	* (CSSStyleDeclarationImp::clearProperties, CSSStyleDeclarationImp::isMutated): New
+
+2013-01-18 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	(HTMLElementImp): Add more details to the 'translate', 'dir', and 'hidden' attributes
+
+	* src/html/HTMLUtil.cpp src/html/HTMLUtil.h: New
+	* testdata/html-004.html: New for testing 'dir'
+	* testdata/html-005.html: New for testing 'translate'
+	* testdata/html-006.html: New for testing 'hidden'
+
+2013-01-18 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLScriptElementImp::getAsync, HTMLScriptElementImp::getDefer) : Fix bugs
+
+2013-01-17 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[HTML] Support document.lastModified
+
+	* (DocumentImp::getLastModified): Add details
+	* (DocumentImp::setLastModified): New
+	* (HttpRequest::getLastModified): New
+	* (HttpRequest::complete, HttpRequest::constructResponseFromCache, HttpRequest::send): Update lastModified
+	* (WindowImp::poll) : Set lastModified of the current document
+	* testdata/html-003.html: New
+
+2013-01-17 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (http::parseTime, HttpResponseMessage, HttpCache) : Use long long for represent a time since the epoch
+
+2013-01-17 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLElementImp::handleMutation): Refine to process subclass content attributes (HTMLBodyElementImp::handleMutation) : New (HTMLMarqueeElementImp::handleMutation) : New
+
+2013-01-17 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (DocumentImp::createElement) : Support the marquee element
+
+2013-01-17 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLElementImp::setEventHandler) : Fix a bug
+
+2013-01-16 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* HTMLElementImp.cpp: Refine
+
+2013-01-16 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLElementImp::handleMutation): Reflect event handler content attributes in IDL attributes testdata/html-001.html: Refine to test setAttribute() testdata/html-002.html: New
+
+2013-01-16 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/one_at_a_time.hpp: New
+
+2013-01-16 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[DOM] Dispatch DOMAttrModified mutation events from the HTML parser
+
+	* (ElementImp::setAttributes): Call setAttributeNS no matter what
+	* (ElementImp::setAttribute, ElementImp::setAttributeNS): Refine; add a TODO item
+
+2013-01-14 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLMarqueeElementImp): Support IDL attributes
+
+2013-01-14 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLBodyElementImp, HTMLFrameSetElementImp): Expose Window's onafterprint and other attributes.
+
+2013-01-14 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[HTML] Add a common HTML event handler subsystem
+
+	* (EventListenerImp): Keep an HTML event handler separately in functionObject; all callers changed.
+	* (EventListenerImp::getEventHandler, EventListenerImp::setEventHandler): New
+	* (EventTargetImp): Keep at most one listener for an HTML event handler in each Listener list
+	* (EventTargetImp::getEventHandlerListener, EventTargetImp::getEventHandler, EventTargetImp::setEventHandler): New
+	* (ECMAScriptContext::dispatchEvent): Refine to use the HTML event handler stored in EventListenerImp
+	* (DocumentImp, HTMLElementImp, WindowImp) : Update all event handler IDL attributes
+	* (DocumentWindow::setEventHandler) : New
+	* (DocumentImp::setEventHandler) : New
+	* (HTMLElementImp::setEventHandler) : New
+	* testdata/html-001.html : New
+
 2013-01-11 Shiki Okasaka <Shiki.Okasaka@gmail.com>
 
 	* NEWS : New

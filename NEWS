@@ -1,3 +1,23 @@
+New in 0.3.1 [2013-04-24]:
+
+* Implemented more features from HTML5 and other specifications including:
+
+  - The 'hashchange' event
+  - The 'lastModified' attribute of the Document interface
+  - The 'innerHTML' attribute (setter only) of the Element interface
+  - The 'reversed' and 'start' attributes of the HTMLOListElement interface
+  - The 'mouseover' and 'mouseout' event types from DOM3-events
+  - The RGBA, HSL and HSLA color values from CSS3-color
+  - The 'opacity' property from CSS3-color
+
+* Support stylesheets for non-CSS presentational hints
+
+* Add support for multiple W3C test suites to the test harness
+
+* Support Mac OS X Lion/Mountain Lion (pre-alpha status at this point)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 New in 0.3.0 [2013-01-11]:
 
 * Update Web IDL definitions from the following specifications:
