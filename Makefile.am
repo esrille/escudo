@@ -549,7 +549,7 @@ LDADD = libeshtml5.a libesfontmanager.a \
 	-ljpeg -lpng -lgif \
 	-lglut -lGLEW -lGLU -lGL -lXext -lX11 -lXmu \
 	-lssl -lcrypto \
-	-lm -lssl -lcrypto
+	-lm -lpthread
 
 AM_LDFLAGS = \
 	$(X11_LDFLAGS)
