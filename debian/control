@@ -7,13 +7,13 @@ Build-Depends: debhelper (>= 8.0.0), autotools-dev,
 	libicu-dev, libglew-dev, libfreetype6-dev, freeglut3-dev, libxmu-dev,
 	libgif-dev, libpng-dev, libjpeg-dev, libssl-dev,
 	libboost-dev, libboost-iostreams-dev, libboost-system-dev, libboost-regex-dev,
-	libmozjs-dev, libv8-dev,
+	libmozjs185-dev, libv8-dev,
 	fonts-liberation, ttf-dejavu-core,
 	fonts-takao-mincho, fonts-takao-gothic, ttf-ancient-fonts
 Standards-Version: 3.9.2
 Homepage: http://code.google.com/p/es-operating-system/
-# Vcs-Svn: http://es-operating-system.googlecode.com/svn/trunk/escort
-# Vcs-Browser: http://code.google.com/p/es-operating-system/source/browse/#svn%2Ftrunk%2Fescort
+Vcs-Browser: https://github.com/esrille/escort
+Vcs-Git: git://github.com/esrille/escort.git
 
 Package: escort
 Architecture: any
