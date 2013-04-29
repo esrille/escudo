@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Esrille Inc.
+ * Copyright 2012, 2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -290,8 +290,8 @@ bool BitmapInfoheader::readPixels(std::FILE* file, const RGBQuad* colorTable, vo
         int y = getHeight() - 1;
         for (;;) {
             int count = fgetc(file);
-            int color = fgetc(file);
-            if (count == EOF || color == EOF)
+            unsigned color = fgetc(file);
+            if (count == EOF || color == static_cast<unsigned>(EOF))
                 break;
             if (0 < count) {
                 if (width < x + count)
@@ -339,7 +339,7 @@ bool BitmapInfoheader::readPixels(std::FILE* file, const RGBQuad* colorTable, vo
                 x += count;
                 while (0 < count--) {
                     color = fgetc(file);
-                    if (color == EOF || usedColors <= color)
+                    if (color == static_cast<unsigned>(EOF) || usedColors <= color)
                         return false;
                     *dst++ = colorTable[color].toRGBA();
                 }
@@ -358,8 +358,8 @@ bool BitmapInfoheader::readPixels(std::FILE* file, const RGBQuad* colorTable, vo
             if (0 < count) {
                 if ((count & 1) || width < x + count)
                     return false;
-                int c0 = (color >> 4) & 0x0f;
-                int c1 = color & 0x0f;
+                unsigned c0 = (color >> 4) & 0x0f;
+                unsigned c1 = color & 0x0f;
                 if (usedColors <= c0 || usedColors <= c1)
                     return false;
                 uint32_t* dst = reinterpret_cast<uint32_t*>(pixels) + width * y + x;
@@ -409,8 +409,8 @@ bool BitmapInfoheader::readPixels(std::FILE* file, const RGBQuad* colorTable, vo
                     color = fgetc(file);
                     if (color == EOF)
                         return false;
-                    int c0 = (color >> 4) & 0x0f;
-                    int c1 = color & 0x0f;
+                    unsigned c0 = (color >> 4) & 0x0f;
+                    unsigned c1 = color & 0x0f;
                     if (usedColors <= c0 || usedColors <= c1)
                         return false;
                     *dst++ = colorTable[c0].toRGBA();
