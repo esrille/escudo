@@ -2511,31 +2511,37 @@ bool HTMLParser::InSelectInTable::processEndTag(HTMLParser* parser, Token& token
 bool HTMLParser::InForeignContent::processEOF(HTMLParser* parser, Token& token)
 {
     // TODO: imeplement me!
+    return false;
 }
 
 bool HTMLParser::InForeignContent::processComment(HTMLParser* parser, Token& token)
 {
     // TODO: imeplement me!
+    return false;
 }
 
 bool HTMLParser::InForeignContent::processDoctype(HTMLParser* parser, Token& token)
 {
     // TODO: imeplement me!
+    return false;
 }
 
 bool HTMLParser::InForeignContent::processCharacter(HTMLParser* parser, Token& token)
 {
     // TODO: imeplement me!
+    return false;
 }
 
 bool HTMLParser::InForeignContent::processStartTag(HTMLParser* parser, Token& token)
 {
     // TODO: imeplement me!
+    return false;
 }
 
 bool HTMLParser::InForeignContent::processEndTag(HTMLParser* parser, Token& token)
 {
     // TODO: imeplement me!
+    return false;
 }
 
 //
