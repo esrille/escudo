@@ -486,6 +486,7 @@ bool TableWrapperBox::processTableChild(Node node, CSSStyleDeclarationImp* style
     }
 
     anonymousCell = 0;
+    return true;
 }
 
 void TableWrapperBox::processRowGroup(Element section)
