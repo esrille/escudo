@@ -757,10 +757,7 @@ CellBox* TableWrapperBox::processCell(Element current, Block* parentBox, CSSStyl
 
 void TableWrapperBox::processColGroup(Element colgroup)
 {
-    CSSStyleDeclarationImp* columnGroupStyle = view->getStyle(colgroup);
-
     bool hasCol = false;
-    int xStart = xWidth;
     for (Element child = colgroup.getFirstElementChild(); child; child = child.getNextElementSibling()) {
         CSSStyleDeclarationImp* childStyle = view->getStyle(child);
         assert(childStyle);
