@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Esrille Inc.
+ * Copyright 2012, 2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ public:
     std::string createPath(const std::string& name) const;
     int createDirectory(const std::string& name);
 
-    bool hasFile(const std::string& path, int mode = 0600);
+    bool hasFile(const std::string& path, unsigned mode = 0600u);
     bool isDirectory(const std::string& path);
     int createDirectories(const std::string& path);
 };

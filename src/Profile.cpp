@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Esrille Inc.
+ * Copyright 2012, 2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -125,7 +125,7 @@ int Profile::createDirectory(const std::string& name)
     return -1;
 }
 
-bool Profile::hasFile(const std::string& path, int mode)
+bool Profile::hasFile(const std::string& path, unsigned mode)
 {
     struct stat buf;
 
