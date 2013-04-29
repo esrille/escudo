@@ -131,8 +131,6 @@ bool EventTargetImp::dispatchEvent(events::Event evt)
     if (!event)
         return false;
 
-    auto currentWindow = static_cast<WindowImp*>(ECMAScriptContext::getCurrent());
-
     event->setDispatchFlag(true);
     event->setTarget(this);
 
