@@ -702,7 +702,6 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, CSSStyleDec
         }
 
         Block* prev = (currentBox != parentBox) ? 0 : prevBox;
-        ElementImp* imp = dynamic_cast<ElementImp*>(element.self());
 
         if ((style->emptyInline & 1) || style->emptyInline == 4) {
             if (!currentBox->hasChildBoxes())
