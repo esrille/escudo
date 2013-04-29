@@ -162,7 +162,7 @@ uint16_t readUint16(const char* p)
 
 unsigned char* expandColors(unsigned char* dst, unsigned char* src, unsigned count, int transparentIndex, GifColorType* colors)
 {
-    for (int i = 0; i < count; ++i, ++src) {
+    for (unsigned i = 0; i < count; ++i, ++src) {
         if (*src == transparentIndex) {
             *dst++ = 0;
             *dst++ = 0;
@@ -213,10 +213,9 @@ unsigned char* readAsGif(FILE* file, unsigned& width, unsigned& height, unsigned
         delays.resize(frameCount, 10);
 
     format = GL_RGBA;
-    for (int frame = 0; frame < frameCount; ++frame) {
+    for (unsigned frame = 0; frame < frameCount; ++frame) {
         SavedImage* image = &gif->SavedImages[frame];
         int transparentIndex = -1;
-        int delay = 0;
         for (int i = 0; i < image->ExtensionBlockCount; ++i) {
             ExtensionBlock* ext = image->ExtensionBlocks + i;
             switch (ext->Function) {
@@ -244,13 +243,13 @@ unsigned char* readAsGif(FILE* file, unsigned& width, unsigned& height, unsigned
             expandColors(p0, image->RasterBits, width * height, transparentIndex, gif->SColorMap->Colors);
         else {
             unsigned char* index = image->RasterBits;
-            for (int row = 0; row < height; row += 8)
+            for (unsigned row = 0; row < height; row += 8)
                 index = expandColors(p0 + width * row, index, width, transparentIndex, gif->SColorMap->Colors);
-            for (int row = 4; row < height; row += 8)
+            for (unsigned row = 4; row < height; row += 8)
                 index = expandColors(p0 + width * row, index, width, transparentIndex, gif->SColorMap->Colors);
-            for (int row = 2; row < height; row += 4)
+            for (unsigned row = 2; row < height; row += 4)
                 index = expandColors(p0 + width * row, index, width, transparentIndex, gif->SColorMap->Colors);
-            for (int row = 1; row < height; row += 2)
+            for (unsigned row = 1; row < height; row += 2)
                 index = expandColors(p0 + width * row, index, width, transparentIndex, gif->SColorMap->Colors);
         }
     }
@@ -276,7 +275,7 @@ unsigned char* readAsBmp(FILE* file, unsigned& width, unsigned& height, unsigned
     if (!data)
         return 0;
     if (std::fseek(file, fileHeader.offset, SEEK_SET) == -1)
-        return false;
+        return 0;
     bool result = header.readPixels(file, colorTable, data);
     if (!result) {
         free(data);
@@ -357,7 +356,7 @@ void BoxImage::open(FILE* file)
     }
     state = CompletelyAvailable;
     total = 0.0f;
-    for (auto i = 0; i < delays.size(); ++i)
+    for (size_t i = 0; i < delays.size(); ++i)
         total += delays[i];
 }
 
