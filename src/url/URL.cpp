@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -353,7 +353,7 @@ void URL::parsePath(size_t& pos)
 }
 
 // iquery = *( ipchar / iprivate / "/" / "?" )
-bool URL::parseQuery(size_t& pos)
+void URL::parseQuery(size_t& pos)
 {
     while (pos < url.length()) {
         if (parsePchar(pos))
@@ -372,7 +372,7 @@ bool URL::parseQuery(size_t& pos)
 }
 
 // ifragment = *( ipchar / "/" / "?" )
-bool URL::parseFragment(size_t& pos)
+void URL::parseFragment(size_t& pos)
 {
     while (pos < url.length()) {
         if (parsePchar(pos))
@@ -570,7 +570,6 @@ bool URL::parseFile(size_t& pos)
 
     // host
     hostStart = hostnameStart = pos;
-    size_t first = pos;
     if (!parseHost(pos))
         return false;
     hostEnd = hostnameEnd = pos;
@@ -607,7 +606,6 @@ bool URL::parseFileRelative()
 
             // host
             hostStart = hostnameStart = pos;
-            size_t first = pos;
             if (!parseHost(pos))
                 return false;
             hostEnd = hostnameEnd = pos;
@@ -774,7 +772,6 @@ bool URL::parseRelative(const URL& base)
     if (hier)
         targetURL += u"//";
     protocolEnd = base.protocolEnd;
-    ptrdiff_t offset = 0;
     if (hostStart == hostEnd) {
         targetURL += base.getHost();
         hostStart = base.hostStart;

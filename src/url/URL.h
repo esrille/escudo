@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,8 +54,8 @@ class URL
     void parseIregName(size_t& pos);
     void parsePath(size_t& pos);
     bool parseHost(size_t& pos);
-    bool parseQuery(size_t& pos);
-    bool parseFragment(size_t& pos);
+    void parseQuery(size_t& pos);
+    void parseFragment(size_t& pos);
     bool parseHTTP(size_t& pos);
     bool parseHTTPRelative();
 
