@@ -87,7 +87,7 @@ public:
             return false;
         }
     }
-    std::string getStatusText() const {
+    const std::string& getStatusText() const {
         return statusText;
     }
     std::string getResponseHeader(const std::string& header) const {

@@ -131,7 +131,7 @@ public:
     unsigned short getStatus() const;
     const std::string& getStatusText() const;
     const std::string getResponseHeader(std::u16string header) const;
-    const std::string& getAllResponseHeaders() const;
+    std::string getAllResponseHeaders() const;
     // void overrideMimeType(std::u16string mime);
 
     bool getError() const {

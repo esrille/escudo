@@ -385,7 +385,7 @@ const std::string HttpRequest::getResponseHeader(std::u16string header) const
     return response.getResponseHeader(utfconv(header));
 }
 
-const std::string& HttpRequest::getAllResponseHeaders() const
+std::string HttpRequest::getAllResponseHeaders() const
 {
     return response.getAllResponseHeaders();
 }
