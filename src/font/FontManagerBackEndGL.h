@@ -100,7 +100,7 @@ class FontManagerBackEndGL : public FontManagerBackEnd
         unsigned px = FontTexture::Width;
         for (int level = 0; level < FontTexture::Level; ++level) {
             uint8_t* p = FontTexture::getMipmapImage(image, level) + px * y + x;
-            for (int i = 0; i < h; ++i, p += px) {
+            for (unsigned i = 0; i < h; ++i, p += px) {
                 glTexSubImage2D(GL_TEXTURE_2D, level, x, y + i, w, 1,
                                 GL_LUMINANCE, GL_UNSIGNED_BYTE, p);
             }
