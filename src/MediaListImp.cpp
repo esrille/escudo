@@ -47,7 +47,7 @@ unsigned getMediaTypeBits(std::u16string media)
     toLower(media);
     if (media.compare(allType) == 0)
         return MediaListImp::All;
-    for (int i = 0; i < mediaTypesCount; ++i) {
+    for (unsigned i = 0; i < mediaTypesCount; ++i) {
         if (media.compare(mediaTypes[i]) == 0)
             return 1u << i;
     }
@@ -63,7 +63,7 @@ std::u16string MediaListImp::getMediaText()
         return allType;
     std::u16string text;
     bool first = true;
-    for (int i = 0; i < mediaTypesCount; ++i) {
+    for (unsigned i = 0; i < mediaTypesCount; ++i) {
         if (types & (1u << i)) {
             if (first)
                 first = false;
