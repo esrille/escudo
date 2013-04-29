@@ -30,6 +30,7 @@
 #include "http/HTTPConnection.h"
 
 #include "css/Box.h"
+#include "css/BoxImage.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
