@@ -930,7 +930,8 @@ bool CSSValueParser::colorKeyword(const CSSValueRule& rule)
 bool CSSValueParser::rgb(const CSSValueRule& rule)
 {
     unsigned rgb = 0;
-    for (int i = stack.size() - 5; i < stack.size(); i += 2) {
+    assert(5 <= stack.size());
+    for (size_t i = stack.size() - 5; i < stack.size(); i += 2) {
         CSSParserTerm* term = stack.at(i);
         if (term->unit == CSSPrimitiveValue::CSS_NUMBER) {
             rgb <<= 8;
@@ -952,7 +953,8 @@ bool CSSValueParser::rgb(const CSSValueRule& rule)
 bool CSSValueParser::rgba(const CSSValueRule& rule)
 {
     unsigned rgb = 0;
-    for (int i = stack.size() - 7; i < stack.size() - 2; i += 2) {
+    assert(7 <= stack.size());
+    for (size_t i = stack.size() - 7; i < stack.size() - 2; i += 2) {
         CSSParserTerm* term = stack.at(i);
         if (term->unit == CSSPrimitiveValue::CSS_NUMBER) {
             rgb <<= 8;
