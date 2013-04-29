@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,8 @@ namespace bootstrap
 class EventImp : public ObjectMixin<EventImp>
 {
 public:
-    static const unsigned short DEFAULT_PHASE = 0x78626C44;
+    // The default eventPhase value; cf. http://www.w3.org/TR/xbl/#the-default-phase
+    static const unsigned short DEFAULT_PHASE = static_cast<unsigned short>(0x78626C44);
 
 private:
     std::u16string type;
