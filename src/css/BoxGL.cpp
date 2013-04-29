@@ -93,7 +93,7 @@ void getOriginScreenPosition(float& x, float& y)
 BoxImage::~BoxImage()
 {
     if (state == CompletelyAvailable) {
-        for (int i = 0; i < frameCount; ++i)
+        for (unsigned i = 0; i < frameCount; ++i)
             deleteImage(pixels + i * (naturalWidth * naturalHeight * 4));
     }
     delete pixels;
