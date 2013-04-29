@@ -34,8 +34,6 @@
 #include "css/CSSStyleRuleImp.h"
 #include "css/CSSStyleSheetImp.h"
 
-class org::w3c::dom::bootstrap::CSSParser;
-
 #include "CSSGrammar.hh"
 
 #include <org/w3c/dom/stylesheets/MediaList.h>
