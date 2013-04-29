@@ -363,7 +363,6 @@ void Block::setContainingBlock(ViewCSSImp* view)
                         absoluteBlock.width = inlineBlock->getPaddingWidth();
                         absoluteBlock.height = inlineBlock->getPaddingHeight();
                     } else {
-                        Box* p = box->getParentBox();
                         float t = box->y - box->paddingTop;
                         float l = box->x - box->paddingLeft;
                         box = style->getLastBox();
