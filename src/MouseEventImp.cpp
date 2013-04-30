@@ -38,6 +38,8 @@ void MouseEventImp::initMouseEvent(const std::u16string& typeArg, bool canBubble
 
 bool MouseEventImp::getModifierState(const std::u16string& keyArg)
 {
+    // TODO: implement me!
+    return false;
 }
 
 Nullable<std::u16string> MouseEventImp::getRegion()
