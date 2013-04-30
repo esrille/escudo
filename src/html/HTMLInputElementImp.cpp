@@ -100,7 +100,7 @@ css::CSSStyleDeclaration HTMLInputElementImp::getStyle()
     if (hasStyle())
         return HTMLElementImp::getStyle();
     css::CSSStyleDeclaration style = HTMLElementImp::getStyle();
-    if (CSSStyleDeclarationImp* imp = dynamic_cast<CSSStyleDeclarationImp*>(style.self())) {
+    if (dynamic_cast<CSSStyleDeclarationImp*>(style.self())) {
         switch (type) {
         case Text:
         case Search:
@@ -120,7 +120,7 @@ css::CSSStyleDeclaration HTMLInputElementImp::getStyle()
 void HTMLInputElementImp::updateStyle()
 {
     css::CSSStyleDeclaration style = HTMLElementImp::getStyle();
-    if (CSSStyleDeclarationImp* imp = dynamic_cast<CSSStyleDeclarationImp*>(style.self())) {
+    if (dynamic_cast<CSSStyleDeclarationImp*>(style.self())) {
         switch (type) {
         case Text:
         case Search:
