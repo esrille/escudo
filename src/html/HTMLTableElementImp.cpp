@@ -109,11 +109,11 @@ unsigned int HTMLTableElementImp::getRowCount()
     // TODO: Better to keep the result
     unsigned int count = 0;
     for (Element child = getFirstElementChild(); child; child = child.getNextElementSibling()) {
-        if (HTMLTableRowElementImp* row = dynamic_cast<HTMLTableRowElementImp*>(child.self()))
+        if (dynamic_cast<HTMLTableRowElementImp*>(child.self()))
             ++count;
         else if (HTMLTableSectionElementImp* section = dynamic_cast<HTMLTableSectionElementImp*>(child.self())) {
             for (Element child = section->getFirstElementChild(); child; child = child.getNextElementSibling()) {
-                if (HTMLTableRowElementImp* row = dynamic_cast<HTMLTableRowElementImp*>(child.self()))
+                if (dynamic_cast<HTMLTableRowElementImp*>(child.self()))
                     ++count;
             }
         }
