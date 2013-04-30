@@ -291,14 +291,13 @@ public:
     };
 
 private:
-    static const size_t PropertyCount = MaxProperties;
-    static const char16_t* PropertyNames[PropertyCount];
+    static const char16_t* PropertyNames[MaxProperties];
 
     Object* owner;
     mutable css::CSSRule parentRule;
-    std::bitset<PropertyCount> propertySet;
-    std::bitset<PropertyCount> importantSet;
-    std::bitset<PropertyCount> inheritSet;
+    std::bitset<MaxProperties> propertySet;
+    std::bitset<MaxProperties> importantSet;
+    std::bitset<MaxProperties> inheritSet;
 
     //
     // Data members for parsing a CSS text
@@ -336,7 +335,7 @@ private:
     void initialize();
 
     void specify(const CSSStyleDeclarationImp* decl, unsigned id);
-    void specify(const CSSStyleDeclarationImp* decl, const std::bitset<PropertyCount>& set);
+    void specify(const CSSStyleDeclarationImp* decl, const std::bitset<MaxProperties>& set);
 
     void setInherit(unsigned id);
     void resetInherit(unsigned id);

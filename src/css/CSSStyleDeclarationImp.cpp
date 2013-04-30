@@ -31,7 +31,7 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 using namespace css;
 
-const char16_t* CSSStyleDeclarationImp::PropertyNames[PropertyCount] = {
+const char16_t* CSSStyleDeclarationImp::PropertyNames[MaxProperties] = {
     u"",
     u"azimuth",
     u"background",
@@ -1191,7 +1191,7 @@ void CSSStyleDeclarationImp::specify(const CSSStyleDeclarationImp* decl, unsigne
     }
 }
 
-void CSSStyleDeclarationImp::specify(const CSSStyleDeclarationImp* decl, const std::bitset<PropertyCount>& set)
+void CSSStyleDeclarationImp::specify(const CSSStyleDeclarationImp* decl, const std::bitset<MaxProperties>& set)
 {
     for (unsigned id = 1; id < MaxProperties; ++id) {
         if (!set.test(id))
@@ -3902,16 +3902,16 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp(int pseudoElementSelectorType) :
     box(0),
     lastBox(0),
     backgroundColor(CSSColorValueImp::Transparent),
-    counterIncrement(1),
-    counterReset(0),
     borderTop(0),
     borderRight(1),
     borderBottom(2),
     borderLeft(3),
+    counterIncrement(1),
+    counterReset(0),
     marginTop(0.0f, css::CSSPrimitiveValue::CSS_PX),
     marginRight(0.0f, css::CSSPrimitiveValue::CSS_PX),
-    marginLeft(0.0f, css::CSSPrimitiveValue::CSS_PX),
     marginBottom(0.0f, css::CSSPrimitiveValue::CSS_PX),
+    marginLeft(0.0f, css::CSSPrimitiveValue::CSS_PX),
     minHeight(0.0f, css::CSSPrimitiveValue::CSS_PX),
     minWidth(0.0f, css::CSSPrimitiveValue::CSS_PX),
     textIndent(0.0f, css::CSSPrimitiveValue::CSS_PX),
@@ -3945,16 +3945,16 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp(CSSStyleDeclarationImp* org) :
     box(0),
     lastBox(0),
     backgroundColor(CSSColorValueImp::Transparent),
-    counterIncrement(1),
-    counterReset(0),
     borderTop(0),
     borderRight(1),
     borderBottom(2),
     borderLeft(3),
+    counterIncrement(1),
+    counterReset(0),
     marginTop(0.0f, css::CSSPrimitiveValue::CSS_PX),
     marginRight(0.0f, css::CSSPrimitiveValue::CSS_PX),
-    marginLeft(0.0f, css::CSSPrimitiveValue::CSS_PX),
     marginBottom(0.0f, css::CSSPrimitiveValue::CSS_PX),
+    marginLeft(0.0f, css::CSSPrimitiveValue::CSS_PX),
     minHeight(0.0f, css::CSSPrimitiveValue::CSS_PX),
     minWidth(0.0f, css::CSSPrimitiveValue::CSS_PX),
     textIndent(0.0f, css::CSSPrimitiveValue::CSS_PX),
@@ -3973,7 +3973,7 @@ CSSStyleDeclarationImp::~CSSStyleDeclarationImp()
 
 const char16_t* CSSStyleDeclarationImp::getPropertyName(int propertyID)
 {
-    if (propertyID < 0 || PropertyCount <= propertyID)
+    if (propertyID < 0 || MaxProperties <= propertyID)
         return PropertyNames[0];
     return PropertyNames[propertyID];
 }
