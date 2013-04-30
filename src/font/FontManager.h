@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -109,7 +109,7 @@ class FontFace
     FontManager* manager;
 
     const char* filename;
-    std::vector<int32_t> charmap;
+    std::vector<char32_t > charmap;
     int32_t glyphCount;
     FT_Face face;
     // a map from nominal font size in pixels to FontTexture
@@ -233,7 +233,7 @@ public:
      * @param ucode Unicode character number
      * @return the font glyph object
      */
-    FontGlyph* getGlyph(int32_t ucode);
+    FontGlyph* getGlyph(char32_t ucode);
     uint8_t* getImage(FontGlyph* glyph);
     bool isMissingGlyph(const FontGlyph* glyph) const {
         return glyph == glyphs;

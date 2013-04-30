@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -308,7 +308,7 @@ unsigned FontFace::getScore(unsigned style, unsigned weight) const
 
 bool FontFace::hasGlyph(char32_t ucode) const
 {
-    std::vector<int32_t>::const_iterator result;
+    std::vector<char32_t>::const_iterator result;
     result = std::lower_bound(charmap.begin(), charmap.end(), ucode);
     return *result == ucode;
 }
@@ -363,14 +363,14 @@ FontTexture::FontTexture(FontFace* face, unsigned int point, bool bold, bool obl
     glyphs = new FontGlyph[face->glyphCount];
 
     sizes[0] = face->face->size;
-    for (int i = 1; i < Sizes; ++i) {
+    for (size_t i = 1; i < Sizes; ++i) {
         FT_Error error = FT_New_Size(face->face, &sizes[i]);
         if (error)
             throw std::runtime_error(__func__);
     }
 
     unsigned px = (point * 96) / 72;  // TODO: make dpi configurable
-    for (int i = 0; i < Sizes; ++i) {
+    for (size_t i = 0; i < Sizes; ++i) {
         FT_Activate_Size(sizes[i]);
         FT_Error error = FT_Set_Pixel_Sizes(face->face, 0, px);
         if (error)
@@ -430,9 +430,9 @@ FontTexture::~FontTexture()
     delete[] glyphs;
 }
 
-FontGlyph* FontTexture::getGlyph(int32_t ucode)
+FontGlyph* FontTexture::getGlyph(char32_t ucode)
 {
-    std::vector<int32_t>::const_iterator result;
+    std::vector<char32_t>::const_iterator result;
     result = std::lower_bound(face->charmap.begin(), face->charmap.end(), ucode);
     if (*result != ucode)
         return glyphs;
@@ -488,7 +488,7 @@ bool FontTexture::storeGlyph(FontGlyph* glyph, FT_UInt glyphIndex)
     assert(glyph->isInitialized());
 
     // update mipmap textures.
-    for (int i = 1; i < Sizes; ++i) {
+    for (size_t i = 1; i < Sizes; ++i) {
         FT_Activate_Size(sizes[i]);
         // load glyph image into the slot (erase previous one)
         FT_Error error = FT_Load_Glyph(face->face, glyphIndex, USE_HINTING ? FT_LOAD_DEFAULT : FT_LOAD_NO_HINTING);
@@ -549,7 +549,7 @@ uint8_t* FontTexture::drawBitmap(FontGlyph* glyph, FT_GlyphSlot slot)
         for (FT_Int j = glyph->x, q = 0; q < bitmap->width; ++j, ++q)
             image[i * Width + j] |= bitmap->buffer[p * bitmap->width + q];
     }
-    assert(((glyph->width + Offset + Align -1) & ~(Align - 1)) <= w);
+    assert(static_cast<unsigned>((glyph->width + Offset + Align -1) & ~(Align - 1)) <= w);
 
     pen.x += w;
     if (ymax < h)
