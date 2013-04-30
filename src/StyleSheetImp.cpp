@@ -19,9 +19,9 @@
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 StyleSheetImp::StyleSheetImp() :
-    disabled(false),
     owner(0),
-    parent(0)
+    parent(0),
+    disabled(false)
 {
 }
 
