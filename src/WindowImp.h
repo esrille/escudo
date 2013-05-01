@@ -68,6 +68,8 @@ class Box;
 class IcoImage;
 class ViewCSSImp;
 
+// WindowImp implements a browsing context and acts as a WindowProxy object for the browsing context.
+// cf. http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#windows
 class WindowImp : public ObjectMixin<WindowImp>
 {
     class EventTask
