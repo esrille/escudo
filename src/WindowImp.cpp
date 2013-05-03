@@ -891,8 +891,7 @@ html::Window WindowImp::getParent()
 
 Element WindowImp::getFrameElement()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return frameElement;
 }
 
 void WindowImp::navigateToFragmentIdentifier(URL target)

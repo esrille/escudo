@@ -42,7 +42,7 @@ HTMLIFrameElementImp::HTMLIFrameElementImp(DocumentImp* ownerDocument) :
 {
     tabIndex = 0;
     if (ownerDocument)
-        window = new WindowImp(dynamic_cast<WindowImp*>(ownerDocument->getDefaultView().self()), this);
+        window = new(std::nothrow) WindowImp(dynamic_cast<WindowImp*>(ownerDocument->getDefaultView().self()), this);
     addEventListener(u"blur", &blurListener, false, EventTargetImp::UseDefault);
 }
 
