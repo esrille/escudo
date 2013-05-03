@@ -190,6 +190,7 @@ class WindowImp : public ObjectMixin<WindowImp>
     ViewCSSImp* view;
     unsigned viewFlags;
 
+    std::u16string name;
     WindowImp* parent;
     std::deque<WindowImp*> childWindows;
     ElementImp* frameElement;

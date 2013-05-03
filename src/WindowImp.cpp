@@ -724,13 +724,14 @@ Document WindowImp::getDocument()
 
 std::u16string WindowImp::getName()
 {
-    // TODO: implement me!
-    return u"";
+    return name;
 }
 
 void WindowImp::setName(const std::u16string& name)
 {
-    // TODO: implement me!
+    if (!name.empty() && name[0] == u'_')
+        return;
+    this->name = name;
 }
 
 html::Location WindowImp::getLocation()
