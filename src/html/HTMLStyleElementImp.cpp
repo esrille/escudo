@@ -82,7 +82,7 @@ void HTMLStyleElementImp::handleMutation(EventListenerImp* listener, events::Eve
         }
     }
     if (WindowImp* view = document->getDefaultWindow())
-        view->setFlags(Box::NEED_SELECTOR_REMATCHING);
+        view->setViewFlags(Box::NEED_SELECTOR_REMATCHING);
     document->resetStyleSheets();
 }
 

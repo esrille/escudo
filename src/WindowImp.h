@@ -188,7 +188,7 @@ class WindowImp : public ObjectMixin<WindowImp>
 
     DocumentWindowPtr window;
     ViewCSSImp* view;
-    unsigned viewFlags;
+    unsigned short viewFlags;
 
     std::u16string name;
     WindowImp* parent;
@@ -236,7 +236,7 @@ public:
         return view;
     }
     void setSize(unsigned w, unsigned h);
-    void setFlags(unsigned f);
+    void setViewFlags(unsigned short flags);
 
     bool isBindingDocumentWindow() const;
 

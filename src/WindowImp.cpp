@@ -97,17 +97,17 @@ void WindowImp::setSize(unsigned w, unsigned h)
     if (width != w || height != h) {
         width = w;
         height = h;
-        setFlags(Box::NEED_REFLOW);
+        setViewFlags(Box::NEED_REFLOW);
     }
 }
 
-void WindowImp::setFlags(unsigned f)
+void WindowImp::setViewFlags(unsigned short flags)
 {
     if (view) {
-        view->setFlags(f | viewFlags);
+        view->setFlags(flags | viewFlags);
         viewFlags = 0;
     } else
-        viewFlags |= f;
+        viewFlags |= flags;
 }
 
 void WindowImp::enter()
@@ -155,7 +155,7 @@ void WindowImp::updateView(ViewCSSImp* next)
     }
     view = next;
     if (viewFlags)
-        setFlags(flags | viewFlags);
+        setViewFlags(flags | viewFlags);
     view->setZoom(zoom);
     detail = 0;
     redisplay = true;
@@ -302,7 +302,7 @@ bool WindowImp::poll()
             // TODO: Check if the parser has been aborted.
             document->resetStyleSheets();
             if (WindowImp* view = document->getDefaultWindow())
-                view->setFlags(Box::NEED_SELECTOR_REMATCHING);
+                view->setViewFlags(Box::NEED_SELECTOR_REMATCHING);
 
             parser.reset();
             document->exit();

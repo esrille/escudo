@@ -287,9 +287,9 @@ public:
     Block* getTree() const {
         return boxTree.get();
     }
-    void setFlags(unsigned short f) {
+    void setFlags(unsigned short flags) {
         if (boxTree)
-            boxTree->setFlags(f);
+            boxTree->setFlags(flags);
     }
     unsigned short gatherFlags() const {
         return boxTree ? boxTree->gatherFlags() : 0;
