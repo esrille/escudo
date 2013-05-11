@@ -54,8 +54,6 @@ public:
     void setHref(const std::u16string& href);
     std::u16string getTarget();
     void setTarget(const std::u16string& target);
-    std::u16string getPing();
-    void setPing(const std::u16string& ping);
     std::u16string getRel();
     void setRel(const std::u16string& rel);
     DOMTokenList getRelList();

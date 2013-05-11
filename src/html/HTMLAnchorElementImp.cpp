@@ -94,35 +94,22 @@ void HTMLAnchorElementImp::setHref(const std::u16string& href)
 
 std::u16string HTMLAnchorElementImp::getTarget()
 {
-    // TODO: implement me!
-    return u"";
+    return getAttribute(u"target");
 }
 
 void HTMLAnchorElementImp::setTarget(const std::u16string& target)
 {
-    // TODO: implement me!
-}
-
-std::u16string HTMLAnchorElementImp::getPing()
-{
-    // TODO: implement me!
-    return u"";
-}
-
-void HTMLAnchorElementImp::setPing(const std::u16string& ping)
-{
-    // TODO: implement me!
+    setAttribute(u"target", target);
 }
 
 std::u16string HTMLAnchorElementImp::getRel()
 {
-    // TODO: implement me!
-    return u"";
+    return getAttribute(u"rel");
 }
 
 void HTMLAnchorElementImp::setRel(const std::u16string& rel)
 {
-    // TODO: implement me!
+    setAttribute(u"rel", rel);
 }
 
 DOMTokenList HTMLAnchorElementImp::getRelList()
@@ -132,46 +119,42 @@ DOMTokenList HTMLAnchorElementImp::getRelList()
 
 std::u16string HTMLAnchorElementImp::getMedia()
 {
-    // TODO: implement me!
-    return u"";
+    return getAttribute(u"media");
 }
 
 void HTMLAnchorElementImp::setMedia(const std::u16string& media)
 {
-    // TODO: implement me!
+   setAttribute(u"media", media);
 }
 
 std::u16string HTMLAnchorElementImp::getHreflang()
 {
-    // TODO: implement me!
-    return u"";
+    return getAttribute(u" hreflang");
 }
 
 void HTMLAnchorElementImp::setHreflang(const std::u16string& hreflang)
 {
-    // TODO: implement me!
+   setAttribute(u" hreflang",  hreflang);
 }
 
 std::u16string HTMLAnchorElementImp::getType()
 {
-    // TODO: implement me!
-    return u"";
+    return getAttribute(u"type");
 }
 
 void HTMLAnchorElementImp::setType(const std::u16string& type)
 {
-    // TODO: implement me!
+   setAttribute(u"type",  type);
 }
 
 std::u16string HTMLAnchorElementImp::getText()
 {
-    // TODO: implement me!
-    return u"";
+    return getTextContent();
 }
 
 void HTMLAnchorElementImp::setText(const std::u16string& text)
 {
-    // TODO: implement me!
+    setTextContent(text);
 }
 
 std::u16string HTMLAnchorElementImp::getProtocol()
