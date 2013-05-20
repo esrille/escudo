@@ -676,18 +676,29 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, CSSStyleDec
             switch (currentBox->flags & (Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION)) {
             case Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION:
             case Box::NEED_EXPANSION:
-                assert(currentBox->inlines.empty());
+                // TODO: check pseudo elements
+                if (!currentBox->inlines.empty()) {
+                    currentBox->inlines.clear();
+                    currentBox->removeChildren();
+                } else {
+                    Box* next;
+                    for (Box* child = currentBox->getFirstChild(); child; child = next) {
+                        next = child->getNextSibling();
+                        if (child->isAnonymous()) {
+                            currentBox->removeChild(child);
+                            child->release_();
+                        }
+                    }
+                }
                 break;
             case Box::NEED_CHILD_EXPANSION:
                 for (auto box = dynamic_cast<Block*>(currentBox->getFirstChild());
-                    box;
-                    prev = box, box = dynamic_cast<Block*>(box->getNextSibling()))
+                     box;
+                     prev = box, box = dynamic_cast<Block*>(box->getNextSibling()))
                 {
                     if (box->flags & (Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION)) {
                         if (box->getNode())
                             constructBlock(box->getNode(), currentBox, style, prev);
-                        else    // anonymous box
-                            box->flags &= ~(Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION);
                     }
                 }
                 for (auto it = currentBox->blockMap.begin(); it != currentBox->blockMap.end(); ++it) {

@@ -439,8 +439,11 @@ void Box::setFlags(unsigned short f)
     for (Box* box = parentBox; box; box = box->parentBox) {
         if ((box->flags & f) == f)
             break;
-        if (dynamic_cast<Block*>(box))
+        if (Block* block = dynamic_cast<Block*>(box)) {
             box->flags |= f;
+            if (block->isAnonymous())
+                box->flags &= ~NEED_CHILD_EXPANSION;
+        }
     }
 }
 
@@ -490,20 +493,6 @@ Block::~Block()
 void Block::clearInlines()
 {
     setFlags(NEED_EXPANSION | NEED_REFLOW);
-    // TODO: check pseudo elements
-    if (!inlines.empty()) {
-        inlines.clear();
-        removeChildren();
-    } else {
-        Box* next;
-        for (Box* child = getFirstChild(); child; child = next) {
-            next = child->getNextSibling();
-            if (child->isAnonymous()) {
-                removeChild(child);
-                child->release_();
-            }
-        }
-    }
 }
 
 bool Block::isFloat() const

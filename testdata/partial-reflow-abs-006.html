@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Partial reflow test</title>
+<style type="text/css">
+#abs {
+  position: absolute;
+  left: 64px;
+  top: 64px;
+  width: 128px;
+  height: 128px;
+  border: solid black 1px;
+}
+#abs > div {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+#red {
+  background-color: red;
+}
+#green {
+  background-color: green;
+  display: none;
+}
+#blue {
+  background-color: blue;
+  display: none;
+}
+#purple {
+  background-color: purple;
+  display: none;
+}
+</style>
+<script type="text/javascript">
+var cnt = 0;
+function doTest() {
+  this.addEventListener('keydown', function(event) {
+    if (event.keyCode == 13) {
+      var t = document.getElementById('t');
+      switch (cnt++ % 2) {
+      case 0:
+        document.getElementById('red').style.display = 'none';
+        document.getElementById('green').style.display = 'block';
+        break;
+      case 1:
+        document.getElementById('green').style.display = 'none';
+        document.getElementById('red').style.display = 'block';
+        break;
+      }
+    }
+  }, false);
+}
+</script>
+</head>
+<body onload="doTest()">
+<p>Press [Enter] to change display properties of absolutely positioned boxes.</p>
+<div id='abs'><div id='red'></div><div id='green'></div></div>
+</div>
+</body>
+</html>
