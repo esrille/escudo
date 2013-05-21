@@ -1930,8 +1930,8 @@ void Block::resolveXY(ViewCSSImp* view, float left, float top, Block* clip)
 void Block::dump(std::string indent)
 {
     std::cout << indent << "* block-level box";
-    float relativeX = stackingContext->getRelativeX();
-    float relativeY = stackingContext->getRelativeY();
+    float relativeX = stackingContext ? stackingContext->getRelativeX() : 0.0f;
+    float relativeY = stackingContext ? stackingContext->getRelativeY() : 0.0f;
     if (isAnonymous())
         std::cout << " [anonymous]";
     else
