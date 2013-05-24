@@ -349,6 +349,8 @@ bool WindowImp::poll()
             }
             if (view) {
                 if (unsigned flags = view->gatherFlags()) {
+                    assert(!(flags & (Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION)) || view->getTree()->getFlags());
+                    assert(!(flags & (Box::NEED_REFLOW | Box::NEED_CHILD_REFLOW)) || view->getTree()->getFlags());
                     if (flags & Box::NEED_SELECTOR_REMATCHING) {
                         recordTime("%*strigger selector rematching", windowDepth * 2, "");
                         backgroundTask.restart(BackgroundTask::Cascade);
