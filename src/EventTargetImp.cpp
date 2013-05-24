@@ -132,7 +132,10 @@ bool EventTargetImp::dispatchEvent(events::Event evt)
         return false;
 
     event->setDispatchFlag(true);
-    event->setTarget(this);
+    if (auto documentWindow = dynamic_cast<DocumentWindow*>(this))
+        event->setTarget(documentWindow->getWindowImp());
+    else
+        event->setTarget(this);
 
     if (NodeImp* node = dynamic_cast<NodeImp*>(this)) {
         DocumentImp* document = dynamic_cast<DocumentImp*>(node);
