@@ -95,7 +95,7 @@ int main(int argc, char* argv[])
     std::thread httpService(std::ref(HttpConnectionManager::getInstance()));
 
     std::string navigatorUrl = getFileURL(profile.getProfilePath()) + "/escort.html";
-    WindowImp* imp = new WindowImp();
+    WindowImp* imp = new WindowImp(0, 0, WindowImp::DeskTop);
     window = imp;
     imp->setFaviconOverridable(true);
     imp->enableZoom(false);

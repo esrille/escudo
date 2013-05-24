@@ -27,8 +27,10 @@ constexpr auto Intern = &one_at_a_time::hash<char16_t>;
 
 #include "utf.h"
 
+#include "DocumentImp.h"
 #include "DOMTokenListImp.h"
 #include "HTMLUtil.h"
+#include "WindowImp.h"
 
 namespace org
 {
@@ -62,8 +64,14 @@ void HTMLAnchorElementImp::handleClick(EventListenerImp* listener, events::Event
 {
     events::MouseEvent mouse = interface_cast<events::MouseEvent>(event);
     std::u16string href = getHref();
-    if (!href.empty() && mouse.getButton() == 0)
-        getOwnerDocument().setLocation(href);
+    if (!href.empty() && mouse.getButton() == 0) {
+        // TODO: Add more details
+        DocumentImp* document = getOwnerDocumentImp();
+        assert(document);
+        WindowImp* window = document->getDefaultWindow();
+        assert(window);
+        window->open(href, getTarget());
+    }
 }
 
 void HTMLAnchorElementImp::handleMutation(events::MutationEvent mutation)

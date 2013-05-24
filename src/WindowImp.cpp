@@ -21,6 +21,8 @@
 #include <boost/version.hpp>
 #include <boost/bind.hpp>
 
+#include "utf.h"
+
 #include "BeforeUnloadEventImp.h"
 #include "DOMImplementationImp.h"
 #include "DocumentImp.h"
@@ -49,7 +51,7 @@ WindowImp::Parser::Parser(DocumentImp* document, int fd, const std::string& opti
     document->setCharacterSet(utfconv(htmlInputStream.getEncoding()));
 }
 
-WindowImp::WindowImp(WindowImp* parent, ElementImp* frameElement) :
+WindowImp::WindowImp(WindowImp* parent, ElementImp* frameElement, unsigned short flags) :
     request(parent ? parent->getLocation().getHref() : u""),
     history(this),
     backgroundTask(this),
@@ -57,6 +59,7 @@ WindowImp::WindowImp(WindowImp* parent, ElementImp* frameElement) :
     window(0),
     view(0),
     viewFlags(0),
+    flags(flags),
     parent(parent),
     frameElement(frameElement),
     clickTarget(0),
@@ -871,7 +874,7 @@ void WindowImp::setLength(Any length)
 html::Window WindowImp::getTop()
 {
     WindowImp* top = this;
-    while (top->parent)
+    while (!top->isTopLevel())
         top = top->parent;
     return top;
 }
@@ -889,7 +892,9 @@ void WindowImp::setOpener(html::Window opener)
 
 html::Window WindowImp::getParent()
 {
-    return parent ? parent : this;
+    if (isTopLevel())
+        return this;
+    return parent;
 }
 
 Element WindowImp::getFrameElement()
@@ -922,39 +927,106 @@ void WindowImp::navigateToFragmentIdentifier(URL target)
     window->dispatchEvent(event);
 }
 
-html::Window WindowImp::open(const std::u16string& url, const std::u16string& target, const std::u16string& features, bool replace)
+// cf. http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#the-rules-for-choosing-a-browsing-context-given-a-browsing-context-name
+WindowImp* WindowImp::selectBrowsingContext(std::u16string target, bool& replace)
 {
-    if (window) {
-        if (DocumentImp* document = dynamic_cast<DocumentImp*>(window->getDocument().self())) {
-            URL base(document->getDocumentURI());
-            URL link(base, url);
-            if (base.isSameExceptFragments(link)) {
-                Task task(this, boost::bind(&WindowImp::navigateToFragmentIdentifier, this, link));
-                putTask(task);
-                return this;
-            }
+    if (target.empty())
+        return this;
 
-            // Prompt to unload the Document object.
-            if (html::BeforeUnloadEvent event = new(std::nothrow) BeforeUnloadEventImp) {
-                window->dispatchEvent(event);
-                if (!event.getReturnValue().empty() || event.getDefaultPrevented())
-                    return this;
-                if (parent && parent->getFaviconOverridable())
-                    parent->setFavicon();
-            }
+    WindowImp* top = this;
+    while (!top->isTopLevel())
+        top = top->parent;
+
+    if (target[0] == u'_') {
+        toLower(target);
+        if (target == u"_self")
+            return this;
+        if (target == u"_parent") {
+            if (parent)
+                return parent;
+            return this;
         }
+        if (target == u"_top")
+            return top;
+        if (target != u"_blank")
+            return 0;
+    } else {
+        // TODO: implement me!
+        return 0;
     }
 
+    if (!top->parent)
+        return this;
+    DocumentImp* ownerDocument = dynamic_cast<DocumentImp*>(top->parent->getDocument().self());
+    if (!ownerDocument)
+        return this;
+
+    HTMLIFrameElementImp* iframe = new(std::nothrow) HTMLIFrameElementImp(ownerDocument, TopLevel);
+    if (!iframe)
+        return 0;
+    WindowImp* context = dynamic_cast<WindowImp*>(iframe->getContentWindow().self());
+    if (!context) {
+        // TODO: release iframe
+        return 0;
+    }
+    replace = true;
+    if (target != u"_blank")
+        context->name = target;
+
+    top->parent->enter();
+    if (Node next = frameElement->getNextSibling())
+        frameElement->getParentNode().insertBefore(iframe, next);
+    else {
+        HTMLElementImp* imp = dynamic_cast<HTMLElementImp*>(frameElement->getParentNode().self());
+        frameElement->getParentNode().appendChild(iframe);
+    }
+    top->parent->exit();
+
+    return context;
+}
+
+void WindowImp::navigate(std::u16string url, bool replace, WindowImp* srcWindow)
+{
     backgroundTask.restart();
 
     // TODO: add more details
-    window = new(std::nothrow) DocumentWindow;
+    if (srcWindow->window) {
+        if (DocumentImp* document = dynamic_cast<DocumentImp*>(srcWindow->window->getDocument().self())) {
+            URL base(document->getDocumentURI());
+            URL resolved(base, url);
+            if (this == srcWindow) {
+                if (base.isSameExceptFragments(resolved)) {
+                    Task task(this, boost::bind(&WindowImp::navigateToFragmentIdentifier, this, resolved));
+                    putTask(task);
+                    return;
+                }
+                // Prompt to unload the Document object.
+                if (html::BeforeUnloadEvent event = new(std::nothrow) BeforeUnloadEventImp) {
+                    window->dispatchEvent(event);
+                    if (!event.getReturnValue().empty() || event.getDefaultPrevented())
+                        return;
+                    if (parent && parent->getFaviconOverridable())
+                        parent->setFavicon();
+                }
+            }
+            url = resolved;
+        }
+    }
 
+    window = new(std::nothrow) DocumentWindow;
     request.abort();
     history.setReplace(replace);
     request.open(u"get", url.empty() ? u"about:blank" : url);
     request.send();
-    return this;
+}
+
+html::Window WindowImp::open(const std::u16string& url, const std::u16string& target, const std::u16string& features, bool replace)
+{
+    WindowImp* targetWindow = selectBrowsingContext(target, replace);
+    if (!targetWindow)
+        return 0;   // TODO: throw an InvalidAccessError exception
+    targetWindow->navigate(url, replace, this);
+    return targetWindow;
 }
 
 html::Window WindowImp::getElement(unsigned int index)

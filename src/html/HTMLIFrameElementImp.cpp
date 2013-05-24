@@ -35,14 +35,16 @@ namespace dom
 namespace bootstrap
 {
 
-HTMLIFrameElementImp::HTMLIFrameElementImp(DocumentImp* ownerDocument) :
+HTMLIFrameElementImp::HTMLIFrameElementImp(DocumentImp* ownerDocument, unsigned flags) :
     ObjectMixin(ownerDocument, u"iframe"),
     window(0),
     blurListener(boost::bind(&HTMLIFrameElementImp::handleBlur, this, _1, _2))
 {
     tabIndex = 0;
-    if (ownerDocument)
-        window = new(std::nothrow) WindowImp(dynamic_cast<WindowImp*>(ownerDocument->getDefaultView().self()), this);
+    if (ownerDocument) {
+        window = new(std::nothrow) WindowImp(dynamic_cast<WindowImp*>(ownerDocument->getDefaultView().self()), this, flags);
+        window.open(u"about:blank", u"_self");  // TODO: Check how location is created
+    }
     addEventListener(u"blur", &blurListener, false, EventTargetImp::UseDefault);
 }
 

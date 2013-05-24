@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
 
     std::thread httpService(std::ref(HttpConnectionManager::getInstance()));
 
-    window = new WindowImp();
+    window = new WindowImp(0, 0, WindowImp::TopLevel);
     window.open(utfconv(argv[argc - 1]), u"_self", u"", true);
 
     glutMainLoop();

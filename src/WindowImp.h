@@ -72,6 +72,14 @@ class ViewCSSImp;
 // cf. http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#windows
 class WindowImp : public ObjectMixin<WindowImp>
 {
+public:
+    // flags
+    enum {
+        DeskTop = 1,
+        TopLevel = 2
+    };
+
+private:
     class EventTask
     {
     public:
@@ -190,6 +198,7 @@ class WindowImp : public ObjectMixin<WindowImp>
     ViewCSSImp* view;
     unsigned short viewFlags;
 
+    unsigned short flags;
     std::u16string name;
     WindowImp* parent;
     std::deque<WindowImp*> childWindows;
@@ -225,12 +234,21 @@ class WindowImp : public ObjectMixin<WindowImp>
     void keyup(const EventTask& task);
 
     void navigateToFragmentIdentifier(URL target);
+    WindowImp* selectBrowsingContext(std::u16string target, bool& replace);
+    void navigate(std::u16string url, bool replace, WindowImp* srcWindow);
 
 public:
-    WindowImp(WindowImp* parent = 0, ElementImp* frameElement = 0);
+    WindowImp(WindowImp* parent = 0, ElementImp* frameElement = 0, unsigned short flags = 0);
     ~WindowImp();
 
     static css::CSSStyleSheet defaultStyleSheet;
+
+    bool isDeskTop() const {
+        return (flags & DeskTop);
+    }
+    bool isTopLevel() const {
+        return (flags & TopLevel) || !parent;
+    }
 
     ViewCSSImp* getView() const {
         return view;

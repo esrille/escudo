@@ -148,7 +148,7 @@ body
     background-color: #d6d2d0;
     position: fixed;
     left: 0;
-    bottom: 0;
+    bottom: 24px;
     right: 0;
     height: 36px;
     font-family: monospace;
@@ -202,11 +202,11 @@ body
     border: none;
     position: fixed;
     top: 0;
-    bottom: 36px;
+    bottom: 60px;
     width: 100%;
     z-index: 0;
 }
-#main
+.main
 {
     margin: 0;
     border: none;
@@ -214,55 +214,219 @@ body
     width: 100%;
     height: 100%;
 }
+#tabs
+{
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    width: 100%;
+    background-color: hsl(20, 7%, 73%);
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    height: 24px;
+    font-family: sans-serif;
+    min-width: 520px;
+    white-space: nowrap;
+    z-index: 1;
+    vertical-align: top;
+}
+#tabs > li
+{
+    display: inline-block;
+    overflow: hidden;
+    height: 22px;
+    line-height: 22px;
+    border-width: 2px 1px 0 1px;
+    border-style: solid;
+}
+#tabs > .tab
+{
+    width: 168px;
+    text-align: left;
+    border-color: hsl(20, 7%, 63%) hsl(20, 7%, 83%) hsl(20, 7%, 83%) hsl(20, 7%, 63%);
+}
+#tabs > .tab:hover
+{
+    background-color: hsl(20, 7%, 88%);
+}
+#tabs > .active
+{
+    background-color: hsl(20, 7%, 83%);
+    border-color: hsl(20, 7%, 83%) hsl(20, 7%, 73%) hsl(20, 7%, 73%) hsl(20, 7%, 83%);
+}
+#plus
+{
+    width: 28px;
+    text-align: center;
+    border-color: hsl(20, 7%, 83%) hsl(20, 7%, 73%) hsl(20, 7%, 73%) hsl(20, 7%, 83%);
+    background-color: hsl(20, 7%, 83%);
+}
+#plus:hover
+{
+    background-color: hsl(20, 7%, 88%);
+}
+iframe.inactive
+{
+    display: none;
+}
 </style>
 <script type="text/javascript">
-function busy(e) {
-    if (e.returnValue.length == 0 && !e.defaultPrevented)
-        document.getElementById('settings').style.backgroundImage = 'url(gear.gif)';
+
+function BrowsingContext()
+{
+    this.busy = false;
+    this.tab = null;
+    this.pane = null;
 }
+
+BrowsingContext.prototype = {
+    activate: function() {
+        this.tab.classList.add('active');
+        this.pane.classList.remove('inactive');
+        var title = this.pane.contentDocument.title;
+        if (0 < title.length)
+            document.title = title;
+        else
+            document.title = navigator.appName;
+        document.getElementById('location').value = this.pane.contentWindow.location;
+        if (this.busy)
+            document.getElementById('settings').style.backgroundImage = 'url(gear.gif)';
+        else
+            document.getElementById('settings').style.backgroundImage = 'url(escort.png)';
+    },
+    deactivate: function() {
+        this.tab.classList.remove('active');
+        this.pane.classList.add('inactive');
+    },
+    setTitle: function(title) {
+        this.tab.textContent = (0 < title.length) ? title : '(untitled)';
+    }
+};
+
+var contexts = [];
+var active = 0;
+var addingNewTab = false;
+
+function getContextIndexFromWindow(w) {
+    for (var i = 0; i < contexts.length; ++i) {
+        if (contexts[i].pane.contentWindow == w) {
+            return i;
+        }
+    }
+    return -1;
+}
+function getContextIndexFromFrame(f) {
+    for (var i = 0; i < contexts.length; ++i) {
+        if (contexts[i].pane == f) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+function busy(e) {
+    if (e.returnValue.length == 0 && !e.defaultPrevented) {
+        var i = getContextIndexFromWindow(e.target);
+        contexts[i].busy = true;
+        if (i == active)
+            document.getElementById('settings').style.backgroundImage = 'url(gear.gif)';
+    }
+}
+function complete(e) {
+    var i = getContextIndexFromFrame(e.target);
+    if (i < 0)
+        return;
+    var c = contexts[i];
+    c.busy = false;
+    var title = c.pane.contentDocument.title;
+    c.setTitle(title);
+    if (i == active) {
+        document.getElementById('settings').style.backgroundImage = 'url(escort.png)';
+        document.getElementById('location').value = c.pane.contentWindow.location;
+        c.pane.focus();
+        c.pane.contentWindow.addEventListener('beforeunload', busy, false);
+        if (0 < title.length)
+            document.title = title;
+        else
+            document.title = navigator.appName;
+    }
+    e.preventDefault();
+}
+
 function back(e) {
-    document.getElementById('main').contentWindow.history.back();
-    document.getElementById('location').value = document.getElementById('main').contentWindow.location;
+    contexts[active].pane.contentWindow.history.back();
+    document.getElementById('location').value = contexts[active].pane.contentWindow.location;
     e.preventDefault();
 }
 function forward(e) {
-    document.getElementById('main').contentWindow.history.forward();
-    document.getElementById('location').value = document.getElementById('main').contentWindow.location;
+    contexts[active].pane.contentWindow.history.forward();
+    document.getElementById('location').value = contexts[active].pane.contentWindow.location;
     e.preventDefault();
 }
 function reload(e) {
     var url = document.getElementById('location').value;
-    document.getElementById('main').contentWindow.location.href = url;
+    contexts[active].pane.contentWindow.location.href = url;
     e.preventDefault();
 }
 function stop(e) {
-    document.getElementById('main').contentWindow.stop();
+    contexts[active].pane.contentWindow.stop();
     e.preventDefault();
 }
 function settings(e) {
-    document.getElementById('main').contentWindow.location.href = 'about:';
-    e.preventDefault();
-}
-function complete(e) {
-    document.getElementById('settings').style.backgroundImage = 'url(escort.png)';
-    document.getElementById('location').value = document.getElementById('main').contentWindow.location;
-    document.getElementById('main').focus();
-    document.getElementById('main').contentWindow.addEventListener('beforeunload', busy, false);
-    var title = document.getElementById('main').contentDocument.title;
-    if (0 < title.length)
-        document.title = title;
-    else
-        document.title = navigator.appName;
+    contexts[active].pane.contentWindow.location.href = 'about:';
     e.preventDefault();
 }
 function keypress(e) {
     if (e.keyCode == 13) {
         var url = document.getElementById('location').value;
-        document.getElementById('main').contentWindow.location.href = url;
+        contexts[active].pane.contentWindow.location.href = url;
         e.preventDefault();
     }
 }
+function clickTab(event) {
+    contexts[active].deactivate();
+    for (var i = 0; i < contexts.length; ++i) {
+        if (contexts[i].tab == event.target) {
+            active = i;
+            break;
+        }
+    }
+    contexts[active].activate();
+}
+function addBrowsingContext(e) {
+    contexts[active].deactivate();
+    var c = new BrowsingContext();
+    c.pane = e.target;
+    c.pane.className = 'main';
+    c.pane.addEventListener('load', complete, false);
+    c.pane.addEventListener('error', complete, false);
+    c.pane.contentWindow.addEventListener('beforeunload', busy, false);
+    c.tab = document.createElement('li');
+    var tabs = document.getElementById('tabs');
+    c.tab.className = 'tab';
+    c.tab.addEventListener('click', clickTab, false);
+    if (addingNewTab) {
+        tabs.insertBefore(c.tab, contexts[0].tab);
+        active = 0;
+    } else {
+        tabs.insertBefore(c.tab, contexts[active].tab.nextElementSibling);
+        ++active;
+    }
+    contexts.splice(active, 0, c);
+    contexts[active].activate();
+}
+function addTab(e) {
+    addingNewTab = true;
+    document.getElementById('main-pane').insertBefore(document.createElement('iframe'), contexts[0].pane);
+    addingNewTab = false;
+}
+
 function init() {
+    document.getElementById('main-pane').addEventListener('DOMNodeInserted', addBrowsingContext, false);
+    document.getElementById('plus').addEventListener('click', addTab, false);
+
     var l = document.getElementById('location');
     l.focus();
     l.addEventListener('keydown', keypress, false);
@@ -271,17 +435,31 @@ function init() {
     document.getElementById('reload').addEventListener('click', reload, false);
     document.getElementById('stop').addEventListener('click', stop, false);
     document.getElementById('settings').addEventListener('click', settings, false);
-    var m = document.getElementById('main');
-    l.value = m.contentWindow.location;
-    m.addEventListener('load', complete, false);
-    m.addEventListener('error', complete, false);
-    m.contentWindow.addEventListener('beforeunload', busy, false);
+
+    var list;
+    list = document.querySelectorAll('.main');
+    for (var i = 0; i < list.length; ++i)
+        contexts[i] = new BrowsingContext();
+    for (var i = 0; i < list.length; ++i) {
+        contexts[i].pane = list[i];
+        contexts[i].pane.addEventListener('load', complete, false);
+        contexts[i].pane.addEventListener('error', complete, false);
+        contexts[i].pane.contentWindow.addEventListener('beforeunload', busy, false);
+    }
+    list = document.querySelectorAll('.tab');
+    for (var i = 0; i < list.length; ++i) {
+        contexts[i].tab = list[i];
+        list[i].addEventListener('click', clickTab, false);
+    }
+
+    contexts[active].activate();
 }
 </script>
 <link rel='icon' href='escort.ico' type='image/vnd.microsoft.icon'>
 </head>
 <body onload='init()'>
 <table id='toolbar'>
+<tr>
 <td style='width: 108px;'>
 <div id='settings' class='button'></div>
 <div id='back' class='button'></div>
@@ -294,7 +472,9 @@ function init() {
 <div id='reload' class='button'></div>
 <div id='stop' class='button'></div>
 </td>
+</tr>
 </table>
-<div id='main-pane'><iframe id='main' src=''></iframe></div>
+<ul id='tabs'><li id='plus'>✚</li><li class='tab active'></li></ul>
+<div id='main-pane'><iframe class='main' src='about:blank'></div>
 </body>
 </html>

@@ -47,7 +47,7 @@ class HTMLIFrameElementImp : public ObjectMixin<HTMLIFrameElementImp, HTMLElemen
     void handleBlur(EventListenerImp* listener, events::Event event);
 
 public:
-    HTMLIFrameElementImp(DocumentImp* ownerDocument);
+    HTMLIFrameElementImp(DocumentImp* ownerDocument, unsigned flags);
     HTMLIFrameElementImp(HTMLIFrameElementImp* org, bool deep);
     ~HTMLIFrameElementImp();
 

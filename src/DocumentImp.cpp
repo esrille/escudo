@@ -446,8 +446,11 @@ Element DocumentImp::createElement(const std::u16string& localName)
         return new(std::nothrow) HTMLModElementImp(this, name);
     if (name == u"img")
         return new(std::nothrow) HTMLImageElementImp(this);
-    if (name == u"iframe")
-        return new(std::nothrow) HTMLIFrameElementImp(this);
+    if (name == u"iframe") {
+        WindowImp* context = getDefaultWindow();
+        assert(context);
+        return new(std::nothrow) HTMLIFrameElementImp(this, context->isDeskTop() ? WindowImp::TopLevel : 0);
+    }
     if (name == u"embed")
         return new(std::nothrow) HTMLEmbedElementImp(this);
     if (name == u"object")

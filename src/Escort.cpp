@@ -101,7 +101,7 @@ int main(int argc, char* argv[])
     std::string navigatorPath = profile.getProfilePath() + "/escort.html";
     if (!profile.hasFile(navigatorPath))
         navigatorPath = std::string(argv[1]) + "/escort.html";
-    WindowImp* imp = new WindowImp();
+    WindowImp* imp = new WindowImp(0, 0, WindowImp::DeskTop);
     window = imp;
     imp->setFaviconOverridable(true);
     imp->enableZoom(false);
