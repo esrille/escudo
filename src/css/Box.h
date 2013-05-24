@@ -390,6 +390,9 @@ public:
     virtual bool isFloat() const {
         return false;
     }
+    virtual bool isClipped() const {
+        return false;
+    }
 
     void updatePadding();
     void updateBorderWidth();
@@ -456,8 +459,10 @@ public:
             y += element.getScrollTop();
         }
         for (Box* box = getFirstChild(); box; box = box->getNextSibling()) {
-            if (Box* target = box->boxFromPoint(x, y, context))
-                return target;
+            if (Box* target = box->boxFromPoint(x, y, context)) {
+                if (!isClipped() || isInside(x, y))
+                    return target;
+            }
         }
         return isInside(x, y) ? this : 0;
     }
@@ -661,7 +666,7 @@ public:
     }
 
     virtual bool isFloat() const;
-    bool isClipped() const {
+    virtual bool isClipped() const {
         return !isAnonymous() && style && style->overflow.isClipped();
     }
     bool canScroll() const {
