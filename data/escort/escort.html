@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <!--
- - Copyright 2010-2012 Esrille Inc.
+ - Copyright 2010-2013 Esrille Inc.
  -
  - Licensed under the Apache License, Version 2.0 (the "License");
  - you may not use this file except in compliance with the License.
@@ -234,6 +234,7 @@ body
 }
 #tabs > li
 {
+    position: relative;
     display: inline-block;
     overflow: hidden;
     height: 22px;
@@ -267,6 +268,16 @@ body
 {
     background-color: hsl(20, 7%, 88%);
 }
+.tab > div
+{
+    position: absolute;
+    right: 0;
+    margin: 0 4px;
+}
+.tab > div:hover
+{
+    color: red;
+}
 iframe.inactive
 {
     display: none;
@@ -282,26 +293,40 @@ function BrowsingContext()
 }
 
 BrowsingContext.prototype = {
-    activate: function() {
-        this.tab.classList.add('active');
-        this.pane.classList.remove('inactive');
-        var title = this.pane.contentDocument.title;
-        if (0 < title.length)
+    refresh: function() {
+        var title = '';
+        if (this.pane.contentDocument)
+            title = this.pane.contentDocument.title;
+        if (0 < title.length) {
             document.title = title;
-        else
+            this.setTitle(title);
+        } else {
             document.title = navigator.appName;
+            this.setTitle('untitled');
+        }
         document.getElementById('location').value = this.pane.contentWindow.location;
         if (this.busy)
             document.getElementById('settings').style.backgroundImage = 'url(gear.gif)';
         else
             document.getElementById('settings').style.backgroundImage = 'url(escort.png)';
     },
+    activate: function() {
+        this.tab.classList.add('active');
+        this.pane.classList.remove('inactive');
+        this.refresh();
+    },
     deactivate: function() {
         this.tab.classList.remove('active');
         this.pane.classList.add('inactive');
     },
     setTitle: function(title) {
-        this.tab.textContent = (0 < title.length) ? title : '(untitled)';
+        this.tab.firstElementChild.textContent = (0 < title.length) ? title : '(untitled)';
+    },
+    terminate: function() {
+        this.pane.parentElement.removeChild(this.pane);
+        this.pane = null;
+        this.tab.parentElement.removeChild(this.tab);
+        this.tab = null;
     }
 };
 
@@ -325,6 +350,14 @@ function getContextIndexFromFrame(f) {
     }
     return -1;
 }
+function getContextIndexFromTab(t) {
+    for (var i = 0; i < contexts.length; ++i) {
+        if (contexts[i].tab == t) {
+            return i;
+        }
+    }
+    return -1;
+}
 
 function busy(e) {
     if (e.returnValue.length == 0 && !e.defaultPrevented) {
@@ -343,26 +376,21 @@ function complete(e) {
     var title = c.pane.contentDocument.title;
     c.setTitle(title);
     if (i == active) {
-        document.getElementById('settings').style.backgroundImage = 'url(escort.png)';
-        document.getElementById('location').value = c.pane.contentWindow.location;
         c.pane.focus();
         c.pane.contentWindow.addEventListener('beforeunload', busy, false);
-        if (0 < title.length)
-            document.title = title;
-        else
-            document.title = navigator.appName;
+        c.refresh();
     }
     e.preventDefault();
 }
 
 function back(e) {
     contexts[active].pane.contentWindow.history.back();
-    document.getElementById('location').value = contexts[active].pane.contentWindow.location;
+    contexts[active].refresh();
     e.preventDefault();
 }
 function forward(e) {
     contexts[active].pane.contentWindow.history.forward();
-    document.getElementById('location').value = contexts[active].pane.contentWindow.location;
+    contexts[active].refresh();
     e.preventDefault();
 }
 function reload(e) {
@@ -386,13 +414,11 @@ function keypress(e) {
     }
 }
 function clickTab(event) {
+    var i = getContextIndexFromTab(event.currentTarget);
+    if (i < 0)
+        return;
     contexts[active].deactivate();
-    for (var i = 0; i < contexts.length; ++i) {
-        if (contexts[i].tab == event.target) {
-            active = i;
-            break;
-        }
-    }
+    active = i;
     contexts[active].activate();
 }
 function addBrowsingContext(e) {
@@ -404,9 +430,13 @@ function addBrowsingContext(e) {
     c.pane.addEventListener('error', complete, false);
     c.pane.contentWindow.addEventListener('beforeunload', busy, false);
     c.tab = document.createElement('li');
+    c.tab.appendChild(document.createElement('span'));
+    c.tab.appendChild(document.createElement('div'));
+    c.tab.lastElementChild.textContent = '✘';
     var tabs = document.getElementById('tabs');
     c.tab.className = 'tab';
     c.tab.addEventListener('click', clickTab, false);
+    c.tab.lastElementChild.addEventListener('click', closeTab, false);
     if (addingNewTab) {
         tabs.insertBefore(c.tab, contexts[0].tab);
         active = 0;
@@ -421,6 +451,24 @@ function addTab(e) {
     addingNewTab = true;
     document.getElementById('main-pane').insertBefore(document.createElement('iframe'), contexts[0].pane);
     addingNewTab = false;
+}
+function closeTab(e) {
+    var i;
+    if (1 < contexts.length) {
+        i = getContextIndexFromTab(e.target.parentElement);
+        if (i < 0)
+            return;
+    } else {
+        addTab(e);
+        i = 1;
+    }
+    if (i == active)
+        contexts[active].deactivate();
+    if (i < active || active == contexts.length - 1)
+        --active;
+    contexts[i].terminate();
+    contexts.splice(i, 1);
+    contexts[active].activate();
 }
 
 function init() {
@@ -449,7 +497,8 @@ function init() {
     list = document.querySelectorAll('.tab');
     for (var i = 0; i < list.length; ++i) {
         contexts[i].tab = list[i];
-        list[i].addEventListener('click', clickTab, false);
+        contexts[i].tab.addEventListener('click', clickTab, false);
+        contexts[i].tab.lastElementChild.addEventListener('click', closeTab, false);
     }
 
     contexts[active].activate();
@@ -474,7 +523,7 @@ function init() {
 </td>
 </tr>
 </table>
-<ul id='tabs'><li id='plus'>✚</li><li class='tab active'></li></ul>
+<ul id='tabs'><li id='plus'>✚</li><li class='tab active'><span></span><div>✘</div></li></ul>
 <div id='main-pane'><iframe class='main' src='about:blank'></div>
 </body>
 </html>
