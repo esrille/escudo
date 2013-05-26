@@ -102,12 +102,7 @@ StackingContext::StackingContext(bool auto_, int zIndex, CSSStyleDeclarationImp*
 
 StackingContext::~StackingContext()
 {
-    if (parent)
-        parent->removeChild(this);
-    while (0 < childCount) {
-        StackingContext* child = removeChild(firstChild);
-        delete child;
-    }
+    detach();
 }
 
 StackingContext* StackingContext::addContext(bool auto_, int zIndex, CSSStyleDeclarationImp* style)
@@ -175,6 +170,22 @@ void StackingContext::setZIndex(bool auto_, int index)
     }
 }
 
+void StackingContext::detach()
+{
+    while (hasChildren())
+        getFirstChild()->detach();
+    if (parent) {
+        for (auto i = parent->getFirstChild(); i; i = i->getNextSibling()) {
+            if (i->positioned == this)
+                i->detach();
+        }
+        parent->removeChild(this);
+        parent = 0;
+    }
+    if (style->getStackingContext() == this)
+        style->clearStackingContext();
+}
+
 void StackingContext::resetScrollSize()
 {
     for (Box* base = firstBase; base; base = base->nextBase)
@@ -218,6 +229,7 @@ void StackingContext::updateClipBox(StackingContext* s)
     for (Block* clip = s->clipBox; clip && clip != s->positioned->clipBox; clip = clip->clipBox) {
         if (clip->stackingContext == s || !clip->getParentBox())
             continue;
+        assert(clip->stackingContext);
         Element element = interface_cast<Element>(clip->node);
         scrollLeft += element.getScrollLeft();
         scrollTop += element.getScrollTop();

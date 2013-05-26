@@ -127,6 +127,8 @@ public:
 
     void setZIndex(bool auto_, int index = 0);
 
+    void detach();
+
     void clearBase() {
         firstBase = lastBase = 0;
         firstFloat = lastFloat = 0;

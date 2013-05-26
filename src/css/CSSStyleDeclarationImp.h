@@ -605,6 +605,9 @@ public:
     StackingContext* getStackingContext() const {
         return stackingContext.get();
     }
+    void clearStackingContext() {
+        stackingContext = 0;
+    }
 
     FontTexture* getFontTexture() const {
         return fontTexture;

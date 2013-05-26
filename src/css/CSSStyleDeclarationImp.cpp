@@ -2247,6 +2247,11 @@ Block* CSSStyleDeclarationImp::updateInlines(Element element)
 
 Block* CSSStyleDeclarationImp::revert(Element element)
 {
+    if (parentStyle && stackingContext && parentStyle->stackingContext != stackingContext) {
+        stackingContext->detach();
+        stackingContext = 0;
+    }
+
     Block* block = dynamic_cast<Block*>(getBox());
     if (!block)
         return updateInlines(element);

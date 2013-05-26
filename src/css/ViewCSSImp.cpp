@@ -301,6 +301,8 @@ void ViewCSSImp::constructComputedStyle(Node node, CSSStyleDeclarationImp* paren
                 node = updateStyleRules(element, style, parentStyle);
                 style->restoreComputedValues(board);
             }
+            if (!style->getStackingContext())
+                style->computeStackingContext(this, parentStyle, false);
         } else {
             style = new(std::nothrow) CSSStyleDeclarationImp;
             if (!style)
@@ -376,6 +378,8 @@ void ViewCSSImp::calculateComputedStyle(Element element, CSSStyleDeclarationImp*
             overflow = style->overflow.getValue();
         flags |= CSSStyleDeclarationImp::Computed;  // The child styles have to be recomputed.
     }
+    if (!style->getStackingContext())
+        style->computeStackingContext(this, parentStyle, false);
 
     Element shadow = element;
     if (HTMLElementImp* imp = dynamic_cast<HTMLElementImp*>(element.self())) {
