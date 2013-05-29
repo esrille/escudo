@@ -117,6 +117,7 @@ void StackingContext::insertContext(StackingContext* item)
 {
     assert(item);
     if (isAuto()) {
+        assert(!parent->isAuto());
         parent->insertContext(item);
         item->positioned = this;
         return;
@@ -175,7 +176,9 @@ void StackingContext::detach()
     while (hasChildren())
         getFirstChild()->detach();
     if (parent) {
-        for (auto i = parent->getFirstChild(); i; i = i->getNextSibling()) {
+        StackingContext* next;
+        for (StackingContext* i = parent->getFirstChild(); i; i = next) {
+            next = i->getNextSibling();
             if (i->positioned == this)
                 i->detach();
         }
@@ -184,6 +187,7 @@ void StackingContext::detach()
     }
     if (style->getStackingContext() == this)
         style->clearStackingContext();
+    positioned = 0;
 }
 
 void StackingContext::resetScrollSize()
@@ -226,7 +230,7 @@ void StackingContext::updateClipBox(StackingContext* s)
 {
     float scrollLeft = 0.0f;
     float scrollTop = 0.0f;
-    for (Block* clip = s->clipBox; clip && clip != s->positioned->clipBox; clip = clip->clipBox) {
+    for (Block* clip = s->clipBox; clip && (!s->positioned || clip != s->positioned->clipBox); clip = clip->clipBox) {
         if (clip->stackingContext == s || !clip->getParentBox())
             continue;
         assert(clip->stackingContext);

@@ -128,6 +128,13 @@ public:
     void setZIndex(bool auto_, int index = 0);
 
     void detach();
+    bool isDetached() const {
+        return !parent;
+    }
+
+    const CSSStyleDeclarationImp* getStyle() const {
+        return style;
+    }
 
     void clearBase() {
         firstBase = lastBase = 0;
