@@ -111,7 +111,7 @@ private:
             y(y),
             button(button)
         {}
-        EventTask(int keyType, unsigned charCode, unsigned keyCode) :
+        EventTask(int keyType, int modifiers, unsigned charCode, unsigned keyCode) :
             type(keyType),
             modifiers(modifiers),
             charCode(charCode),
