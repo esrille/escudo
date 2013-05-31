@@ -355,10 +355,20 @@ void StackingContext::renderFloats(ViewCSSImp* view, Box* last, Box* current)
 
 void StackingContext::addBase(Box* box)
 {
-#ifndef NDEBUG
-    for (Box* i = firstBase; i; i = i->nextBase)
+    Box* prev = 0;
+    for (Box* i = firstBase; i; prev = i, i = i->nextBase) {
         assert(box != i);
-#endif
+        if (i->parentBox == box) {  // This happens with positioned inline-level boxes
+            if (prev)
+                prev->nextBase = box;
+            else
+                firstBase = box;
+            box->nextBase = i->nextBase;
+            if (lastBase == i)
+                lastBase = box;
+            return;
+        }
+    }
     if (!firstBase)
         firstBase = lastBase = box;
     else {
