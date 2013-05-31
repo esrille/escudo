@@ -694,8 +694,15 @@ void Block::renderInline(ViewCSSImp* view, StackingContext* stackingContext)
 void Block::render(ViewCSSImp* view, StackingContext* stackingContext)
 {
     unsigned overflow = renderBegin(view);
+
+    Box* last = 0;
+    if (overflow != CSSOverflowValueImp::Visible)
+        last = stackingContext->getLastFloat();
     renderNonInline(view, stackingContext);
-    renderInline(view, stackingContext);
+    renderInline(view, stackingContext);  // TODO: Check which should be drawn first; floats or inline-blocks?
+    if (overflow != CSSOverflowValueImp::Visible && last != stackingContext->getLastFloat())
+        stackingContext->renderFloats(view, last, this);
+
     if (!isAnonymous() && 0.0f < getOutlineWidth())
         renderOutline(view, x, y + getTopBorderEdge());
     renderEnd(view, overflow);
