@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ class FontManagerBackEndGL : public FontManagerBackEnd
 
     void update()
     {
+        std::lock_guard<std::mutex> lock(mutex);
         if (!updateList.empty()) {
             for (auto i = updateList.begin(); i != updateList.end(); ++i) {
                 if (i->second == Add)

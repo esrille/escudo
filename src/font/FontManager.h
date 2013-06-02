@@ -41,26 +41,30 @@ struct FontGlyph;
 class FontManagerBackEnd
 {
 protected:
+    mutable std::mutex mutex;
     std::list<std::pair<uint8_t*, FontGlyph*>> updateList;
 
     static FontGlyph* const Add;
     static FontGlyph* const Delete;
 
+    void clear() {
+        updateList.clear();
+    }
+
 public:
     virtual ~FontManagerBackEnd() {}
 
-    // TODO: sync
     void addImage(uint8_t* image) {
+        std::lock_guard<std::mutex> lock(mutex);
         updateList.push_back(std::make_pair(image, Add));
     }
     void updateImage(uint8_t* image, FontGlyph* glyph)  {
+        std::lock_guard<std::mutex> lock(mutex);
         updateList.push_back(std::make_pair(image, glyph));
     }
     void deleteImage(uint8_t* image)  {
+        std::lock_guard<std::mutex> lock(mutex);
         updateList.push_back(std::make_pair(image, Delete));
-    }
-    void clear() {
-        updateList.clear();
     }
 
     virtual void renderText(FontTexture* font, const char16_t* text, size_t length, float letterSpacing, float wordSpacing) = 0;
