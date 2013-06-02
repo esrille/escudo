@@ -75,7 +75,7 @@ void deleteImage(uint8_t* image)
 {
     std::map<uint8_t*, GLuint>::iterator it = texnames.find(image);
     if (it != texnames.end()) {
-        glDeleteTextures(1, &it->second);
+        deleteTexture(it->second);
         texnames.erase(it);
     }
 }

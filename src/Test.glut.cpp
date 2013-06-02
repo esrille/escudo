@@ -17,6 +17,9 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 
+#include <thread>
+#include <mutex>
+
 #include "WindowImp.h"
 #include "Test.util.h"
 #include "http/HTTPConnection.h"
@@ -28,10 +31,31 @@ html::Window window(0);
 
 namespace
 {
-    enum {
-        MainThread = 1
-    };
-    __thread unsigned threadFlags;
+
+std::mutex mutex;
+
+// threadFlags
+const unsigned MainThread = 0x01;
+__thread unsigned threadFlags;
+
+const size_t MaxTexturesToDelete = 1024;
+GLuint texturesToDelete[MaxTexturesToDelete];
+size_t textureCountToDelete;
+
+void deleteTextures() {
+    std::lock_guard<std::mutex> lock(mutex);
+    if (0 < textureCountToDelete) {
+        glDeleteTextures(textureCountToDelete, texturesToDelete);
+        textureCountToDelete = 0;
+    }
+}
+
+}
+
+void deleteTexture(unsigned texture) {
+    std::lock_guard<std::mutex> lock(mutex);
+    assert(textureCountToDelete + 1 < MaxTexturesToDelete);
+    texturesToDelete[textureCountToDelete++] = texture;
 }
 
 void reshape(int w, int h)
@@ -71,6 +95,9 @@ void display()
         assert(x == 0.0f && y == 0.0f);
 #endif
     }
+
+    deleteTextures();
+
     glutSwapBuffers();  // This would block until the sync happens
 }
 

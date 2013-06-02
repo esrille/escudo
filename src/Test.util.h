@@ -63,6 +63,7 @@ std::string getFileURL(const std::string& path);
 //
 void init(int* argc, char* argv[], int width = -1, int height = -1);
 bool isMainThread();
+void deleteTexture(unsigned texture);
 
 //
 // Test.x11.cpp
