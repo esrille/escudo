@@ -21,9 +21,9 @@
 #include "config.h"
 #endif
 
-#include <deque>
-
 #include <boost/function.hpp>
+
+#include "Queue.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -33,6 +33,7 @@ class Task
     Object target;
     boost::function<void (void)> handler;
 public:
+    Task() {}
     Task(Object target, boost::function<void (void)> func) :
         target(target),
         handler(func)
@@ -62,28 +63,7 @@ public:
     }
 };
 
-class TaskQueue
-{
-    std::deque<Task> queue;
-public:
-    explicit operator bool( ) const {
-        return !queue.empty();
-    }
-    bool operator!() const {
-        return queue.empty();
-    }
-    bool empty() const {
-        return queue.empty();
-    }
-    Task getTask() {
-        Task task(queue.front());
-        queue.pop_front();
-        return task;
-    }
-    void putTask(const Task& task) {
-        queue.push_back(task);
-    }
-};
+typedef Queue<Task> TaskQueue;
 
 }}}}  // org::w3c::dom::bootstrap
 
