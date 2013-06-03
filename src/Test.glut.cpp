@@ -19,6 +19,7 @@
 
 #include <thread>
 #include <mutex>
+#include <vector>
 
 #include "WindowImp.h"
 #include "Test.util.h"
@@ -37,16 +38,13 @@ std::mutex mutex;
 // threadFlags
 const unsigned MainThread = 0x01;
 __thread unsigned threadFlags;
-
-const size_t MaxTexturesToDelete = 1024;
-GLuint texturesToDelete[MaxTexturesToDelete];
-size_t textureCountToDelete;
+std::vector<GLuint> texturesToDelete;
 
 void deleteTextures() {
     std::lock_guard<std::mutex> lock(mutex);
-    if (0 < textureCountToDelete) {
-        glDeleteTextures(textureCountToDelete, texturesToDelete);
-        textureCountToDelete = 0;
+    if (!texturesToDelete.empty()) {
+        glDeleteTextures(texturesToDelete.size(), texturesToDelete.data());
+        texturesToDelete.clear();
     }
 }
 
@@ -54,8 +52,7 @@ void deleteTextures() {
 
 void deleteTexture(unsigned texture) {
     std::lock_guard<std::mutex> lock(mutex);
-    assert(textureCountToDelete + 1 < MaxTexturesToDelete);
-    texturesToDelete[textureCountToDelete++] = texture;
+    texturesToDelete.push_back(texture);
 }
 
 void reshape(int w, int h)
