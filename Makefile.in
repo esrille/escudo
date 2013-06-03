@@ -1333,7 +1333,7 @@ libeshtml5_a_SOURCES = org/w3c/dom/ObjectArray.h src/one_at_a_time.hpp \
 	src/TextIterator.h src/U16InputStream.cpp src/U16InputStream.h \
 	src/Canvas.h src/CanvasGL.cpp src/CanvasGL.h \
 	src/BackgroundTask.cpp src/DocumentWindow.cpp \
-	src/DocumentWindow.h src/Profile.cpp src/Profile.h \
+	src/DocumentWindow.h src/Profile.cpp src/Profile.h src/Queue.h \
 	src/Test.util.h src/Test.util.cpp src/Test.glut.cpp \
 	src/Test.x11.cpp src/url/URI.h src/url/URI.cpp src/url/URL.h \
 	src/url/URL.cpp src/http/HTTPCache.h src/http/HTTPCache.cpp \

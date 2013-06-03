@@ -646,6 +646,7 @@ libeshtml5_a_SOURCES = \
 	src/DocumentWindow.h \
 	src/Profile.cpp \
 	src/Profile.h \
+	src/Queue.h \
 	src/Test.util.h \
 	src/Test.util.cpp \
 	src/Test.glut.cpp \
