@@ -30,6 +30,7 @@ const char* fontList[] =
     "/Library/Fonts/Arial Bold.ttf",
     "/Library/Fonts/Arial Italic.ttf",
     "/Library/Fonts/Arial.ttf",
+    "/Library/Fonts/Arial Unicode.ttf",
     "/Library/Fonts/Times New Roman Bold Italic.ttf",
     "/Library/Fonts/Times New Roman Bold.ttf",
     "/Library/Fonts/Times New Roman Italic.ttf",
