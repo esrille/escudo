@@ -243,12 +243,12 @@ bool CSSSelector::match(Element& element, ViewCSSImp* view, bool dynamic)
             break;
         case CSSPrimarySelector::Child:
             e = e.getParentElement();
-            if (!(*i)->match(e, view, dynamic))
+            if (!e || !(*i)->match(e, view, dynamic))
                 return false;
             break;
         case CSSPrimarySelector::AdjacentSibling:
             e = e.getPreviousElementSibling();
-            if (!(*i)->match(e, view, dynamic))
+            if (!e || !(*i)->match(e, view, dynamic))
                 return false;
             break;
         case CSSPrimarySelector::GeneralSibling:
@@ -292,7 +292,7 @@ bool CSSPseudoClassSelector::match(Element& element, ViewCSSImp* view, bool dyna
             return view->isHovered(element);
         break;
     case FirstChild:
-        if (element && element.getParentElement().getFirstElementChild() == element)
+        if (element.getParentElement().getFirstElementChild() == element)
             return true;
         break;
     case Active:
