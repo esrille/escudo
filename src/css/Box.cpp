@@ -1025,6 +1025,26 @@ bool Block::isCollapsedThrough() const
     return true;
 }
 
+float Block::getInternalClearances() const
+{
+    if (height != 0.0f || isFlowRoot() ||
+        borderTop != 0.0f || paddingTop != 0.0f || paddingBottom != 0.0f || borderBottom != 0.0f)
+        return 0.0f;
+    float c = 0.0f;
+    for (LineBox* lineBox = dynamic_cast<LineBox*>(getFirstChild());
+         lineBox;
+         lineBox = dynamic_cast<LineBox*>(lineBox->getNextSibling()))
+    {
+        if (lineBox->getTotalHeight() != 0.0f)
+            return 0.0f;
+        if (!isnan(lineBox->clearance))
+            c += lineBox->clearance;
+    }
+    if (c != 0.0f)
+        c += topBorderEdge;
+    return c;
+}
+
 float Block::collapseMarginTop(FormattingContext* context)
 {
     if (!isCollapsableOutside()) {
@@ -1071,8 +1091,11 @@ float Block::collapseMarginTop(FormattingContext* context)
     marginTop = context->collapseMargins(marginTop);
 
     if (!isAnonymous()) {
-        clearance = context->clear(style->clear.getValue());
+        unsigned clear = style->clear.getValue();
+        clearance = context->clear(clear);
         Block* prev = dynamic_cast<Block*>(getPreviousSibling());
+        if (clear && prev)
+            clearance += prev->getInternalClearances();
         if (clearance == 0.0f)
             clearance = NAN;
         else if (prev && prev->isCollapsedThrough()) {

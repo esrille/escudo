@@ -675,6 +675,7 @@ public:
     }
 
     bool isCollapsedThrough() const;
+    float getInternalClearances() const;
 
     virtual const ContainingBlock* getContainingBlock(ViewCSSImp* view) const;
     void setContainingBlock(ViewCSSImp* view);
