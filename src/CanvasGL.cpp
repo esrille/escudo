@@ -23,7 +23,7 @@ GLuint Canvas::Impl::currentFrameBuffer = 0;
 
 void Canvas::Impl::setup(int w, int h)
 {
-    if (width != 0 || height != 0 || w < 0 || h < 0)
+    if (width != 0 || height != 0 || w <= 0 || h <= 0)
         return;
 
     width = w;
