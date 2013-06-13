@@ -535,14 +535,21 @@ void WindowImp::mouseMove(const EventTask& task)
     Box* box = view->boxFromPoint(x, y);
     if (!box)
         return;
+
+    Element target = Box::getContainingElement(box->getTargetNode());
+    Element prev = view->setHovered(target);
+
+    if (prev != target) {
+        if (html::Window c = interface_cast<html::HTMLIFrameElement>(prev).getContentWindow()) {
+            if (auto w = dynamic_cast<WindowImp*>(c.self()))
+                w->mouseMove(-1, -1, modifiers);
+        }
+    }
     if (WindowImp* childWindow = box->getChildWindow()) {
         childWindow->mouseMove(x - box->getX() - box->getBlankLeft(),
                                y - box->getY() - box->getBlankTop(),
                                modifiers);
     }
-
-    Element target = Box::getContainingElement(box->getTargetNode());
-    Element prev = view->setHovered(target);
     if (prev != target) {
         // mouseout
         if (MouseEventImp* imp = new(std::nothrow) MouseEventImp) {

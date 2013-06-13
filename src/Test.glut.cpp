@@ -215,6 +215,14 @@ void mouseMove(int x, int y)
         imp->mouseMove(x, y, glutGetModifiers());
 }
 
+void entry(int state)
+{
+    if (state == GLUT_LEFT) {
+        if (WindowImp* imp = static_cast<WindowImp*>(window.self()))
+            imp->mouseMove(-1, -1, glutGetModifiers());
+    }
+}
+
 void timer(int value)
 {
     HttpConnectionManager::getInstance().poll();    // TODO: This line should not be necessary.
@@ -269,6 +277,7 @@ void init(int* argc, char* argv[], int width, int height)
     glutMouseFunc(mouse);
     glutMotionFunc(mouseMove);
     glutPassiveMotionFunc(mouseMove);
+    glutEntryFunc(entry);
     glutTimerFunc(50, timer, 0);
     glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
 
