@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+div {
+  width: 96px;
+  height: 96px;
+  border: solid cyan 2px;
+}
+#outer {
+  width: 144px;
+  height: 200px;
+  border: solid magenta 2px;
+}
+.left {
+  float: left;
+}
+.right {
+  float: right;
+}
+.clear {
+  clear: left;
+}
+</style>
+</head>
+<body>
+  <div id="outer">
+    <div class="right"></div>
+    <div class="left clear"></div>
+  </div>
+</body>
+</html>

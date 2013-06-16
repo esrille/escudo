@@ -891,7 +891,10 @@ bool Block::layOutInline(ViewCSSImp* view, FormattingContext* context, float ori
             keepConsumed = true;
             clearance = -context->usedMargin;
             clearance += context->clear(clear);
-        } else {
+            // Note if no clearance is added, we do shift down at least one
+            // floating box; cf. testdata/css-007.html
+        }
+        if (clearance <= 0.0f) {
             context->leftover = width - context->getLeftEdge() - context->getRightEdge();
             while (context->getLeftoverForFloat(this, floatingBox->style->float_.getValue()) < floatingBox->getEffectiveTotalWidth()) {
                 float h = context->shiftDown();
