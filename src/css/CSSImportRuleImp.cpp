@@ -108,8 +108,10 @@ void CSSImportRuleImp::notify()
         CSSParser parser;
         CSSInputStream cssStream(stream, request->getResponseMessage().getContentCharset(), utfconv(document->getCharacterSet()));
         styleSheet = parser.parse(document, cssStream);
-        if (auto imp = dynamic_cast<CSSStyleSheetImp*>(styleSheet.self()))
+        if (auto imp = dynamic_cast<CSSStyleSheetImp*>(styleSheet.self())) {
             imp->setParentStyleSheet(getParentStyleSheet());
+            imp->setHref(request->getRequestMessage().getURL());
+        }
         if (4 <= getLogLevel())
             dumpStyleSheet(std::cerr, styleSheet.self());
     }
