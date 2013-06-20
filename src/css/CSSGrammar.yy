@@ -483,25 +483,35 @@ expr
     }
   ;
 term
-  : unary_term
+  : unary_term {
+        $$.parser = parser;
+  }
   | STRING       optional_space {
+        $$.parser = parser;
         $$.unit = CSSPrimitiveValue::CSS_STRING;
         $$.text = $1;
     }
   | IDENT        optional_space {
+        $$.parser = parser;
         $$.unit = CSSPrimitiveValue::CSS_IDENT;
         $$.text = $1;
     }
   | URI          optional_space {
+        $$.parser = parser;
         $$.unit = CSSPrimitiveValue::CSS_URI;
         $$.text = $1;
     }
   | UNICODERANGE optional_space {
+        $$.parser = parser;
         $$.unit = CSSPrimitiveValue::CSS_UNICODE_RANGE;
         $$.text = $1;
     }
-  | hexcolor
-  | function /* In CSS3, function seems to be moved to numeric_term... */
+  | hexcolor {
+        $$.parser = parser;
+  }
+  | function {    /* In CSS3, function seems to be moved to numeric_term... */
+        $$.parser = parser;
+  }
   ;
 function
   : FUNCTION optional_space expr ')' optional_space {

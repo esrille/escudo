@@ -105,12 +105,11 @@ void CSSImportRuleImp::notify()
 {
     if (request->getStatus() == 200) {
         boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request->getContentDescriptor(), boost::iostreams::close_handle);
-        CSSParser parser;
+        CSSParser parser(request->getRequestMessage().getURL());
         CSSInputStream cssStream(stream, request->getResponseMessage().getContentCharset(), utfconv(document->getCharacterSet()));
         styleSheet = parser.parse(document, cssStream);
         if (auto imp = dynamic_cast<CSSStyleSheetImp*>(styleSheet.self())) {
             imp->setParentStyleSheet(getParentStyleSheet());
-            imp->setHref(request->getRequestMessage().getURL());
         }
         if (4 <= getLogLevel())
             dumpStyleSheet(std::cerr, styleSheet.self());

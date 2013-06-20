@@ -30,12 +30,14 @@
 #include "CSSTokenizer.h"
 #include "CSSSerialize.h"
 #include "MediaListImp.h"
+#include "url/URL.h"
 
 extern int getLogLevel();
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class DocumentImp;
+class CSSParser;
 class CSSSelectorsGroup;
 class CSSStyleRuleImp;
 class CSSStyleSheetImp;
@@ -175,6 +177,8 @@ struct CSSParserTerm
     static const unsigned short CSS_TERM_INDEX = 204;
     static const unsigned short CSS_TERM_END = 205;
 
+    CSSParser* parser;
+
     short op;  // '/', ',', or '\0'
     unsigned short unit;
     CSSParserNumber number;  // TODO: number should be float
@@ -206,6 +210,7 @@ struct CSSParserTerm
             return u"";
         }
     }
+    std::u16string getURL() const;
 };
 
 struct CSSParserExpr
@@ -237,6 +242,7 @@ struct CSSParserExpr
 
 class CSSParser
 {
+    URL baseURL;
     DocumentImp* document;
     CSSTokenizer tokenizer;
     CSSStyleSheetImp* styleSheet;
@@ -253,7 +259,8 @@ class CSSParser
         tokenizer.reset(cssText);
     }
 public:
-    CSSParser() :
+    CSSParser(const std::u16string base = u"") :
+        baseURL(base),
         document(0),
         styleSheet(0),
         styleDeclaration(0),
@@ -263,6 +270,14 @@ public:
         caseSensitive(false),
         importable(true)
     {
+    }
+
+    std::u16string getURL(const std::u16string& href) const {
+        if (!baseURL.isEmpty()) {
+            URL url(baseURL, href);
+            return url;
+        }
+        return href;
     }
 
     css::CSSStyleSheet parse(DocumentImp* document, const std::u16string& cssText);

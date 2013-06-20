@@ -73,10 +73,11 @@ void HTMLStyleElementImp::handleMutation(EventListenerImp* listener, events::Eve
             if (TextImp* text = dynamic_cast<TextImp*>(node.self()))  // TODO better to avoid imp call?
                 content += text->getData();
         }
-        CSSParser parser;
+        CSSParser parser(getBaseURI());
         styleSheet = parser.parse(document, content);
         if (auto imp = dynamic_cast<CSSStyleSheetImp*>(styleSheet.self())) {
             imp->setOwnerNode(this);
+            imp->setHref(u"");
             if (4 <= getLogLevel())
                 dumpStyleSheet(std::cerr, imp);
         }

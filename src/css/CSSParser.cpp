@@ -24,12 +24,18 @@
 using namespace org::w3c::dom::bootstrap;
 using namespace org::w3c::dom::css;
 
+std::u16string CSSParserTerm::getURL() const
+{
+    return parser->getURL(getString());
+}
+
 CSSStyleSheet CSSParser::parse(DocumentImp* document, const std::u16string& cssText)
 {
     this->document = document;
     styleSheet = new(std::nothrow) CSSStyleSheetImp;
     if (!styleSheet)
         return 0;
+    styleSheet->setHref(baseURL);
     tokenizer.reset(cssText);
     CSSparse(this);
     return styleSheet;
