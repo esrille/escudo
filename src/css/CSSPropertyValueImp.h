@@ -2063,7 +2063,7 @@ public:
         if (0 <= term->getIndex())
             return setValue();
         else
-            return setValue(term->getString());
+            return setValue(term->getURL());
     }
     std::u16string getValue() const {
         return uri;
