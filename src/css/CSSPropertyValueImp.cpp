@@ -1180,7 +1180,7 @@ bool CSSContentValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* 
                     content = new(std::nothrow) StringContent(term->getString());
                     break;
                 case CSSPrimitiveValue::CSS_URI:
-                    content = new(std::nothrow) URIContent(term->getString());
+                    content = new(std::nothrow) URIContent(term->getURL());
                     break;
                 }
                 break;
@@ -1389,7 +1389,7 @@ bool CSSCursorValueImp::setValue(CSSStyleDeclarationImp* decl, CSSValueParser* p
     for (auto i = stack.begin(); i != stack.end(); ++i) {
         CSSParserTerm* term = *i;
         if (term->unit == CSSPrimitiveValue::CSS_URI)
-            uriList.push_back(term->getString());
+            uriList.push_back(term->getURL());
         else if (0 <= term->getIndex())
             value = term->getIndex();
     }
