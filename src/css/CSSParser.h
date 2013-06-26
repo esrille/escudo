@@ -177,8 +177,8 @@ struct CSSParserTerm
     static const unsigned short CSS_TERM_INDEX = 204;
     static const unsigned short CSS_TERM_END = 205;
 
-    CSSParser* parser;
-
+    // Note CSSParserTerm must begin with op, and then unit as they are initialized
+    // via the initialization list.
     short op;  // '/', ',', or '\0'
     unsigned short unit;
     CSSParserNumber number;  // TODO: number should be float
@@ -187,6 +187,9 @@ struct CSSParserTerm
     CSSParserExpr* expr;  // for function
 
     unsigned propertyID;
+
+    // Internal fields
+    CSSParser* parser;
 
     std::u16string getCssText();
     int getIndex() const {
