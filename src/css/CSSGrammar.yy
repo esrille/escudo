@@ -508,10 +508,10 @@ term
     }
   | hexcolor {
         $$.parser = parser;
-  }
+    }
   | function {    /* In CSS3, function seems to be moved to numeric_term... */
         $$.parser = parser;
-  }
+    }
   ;
 function
   : FUNCTION optional_space expr ')' optional_space {
