@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
     }
     HttpRequest::setCachePath(profile.createPath("cache"));
 
-    init(&argc, argv, 816, 1056);
+    init(&argc, argv);
     initLogLevel(&argc, argv);
     initFonts(&argc, argv);
 
