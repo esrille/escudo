@@ -414,7 +414,7 @@ void HttpConnection::readChunk(const boost::system::error_code& err)
         }
         bool completed = false;
         while (0 < response.size()) {
-            if (line[line.length() - 1] != '\n') {
+            if (line.empty() || line[line.length() - 1] != '\n') {
                 const char* chunk = boost::asio::buffer_cast<const char*>(response.data());
                 const char* chunkEnd = chunk + response.size();
                 auto p = std::find(chunk, chunkEnd, '\n');
