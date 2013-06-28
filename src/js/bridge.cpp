@@ -164,8 +164,7 @@ jsval convert(JSContext* cx, Any& v)
 JSBool caller(JSContext* cx, uintN argc, jsval* vp)
 {
     JSObject* obj = JSVAL_TO_OBJECT(JS_CALLEE(cx, vp));
-    ObjectImp* native = static_cast<ObjectImp*>(JS_GetPrivate(cx, obj));
-    if (native) {
+    if (ObjectImp* native = static_cast<ObjectImp*>(JS_GetPrivate(cx, obj))) {
         TemporaryBuffer<Any> arguments(alloca(sizeof(Any) * argc), argc);
         for (unsigned i = 0; i < argc; ++i)
             arguments[i] = convert(cx, JS_ARGV(cx, vp)[i]);
@@ -180,13 +179,14 @@ template <int N>
 JSBool operation(JSContext* cx, uintN argc, jsval* vp)
 {
     if (JSObject* obj = JS_THIS_OBJECT(cx, vp)) {
-        ObjectImp* native = static_cast<ObjectImp*>(JS_GetPrivate(cx, obj));
-        TemporaryBuffer<Any> arguments(alloca(sizeof(Any) * argc), argc);
-        for (unsigned i = 0; i < argc; ++i)
-            arguments[i] = convert(cx, JS_ARGV(cx, vp)[i]);
-        Any result = native->message_(NativeClass::getHash(cx, vp, N), 0, argc, arguments);
-        JS_SET_RVAL(cx, vp, convert(cx, result));
-        return JS_TRUE;
+        if (ObjectImp* native = static_cast<ObjectImp*>(JS_GetPrivate(cx, obj))) {
+            TemporaryBuffer<Any> arguments(alloca(sizeof(Any) * argc), argc);
+            for (unsigned i = 0; i < argc; ++i)
+                arguments[i] = convert(cx, JS_ARGV(cx, vp)[i]);
+            Any result = native->message_(NativeClass::getHash(cx, vp, N), 0, argc, arguments);
+            JS_SET_RVAL(cx, vp, convert(cx, result));
+            return JS_TRUE;
+        }
     }
     return JS_FALSE;
 }
@@ -366,14 +366,15 @@ template <int R>
 JSBool NativeClass::getter(JSContext* cx, JSObject* obj, jsid id, jsval* vp)
 {
     if (JSID_IS_INT(id)) {
-        ObjectImp* native = static_cast<ObjectImp*>(JS_GetPrivate(cx, obj));
-        NativeClass* nc = static_cast<NativeClass*>(native->getStaticPrivate());
-        while (nc->protoRank != R)
-            nc = nc->proto;
-        uint32_t hash = nc->getHash(JSID_TO_INT(id) & 0xff);
-        Any result = native->message_(hash, 0, Object::GETTER_, 0);
-        JS_SET_RVAL(cx, vp, convert(cx, result));
-        return JS_TRUE;
+        if (ObjectImp* native = static_cast<ObjectImp*>(JS_GetPrivate(cx, obj))) {
+            NativeClass* nc = static_cast<NativeClass*>(native->getStaticPrivate());
+            while (nc->protoRank != R)
+                nc = nc->proto;
+            uint32_t hash = nc->getHash(JSID_TO_INT(id) & 0xff);
+            Any result = native->message_(hash, 0, Object::GETTER_, 0);
+            JS_SET_RVAL(cx, vp, convert(cx, result));
+            return JS_TRUE;
+        }
     }
     return JS_FALSE;
 }
@@ -382,15 +383,16 @@ template <int R>
 JSBool NativeClass::setter(JSContext* cx, JSObject* obj, jsid id, JSBool strict, jsval* vp)
 {
     if (JSID_IS_INT(id)) {
-        ObjectImp* native = static_cast<ObjectImp*>(JS_GetPrivate(cx, obj));
-        NativeClass* nc = static_cast<NativeClass*>(native->getStaticPrivate());
-        while (nc->protoRank != R)
-            nc = nc->proto;
-        uint32_t hash = nc->getHash(JSID_TO_INT(id) & 0xff);
-        Any argument = convert(cx, *vp);
-        Any result = native->message_(hash, 0, Object::SETTER_, &argument);
-        JS_SET_RVAL(cx, vp, convert(cx, result));
-        return JS_TRUE;
+        if (ObjectImp* native = static_cast<ObjectImp*>(JS_GetPrivate(cx, obj))) {
+            NativeClass* nc = static_cast<NativeClass*>(native->getStaticPrivate());
+            while (nc->protoRank != R)
+                nc = nc->proto;
+            uint32_t hash = nc->getHash(JSID_TO_INT(id) & 0xff);
+            Any argument = convert(cx, *vp);
+            Any result = native->message_(hash, 0, Object::SETTER_, &argument);
+            JS_SET_RVAL(cx, vp, convert(cx, result));
+            return JS_TRUE;
+        }
     }
     return JS_FALSE;
 }
