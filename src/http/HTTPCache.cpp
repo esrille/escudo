@@ -45,7 +45,7 @@ void HttpCache::notify(HttpRequest* request, bool error)
             request->removeFile();
             request->constructResponseFromCache(false);
         } else {
-            if (!filePath.empty())
+            if (!filePath.empty() && filePath != request->getFilePath())
                 remove(filePath.c_str());
             response.updateStatus(request->getResponseMessage());
             filePath = request->getFilePath();
