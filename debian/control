@@ -1,4 +1,4 @@
-Source: escort
+Source: escudo
 Section: web
 Priority: extra
 Maintainer: Esrille Inc. (0.2) <info@esrille.org>
@@ -12,16 +12,16 @@ Build-Depends: debhelper (>= 8.0.0), autotools-dev,
 	fonts-takao-mincho, fonts-takao-gothic, ttf-ancient-fonts
 Standards-Version: 3.9.2
 Homepage: http://code.google.com/p/es-operating-system/
-Vcs-Browser: https://github.com/esrille/escort
-Vcs-Git: git://github.com/esrille/escort.git
+Vcs-Browser: https://github.com/esrille/escudo
+Vcs-Git: git://github.com/esrille/escudo.git
 
-Package: escort
+Package: escudo
 Architecture: any
 Depends: ${shlibs:Depends},${misc:Depends},
 	fonts-liberation, ttf-dejavu-core,
 	fonts-takao-mincho, fonts-takao-gothic, ttf-ancient-fonts
-Description: Escort Web Browser
- Escort web browser is a new web browser which is currently under the
- development as one of the ES operating system projects. Escort has a
- totally new CSS/HTML rendering engine, and Escort can be configured
- with SpiderMonkey or V8 JavaScript engine at this point.
+Description: Escudo Web Browser
+ Escudo is a new web browser currently being developed as one of the
+ ES operating system projects. Escudo has a totally new CSS/HTML
+ rendering engine, and Escudo can be configured with SpiderMonkey or
+ V8 JavaScript engine at this point.

@@ -29,7 +29,7 @@ namespace bootstrap
 
 std::u16string NavigatorImp::getAppName()
 {
-    return u"Escort";
+    return u"Escudo";
 }
 
 std::u16string NavigatorImp::getAppVersion()

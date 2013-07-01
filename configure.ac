@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script
-AC_INIT([escort], [0.3.2])
+AC_INIT([escudo], [0.3.2])
 AC_CONFIG_AUX_DIR(.)
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([foreign no-define])
@@ -11,7 +11,7 @@ AC_PROG_RANLIB
 AC_CANONICAL_HOST
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_FILES([
-escort.spec
+escudo.spec
 debian/changelog
 Makefile
 data/Makefile
@@ -23,7 +23,7 @@ data/48x48/Makefile
 data/64x64/Makefile
 data/128x128/Makefile
 data/256x256/Makefile
-data/escort/about/index.html
+data/escudo/about/index.html
 ])
 
 AH_BOTTOM([#include <Object.h>])
@@ -33,8 +33,8 @@ AH_BOTTOM([#if 4 < __GNUC__ || __GNUC__ == 4 && 6 <= __GNUC_MINOR__
 
 # generate char16_t stubs
 AH_BOTTOM([#ifdef __APPLE__
-#ifndef ESCORT_CHAR16_T_STUBS
-#define ESCORT_CHAR16_T_STUBS
+#ifndef ESCUDO_CHAR16_T_STUBS
+#define ESCUDO_CHAR16_T_STUBS
 #include <locale>
 namespace std {
 template<>

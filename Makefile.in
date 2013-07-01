@@ -73,14 +73,14 @@ noinst_PROGRAMS = harness$(EXEEXT) Any.test$(EXEEXT) \
 	Script.test$(EXEEXT) ScriptV8.test$(EXEEXT) \
 	Navigator.test$(EXEEXT) NavigatorV8.test$(EXEEXT) \
 	Profile.test$(EXEEXT)
-escortlibexec_PROGRAMS = escort$(EXEEXT)
+escudolibexec_PROGRAMS = escudo$(EXEEXT)
 subdir = .
 DIST_COMMON = README $(am__configure_deps) $(dist_aboutdata_DATA) \
 	$(dist_bin_SCRIPTS) $(dist_desktop_DATA) \
-	$(dist_escortdata_DATA) $(srcdir)/Makefile.am \
+	$(dist_escudodata_DATA) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
-	$(srcdir)/escort.spec.in $(top_srcdir)/configure \
-	$(top_srcdir)/data/escort/about/index.html.in \
+	$(srcdir)/escudo.spec.in $(top_srcdir)/configure \
+	$(top_srcdir)/data/escudo/about/index.html.in \
 	$(top_srcdir)/debian/changelog.in CSSGrammar.cc CSSGrammar.hh \
 	ChangeLog NEWS config.guess config.sub depcomp install-sh \
 	missing ylwrap
@@ -93,8 +93,8 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = escort.spec debian/changelog \
-	data/escort/about/index.html
+CONFIG_CLEAN_FILES = escudo.spec debian/changelog \
+	data/escudo/about/index.html
 CONFIG_CLEAN_VPATH_FILES =
 LIBRARIES = $(noinst_LIBRARIES)
 AR = ar
@@ -395,10 +395,10 @@ libesv8api_a_AR = $(AR) $(ARFLAGS)
 libesv8api_a_LIBADD =
 am_libesv8api_a_OBJECTS = bridgeV8.$(OBJEXT) ScriptV8.$(OBJEXT)
 libesv8api_a_OBJECTS = $(am_libesv8api_a_OBJECTS)
-am__installdirs = "$(DESTDIR)$(escortlibexecdir)" \
+am__installdirs = "$(DESTDIR)$(escudolibexecdir)" \
 	"$(DESTDIR)$(bindir)" "$(DESTDIR)$(aboutdatadir)" \
-	"$(DESTDIR)$(desktopdir)" "$(DESTDIR)$(escortdatadir)"
-PROGRAMS = $(escortlibexec_PROGRAMS) $(noinst_PROGRAMS)
+	"$(DESTDIR)$(desktopdir)" "$(DESTDIR)$(escudodatadir)"
+PROGRAMS = $(escudolibexec_PROGRAMS) $(noinst_PROGRAMS)
 am_Any_test_OBJECTS = Any.test.$(OBJEXT)
 Any_test_OBJECTS = $(am_Any_test_OBJECTS)
 am__DEPENDENCIES_1 =
@@ -479,10 +479,10 @@ ScriptV8_test_LINK = $(CXXLD) $(ScriptV8_test_CXXFLAGS) $(CXXFLAGS) \
 am_URL_test_OBJECTS = URL.test.$(OBJEXT)
 URL_test_OBJECTS = $(am_URL_test_OBJECTS)
 URL_test_DEPENDENCIES = $(am__DEPENDENCIES_3)
-am_escort_OBJECTS = escort-Escort.$(OBJEXT)
-escort_OBJECTS = $(am_escort_OBJECTS)
-escort_DEPENDENCIES = $(am__DEPENDENCIES_3)
-escort_LINK = $(CXXLD) $(escort_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
+am_escudo_OBJECTS = escudo-Escudo.$(OBJEXT)
+escudo_OBJECTS = $(am_escudo_OBJECTS)
+escudo_DEPENDENCIES = $(am__DEPENDENCIES_3)
+escudo_LINK = $(CXXLD) $(escudo_CXXFLAGS) $(CXXFLAGS) $(AM_LDFLAGS) \
 	$(LDFLAGS) -o $@
 am_harness_OBJECTS = harness.$(OBJEXT)
 harness_OBJECTS = $(am_harness_OBJECTS)
@@ -545,7 +545,7 @@ SOURCES = $(libesfontmanager_a_SOURCES) $(libeshtml5_a_SOURCES) \
 	$(Ico_test_SOURCES) $(Navigator_test_SOURCES) \
 	$(NavigatorV8_test_SOURCES) $(Profile_test_SOURCES) \
 	$(Script_test_SOURCES) $(ScriptV8_test_SOURCES) \
-	$(URL_test_SOURCES) $(escort_SOURCES) $(harness_SOURCES)
+	$(URL_test_SOURCES) $(escudo_SOURCES) $(harness_SOURCES)
 DIST_SOURCES = $(libesfontmanager_a_SOURCES) $(libeshtml5_a_SOURCES) \
 	$(libesjsapi_a_SOURCES) $(libesv8api_a_SOURCES) \
 	$(Any_test_SOURCES) $(Box_test_SOURCES) \
@@ -558,7 +558,7 @@ DIST_SOURCES = $(libesfontmanager_a_SOURCES) $(libeshtml5_a_SOURCES) \
 	$(Ico_test_SOURCES) $(Navigator_test_SOURCES) \
 	$(NavigatorV8_test_SOURCES) $(Profile_test_SOURCES) \
 	$(Script_test_SOURCES) $(ScriptV8_test_SOURCES) \
-	$(URL_test_SOURCES) $(escort_SOURCES) $(harness_SOURCES)
+	$(URL_test_SOURCES) $(escudo_SOURCES) $(harness_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
 	install-dvi-recursive install-exec-recursive \
@@ -572,7 +572,7 @@ am__can_run_installinfo = \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
 DATA = $(dist_aboutdata_DATA) $(dist_desktop_DATA) \
-	$(dist_escortdata_DATA)
+	$(dist_escudodata_DATA)
 HEADERS = $(nobase_nodist_noinst_HEADERS)
 RECURSIVE_CLEAN_TARGETS = mostlyclean-recursive clean-recursive	\
   distclean-recursive maintainer-clean-recursive
@@ -1726,41 +1726,41 @@ NavigatorV8_test_SOURCES = src/Navigator.test.cpp
 NavigatorV8_test_LDADD = $(v8_LDADD)
 NavigatorV8_test_CXXFLAGS = $(AM_CFLAGS) -DUSE_V8
 Profile_test_SOURCES = src/Profile.test.cpp
-dist_bin_SCRIPTS = app/escort
+dist_bin_SCRIPTS = app/escudo
 @HAVE_LIBEXEC_FALSE@esrillelibexecdir = $(libdir)/esrille
 @HAVE_LIBEXEC_TRUE@esrillelibexecdir = $(libexecdir)/esrille
-escortlibexecdir = $(esrillelibexecdir)/escort
-escort_SOURCES = src/Escort.cpp
-escort_LDADD = $(js_LDADD)
-escort_CXXFLAGS = $(AM_CFLAGS) -DUSE_JS
+escudolibexecdir = $(esrillelibexecdir)/escudo
+escudo_SOURCES = src/Escudo.cpp
+escudo_LDADD = $(js_LDADD)
+escudo_CXXFLAGS = $(AM_CFLAGS) -DUSE_JS
 desktopdir = $(datadir)/applications
-dist_desktop_DATA = data/escort/escort.desktop
+dist_desktop_DATA = data/escudo/escudo.desktop
 esrilledatadir = $(datadir)/esrille
-escortdatadir = $(esrilledatadir)/escort
-aboutdatadir = $(escortdatadir)/about
-dist_escortdata_DATA = \
-	data/escort/default.css \
-	data/escort/escort.html \
-	data/escort/escort.ico \
-	data/escort/escort.png \
-	data/escort/gear.gif \
-	data/escort/go-next.png \
-	data/escort/go-previous.png \
-	data/escort/view-refresh.png \
-	data/escort/process-stop.png \
-	data/escort/preshint.css
+escudodatadir = $(esrilledatadir)/escudo
+aboutdatadir = $(escudodatadir)/about
+dist_escudodata_DATA = \
+	data/escudo/default.css \
+	data/escudo/escudo.html \
+	data/escudo/escudo.ico \
+	data/escudo/escudo.png \
+	data/escudo/gear.gif \
+	data/escudo/go-next.png \
+	data/escudo/go-previous.png \
+	data/escudo/view-refresh.png \
+	data/escudo/process-stop.png \
+	data/escudo/preshint.css
 
 dist_aboutdata_DATA = \
-	data/escort/about/blank \
-	data/escort/about/index.html \
-	data/escort/about/escort_24.png \
-	data/escort/about/escort_128.png
+	data/escudo/about/blank \
+	data/escudo/about/index.html \
+	data/escudo/about/escudo_24.png \
+	data/escudo/about/escudo_128.png
 
 EXTRA_DIST = \
 	m4/ax_compare_version.m4 \
 	m4/bison.m4 \
-	escort.spec.in \
-	escort.spec \
+	escudo.spec.in \
+	escudo.spec \
 	debian/changelog \
 	debian/changelog.in \
 	debian/compat \
@@ -1769,8 +1769,8 @@ EXTRA_DIST = \
 	debian/docs \
 	debian/rules \
 	debian/source/format \
-	data/escort/about/index.html.in \
-	testlog/css2.1/20110323/implement-report-Escort-Fedora.data \
+	data/escudo/about/index.html.in \
+	testlog/css2.1/20110323/implement-report-Escudo-Fedora.data \
 	LICENSE \
 	NOTICE \
 	config.h \
@@ -1875,11 +1875,11 @@ $(srcdir)/config.h.in:  $(am__configure_deps)
 
 distclean-hdr:
 	-rm -f config.h stamp-h1
-escort.spec: $(top_builddir)/config.status $(srcdir)/escort.spec.in
+escudo.spec: $(top_builddir)/config.status $(srcdir)/escudo.spec.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 debian/changelog: $(top_builddir)/config.status $(top_srcdir)/debian/changelog.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
-data/escort/about/index.html: $(top_builddir)/config.status $(top_srcdir)/data/escort/about/index.html.in
+data/escudo/about/index.html: $(top_builddir)/config.status $(top_srcdir)/data/escudo/about/index.html.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 
 clean-noinstLIBRARIES:
@@ -1903,12 +1903,12 @@ libesv8api.a: $(libesv8api_a_OBJECTS) $(libesv8api_a_DEPENDENCIES) $(EXTRA_libes
 	-rm -f libesv8api.a
 	$(libesv8api_a_AR) libesv8api.a $(libesv8api_a_OBJECTS) $(libesv8api_a_LIBADD)
 	$(RANLIB) libesv8api.a
-install-escortlibexecPROGRAMS: $(escortlibexec_PROGRAMS)
+install-escudolibexecPROGRAMS: $(escudolibexec_PROGRAMS)
 	@$(NORMAL_INSTALL)
-	@list='$(escortlibexec_PROGRAMS)'; test -n "$(escortlibexecdir)" || list=; \
+	@list='$(escudolibexec_PROGRAMS)'; test -n "$(escudolibexecdir)" || list=; \
 	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(escortlibexecdir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(escortlibexecdir)" || exit 1; \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(escudolibexecdir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(escudolibexecdir)" || exit 1; \
 	fi; \
 	for p in $$list; do echo "$$p $$p"; done | \
 	sed 's/$(EXEEXT)$$//' | \
@@ -1926,23 +1926,23 @@ install-escortlibexecPROGRAMS: $(escortlibexec_PROGRAMS)
 	while read type dir files; do \
 	    if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
 	    test -z "$$files" || { \
-	      echo " $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(escortlibexecdir)$$dir'"; \
-	      $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(escortlibexecdir)$$dir" || exit $$?; \
+	      echo " $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(escudolibexecdir)$$dir'"; \
+	      $(INSTALL_PROGRAM_ENV) $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(escudolibexecdir)$$dir" || exit $$?; \
 	    } \
 	; done
 
-uninstall-escortlibexecPROGRAMS:
+uninstall-escudolibexecPROGRAMS:
 	@$(NORMAL_UNINSTALL)
-	@list='$(escortlibexec_PROGRAMS)'; test -n "$(escortlibexecdir)" || list=; \
+	@list='$(escudolibexec_PROGRAMS)'; test -n "$(escudolibexecdir)" || list=; \
 	files=`for p in $$list; do echo "$$p"; done | \
 	  sed -e 'h;s,^.*/,,;s/$(EXEEXT)$$//;$(transform)' \
 	      -e 's/$$/$(EXEEXT)/' `; \
 	test -n "$$list" || exit 0; \
-	echo " ( cd '$(DESTDIR)$(escortlibexecdir)' && rm -f" $$files ")"; \
-	cd "$(DESTDIR)$(escortlibexecdir)" && rm -f $$files
+	echo " ( cd '$(DESTDIR)$(escudolibexecdir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(escudolibexecdir)" && rm -f $$files
 
-clean-escortlibexecPROGRAMS:
-	-test -z "$(escortlibexec_PROGRAMS)" || rm -f $(escortlibexec_PROGRAMS)
+clean-escudolibexecPROGRAMS:
+	-test -z "$(escudolibexec_PROGRAMS)" || rm -f $(escudolibexec_PROGRAMS)
 
 clean-noinstPROGRAMS:
 	-test -z "$(noinst_PROGRAMS)" || rm -f $(noinst_PROGRAMS)
@@ -2006,9 +2006,9 @@ ScriptV8.test$(EXEEXT): $(ScriptV8_test_OBJECTS) $(ScriptV8_test_DEPENDENCIES) $
 URL.test$(EXEEXT): $(URL_test_OBJECTS) $(URL_test_DEPENDENCIES) $(EXTRA_URL_test_DEPENDENCIES) 
 	@rm -f URL.test$(EXEEXT)
 	$(CXXLINK) $(URL_test_OBJECTS) $(URL_test_LDADD) $(LIBS)
-escort$(EXEEXT): $(escort_OBJECTS) $(escort_DEPENDENCIES) $(EXTRA_escort_DEPENDENCIES) 
-	@rm -f escort$(EXEEXT)
-	$(escort_LINK) $(escort_OBJECTS) $(escort_LDADD) $(LIBS)
+escudo$(EXEEXT): $(escudo_OBJECTS) $(escudo_DEPENDENCIES) $(EXTRA_escudo_DEPENDENCIES) 
+	@rm -f escudo$(EXEEXT)
+	$(escudo_LINK) $(escudo_OBJECTS) $(escudo_LDADD) $(LIBS)
 harness$(EXEEXT): $(harness_OBJECTS) $(harness_DEPENDENCIES) $(EXTRA_harness_DEPENDENCIES) 
 	@rm -f harness$(EXEEXT)
 	$(CXXLINK) $(harness_OBJECTS) $(harness_LDADD) $(LIBS)
@@ -2612,7 +2612,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/XMLSerializerImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bridge.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/bridgeV8.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/escort-Escort.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/escudo-Escudo.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/harness.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libesfontmanager_a-FontDatabase.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libesfontmanager_a-FontManager.Po@am__quote@
@@ -10472,19 +10472,19 @@ URL.test.obj: src/URL.test.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o URL.test.obj `if test -f 'src/URL.test.cpp'; then $(CYGPATH_W) 'src/URL.test.cpp'; else $(CYGPATH_W) '$(srcdir)/src/URL.test.cpp'; fi`
 
-escort-Escort.o: src/Escort.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(escort_CXXFLAGS) $(CXXFLAGS) -MT escort-Escort.o -MD -MP -MF $(DEPDIR)/escort-Escort.Tpo -c -o escort-Escort.o `test -f 'src/Escort.cpp' || echo '$(srcdir)/'`src/Escort.cpp
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/escort-Escort.Tpo $(DEPDIR)/escort-Escort.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/Escort.cpp' object='escort-Escort.o' libtool=no @AMDEPBACKSLASH@
+escudo-Escudo.o: src/Escudo.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(escudo_CXXFLAGS) $(CXXFLAGS) -MT escudo-Escudo.o -MD -MP -MF $(DEPDIR)/escudo-Escudo.Tpo -c -o escudo-Escudo.o `test -f 'src/Escudo.cpp' || echo '$(srcdir)/'`src/Escudo.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/escudo-Escudo.Tpo $(DEPDIR)/escudo-Escudo.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/Escudo.cpp' object='escudo-Escudo.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(escort_CXXFLAGS) $(CXXFLAGS) -c -o escort-Escort.o `test -f 'src/Escort.cpp' || echo '$(srcdir)/'`src/Escort.cpp
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(escudo_CXXFLAGS) $(CXXFLAGS) -c -o escudo-Escudo.o `test -f 'src/Escudo.cpp' || echo '$(srcdir)/'`src/Escudo.cpp
 
-escort-Escort.obj: src/Escort.cpp
-@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(escort_CXXFLAGS) $(CXXFLAGS) -MT escort-Escort.obj -MD -MP -MF $(DEPDIR)/escort-Escort.Tpo -c -o escort-Escort.obj `if test -f 'src/Escort.cpp'; then $(CYGPATH_W) 'src/Escort.cpp'; else $(CYGPATH_W) '$(srcdir)/src/Escort.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/escort-Escort.Tpo $(DEPDIR)/escort-Escort.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/Escort.cpp' object='escort-Escort.obj' libtool=no @AMDEPBACKSLASH@
+escudo-Escudo.obj: src/Escudo.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(escudo_CXXFLAGS) $(CXXFLAGS) -MT escudo-Escudo.obj -MD -MP -MF $(DEPDIR)/escudo-Escudo.Tpo -c -o escudo-Escudo.obj `if test -f 'src/Escudo.cpp'; then $(CYGPATH_W) 'src/Escudo.cpp'; else $(CYGPATH_W) '$(srcdir)/src/Escudo.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/escudo-Escudo.Tpo $(DEPDIR)/escudo-Escudo.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/Escudo.cpp' object='escudo-Escudo.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(escort_CXXFLAGS) $(CXXFLAGS) -c -o escort-Escort.obj `if test -f 'src/Escort.cpp'; then $(CYGPATH_W) 'src/Escort.cpp'; else $(CYGPATH_W) '$(srcdir)/src/Escort.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(escudo_CXXFLAGS) $(CXXFLAGS) -c -o escudo-Escudo.obj `if test -f 'src/Escudo.cpp'; then $(CYGPATH_W) 'src/Escudo.cpp'; else $(CYGPATH_W) '$(srcdir)/src/Escudo.cpp'; fi`
 
 harness.o: src/harness.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT harness.o -MD -MP -MF $(DEPDIR)/harness.Tpo -c -o harness.o `test -f 'src/harness.cpp' || echo '$(srcdir)/'`src/harness.cpp
@@ -10563,27 +10563,27 @@ uninstall-dist_desktopDATA:
 	@list='$(dist_desktop_DATA)'; test -n "$(desktopdir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
 	dir='$(DESTDIR)$(desktopdir)'; $(am__uninstall_files_from_dir)
-install-dist_escortdataDATA: $(dist_escortdata_DATA)
+install-dist_escudodataDATA: $(dist_escudodata_DATA)
 	@$(NORMAL_INSTALL)
-	@list='$(dist_escortdata_DATA)'; test -n "$(escortdatadir)" || list=; \
+	@list='$(dist_escudodata_DATA)'; test -n "$(escudodatadir)" || list=; \
 	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(escortdatadir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(escortdatadir)" || exit 1; \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(escudodatadir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(escudodatadir)" || exit 1; \
 	fi; \
 	for p in $$list; do \
 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
 	  echo "$$d$$p"; \
 	done | $(am__base_list) | \
 	while read files; do \
-	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(escortdatadir)'"; \
-	  $(INSTALL_DATA) $$files "$(DESTDIR)$(escortdatadir)" || exit $$?; \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(escudodatadir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(escudodatadir)" || exit $$?; \
 	done
 
-uninstall-dist_escortdataDATA:
+uninstall-dist_escudodataDATA:
 	@$(NORMAL_UNINSTALL)
-	@list='$(dist_escortdata_DATA)'; test -n "$(escortdatadir)" || list=; \
+	@list='$(dist_escudodata_DATA)'; test -n "$(escudodatadir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	dir='$(DESTDIR)$(escortdatadir)'; $(am__uninstall_files_from_dir)
+	dir='$(DESTDIR)$(escudodatadir)'; $(am__uninstall_files_from_dir)
 
 # This directory's subdirectories are mostly independent; you can cd
 # into them and run 'make' without going through this Makefile.
@@ -10912,7 +10912,7 @@ all-am: Makefile $(LIBRARIES) $(PROGRAMS) $(SCRIPTS) $(DATA) \
 		$(HEADERS) config.h
 installdirs: installdirs-recursive
 installdirs-am:
-	for dir in "$(DESTDIR)$(escortlibexecdir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(aboutdatadir)" "$(DESTDIR)$(desktopdir)" "$(DESTDIR)$(escortdatadir)"; do \
+	for dir in "$(DESTDIR)$(escudolibexecdir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(aboutdatadir)" "$(DESTDIR)$(desktopdir)" "$(DESTDIR)$(escudodatadir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: $(BUILT_SOURCES)
@@ -10951,7 +10951,7 @@ maintainer-clean-generic:
 	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 clean: clean-recursive
 
-clean-am: clean-escortlibexecPROGRAMS clean-generic clean-local \
+clean-am: clean-escudolibexecPROGRAMS clean-generic clean-local \
 	clean-noinstLIBRARIES clean-noinstPROGRAMS mostlyclean-am
 
 distclean: distclean-recursive
@@ -10974,13 +10974,13 @@ info: info-recursive
 info-am:
 
 install-data-am: install-dist_aboutdataDATA install-dist_desktopDATA \
-	install-dist_escortdataDATA
+	install-dist_escudodataDATA
 
 install-dvi: install-dvi-recursive
 
 install-dvi-am:
 
-install-exec-am: install-dist_binSCRIPTS install-escortlibexecPROGRAMS
+install-exec-am: install-dist_binSCRIPTS install-escudolibexecPROGRAMS
 
 install-html: install-html-recursive
 
@@ -11022,8 +11022,8 @@ ps: ps-recursive
 ps-am:
 
 uninstall-am: uninstall-dist_aboutdataDATA uninstall-dist_binSCRIPTS \
-	uninstall-dist_desktopDATA uninstall-dist_escortdataDATA \
-	uninstall-escortlibexecPROGRAMS
+	uninstall-dist_desktopDATA uninstall-dist_escudodataDATA \
+	uninstall-escudolibexecPROGRAMS
 
 .MAKE: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) all check \
 	cscopelist-recursive ctags-recursive install install-am \
@@ -11031,7 +11031,7 @@ uninstall-am: uninstall-dist_aboutdataDATA uninstall-dist_binSCRIPTS \
 
 .PHONY: $(RECURSIVE_CLEAN_TARGETS) $(RECURSIVE_TARGETS) CTAGS GTAGS \
 	all all-am am--refresh check check-am clean clean-cscope \
-	clean-escortlibexecPROGRAMS clean-generic clean-local \
+	clean-escudolibexecPROGRAMS clean-generic clean-local \
 	clean-noinstLIBRARIES clean-noinstPROGRAMS cscope cscopelist \
 	cscopelist-recursive ctags ctags-recursive dist dist-all \
 	dist-bzip2 dist-gzip dist-hook dist-lzip dist-shar dist-tarZ \
@@ -11040,8 +11040,8 @@ uninstall-am: uninstall-dist_aboutdataDATA uninstall-dist_binSCRIPTS \
 	distdir distuninstallcheck dvi dvi-am html html-am info \
 	info-am install install-am install-data install-data-am \
 	install-dist_aboutdataDATA install-dist_binSCRIPTS \
-	install-dist_desktopDATA install-dist_escortdataDATA \
-	install-dvi install-dvi-am install-escortlibexecPROGRAMS \
+	install-dist_desktopDATA install-dist_escudodataDATA \
+	install-dvi install-dvi-am install-escudolibexecPROGRAMS \
 	install-exec install-exec-am install-html install-html-am \
 	install-info install-info-am install-man install-pdf \
 	install-pdf-am install-ps install-ps-am install-strip \
@@ -11050,8 +11050,8 @@ uninstall-am: uninstall-dist_aboutdataDATA uninstall-dist_binSCRIPTS \
 	mostlyclean-compile mostlyclean-generic pdf pdf-am ps ps-am \
 	tags tags-recursive uninstall uninstall-am \
 	uninstall-dist_aboutdataDATA uninstall-dist_binSCRIPTS \
-	uninstall-dist_desktopDATA uninstall-dist_escortdataDATA \
-	uninstall-escortlibexecPROGRAMS
+	uninstall-dist_desktopDATA uninstall-dist_escudodataDATA \
+	uninstall-escudolibexecPROGRAMS
 
 
 %.cpp : %.re
@@ -11071,7 +11071,7 @@ org/w3c/dom/Node.cpp : $(idl_files)
 $(generated_sources) : org/w3c/dom/Node.cpp
 
 noinst_PROGRAMS : $(LDADD) libesjsapi.a libesv8api.a
-escortlibexec_PROGRAMS : $(LDADD) libesjsapi.a libesv8api.a
+escudolibexec_PROGRAMS : $(LDADD) libesjsapi.a libesv8api.a
 
 clean-local:
 	rm -rf $(generated_sources) $(generated_headers) $(generated_scanners) *.output

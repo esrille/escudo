@@ -49,8 +49,8 @@
 #endif
 
 #ifdef __APPLE__
-#ifndef ESCORT_CHAR16_T_STUBS
-#define ESCORT_CHAR16_T_STUBS
+#ifndef ESCUDO_CHAR16_T_STUBS
+#define ESCUDO_CHAR16_T_STUBS
 #include <locale>
 namespace std {
 template<>

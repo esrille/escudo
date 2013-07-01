@@ -1,9 +1,9 @@
 Format: http://dep.debian.net/deps/dep5
-Upstream-Name: escort
-Source: http://es-operating-system.googlecode.com/svn/trunk/escort
+Upstream-Name: escudo
+Source: https://github.com/esrille/escudo
 
 Files: *
-Copyright: 2012 Esrille Inc. <info@esrille.org>
+Copyright: 2012, 2013 Esrille Inc. <info@esrille.org>
 License: Apache-2.0
 
 License: Apache-2.0

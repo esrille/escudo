@@ -105,7 +105,7 @@ binding, implementation, template, content, inherited { display: none; }
 button { binding: button; }
 details { binding: details; }
 input {
-    binding: url(escort.html#input-textfield);
+    binding: url(escudo.html#input-textfield);
     display: inline-block;
     white-space: pre;
     background-color: white;
@@ -125,13 +125,13 @@ input[type=number i] { binding: input-number; }
 input[type=range i] { binding: input-range; }
 input[type=color i] { binding: input-color; }
 input[type=checkbox i] {
-    binding: url(escort.html#input-checkbox);
+    binding: url(escudo.html#input-checkbox);
     display: inline-block;
     border-style: none;
     padding: 2px;
 }
 input[type=radio i] {
-    binding: url(escort.html#input-radio);
+    binding: url(escudo.html#input-radio);
     font-family: "DejaVu Sans Mono";
     display: inline-block;
     border-style: none;
@@ -139,7 +139,7 @@ input[type=radio i] {
 }
 input[type=file i] { binding: input-file; }
 input[type=submit i], input[type=reset i], input[type=button i] {
-    binding: url(escort.html#input-button);
+    binding: url(escudo.html#input-button);
     font-family: "DejaVu Sans Mono";
     display: inline-block;
     background-color: silver;

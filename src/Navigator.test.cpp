@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
         break;
     case EAGAIN:
         // TODO: use a named pipe for requesting to open another window.
-        std::cerr << "error: another instance of escort web browser might already be running.\n";
+        std::cerr << "error: another instance of escudo web browser might already be running.\n";
         return EXIT_FAILURE;
     case ENOENT:
         std::cerr << "error: the specified profile directory '" << profile.getProfilePath() << "' does not exist.\n";
@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
     HttpRequest::setAboutPath(profile.getProfilePath());
     std::thread httpService(std::ref(HttpConnectionManager::getInstance()));
 
-    std::string navigatorUrl = getFileURL(profile.getProfilePath()) + "/escort.html";
+    std::string navigatorUrl = getFileURL(profile.getProfilePath()) + "/escudo.html";
     WindowImp* imp = new WindowImp(0, 0, WindowImp::DeskTop);
     window = imp;
     imp->setFaviconOverridable(true);

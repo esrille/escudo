@@ -222,7 +222,7 @@ top_srcdir = @top_srcdir@
 size = 16x16
 EXTRA_DIST = $(icon_DATA)
 icondir = $(datadir)/icons/hicolor/$(size)/apps
-dist_icon_DATA = escort.png
+dist_icon_DATA = escudo.png
 all: all-am
 
 .SUFFIXES:

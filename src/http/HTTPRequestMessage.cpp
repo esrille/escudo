@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ void HttpRequestMessage::open(const std::string& method, const std::u16string& u
     this->method = method;
     toUpperCase(this->method);
     this->url = URL(url);
-    setHeader("User-Agent", "Escort/" PACKAGE_VERSION);
+    setHeader("User-Agent", "Escudo/" PACKAGE_VERSION);
 }
 
 bool HttpRequestMessage::redirect(const std::u16string& url)

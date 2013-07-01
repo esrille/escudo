@@ -1301,46 +1301,46 @@ NavigatorV8_test_CXXFLAGS = $(AM_CFLAGS) -DUSE_V8
 
 Profile_test_SOURCES = src/Profile.test.cpp
 
-dist_bin_SCRIPTS = app/escort
+dist_bin_SCRIPTS = app/escudo
 
 if HAVE_LIBEXEC
 esrillelibexecdir = $(libexecdir)/esrille
 else
 esrillelibexecdir = $(libdir)/esrille
 endif
-escortlibexecdir = $(esrillelibexecdir)/escort
+escudolibexecdir = $(esrillelibexecdir)/escudo
 
-escortlibexec_PROGRAMS = escort
-escortlibexec_PROGRAMS : $(LDADD) libesjsapi.a libesv8api.a
+escudolibexec_PROGRAMS = escudo
+escudolibexec_PROGRAMS : $(LDADD) libesjsapi.a libesv8api.a
 
-escort_SOURCES = src/Escort.cpp
-escort_LDADD = $(js_LDADD)
-escort_CXXFLAGS = $(AM_CFLAGS) -DUSE_JS
+escudo_SOURCES = src/Escudo.cpp
+escudo_LDADD = $(js_LDADD)
+escudo_CXXFLAGS = $(AM_CFLAGS) -DUSE_JS
 
 desktopdir = $(datadir)/applications
-dist_desktop_DATA = data/escort/escort.desktop
+dist_desktop_DATA = data/escudo/escudo.desktop
 
 esrilledatadir = $(datadir)/esrille
-escortdatadir = $(esrilledatadir)/escort
-aboutdatadir = $(escortdatadir)/about
+escudodatadir = $(esrilledatadir)/escudo
+aboutdatadir = $(escudodatadir)/about
 
-dist_escortdata_DATA =  \
-	data/escort/default.css \
-	data/escort/escort.html \
-	data/escort/escort.ico \
-	data/escort/escort.png \
-	data/escort/gear.gif \
-	data/escort/go-next.png \
-	data/escort/go-previous.png \
-	data/escort/view-refresh.png \
-	data/escort/process-stop.png \
-	data/escort/preshint.css
+dist_escudodata_DATA =  \
+	data/escudo/default.css \
+	data/escudo/escudo.html \
+	data/escudo/escudo.ico \
+	data/escudo/escudo.png \
+	data/escudo/gear.gif \
+	data/escudo/go-next.png \
+	data/escudo/go-previous.png \
+	data/escudo/view-refresh.png \
+	data/escudo/process-stop.png \
+	data/escudo/preshint.css
 
 dist_aboutdata_DATA =  \
-	data/escort/about/blank \
-	data/escort/about/index.html \
-	data/escort/about/escort_24.png \
-	data/escort/about/escort_128.png
+	data/escudo/about/blank \
+	data/escudo/about/index.html \
+	data/escudo/about/escudo_24.png \
+	data/escudo/about/escudo_128.png
 
 clean-local:
 	rm -rf $(generated_sources) $(generated_headers) $(generated_scanners) *.output
@@ -1351,8 +1351,8 @@ dist-hook:
 EXTRA_DIST = \
 	m4/ax_compare_version.m4 \
 	m4/bison.m4 \
-	escort.spec.in \
-	escort.spec \
+	escudo.spec.in \
+	escudo.spec \
 	debian/changelog \
 	debian/changelog.in \
 	debian/compat \
@@ -1361,8 +1361,8 @@ EXTRA_DIST = \
 	debian/docs \
 	debian/rules \
 	debian/source/format \
-	data/escort/about/index.html.in \
-	testlog/css2.1/20110323/implement-report-Escort-Fedora.data \
+	data/escudo/about/index.html.in \
+	testlog/css2.1/20110323/implement-report-Escudo-Fedora.data \
 	LICENSE \
 	NOTICE \
 	config.h \
