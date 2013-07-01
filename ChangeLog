@@ -1,5 +1,10 @@
 2013-07-01 Shiki Okasaka <Shiki.Okasaka@gmail.com>
 
+	* testlog/css2.1/20110323/implement-report-Escudo-Fedora.data : Update
+	* testlog/css3-color/nightly-unstable/implementation-report-Escudo-Fedora.data : Update
+
+2013-07-01 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
 	Add escudo logo mark
 
 	* Makefile.am (dist_aboutdata_DATA) : Add escudo.png
@@ -11536,4 +11541,3 @@
 	  xhr/XMLHttpRequestEventTargetImp.h, xhr/XMLHttpRequestImp.cpp,
 	  xhr/XMLHttpRequestImp.h, xhr/XMLHttpRequestUploadImp.cpp,
 	  xhr/XMLHttpRequestUploadImp.h: (www) : Initial check in.
-
