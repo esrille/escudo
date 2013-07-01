@@ -1,3 +1,13 @@
+New in 0.3.2 [2013-07-01]:
+
+* Assigned a new code name "Escudo"
+
+* Support tab browsing
+
+* Support Ubuntu 13.04 and Fedora 19
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 New in 0.3.1 [2013-04-24]:
 
 * Implemented more features from HTML5 and other specifications including:

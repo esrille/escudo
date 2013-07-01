@@ -1,5 +1,59 @@
 2013-07-01 Shiki Okasaka <Shiki.Okasaka@gmail.com>
 
+	Add escudo logo mark
+
+	* Makefile.am (dist_aboutdata_DATA) : Add escudo.png
+	* data/escudo/about/escudo.png : New
+	* data/escudo/about/index.html, data/escudo/about/index.html.in : Refine
+	* escudo.spec.in : Add escudo.png
+
+2013-07-01 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Assign the new code name "Escudo".
+
+	The previous code name "Escort" used in files, directories, etc., has been
+	renamed to "Escudo". The User-Agent name is also changed to "Escudo/0.3.2":
+
+	* Makefile.am
+	* app/escudo
+	* configure.ac
+	* data/128x128/Makefile.am
+	* data/128x128/escudo.png
+	* data/16x16/Makefile.am
+	* data/16x16/escudo.png
+	* data/22x22/Makefile.am
+	* data/22x22/escudo.png
+	* data/24x24/Makefile.am
+	* data/24x24/escudo.png
+	* data/256x256/Makefile.am
+	* data/256x256/escudo.png
+	* data/32x32/Makefile.am
+	* data/32x32/escudo.png
+	* data/48x48/Makefile.am
+	* data/48x48/escudo.png
+	* data/64x64/Makefile.am
+	* data/64x64/escudo.png
+	* data/escudo/about/escudo_128.png
+	* data/escudo/about/escudo_24.png
+	* data/escudo/about/index.html
+	* data/escudo/default.css
+	* data/escudo/escudo.desktop
+	* data/escudo/escudo.html
+	* data/escudo/escudo.ico
+	* data/escudo/escudo.png
+	* data/escudo/gear.gif
+	* data/escudo/preshint.css
+	* debian/control
+	* debian/copyright
+	* src/Escudo.cpp
+	* src/Navigator.test.cpp
+	* src/NavigatorImp.cpp
+	* src/http/HTTPRequestMessage.cpp
+	* testlog/css2.1/20110323/implement-report-Escudo-Fedora.data
+	* testlog/css3-color/nightly-unstable/implementation-report-Escudo-Fedora.data
+
+2013-07-01 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
 	* (ElementImp::setInnerHTML) : Remove a debugging statement
 
 2013-07-01 Shiki Okasaka <Shiki.Okasaka@gmail.com>
