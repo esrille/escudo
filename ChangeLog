@@ -1,3 +1,11 @@
+2013-07-01 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (ElementImp::setInnerHTML) : Remove a debugging statement
+
+2013-07-01 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/Test.glut.cpp (entry) : Fix not to call glutGetModifiers
+
 2013-06-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
 
 	* testlog/css3-color/nightly-unstable/implementation-report-Escort-Fedora.data : Update
