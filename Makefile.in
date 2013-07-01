@@ -1753,6 +1753,7 @@ dist_escudodata_DATA = \
 dist_aboutdata_DATA = \
 	data/escudo/about/blank \
 	data/escudo/about/index.html \
+	data/escudo/about/escudo.png \
 	data/escudo/about/escudo_24.png \
 	data/escudo/about/escudo_128.png
 

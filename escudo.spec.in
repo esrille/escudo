@@ -75,6 +75,7 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 %dir %{_datadir}/esrille/escudo/about
 %{_datadir}/esrille/escudo/about/blank
 %{_datadir}/esrille/escudo/about/index.html
+%{_datadir}/esrille/escudo/about/escudo.png
 %{_datadir}/esrille/escudo/about/escudo_128.png
 %{_datadir}/esrille/escudo/about/escudo_24.png
 %{_datadir}/icons/hicolor/*/apps/escudo.png
