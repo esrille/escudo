@@ -1,3 +1,360 @@
+2013-06-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* testlog/css3-color/nightly-unstable/implementation-report-Escort-Fedora.data : Update
+
+2013-06-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* testlog/css2.1/20110323/implement-report-Escort-Fedora.data : Update
+
+2013-06-29 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HttpCache::notify) : Fix a bug
+
+2013-06-29 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/js/bridge.cpp (caller, operation, NativeClass::getter, NativeClass::setter) : Refine
+
+2013-06-28 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HttpConnection::readChunk) : Fix a bug
+
+2013-06-27 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/Navigator.test.cpp (main) : Use the default window size for using on PCs with small monitors
+
+2013-06-26 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSParserTerm) : Move 'parser' field to the end; see the comment for details
+
+2013-06-26 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/css/CSSGrammar.yy : Clean up
+
+2013-06-21 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSContentValueImp::setValue) : Set absolute URL to URIContent (CSSCursorValueImp::setValue) : Set absolute URL to uriList
+
+2013-06-21 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSListStyleImageValueImp::setValue) : Set the absolute URL to the internal uri field testdata/css-010.html, testdata/css/css-010.css : New
+
+2013-06-20 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Use the base URI of the CSS style sheet for the background-image property.
+
+	Note the other CSS properties that take url values must be processed like this, too.
+
+	* (CSSBackgroundImageValueImp::setValue) : Set the absolute URL to the internal uri field
+	* (CSSParser::CSSParser) : Take the base URL as the default argument
+	* (CSSParser::getURL) : New
+	* (CSSParser::parse) : Set href of the style sheet to the specified base URL
+	* (CSSParserTerm::getURL) : New
+	* (CSSImportRuleImp::notify, HTMLLinkElementImp::linkStyleSheet, HTMLStyleElementImp::handleMutation) : Specify the base URL to the CSS parser
+	* src/css/CSSGrammar.yy (term) : Set term.parser to the current CSS parser
+	* testdata/css-008.html, testdata/css/css-008.css : New
+	* testdata/css-009.html, testdata/css/css-009.css : New
+
+2013-06-20 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSImportRuleImp::notify) : Set the absolute URL to the imported style sheet.
+
+2013-06-16 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Block::layOutInline) : Fix a bug; cf. testdata/css-007.html
+
+2013-06-13 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	When the mouse pointer has left a window, no element should be staying hovered.
+
+	* src/Test.glut.cpp (entry) : New to process the X11 LeaveNotify events
+	* src/Test.glut.cpp (init) : Refine
+	* (WindowImp::mouseMove) : Emulate entry() for a child window
+
+2013-06-12 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Canvas::Impl::setup) : Fix a bug; cf. html4/absolute-replaced-height-014.htm
+
+2013-06-10 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[CSS] Clearances stored in line boxes need to be took into account in the following block box with a clearance.
+
+	* (Block::collapseMarginTop) : Fix clearance calculation
+	* (Block::getInternalClearances) : New
+	* testdata/css-006.html : New
+
+2013-06-09 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSSelector::match, CSSPseudoClassSelector::match) : Refine
+
+2013-06-09 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[CSS] Fix not to activate the '*:first-child+html' selector with the sane html element; cf. css-005.html
+
+	Note this is a known CSS hack for old IE and it must not be applied to the ES web browser.
+
+	* (CSSPseudoClassSelector::match) : Fix a bug
+	* testdata/css-005.html : New
+
+2013-06-04 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/font/FontDatabase.cpp (fontList) : Add Arial Unicode font for OS X
+
+2013-06-03 Yusuke Suzuki <utatane.tea@gmail.com>
+
+	Use vector for storing textures to be deleted
+
+	* src/Test.util.h (deleteTexture) : Use vector instead of C array
+
+2013-06-03 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* Makefile.am (libeshtml5_a_SOURCES) : Add src/Queue.h
+
+2013-06-03 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Fix not to call glDeleteTextures from threads other than the main thread
+
+	* cf. https://github.com/esrille/escort/issues/68
+	* src/Test.util.h (deleteTexture) : New
+	* src/Test.glut.cpp (display) : Clean up unused textures
+	* src/Test.glut.cpp (deleteTexture) : New
+	* src/css/BoxGL.cpp (deleteImage) : Refine using deleteTexture
+
+2013-06-03 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (FontManagerBackEnd) : Fix synchronization issues
+
+2013-06-03 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Make TaskQueue thread-safe
+
+	* (TaskQueue) : Refine using Queue
+	* (Task::Task) : New
+	* (WindowImp::putTask, WindowImp::eventLoop) : Refine
+	* src/Queue.h : New
+
+2013-06-01 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* [CSS] (Block::render) : Fix a bug; cf. css-004.html
+
+2013-06-01 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[CSS] Fix not to render inline-block boxes twice; cf. css-003.html
+
+	* (StackingContext::addBase) : Fix a bug
+	* testdata/css-003.html : New
+
+2013-05-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (EventTask::EventTask) : Fix a bug
+
+2013-05-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* testlog/css2.1/20110323/implement-report-Escort-Fedora.data : Update
+
+2013-05-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (StackingContext::detach) : Fix a bug (StackingContext::updateClipBox) : Fix a bug (StackingContext::insertContext) : Add a assertion (StackingContext::isDetached, StackingContext::getStyle) : New for debugging
+
+2013-05-26 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[escort] Add a close button on each tab
+
+	* data/escort/escort.html : Support the tab close button
+
+2013-05-26 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[CSS] Remove unused stacking contexts from ViewCSS
+
+	* (StackingContext::~StackingContext) : Detach this context from the tree of the stacking contexts.
+	* (StackingContext::detach): New
+	* (CSSStyleDeclarationImp::revert): If this style has its own stacking context, detach it from the stacking contexts.
+	* (CSSStyleDeclarationImp::clearStackingContext) : New
+	* (ViewCSSImp::constructComputedStyle, ViewCSSImp::calculateComputedStyle) : Regenerate a stacking context if there isn't one
+
+2013-05-24 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[escort] Support multiple tabs
+
+	WindowImp now supports DeskTop and TopLevel modes.  In DeskTop mode, when a
+	top-level browsing context is created, a new iframe element is created
+	in the DeskTop window for the new top-level browsing context.
+	The revised escort.html captures the DOMNodeInserted events of iframe
+	elements created in the DeskTop window, and lay out iframe elements like
+	tabs.
+
+	* data/escort/escort.html : Add the tab bar and add/refine support functions;
+	* (WindowImp) : Support DeskTop and TopLevel modes.
+	* (WindowImp::WindowImp) : Take another argument to specify the window mode; all callers changed
+	* (WindowImp::open, WindowImp::getTop, WindowImp::getParent) : Refine
+	* (WindowImp::selectBrowsingContext, WindowImp::navigate): New
+	* (DocumentImp::createElement) : Support DeskTop and TopLevel modes.
+	* (HTMLIFrameElementImp::HTMLIFrameElementImp) : Refine
+	* (HTMLAnchorElementImp::handleClick) : Check the target attribute
+
+2013-05-24 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (WindowImp::poll) : Add more assertions.
+
+2013-05-24 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Box::boxFromPoint) : Fix a bug (Box::isClipped) : New
+
+2013-05-24 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (EventTargetImp::dispatchEvent) : Fix a bug
+
+2013-05-22 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Block::dump) : Refine
+
+2013-05-21 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Block::clearInlines, ViewCSSImp::constructBlock) : Clear inline boxes lazily in constructBlock. Otherwise, important relationships between parent and child boxes are lost; cf. partial-reflow-abs-006.html (Box::setFlags) : Do not set NEED_CHILD_EXPANSION to an anonymous box testdata/partial-reflow-abs-006.html : New
+
+2013-05-11 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLAnchorElementImp) : Adding more details
+
+2013-05-07 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (WindowImp::setViewFlags) : Rename from setFlags; all callers changed
+
+2013-05-03 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (WindowImp::getName, WindowImp::setName) : Add details
+
+2013-05-03 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (WindowImp::getFrameElement) : Add details (HTMLIFrameElementImp::HTMLIFrameElementImp) : Refine
+
+2013-05-02 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (WindowImp): Add a description
+
+2013-04-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/font/FontManager.cpp, src/font/FontManager.h : Refine
+
+2013-04-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLTableRowElementImp::insertCell, HTMLTableRowElementImp::deleteCell): Refine
+
+2013-04-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLTableElementImp::getRowCount): Clean up
+
+2013-04-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLInputElementImp::getStyle, HTMLInputElementImp::updateStyle): Clean up
+
+2013-04-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSStyleDeclarationImp) : Clean up
+
+2013-04-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (StyleSheetImp::StyleSheetImp): Clean up
+
+2013-04-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (MouseEventImp::getModifierState): Add a comment
+
+2013-04-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (EventTargetImp::dispatchEvent): Refine
+
+2013-04-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (MediaListImp::getMediaText): Refine
+
+2013-04-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (ViewCSSImp::constructBlock): Clean up
+
+2013-04-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (TableWrapperBox::processTableChild): Fix a bug
+
+2013-04-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (TableWrapperBox::processColGroup) : Clean up
+
+2013-04-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (EventImp::DEFAULT_PHASE) : Refine
+
+2013-04-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSValueParser::rgb, CSSValueParser::rgba) : Refine
+
+2013-04-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Profile::hasFile) : Refine
+
+2013-04-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/css/CSSGrammar.yy : Refine
+
+2013-04-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (BoxImage::~BoxImage) : Refine
+
+2013-04-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (FontManagerBackEndGL::updateImage) : Refine
+
+2013-04-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Block::setContainingBlock): Clean up
+
+2013-04-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLParser::InForeignContent): Fix warnings
+
+2013-04-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/css/BoxImage.cpp : Clean up
+
+2013-04-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (BitmapInfoheader::readPixels): Clean up
+
+2013-04-29 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/http/HTTPRequest.cpp : Refine
+
+2013-04-29 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HttpResponseMessage::getStatusText): Refine (HttpRequest::getAllResponseHeaders): Refine
+
+2013-04-29 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/url/URL.cpp, src/url/URL.h : Clean up
+
+2013-04-29 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/utf.cpp, src/utf.h : Clean up and remove unused functions
+
+2013-04-29 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* configure.ac (AC_INIT): Set version to 0.3.2
+
+2013-04-29 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* debian/control (Build-Depends): Rename libmozjs-dev to libmozjs185-dev for Ubuntu 13.04
+
+2013-04-27 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* Makefile.am (LDADD): Add -lpthread for Ubuntu 13.04
+
+2013-04-24 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* testlog/css2.1/20110323/implement-report-Escort-Fedora.data: Update
+
+2013-04-24 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* NEWS: Update
+
 2013-04-20 Shiki Okasaka <Shiki.Okasaka@gmail.com>
 
 	Refine JSAPI bridge to support multiple ECMAScript contexts
