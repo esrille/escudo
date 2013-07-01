@@ -577,8 +577,6 @@ void ElementImp::setInnerHTML(const std::u16string& innerHTML)
     if (!root)
         return;
 
-    dumpTree(std::cout, document);
-
     // TODO: Set suppress observers flag
     for (auto i = getFirstChild(); i; i = i.getNextSibling())
         removeChild(i);
