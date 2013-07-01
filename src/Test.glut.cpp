@@ -218,8 +218,11 @@ void mouseMove(int x, int y)
 void entry(int state)
 {
     if (state == GLUT_LEFT) {
-        if (WindowImp* imp = static_cast<WindowImp*>(window.self()))
-            imp->mouseMove(-1, -1, glutGetModifiers());
+        if (WindowImp* imp = static_cast<WindowImp*>(window.self())) {
+            // Note glutGetModifiers() cannot be used outside an input callback
+            // TODO: Keep modifiers status.
+            imp->mouseMove(-1, -1, 0 /* glutGetModifiers() */);
+        }
     }
 }
 
