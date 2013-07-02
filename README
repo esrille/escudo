@@ -1,17 +1,17 @@
-This directory contains Escort web browser.
+This directory contains Escudo web browser.
 
-Escort web browser, currently being developed as one of the ES operating
+Escudo web browser, currently being developed as one of the ES operating
 system projects, contains a totally new CSS/HTML rendering engine written
-in C++11, and it can be configured with SpiderMonkey or V8 JavaScript
+in C++11. Escudo can be configured with SpiderMonkey or V8 JavaScript
 engine along with the C++11 Web IDL binding of the esidl Web IDL compiler.
-For the graphics backend, Escort web browser uses OpenGL for the better
+For the graphics backend, Escudo web browser uses OpenGL for the better
 performance and portability.
 
-The core components of the Escort web browser will be used like a window
+The core components of the Escudo web browser will be used like a window
 system in today's operating systems in the ES operating system, but before
 doing so, we are experimenting it as a standalone web browser on Linux.
-The user interface of the Escort web browser itself is written in HTML/CSS
-and JavaScript on top of the Escort core components.
+The user interface of the Escudo web browser itself is written in HTML/CSS
+and JavaScript on top of the Escudo core components.
 
 --
 
