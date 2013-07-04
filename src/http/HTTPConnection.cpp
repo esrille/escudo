@@ -226,6 +226,10 @@ void HttpConnection::handleWriteRequest(const boost::system::error_code& err)
         std::cerr << __func__ << ' ' << err <<  '\n';
 
     if (!err && current) {
+        if (state != Connected && state != CloseWait) {
+            retry();
+            return;
+        }
         if (current->getRequestMessage().getVersion() < 10)
             state = ReadContent;
         else
