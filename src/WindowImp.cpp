@@ -984,7 +984,6 @@ WindowImp* WindowImp::selectBrowsingContext(std::u16string target, bool& replace
     if (Node next = frameElement->getNextSibling())
         frameElement->getParentNode().insertBefore(iframe, next);
     else {
-        HTMLElementImp* imp = dynamic_cast<HTMLElementImp*>(frameElement->getParentNode().self());
         frameElement->getParentNode().appendChild(iframe);
     }
     top->parent->exit();
