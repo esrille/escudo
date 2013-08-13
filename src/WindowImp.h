@@ -127,7 +127,7 @@ private:
             Cascading,
             Cascaded,
             Layouting,
-            Done,
+            Done
         };
         enum {
             Abort = 1,
@@ -161,6 +161,9 @@ private:
         }
         bool isIdle() const {
             return state == Done && !flags && xfered;
+        }
+        bool isRestarting() const {
+            return flags & Restart;
         }
     };
 

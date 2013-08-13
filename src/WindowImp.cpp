@@ -315,65 +315,67 @@ bool WindowImp::poll()
                 dumpTree(std::cerr, document);
         }
 
-        switch (backgroundTask.getState()) {
-        case BackgroundTask::Cascaded:
-            HTMLElementImp::xblEnteredDocument(document);
-            backgroundTask.wakeUp(BackgroundTask::Layout);
-            break;
-        case BackgroundTask::Init:
-        case BackgroundTask::Done: {
+        if (!backgroundTask.isRestarting()) {
+            switch (backgroundTask.getState()) {
+            case BackgroundTask::Cascaded:
+                HTMLElementImp::xblEnteredDocument(document);
+                backgroundTask.wakeUp(BackgroundTask::Layout);
+                break;
+            case BackgroundTask::Init:
+            case BackgroundTask::Done: {
 
-            eventLoop();
+                eventLoop();
 
-            ViewCSSImp* next = backgroundTask.getView();
-            updateView(next);
-            if (document->getReadyState() == u"interactive") {
-                // TODO: Check if the parser has been aborted.
+                ViewCSSImp* next = backgroundTask.getView();
+                updateView(next);
+                if (document->getReadyState() == u"interactive") {
+                    // TODO: Check if the parser has been aborted.
 
-                // Run from the step 3. of 'stops parsing'.
-                // cf. http://www.whatwg.org/specs/web-apps/current-work/multipage/the-end.html#the-end
+                    // Run from the step 3. of 'stops parsing'.
+                    // cf. http://www.whatwg.org/specs/web-apps/current-work/multipage/the-end.html#the-end
 
-                // Process scripts that will execute when the document has finished parsing (i.e., defer).
-                // TODO: Check there's no style sheet that is blocking scripts.
-                if (document->processDeferScripts()) {
-                    if (!document->hasContentLoaded()) {
-                        if (events::Event event = new(std::nothrow) EventImp) {
-                            event.initEvent(u"DOMContentLoaded", true, false);
-                            document->dispatchEvent(event);
+                    // Process scripts that will execute when the document has finished parsing (i.e., defer).
+                    // TODO: Check there's no style sheet that is blocking scripts.
+                    if (document->processDeferScripts()) {
+                        if (!document->hasContentLoaded()) {
+                            if (events::Event event = new(std::nothrow) EventImp) {
+                                event.initEvent(u"DOMContentLoaded", true, false);
+                                document->dispatchEvent(event);
+                            }
+                            document->decrementLoadEventDelayCount();
+                            document->setContentLoaded();
+
+                            backgroundTask.restart(BackgroundTask::Cascade);
                         }
-                        document->decrementLoadEventDelayCount();
-                        document->setContentLoaded();
-
-                        backgroundTask.restart(BackgroundTask::Cascade);
                     }
                 }
-            }
-            if (document->getReadyState() == u"complete") {
-            }
-            if (view) {
-                if (unsigned flags = view->gatherFlags()) {
-                    assert(!(flags & (Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION)) || view->getTree()->getFlags());
-                    assert(!(flags & (Box::NEED_REFLOW | Box::NEED_CHILD_REFLOW)) || view->getTree()->getFlags());
-                    if (flags & Box::NEED_SELECTOR_REMATCHING) {
-                        recordTime("%*strigger selector rematching", windowDepth * 2, "");
-                        backgroundTask.restart(BackgroundTask::Cascade);
-                        view = 0;
-                    } else if (flags & Box::NEED_SELECTOR_MATCHING) {
-                        recordTime("%*strigger restyling", windowDepth * 2, "");
-                        backgroundTask.wakeUp(BackgroundTask::Cascade);
-                        view = 0;
-                    } else if (flags & (Box::NEED_STYLE_RECALCULATION | Box::NEED_EXPANSION | Box::NEED_CHILD_REFLOW | Box::NEED_REFLOW)) {
-                        recordTime("%*strigger reflow", windowDepth * 2, "");
-                        backgroundTask.wakeUp(BackgroundTask::Layout);
-                        view = 0;
-                    } else if (flags & Box::NEED_REPAINT)
-                        redisplay = true;
+                if (document->getReadyState() == u"complete") {
                 }
+                if (view) {
+                    if (unsigned flags = view->gatherFlags()) {
+                        assert(!(flags & (Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION)) || view->getTree()->getFlags());
+                        assert(!(flags & (Box::NEED_REFLOW | Box::NEED_CHILD_REFLOW)) || view->getTree()->getFlags());
+                        if (flags & Box::NEED_SELECTOR_REMATCHING) {
+                            recordTime("%*strigger selector rematching", windowDepth * 2, "");
+                            backgroundTask.restart(BackgroundTask::Cascade);
+                            view = 0;
+                        } else if (flags & Box::NEED_SELECTOR_MATCHING) {
+                            recordTime("%*strigger restyling", windowDepth * 2, "");
+                            backgroundTask.wakeUp(BackgroundTask::Cascade);
+                            view = 0;
+                        } else if (flags & (Box::NEED_STYLE_RECALCULATION | Box::NEED_EXPANSION | Box::NEED_CHILD_REFLOW | Box::NEED_REFLOW)) {
+                            recordTime("%*strigger reflow", windowDepth * 2, "");
+                            backgroundTask.wakeUp(BackgroundTask::Layout);
+                            view = 0;
+                        } else if (flags & Box::NEED_REPAINT)
+                            redisplay = true;
+                    }
+                }
+                break;
             }
-            break;
-        }
-        default:
-            break;
+            default:
+                break;
+            }
         }
         break;
     default:

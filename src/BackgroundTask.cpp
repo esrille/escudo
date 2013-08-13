@@ -70,14 +70,12 @@ void WindowImp::BackgroundTask::operator()()
         // Restart
         //
         if (command & Restart) {
-            command &= ~Restart;
             deleteView();
             state = Init;
         }
 
         // A binding document does not need a view.
         if (window->isBindingDocumentWindow()) {
-            command &= ~(Cascade | Layout);
             state = Done;
             continue;
         }
@@ -86,7 +84,6 @@ void WindowImp::BackgroundTask::operator()()
         // Cascade
         //
         if (!view || (command & Cascade)) {
-            command &= ~Cascade;
             state = Cascading;
             recordTime("%*sselector matching begin", window->windowDepth * 2, "");
             if (!view)
@@ -104,7 +101,6 @@ void WindowImp::BackgroundTask::operator()()
         // Layout
         //
         if (command & Layout) {
-            command &= ~Layout;
             state = Layouting;
             view->setSize(window->width, window->height);   // TODO: sync with mainloop
             recordTime("%*sstyle recalculation begin", window->windowDepth * 2, "");
@@ -156,10 +152,11 @@ void WindowImp::BackgroundTask::restart(unsigned flags)
 
 ViewCSSImp* WindowImp::BackgroundTask::getView()
 {
-    assert(state == Done || state == Init);
-    if (!xfered && view) {
-        xfered = true;
-        return view;
+    if (state == Done || state == Init) {
+        if (!xfered && view) {
+            xfered = true;
+            return view;
+        }
     }
     return 0;
 }
