@@ -160,7 +160,7 @@ start
   | START_EXPRESSION expr {
         parser->setExpression($2);
     }
-  | START_MEDIA_LIST medium_list
+  | START_MEDIA_LIST media_list
   | START_SELECTORS_GROUP dom_selectors_group {
         parser->setSelectorsGroup($2);
     }
@@ -183,7 +183,7 @@ stylesheet
     optional_sgml optional_namespaces statement_list
   ;
 import
-  : IMPORT_SYM optional_space uri_term optional_space medium_list ';' optional_space {
+  : IMPORT_SYM optional_space uri_term optional_space media_list ';' optional_space {
         if (!parser->isImportable())
             $$ = 0;
         else {
@@ -223,7 +223,7 @@ media
   : MEDIA_SYM optional_space {
         parser->setMediaRule(new(std::nothrow) CSSMediaRuleImp);
     }
-    medium_list
+    media_list
    '{' optional_space optional_rulesets error_non_block '}' optional_space {
         CSSMediaRuleImp* mediaRule = parser->getMediaRule();
         if (mediaRule) {
@@ -710,9 +710,9 @@ optional_rulesets
         CSSerror(parser, "syntax error, invalid ruleset");
     }
   ;
-medium_list
+media_list
   : medium
-  | medium_list ',' optional_space medium
+  | media_list ',' optional_space medium
   ;
 declaration_list
   : declaration {
