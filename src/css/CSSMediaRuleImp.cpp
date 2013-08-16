@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,13 +34,10 @@ unsigned short CSSMediaRuleImp::getType()
 
 std::u16string CSSMediaRuleImp::getCssText()
 {
-    std::u16string text = u"@media " + mediaList.getMediaText() + u" {";
+    std::u16string text = u"@media " + mediaList.getMediaText() + u" { ";
     for (auto i = ruleList.begin(); i != ruleList.end(); ++i)
-        text += (*i).getCssText();
-    text += u"}";
-    std::u16string media = mediaList.getMediaText();
-    if (!media.empty())
-        text += u" " + media;
+        text += (*i).getCssText() + u" ";
+    text += u'}';
     return text;
 }
 
