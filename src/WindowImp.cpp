@@ -1808,8 +1808,7 @@ html::MediaQueryList WindowImp::matchMedia(const std::u16string& media_query_lis
 
 html::Screen WindowImp::getScreen()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return &screen;
 }
 
 int WindowImp::getInnerWidth()

@@ -60,6 +60,7 @@
 #include "NavigatorImp.h"
 #include "html/HTMLInputStream.h"
 #include "html/HTMLParser.h"
+#include "html/ScreenImp.h"
 #include "http/HTTPRequest.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
@@ -194,6 +195,7 @@ private:
     HttpRequest request;
     Retained<NavigatorImp> navigator;
     Retained<HistoryImp> history;
+    Retained<ScreenImp> screen;
     BackgroundTask backgroundTask;
     std::thread thread;
 
