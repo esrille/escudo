@@ -47,6 +47,7 @@ class CSSFontSizeValueImp;
 struct CSSNumericValue
 {
     static const char16_t* Units[];
+    static const char16_t* ResolutionUnits[];
 
     unsigned short unit;  // cf. CSSPrimitiveValue
     short index;  // non-negative value if this value has a keyword index value rather than number
@@ -80,6 +81,8 @@ public:
         std::u16string cssText = CSSSerializeNumber(number);
         if (css::CSSPrimitiveValue::CSS_PERCENTAGE <= unit && unit <= css::CSSPrimitiveValue::CSS_KHZ)
             cssText += Units[unit - css::CSSPrimitiveValue::CSS_PERCENTAGE];
+        else if (css::CSSPrimitiveValue::CSS_DPPX <= unit && unit <= css::CSSPrimitiveValue::CSS_DPCM)
+            cssText += ResolutionUnits[unit - css::CSSPrimitiveValue::CSS_DPPX];
         return cssText;
     }
     // cf. http://dvcs.w3.org/hg/csswg/raw-file/tip/cssom/Overview.html#resolved-values
@@ -89,6 +92,8 @@ public:
         std::u16string cssText = CSSSerializeNumber(resolved);
         if (css::CSSPrimitiveValue::CSS_PERCENTAGE <= resolvedUnit && resolvedUnit <= css::CSSPrimitiveValue::CSS_KHZ)
             cssText += Units[resolvedUnit - css::CSSPrimitiveValue::CSS_PERCENTAGE];
+        else if (css::CSSPrimitiveValue::CSS_DPPX <= unit && unit <= css::CSSPrimitiveValue::CSS_DPCM)
+            cssText += ResolutionUnits[unit - css::CSSPrimitiveValue::CSS_DPPX];
         return cssText;
     }
     CSSNumericValue& setValue(CSSParserTerm* term) {

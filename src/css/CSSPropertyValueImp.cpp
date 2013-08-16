@@ -50,6 +50,12 @@ const char16_t* CSSNumericValue::Units[] = {
     u"kHz"
 };
 
+const char16_t* CSSNumericValue::ResolutionUnits[] = {
+    u"dppx",
+    u"dpi",
+    u"dpcm",
+};
+
 const char16_t* CSSAutoLengthValueImp::Options[] = {
     u"auto",
 };
