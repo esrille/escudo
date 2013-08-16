@@ -382,7 +382,8 @@ am__objects_1 = ArrayBuffer.$(OBJEXT) ArrayBufferView.$(OBJEXT) \
 	XBLImplementationList.$(OBJEXT)
 am__objects_2 =
 am__objects_3 = CSSPropertyNames.$(OBJEXT) CSSTokenizer.$(OBJEXT) \
-	CSSColor.$(OBJEXT) CSSGrammar.$(OBJEXT)
+	CSSColor.$(OBJEXT) MediaFeatureNames.$(OBJEXT) \
+	MediaTypeNames.$(OBJEXT) CSSGrammar.$(OBJEXT)
 nodist_libeshtml5_a_OBJECTS = $(am__objects_1) $(am__objects_2) \
 	$(am__objects_3)
 libeshtml5_a_OBJECTS = $(am_libeshtml5_a_OBJECTS) \
@@ -1271,6 +1272,8 @@ generated_scanners = \
 	src/css/CSSPropertyNames.cpp \
 	src/css/CSSTokenizer.cpp \
 	src/css/CSSColor.cpp \
+	src/MediaFeatureNames.cpp \
+	src/MediaTypeNames.cpp \
 	CSSGrammar.cc CSSGrammar.hh
 
 BUILT_SOURCES = $(generated_headers) $(generated_scanners) $(generated_sources)
@@ -1403,7 +1406,8 @@ libeshtml5_a_SOURCES = org/w3c/dom/ObjectArray.h src/one_at_a_time.hpp \
 	src/HistoryImp.h src/KeyboardEventImp.cpp \
 	src/KeyboardEventImp.h src/KeyboardEventInitImp.cpp \
 	src/KeyboardEventInitImp.h src/LocationImp.cpp \
-	src/LocationImp.h src/MediaListImp.cpp src/MediaListImp.h \
+	src/LocationImp.h src/MediaFeatureNames.re \
+	src/MediaListImp.cpp src/MediaListImp.h src/MediaTypeNames.re \
 	src/MessageEventImp.cpp src/MessageEventImp.h \
 	src/MessageEventInitImp.cpp src/MessageEventInitImp.h \
 	src/MouseEventImp.cpp src/MouseEventImp.h \
@@ -2448,12 +2452,14 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MediaControllerImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MediaError.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MediaErrorImp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MediaFeatureNames.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MediaList.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MediaListImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MediaQueryList.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MediaQueryListImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MediaQueryListListener.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MediaQueryListListenerImp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MediaTypeNames.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageChannel.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageChannelImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/MessageEvent.Po@am__quote@
@@ -10136,6 +10142,34 @@ CSSColor.obj: src/css/CSSColor.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/css/CSSColor.cpp' object='CSSColor.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o CSSColor.obj `if test -f 'src/css/CSSColor.cpp'; then $(CYGPATH_W) 'src/css/CSSColor.cpp'; else $(CYGPATH_W) '$(srcdir)/src/css/CSSColor.cpp'; fi`
+
+MediaFeatureNames.o: src/MediaFeatureNames.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MediaFeatureNames.o -MD -MP -MF $(DEPDIR)/MediaFeatureNames.Tpo -c -o MediaFeatureNames.o `test -f 'src/MediaFeatureNames.cpp' || echo '$(srcdir)/'`src/MediaFeatureNames.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/MediaFeatureNames.Tpo $(DEPDIR)/MediaFeatureNames.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/MediaFeatureNames.cpp' object='MediaFeatureNames.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MediaFeatureNames.o `test -f 'src/MediaFeatureNames.cpp' || echo '$(srcdir)/'`src/MediaFeatureNames.cpp
+
+MediaFeatureNames.obj: src/MediaFeatureNames.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MediaFeatureNames.obj -MD -MP -MF $(DEPDIR)/MediaFeatureNames.Tpo -c -o MediaFeatureNames.obj `if test -f 'src/MediaFeatureNames.cpp'; then $(CYGPATH_W) 'src/MediaFeatureNames.cpp'; else $(CYGPATH_W) '$(srcdir)/src/MediaFeatureNames.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/MediaFeatureNames.Tpo $(DEPDIR)/MediaFeatureNames.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/MediaFeatureNames.cpp' object='MediaFeatureNames.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MediaFeatureNames.obj `if test -f 'src/MediaFeatureNames.cpp'; then $(CYGPATH_W) 'src/MediaFeatureNames.cpp'; else $(CYGPATH_W) '$(srcdir)/src/MediaFeatureNames.cpp'; fi`
+
+MediaTypeNames.o: src/MediaTypeNames.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MediaTypeNames.o -MD -MP -MF $(DEPDIR)/MediaTypeNames.Tpo -c -o MediaTypeNames.o `test -f 'src/MediaTypeNames.cpp' || echo '$(srcdir)/'`src/MediaTypeNames.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/MediaTypeNames.Tpo $(DEPDIR)/MediaTypeNames.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/MediaTypeNames.cpp' object='MediaTypeNames.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MediaTypeNames.o `test -f 'src/MediaTypeNames.cpp' || echo '$(srcdir)/'`src/MediaTypeNames.cpp
+
+MediaTypeNames.obj: src/MediaTypeNames.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT MediaTypeNames.obj -MD -MP -MF $(DEPDIR)/MediaTypeNames.Tpo -c -o MediaTypeNames.obj `if test -f 'src/MediaTypeNames.cpp'; then $(CYGPATH_W) 'src/MediaTypeNames.cpp'; else $(CYGPATH_W) '$(srcdir)/src/MediaTypeNames.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/MediaTypeNames.Tpo $(DEPDIR)/MediaTypeNames.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/MediaTypeNames.cpp' object='MediaTypeNames.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o MediaTypeNames.obj `if test -f 'src/MediaTypeNames.cpp'; then $(CYGPATH_W) 'src/MediaTypeNames.cpp'; else $(CYGPATH_W) '$(srcdir)/src/MediaTypeNames.cpp'; fi`
 
 bridge.o: src/js/bridge.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT bridge.o -MD -MP -MF $(DEPDIR)/bridge.Tpo -c -o bridge.o `test -f 'src/js/bridge.cpp' || echo '$(srcdir)/'`src/js/bridge.cpp

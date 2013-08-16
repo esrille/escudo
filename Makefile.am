@@ -531,6 +531,8 @@ generated_scanners = \
 	src/css/CSSPropertyNames.cpp \
 	src/css/CSSTokenizer.cpp \
 	src/css/CSSColor.cpp \
+	src/MediaFeatureNames.cpp \
+	src/MediaTypeNames.cpp \
 	CSSGrammar.cc CSSGrammar.hh
 
 BUILT_SOURCES = $(generated_headers) $(generated_scanners) $(generated_sources)
@@ -805,8 +807,10 @@ libeshtml5_a_SOURCES += \
 	src/KeyboardEventInitImp.h \
 	src/LocationImp.cpp \
 	src/LocationImp.h \
+	src/MediaFeatureNames.re \
 	src/MediaListImp.cpp \
 	src/MediaListImp.h \
+	src/MediaTypeNames.re \
 	src/MessageEventImp.cpp \
 	src/MessageEventImp.h \
 	src/MessageEventInitImp.cpp \

@@ -19,6 +19,8 @@
 #include "CSSStyleDeclarationImp.h"
 #include "CSSPropertyValueImp.h"
 
+#include "MediaListImp.h"
+
 #include <org/w3c/dom/css/CSSPrimitiveValue.h>
 
 #include <algorithm>
@@ -42,6 +44,8 @@ CSSValueRule CSSValueParser::auto_numbering;
 CSSValueRule CSSValueParser::comma;
 CSSValueRule CSSValueParser::ident;
 CSSValueRule CSSValueParser::integer;
+CSSValueRule CSSValueParser::non_negative_integer;
+CSSValueRule CSSValueParser::positive_integer;
 CSSValueRule CSSValueParser::length;
 CSSValueRule CSSValueParser::non_negative_length;
 CSSValueRule CSSValueParser::number;
@@ -121,6 +125,12 @@ CSSValueRule CSSValueParser::zIndex;
 
 CSSValueRule CSSValueParser::binding;
 
+CSSValueRule CSSValueParser::ratio;
+CSSValueRule CSSValueParser::resolution;
+CSSValueRule CSSValueParser::orientation;
+CSSValueRule CSSValueParser::scan;
+CSSValueRule CSSValueParser::grid;
+
 void CSSValueParser::initializeRules()
 {
     angle = CSSValueRule(CSSValueRule::Angle);
@@ -129,9 +139,12 @@ void CSSValueParser::initializeRules()
     length = CSSValueRule(CSSValueRule::Length);
     non_negative_length = CSSValueRule(CSSValueRule::NonNegativeLength);
     integer = CSSValueRule(CSSValueRule::AnyInteger);
+    non_negative_integer = CSSValueRule(CSSValueRule::NonNegativeInteger);
     number = CSSValueRule(CSSValueRule::AnyNumber);
     percentage = CSSValueRule(CSSValueRule::Percentage);
+    positive_integer = CSSValueRule(CSSValueRule::PositiveInteger);
     non_negative_percentage = CSSValueRule(CSSValueRule::NonNegativePercentage);
+    resolution = CSSValueRule(CSSValueRule::Resolution);
     slash = CSSValueRule(CSSValueRule::Slash);
     string = CSSValueRule(CSSValueRule::String);
     uri = CSSValueRule(CSSValueRule::Uri);
@@ -598,6 +611,19 @@ void CSSValueParser::initializeRules()
         | CSSValueRule(u"textarea", CSSBindingValueImp::Textarea)
         | CSSValueRule(u"keygen", CSSBindingValueImp::Keygen)
         | CSSValueRule(u"time", CSSBindingValueImp::Time);
+
+    // Media Queries
+    ratio
+        = positive_integer + lineHeight + positive_integer;
+    orientation
+        = CSSValueRule(u"portrait", MediaListImp::Portrait)
+        | CSSValueRule(u"landscape", MediaListImp::Landscape);
+    scan
+        = CSSValueRule(u"progressive", MediaListImp::Progressive)
+        | CSSValueRule(u"interlace", MediaListImp::Interlace);
+    grid
+        = CSSValueRule(0.0f)
+        | CSSValueRule(1.0f);
 }
 
 CSSValueRule::operator std::u16string() const
@@ -629,14 +655,20 @@ CSSValueRule::operator std::u16string() const
         return u"Juxtapose";
     case Length:
         return u"Length";
+    case NonNegativeInteger:
+        return u"NonNegativeInteger";
     case NonNegativeLength:
         return u"NonNegativeLength";
+    case NonNegativePercentage:
+        return u"NonNegativePercentage";
     case Number:
         return u"Number";
     case Percentage:
         return u"Percentage";
-    case NonNegativePercentage:
-        return u"NonNegativePercentage";
+    case PositiveInteger:
+        return u"PositiveInteger";
+    case Resolution:
+        return u"Resolution";
     case Slash:
         return u"Slash";
     case String:
@@ -803,11 +835,25 @@ bool CSSValueRule::isValid(CSSValueParser* parser, unsigned propertyID) const
             }
         }
         break;
+    case NonNegativeInteger:
+        if (term.unit == CSSPrimitiveValue::CSS_NUMBER && term.number.isInteger() && 0.0f <= term.getNumber()) {
+            parser->push(&term, propertyID);
+            return parser->acceptToken();
+        }
+        break;
     case NonNegativeLength:
         if (term.unit == CSSPrimitiveValue::CSS_NUMBER && term.number == 0.0)
             term.unit = CSSPrimitiveValue::CSS_PX;  // TODO: check this is okay for any other rules.
         if (CSSPrimitiveValue::CSS_EMS <= term.unit && term.unit <= CSSPrimitiveValue::CSS_PC &&
             0.0f <= term.getNumber()) {
+            if (!f || (parser->*f)(*this)) {
+                parser->push(&term, propertyID);
+                return parser->acceptToken();
+            }
+        }
+        break;
+    case NonNegativePercentage:
+        if (term.unit == CSSPrimitiveValue::CSS_PERCENTAGE && 0.0f <= term.getNumber()) {
             if (!f || (parser->*f)(*this)) {
                 parser->push(&term, propertyID);
                 return parser->acceptToken();
@@ -830,12 +876,24 @@ bool CSSValueRule::isValid(CSSValueParser* parser, unsigned propertyID) const
             }
         }
         break;
-    case NonNegativePercentage:
-        if (term.unit == CSSPrimitiveValue::CSS_PERCENTAGE && 0.0f <= term.getNumber()) {
+    case PositiveInteger:
+        if (term.unit == CSSPrimitiveValue::CSS_NUMBER && term.number.isInteger() && 0.0f < term.getNumber()) {
+            parser->push(&term, propertyID);
+            return parser->acceptToken();
+        }
+        break;
+    case Resolution:
+        switch (term.unit) {
+        case CSSPrimitiveValue::CSS_DPPX:
+        case CSSPrimitiveValue::CSS_DPI:
+        case CSSPrimitiveValue::CSS_DPCM:
             if (!f || (parser->*f)(*this)) {
                 parser->push(&term, propertyID);
                 return parser->acceptToken();
             }
+            break;
+        default:
+            break;
         }
         break;
     case Slash:
@@ -1298,6 +1356,55 @@ CSSValueParser::CSSValueParser(int propertyID) :
         break;
     case CSSStyleDeclarationImp::Opacity:
         rule = &number;
+        break;
+
+    // Media Queries rules
+    case MediaListImp::Width:
+    case MediaListImp::MinWidth:
+    case MediaListImp::MaxWidth:
+    case MediaListImp::Height:
+    case MediaListImp::MinHeight:
+    case MediaListImp::MaxHeight:
+    case MediaListImp::DeviceWidth:
+    case MediaListImp::MinDeviceWidth:
+    case MediaListImp::MaxDeviceWidth:
+    case MediaListImp::DeviceHeight:
+    case MediaListImp::MinDeviceHeight:
+    case MediaListImp::MaxDeviceHeight:
+        rule = &non_negative_length;
+        break;
+    case MediaListImp::Orientation:
+        rule = &orientation;
+        break;
+    case MediaListImp::AspectRatio:
+    case MediaListImp::MinAspectRatio:
+    case MediaListImp::MaxAspectRatio:
+    case MediaListImp::DeviceAspectRatio:
+    case MediaListImp::MinDeviceAspectRatio:
+    case MediaListImp::MaxDeviceAspectRatio:
+        rule = &ratio;
+        break;
+    case MediaListImp::Color:
+    case MediaListImp::MinColor:
+    case MediaListImp::MaxColor:
+    case MediaListImp::ColorIndex:
+    case MediaListImp::MinColorIndex:
+    case MediaListImp::MaxColorIndex:
+    case MediaListImp::Monochrome:
+    case MediaListImp::MinMonochrome:
+    case MediaListImp::MaxMonochrome:
+        rule = &non_negative_integer;
+        break;
+    case MediaListImp::Resolution:
+    case MediaListImp::MinResolution:
+    case MediaListImp::MaxResolution:
+        rule = &resolution;
+        break;
+    case MediaListImp::Scan:
+        rule = &scan;
+        break;
+    case MediaListImp::Grid:
+        rule = &grid;
         break;
     default:
         rule = 0;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,7 @@ public:
 
     void setMediaList(MediaListImp* list) {
         if (list)
-            mediaList = *list;
+            mediaList = std::move(*list);
     }
 
     // CSSRule

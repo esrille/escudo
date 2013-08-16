@@ -91,6 +91,9 @@ using namespace org::w3c::dom::css;
 %token <number> LENGTH_IN
 %token <number> LENGTH_PT
 %token <number> LENGTH_PC
+%token MEDIA_AND
+%token MEDIA_NOT
+%token MEDIA_ONLY
 %token MEDIA_SYM
 %token NAMESPACE_SYM
 %token NOT
@@ -98,7 +101,9 @@ using namespace org::w3c::dom::css;
 %token PAGE_SYM
 %token <number> PERCENTAGE
 %token PREFIXMATCH
-%token <number> PX
+%token <number> RESOLUTION_DPCM
+%token <number> RESOLUTION_DPI
+%token <number> RESOLUTION_DPPX
 %token S
 %token <text> STRING
 %token <text> BAD_STRING
@@ -124,9 +129,13 @@ using namespace org::w3c::dom::css;
 %type <integer> unary_operator
 %type <integer> operator
 %type <integer> declaration
+%type <integer> media_type;
+%type <integer> media_feature;
+%type <integer> optional_media_query_operator
 %type <expr> expr
 %type <expr> term_list
 %type <expr> expression
+%type <expr> optional_media_query_value
 %type <term> term
 %type <term> numeric_term
 %type <term> unary_term
@@ -160,7 +169,7 @@ start
   | START_EXPRESSION expr {
         parser->setExpression($2);
     }
-  | START_MEDIA_LIST media_list
+  | START_MEDIA_LIST media_query_list
   | START_SELECTORS_GROUP dom_selectors_group {
         parser->setSelectorsGroup($2);
     }
@@ -183,7 +192,7 @@ stylesheet
     optional_sgml optional_namespaces statement_list
   ;
 import
-  : IMPORT_SYM optional_space uri_term optional_space media_list ';' optional_space {
+  : IMPORT_SYM optional_space uri_term optional_space media_query_list ';' optional_space {
         if (!parser->isImportable())
             $$ = 0;
         else {
@@ -223,7 +232,7 @@ media
   : MEDIA_SYM optional_space {
         parser->setMediaRule(new(std::nothrow) CSSMediaRuleImp);
     }
-    media_list
+    media_query_list
    '{' optional_space optional_rulesets error_non_block '}' optional_space {
         CSSMediaRuleImp* mediaRule = parser->getMediaRule();
         if (mediaRule) {
@@ -240,12 +249,6 @@ media
     }
   | MEDIA_SYM error_non_block ';' optional_sgml {
         $$ = 0;
-    }
-  ;
-medium
-  : IDENT optional_space {
-        if (MediaListImp* mediaList = parser->getMediaList())
-            mediaList->appendMedium($1);
     }
   ;
 page
@@ -512,6 +515,21 @@ term
   | function {    /* In CSS3, function seems to be moved to numeric_term... */
         $$.parser = parser;
     }
+  | RESOLUTION_DPCM optional_space {
+        $$.parser = parser;
+        $$.unit = CSSPrimitiveValue::CSS_DPCM;
+        $$.number = $1;
+    }
+  | RESOLUTION_DPI optional_space {
+        $$.parser = parser;
+        $$.unit = CSSPrimitiveValue::CSS_DPI;
+        $$.number = $1;
+    }
+  | RESOLUTION_DPPX optional_space {
+        $$.parser = parser;
+        $$.unit = CSSPrimitiveValue::CSS_DPPX;
+        $$.number = $1;
+    }
   ;
 function
   : FUNCTION optional_space expr ')' optional_space {
@@ -710,10 +728,86 @@ optional_rulesets
         CSSerror(parser, "syntax error, invalid ruleset");
     }
   ;
+
+/* The media_query_list production from Media Quires replaces the media_list
+ * production in CSS 2.1:
+
 media_list
   : medium
   | media_list ',' optional_space medium
   ;
+medium
+  : IDENT optional_space {
+        if (MediaListImp* mediaList = parser->getMediaList())
+            mediaList->appendMedium($1);
+    }
+  ;
+
+ */
+media_query_list
+  : /* empty */
+  | media_query_list_body
+  ;
+media_query_list_body
+  : media_query
+  | media_query_list_body ',' optional_space media_query
+  ;
+media_query
+  : optional_media_query_operator optional_space media_type optional_space optional_media_query_expression_list {
+        if (MediaListImp* mediaList = parser->getMediaList())
+            mediaList->appendMedium($1 | $3);
+    }
+  | media_query_expression_list {
+        if (MediaListImp* mediaList = parser->getMediaList())
+            mediaList->appendMedium(MediaListImp::All);
+    }
+  ;
+media_type
+  : IDENT {
+        $$ = MediaListImp::getMediaTypeID($1);
+    }
+  ;
+media_query_expression
+  : '(' optional_space media_feature optional_space optional_media_query_value ')' optional_space {
+        if (MediaListImp* mediaList = parser->getMediaList())
+            mediaList->appendFeature($3, $5);
+    }
+  ;
+media_feature
+  : IDENT {
+        $$ = MediaListImp::getFeatureID($1);
+    }
+  ;
+media_query_expression_list
+  : media_query_expression
+  | media_query_expression_list MEDIA_AND optional_space media_query_expression
+  ;
+optional_media_query_expression_list
+  : /* empty */
+  | MEDIA_AND optional_space media_query_expression_list
+  ;
+optional_media_query_operator
+  : /* empty */ {
+        $$ = 0;
+  }
+  | MEDIA_ONLY {
+        $$ = MediaListImp::Only;
+    }
+  | MEDIA_NOT {
+        $$ = MediaListImp::Not;
+    }
+  ;
+optional_media_query_value
+  : /* empty */ {
+        $$ = 0;
+    }
+  | ':' optional_space expr {
+        $$ = $3;
+  }
+  ;
+/*
+ */
+
 declaration_list
   : declaration {
         if (CSSStyleDeclarationImp* decl = parser->getStyleDeclaration())

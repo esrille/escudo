@@ -44,7 +44,7 @@ start:
         mode = Normal;
         return START_EXPRESSION;
     case StartMediaList:
-        mode = Normal;
+        mode = MediaQuery;
         return START_MEDIA_LIST;
     case StartSelectorsGroup:
         mode = Normal;
@@ -88,13 +88,6 @@ start:
     eof_string2 = "'" ([^\X0000\n\r\f\\'] | "\\" nl | "\"" | nonascii | escape)* "\X0000";
     eof_string = eof_string1 | eof_string2;
 
-    D = 'd' | "\\" "0"{0,4} ("44"|"64") ("\r\n" | [ \t\r\n\f])?;
-    E = 'e' | "\\" "0"{0,4} ("45"|"65") ("\r\n" | [ \t\r\n\f])?;
-    N = 'n' | "\\" "0"{0,4} ("4e"|"6e") ("\r\n" | [ \t\r\n\f])? | '\\n';
-    O = 'o' | "\\" "0"{0,4} ("4f"|"6f") ("\r\n" | [ \t\r\n\f])? | '\\o';
-    T = 't' | "\\" "0"{0,4} ("54"|"74") ("\r\n" | [ \t\r\n\f])? | '\\t';
-    V = 'v' | "\\" "0"{0,4} ("58"|"78") ("\r\n" | [ \t\r\n\f])? | '\\v';
-
     re2c:define:YYCTYPE  = "char16_t";
     re2c:define:YYCURSOR = yyin;
     re2c:define:YYMARKER = yymarker;
@@ -137,6 +130,14 @@ start:
 
     ident               {
                             CSSlval.text = { yytext, yyin - yytext };
+                            if (mode == MediaQuery) {
+                                if (CSSlval.text.compareIgnoreCase(u"and", 3))
+                                    return MEDIA_AND;
+                                if (CSSlval.text.compareIgnoreCase(u"not", 3))
+                                    return MEDIA_NOT;
+                                if (CSSlval.text.compareIgnoreCase(u"only", 4))
+                                    return MEDIA_ONLY;
+                            }
                             return IDENT;
                         }
 
@@ -150,19 +151,34 @@ start:
                             return HASH_IDENT;
                         }
 
-    ":" N O T "("       {
+    ':not('             {
                             openConstructs.push_front(')');
                             return NOT;
                         }
 
     '@import'           {
+                            mode = MediaQuery;
                             openConstructs.push_front(';');
                             return IMPORT_SYM;
                         }
-    '@page'             {return PAGE_SYM;}
-    '@media'            {return MEDIA_SYM;}
-    '@font-face'        {return FONT_FACE_SYM;}
-    '@charset'          {return CHARSET_SYM;}
+
+    '@page'             {
+                            return PAGE_SYM;
+                        }
+
+    '@media'            {
+                            mode = MediaQuery;
+                            return MEDIA_SYM;
+                        }
+
+    '@font-face'        {
+                            return FONT_FACE_SYM;
+                        }
+
+    '@charset'          {
+                            return CHARSET_SYM;
+                        }
+
     '@namespace'        {
                             openConstructs.push_front(';');
                             return NAMESPACE_SYM;
@@ -188,6 +204,18 @@ start:
     num 'cm'            {
                             parseNumber(yytext, yyin - yytext - 2, &CSSlval.number);
                             return LENGTH_CM;
+                        }
+    num 'dpcm'          {
+                            parseNumber(yytext, yyin - yytext - 2, &CSSlval.number);
+                            return RESOLUTION_DPCM;
+                        }
+    num 'dpi'           {
+                            parseNumber(yytext, yyin - yytext - 2, &CSSlval.number);
+                            return RESOLUTION_DPI;
+                        }
+    num 'dppx'          {
+                            parseNumber(yytext, yyin - yytext - 2, &CSSlval.number);
+                            return RESOLUTION_DPPX;
                         }
     num 'mm'            {
                             parseNumber(yytext, yyin - yytext - 2, &CSSlval.number);
@@ -290,6 +318,8 @@ start:
                             return BAD_STRING;
                         }
     "{"                 {
+                            if (mode == MediaQuery)
+                                mode = Normal;
                             openConstructs.push_front('}');
                             return *yytext;
                         }
@@ -317,6 +347,8 @@ start:
                             return *yytext;
                         }
     ";"                 {
+                            if (mode == MediaQuery)
+                                mode = Normal;
                             if (!openConstructs.empty() && openConstructs.front() == ';')
                                 openConstructs.pop_front();
                             return *yytext;

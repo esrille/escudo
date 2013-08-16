@@ -45,10 +45,13 @@ public:
         Ident,
         Juxtapose,
         Length,
+        NonNegativeInteger,
         NonNegativeLength,
+        NonNegativePercentage,
         Number,
         Percentage,
-        NonNegativePercentage,
+        PositiveInteger,
+        Resolution,
         Slash,
         String,
         Uri,
@@ -205,6 +208,8 @@ class CSSValueParser
     static CSSValueRule ident;
     static CSSValueRule inherit;
     static CSSValueRule integer;
+    static CSSValueRule non_negative_integer;
+    static CSSValueRule positive_integer;
     static CSSValueRule length;
     static CSSValueRule non_negative_length;
     static CSSValueRule number;
@@ -283,6 +288,13 @@ class CSSValueParser
     static CSSValueRule zIndex;
 
     static CSSValueRule binding;
+
+    // Media Queries
+    static CSSValueRule ratio;
+    static CSSValueRule resolution;
+    static CSSValueRule orientation;
+    static CSSValueRule scan;
+    static CSSValueRule grid;
 
     int propertyID;
     CSSValueRule* rule;

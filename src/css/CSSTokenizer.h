@@ -38,6 +38,7 @@ public:
         StartMediaList,
         StartSelectorsGroup,
         Normal,
+        MediaQuery,
         End
     };
 

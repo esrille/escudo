@@ -161,6 +161,15 @@ struct CSSParserString
     bool operator==(const char16_t* s) const {
         return std::memcmp(text, s, length * sizeof(char16_t)) == 0 && s[length] == 0;
     }
+    bool compareIgnoreCase(const char16_t* s, ssize_t len) const {
+        if (length != len)
+            return false;
+        for (const char16_t* t = text; 0 < len; --len) {
+            if (toLower(*s++) != toLower(*t++))
+                return false;
+        }
+        return true;
+    }
 
     void clear() {
         length = 0;
