@@ -72,6 +72,11 @@ module css {
     const unsigned short      CSS_RECT                       = 24;
     const unsigned short      CSS_RGBCOLOR                   = 25;
 
+    // From Media Queries and CSS Values and Units Module
+    const unsigned short      CSS_DPPX                       = 30;   // TBD
+    const unsigned short      CSS_DPI                        = 31;   // TBD
+    const unsigned short      CSS_DPCM                       = 32;   // TBD
+
     const unsigned short      CSS_UNICODE_RANGE              = 102;  // TBD
 
     readonly attribute unsigned short   primitiveType;
