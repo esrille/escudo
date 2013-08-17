@@ -34,6 +34,15 @@ namespace bootstrap
 class ScreenImp : public ObjectMixin<ScreenImp>
 {
 public:
+    // For Media Queries
+    unsigned int getDPI() const;
+    unsigned int getDPPX() const;
+    unsigned int getColor() const;
+    unsigned int getColorIndex() const;
+    unsigned int getMonochrome() const;
+    unsigned int getScan() const;
+    unsigned int getGrid() const;
+
     // Screen
     unsigned int getAvailWidth();
     unsigned int getAvailHeight();

@@ -123,7 +123,7 @@ void HTMLLinkElementImp::refresh()
                 std::u16string mediaText = getMedia();
                 Retained<MediaListImp> mediaList;
                 mediaList.setMediaText(mediaText);
-                if (mediaText.empty() || mediaList.hasMedium(MediaListImp::Screen)) {   // TODO: support other mediums, too.
+                if (mediaText.empty() || mediaList.matches(document ? document->getDefaultWindow() : 0)) {
                     if (current)
                         current->cancel();
                     current = new(std::nothrow) HttpRequest(document->getDocumentURI());

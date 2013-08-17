@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Esrille Inc.
+ * Copyright 2012, 2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
 #include "CSSStyleDeclarationImp.h"
 #include "CSSStyleSheetImp.h"
 
+#include "DocumentImp.h"
 #include "ViewCSSImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
@@ -68,7 +69,7 @@ void CSSRuleListImp::append(css::CSSRule rule, DocumentImp* document)
         }
     } else if (CSSMediaRuleImp* mediaRule = dynamic_cast<CSSMediaRuleImp*>(rule.self())) {
         MediaListImp* mediaList = dynamic_cast<MediaListImp*>(mediaRule->getMedia().self());
-        if (mediaList->hasMedium(MediaListImp::Screen)) {   // TODO: support other mediums, too.
+        if (mediaList->matches(document ? document->getDefaultWindow() : 0)) {
             css::CSSRuleList ruleList = mediaRule->getCssRules();
             unsigned length = ruleList.getLength();
             for (unsigned i = 0; i < length; ++i)
@@ -76,7 +77,7 @@ void CSSRuleListImp::append(css::CSSRule rule, DocumentImp* document)
         }
     } else if (CSSImportRuleImp* importRule = dynamic_cast<CSSImportRuleImp*>(rule.self())) {
         MediaListImp* mediaList = dynamic_cast<MediaListImp*>(importRule->getMedia().self());
-        if (mediaList->hasMedium(MediaListImp::Screen)) {   // TODO: support other mediums, too.
+        if (mediaList->matches(document ? document->getDefaultWindow() : 0)) {
             if (document) {
                 importRule->setDocument(document);
                 importRule->getStyleSheet();  // to get the CSS file

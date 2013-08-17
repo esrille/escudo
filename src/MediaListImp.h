@@ -29,6 +29,7 @@
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class CSSParserExpr;
+class WindowImp;
 
 class MediaListImp : public ObjectMixin<MediaListImp>
 {
@@ -152,7 +153,7 @@ public:
     void clear() {
         mediaQueries.clear();
     }
-    bool hasMedium(unsigned bit);
+    bool matches(WindowImp* window);
 
     void appendFeature(int feature, CSSParserExpr* expr);
     void appendMedium(unsigned medium);

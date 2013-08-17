@@ -155,14 +155,6 @@ public:
         stackingContexts = contexts;
     }
 
-    unsigned getDPI() const {
-        return dpi;
-    }
-    void setDPI(unsigned size) {
-        dpi = size;
-        // TODO: update fontSizeTable, too?
-    }
-
     unsigned getMediumFontSize() const {
         return mediumFontSize;
     }

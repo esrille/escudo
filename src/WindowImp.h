@@ -23,6 +23,7 @@
 
 #include <org/w3c/dom/html/Window.h>
 
+#include <org/w3c/dom/css/CSSPrimitiveValue.h>
 #include <org/w3c/dom/css/CSSStyleDeclaration.h>
 #include <org/w3c/dom/html/MediaQueryList.h>
 #include <org/w3c/dom/html/Screen.h>
@@ -348,6 +349,43 @@ public:
 
     ElementImp* getFrameElementImp() const {
         return frameElement;
+    }
+    ScreenImp* getScreenImp() {
+        return &screen;
+    }
+
+    // This getPx() function is for supporting media queries in which relative
+    // units are based on the initial value unlike ViewCSSImp::getPx().
+    // cf. http://www.w3.org/TR/css3-mediaqueries/#units
+    float getPx(float value, unsigned short unit, float fontSize = 16.0f) {
+        switch (unit) {
+        case css::CSSPrimitiveValue::CSS_NUMBER:
+            return value;
+        case css::CSSPrimitiveValue::CSS_EMS:
+            return fontSize * value;
+        case css::CSSPrimitiveValue::CSS_EXS:
+            return fontSize * value * 0.5f;
+        case css::CSSPrimitiveValue::CSS_PX:
+            return value;
+        case css::CSSPrimitiveValue::CSS_CM:
+            return value / 2.54f * screen.getDPI();
+        case css::CSSPrimitiveValue::CSS_MM:
+            return value / 25.4f * screen.getDPI();
+        case css::CSSPrimitiveValue::CSS_IN:
+            return value * screen.getDPI();
+        case css::CSSPrimitiveValue::CSS_PT:
+            return value / 72 * screen.getDPI();
+        case css::CSSPrimitiveValue::CSS_PC:
+            return value * 12 / 72 * screen.getDPI();
+        case css::CSSPrimitiveValue::CSS_DPPX:
+            return value;
+        case css::CSSPrimitiveValue::CSS_DPI:
+            return value;
+        case css::CSSPrimitiveValue::CSS_DPCM:
+            return value * 2.54f;
+        default:
+            return NAN;
+        }
     }
 
     // Window
