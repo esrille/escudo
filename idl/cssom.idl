@@ -82,7 +82,11 @@ module css {
 
 typedef stylesheets::MediaList MediaList;
 
-typedef CSSRule[] CSSRuleList;
+[ArrayClass]
+interface CSSRuleList {
+  getter CSSRule? item(unsigned long index);
+  readonly attribute unsigned long length;
+};
 
 interface CSSRule {
     const unsigned short STYLE_RULE = 1;

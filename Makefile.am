@@ -76,6 +76,7 @@ generated_headers = \
 	org/w3c/dom/css/CSSPageRule.h \
 	org/w3c/dom/css/CSSPrimitiveValue.h \
 	org/w3c/dom/css/CSSRule.h \
+	org/w3c/dom/css/CSSRuleList.h \
 	org/w3c/dom/css/CSSStyleDeclaration.h \
 	org/w3c/dom/css/CSSStyleRule.h \
 	org/w3c/dom/css/CSSStyleSheet.h \
@@ -326,6 +327,7 @@ generated_sources = \
 	org/w3c/dom/css/CSSPageRule.cpp \
 	org/w3c/dom/css/CSSPrimitiveValue.cpp \
 	org/w3c/dom/css/CSSRule.cpp \
+	org/w3c/dom/css/CSSRuleList.cpp \
 	org/w3c/dom/css/CSSStyleDeclaration.cpp \
 	org/w3c/dom/css/CSSStyleRule.cpp \
 	org/w3c/dom/css/CSSStyleSheet.cpp \

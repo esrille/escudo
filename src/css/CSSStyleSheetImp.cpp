@@ -43,7 +43,7 @@ css::CSSRule CSSStyleSheetImp::getOwnerRule()
 
 css::CSSRuleList CSSStyleSheetImp::getCssRules()
 {
-    return ruleList.self();
+    return &ruleList;
 }
 
 unsigned int CSSStyleSheetImp::insertRule(const std::u16string& rule, unsigned int index)

@@ -281,12 +281,13 @@ am__objects_1 = ArrayBuffer.$(OBJEXT) ArrayBufferView.$(OBJEXT) \
 	CSSFontFaceRule.$(OBJEXT) CSSImportRule.$(OBJEXT) \
 	CSSMediaRule.$(OBJEXT) CSSNamespaceRule.$(OBJEXT) \
 	CSSPageRule.$(OBJEXT) CSSPrimitiveValue.$(OBJEXT) \
-	CSSRule.$(OBJEXT) CSSStyleDeclaration.$(OBJEXT) \
-	CSSStyleRule.$(OBJEXT) CSSStyleSheet.$(OBJEXT) \
-	CSSUnknownRule.$(OBJEXT) CSSValue.$(OBJEXT) \
-	CSSValueList.$(OBJEXT) DocumentCSS.$(OBJEXT) \
-	DOMImplementationCSS.$(OBJEXT) ElementCSSInlineStyle.$(OBJEXT) \
-	Rect.$(OBJEXT) RGBColor.$(OBJEXT) CompositionEvent.$(OBJEXT) \
+	CSSRule.$(OBJEXT) CSSRuleList.$(OBJEXT) \
+	CSSStyleDeclaration.$(OBJEXT) CSSStyleRule.$(OBJEXT) \
+	CSSStyleSheet.$(OBJEXT) CSSUnknownRule.$(OBJEXT) \
+	CSSValue.$(OBJEXT) CSSValueList.$(OBJEXT) \
+	DocumentCSS.$(OBJEXT) DOMImplementationCSS.$(OBJEXT) \
+	ElementCSSInlineStyle.$(OBJEXT) Rect.$(OBJEXT) \
+	RGBColor.$(OBJEXT) CompositionEvent.$(OBJEXT) \
 	CompositionEventInit.$(OBJEXT) CustomEvent.$(OBJEXT) \
 	CustomEventInit.$(OBJEXT) Event.$(OBJEXT) \
 	EventHandlerNonNull.$(OBJEXT) EventInit.$(OBJEXT) \
@@ -817,6 +818,7 @@ generated_headers = \
 	org/w3c/dom/css/CSSPageRule.h \
 	org/w3c/dom/css/CSSPrimitiveValue.h \
 	org/w3c/dom/css/CSSRule.h \
+	org/w3c/dom/css/CSSRuleList.h \
 	org/w3c/dom/css/CSSStyleDeclaration.h \
 	org/w3c/dom/css/CSSStyleRule.h \
 	org/w3c/dom/css/CSSStyleSheet.h \
@@ -1067,6 +1069,7 @@ generated_sources = \
 	org/w3c/dom/css/CSSPageRule.cpp \
 	org/w3c/dom/css/CSSPrimitiveValue.cpp \
 	org/w3c/dom/css/CSSRule.cpp \
+	org/w3c/dom/css/CSSRuleList.cpp \
 	org/w3c/dom/css/CSSStyleDeclaration.cpp \
 	org/w3c/dom/css/CSSStyleRule.cpp \
 	org/w3c/dom/css/CSSStyleSheet.cpp \
@@ -2112,6 +2115,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CSSPropertyValueImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CSSRule.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CSSRuleImp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CSSRuleList.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CSSRuleListImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CSSSelector.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CSSSerialize.Po@am__quote@
@@ -7300,6 +7304,20 @@ CSSRule.obj: org/w3c/dom/css/CSSRule.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/css/CSSRule.cpp' object='CSSRule.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o CSSRule.obj `if test -f 'org/w3c/dom/css/CSSRule.cpp'; then $(CYGPATH_W) 'org/w3c/dom/css/CSSRule.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/css/CSSRule.cpp'; fi`
+
+CSSRuleList.o: org/w3c/dom/css/CSSRuleList.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT CSSRuleList.o -MD -MP -MF $(DEPDIR)/CSSRuleList.Tpo -c -o CSSRuleList.o `test -f 'org/w3c/dom/css/CSSRuleList.cpp' || echo '$(srcdir)/'`org/w3c/dom/css/CSSRuleList.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/CSSRuleList.Tpo $(DEPDIR)/CSSRuleList.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/css/CSSRuleList.cpp' object='CSSRuleList.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o CSSRuleList.o `test -f 'org/w3c/dom/css/CSSRuleList.cpp' || echo '$(srcdir)/'`org/w3c/dom/css/CSSRuleList.cpp
+
+CSSRuleList.obj: org/w3c/dom/css/CSSRuleList.cpp
+@am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT CSSRuleList.obj -MD -MP -MF $(DEPDIR)/CSSRuleList.Tpo -c -o CSSRuleList.obj `if test -f 'org/w3c/dom/css/CSSRuleList.cpp'; then $(CYGPATH_W) 'org/w3c/dom/css/CSSRuleList.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/css/CSSRuleList.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/CSSRuleList.Tpo $(DEPDIR)/CSSRuleList.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='org/w3c/dom/css/CSSRuleList.cpp' object='CSSRuleList.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o CSSRuleList.obj `if test -f 'org/w3c/dom/css/CSSRuleList.cpp'; then $(CYGPATH_W) 'org/w3c/dom/css/CSSRuleList.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/css/CSSRuleList.cpp'; fi`
 
 CSSStyleDeclaration.o: org/w3c/dom/css/CSSStyleDeclaration.cpp
 @am__fastdepCXX_TRUE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT CSSStyleDeclaration.o -MD -MP -MF $(DEPDIR)/CSSStyleDeclaration.Tpo -c -o CSSStyleDeclaration.o `test -f 'org/w3c/dom/css/CSSStyleDeclaration.cpp' || echo '$(srcdir)/'`org/w3c/dom/css/CSSStyleDeclaration.cpp

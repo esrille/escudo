@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-#ifndef CSSRULELIST_IMP_H
-#define CSSRULELIST_IMP_H
+#ifndef ORG_W3C_DOM_BOOTSTRAP_CSSRULELISTIMP_H_INCLUDED
+#define ORG_W3C_DOM_BOOTSTRAP_CSSRULELISTIMP_H_INCLUDED
 
-#include <Object.h>
-#include <org/w3c/dom/ObjectArray.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#include <org/w3c/dom/css/CSSRuleList.h>
 
 #include <deque>
 #include <list>
@@ -32,7 +35,7 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class DocumentImp;
 
-class CSSRuleListImp : public ObjectImp
+class CSSRuleListImp : public ObjectMixin<CSSRuleListImp>
 {
 public:
     struct Rule
@@ -131,42 +134,37 @@ public:
 
     void find(RuleSet& set, ViewCSSImp* view, Element& element, unsigned importance);
 
-    css::CSSRuleList getCssRules()
-    {
+    css::CSSRuleList getCssRules() {
         return this;
     }
 
     // for StyleSheet
-    unsigned int insertRule(const std::u16string& rule, unsigned int index)
-    {
+    unsigned int insertRule(const std::u16string& rule, unsigned int index) {
         // TODO: implement me
         return 0;
     }
 
-    void deleteRule(unsigned int index)
-    {
+    void deleteRule(unsigned int index) {
         // TODO: implement me
     }
 
-    // ObjectArray
-    unsigned int getLength() {
-        return ruleList.size();
-    }
-    void setLength(unsigned int length) {
-    }
-    css::CSSRule getElement(unsigned int index) {
+    // CSSRuleList
+    css::CSSRule item(unsigned int index) {
         if (getLength() <= index)
             return 0;
         return ruleList[index];
     }
-    void setElement(unsigned int index, css::CSSRule value) {
+    unsigned int getLength() {
+        return ruleList.size();
     }
-    Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
-        return ObjectArray<css::CSSRule>::dispatch(this, selector, id, argc, argv);
+    // Object
+    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
+    {
+        return css::CSSRuleList::dispatch(this, selector, id, argc, argv);
     }
-
-    virtual void* getStaticPrivate() const {
-        return 0;
+    static const char* const getMetaData()
+    {
+        return css::CSSRuleList::getMetaData();
     }
 
     static bool hasHover(const RuleSet& set);
@@ -174,4 +172,4 @@ public:
 
 }}}}  // org::w3c::dom::bootstrap
 
-#endif  // CSSRULELIST_IMP_H
+#endif  // ORG_W3C_DOM_BOOTSTRAP_CSSRULELISTIMP_H_INCLUDED

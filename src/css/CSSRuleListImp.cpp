@@ -73,7 +73,7 @@ void CSSRuleListImp::append(css::CSSRule rule, DocumentImp* document)
             css::CSSRuleList ruleList = mediaRule->getCssRules();
             unsigned length = ruleList.getLength();
             for (unsigned i = 0; i < length; ++i)
-                append(ruleList.getElement(i), document);
+                append(ruleList.item(i), document);
         }
     } else if (CSSImportRuleImp* importRule = dynamic_cast<CSSImportRuleImp*>(rule.self())) {
         MediaListImp* mediaList = dynamic_cast<MediaListImp*>(importRule->getMedia().self());

@@ -49,6 +49,7 @@
 #include "css/CSSPageRuleImp.h"
 #include "css/CSSPrimitiveValueImp.h"
 #include "css/CSSRuleImp.h"
+#include "css/CSSRuleListImp.h"
 #include "css/CSSStyleDeclarationImp.h"
 #include "css/CSSStyleRuleImp.h"
 #include "css/CSSStyleSheetImp.h"
@@ -361,6 +362,7 @@ void registerClasses(v8::Handle<v8::ObjectTemplate> global)
     CSSPageRuleImp::setStaticPrivate(new NativeClass(global, CSSPageRuleImp::getMetaData()));
     CSSPrimitiveValueImp::setStaticPrivate(new NativeClass(global, CSSPrimitiveValueImp::getMetaData()));
 //    CSSRuleImp::setStaticPrivate(new NativeClass(global, CSSRuleImp::getMetaData()));
+    CSSRuleListImp::setStaticPrivate(new NativeClass(global, CSSRuleListImp::getMetaData()));
 //    CSSStyleDeclarationImp::setStaticPrivate(new NativeClass(global, CSSStyleDeclarationImp::getMetaData()));
     CSSStyleRuleImp::setStaticPrivate(new NativeClass(global, CSSStyleRuleImp::getMetaData()));
     CSSStyleSheetImp::setStaticPrivate(new NativeClass(global, CSSStyleSheetImp::getMetaData()));

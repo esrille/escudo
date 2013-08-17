@@ -22,6 +22,7 @@
 #include <sstream>
 
 #include <org/w3c/dom/css/CSSMediaRule.h>
+#include <org/w3c/dom/css/CSSRuleList.h>
 #include <org/w3c/dom/css/CSSStyleRule.h>
 #include <org/w3c/dom/stylesheets/MediaList.h>
 
@@ -41,7 +42,7 @@ void test(std::istream& stream)
     if (!list)
         return;
     for (unsigned int i = 0; i < list.getLength(); ++i) {
-        css::CSSRule rule = list.getElement(i);
+        css::CSSRule rule = list.item(i);
         switch (rule.getType()) {
         case css::CSSRule::STYLE_RULE: {
             css::CSSStyleRule styleRule = interface_cast<css::CSSStyleRule>(rule);
@@ -59,7 +60,7 @@ void test(std::istream& stream)
             std::cout << " {\n";
             css::CSSRuleList list = mediaRule.getCssRules();
             for (unsigned int i = 0; i < list.getLength(); ++i) {
-                css::CSSRule rule = list.getElement(i);
+                css::CSSRule rule = list.item(i);
                 if (rule.getType() == css::CSSRule::STYLE_RULE) {
                     css::CSSStyleRule styleRule = interface_cast<css::CSSStyleRule>(rule);
                     std::cout << styleRule.getSelectorText() << " {";

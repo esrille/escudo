@@ -104,7 +104,7 @@ void dumpStyleSheet(std::ostream& result, css::CSSStyleSheet sheet)
     css::CSSRuleList list = sheet.getCssRules();
     unsigned length = list.getLength();
     for (unsigned i = 0; i < length; ++i) {
-        css::CSSRule rule = list.getElement(i);
+        css::CSSRule rule = list.item(i);
         result << rule.getCssText() << '\n';
     }
 }
