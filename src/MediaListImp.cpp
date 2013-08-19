@@ -151,7 +151,7 @@ MediaQuery::getMediaText()
         text += u"only ";
     if (type & Not)
         text += u"not ";
-    if (type == All)
+    if ((type & All) == All)
         text += allType;
     else {
         for (unsigned i = 0; i < mediaTypesCount; ++i) {
