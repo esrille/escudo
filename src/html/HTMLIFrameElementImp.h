@@ -44,6 +44,8 @@ class HTMLIFrameElementImp : public ObjectMixin<HTMLIFrameElementImp, HTMLElemen
     html::Window window;
     Retained<EventListenerImp> blurListener;
 
+    bool loadInProgess;
+
     void handleBlur(EventListenerImp* listener, events::Event event);
 
 public:
@@ -52,6 +54,8 @@ public:
     ~HTMLIFrameElementImp();
 
     virtual void handleMutation(events::MutationEvent mutation);
+
+    void notify(bool error);
 
     // HTMLIFrameElement
     std::u16string getSrc();

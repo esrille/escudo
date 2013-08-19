@@ -23,6 +23,7 @@
 constexpr auto Intern = &one_at_a_time::hash<char16_t>;
 
 #include "DocumentImp.h"
+#include "EventImp.h"
 #include "HTMLUtil.h"
 #include "WindowImp.h"
 
@@ -38,10 +39,15 @@ namespace bootstrap
 HTMLIFrameElementImp::HTMLIFrameElementImp(DocumentImp* ownerDocument, unsigned flags) :
     ObjectMixin(ownerDocument, u"iframe"),
     window(0),
-    blurListener(boost::bind(&HTMLIFrameElementImp::handleBlur, this, _1, _2))
+    blurListener(boost::bind(&HTMLIFrameElementImp::handleBlur, this, _1, _2)),
+    loadInProgess(false)
 {
     tabIndex = 0;
     if (ownerDocument) {
+        if (ownerDocument->getReadyState() != u"complete") {
+            loadInProgess = true;
+            ownerDocument->incrementLoadEventDelayCount();
+        }
         window = new(std::nothrow) WindowImp(dynamic_cast<WindowImp*>(ownerDocument->getDefaultView().self()), this, flags);
         window.open(u"about:blank", u"_self");  // TODO: Check how location is created
     }
@@ -51,7 +57,8 @@ HTMLIFrameElementImp::HTMLIFrameElementImp(DocumentImp* ownerDocument, unsigned 
 HTMLIFrameElementImp::HTMLIFrameElementImp(HTMLIFrameElementImp* org, bool deep) :
     ObjectMixin(org, deep),
     window(org->window),
-    blurListener(boost::bind(&HTMLIFrameElementImp::handleBlur, this, _1, _2))
+    blurListener(boost::bind(&HTMLIFrameElementImp::handleBlur, this, _1, _2)),
+    loadInProgess(false)
 {
     tabIndex = org->tabIndex;
     addEventListener(u"blur", &blurListener, false, EventTargetImp::UseDefault);
@@ -59,6 +66,23 @@ HTMLIFrameElementImp::HTMLIFrameElementImp(HTMLIFrameElementImp* org, bool deep)
 
 HTMLIFrameElementImp::~HTMLIFrameElementImp()
 {
+}
+
+void HTMLIFrameElementImp::notify(bool error)
+{
+    // The iframe load event steps
+    events::Event event = new(std::nothrow) EventImp;
+    if (!error)
+        event.initEvent(u"load", false, false);
+    else
+        event.initEvent(u"error", false, false);
+    dispatchEvent(event);
+    if (!loadInProgess)
+        return;
+    if (DocumentImp* ownerDocument = getOwnerDocumentImp()) {
+        ownerDocument->decrementLoadEventDelayCount();
+        loadInProgess = false;
+    }
 }
 
 void HTMLIFrameElementImp::handleMutation(events::MutationEvent mutation)
