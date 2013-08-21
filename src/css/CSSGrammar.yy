@@ -751,6 +751,13 @@ media_query_list
 media_query_list_body
   : media_query
   | media_query_list_body ',' optional_space media_query
+  | media_query_list_body error {
+        if (MediaListImp* mediaList = parser->getMediaList()) {
+            CSSerror(parser, "syntax error, invalid media query");
+            mediaList->clearFeatures();
+            mediaList->appendMedium(MediaListImp::Not | MediaListImp::All);
+        }
+    }
   ;
 media_query
   : optional_media_query_operator optional_space media_type optional_space optional_media_query_expression_list {

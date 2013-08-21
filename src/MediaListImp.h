@@ -23,7 +23,6 @@
 
 #include <org/w3c/dom/stylesheets/MediaList.h>
 
-#include <deque>
 #include <list>
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
@@ -111,6 +110,8 @@ public:
         {
         }
 
+        bool operator==(const MediaFeature& other) const;
+
         unsigned short getIndex() const {
             return unit;
         }
@@ -129,13 +130,15 @@ public:
         MediaQuery(unsigned type, std::list<MediaFeature>&& features);
         MediaQuery(MediaQuery&& from);
 
+        bool operator==(const MediaQuery& other) const;
+
         std::u16string getMediaText();
     };
 
 private:
     std::list<MediaFeature> mediaFeatures;  // only used while parsing the text
 
-    std::deque<MediaQuery> mediaQueries;
+    std::list<MediaQuery> mediaQueries;
 
 public:
     MediaListImp()
@@ -155,6 +158,11 @@ public:
     }
     bool matches(WindowImp* window);
 
+    bool contains(const MediaQuery& mediaQuery) const;
+
+    void clearFeatures() {
+        mediaFeatures.clear();
+    }
     void appendFeature(int feature, CSSParserExpr* expr);
     void appendMedium(unsigned medium);
 

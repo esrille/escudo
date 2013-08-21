@@ -19,6 +19,7 @@
 #include <assert.h>
 #include <math.h>
 
+#include <algorithm>
 #include <utility>
 
 #include <org/w3c/dom/css/CSSPrimitiveValue.h>
@@ -78,6 +79,17 @@ const char16_t* const scanTypes[] = {
 
 const size_t mediaTypesCount = sizeof mediaTypes / sizeof mediaTypes[0];
 
+}
+
+bool MediaListImp::
+MediaFeature::operator==(const MediaFeature& other) const {
+    if (feature != other.feature)
+        return false;
+    if (unit != other.unit)
+        return false;
+    if (isnan(value) && isnan(other.value))
+        return true;
+    return value == other.value;
 }
 
 std::u16string MediaListImp::
@@ -140,6 +152,27 @@ MediaQuery::MediaQuery(MediaQuery&& from) :
 {
     from.type = 0;
     assert(from.features.empty());
+}
+
+bool MediaListImp::
+MediaQuery::operator==(const MediaQuery& other) const
+{
+    if (type != other.type)
+        return false;
+    if (features.size() != other.features.size())
+        return false;
+    for (auto i = features.begin(); i != features.end(); ++i) {
+        bool found = false;
+        for (auto j = other.features.begin(); j != other.features.end(); ++j) {
+            if (*i == *j) {
+                found = true;
+                break;
+            }
+        }
+        if (!found)
+            return false;
+    }
+    return true;
 }
 
 std::u16string MediaListImp::
@@ -374,10 +407,17 @@ bool MediaListImp::matches(WindowImp* window)
     return false;
 }
 
-void MediaListImp::appendMedium(unsigned medium)
+bool MediaListImp::contains(const MediaQuery& mediaQuery) const
 {
-    mediaQueries.emplace_back(medium, std::move(mediaFeatures));
+    return std::find(mediaQueries.begin(), mediaQueries.end(), mediaQuery) != mediaQueries.end();
+}
+
+void MediaListImp::appendMedium(unsigned media)
+{
+    MediaQuery mediaQuery(media, std::move(mediaFeatures));
     assert(mediaFeatures.empty());
+    if (!contains(mediaQuery))
+        mediaQueries.push_back(std::move(mediaQuery));
 }
 
 void MediaListImp::appendFeature(int feature, CSSParserExpr* expr)
@@ -443,11 +483,16 @@ unsigned int MediaListImp::getLength()
 
 std::u16string MediaListImp::item(unsigned int index)
 {
-    if (getLength() <= index)
-        return u"";
-    if (mediaQueries.empty())
-        return allType;
-    return mediaQueries[index].getMediaText();
+    if (index < getLength()) {
+        if (mediaQueries.empty())
+            return allType;
+        for (auto i = mediaQueries.begin(); i != mediaQueries.end(); ++i) {
+            if (index == 0)
+                return i->getMediaText();
+            --index;
+        }
+    }
+    return u"";
 }
 
 void MediaListImp::appendMedium(const std::u16string& medium)
@@ -455,8 +500,11 @@ void MediaListImp::appendMedium(const std::u16string& medium)
     if (medium.empty())
         return;
     CSSParser parser;
-    parser.parseMediaList(medium);
-    // TODO: append
+    MediaListImp* newList = parser.parseMediaList(medium);
+    for (auto i = newList->mediaQueries.begin(); i != newList->mediaQueries.end(); ++i) {
+        if (!contains(*i))
+            mediaQueries.push_back(std::move(*i));
+    }
 }
 
 void MediaListImp::deleteMedium(const std::u16string& medium)
@@ -464,8 +512,12 @@ void MediaListImp::deleteMedium(const std::u16string& medium)
     if (medium.empty())
         return;
     CSSParser parser;
-    parser.parseMediaList(medium);
-    // TODO: delete
+    MediaListImp* newList = parser.parseMediaList(medium);
+    for (auto i = newList->mediaQueries.begin(); i != newList->mediaQueries.end(); ++i) {
+        auto found = std::find(mediaQueries.begin(), mediaQueries.end(), *i);
+        if (found != mediaQueries.end())
+            mediaQueries.erase(found);
+    }
 }
 
 }  // org::w3c::dom::bootstrap

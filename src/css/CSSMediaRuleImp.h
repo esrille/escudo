@@ -23,17 +23,21 @@
 #include <deque>
 
 #include "CSSRuleImp.h"
+#include "CSSRuleListImp.h"
 #include "MediaListImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class CSSMediaRuleImp : public ObjectMixin<CSSMediaRuleImp, CSSRuleImp>
 {
-    std::deque<css::CSSRule> ruleList;
+    Retained<CSSRuleListImp> ruleList;
     Retained<MediaListImp> mediaList;
 
 public:
-    void append(css::CSSRule rule);
+    void append(css::CSSRule rule) {
+        ruleList.append(rule);
+    }
+
     void setMediaList(MediaListImp* list) {
         if (list)
             mediaList = std::move(*list);

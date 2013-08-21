@@ -15,18 +15,12 @@
  */
 
 #include "CSSMediaRuleImp.h"
-#include "ObjectArrayImp.h"
 
 #include <org/w3c/dom/css/CSSRuleList.h>
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 using namespace css;
-
-void CSSMediaRuleImp::append(css::CSSRule rule)
-{
-    ruleList.push_back(rule);
-}
 
 // CSSRule
 unsigned short CSSMediaRuleImp::getType()
@@ -36,11 +30,7 @@ unsigned short CSSMediaRuleImp::getType()
 
 std::u16string CSSMediaRuleImp::getCssText()
 {
-    std::u16string text = u"@media " + mediaList.getMediaText() + u" { ";
-    for (auto i = ruleList.begin(); i != ruleList.end(); ++i)
-        text += (*i).getCssText() + u" ";
-    text += u'}';
-    return text;
+    return u"@media " + mediaList.getMediaText() + u" { " + ruleList.getCssText() += u'}';
 }
 
 // CSSMediaRule
@@ -56,8 +46,7 @@ void CSSMediaRuleImp::setMedia(const std::u16string& media)
 
 css::CSSRuleList CSSMediaRuleImp::getCssRules()
 {
-    // TODO: implement me!
-    return 0;
+    return &ruleList;
 }
 
 unsigned int CSSMediaRuleImp::insertRule(const std::u16string& rule, unsigned int index)

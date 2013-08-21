@@ -125,6 +125,11 @@ public:
         order(0)
     {}
 
+    // trivial version for CSSMediaRule
+    void append(css::CSSRule rule) {
+        ruleList.push_back(rule);
+    }
+
     void append(css::CSSRule rule, DocumentImp* document);
 
     void appendMisc(CSSSelector* selector, CSSStyleDeclarationImp* declaration);
@@ -136,6 +141,15 @@ public:
 
     css::CSSRuleList getCssRules() {
         return this;
+    }
+
+    std::u16string getCssText()
+    {
+        std::u16string text;
+
+        for (auto i = ruleList.begin(); i != ruleList.end(); ++i)
+            text += (*i).getCssText() + u" ";
+        return text;
     }
 
     // for StyleSheet
