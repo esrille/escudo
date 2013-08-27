@@ -30,15 +30,16 @@ class HTMLStyleElementImp : public ObjectMixin<HTMLStyleElementImp, HTMLElementI
 {
     Retained<EventListenerImp> mutationListener;
     std::u16string type;
-    std::u16string media;
     bool scoped;
     stylesheets::StyleSheet styleSheet;
+
+    virtual void handleMutation(EventListenerImp* listener, events::Event event);
 
 public:
     HTMLStyleElementImp(DocumentImp* ownerDocument);
     HTMLStyleElementImp(HTMLStyleElementImp* org, bool deep);
 
-    virtual void handleMutation(EventListenerImp* listener, events::Event event);
+    virtual void handleMutation(events::MutationEvent mutation);
 
     // Node
     virtual Node cloneNode(bool deep = true);

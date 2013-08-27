@@ -244,8 +244,11 @@ Element ViewCSSImp::updateStyleRules(Element element, CSSStyleDeclarationImp* st
     stylesheets::StyleSheetList styleSheetList(getDocument().getStyleSheets());
     for (unsigned i = 0; i < styleSheetList.getLength(); ++i) {
         CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(styleSheetList.getElement(i).self());
-        findDeclarations(style->ruleSet, element, sheet->getCssRules(), importance++);
-        // TODO: Check overflow of importance
+        MediaListImp* mediaList = dynamic_cast<MediaListImp*>(sheet->getMedia().self());
+        if (mediaList->matches(window->getWindowImp())) {
+            findDeclarations(style->ruleSet, element, sheet->getCssRules(), importance++);
+            // TODO: Check overflow of importance
+        }
     }
 
     style->compute(this, parentStyle, element);

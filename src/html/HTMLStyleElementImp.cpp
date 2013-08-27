@@ -21,6 +21,10 @@
 
 #include <boost/bind.hpp>
 
+#include "one_at_a_time.hpp"
+
+constexpr auto Intern = &one_at_a_time::hash<char16_t>;
+
 #include "TextImp.h"
 #include "DocumentImp.h"
 #include "WindowImp.h"
@@ -33,7 +37,6 @@ HTMLStyleElementImp::HTMLStyleElementImp(DocumentImp* ownerDocument) :
     ObjectMixin(ownerDocument, u"style"),
     mutationListener(boost::bind(&HTMLStyleElementImp::handleMutation, this, _1, _2)),
     type(u"text/css"),
-    media(u"all"),
     scoped(false),
     styleSheet(0)
 {
@@ -46,7 +49,6 @@ HTMLStyleElementImp::HTMLStyleElementImp(HTMLStyleElementImp* org, bool deep) :
     ObjectMixin(org, deep),
     mutationListener(boost::bind(&HTMLStyleElementImp::handleMutation, this, _1, _2)),
     type(org->type),
-    media(org->media),
     scoped(org->scoped),
     styleSheet(org->styleSheet) // TODO: make a clone sheet, too?
 {
@@ -87,6 +89,20 @@ void HTMLStyleElementImp::handleMutation(EventListenerImp* listener, events::Eve
     document->resetStyleSheets();
 }
 
+void HTMLStyleElementImp::handleMutation(events::MutationEvent mutation)
+{
+    std::u16string value = mutation.getNewValue();
+
+    switch (Intern(mutation.getAttrName().c_str())) {
+    case Intern(u"media"):
+        styleSheet.setMedia((mutation.getAttrChange() != events::MutationEvent::REMOVAL) ? value : u"");
+        break;
+    default:
+        HTMLElementImp::handleMutation(mutation);
+        break;
+    }
+}
+
 // Node
 Node HTMLStyleElementImp::cloneNode(bool deep)
 {
@@ -109,12 +125,12 @@ void HTMLStyleElementImp::setDisabled(bool disabled)
 
 std::u16string HTMLStyleElementImp::getMedia()
 {
-    return media;
+    return getAttribute(u"media");
 }
 
 void HTMLStyleElementImp::setMedia(const std::u16string& media)
 {
-    this->media = media;
+    setAttribute(u"media", media);
 }
 
 std::u16string HTMLStyleElementImp::getType()
