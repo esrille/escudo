@@ -17,11 +17,16 @@
 #ifndef ORG_W3C_DOM_BOOTSTRAP_STYLESHEETIMP_H_INCLUDED
 #define ORG_W3C_DOM_BOOTSTRAP_STYLESHEETIMP_H_INCLUDED
 
-#include <Object.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <org/w3c/dom/stylesheets/StyleSheet.h>
 
 #include <org/w3c/dom/stylesheets/MediaList.h>
 #include <org/w3c/dom/Node.h>
+
+#include "MediaListImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -31,6 +36,8 @@ class StyleSheetImp : public ObjectMixin<StyleSheetImp>
     Node owner;
     stylesheets::StyleSheet parent;
     bool disabled;
+
+    Retained<MediaListImp> mediaList;
 
 public:
     StyleSheetImp();

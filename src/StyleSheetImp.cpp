@@ -69,13 +69,12 @@ Nullable<std::u16string> StyleSheetImp::getTitle()
 
 stylesheets::MediaList StyleSheetImp::getMedia()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return &mediaList;
 }
 
 void StyleSheetImp::setMedia(const std::u16string& media)
 {
-    // TODO: implement me!
+    mediaList.setMediaText(media);
 }
 
 bool StyleSheetImp::getDisabled()
