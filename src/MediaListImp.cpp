@@ -428,26 +428,28 @@ void MediaListImp::appendFeature(int feature, CSSParserExpr* expr)
         CSSValueParser parser(feature);
         if (!parser.isValid(expr))
             feature = Unknown;
-        CSSParserTerm* term = parser.getStack().back();
-        switch (feature) {
-        case AspectRatio:
-        case MinAspectRatio:
-        case MaxAspectRatio:
-        case DeviceAspectRatio:
-        case MinDeviceAspectRatio:
-        case MaxDeviceAspectRatio:
-            assert(parser.getStack().size() == 3);
-            value = parser.getStack()[0]->getNumber();
-            unit = parser.getStack()[2]->getNumber();
-            break;
-        case Orientation:
-        case Scan:
-            unit = (term->getIndex() < 0) ? 0 : term->getIndex();
-            break;
-        default:
-            value = term->getNumber();
-            unit = term->unit;
-            break;
+        else {
+            CSSParserTerm* term = parser.getStack().back();
+            switch (feature) {
+            case AspectRatio:
+            case MinAspectRatio:
+            case MaxAspectRatio:
+            case DeviceAspectRatio:
+            case MinDeviceAspectRatio:
+            case MaxDeviceAspectRatio:
+                assert(parser.getStack().size() == 3);
+                value = parser.getStack()[0]->getNumber();
+                unit = parser.getStack()[2]->getNumber();
+                break;
+            case Orientation:
+            case Scan:
+                unit = (term->getIndex() < 0) ? 0 : term->getIndex();
+                break;
+            default:
+                value = term->getNumber();
+                unit = term->unit;
+                break;
+            }
         }
         delete expr;
     }
