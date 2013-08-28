@@ -416,6 +416,13 @@ void MediaListImp::appendMedium(unsigned media)
 {
     MediaQuery mediaQuery(media, std::move(mediaFeatures));
     assert(mediaFeatures.empty());
+    for (auto i = mediaQuery.features.begin(); i != mediaQuery.features.end(); ++i) {
+        if (i->feature == Unknown) {
+            mediaQuery.type = Not | All;
+            mediaQuery.features.clear();
+            break;
+        }
+    }
     if (!contains(mediaQuery))
         mediaQueries.push_back(std::move(mediaQuery));
 }
@@ -452,7 +459,8 @@ void MediaListImp::appendFeature(int feature, CSSParserExpr* expr)
             }
         }
         delete expr;
-    }
+    } else if (feature & Min)   // is min or is max?
+        feature = Unknown;
     mediaFeatures.emplace_back(feature, value, unit);
 }
 
