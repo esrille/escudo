@@ -614,7 +614,7 @@ void CSSValueParser::initializeRules()
 
     // Media Queries
     ratio
-        = positive_integer + lineHeight + positive_integer;
+        = positive_integer + slash + positive_integer;
     orientation
         = CSSValueRule(u"portrait", MediaListImp::Portrait)
         | CSSValueRule(u"landscape", MediaListImp::Landscape);
