@@ -125,12 +125,6 @@ void DocumentWindow::notify()
         imp->decrementLoadEventDelayCount();
 }
 
-void DocumentWindow::scroll(int x, int y)
-{
-    scrollX = x;
-    scrollY = y;
-}
-
 void DocumentWindow::handleClick(EventListenerImp* listener, events::Event event)
 {
     if (event.getDefaultPrevented())

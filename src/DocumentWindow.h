@@ -89,7 +89,11 @@ public:
     int getScrollY() const {
         return scrollY;
     }
-    void scroll(int x, int y);
+    void scroll(int x, int y) {
+        scrollX = x;
+        scrollY = y;
+    }
+
 };
 
 typedef boost::intrusive_ptr<DocumentWindow> DocumentWindowPtr;
