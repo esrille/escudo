@@ -293,7 +293,7 @@ bool MediaListImp::matches(WindowImp* window)
                         result = false;
                     break;
                 case MinAspectRatio:
-                    if (!isnan(j->value) && window->getInnerWidth() * j->unit <= window->getInnerHeight() * j->value)
+                    if (!isnan(j->value) && window->getInnerWidth() * j->unit < window->getInnerHeight() * j->value)
                         result = false;
                     break;
                 case MaxAspectRatio:
@@ -305,7 +305,7 @@ bool MediaListImp::matches(WindowImp* window)
                         result = false;
                     break;
                 case MinDeviceAspectRatio:
-                    if (!isnan(j->value) && window->getScreenImp()->getWidth() * j->unit <= window->getScreenImp()->getHeight() * j->value)
+                    if (!isnan(j->value) && window->getScreenImp()->getWidth() * j->unit < window->getScreenImp()->getHeight() * j->value)
                         result = false;
                     break;
                 case MaxDeviceAspectRatio:
@@ -457,8 +457,8 @@ void MediaListImp::appendFeature(int feature, CSSParserExpr* expr)
             case MinDeviceAspectRatio:
             case MaxDeviceAspectRatio:
                 assert(parser.getStack().size() == 3);
-                value = parser.getStack()[0]->getNumber();
-                unit = parser.getStack()[2]->getNumber();
+                value = parser.getStack()[0]->getNumber();  // width
+                unit = parser.getStack()[2]->getNumber();   // height
                 break;
             case Orientation:
             case Scan:
