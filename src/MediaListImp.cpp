@@ -215,7 +215,10 @@ bool MediaListImp::matches(WindowImp* window)
             for (auto j = i->features.begin(); j != i->features.end(); ++j) {
                 switch (j->feature) {
                 case Width:
-                    if (j->unit && window->getInnerWidth() != window->getPx(j->value, j->unit))
+                    if (j->unit) {
+                        if (window->getInnerWidth() != window->getPx(j->value, j->unit))
+                            result = false;
+                    } else if (window->getInnerWidth() == 0)
                         result = false;
                     break;
                 case MinWidth:
@@ -227,8 +230,11 @@ bool MediaListImp::matches(WindowImp* window)
                         result = false;
                     break;
                 case Height:
-                    if (j->unit && window->getInnerHeight() != window->getPx(j->value, j->unit))
-                        result = false;
+                    if (j->unit) {
+                        if (window->getInnerHeight() != window->getPx(j->value, j->unit))
+                            result = false;
+                    } else if (window->getInnerHeight() == 0)
+                        result =false;
                     break;
                 case MinHeight:
                     if (j->unit && window->getInnerHeight() < window->getPx(j->value, j->unit))
@@ -239,7 +245,10 @@ bool MediaListImp::matches(WindowImp* window)
                         result = false;
                     break;
                 case DeviceWidth:
-                    if (j->unit && window->getScreenImp()->getWidth() != window->getPx(j->value, j->unit))
+                    if (j->unit) {
+                        if (window->getScreenImp()->getWidth() != window->getPx(j->value, j->unit))
+                            result = false;
+                    } else if (window->getScreenImp()->getWidth() == 0)
                         result = false;
                     break;
                 case MinDeviceWidth:
@@ -251,7 +260,10 @@ bool MediaListImp::matches(WindowImp* window)
                         result = false;
                     break;
                 case DeviceHeight:
-                    if (j->unit && window->getScreenImp()->getHeight() != window->getPx(j->value, j->unit))
+                    if (j->unit) {
+                        if (window->getScreenImp()->getHeight() != window->getPx(j->value, j->unit))
+                            result = false;
+                    } else if (window->getScreenImp()->getHeight() == 0)
                         result = false;
                     break;
                 case MinDeviceHeight:
