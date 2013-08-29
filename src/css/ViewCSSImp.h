@@ -17,7 +17,9 @@
 #ifndef VIEWCSS_IMP_H
 #define VIEWCSS_IMP_H
 
-#include <Object.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include <org/w3c/dom/css/CSSStyleDeclaration.h>
 
