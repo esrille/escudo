@@ -210,6 +210,10 @@ bool WindowImp::poll()
         updateView(next);
         if (view && (view->gatherFlags() & Box::NEED_REPAINT)) {
             redisplay = true;
+            if (flags & Loading) {
+                flags &= ~Loading;
+                document->decrementLoadEventDelayCount();
+            }
             render(0);
         }
     }
@@ -304,8 +308,9 @@ bool WindowImp::poll()
 
             // TODO: Check if the parser has been aborted.
             document->resetStyleSheets();
-            if (WindowImp* view = document->getDefaultWindow())
-                view->setViewFlags(Box::NEED_SELECTOR_REMATCHING);
+            setViewFlags(Box::NEED_SELECTOR_REMATCHING);
+            flags |= Loading;
+            document->incrementLoadEventDelayCount();
 
             parser.reset();
             document->exit();
@@ -367,8 +372,13 @@ bool WindowImp::poll()
                             recordTime("%*strigger reflow", windowDepth * 2, "");
                             backgroundTask.wakeUp(BackgroundTask::Layout);
                             view = 0;
-                        } else if (flags & Box::NEED_REPAINT)
+                        } else if (flags & Box::NEED_REPAINT) {
                             redisplay = true;
+                            if (flags & Loading) {
+                                flags &= ~Loading;
+                                document->decrementLoadEventDelayCount();
+                            }
+                        }
                     }
                 }
                 break;

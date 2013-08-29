@@ -78,7 +78,8 @@ public:
     // flags
     enum {
         DeskTop = 1,
-        TopLevel = 2
+        TopLevel = 2,
+        Loading = 4
     };
 
 private:
