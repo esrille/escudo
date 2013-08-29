@@ -35,6 +35,7 @@ constexpr auto Intern = &one_at_a_time::hash<char16_t>;
 #include "css/Box.h"
 #include "css/CSSParser.h"
 #include "css/CSSStyleDeclarationImp.h"
+#include "css/ViewCSSImp.h"
 #include "HTMLBindingElementImp.h"
 #include "HTMLTemplateElementImp.h"
 #include "HTMLUtil.h"
@@ -337,17 +338,17 @@ void HTMLElementImp::handleMutation(events::MutationEvent mutation)
 
 Box* HTMLElementImp::getBox()
 {
-    html::Window window = getOwnerDocument().getDefaultView();
-    if (!window)
+    DocumentImp* owner = getOwnerDocumentImp();
+    if (!owner)
         return 0;
-    css::CSSStyleDeclaration style = window.getComputedStyle(this);
-    if (!style)
+    WindowImp* window = owner->getDefaultWindow();
+    if (!window || !window->getView())
         return 0;
     // TODO: Fix MVC violation
-    CSSStyleDeclarationImp* imp = dynamic_cast<CSSStyleDeclarationImp*>(style.self());
-    if (!imp)
+    CSSStyleDeclarationImp* style = window->getView()->getStyle(this);
+    if (!style)
         return 0;
-    return imp->getBox();
+    return style->getBox();
 }
 
 void HTMLElementImp::setEventHandler(const std::u16string& type, Object handler)

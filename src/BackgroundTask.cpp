@@ -120,6 +120,7 @@ void WindowImp::BackgroundTask::operator()()
 unsigned WindowImp::BackgroundTask::sleep()
 {
     std::unique_lock<std::mutex> lock(mutex);
+    cond.notify_all();
     while (!flags)
         cond.wait(lock);
     unsigned result = flags;
@@ -159,6 +160,17 @@ ViewCSSImp* WindowImp::BackgroundTask::getView()
         }
     }
     return 0;
+}
+
+bool WindowImp::BackgroundTask::wait()
+{
+    std::unique_lock<std::mutex> lock(mutex);
+    int original = state;
+    if (!isRestarting() && original == Done)
+        return true;
+    while ((isRestarting() || state == original) && !(flags & Abort))
+        cond.wait(lock);
+    return !(flags & Abort);
 }
 
 }}}}  // org::w3c::dom::bootstrap

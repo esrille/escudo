@@ -2418,6 +2418,14 @@ unsigned int CSSStyleDeclarationImp::getLength()
 
 std::u16string CSSStyleDeclarationImp::item(unsigned int index)
 {
+    if (getFlags() & ComputedStyle) {
+        if (auto document = dynamic_cast<DocumentImp*>(owner)) {
+            if (WindowImp* window = document->getDefaultWindow())
+                window->updateView();
+        }
+        return getProperty(index)->getCssText(this);
+    }
+
     if (inheritSet.test(index))
         return u"inherit";
     if (propertySet.test(index))
@@ -2480,17 +2488,20 @@ void CSSStyleDeclarationImp::setProperty(const std::u16string& property, const s
     if (priority == u"non-css") {  // ES extension
         if (CSSStyleDeclarationImp* nonCSS = createPseudoElementStyle(CSSPseudoElementSelector::NonCSS)) {
             nonCSS->setProperty(property, value);
-            assert(owner);
-            html::Window window = interface_cast<Element>(owner).getOwnerDocument().getDefaultView();
-            if (!window)
+            ElementImp* elm = dynamic_cast<ElementImp*>(owner);
+            if (!elm)
                 return;
-            css::CSSStyleDeclaration style = window.getComputedStyle(interface_cast<Element>(owner));
+            DocumentImp* doc = elm->getOwnerDocumentImp();
+            if (!doc)
+                return;
+            WindowImp* window = doc->getDefaultWindow();
+            if (!window || !window->getView())
+                return;
+            CSSStyleDeclarationImp* style = window->getView()->getStyle(elm);
             if (!style)
                 return;
-            if (CSSStyleDeclarationImp* imp = dynamic_cast<CSSStyleDeclarationImp*>(style.self())) {
-                imp->requestReconstruct(Box::NEED_STYLE_RECALCULATION);
-                imp->clearFlags(CSSStyleDeclarationImp::Computed);
-            }
+            style->requestReconstruct(Box::NEED_STYLE_RECALCULATION);
+            style->clearFlags(CSSStyleDeclarationImp::Computed);
         }
         return;
     }
@@ -2542,7 +2553,7 @@ void CSSStyleDeclarationImp::setAzimuth(const Nullable<std::u16string>& azimuth)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getBackground()
 {
-    return background.getCssText(this);
+    return item(Background);
 }
 
 void CSSStyleDeclarationImp::setBackground(const Nullable<std::u16string>& background)
@@ -2552,7 +2563,7 @@ void CSSStyleDeclarationImp::setBackground(const Nullable<std::u16string>& backg
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getBackgroundAttachment()
 {
-    return backgroundAttachment.getCssText(this);
+    return item(BackgroundAttachment);
 }
 
 void CSSStyleDeclarationImp::setBackgroundAttachment(const Nullable<std::u16string>& backgroundAttachment)
@@ -2562,7 +2573,7 @@ void CSSStyleDeclarationImp::setBackgroundAttachment(const Nullable<std::u16stri
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getBackgroundColor()
 {
-    return backgroundColor.getCssText(this);
+    return item(BackgroundColor);
 }
 
 void CSSStyleDeclarationImp::setBackgroundColor(const Nullable<std::u16string>& backgroundColor)
@@ -2572,7 +2583,7 @@ void CSSStyleDeclarationImp::setBackgroundColor(const Nullable<std::u16string>& 
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getBackgroundImage()
 {
-    return backgroundImage.getCssText(this);
+    return item(BackgroundImage);
 }
 
 void CSSStyleDeclarationImp::setBackgroundImage(const Nullable<std::u16string>& backgroundImage)
@@ -2582,7 +2593,7 @@ void CSSStyleDeclarationImp::setBackgroundImage(const Nullable<std::u16string>& 
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getBackgroundPosition()
 {
-    return backgroundPosition.getCssText(this);
+    return item(BackgroundPosition);
 }
 
 void CSSStyleDeclarationImp::setBackgroundPosition(const Nullable<std::u16string>& backgroundPosition)
@@ -2592,7 +2603,7 @@ void CSSStyleDeclarationImp::setBackgroundPosition(const Nullable<std::u16string
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getBackgroundRepeat()
 {
-    return backgroundRepeat.getCssText(this);
+    return item(BackgroundRepeat);
 }
 
 void CSSStyleDeclarationImp::setBackgroundRepeat(const Nullable<std::u16string>& backgroundRepeat)
@@ -2602,7 +2613,7 @@ void CSSStyleDeclarationImp::setBackgroundRepeat(const Nullable<std::u16string>&
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getBorder()
 {
-    return border.getCssText(this);
+    return item(Border);
 }
 
 void CSSStyleDeclarationImp::setBorder(const Nullable<std::u16string>& border)
@@ -2612,7 +2623,7 @@ void CSSStyleDeclarationImp::setBorder(const Nullable<std::u16string>& border)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getBorderCollapse()
 {
-    return borderCollapse.getCssText(this);
+    return item(BorderCollapse);
 }
 
 void CSSStyleDeclarationImp::setBorderCollapse(const Nullable<std::u16string>& borderCollapse)
@@ -2622,7 +2633,7 @@ void CSSStyleDeclarationImp::setBorderCollapse(const Nullable<std::u16string>& b
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getBorderColor()
 {
-    return borderColor.getCssText(this);
+    return item(BorderColor);
 }
 
 void CSSStyleDeclarationImp::setBorderColor(const Nullable<std::u16string>& borderColor)
@@ -2632,7 +2643,7 @@ void CSSStyleDeclarationImp::setBorderColor(const Nullable<std::u16string>& bord
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getBorderSpacing()
 {
-    return borderSpacing.getCssText(this);
+    return item(BorderSpacing);
 }
 
 void CSSStyleDeclarationImp::setBorderSpacing(const Nullable<std::u16string>& borderSpacing)
@@ -2642,7 +2653,7 @@ void CSSStyleDeclarationImp::setBorderSpacing(const Nullable<std::u16string>& bo
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getBorderStyle()
 {
-    return borderStyle.getCssText(this);
+    return item(BorderStyle);
 }
 
 void CSSStyleDeclarationImp::setBorderStyle(const Nullable<std::u16string>& borderStyle)
@@ -2652,7 +2663,7 @@ void CSSStyleDeclarationImp::setBorderStyle(const Nullable<std::u16string>& bord
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getBorderTop()
 {
-    return borderTop.getCssText(this);
+    return item(BorderTop);
 }
 
 void CSSStyleDeclarationImp::setBorderTop(const Nullable<std::u16string>& borderTop)
@@ -2662,7 +2673,7 @@ void CSSStyleDeclarationImp::setBorderTop(const Nullable<std::u16string>& border
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getBorderRight()
 {
-    return borderRight.getCssText(this);
+    return item(BorderRight);
 }
 
 void CSSStyleDeclarationImp::setBorderRight(const Nullable<std::u16string>& borderRight)
@@ -2672,7 +2683,7 @@ void CSSStyleDeclarationImp::setBorderRight(const Nullable<std::u16string>& bord
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getBorderBottom()
 {
-    return borderBottom.getCssText(this);
+    return item(BorderBottom);
 }
 
 void CSSStyleDeclarationImp::setBorderBottom(const Nullable<std::u16string>& borderBottom)
@@ -2682,7 +2693,7 @@ void CSSStyleDeclarationImp::setBorderBottom(const Nullable<std::u16string>& bor
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getBorderLeft()
 {
-    return borderLeft.getCssText(this);
+    return item(BorderLeft);
 }
 
 void CSSStyleDeclarationImp::setBorderLeft(const Nullable<std::u16string>& borderLeft)
@@ -2692,7 +2703,7 @@ void CSSStyleDeclarationImp::setBorderLeft(const Nullable<std::u16string>& borde
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getBorderTopColor()
 {
-    return borderTopColor.getCssText(this);
+    return item(BorderTopColor);
 }
 
 void CSSStyleDeclarationImp::setBorderTopColor(const Nullable<std::u16string>& borderTopColor)
@@ -2702,7 +2713,7 @@ void CSSStyleDeclarationImp::setBorderTopColor(const Nullable<std::u16string>& b
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getBorderRightColor()
 {
-    return borderRightColor.getCssText(this);
+    return item(BorderRightColor);
 }
 
 void CSSStyleDeclarationImp::setBorderRightColor(const Nullable<std::u16string>& borderRightColor)
@@ -2712,7 +2723,7 @@ void CSSStyleDeclarationImp::setBorderRightColor(const Nullable<std::u16string>&
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getBorderBottomColor()
 {
-    return borderBottomColor.getCssText(this);
+    return item(BorderBottomColor);
 }
 
 void CSSStyleDeclarationImp::setBorderBottomColor(const Nullable<std::u16string>& borderBottomColor)
@@ -2722,7 +2733,7 @@ void CSSStyleDeclarationImp::setBorderBottomColor(const Nullable<std::u16string>
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getBorderLeftColor()
 {
-    return borderLeftColor.getCssText(this);
+    return item(BorderLeftColor);
 }
 
 void CSSStyleDeclarationImp::setBorderLeftColor(const Nullable<std::u16string>& borderLeftColor)
@@ -2732,7 +2743,7 @@ void CSSStyleDeclarationImp::setBorderLeftColor(const Nullable<std::u16string>& 
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getBorderTopStyle()
 {
-    return borderTopStyle.getCssText(this);
+    return item(BorderTopStyle);
 }
 
 void CSSStyleDeclarationImp::setBorderTopStyle(const Nullable<std::u16string>& borderTopStyle)
@@ -2742,7 +2753,7 @@ void CSSStyleDeclarationImp::setBorderTopStyle(const Nullable<std::u16string>& b
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getBorderRightStyle()
 {
-    return borderRightStyle.getCssText(this);
+    return item(BorderRightStyle);
 }
 
 void CSSStyleDeclarationImp::setBorderRightStyle(const Nullable<std::u16string>& borderRightStyle)
@@ -2752,7 +2763,7 @@ void CSSStyleDeclarationImp::setBorderRightStyle(const Nullable<std::u16string>&
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getBorderBottomStyle()
 {
-    return borderBottomStyle.getCssText(this);
+    return item(BorderBottomStyle);
 }
 
 void CSSStyleDeclarationImp::setBorderBottomStyle(const Nullable<std::u16string>& borderBottomStyle)
@@ -2762,7 +2773,7 @@ void CSSStyleDeclarationImp::setBorderBottomStyle(const Nullable<std::u16string>
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getBorderLeftStyle()
 {
-    return borderLeftStyle.getCssText(this);
+    return item(BorderLeftStyle);
 }
 
 void CSSStyleDeclarationImp::setBorderLeftStyle(const Nullable<std::u16string>& borderLeftStyle)
@@ -2772,7 +2783,7 @@ void CSSStyleDeclarationImp::setBorderLeftStyle(const Nullable<std::u16string>& 
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getBorderTopWidth()
 {
-    return borderTopWidth.getCssText(this);
+    return item(BorderTopWidth);
 }
 
 void CSSStyleDeclarationImp::setBorderTopWidth(const Nullable<std::u16string>& borderTopWidth)
@@ -2782,7 +2793,7 @@ void CSSStyleDeclarationImp::setBorderTopWidth(const Nullable<std::u16string>& b
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getBorderRightWidth()
 {
-    return borderRightWidth.getCssText(this);
+    return item(BorderRightWidth);
 }
 
 void CSSStyleDeclarationImp::setBorderRightWidth(const Nullable<std::u16string>& borderRightWidth)
@@ -2792,7 +2803,7 @@ void CSSStyleDeclarationImp::setBorderRightWidth(const Nullable<std::u16string>&
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getBorderBottomWidth()
 {
-    return borderBottomWidth.getCssText(this);
+    return item(BorderBottomWidth);
 }
 
 void CSSStyleDeclarationImp::setBorderBottomWidth(const Nullable<std::u16string>& borderBottomWidth)
@@ -2802,7 +2813,7 @@ void CSSStyleDeclarationImp::setBorderBottomWidth(const Nullable<std::u16string>
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getBorderLeftWidth()
 {
-    return borderLeftWidth.getCssText(this);
+    return item(BorderLeftWidth);
 }
 
 void CSSStyleDeclarationImp::setBorderLeftWidth(const Nullable<std::u16string>& borderLeftWidth)
@@ -2812,7 +2823,7 @@ void CSSStyleDeclarationImp::setBorderLeftWidth(const Nullable<std::u16string>& 
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getBorderWidth()
 {
-    return borderWidth.getCssText(this);
+    return item(BorderWidth);
 }
 
 void CSSStyleDeclarationImp::setBorderWidth(const Nullable<std::u16string>& borderWidth)
@@ -2822,7 +2833,7 @@ void CSSStyleDeclarationImp::setBorderWidth(const Nullable<std::u16string>& bord
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getBottom()
 {
-    return bottom.getCssText(this);
+    return item(Bottom);
 }
 
 void CSSStyleDeclarationImp::setBottom(const Nullable<std::u16string>& bottom)
@@ -2832,7 +2843,7 @@ void CSSStyleDeclarationImp::setBottom(const Nullable<std::u16string>& bottom)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getCaptionSide()
 {
-    return captionSide.getCssText(this);
+    return item(CaptionSide);
 }
 
 void CSSStyleDeclarationImp::setCaptionSide(const Nullable<std::u16string>& captionSide)
@@ -2842,7 +2853,7 @@ void CSSStyleDeclarationImp::setCaptionSide(const Nullable<std::u16string>& capt
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getClear()
 {
-    return clear.getCssText(this);
+    return item(Clear);
 }
 
 void CSSStyleDeclarationImp::setClear(const Nullable<std::u16string>& clear)
@@ -2863,7 +2874,7 @@ void CSSStyleDeclarationImp::setClip(const Nullable<std::u16string>& clip)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getColor()
 {
-    return color.getCssText(this);
+    return item(Color);
 }
 
 void CSSStyleDeclarationImp::setColor(const Nullable<std::u16string>& color)
@@ -2873,7 +2884,7 @@ void CSSStyleDeclarationImp::setColor(const Nullable<std::u16string>& color)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getContent()
 {
-    return content.getCssText(this);
+    return item(Content);
 }
 
 void CSSStyleDeclarationImp::setContent(const Nullable<std::u16string>& content)
@@ -2883,7 +2894,7 @@ void CSSStyleDeclarationImp::setContent(const Nullable<std::u16string>& content)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getCounterIncrement()
 {
-    return counterIncrement.getCssText(this);
+    return item(CounterIncrement);
 }
 
 void CSSStyleDeclarationImp::setCounterIncrement(const Nullable<std::u16string>& counterIncrement)
@@ -2893,7 +2904,7 @@ void CSSStyleDeclarationImp::setCounterIncrement(const Nullable<std::u16string>&
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getCounterReset()
 {
-    return counterReset.getCssText(this);
+    return item(CounterReset);
 }
 
 void CSSStyleDeclarationImp::setCounterReset(const Nullable<std::u16string>& counterReset)
@@ -2936,7 +2947,7 @@ void CSSStyleDeclarationImp::setCueBefore(const Nullable<std::u16string>& cueBef
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getCursor()
 {
-    return cursor.getCssText(this);
+    return item(Cursor);
 }
 
 void CSSStyleDeclarationImp::setCursor(const Nullable<std::u16string>& cursor)
@@ -2946,7 +2957,7 @@ void CSSStyleDeclarationImp::setCursor(const Nullable<std::u16string>& cursor)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getDirection()
 {
-    return direction.getCssText(this);
+    return item(Direction);
 }
 
 void CSSStyleDeclarationImp::setDirection(const Nullable<std::u16string>& direction)
@@ -2956,7 +2967,7 @@ void CSSStyleDeclarationImp::setDirection(const Nullable<std::u16string>& direct
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getDisplay()
 {
-    return display.getCssText(this);
+    return item(Display);
 }
 
 void CSSStyleDeclarationImp::setDisplay(const Nullable<std::u16string>& display)
@@ -2977,7 +2988,7 @@ void CSSStyleDeclarationImp::setElevation(const Nullable<std::u16string>& elevat
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getEmptyCells()
 {
-    return emptyCells.getCssText(this);
+    return item(EmptyCells);
 }
 
 void CSSStyleDeclarationImp::setEmptyCells(const Nullable<std::u16string>& emptyCells)
@@ -2987,7 +2998,7 @@ void CSSStyleDeclarationImp::setEmptyCells(const Nullable<std::u16string>& empty
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getCssFloat()
 {
-    return float_.getCssText(this);
+    return item(Float);
 }
 
 void CSSStyleDeclarationImp::setCssFloat(const Nullable<std::u16string>& cssFloat)
@@ -2997,7 +3008,7 @@ void CSSStyleDeclarationImp::setCssFloat(const Nullable<std::u16string>& cssFloa
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getFont()
 {
-    return font.getCssText(this);
+    return item(Font);
 }
 
 void CSSStyleDeclarationImp::setFont(const Nullable<std::u16string>& font)
@@ -3007,7 +3018,7 @@ void CSSStyleDeclarationImp::setFont(const Nullable<std::u16string>& font)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getFontFamily()
 {
-    return fontFamily.getCssText(this);
+    return item(FontFamily);
 }
 
 void CSSStyleDeclarationImp::setFontFamily(const Nullable<std::u16string>& fontFamily)
@@ -3017,7 +3028,7 @@ void CSSStyleDeclarationImp::setFontFamily(const Nullable<std::u16string>& fontF
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getFontSize()
 {
-    return fontSize.getCssText(this);
+    return item(FontSize);
 }
 
 void CSSStyleDeclarationImp::setFontSize(const Nullable<std::u16string>& fontSize)
@@ -3047,7 +3058,7 @@ void CSSStyleDeclarationImp::setFontStretch(const Nullable<std::u16string>& font
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getFontStyle()
 {
-    return fontStyle.getCssText(this);
+    return item(FontStyle);
 }
 
 void CSSStyleDeclarationImp::setFontStyle(const Nullable<std::u16string>& fontStyle)
@@ -3057,7 +3068,7 @@ void CSSStyleDeclarationImp::setFontStyle(const Nullable<std::u16string>& fontSt
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getFontVariant()
 {
-    return fontVariant.getCssText(this);
+    return item(FontVariant);
 }
 
 void CSSStyleDeclarationImp::setFontVariant(const Nullable<std::u16string>& fontVariant)
@@ -3067,7 +3078,7 @@ void CSSStyleDeclarationImp::setFontVariant(const Nullable<std::u16string>& font
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getFontWeight()
 {
-    return fontWeight.getCssText(this);
+    return item(FontWeight);
 }
 
 void CSSStyleDeclarationImp::setFontWeight(const Nullable<std::u16string>& fontWeight)
@@ -3077,7 +3088,7 @@ void CSSStyleDeclarationImp::setFontWeight(const Nullable<std::u16string>& fontW
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getHeight()
 {
-    return height.getCssText(this);
+    return item(Height);
 }
 
 void CSSStyleDeclarationImp::setHeight(const Nullable<std::u16string>& height)
@@ -3087,7 +3098,7 @@ void CSSStyleDeclarationImp::setHeight(const Nullable<std::u16string>& height)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getLeft()
 {
-    return left.getCssText(this);
+    return item(Left);
 }
 
 void CSSStyleDeclarationImp::setLeft(const Nullable<std::u16string>& left)
@@ -3097,7 +3108,7 @@ void CSSStyleDeclarationImp::setLeft(const Nullable<std::u16string>& left)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getLetterSpacing()
 {
-    return letterSpacing.getCssText(this);
+    return item(LetterSpacing);
 }
 
 void CSSStyleDeclarationImp::setLetterSpacing(const Nullable<std::u16string>& letterSpacing)
@@ -3107,7 +3118,7 @@ void CSSStyleDeclarationImp::setLetterSpacing(const Nullable<std::u16string>& le
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getLineHeight()
 {
-    return lineHeight.getCssText(this);
+    return item(LineHeight);
 }
 
 void CSSStyleDeclarationImp::setLineHeight(const Nullable<std::u16string>& lineHeight)
@@ -3117,7 +3128,7 @@ void CSSStyleDeclarationImp::setLineHeight(const Nullable<std::u16string>& lineH
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getListStyle()
 {
-    return listStyle.getCssText(this);
+    return item(ListStyle);
 }
 
 void CSSStyleDeclarationImp::setListStyle(const Nullable<std::u16string>& listStyle)
@@ -3127,7 +3138,7 @@ void CSSStyleDeclarationImp::setListStyle(const Nullable<std::u16string>& listSt
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getListStyleImage()
 {
-    return listStyleImage.getCssText(this);
+    return item(ListStyleImage);
 }
 
 void CSSStyleDeclarationImp::setListStyleImage(const Nullable<std::u16string>& listStyleImage)
@@ -3137,7 +3148,7 @@ void CSSStyleDeclarationImp::setListStyleImage(const Nullable<std::u16string>& l
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getListStylePosition()
 {
-    return listStylePosition.getCssText(this);
+    return item(ListStylePosition);
 }
 
 void CSSStyleDeclarationImp::setListStylePosition(const Nullable<std::u16string>& listStylePosition)
@@ -3147,7 +3158,7 @@ void CSSStyleDeclarationImp::setListStylePosition(const Nullable<std::u16string>
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getListStyleType()
 {
-    return listStyleType.getCssText(this);
+    return item(ListStyleType);
 }
 
 void CSSStyleDeclarationImp::setListStyleType(const Nullable<std::u16string>& listStyleType)
@@ -3157,7 +3168,7 @@ void CSSStyleDeclarationImp::setListStyleType(const Nullable<std::u16string>& li
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getMargin()
 {
-    return margin.getCssText(this);
+    return item(Margin);
 }
 
 void CSSStyleDeclarationImp::setMargin(const Nullable<std::u16string>& margin)
@@ -3167,7 +3178,7 @@ void CSSStyleDeclarationImp::setMargin(const Nullable<std::u16string>& margin)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getMarginTop()
 {
-    return marginTop.getCssText(this);
+    return item(MarginTop);
 }
 
 void CSSStyleDeclarationImp::setMarginTop(const Nullable<std::u16string>& marginTop)
@@ -3177,7 +3188,7 @@ void CSSStyleDeclarationImp::setMarginTop(const Nullable<std::u16string>& margin
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getMarginRight()
 {
-    return marginRight.getCssText(this);
+    return item(MarginRight);
 }
 
 void CSSStyleDeclarationImp::setMarginRight(const Nullable<std::u16string>& marginRight)
@@ -3187,7 +3198,7 @@ void CSSStyleDeclarationImp::setMarginRight(const Nullable<std::u16string>& marg
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getMarginBottom()
 {
-    return marginBottom.getCssText(this);
+    return item(MarginBottom);
 }
 
 void CSSStyleDeclarationImp::setMarginBottom(const Nullable<std::u16string>& marginBottom)
@@ -3197,7 +3208,7 @@ void CSSStyleDeclarationImp::setMarginBottom(const Nullable<std::u16string>& mar
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getMarginLeft()
 {
-    return marginLeft.getCssText(this);
+    return item(MarginLeft);
 }
 
 void CSSStyleDeclarationImp::setMarginLeft(const Nullable<std::u16string>& marginLeft)
@@ -3227,7 +3238,7 @@ void CSSStyleDeclarationImp::setMarks(const Nullable<std::u16string>& marks)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getMaxHeight()
 {
-    return maxHeight.getCssText(this);
+    return item(MaxHeight);
 }
 
 void CSSStyleDeclarationImp::setMaxHeight(const Nullable<std::u16string>& maxHeight)
@@ -3237,7 +3248,7 @@ void CSSStyleDeclarationImp::setMaxHeight(const Nullable<std::u16string>& maxHei
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getMaxWidth()
 {
-    return maxWidth.getCssText(this);
+    return item(MaxWidth);
 }
 
 void CSSStyleDeclarationImp::setMaxWidth(const Nullable<std::u16string>& maxWidth)
@@ -3247,7 +3258,7 @@ void CSSStyleDeclarationImp::setMaxWidth(const Nullable<std::u16string>& maxWidt
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getMinHeight()
 {
-    return minHeight.getCssText(this);
+    return item(MinHeight);
 }
 
 void CSSStyleDeclarationImp::setMinHeight(const Nullable<std::u16string>& minHeight)
@@ -3257,7 +3268,7 @@ void CSSStyleDeclarationImp::setMinHeight(const Nullable<std::u16string>& minHei
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getMinWidth()
 {
-    return minWidth.getCssText(this);
+    return item(MinWidth);
 }
 
 void CSSStyleDeclarationImp::setMinWidth(const Nullable<std::u16string>& minWidth)
@@ -3278,7 +3289,7 @@ void CSSStyleDeclarationImp::setOrphans(const Nullable<std::u16string>& orphans)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getOutline()
 {
-    return outline.getCssText(this);
+    return item(Outline);
 }
 
 void CSSStyleDeclarationImp::setOutline(const Nullable<std::u16string>& outline)
@@ -3288,7 +3299,7 @@ void CSSStyleDeclarationImp::setOutline(const Nullable<std::u16string>& outline)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getOutlineColor()
 {
-    return outlineColor.getCssText(this);
+    return item(OutlineColor);
 }
 
 void CSSStyleDeclarationImp::setOutlineColor(const Nullable<std::u16string>& outlineColor)
@@ -3298,7 +3309,7 @@ void CSSStyleDeclarationImp::setOutlineColor(const Nullable<std::u16string>& out
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getOutlineStyle()
 {
-    return outlineStyle.getCssText(this);
+    return item(OutlineStyle);
 }
 
 void CSSStyleDeclarationImp::setOutlineStyle(const Nullable<std::u16string>& outlineStyle)
@@ -3308,7 +3319,7 @@ void CSSStyleDeclarationImp::setOutlineStyle(const Nullable<std::u16string>& out
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getOutlineWidth()
 {
-    return outlineWidth.getCssText(this);
+    return item(OutlineWidth);
 }
 
 void CSSStyleDeclarationImp::setOutlineWidth(const Nullable<std::u16string>& outlineWidth)
@@ -3318,7 +3329,7 @@ void CSSStyleDeclarationImp::setOutlineWidth(const Nullable<std::u16string>& out
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getOverflow()
 {
-    return overflow.getCssText(this);
+    return item(Overflow);
 }
 
 void CSSStyleDeclarationImp::setOverflow(const Nullable<std::u16string>& overflow)
@@ -3328,7 +3339,7 @@ void CSSStyleDeclarationImp::setOverflow(const Nullable<std::u16string>& overflo
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getPadding()
 {
-    return padding.getCssText(this);
+    return item(Padding);
 }
 
 void CSSStyleDeclarationImp::setPadding(const Nullable<std::u16string>& padding)
@@ -3338,7 +3349,7 @@ void CSSStyleDeclarationImp::setPadding(const Nullable<std::u16string>& padding)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getPaddingTop()
 {
-    return paddingTop.getCssText(this);
+    return item(PaddingTop);
 }
 
 void CSSStyleDeclarationImp::setPaddingTop(const Nullable<std::u16string>& paddingTop)
@@ -3348,7 +3359,7 @@ void CSSStyleDeclarationImp::setPaddingTop(const Nullable<std::u16string>& paddi
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getPaddingRight()
 {
-    return paddingRight.getCssText(this);
+    return item(PaddingRight);
 }
 
 void CSSStyleDeclarationImp::setPaddingRight(const Nullable<std::u16string>& paddingRight)
@@ -3358,7 +3369,7 @@ void CSSStyleDeclarationImp::setPaddingRight(const Nullable<std::u16string>& pad
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getPaddingBottom()
 {
-    return paddingBottom.getCssText(this);
+    return item(PaddingBottom);
 }
 
 void CSSStyleDeclarationImp::setPaddingBottom(const Nullable<std::u16string>& paddingBottom)
@@ -3368,7 +3379,7 @@ void CSSStyleDeclarationImp::setPaddingBottom(const Nullable<std::u16string>& pa
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getPaddingLeft()
 {
-    return paddingLeft.getCssText(this);
+    return item(PaddingLeft);
 }
 
 void CSSStyleDeclarationImp::setPaddingLeft(const Nullable<std::u16string>& paddingLeft)
@@ -3388,7 +3399,7 @@ void CSSStyleDeclarationImp::setPage(const Nullable<std::u16string>& page)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getPageBreakAfter()
 {
-    return pageBreakAfter.getCssText(this);
+    return item(PageBreakAfter);
 }
 
 void CSSStyleDeclarationImp::setPageBreakAfter(const Nullable<std::u16string>& pageBreakAfter)
@@ -3398,7 +3409,7 @@ void CSSStyleDeclarationImp::setPageBreakAfter(const Nullable<std::u16string>& p
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getPageBreakBefore()
 {
-    return pageBreakBefore.getCssText(this);
+    return item(PageBreakBefore);
 }
 
 void CSSStyleDeclarationImp::setPageBreakBefore(const Nullable<std::u16string>& pageBreakBefore)
@@ -3408,7 +3419,7 @@ void CSSStyleDeclarationImp::setPageBreakBefore(const Nullable<std::u16string>& 
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getPageBreakInside()
 {
-    return pageBreakInside.getCssText(this);
+    return item(PageBreakInside);
 }
 
 void CSSStyleDeclarationImp::setPageBreakInside(const Nullable<std::u16string>& pageBreakInside)
@@ -3484,7 +3495,7 @@ void CSSStyleDeclarationImp::setPlayDuring(const Nullable<std::u16string>& playD
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getPosition()
 {
-    return position.getCssText(this);
+    return item(Position);
 }
 
 void CSSStyleDeclarationImp::setPosition(const Nullable<std::u16string>& position)
@@ -3494,7 +3505,7 @@ void CSSStyleDeclarationImp::setPosition(const Nullable<std::u16string>& positio
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getQuotes()
 {
-    return quotes.getCssText(this);
+    return item(Quotes);
 }
 
 void CSSStyleDeclarationImp::setQuotes(const Nullable<std::u16string>& quotes)
@@ -3515,7 +3526,7 @@ void CSSStyleDeclarationImp::setRichness(const Nullable<std::u16string>& richnes
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getRight()
 {
-    return right.getCssText(this);
+    return item(Right);
 }
 
 void CSSStyleDeclarationImp::setRight(const Nullable<std::u16string>& right)
@@ -3601,7 +3612,7 @@ void CSSStyleDeclarationImp::setStress(const Nullable<std::u16string>& stress)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getTableLayout()
 {
-    return tableLayout.getCssText(this);
+    return item(TableLayout);
 }
 
 void CSSStyleDeclarationImp::setTableLayout(const Nullable<std::u16string>& tableLayout)
@@ -3611,7 +3622,7 @@ void CSSStyleDeclarationImp::setTableLayout(const Nullable<std::u16string>& tabl
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getTextAlign()
 {
-    return textAlign.getCssText(this);
+    return item(TextAlign);
 }
 
 void CSSStyleDeclarationImp::setTextAlign(const Nullable<std::u16string>& textAlign)
@@ -3621,7 +3632,7 @@ void CSSStyleDeclarationImp::setTextAlign(const Nullable<std::u16string>& textAl
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getTextDecoration()
 {
-    return textDecoration.getCssText(this);
+    return item(TextDecoration);
 }
 
 void CSSStyleDeclarationImp::setTextDecoration(const Nullable<std::u16string>& textDecoration)
@@ -3631,7 +3642,7 @@ void CSSStyleDeclarationImp::setTextDecoration(const Nullable<std::u16string>& t
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getTextIndent()
 {
-    return textIndent.getCssText(this);
+    return item(TextIndent);
 }
 
 void CSSStyleDeclarationImp::setTextIndent(const Nullable<std::u16string>& textIndent)
@@ -3651,7 +3662,7 @@ void CSSStyleDeclarationImp::setTextShadow(const Nullable<std::u16string>& textS
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getTextTransform()
 {
-    return textTransform.getCssText(this);
+    return item(TextTransform);
 }
 
 void CSSStyleDeclarationImp::setTextTransform(const Nullable<std::u16string>& textTransform)
@@ -3661,7 +3672,7 @@ void CSSStyleDeclarationImp::setTextTransform(const Nullable<std::u16string>& te
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getTop()
 {
-    return top.getCssText(this);
+    return item(Top);
 }
 
 void CSSStyleDeclarationImp::setTop(const Nullable<std::u16string>& top)
@@ -3671,7 +3682,7 @@ void CSSStyleDeclarationImp::setTop(const Nullable<std::u16string>& top)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getUnicodeBidi()
 {
-    return unicodeBidi.getCssText(this);
+    return item(UnicodeBidi);
 }
 
 void CSSStyleDeclarationImp::setUnicodeBidi(const Nullable<std::u16string>& unicodeBidi)
@@ -3681,7 +3692,7 @@ void CSSStyleDeclarationImp::setUnicodeBidi(const Nullable<std::u16string>& unic
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getVerticalAlign()
 {
-    return verticalAlign.getCssText(this);
+    return item(VerticalAlign);
 }
 
 void CSSStyleDeclarationImp::setVerticalAlign(const Nullable<std::u16string>& verticalAlign)
@@ -3691,7 +3702,7 @@ void CSSStyleDeclarationImp::setVerticalAlign(const Nullable<std::u16string>& ve
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getVisibility()
 {
-    return visibility.getCssText(this);
+    return item(Visibility);
 }
 
 void CSSStyleDeclarationImp::setVisibility(const Nullable<std::u16string>& visibility)
@@ -3723,7 +3734,7 @@ void CSSStyleDeclarationImp::setVolume(const Nullable<std::u16string>& volume)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getWhiteSpace()
 {
-    return whiteSpace.getCssText(this);
+    return item(WhiteSpace);
 }
 
 void CSSStyleDeclarationImp::setWhiteSpace(const Nullable<std::u16string>& whiteSpace)
@@ -3744,7 +3755,7 @@ void CSSStyleDeclarationImp::setWidows(const Nullable<std::u16string>& widows)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getWidth()
 {
-    return width.getCssText(this);
+    return item(Width);
 }
 
 void CSSStyleDeclarationImp::setWidth(const Nullable<std::u16string>& width)
@@ -3754,7 +3765,7 @@ void CSSStyleDeclarationImp::setWidth(const Nullable<std::u16string>& width)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getWordSpacing()
 {
-    return wordSpacing.getCssText(this);
+    return item(WordSpacing);
 }
 
 void CSSStyleDeclarationImp::setWordSpacing(const Nullable<std::u16string>& wordSpacing)
@@ -3764,7 +3775,7 @@ void CSSStyleDeclarationImp::setWordSpacing(const Nullable<std::u16string>& word
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getZIndex()
 {
-    return zIndex.getCssText(this);
+    return item(ZIndex);
 }
 
 void CSSStyleDeclarationImp::setZIndex(const Nullable<std::u16string>& zIndex)
@@ -3806,7 +3817,7 @@ void CSSStyleDeclarationImp::setHTMLAlign(const Nullable<std::u16string>& align)
 
 Nullable<std::u16string> CSSStyleDeclarationImp::getOpacity()
 {
-    return opacity.getCssText(this);
+    return item(Opacity);
 }
 
 void CSSStyleDeclarationImp::setOpacity(const Nullable<std::u16string>& opacity)

@@ -1796,8 +1796,42 @@ void WindowImp::setOnwaiting(events::EventHandlerNonNull onwaiting)
     window->setEventHandler(u"waiting", onwaiting);
 }
 
+void WindowImp::updateView()
+{
+    if (parent)
+        parent->updateView();
+    while (view) {
+        unsigned flags = view->gatherFlags();
+        if (!flags || flags == Box::NEED_REPAINT)
+            return;
+        if (flags & Box::NEED_SELECTOR_REMATCHING) {
+            backgroundTask.restart(BackgroundTask::Cascade);
+            view = 0;
+        } else if (flags & Box::NEED_SELECTOR_MATCHING) {
+            backgroundTask.wakeUp(BackgroundTask::Cascade);
+            view = 0;
+        } else if (flags & (Box::NEED_STYLE_RECALCULATION | Box::NEED_EXPANSION | Box::NEED_CHILD_REFLOW | Box::NEED_REFLOW)) {
+            backgroundTask.wakeUp(BackgroundTask::Layout);
+            view = 0;
+        }
+        while (backgroundTask.isRestarting() ||
+               backgroundTask.getState() != BackgroundTask::Done && backgroundTask.getState() != BackgroundTask::Init)
+        {
+            backgroundTask.wait();
+            if (backgroundTask.getState() == BackgroundTask::Cascaded) {
+                if (DocumentImp* document = dynamic_cast<DocumentImp*>(window->getDocument().self()))
+                    HTMLElementImp::xblEnteredDocument(document);
+                backgroundTask.wakeUp(BackgroundTask::Layout);
+            }
+        }
+        ViewCSSImp* next = backgroundTask.getView();
+        updateView(next);
+    }
+}
+
 css::CSSStyleDeclaration WindowImp::getComputedStyle(Element elt)
 {
+    updateView();
     if (!view)
         return 0;
     return view->getStyle(elt);
@@ -1805,6 +1839,7 @@ css::CSSStyleDeclaration WindowImp::getComputedStyle(Element elt)
 
 css::CSSStyleDeclaration WindowImp::getComputedStyle(Element elt, const std::u16string& pseudoElt)
 {
+    updateView();
     if (!view)
         return 0;
     return view->getStyle(elt, pseudoElt);

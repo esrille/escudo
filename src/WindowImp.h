@@ -168,6 +168,7 @@ private:
         bool isRestarting() const {
             return flags & Restart;
         }
+        bool wait();
     };
 
     class Parser
@@ -244,6 +245,8 @@ private:
     WindowImp* selectBrowsingContext(std::u16string target, bool& replace);
     void navigate(std::u16string url, bool replace, WindowImp* srcWindow);
 
+    void updateView(ViewCSSImp* next);
+
 public:
     WindowImp(WindowImp* parent = 0, ElementImp* frameElement = 0, unsigned short flags = 0);
     ~WindowImp();
@@ -278,7 +281,6 @@ public:
     DocumentWindowPtr getDocumentWindow() const {
         return window;
     }
-    void updateView(ViewCSSImp* next);
     void setDocumentWindow(const DocumentWindowPtr& window);
 
     float getScrollWidth() const {
@@ -388,6 +390,8 @@ public:
             return NAN;
         }
     }
+
+    void updateView();
 
     // Window
     html::Window getWindow();
