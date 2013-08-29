@@ -96,6 +96,11 @@ void HTMLStyleElementImp::handleMutation(events::MutationEvent mutation)
     switch (Intern(mutation.getAttrName().c_str())) {
     case Intern(u"media"):
         styleSheet.setMedia((mutation.getAttrChange() != events::MutationEvent::REMOVAL) ? value : u"");
+        if (DocumentImp* document = getOwnerDocumentImp()) {
+            // TODO: Optimize the following steps later
+            if (WindowImp* view = document->getDefaultWindow())
+                view->setViewFlags(Box::NEED_SELECTOR_REMATCHING);
+        }
         break;
     default:
         HTMLElementImp::handleMutation(mutation);
