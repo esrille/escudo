@@ -53,7 +53,8 @@ unsigned int ScreenImp::getColor() const
 
 unsigned int ScreenImp::getColorIndex() const
 {
-    return glutGet(GLUT_WINDOW_COLORMAP_SIZE);
+    // Note GLUT_WINDOW_COLORMAP_SIZE could be non-zero even for RGBA color model windows
+    return (0 < getColor()) ? 0 : glutGet(GLUT_WINDOW_COLORMAP_SIZE);
 }
 
 unsigned int ScreenImp::getMonochrome() const
