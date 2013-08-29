@@ -67,6 +67,7 @@ void DocumentWindow::setDocument(const Document& document)
     if (global)
         delete global;
     global = new(std::nothrow) ECMAScriptContext;
+    map.clear();
 }
 
 void DocumentWindow::enter(WindowImp* proxy)
@@ -189,6 +190,30 @@ void DocumentWindow::handleMouseMove(EventListenerImp* listener, events::Event e
 
     moveX = mouse.getScreenX();
     moveY = mouse.getScreenY();
+}
+
+CSSStyleDeclarationPtr DocumentWindow::getComputedStyle(Element element)
+{
+    auto found = map.find(element);
+    if (found != map.end()) {
+        CSSStyleDeclarationImp* style = found->second.get();
+        assert(style);
+        style->reset();
+        style->setFlags(CSSStyleDeclarationImp::ComputedStyle);
+        return style;
+    }
+    CSSStyleDeclarationPtr style = new(std::nothrow) CSSStyleDeclarationImp;
+    if (style) {
+        style->setOwner(document.self());
+        style->setFlags(CSSStyleDeclarationImp::ComputedStyle);
+        map.insert({ element, style });
+    }
+    return style;
+}
+
+void DocumentWindow::putComputedStyle(Element element)
+{
+    map.erase(element);
 }
 
 }}}}  // org::w3c::dom::bootstrap

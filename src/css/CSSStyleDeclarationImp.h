@@ -286,6 +286,7 @@ public:
     enum flags {
         Computed = 0x01,
         Resolved = 0x02,
+        ComputedStyle = 0x2000000,
         Mutated = 0x4000000,
         NeedSelectorMatching = 0x8000000
     };
@@ -466,6 +467,8 @@ public:
 
     void resetComputedStyle();
     void restoreComputedValues(CSSStyleDeclarationBoard& board);
+
+    void reset();
 
     void setOwner(Object* owner) {
         this->owner = owner;

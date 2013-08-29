@@ -21,6 +21,7 @@
 #include "config.h"
 #endif
 
+#include <map>
 #include <boost/intrusive_ptr.hpp>
 
 #include <org/w3c/dom/Document.h>
@@ -29,6 +30,7 @@
 #include "EventTargetImp.h"
 #include "ECMAScript.h"
 #include "Task.h"
+#include "css/CSSStyleDeclarationImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -48,6 +50,9 @@ class DocumentWindow : public EventTargetImp
     int moveY;
     Retained<EventListenerImp> clickListener;
     Retained<EventListenerImp> mouseMoveListener;
+
+    // computed style memory manager
+    std::map<Element, CSSStyleDeclarationPtr> map;
 
     DocumentWindow(const DocumentWindow& window) = delete;
     DocumentWindow& operator=(const DocumentWindow&) = delete;
@@ -81,6 +86,9 @@ public:
     void setEventHandler(const std::u16string& type, Object handler);
 
     HttpRequest* preload(const std::u16string& base, const std::u16string& url);
+
+    CSSStyleDeclarationPtr getComputedStyle(Element elt);
+    void putComputedStyle(Element elt);
 
     // CSSOM View
     int getScrollX() const {

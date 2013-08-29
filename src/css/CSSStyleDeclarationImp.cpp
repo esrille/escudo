@@ -21,6 +21,7 @@
 
 #include "CSSPropertyValueImp.h"
 #include "CSSValueParser.h"
+#include "DocumentImp.h"
 #include "MutationEventImp.h"
 #include "StackingContext.h"
 #include "Table.h"
@@ -3884,6 +3885,19 @@ void CSSStyleDeclarationImp::resetComputedStyle()
     for (int i = CSSPseudoElementSelector::NonCSS; i < CSSPseudoElementSelector::MaxPseudoElements; ++i)
         pseudoElements[i] = 0;
     marker = before = after = 0;
+}
+
+void CSSStyleDeclarationImp::reset()
+{
+    parentRule = 0;
+    flags = 0;
+    parentStyle = 0;
+    bodyStyle = 0;
+    stackingContext = 0;
+    fontTexture = 0;
+    clearProperties();
+    resetComputedStyle();
+    clearBox();
 }
 
 CSSStyleDeclarationImp::CSSStyleDeclarationImp(int pseudoElementSelectorType) :

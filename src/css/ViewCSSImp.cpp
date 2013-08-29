@@ -294,8 +294,9 @@ void ViewCSSImp::constructComputedStyle(Node node, CSSStyleDeclarationImp* paren
     CSSStyleDeclarationImp* style = 0;
     Element element((node.getNodeType() == Node::ELEMENT_NODE) ? interface_cast<Element>(node) : 0);
     if (element) {
-        if (map.find(element) != map.end()) {
-            style = map[element].get();
+        auto found = map.find(element);
+        if (found != map.end()) {
+            style = found->second.get();
             assert(style);
             if (style->getFlags() & CSSStyleDeclarationImp::NeedSelectorMatching) {
                 style->clearFlags(CSSStyleDeclarationImp::NeedSelectorMatching);
@@ -307,7 +308,7 @@ void ViewCSSImp::constructComputedStyle(Node node, CSSStyleDeclarationImp* paren
             if (!style->getStackingContext())
                 style->computeStackingContext(this, parentStyle, false);
         } else {
-            style = new(std::nothrow) CSSStyleDeclarationImp;
+            style = window->getComputedStyle(element).get();
             if (!style)
                 return;  // TODO: error
             addStyle(element, style);
