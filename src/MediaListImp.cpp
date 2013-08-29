@@ -222,11 +222,11 @@ bool MediaListImp::matches(WindowImp* window)
                         result = false;
                     break;
                 case MinWidth:
-                    if (j->unit && window->getInnerWidth() < window->getPx(j->value, j->unit))
+                    if (window->getInnerWidth() < window->getPx(j->value, j->unit))
                         result = false;
                     break;
                 case MaxWidth:
-                    if (j->unit && window->getPx(j->value, j->unit) < window->getInnerWidth())
+                    if (window->getPx(j->value, j->unit) < window->getInnerWidth())
                         result = false;
                     break;
                 case Height:
@@ -237,11 +237,11 @@ bool MediaListImp::matches(WindowImp* window)
                         result =false;
                     break;
                 case MinHeight:
-                    if (j->unit && window->getInnerHeight() < window->getPx(j->value, j->unit))
+                    if (window->getInnerHeight() < window->getPx(j->value, j->unit))
                         result = false;
                     break;
                 case MaxHeight:
-                    if (j->unit && window->getPx(j->value, j->unit) < window->getInnerHeight())
+                    if (window->getPx(j->value, j->unit) < window->getInnerHeight())
                         result = false;
                     break;
                 case DeviceWidth:
@@ -252,11 +252,11 @@ bool MediaListImp::matches(WindowImp* window)
                         result = false;
                     break;
                 case MinDeviceWidth:
-                    if (j->unit && window->getScreenImp()->getWidth() < window->getPx(j->value, j->unit))
+                    if (window->getScreenImp()->getWidth() < window->getPx(j->value, j->unit))
                         result = false;
                     break;
                 case MaxDeviceWidth:
-                    if (j->unit && window->getPx(j->value, j->unit) < window->getScreenImp()->getWidth())
+                    if (window->getPx(j->value, j->unit) < window->getScreenImp()->getWidth())
                         result = false;
                     break;
                 case DeviceHeight:
@@ -267,11 +267,11 @@ bool MediaListImp::matches(WindowImp* window)
                         result = false;
                     break;
                 case MinDeviceHeight:
-                    if (j->unit && window->getScreenImp()->getHeight() < window->getPx(j->value, j->unit))
+                    if (window->getScreenImp()->getHeight() < window->getPx(j->value, j->unit))
                         result = false;
                     break;
                 case MaxDeviceHeight:
-                    if (j->unit && window->getPx(j->value, j->unit) < window->getScreenImp()->getHeight())
+                    if (window->getPx(j->value, j->unit) < window->getScreenImp()->getHeight())
                         result = false;
                     break;
                 case Orientation:
@@ -293,11 +293,11 @@ bool MediaListImp::matches(WindowImp* window)
                         result = false;
                     break;
                 case MinAspectRatio:
-                    if (!isnan(j->value) && window->getInnerWidth() * j->unit < window->getInnerHeight() * j->value)
+                    if (window->getInnerWidth() * j->unit < window->getInnerHeight() * j->value)
                         result = false;
                     break;
                 case MaxAspectRatio:
-                    if (!isnan(j->value) && window->getInnerHeight() * j->value < window->getInnerWidth() * j->unit)
+                    if (window->getInnerHeight() * j->value < window->getInnerWidth() * j->unit)
                         result = false;
                     break;
                 case DeviceAspectRatio:
@@ -305,47 +305,56 @@ bool MediaListImp::matches(WindowImp* window)
                         result = false;
                     break;
                 case MinDeviceAspectRatio:
-                    if (!isnan(j->value) && window->getScreenImp()->getWidth() * j->unit < window->getScreenImp()->getHeight() * j->value)
+                    if (window->getScreenImp()->getWidth() * j->unit < window->getScreenImp()->getHeight() * j->value)
                         result = false;
                     break;
                 case MaxDeviceAspectRatio:
-                    if (!isnan(j->value) && window->getScreenImp()->getHeight() * j->value < window->getScreenImp()->getWidth() * j->unit)
+                    if (window->getScreenImp()->getHeight() * j->value < window->getScreenImp()->getWidth() * j->unit)
                         result = false;
                     break;
                 case Color:
-                    if (j->unit && window->getScreenImp()->getColor() != j->value)
+                    if (j->unit) {
+                        if (window->getScreenImp()->getColor() != j->value)
+                            result = false;
+                    } else if (window->getScreenImp()->getColor() == 0)
                         result = false;
                     break;
                 case MinColor:
-                    if (j->unit && window->getScreenImp()->getColor() < j->value)
+                    if (window->getScreenImp()->getColor() < j->value)
                         result = false;
                     break;
                 case MaxColor:
-                    if (j->unit && j->value < window->getScreenImp()->getColor())
+                    if (j->value < window->getScreenImp()->getColor())
                         result = false;
                     break;
                 case ColorIndex:
-                    if (j->unit && window->getScreenImp()->getColorIndex() != j->value)
+                    if (j->unit) {
+                        if (window->getScreenImp()->getColorIndex() != j->value)
+                            result = false;
+                    } else if (window->getScreenImp()->getColorIndex() == 0)
                         result = false;
                     break;
                 case MinColorIndex:
-                    if (j->unit && window->getScreenImp()->getColorIndex() < j->value)
+                    if (window->getScreenImp()->getColorIndex() < j->value)
                         result = false;
                     break;
                 case MaxColorIndex:
-                    if (j->unit && j->value < window->getScreenImp()->getColorIndex())
+                    if (j->value < window->getScreenImp()->getColorIndex())
                         result = false;
                     break;
                 case Monochrome:
-                    if (j->unit && window->getScreenImp()->getMonochrome() != j->value)
+                    if (j->unit) {
+                        if (window->getScreenImp()->getMonochrome() != j->value)
+                            result = false;
+                    } else if (window->getScreenImp()->getMonochrome() == 0)
                         result = false;
                     break;
                 case MinMonochrome:
-                    if (j->unit && window->getScreenImp()->getMonochrome() < j->value)
+                    if (window->getScreenImp()->getMonochrome() < j->value)
                         result = false;
                     break;
                 case MaxMonochrome:
-                    if (j->unit && j->value < window->getScreenImp()->getMonochrome())
+                    if (j->value < window->getScreenImp()->getMonochrome())
                         result = false;
                     break;
                 case Resolution:
