@@ -887,9 +887,11 @@ bool CSSValueRule::isValid(CSSValueParser* parser, unsigned propertyID) const
         case CSSPrimitiveValue::CSS_DPPX:
         case CSSPrimitiveValue::CSS_DPI:
         case CSSPrimitiveValue::CSS_DPCM:
-            if (!f || (parser->*f)(*this)) {
-                parser->push(&term, propertyID);
-                return parser->acceptToken();
+            if (0.0f < term.getNumber()) {
+                if (!f || (parser->*f)(*this)) {
+                    parser->push(&term, propertyID);
+                    return parser->acceptToken();
+                }
             }
             break;
         default:

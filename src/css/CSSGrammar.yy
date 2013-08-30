@@ -515,21 +515,6 @@ term
   | function {    /* In CSS3, function seems to be moved to numeric_term... */
         $$.parser = parser;
     }
-  | RESOLUTION_DPCM optional_space {
-        $$.parser = parser;
-        $$.unit = CSSPrimitiveValue::CSS_DPCM;
-        $$.number = $1;
-    }
-  | RESOLUTION_DPI optional_space {
-        $$.parser = parser;
-        $$.unit = CSSPrimitiveValue::CSS_DPI;
-        $$.number = $1;
-    }
-  | RESOLUTION_DPPX optional_space {
-        $$.parser = parser;
-        $$.unit = CSSPrimitiveValue::CSS_DPPX;
-        $$.number = $1;
-    }
   ;
 function
   : FUNCTION optional_space expr ')' optional_space {
@@ -962,6 +947,21 @@ numeric_term
     }
   | FREQ_KHZ optional_space {
         $$.unit = CSSPrimitiveValue::CSS_KHZ;
+        $$.number = $1;
+    }
+  | RESOLUTION_DPCM optional_space {
+        $$.parser = parser;
+        $$.unit = CSSPrimitiveValue::CSS_DPCM;
+        $$.number = $1;
+    }
+  | RESOLUTION_DPI optional_space {
+        $$.parser = parser;
+        $$.unit = CSSPrimitiveValue::CSS_DPI;
+        $$.number = $1;
+    }
+  | RESOLUTION_DPPX optional_space {
+        $$.parser = parser;
+        $$.unit = CSSPrimitiveValue::CSS_DPPX;
         $$.number = $1;
     }
   ;
