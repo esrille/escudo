@@ -125,11 +125,7 @@ public:
         order(0)
     {}
 
-    // trivial version for CSSMediaRule
-    void append(css::CSSRule rule) {
-        ruleList.push_back(rule);
-    }
-
+    void append(css::CSSRule rule);   // trivial version for CSSMediaRule
     void append(css::CSSRule rule, DocumentImp* document);
 
     void appendMisc(CSSSelector* selector, CSSStyleDeclarationImp* declaration);

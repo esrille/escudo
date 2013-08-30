@@ -27,6 +27,11 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 using namespace css;
 
+void CSSRuleListImp::append(css::CSSRule rule)
+{
+    ruleList.push_back(rule);
+}
+
 bool CSSRuleListImp::PrioritizedRule::isActive(Element& element, ViewCSSImp* view) const
 {
     CSSSelector* selector = getSelector();

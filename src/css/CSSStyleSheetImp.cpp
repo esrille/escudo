@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,8 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
-void CSSStyleSheetImp::append(css::CSSRule rule, DocumentImp* document) {
+void CSSStyleSheetImp::append(css::CSSRule rule, DocumentImp* document)
+{
     if (auto imp = dynamic_cast<CSSRuleImp*>(rule.self())) {
         imp->setParentStyleSheet(this);
         ruleList.append(rule, document);
