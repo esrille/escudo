@@ -754,11 +754,11 @@ media_query_list_body
     }
   ;
 media_query
-  : optional_media_query_operator optional_space media_type optional_space optional_media_query_expression_list {
+  : optional_media_query_operator media_type optional_media_query_expression_list optional_space {
         if (MediaListImp* mediaList = parser->getMediaList())
-            mediaList->appendMedium($1 | $3);
+            mediaList->appendMedium($1 | $2);
     }
-  | media_query_expression_list {
+  | media_query_expression_list optional_space {
         if (MediaListImp* mediaList = parser->getMediaList())
             mediaList->appendMedium(MediaListImp::All);
     }
@@ -769,7 +769,7 @@ media_type
     }
   ;
 media_query_expression
-  : '(' optional_space media_feature optional_space optional_media_query_value ')' optional_space {
+  : '(' optional_space media_feature optional_space optional_media_query_value ')' {
         if (MediaListImp* mediaList = parser->getMediaList())
             mediaList->appendFeature($3, $5);
     }
@@ -785,20 +785,20 @@ media_feature
   ;
 media_query_expression_list
   : media_query_expression
-  | media_query_expression_list MEDIA_AND optional_space media_query_expression
+  | media_query_expression_list space MEDIA_AND space media_query_expression
   ;
 optional_media_query_expression_list
   : /* empty */
-  | MEDIA_AND optional_space media_query_expression_list
+  | space MEDIA_AND space media_query_expression_list
   ;
 optional_media_query_operator
   : /* empty */ {
         $$ = 0;
   }
-  | MEDIA_ONLY {
+  | MEDIA_ONLY space {
         $$ = MediaListImp::Only;
     }
-  | MEDIA_NOT {
+  | MEDIA_NOT space {
         $$ = MediaListImp::Not;
     }
   ;
@@ -1014,6 +1014,10 @@ optional_sgml
 optional_space
   : /* empty */
   | optional_space S
+  ;
+space
+  : S
+  | space S
   ;
 invalid_construct
   : '{' error invalid_construct_list error '}'
