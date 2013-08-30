@@ -409,8 +409,11 @@ bool MediaListImp::matches(WindowImp* window)
                         result = false;
                     break;
                 case Grid:
-                    if (j->unit && j->value != window->getScreenImp()->getGrid())
-                        result = false;
+                    if (j->unit) {
+                        if (j->value != window->getScreenImp()->getGrid())
+                            result = false;
+                    } else if (window->getScreenImp()->getGrid() == 0)
+                            result = false;
                     break;
                 default:
                     result = false;
