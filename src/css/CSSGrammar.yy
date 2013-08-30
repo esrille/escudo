@@ -736,7 +736,16 @@ media_query_list
 media_query_list_body
   : media_query
   | media_query_list_body ',' optional_space media_query
-  | media_query_list_body error {
+  | media_query_list_body ',' optional_space invalid_construct_list
+  | media_query_list_body ',' optional_space error
+  | invalid_construct_list {
+        if (MediaListImp* mediaList = parser->getMediaList()) {
+            CSSerror(parser, "syntax error, invalid media query");
+            mediaList->clearFeatures();
+            mediaList->appendMedium(MediaListImp::Not | MediaListImp::All);
+        }
+    }
+  | error {
         if (MediaListImp* mediaList = parser->getMediaList()) {
             CSSerror(parser, "syntax error, invalid media query");
             mediaList->clearFeatures();
@@ -763,6 +772,10 @@ media_query_expression
   : '(' optional_space media_feature optional_space optional_media_query_value ')' optional_space {
         if (MediaListImp* mediaList = parser->getMediaList())
             mediaList->appendFeature($3, $5);
+    }
+  | '(' optional_space error_parenthesis ')' optional_space {
+        if (MediaListImp* mediaList = parser->getMediaList())
+            mediaList->appendFeature(MediaListImp::Unknown, 0);
     }
   ;
 media_feature
