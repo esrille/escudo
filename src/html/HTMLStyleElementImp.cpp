@@ -80,6 +80,7 @@ void HTMLStyleElementImp::handleMutation(EventListenerImp* listener, events::Eve
         if (auto imp = dynamic_cast<CSSStyleSheetImp*>(styleSheet.self())) {
             imp->setOwnerNode(this);
             imp->setHref(u"");
+            imp->setMedia(getMedia());
             if (4 <= getLogLevel())
                 dumpStyleSheet(std::cerr, imp);
         }
