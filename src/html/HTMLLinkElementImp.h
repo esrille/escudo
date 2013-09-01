@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-#ifndef HTMLLINKELEMENT_IMP_H
-#define HTMLLINKELEMENT_IMP_H
+#ifndef ORG_W3C_DOM_BOOTSTRAP_HTMLLINKELEMENTIMP_H_INCLUDED
+#define ORG_W3C_DOM_BOOTSTRAP_HTMLLINKELEMENTIMP_H_INCLUDED
 
-#include <Object.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 #include <org/w3c/dom/html/HTMLLinkElement.h>
 
 #include <org/w3c/dom/stylesheets/StyleSheet.h>
@@ -94,4 +96,4 @@ public:
 
 }}}}  // org::w3c::dom::bootstrap
 
-#endif  // HTMLLINKELEMENT_IMP_H
+#endif  // ORG_W3C_DOM_BOOTSTRAP_HTMLLINKELEMENTIMP_H_INCLUDED

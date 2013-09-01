@@ -73,9 +73,18 @@ void HTMLLinkElementImp::resetStyleSheet()
 void HTMLLinkElementImp::handleMutation(events::MutationEvent mutation)
 {
     switch (Intern(mutation.getAttrName().c_str())) {
+    case Intern(u"media"):
+        if (styleSheet) {
+            styleSheet.setMedia((mutation.getAttrChange() != events::MutationEvent::REMOVAL) ? mutation.getNewValue() : u"");
+            if (DocumentImp* document = getOwnerDocumentImp()) {
+                // TODO: Optimize the following steps later
+                if (WindowImp* view = document->getDefaultWindow())
+                    view->setViewFlags(Box::NEED_SELECTOR_REMATCHING);
+            }
+        }
+        break;
     case Intern(u"href"):
     case Intern(u"rel"):
-    case Intern(u"media"):
     case Intern(u"hreflang"):
     case Intern(u"type"):
     case Intern(u"sizes"):
@@ -120,20 +129,15 @@ void HTMLLinkElementImp::refresh()
         if (::contains(rel, u"stylesheet")) {
             // TODO: check "type"
             if (!::contains(rel, u"alternate")) {
-                std::u16string mediaText = getMedia();
-                Retained<MediaListImp> mediaList;
-                mediaList.setMediaText(mediaText);
-                if (mediaText.empty() || mediaList.matches(document ? document->getDefaultWindow() : 0)) {
-                    if (current)
-                        current->cancel();
-                    current = new(std::nothrow) HttpRequest(document->getDocumentURI());
-                    if (current) {
-                        current->open(u"GET", href);
-                        current->setHandler(boost::bind(&HTMLLinkElementImp::linkStyleSheet, this, current));
-                        document->incrementLoadEventDelayCount();
-                        current->send();
-                        return; // Do not reset styleSheet.
-                    }
+                if (current)
+                    current->cancel();
+                current = new(std::nothrow) HttpRequest(document->getDocumentURI());
+                if (current) {
+                    current->open(u"GET", href);
+                    current->setHandler(boost::bind(&HTMLLinkElementImp::linkStyleSheet, this, current));
+                    document->incrementLoadEventDelayCount();
+                    current->send();
+                    return; // Do not reset styleSheet.
                 }
             }
         } else if (::contains(rel, u"icon")) {
@@ -164,6 +168,7 @@ void HTMLLinkElementImp::linkStyleSheet(HttpRequest* request)
         styleSheet = parser.parse(document, cssStream);
         if (auto imp = dynamic_cast<CSSStyleSheetImp*>(styleSheet.self()))
             imp->setOwnerNode(this);
+        styleSheet.setMedia(getMedia());
         if (4 <= getLogLevel())
             dumpStyleSheet(std::cerr, styleSheet.self());
         document->resetStyleSheets();
