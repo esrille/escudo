@@ -1418,4 +1418,48 @@ EXTRA_DIST = \
 	idl/wget_webidl_dom \
 	idl/workers.idl \
 	idl/xbl2.idl \
-	idl/xhr2.idl
+	idl/xhr2.idl \
+	src/third_party/icu/LICENSE \
+	src/third_party/icu/unicode/bytestream.h \
+	src/third_party/icu/unicode/chariter.h \
+	src/third_party/icu/unicode/localpointer.h \
+	src/third_party/icu/unicode/parseerr.h \
+	src/third_party/icu/unicode/platform.h \
+	src/third_party/icu/unicode/ptypes.h \
+	src/third_party/icu/unicode/putil.h \
+	src/third_party/icu/unicode/rep.h \
+	src/third_party/icu/unicode/std_string.h \
+	src/third_party/icu/unicode/strenum.h \
+	src/third_party/icu/unicode/stringpiece.h \
+	src/third_party/icu/unicode/ubrk.h \
+	src/third_party/icu/unicode/uchar.h \
+	src/third_party/icu/unicode/ucnv_cb.h \
+	src/third_party/icu/unicode/ucnv_err.h \
+	src/third_party/icu/unicode/ucnv.h \
+	src/third_party/icu/unicode/ucoleitr.h \
+	src/third_party/icu/unicode/ucol.h \
+	src/third_party/icu/unicode/uconfig.h \
+	src/third_party/icu/unicode/ucsdet.h \
+	src/third_party/icu/unicode/uenum.h \
+	src/third_party/icu/unicode/uidna.h \
+	src/third_party/icu/unicode/uiter.h \
+	src/third_party/icu/unicode/uloc.h \
+	src/third_party/icu/unicode/umachine.h \
+	src/third_party/icu/unicode/unistr.h \
+	src/third_party/icu/unicode/unorm2.h \
+	src/third_party/icu/unicode/unorm.h \
+	src/third_party/icu/unicode/uobject.h \
+	src/third_party/icu/unicode/urename.h \
+	src/third_party/icu/unicode/uscript.h \
+	src/third_party/icu/unicode/usearch.h \
+	src/third_party/icu/unicode/uset.h \
+	src/third_party/icu/unicode/ushape.h \
+	src/third_party/icu/unicode/ustring.h \
+	src/third_party/icu/unicode/utext.h \
+	src/third_party/icu/unicode/utf16.h \
+	src/third_party/icu/unicode/utf8.h \
+	src/third_party/icu/unicode/utf.h \
+	src/third_party/icu/unicode/utf_old.h \
+	src/third_party/icu/unicode/utypes.h \
+	src/third_party/icu/unicode/uvernum.h \
+	src/third_party/icu/unicode/uversion.h
