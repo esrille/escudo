@@ -25,6 +25,7 @@
 #include <boost/intrusive_ptr.hpp>
 
 #include <org/w3c/dom/Document.h>
+#include <org/w3c/dom/html/MediaQueryList.h>
 
 #include "EventListenerImp.h"
 #include "EventTargetImp.h"
@@ -34,8 +35,9 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
-class WindowImp;
 class HttpRequest;
+class MediaQueryListImp;
+class WindowImp;
 
 // DocumentWindow implements the Window object
 class DocumentWindow : public EventTargetImp
@@ -53,6 +55,8 @@ class DocumentWindow : public EventTargetImp
 
     // computed style memory manager
     std::map<Element, CSSStyleDeclarationPtr> map;
+
+    std::list<MediaQueryListImp*> mediaQueryLists;
 
     DocumentWindow(const DocumentWindow& window) = delete;
     DocumentWindow& operator=(const DocumentWindow&) = delete;
@@ -99,7 +103,11 @@ public:
     CSSStyleDeclarationPtr getComputedStyle(Element elt);
     void putComputedStyle(Element elt);
 
+    void evaluateMedia();
+    void removeMedia(MediaQueryListImp* mediaQueryList);
+
     // CSSOM View
+    html::MediaQueryList matchMedia(const std::u16string& media_query_list);
     int getScrollX() const {
         return scrollX;
     }

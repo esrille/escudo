@@ -24,6 +24,7 @@
 #include "ECMAScript.h"
 #include "WindowImp.h"
 #include "css/ViewCSSImp.h"
+#include "html/MediaQueryListImp.h"
 
 #include "Test.util.h"
 
@@ -214,6 +215,25 @@ CSSStyleDeclarationPtr DocumentWindow::getComputedStyle(Element element)
 void DocumentWindow::putComputedStyle(Element element)
 {
     map.erase(element);
+}
+
+html::MediaQueryList DocumentWindow::matchMedia(const std::u16string& media_query_list)
+{
+    MediaQueryListImp* mediaQueryList = new(std::nothrow) MediaQueryListImp(this, media_query_list);
+    if (mediaQueryList)
+        mediaQueryLists.push_back(mediaQueryList);
+    return mediaQueryList;
+}
+
+void DocumentWindow::evaluateMedia()
+{
+    for (auto i = mediaQueryLists.begin(); i != mediaQueryLists.end(); ++i)
+        (*i)->evaluate();
+}
+
+void DocumentWindow::removeMedia(MediaQueryListImp* mediaQueryList)
+{
+    mediaQueryLists.remove(mediaQueryList);
 }
 
 }}}}  // org::w3c::dom::bootstrap

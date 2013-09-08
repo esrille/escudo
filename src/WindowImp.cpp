@@ -101,6 +101,8 @@ void WindowImp::setSize(unsigned w, unsigned h)
         width = w;
         height = h;
         setViewFlags(Box::NEED_REFLOW);
+        if (window)
+            window->evaluateMedia();
     }
 }
 
@@ -1847,8 +1849,7 @@ css::CSSStyleDeclaration WindowImp::getComputedStyle(Element elt, const std::u16
 
 html::MediaQueryList WindowImp::matchMedia(const std::u16string& media_query_list)
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return window->matchMedia(media_query_list);
 }
 
 html::Screen WindowImp::getScreen()

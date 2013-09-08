@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script>
+var mql1;
+var mql2;
+function listener(list)
+{
+  alert(list.media);
+}
+function init()
+{
+  mql1 = matchMedia("screen and (max-width: 300px)");
+  mql1.addListener(listener);
+  mql2 = matchMedia("screen and (max-height: 600px)");
+  mql2.addListener(listener);
+}
+</script>
+</head>
+<body onload=init()>
+</body>
+</html>
