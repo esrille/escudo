@@ -28,15 +28,13 @@ partial interface Window {
 };
 
 interface MediaQueryList {
-    readonly attribute DOMString media;
-    readonly attribute boolean matches;
-    void addListener (MediaQueryListListener listener);
-    void removeListener (MediaQueryListListener listener);
+  readonly attribute DOMString media;
+  readonly attribute boolean matches;
+  void addListener(MediaQueryListListener listener);
+  void removeListener(MediaQueryListListener listener);
 };
 
-interface MediaQueryListListener {
-    void handleChange (MediaQueryList list);
-};
+callback MediaQueryListListener = void (MediaQueryList list);
 
 interface Screen {
     readonly attribute unsigned long availWidth;
