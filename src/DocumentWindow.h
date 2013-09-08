@@ -83,6 +83,15 @@ public:
     void enter(WindowImp* proxy);
     void exit(WindowImp* proxy);
 
+    void putTask(const Task& task) {
+        taskQueue.push(task);
+    }
+    void eventLoop() {
+        Task task;
+        while (taskQueue.tryPop(task))
+            task.run();
+    }
+
     void setEventHandler(const std::u16string& type, Object handler);
 
     HttpRequest* preload(const std::u16string& base, const std::u16string& url);

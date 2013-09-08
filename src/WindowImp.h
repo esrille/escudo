@@ -292,14 +292,11 @@ public:
 
     void putTask(const Task& task) {
         if (window)
-            window->getTaskQueue().push(task);
+            window->putTask(task);
     }
     void eventLoop() {
-        if (window) {
-            Task task;
-            while (window->getTaskQueue().tryPop(task))
-                task.run();
-        }
+        if (window)
+            window->eventLoop();
     }
 
     void enter();
