@@ -152,6 +152,9 @@ void CSSRuleListImp::find(RuleSet& set, ViewCSSImp* view, Element& element, unsi
 {
     this->importance = importance;
 
+    // Declarations in imported style sheets are considered to be before any
+    // declarations in the style sheet itself.
+    // cf. http://www.w3.org/TR/CSS2/cascade.html#cascading-order
     for (auto i = importList.begin(); i != importList.end(); ++i) {
         if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>((*i)->getStyleSheet().self())) {
             if (CSSRuleListImp* ruleList = dynamic_cast<CSSRuleListImp*>(sheet->getCssRules().self()))
