@@ -86,7 +86,7 @@ class ViewCSSImp
     void removeComputedStyle(Element element);
 
     void handleMutation(EventListenerImp* listener, events::Event event);
-    void findDeclarations(CSSRuleListImp::RuleSet& set, Element element, css::CSSRuleList list, unsigned importance);
+    void collectRules(CSSRuleListImp::RuleSet& set, Element element, css::CSSRuleList list, unsigned importance);
     Element updateStyleRules(Element element, CSSStyleDeclarationImp* style, CSSStyleDeclarationImp* parentStyle);
 
 public:

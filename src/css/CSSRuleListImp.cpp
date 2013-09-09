@@ -94,7 +94,7 @@ void CSSRuleListImp::append(css::CSSRule rule, DocumentImp* document)
         ruleList.push_back(rule);
 }
 
-void CSSRuleListImp::find(RuleSet& set, ViewCSSImp* view, Element& element, std::multimap<std::u16string, Rule>& map, const std::u16string& key)
+void CSSRuleListImp::collectRules(RuleSet& set, ViewCSSImp* view, Element& element, std::multimap<std::u16string, Rule>& map, const std::u16string& key)
 {
     for (auto i = map.find(key); i != map.end() && i->first == key; ++i) {
         CSSSelector* selector = i->second.selector;
@@ -106,14 +106,14 @@ void CSSRuleListImp::find(RuleSet& set, ViewCSSImp* view, Element& element, std:
     }
 }
 
-void CSSRuleListImp::findByID(RuleSet& set, ViewCSSImp* view, Element& element)
+void CSSRuleListImp::collectRulesByID(RuleSet& set, ViewCSSImp* view, Element& element)
 {
     Nullable<std::u16string> attr = element.getAttribute(u"id");
     if (attr.hasValue())
-        find(set, view, element, mapID, attr.value());
+        collectRules(set, view, element, mapID, attr.value());
 }
 
-void CSSRuleListImp::findByClass(RuleSet& set, ViewCSSImp* view, Element& element)
+void CSSRuleListImp::collectRulesByClass(RuleSet& set, ViewCSSImp* view, Element& element)
 {
     Nullable<std::u16string> attr = element.getAttribute(u"class");
     if (attr.hasValue()) {
@@ -126,17 +126,17 @@ void CSSRuleListImp::findByClass(RuleSet& set, ViewCSSImp* view, Element& elemen
             size_t start = pos++;
             while (pos < classes.length() && !isSpace(classes[pos]))
                 ++pos;
-            find(set, view, element, mapClass, classes.substr(start, pos - start));
+            collectRules(set, view, element, mapClass, classes.substr(start, pos - start));
         }
     }
 }
 
-void CSSRuleListImp::findByType(RuleSet& set, ViewCSSImp* view, Element& element)
+void CSSRuleListImp::collectRulesByType(RuleSet& set, ViewCSSImp* view, Element& element)
 {
-    find(set, view, element, mapType, element.getLocalName());
+    collectRules(set, view, element, mapType, element.getLocalName());
 }
 
-void CSSRuleListImp::findMisc(RuleSet& set, ViewCSSImp* view, Element& element)
+void CSSRuleListImp::collectRulesByMisc(RuleSet& set, ViewCSSImp* view, Element& element)
 {
     for (auto i = misc.begin(); i != misc.end(); ++i) {
         CSSSelector* selector = i->selector;
@@ -148,7 +148,7 @@ void CSSRuleListImp::findMisc(RuleSet& set, ViewCSSImp* view, Element& element)
     }
 }
 
-void CSSRuleListImp::find(RuleSet& set, ViewCSSImp* view, Element& element, unsigned importance)
+void CSSRuleListImp::collectRules(RuleSet& set, ViewCSSImp* view, Element& element, unsigned importance)
 {
     this->importance = importance;
 
@@ -158,14 +158,14 @@ void CSSRuleListImp::find(RuleSet& set, ViewCSSImp* view, Element& element, unsi
     for (auto i = importList.begin(); i != importList.end(); ++i) {
         if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>((*i)->getStyleSheet().self())) {
             if (CSSRuleListImp* ruleList = dynamic_cast<CSSRuleListImp*>(sheet->getCssRules().self()))
-                ruleList->find(set, view, element, importance);
+                ruleList->collectRules(set, view, element, importance);
         }
     }
 
-    findMisc(set, view, element);
-    findByType(set, view, element);
-    findByClass(set, view, element);
-    findByID(set, view, element);
+    collectRulesByMisc(set, view, element);
+    collectRulesByType(set, view, element);
+    collectRulesByClass(set, view, element);
+    collectRulesByID(set, view, element);
 }
 
 bool CSSRuleListImp::hasHover(const RuleSet& set)

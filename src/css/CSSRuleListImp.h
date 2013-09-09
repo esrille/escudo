@@ -113,11 +113,11 @@ private:
     std::multimap<std::u16string, Rule> mapType;   // type selectors
     std::deque<Rule> misc;
 
-    void find(RuleSet& set, ViewCSSImp* view, Element& element, std::multimap<std::u16string, Rule>& map, const std::u16string& key);
-    void findByID(RuleSet& set, ViewCSSImp* view, Element& element);
-    void findByClass(RuleSet& set, ViewCSSImp* view, Element& element);
-    void findByType(RuleSet& set, ViewCSSImp* view, Element& element);
-    void findMisc(RuleSet& set, ViewCSSImp* view, Element& element);
+    void collectRules(RuleSet& set, ViewCSSImp* view, Element& element, std::multimap<std::u16string, Rule>& map, const std::u16string& key);
+    void collectRulesByID(RuleSet& set, ViewCSSImp* view, Element& element);
+    void collectRulesByClass(RuleSet& set, ViewCSSImp* view, Element& element);
+    void collectRulesByType(RuleSet& set, ViewCSSImp* view, Element& element);
+    void collectRulesByMisc(RuleSet& set, ViewCSSImp* view, Element& element);
 
 public:
     CSSRuleListImp() :
@@ -133,7 +133,7 @@ public:
     void appendClass(CSSSelector* selector, CSSStyleDeclarationImp* declaration, const std::u16string& key);
     void appendType(CSSSelector* selector, CSSStyleDeclarationImp* declaration, const std::u16string& key);
 
-    void find(RuleSet& set, ViewCSSImp* view, Element& element, unsigned importance);
+    void collectRules(RuleSet& set, ViewCSSImp* view, Element& element, unsigned importance);
 
     css::CSSRuleList getCssRules() {
         return this;

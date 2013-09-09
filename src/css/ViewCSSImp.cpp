@@ -190,12 +190,12 @@ void ViewCSSImp::handleMutation(EventListenerImp* listener, events::Event event)
     setFlags(Box::NEED_SELECTOR_REMATCHING);
 }
 
-void ViewCSSImp::findDeclarations(CSSRuleListImp::RuleSet& set, Element element, css::CSSRuleList list, unsigned importance)
+void ViewCSSImp::collectRules(CSSRuleListImp::RuleSet& set, Element element, css::CSSRuleList list, unsigned importance)
 {
     CSSRuleListImp* ruleList = dynamic_cast<CSSRuleListImp*>(list.self());
     if (!ruleList)
         return;
-    ruleList->find(set, this, element, importance);
+    ruleList->collectRules(set, this, element, importance);
 }
 
 void ViewCSSImp::resolveXY(float left, float top)
@@ -227,9 +227,9 @@ Element ViewCSSImp::updateStyleRules(Element element, CSSStyleDeclarationImp* st
     }
 
     if (CSSStyleSheetImp* sheet = getDOMImplementation()->getDefaultStyleSheet())
-        findDeclarations(style->ruleSet, element, sheet->getCssRules(), CSSRuleListImp::UserAgent);
+        collectRules(style->ruleSet, element, sheet->getCssRules(), CSSRuleListImp::UserAgent);
     if (CSSStyleSheetImp* sheet = getDOMImplementation()->getUserStyleSheet())
-        findDeclarations(style->ruleSet, element, sheet->getCssRules(), CSSRuleListImp::User);
+        collectRules(style->ruleSet, element, sheet->getCssRules(), CSSRuleListImp::User);
     if (elementDecl) {
         if (CSSStyleDeclarationImp* nonCSS = elementDecl->getPseudoElementStyle(CSSPseudoElementSelector::NonCSS)) {
             // TODO: emplace() seems to be not ready yet with libstdc++.
@@ -238,7 +238,7 @@ Element ViewCSSImp::updateStyleRules(Element element, CSSStyleDeclarationImp* st
         }
     }
     if (CSSStyleSheetImp* sheet = getDOMImplementation()->getPresentationalHints())
-        findDeclarations(style->ruleSet, element, sheet->getCssRules(), CSSRuleListImp::Presentational);
+        collectRules(style->ruleSet, element, sheet->getCssRules(), CSSRuleListImp::Presentational);
 
     unsigned importance = CSSRuleListImp::Author;
     stylesheets::StyleSheetList styleSheetList(getDocument().getStyleSheets());
@@ -246,7 +246,7 @@ Element ViewCSSImp::updateStyleRules(Element element, CSSStyleDeclarationImp* st
         CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(styleSheetList.getElement(i).self());
         MediaListImp* mediaList = dynamic_cast<MediaListImp*>(sheet->getMedia().self());
         if (mediaList->matches(window->getWindowImp())) {
-            findDeclarations(style->ruleSet, element, sheet->getCssRules(), importance++);
+            collectRules(style->ruleSet, element, sheet->getCssRules(), importance++);
             // TODO: Check overflow of importance
         }
     }
