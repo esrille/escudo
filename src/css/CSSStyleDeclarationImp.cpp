@@ -288,7 +288,7 @@ unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
     //
     // Checks for Box::NEED_EXPANSION
     //
-    // Note zIndex is checked inside CSSStyleDeclarationImp::compute().
+    // Note zIndex is checked inside compute().
 
     if (style->display.getValue() == CSSDisplayValueImp::ListItem) {
         if (style->listStyleImage != listStyleImage)

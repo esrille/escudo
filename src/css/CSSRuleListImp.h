@@ -60,12 +60,12 @@ public:
         unsigned priority;
         CSSRuleListImp::Rule rule;
     public:
-        PrioritizedRule(unsigned prio, const CSSRuleListImp::Rule& rule) :
-            priority(prio),
+        PrioritizedRule(unsigned priority, const CSSRuleListImp::Rule& rule) :
+            priority(priority),
             rule(rule)
         {
-            if ((priority & 0xff000000) != Presentational)
-                priority |= rule.selector->getSpecificity();
+            if ((this->priority & 0xff000000) != Presentational)
+                this->priority |= rule.selector->getSpecificity();
         }
         PrioritizedRule(unsigned priority, CSSStyleDeclarationImp* decl) :
             priority(priority)
