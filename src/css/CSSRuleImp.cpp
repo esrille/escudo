@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,20 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 using namespace css;
 
+CSSRuleImp::CSSRuleImp() :
+    parentStyleSheet(0),
+    parentRule(0)
+{
+}
+
 void CSSRuleImp::setParentStyleSheet(css::CSSStyleSheet sheet)
 {
-    parent = sheet;
+    parentStyleSheet = sheet;
+}
+
+void CSSRuleImp::setParentRule(CSSRuleImp* rule)
+{
+    parentRule = rule;
 }
 
 // CSSRule
@@ -33,24 +44,21 @@ unsigned short CSSRuleImp::getType()
 
 std::u16string CSSRuleImp::getCssText()
 {
-    // TODO: implement me!
     return u"";
 }
 
 void CSSRuleImp::setCssText(const std::u16string& cssText)
 {
-    // TODO: implement me!
 }
 
 css::CSSRule CSSRuleImp::getParentRule()
 {
-    // TODO: implement me!
-    return static_cast<Object*>(0);
+    return parentRule;
 }
 
 css::CSSStyleSheet CSSRuleImp::getParentStyleSheet()
 {
-    return parent;
+    return parentStyleSheet;
 }
 
 }}}}  // org::w3c::dom::bootstrap

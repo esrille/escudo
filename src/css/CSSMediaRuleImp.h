@@ -34,9 +34,9 @@ class CSSMediaRuleImp : public ObjectMixin<CSSMediaRuleImp, CSSRuleImp>
     Retained<MediaListImp> mediaList;
 
 public:
-    void append(css::CSSRule rule) {
-        ruleList.append(rule);
-    }
+    ~CSSMediaRuleImp();
+
+    void append(css::CSSRule rule);
 
     void setMediaList(MediaListImp* list) {
         if (list)

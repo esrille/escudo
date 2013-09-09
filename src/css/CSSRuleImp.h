@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,15 +26,14 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class CSSRuleImp : public ObjectMixin<CSSRuleImp>
 {
-    css::CSSStyleSheet parent;
+    css::CSSStyleSheet parentStyleSheet;
+    CSSRuleImp* parentRule;
 
 public:
-    CSSRuleImp() :
-        parent(0)
-    {
-    }
+    CSSRuleImp();
 
     void setParentStyleSheet(css::CSSStyleSheet sheet);
+    void setParentRule(CSSRuleImp* rule);
 
     // CSSRule
     virtual unsigned short getType();

@@ -77,7 +77,6 @@ void CSSRuleListImp::append(css::CSSRule rule, DocumentImp* document)
         if (mediaList->matches(document ? document->getDefaultWindow() : 0)) {
             css::CSSRuleList ruleList = mediaRule->getCssRules();
             unsigned length = ruleList.getLength();
-            // FIXME: At least, the following rule items must not be inserted to 'ruleList'.
             for (unsigned i = 0; i < length; ++i)
                 append(ruleList.item(i), document);
         }
@@ -91,7 +90,8 @@ void CSSRuleListImp::append(css::CSSRule rule, DocumentImp* document)
             }
         }
     }
-    ruleList.push_back(rule);
+    if (!rule.getParentRule())
+        ruleList.push_back(rule);
 }
 
 void CSSRuleListImp::find(RuleSet& set, ViewCSSImp* view, Element& element, std::multimap<std::u16string, Rule>& map, const std::u16string& key)

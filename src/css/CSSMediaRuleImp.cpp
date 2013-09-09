@@ -22,6 +22,24 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 using namespace css;
 
+CSSMediaRuleImp::~CSSMediaRuleImp()
+{
+    unsigned length = ruleList.getLength();
+    for (unsigned i = 0; i < length; ++i) {
+        CSSRule rule = ruleList.item(i);
+        if (auto imp = dynamic_cast<CSSRuleImp*>(rule.self()))
+            imp->setParentRule(0);
+    }
+}
+
+void CSSMediaRuleImp::append(css::CSSRule rule)
+{
+    if (auto imp = dynamic_cast<CSSRuleImp*>(rule.self())) {
+        imp->setParentRule(this);
+        ruleList.append(rule);
+    }
+}
+
 // CSSRule
 unsigned short CSSMediaRuleImp::getType()
 {
