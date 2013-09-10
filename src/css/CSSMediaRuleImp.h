@@ -31,16 +31,16 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 class CSSMediaRuleImp : public ObjectMixin<CSSMediaRuleImp, CSSRuleImp>
 {
     Retained<CSSRuleListImp> ruleList;
-    Retained<MediaListImp> mediaList;
+    stylesheets::MediaList mediaList {0};
 
 public:
     ~CSSMediaRuleImp();
 
     void append(css::CSSRule rule);
 
-    void setMediaList(MediaListImp* list) {
-        if (list)
-            mediaList = std::move(*list);
+    void setMediaList(MediaListImp&& other) {
+        assert(!mediaList);
+        mediaList = new(std::nothrow) MediaListImp(std::move(other));
     }
 
     // CSSRule

@@ -50,7 +50,7 @@ class MediaQueryListImp : public ObjectMixin<MediaQueryListImp>
     };
     int state;
     DocumentWindowPtr window;
-    Retained<MediaListImp> mediaList;
+    stylesheets::MediaList mediaList {0};
     std::list<html::MediaQueryListListener> listeners;
 
 public:

@@ -54,7 +54,7 @@ std::u16string CSSMediaRuleImp::getCssText()
 // CSSMediaRule
 stylesheets::MediaList CSSMediaRuleImp::getMedia()
 {
-    return &mediaList;
+    return mediaList;
 }
 
 void CSSMediaRuleImp::setMedia(const std::u16string& media)

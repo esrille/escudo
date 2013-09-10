@@ -295,7 +295,7 @@ public:
     css::CSSStyleSheet parse(DocumentImp* document, const std::u16string& cssText);
     css::CSSStyleDeclaration parseDeclarations(const std::u16string& cssDecl);
     CSSParserExpr* parseExpression(const std::u16string& cssExpr);
-    MediaListImp* parseMediaList(const std::u16string& mediaText);
+    MediaListImp& parseMediaList(const std::u16string& mediaText);
     CSSSelectorsGroup* parseSelectorsGroup(const std::u16string& selectors);
 
     DocumentImp* getDocument() const {
@@ -336,8 +336,8 @@ public:
         return mediaRule;
     }
 
-    MediaListImp* getMediaList() {
-        return &mediaList;
+    MediaListImp& getMediaList() {
+        return mediaList;
     }
 
     bool getCaseSensitivity() const {

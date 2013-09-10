@@ -198,10 +198,8 @@ import
         else {
             CSSImportRuleImp* rule = new(std::nothrow) CSSImportRuleImp($3);
             if (rule) {
-                if (MediaListImp* mediaList = parser->getMediaList()) {
-                    rule->setMediaList(mediaList);
-                    mediaList->clear();
-                }
+                rule->setMediaList(std::move(parser->getMediaList()));
+                parser->getMediaList().clear();
             }
             $$ = rule;
         }
@@ -236,10 +234,8 @@ media
    '{' optional_space optional_rulesets error_non_block '}' optional_space {
         CSSMediaRuleImp* mediaRule = parser->getMediaRule();
         if (mediaRule) {
-            if (MediaListImp* mediaList = parser->getMediaList()) {
-                mediaRule->setMediaList(mediaList);
-                mediaList->clear();
-            }
+            mediaRule->setMediaList(std::move(parser->getMediaList()));
+            parser->getMediaList().clear();
             parser->setMediaRule(0);
         }
         $$ = mediaRule;
@@ -723,8 +719,7 @@ media_list
   ;
 medium
   : IDENT optional_space {
-        if (MediaListImp* mediaList = parser->getMediaList())
-            mediaList->appendMedium($1);
+        parser->getMediaList().appendMedium($1);
     }
   ;
 
@@ -739,28 +734,22 @@ media_query_list_body
   | media_query_list_body ',' optional_space invalid_construct_list
   | media_query_list_body ',' optional_space error
   | invalid_construct_list {
-        if (MediaListImp* mediaList = parser->getMediaList()) {
-            CSSerror(parser, "syntax error, invalid media query");
-            mediaList->clearFeatures();
-            mediaList->appendMedium(MediaListImp::Not | MediaListImp::All);
-        }
+        CSSerror(parser, "syntax error, invalid media query");
+        parser->getMediaList().clearFeatures();
+        parser->getMediaList().appendMedium(MediaListImp::Not | MediaListImp::All);
     }
   | error {
-        if (MediaListImp* mediaList = parser->getMediaList()) {
-            CSSerror(parser, "syntax error, invalid media query");
-            mediaList->clearFeatures();
-            mediaList->appendMedium(MediaListImp::Not | MediaListImp::All);
-        }
+        CSSerror(parser, "syntax error, invalid media query");
+        parser->getMediaList().clearFeatures();
+        parser->getMediaList().appendMedium(MediaListImp::Not | MediaListImp::All);
     }
   ;
 media_query
   : optional_media_query_operator media_type optional_media_query_expression_list optional_space {
-        if (MediaListImp* mediaList = parser->getMediaList())
-            mediaList->appendMedium($1 | $2);
+        parser->getMediaList().appendMedium($1 | $2);
     }
   | media_query_expression_list optional_space {
-        if (MediaListImp* mediaList = parser->getMediaList())
-            mediaList->appendMedium(MediaListImp::All);
+        parser->getMediaList().appendMedium(MediaListImp::All);
     }
   ;
 media_type
@@ -770,12 +759,10 @@ media_type
   ;
 media_query_expression
   : '(' optional_space media_feature optional_space optional_media_query_value ')' {
-        if (MediaListImp* mediaList = parser->getMediaList())
-            mediaList->appendFeature($3, $5);
+        parser->getMediaList().appendFeature($3, $5);
     }
   | '(' optional_space error_parenthesis ')' optional_space {
-        if (MediaListImp* mediaList = parser->getMediaList())
-            mediaList->appendFeature(MediaListImp::Unknown, 0);
+        parser->getMediaList().appendFeature(MediaListImp::Unknown, 0);
     }
   ;
 media_feature

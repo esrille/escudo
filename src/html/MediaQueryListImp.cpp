@@ -31,11 +31,15 @@ namespace dom
 namespace bootstrap
 {
 
+// Note this constructor should be called via WindowImp::matchMedia().
 MediaQueryListImp::MediaQueryListImp(DocumentWindowPtr window, std::u16string query) :
     state(Unknown),
     window(window)
 {
-    mediaList.setMediaText(query);
+    if (!query.empty()) {
+        mediaList = new(std::nothrow) MediaListImp;
+        mediaList.setMediaText(query);
+    }
 }
 
 MediaQueryListImp::~MediaQueryListImp()
@@ -45,8 +49,10 @@ MediaQueryListImp::~MediaQueryListImp()
 
 bool MediaQueryListImp::evaluate()
 {
+    if (!mediaList)
+        return Unknown;
     int old = state;
-    state = getMatches() ? Match : NotMatch;
+    state = dynamic_cast<MediaListImp*>(mediaList.self())->matches(window->getWindowImp()) ? Match : NotMatch;
     if (old == state || old == Unknown)
         return state;
     for (auto i = listeners.begin(); i != listeners.end(); ++i) {
@@ -66,7 +72,7 @@ std::u16string MediaQueryListImp::getMedia()
 
 bool MediaQueryListImp::getMatches()
 {
-    return mediaList.matches(window->getWindowImp());
+    return state == Match;
 }
 
 void MediaQueryListImp::addListener(html::MediaQueryListListener listener)

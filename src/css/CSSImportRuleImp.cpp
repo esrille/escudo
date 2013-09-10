@@ -78,7 +78,7 @@ std::u16string CSSImportRuleImp::getHref()
 
 stylesheets::MediaList CSSImportRuleImp::getMedia()
 {
-    return &mediaList;
+    return mediaList;
 }
 
 void CSSImportRuleImp::setMedia(const std::u16string& media)

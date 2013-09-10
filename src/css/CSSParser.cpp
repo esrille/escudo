@@ -59,7 +59,7 @@ CSSParserExpr* CSSParser::parseExpression(const std::u16string& cssExpr)
     return getExpression();
 }
 
-MediaListImp* CSSParser::parseMediaList(const std::u16string& mediaText)
+MediaListImp& CSSParser::parseMediaList(const std::u16string& mediaText)
 {
     tokenizer.reset(mediaText, CSSTokenizer::StartMediaList);
     CSSparse(this);

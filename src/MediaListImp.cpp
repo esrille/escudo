@@ -506,7 +506,7 @@ void MediaListImp::setMediaText(const std::u16string& mediaText)
     clear();
     if (!mediaText.empty()) {
         CSSParser parser;
-        *this = std::move(*parser.parseMediaList(mediaText));
+        *this = std::move(parser.parseMediaList(mediaText));
     }
 }
 
@@ -534,8 +534,8 @@ void MediaListImp::appendMedium(const std::u16string& medium)
     if (medium.empty())
         return;
     CSSParser parser;
-    MediaListImp* newList = parser.parseMediaList(medium);
-    for (auto i = newList->mediaQueries.begin(); i != newList->mediaQueries.end(); ++i) {
+    MediaListImp& newList = parser.parseMediaList(medium);
+    for (auto i = newList.mediaQueries.begin(); i != newList.mediaQueries.end(); ++i) {
         if (!contains(*i))
             mediaQueries.push_back(std::move(*i));
     }
@@ -546,8 +546,8 @@ void MediaListImp::deleteMedium(const std::u16string& medium)
     if (medium.empty())
         return;
     CSSParser parser;
-    MediaListImp* newList = parser.parseMediaList(medium);
-    for (auto i = newList->mediaQueries.begin(); i != newList->mediaQueries.end(); ++i) {
+    MediaListImp& newList = parser.parseMediaList(medium);
+    for (auto i = newList.mediaQueries.begin(); i != newList.mediaQueries.end(); ++i) {
         auto found = std::find(mediaQueries.begin(), mediaQueries.end(), *i);
         if (found != mediaQueries.end())
             mediaQueries.erase(found);
