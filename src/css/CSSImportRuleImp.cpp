@@ -45,6 +45,7 @@ using namespace css;
 
 CSSImportRuleImp::CSSImportRuleImp(const std::u16string& href) :
     href(href),
+    mediaList(new(std::nothrow) MediaListImp),
     request(0),
     styleSheet(0)
 {
@@ -54,6 +55,15 @@ CSSImportRuleImp::~CSSImportRuleImp()
 {
     delete request;
 }
+
+void CSSImportRuleImp::setMediaList(MediaListImp&& other)
+{
+    if (!mediaList)
+        return;
+    if (auto imp = dynamic_cast<MediaListImp*>(mediaList.self()))
+        *imp = std::move(other);
+}
+
 
 // CSSRule
 unsigned short CSSImportRuleImp::getType()

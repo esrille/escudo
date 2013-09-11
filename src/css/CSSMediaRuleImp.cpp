@@ -22,6 +22,11 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 using namespace css;
 
+CSSMediaRuleImp::CSSMediaRuleImp() :
+    mediaList(new(std::nothrow) MediaListImp)
+{
+}
+
 CSSMediaRuleImp::~CSSMediaRuleImp()
 {
     unsigned length = ruleList.getLength();
@@ -38,6 +43,14 @@ void CSSMediaRuleImp::append(css::CSSRule rule)
         imp->setParentRule(this);
         ruleList.append(rule);
     }
+}
+
+void CSSMediaRuleImp::setMediaList(MediaListImp&& other)
+{
+    if (!mediaList)
+        return;
+    if (auto imp = dynamic_cast<MediaListImp*>(mediaList.self()))
+        *imp = std::move(other);
 }
 
 // CSSRule

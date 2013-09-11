@@ -47,7 +47,7 @@ class CSSImportRuleImp : public ObjectMixin<CSSImportRuleImp, CSSRuleImp>
     DocumentImp* document;
 
     std::u16string href;
-    stylesheets::MediaList mediaList {0};
+    stylesheets::MediaList mediaList;
 
     HttpRequest* request;
     css::CSSStyleSheet styleSheet;
@@ -62,10 +62,7 @@ public:
         this->document = document;
     }
 
-    void setMediaList(MediaListImp&& other) {
-        assert(!mediaList);
-        mediaList = new(std::nothrow) MediaListImp(std::move(other));
-    }
+    void setMediaList(MediaListImp&& other);
 
     // CSSRule
     virtual unsigned short getType();
