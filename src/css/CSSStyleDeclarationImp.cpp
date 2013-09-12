@@ -1739,7 +1739,9 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
         // Normal declarations
         for (auto i = ruleSet.begin(); i != ruleSet.end(); ++i) {
             if (CSSStyleDeclarationImp* pseudo = createPseudoElementStyle(i->getPseudoElementID())) {
-                if (i->isActive(element, view))
+                if (i->mql)
+                    setFlags(MediaDependent);
+                if (i->getMatches() && i->isActive(element, view))
                     pseudo->specify(i->getDeclaration());
             }
         }
@@ -1748,7 +1750,9 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
         // Author important declarations
         for (auto i = ruleSet.begin(); i != ruleSet.end(); ++i) {
             if (CSSStyleDeclarationImp* pseudo = createPseudoElementStyle(i->getPseudoElementID())) {
-                if (i->isActive(element, view) && !i->isUserStyle())
+                if (i->mql)
+                    setFlags(MediaDependent);
+                if (i->getMatches() && i->isActive(element, view) && !i->isUserStyle())
                     pseudo->specifyImportant(i->getDeclaration());
             }
         }
@@ -1757,7 +1761,9 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
         // User important declarations
         for (auto i = ruleSet.begin(); i != ruleSet.end(); ++i) {
             if (CSSStyleDeclarationImp* pseudo = createPseudoElementStyle(i->getPseudoElementID())) {
-                if (i->isActive(element, view) && i->isUserStyle())
+                if (i->mql)
+                    setFlags(MediaDependent);
+                if (i->getMatches() && i->isActive(element, view) && i->isUserStyle())
                     pseudo->specifyImportant(i->getDeclaration());
             }
         }
@@ -3880,6 +3886,7 @@ void CSSStyleDeclarationImp::initialize()
         overflow.setValue();
         background.reset(this);
     }
+    flags &= ~MediaDependent;
 }
 
 void CSSStyleDeclarationImp::clearProperties()

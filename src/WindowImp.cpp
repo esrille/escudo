@@ -103,6 +103,10 @@ void WindowImp::setSize(unsigned w, unsigned h)
         setViewFlags(Box::NEED_REFLOW);
         if (window)
             window->evaluateMedia();
+        if (view && view->evaluateMedia()) {
+            setViewFlags(Box::NEED_STYLE_RECALCULATION);
+            view->setMediaCheck();
+        }
     }
 }
 

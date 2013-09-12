@@ -34,6 +34,7 @@
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class DocumentImp;
+class MediaQueryListImp;
 
 class CSSRuleListImp : public ObjectMixin<CSSRuleListImp>
 {
@@ -44,6 +45,7 @@ public:
         CSSSelector* selector;
         CSSStyleDeclarationImp* declaration;
         unsigned order;
+        MediaListImp* mediaList;
     };
 
     enum Importance
@@ -59,20 +61,24 @@ public:
         // TODO: Make sure the rule is valid while this is in use.
         unsigned priority;
         CSSRuleListImp::Rule rule;
+        MediaQueryListImp* mql;
     public:
-        PrioritizedRule(unsigned priority, const CSSRuleListImp::Rule& rule) :
+        PrioritizedRule(unsigned priority, const CSSRuleListImp::Rule& rule, MediaQueryListImp* mql) :
             priority(priority),
-            rule(rule)
+            rule(rule),
+            mql(mql)
         {
             if ((this->priority & 0xff000000) != Presentational)
                 this->priority |= rule.selector->getSpecificity();
         }
         PrioritizedRule(unsigned priority, CSSStyleDeclarationImp* decl) :
-            priority(priority)
+            priority(priority),
+            mql(0)
         {
             rule.selector = 0;
             rule.declaration = decl;
             rule.order = 0;
+            rule.mediaList = 0;
         }
         CSSSelector* getSelector() const {
             return rule.selector;
@@ -94,6 +100,7 @@ public:
                 return pseudo->getID();
             return CSSPseudoElementSelector::NonPseudo;
         }
+        bool getMatches() const;
         bool isActive(Element& element, ViewCSSImp* view) const;
         bool operator <(const PrioritizedRule& decl) const {
             return (priority < decl.priority) || (priority == decl.priority && getOrder() < decl.getOrder()) ;
@@ -113,11 +120,11 @@ private:
     std::multimap<std::u16string, Rule> mapType;   // type selectors
     std::deque<Rule> misc;
 
-    void collectRules(RuleSet& set, ViewCSSImp* view, Element& element, std::multimap<std::u16string, Rule>& map, const std::u16string& key);
-    void collectRulesByID(RuleSet& set, ViewCSSImp* view, Element& element);
-    void collectRulesByClass(RuleSet& set, ViewCSSImp* view, Element& element);
-    void collectRulesByType(RuleSet& set, ViewCSSImp* view, Element& element);
-    void collectRulesByMisc(RuleSet& set, ViewCSSImp* view, Element& element);
+    void collectRules(RuleSet& set, ViewCSSImp* view, Element& element, std::multimap<std::u16string, Rule>& map, const std::u16string& key, MediaListImp* mediaList);
+    void collectRulesByID(RuleSet& set, ViewCSSImp* view, Element& element, MediaListImp* mediaList);
+    void collectRulesByClass(RuleSet& set, ViewCSSImp* view, Element& element, MediaListImp* mediaList);
+    void collectRulesByType(RuleSet& set, ViewCSSImp* view, Element& element, MediaListImp* mediaList);
+    void collectRulesByMisc(RuleSet& set, ViewCSSImp* view, Element& element, MediaListImp* mediaList);
 
 public:
     CSSRuleListImp() :
@@ -126,14 +133,14 @@ public:
     {}
 
     void append(css::CSSRule rule);   // trivial version for CSSMediaRule
-    void append(css::CSSRule rule, DocumentImp* document);
+    void append(css::CSSRule rule, DocumentImp* document, MediaListImp* mediaList);
 
-    void appendMisc(CSSSelector* selector, CSSStyleDeclarationImp* declaration);
-    void appendID(CSSSelector* selector, CSSStyleDeclarationImp* declaration, const std::u16string& key);
-    void appendClass(CSSSelector* selector, CSSStyleDeclarationImp* declaration, const std::u16string& key);
-    void appendType(CSSSelector* selector, CSSStyleDeclarationImp* declaration, const std::u16string& key);
+    void appendMisc(CSSSelector* selector, CSSStyleDeclarationImp* declaration, MediaListImp* mediaList);
+    void appendID(CSSSelector* selector, CSSStyleDeclarationImp* declaration, const std::u16string& key, MediaListImp* mediaList);
+    void appendClass(CSSSelector* selector, CSSStyleDeclarationImp* declaration, const std::u16string& key, MediaListImp* mediaList);
+    void appendType(CSSSelector* selector, CSSStyleDeclarationImp* declaration, const std::u16string& key, MediaListImp* mediaList);
 
-    void collectRules(RuleSet& set, ViewCSSImp* view, Element& element, unsigned importance);
+    void collectRules(RuleSet& set, ViewCSSImp* view, Element& element, unsigned importance, MediaListImp* mediaList);
 
     css::CSSRuleList getCssRules() {
         return this;

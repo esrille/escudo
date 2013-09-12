@@ -47,19 +47,24 @@ MediaQueryListImp::~MediaQueryListImp()
     window->removeMedia(this);
 }
 
+void MediaQueryListImp::setMediaList(stylesheets::MediaList list)
+{
+    mediaList = list;
+}
+
 bool MediaQueryListImp::evaluate()
 {
     if (!mediaList)
-        return Unknown;
+        return false;
     int old = state;
     state = dynamic_cast<MediaListImp*>(mediaList.self())->matches(window->getWindowImp()) ? Match : NotMatch;
     if (old == state || old == Unknown)
-        return state;
+        return false;
     for (auto i = listeners.begin(); i != listeners.end(); ++i) {
         Task task(*i, boost::bind<void>(*i, html::MediaQueryList(this)));
         window->putTask(task);
     }
-    return state;
+    return true;
 }
 
 

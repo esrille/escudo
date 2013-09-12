@@ -25,7 +25,7 @@ void CSSStyleSheetImp::append(css::CSSRule rule, DocumentImp* document)
 {
     if (auto imp = dynamic_cast<CSSRuleImp*>(rule.self())) {
         imp->setParentStyleSheet(this);
-        ruleList.append(rule, document);
+        ruleList.append(rule, document, 0);
     }
 }
 

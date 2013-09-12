@@ -37,6 +37,7 @@
 #include "MediaListImp.h"
 #include "html/HTMLElementImp.h"
 #include "html/HTMLTemplateElementImp.h"
+#include "html/MediaQueryListImp.h"
 
 #include "Box.h"
 #include "Table.h"
@@ -70,6 +71,7 @@ ViewCSSImp::ViewCSSImp(DocumentWindowPtr window) :
     dpi(96),
     zoom(1.0f),
     mutationListener(boost::bind(&ViewCSSImp::handleMutation, this, _1, _2)),
+    mediaCheck(false),
     overflow(CSSOverflowValueImp::Auto),
     stackingContexts(0),
     hovered(0),
@@ -190,18 +192,45 @@ void ViewCSSImp::handleMutation(EventListenerImp* listener, events::Event event)
     setFlags(Box::NEED_SELECTOR_REMATCHING);
 }
 
-void ViewCSSImp::collectRules(CSSRuleListImp::RuleSet& set, Element element, css::CSSRuleList list, unsigned importance)
+void ViewCSSImp::collectRules(CSSRuleListImp::RuleSet& set, Element element, css::CSSRuleList list, unsigned importance, MediaListImp* mediaList)
 {
     CSSRuleListImp* ruleList = dynamic_cast<CSSRuleListImp*>(list.self());
     if (!ruleList)
         return;
-    ruleList->collectRules(set, this, element, importance);
+    ruleList->collectRules(set, this, element, importance, mediaList);
 }
 
 void ViewCSSImp::resolveXY(float left, float top)
 {
     if (boxTree)
         boxTree->resolveXY(this, left, top, 0);
+}
+
+MediaQueryListImp* ViewCSSImp::matchMedia(MediaListImp* mediaList)
+{
+    if (!mediaList)
+        return nullptr;
+    auto found = mediaListMap.find(mediaList);
+    if (found != mediaListMap.end())
+        return dynamic_cast<MediaQueryListImp*>(found->second.self());
+    if (auto mql = new(std::nothrow) MediaQueryListImp(getWindow())) {
+        mql->setMediaList(mediaList);
+        mql->evaluate();
+        mediaListMap.insert({ mediaList, mql });
+        return mql;
+    }
+    return 0;
+}
+
+bool ViewCSSImp::evaluateMedia()
+{
+    bool result = false;
+    for (auto i = mediaListMap.begin(); i != mediaListMap.end(); ++i) {
+        auto mql = dynamic_cast<MediaQueryListImp*>(i->second.self());
+        assert(mql);
+        result |= mql->evaluate();
+    }
+    return result;
 }
 
 void ViewCSSImp::addStyle(const Element& element, CSSStyleDeclarationImp* style)
@@ -245,10 +274,7 @@ Element ViewCSSImp::updateStyleRules(Element element, CSSStyleDeclarationImp* st
     for (unsigned i = 0; i < styleSheetList.getLength(); ++i) {
         CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(styleSheetList.getElement(i).self());
         MediaListImp* mediaList = dynamic_cast<MediaListImp*>(sheet->getMedia().self());
-        if (mediaList->matches(window->getWindowImp())) {
-            collectRules(style->ruleSet, element, sheet->getCssRules(), importance++);
-            // TODO: Check overflow of importance
-        }
+        collectRules(style->ruleSet, element, sheet->getCssRules(), importance++, mediaList);
     }
 
     style->compute(this, parentStyle, element);
@@ -327,6 +353,7 @@ void ViewCSSImp::calculateComputedStyles()
             calculateComputedStyle(interface_cast<Element>(child), 0, &counterContext, 0);
     }
     clearFlags(Box::NEED_STYLE_RECALCULATION);  // TODO: Refine
+    mediaCheck = false;
 }
 
 void ViewCSSImp::calculateComputedStyle(Element element, CSSStyleDeclarationImp* parentStyle, CSSAutoNumberingValueImp::CounterContext* counterContext, unsigned flags)
@@ -346,7 +373,7 @@ void ViewCSSImp::calculateComputedStyle(Element element, CSSStyleDeclarationImp*
 
     // If the fundamental values such as 'display' are changed, the box(es) associated with the
     // style need to be reverted.
-    if (!style->isComputed()) {
+    if (!style->isComputed() || (mediaCheck && (style->flags & CSSStyleDeclarationImp::MediaDependent))) {
         CSSStyleDeclarationBoard board(style);
         style->compute(this, parentStyle, element);
         unsigned comp = board.compare(style);

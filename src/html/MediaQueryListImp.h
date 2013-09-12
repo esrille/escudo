@@ -54,10 +54,11 @@ class MediaQueryListImp : public ObjectMixin<MediaQueryListImp>
     std::list<html::MediaQueryListListener> listeners;
 
 public:
-    MediaQueryListImp(DocumentWindowPtr window, std::u16string query);
+    MediaQueryListImp(DocumentWindowPtr window, std::u16string query = u"");
     ~MediaQueryListImp();
 
-    bool evaluate();
+    void setMediaList(stylesheets::MediaList list);  // this is for ViewCSSImp only
+    bool evaluate();  // returns true if state has been changed
 
     // MediaQueryList
     std::u16string getMedia();

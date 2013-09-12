@@ -59,6 +59,9 @@ class ViewCSSImp
 
     Retained<EventListenerImp> mutationListener;
 
+    std::map<MediaListImp*, html::MediaQueryList> mediaListMap;
+    bool mediaCheck;
+
     // Selector matching
     std::map<Element, CSSStyleDeclarationPtr> map;
     std::list<Object*> hoverList;
@@ -86,7 +89,7 @@ class ViewCSSImp
     void removeComputedStyle(Element element);
 
     void handleMutation(EventListenerImp* listener, events::Event event);
-    void collectRules(CSSRuleListImp::RuleSet& set, Element element, css::CSSRuleList list, unsigned importance);
+    void collectRules(CSSRuleListImp::RuleSet& set, Element element, css::CSSRuleList list, unsigned importance, MediaListImp* mediaList = 0);
     Element updateStyleRules(Element element, CSSStyleDeclarationImp* style, CSSStyleDeclarationImp* parentStyle);
 
 public:
@@ -99,6 +102,10 @@ public:
     DocumentWindowPtr getWindow() const {
         return window;
     }
+
+    // Media query
+    MediaQueryListImp* matchMedia(MediaListImp* mediaList);
+    bool evaluateMedia();
 
     // Selector matching
     void addStyle(const Element& element, CSSStyleDeclarationImp* style);
@@ -316,6 +323,10 @@ public:
 
     void clip(float left, float top, float w, float h);
     void unclip(float left, float top, float w, float h);
+
+    void setMediaCheck() {
+        mediaCheck = true;
+    }
 
     // ViewCSS
     virtual css::CSSStyleDeclaration getComputedStyle(Element elt, Nullable<std::u16string> pseudoElt);

@@ -374,27 +374,27 @@ bool CSSSelector::hasPseudoClassSelector(int type) const
     return false;
 }
 
-void CSSSelector::registerToRuleList(CSSRuleListImp* ruleList, CSSStyleDeclarationImp* declaration)
+void CSSSelector::registerToRuleList(CSSRuleListImp* ruleList, CSSStyleDeclarationImp* declaration, MediaListImp* mediaList)
 {
     if (simpleSelectors.empty())
         return;
-    simpleSelectors.back()->registerToRuleList(ruleList, this, declaration);
+    simpleSelectors.back()->registerToRuleList(ruleList, this, declaration, mediaList);
 }
 
-void CSSPrimarySelector::registerToRuleList(CSSRuleListImp* ruleList, CSSSelector* selector, CSSStyleDeclarationImp* declaration)
+void CSSPrimarySelector::registerToRuleList(CSSRuleListImp* ruleList, CSSSelector* selector, CSSStyleDeclarationImp* declaration, MediaListImp* mediaList)
 {
     if (chain.empty()) {
         if (name == u"*")
-            ruleList->appendMisc(selector, declaration);
+            ruleList->appendMisc(selector, declaration, mediaList);
         else
-            ruleList->appendType(selector, declaration, name);
+            ruleList->appendType(selector, declaration, name, mediaList);
         return;
     }
     bool hadID = false;
     for (auto i = chain.begin(); i != chain.end(); ++i) {
         if (CSSIDSelector* idSelector = dynamic_cast<CSSIDSelector*>(*i)) {
             hadID = true;
-            ruleList->appendID(selector, declaration, idSelector->getName());
+            ruleList->appendID(selector, declaration, idSelector->getName(), mediaList);
         }
     }
     if (hadID)
@@ -403,11 +403,11 @@ void CSSPrimarySelector::registerToRuleList(CSSRuleListImp* ruleList, CSSSelecto
     for (auto i = chain.begin(); i != chain.end(); ++i) {
         if (CSSClassSelector* classSelector = dynamic_cast<CSSClassSelector*>(*i)) {
             hadClass = true;
-            ruleList->appendClass(selector, declaration, classSelector->getName());
+            ruleList->appendClass(selector, declaration, classSelector->getName(), mediaList);
         }
     }
     if (!hadClass)
-        ruleList->appendMisc(selector, declaration);
+        ruleList->appendMisc(selector, declaration, mediaList);
 }
 
 CSSPseudoElementSelector* CSSPrimarySelector::getPseudoElement() const
