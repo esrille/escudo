@@ -104,7 +104,7 @@ void CSSRuleListImp::collectRules(RuleSet& set, ViewCSSImp* view, Element& eleme
         if (!selector->match(element, view, false))
             continue;
         // TODO: emplace() seems to be not ready yet with libstdc++.
-        if (!mediaList)
+        if (i->second.mediaList)
             mediaList = i->second.mediaList;
         // TODO: else ...
         PrioritizedRule rule(importance, i->second, view->matchMedia(mediaList));
@@ -149,7 +149,7 @@ void CSSRuleListImp::collectRulesByMisc(RuleSet& set, ViewCSSImp* view, Element&
         if (!selector->match(element, view, false))
             continue;
         // TODO: emplace() seems to be not ready yet with libstdc++.
-        if (!mediaList)
+        if (i->mediaList)
             mediaList = i->mediaList;
         // TODO: else ...
         PrioritizedRule rule(importance, *i, view->matchMedia(mediaList));
