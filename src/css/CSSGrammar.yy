@@ -745,7 +745,7 @@ media_query_list_body
     }
   ;
 media_query
-  : optional_media_query_operator media_type optional_media_query_expression_list optional_space {
+  : optional_media_query_operator media_type optional_space optional_media_query_expression_list {
         parser->getMediaList().appendMedium($1 | $2);
     }
   | media_query_expression_list optional_space {
@@ -758,7 +758,7 @@ media_type
     }
   ;
 media_query_expression
-  : '(' optional_space media_feature optional_space optional_media_query_value ')' {
+  : '(' optional_space media_feature optional_space optional_media_query_value ')' optional_space {
         parser->getMediaList().appendFeature($3, $5);
     }
   | '(' optional_space error_parenthesis ')' optional_space {
@@ -772,11 +772,11 @@ media_feature
   ;
 media_query_expression_list
   : media_query_expression
-  | media_query_expression_list space MEDIA_AND space media_query_expression
+  | media_query_expression_list MEDIA_AND space media_query_expression
   ;
 optional_media_query_expression_list
   : /* empty */
-  | space MEDIA_AND space media_query_expression_list
+  | MEDIA_AND space media_query_expression_list
   ;
 optional_media_query_operator
   : /* empty */ {
