@@ -57,6 +57,8 @@ class DocumentWindow : public EventTargetImp
     std::map<Element, CSSStyleDeclarationPtr> map;
 
     std::list<MediaQueryListImp*> mediaQueryLists;
+    std::list<html::MediaQueryList> viewMediaQueryLists;
+    bool mediaCheck;
 
     DocumentWindow(const DocumentWindow& window) = delete;
     DocumentWindow& operator=(const DocumentWindow&) = delete;
@@ -103,8 +105,15 @@ public:
     CSSStyleDeclarationPtr getComputedStyle(Element elt);
     void putComputedStyle(Element elt);
 
-    void evaluateMedia();
+    bool evaluateMedia();
     void removeMedia(MediaQueryListImp* mediaQueryList);
+    void flushMediaQueryLists(ViewCSSImp* view);
+    bool getMediaCheck() const {
+        return mediaCheck;
+    }
+    void setMediaCheck(bool value) {
+        mediaCheck = value;
+    }
 
     // CSSOM View
     html::MediaQueryList matchMedia(const std::u16string& media_query_list);

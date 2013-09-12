@@ -105,7 +105,10 @@ public:
 
     // Media query
     MediaQueryListImp* matchMedia(MediaListImp* mediaList);
-    bool evaluateMedia();
+    void flushMediaQueryLists(std::list<html::MediaQueryList>& list) {
+        for (auto i = mediaListMap.begin(); i != mediaListMap.end(); ++i)
+            list.push_back(i->second);
+    }
 
     // Selector matching
     void addStyle(const Element& element, CSSStyleDeclarationImp* style);
@@ -324,7 +327,10 @@ public:
     void clip(float left, float top, float w, float h);
     void unclip(float left, float top, float w, float h);
 
-    void setMediaCheck() {
+    bool getMediaCheck() const {
+        return mediaCheck;
+    }
+    void setMediaCheck(bool value) {
         mediaCheck = true;
     }
 

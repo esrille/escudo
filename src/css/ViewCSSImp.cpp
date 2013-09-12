@@ -222,17 +222,6 @@ MediaQueryListImp* ViewCSSImp::matchMedia(MediaListImp* mediaList)
     return 0;
 }
 
-bool ViewCSSImp::evaluateMedia()
-{
-    bool result = false;
-    for (auto i = mediaListMap.begin(); i != mediaListMap.end(); ++i) {
-        auto mql = dynamic_cast<MediaQueryListImp*>(i->second.self());
-        assert(mql);
-        result |= mql->evaluate();
-    }
-    return result;
-}
-
 void ViewCSSImp::addStyle(const Element& element, CSSStyleDeclarationImp* style)
 {
     assert(element);
@@ -347,13 +336,17 @@ void ViewCSSImp::constructComputedStyle(Node node, CSSStyleDeclarationImp* paren
 
 void ViewCSSImp::calculateComputedStyles()
 {
+    if (getWindow()->getMediaCheck()) {
+        getWindow()->setMediaCheck(false);
+        setMediaCheck(true);
+    }
     CSSAutoNumberingValueImp::CounterContext counterContext(this);
     for (Node child = getDocument().getFirstChild(); child; child = child.getNextSibling()) {
         if (child.getNodeType() == Node::ELEMENT_NODE)
             calculateComputedStyle(interface_cast<Element>(child), 0, &counterContext, 0);
     }
     clearFlags(Box::NEED_STYLE_RECALCULATION);  // TODO: Refine
-    mediaCheck = false;
+    setMediaCheck(false);
 }
 
 void ViewCSSImp::calculateComputedStyle(Element element, CSSStyleDeclarationImp* parentStyle, CSSAutoNumberingValueImp::CounterContext* counterContext, unsigned flags)
@@ -373,7 +366,7 @@ void ViewCSSImp::calculateComputedStyle(Element element, CSSStyleDeclarationImp*
 
     // If the fundamental values such as 'display' are changed, the box(es) associated with the
     // style need to be reverted.
-    if (!style->isComputed() || (mediaCheck && (style->flags & CSSStyleDeclarationImp::MediaDependent))) {
+    if (!style->isComputed() || (getMediaCheck() && (style->flags & CSSStyleDeclarationImp::MediaDependent))) {
         CSSStyleDeclarationBoard board(style);
         style->compute(this, parentStyle, element);
         unsigned comp = board.compare(style);

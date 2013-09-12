@@ -101,12 +101,8 @@ void WindowImp::setSize(unsigned w, unsigned h)
         width = w;
         height = h;
         setViewFlags(Box::NEED_REFLOW);
-        if (window)
-            window->evaluateMedia();
-        if (view && view->evaluateMedia()) {
+        if (window && window->evaluateMedia())
             setViewFlags(Box::NEED_STYLE_RECALCULATION);
-            view->setMediaCheck();
-        }
     }
 }
 
@@ -181,6 +177,8 @@ void WindowImp::updateView(ViewCSSImp* next)
         std::u16string title = view->getDocument().getTitle();
         setWindowTitle(utfconv(title).c_str());
     }
+
+    window->flushMediaQueryLists(view);
 }
 
 void WindowImp::setDocumentWindow(const DocumentWindowPtr& window)

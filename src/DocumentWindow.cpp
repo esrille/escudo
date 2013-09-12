@@ -36,7 +36,8 @@ DocumentWindow::DocumentWindow() :
     scrollX(0),
     scrollY(0),
     clickListener(boost::bind(&DocumentWindow::handleClick, this, _1, _2)),
-    mouseMoveListener(boost::bind(&DocumentWindow::handleMouseMove, this, _1, _2))
+    mouseMoveListener(boost::bind(&DocumentWindow::handleMouseMove, this, _1, _2)),
+    mediaCheck(false)
 {
     addEventListener(u"click", &clickListener, false, EventTargetImp::UseDefault);
     addEventListener(u"mousemove", &mouseMoveListener, false, EventTargetImp::UseDefault);
@@ -225,10 +226,20 @@ html::MediaQueryList DocumentWindow::matchMedia(const std::u16string& media_quer
     return mediaQueryList;
 }
 
-void DocumentWindow::evaluateMedia()
+bool DocumentWindow::evaluateMedia()
 {
     for (auto i = mediaQueryLists.begin(); i != mediaQueryLists.end(); ++i)
         (*i)->evaluate();
+
+    bool result = false;
+    for (auto i = viewMediaQueryLists.begin(); i != viewMediaQueryLists.end(); ++i) {
+        auto mql = dynamic_cast<MediaQueryListImp*>((*i).self());
+        assert(mql);
+        result |= mql->evaluate();
+    }
+    if (result)
+        setMediaCheck(true);
+    return result;
 }
 
 void DocumentWindow::removeMedia(MediaQueryListImp* mediaQueryList)
@@ -236,5 +247,11 @@ void DocumentWindow::removeMedia(MediaQueryListImp* mediaQueryList)
     mediaQueryLists.remove(mediaQueryList);
 }
 
-}}}}  // org::w3c::dom::bootstrap
+void DocumentWindow::flushMediaQueryLists(ViewCSSImp* view)
+{
+    viewMediaQueryLists.clear();
+    view->flushMediaQueryLists(viewMediaQueryLists);
+}
 
+
+}}}}  // org::w3c::dom::bootstrap
