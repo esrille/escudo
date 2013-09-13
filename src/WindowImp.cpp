@@ -313,8 +313,10 @@ bool WindowImp::poll()
             // TODO: Check if the parser has been aborted.
             document->resetStyleSheets();
             setViewFlags(Box::NEED_SELECTOR_REMATCHING);
-            flags |= Loading;
-            document->incrementLoadEventDelayCount();
+            if (!(flags & Loading) && !isBindingDocumentWindow()) { // Note a binding document does not create its view.
+                flags |= Loading;
+                document->incrementLoadEventDelayCount();
+            }
 
             parser.reset();
             document->exit();
