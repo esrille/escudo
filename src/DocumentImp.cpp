@@ -1703,7 +1703,7 @@ Document DocumentImp::loadBindingDocument(const std::u16string& documentURI)
     if (found != bindingDocuments.end())
         return found->second.getDocument();
 
-    WindowImp* window = new WindowImp(defaultView);
+    WindowImp* window = new(std::nothrow) WindowImp(defaultView);
     if (!window)
         return 0;
     bindingDocuments.insert(std::pair<std::u16string, html::Window>(documentURI, window));
