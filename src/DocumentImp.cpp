@@ -189,6 +189,10 @@ void DocumentImp::setReadyState(const std::u16string& readyState)
             defaultView->dispatchEvent(event);
             if (HTMLIFrameElementImp* frame = dynamic_cast<HTMLIFrameElementImp*>(defaultView->getFrameElementImp()))
                 frame->notify(getError());
+            if (defaultView->isBindingDocumentWindow()) {
+                if (WindowImp* parent = dynamic_cast<WindowImp*>(defaultView->getParent().self()))
+                    parent->setViewFlags(Box::NEED_SELECTOR_MATCHING);
+            }
         }
     }
 }

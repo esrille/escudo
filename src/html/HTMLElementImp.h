@@ -101,7 +101,7 @@ public:
         return shadowImplementation;
     }
 
-    virtual void generateShadowContent(CSSStyleDeclarationImp* style);
+    virtual bool generateShadowContent(CSSStyleDeclarationImp* style);
 
     // Node
     virtual Node cloneNode(bool deep = true);

@@ -91,8 +91,8 @@ class ViewCSSImp
 
     void handleMutation(EventListenerImp* listener, events::Event event);
     void collectRules(CSSRuleListImp::RuleSet& set, Element element, css::CSSRuleList list, unsigned importance, MediaListImp* mediaList = 0);
-    Element updateStyleRules(Element element, CSSStyleDeclarationImp* style, CSSStyleDeclarationImp* parentStyle);
-    html::HTMLTemplateElement expandBinding(Element element, CSSStyleDeclarationImp* style);
+    void updateStyleRules(Element element, CSSStyleDeclarationImp* style, CSSStyleDeclarationImp* parentStyle);
+    bool expandBinding(Element element, CSSStyleDeclarationImp* style);
 
 public:
     ViewCSSImp(DocumentWindowPtr window);

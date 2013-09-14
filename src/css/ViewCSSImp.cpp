@@ -235,7 +235,7 @@ void ViewCSSImp::constructComputedStyles()
     clearFlags(Box::NEED_SELECTOR_MATCHING | Box::NEED_SELECTOR_REMATCHING);  // TODO: Refine
 }
 
-Element ViewCSSImp::updateStyleRules(Element element, CSSStyleDeclarationImp* style, CSSStyleDeclarationImp* parentStyle)
+void ViewCSSImp::updateStyleRules(Element element, CSSStyleDeclarationImp* style, CSSStyleDeclarationImp* parentStyle)
 {
     CSSStyleDeclarationImp* elementDecl(0);
     html::HTMLElement htmlElement(0);
@@ -285,31 +285,31 @@ Element ViewCSSImp::updateStyleRules(Element element, CSSStyleDeclarationImp* st
         hoverList.clear();
     }
 
-    html::HTMLTemplateElement shadowTree = expandBinding(element, style);
-
+    expandBinding(element, style);
     style->updateInlines(element); // TODO ???
-
     style->clearFlags(CSSStyleDeclarationImp::Computed);    // TODO: Only styles of children need to be recomputed
-
-    return shadowTree ? shadowTree : element;
 }
 
-html::HTMLTemplateElement ViewCSSImp::expandBinding(Element element, CSSStyleDeclarationImp* style)
+// Return true if its shadow tree is changed
+bool ViewCSSImp::expandBinding(Element element, CSSStyleDeclarationImp* style)
 {
     if (style->binding.getValue() == CSSBindingValueImp::None) {
         // TODO: detach the shadow tree from element (if any)
-        return 0;
+        return false;
     }
 
     html::HTMLTemplateElement shadowTree(0);
-    if (HTMLElementImp* imp = dynamic_cast<HTMLElementImp*>(element.self())) {
-        imp->generateShadowContent(style);
-        if (shadowTree = imp->getShadowTree()) {
-            if (auto imp = dynamic_cast<HTMLTemplateElementImp*>(shadowTree.self()))
-                imp->setHost(element);
-        }
+    HTMLElementImp* imp = dynamic_cast<HTMLElementImp*>(element.self());
+    if (!imp)
+        return false;
+    if (!imp->generateShadowContent(style))
+        return false;
+    if (shadowTree = imp->getShadowTree()) {
+        if (auto imp = dynamic_cast<HTMLTemplateElementImp*>(shadowTree.self()))
+            imp->setHost(element);
+        return true;
     }
-    return shadowTree;
+    return false;
 }
 
 void ViewCSSImp::constructComputedStyle(Node node, CSSStyleDeclarationImp* parentStyle)
@@ -325,9 +325,10 @@ void ViewCSSImp::constructComputedStyle(Node node, CSSStyleDeclarationImp* paren
                 style->clearFlags(CSSStyleDeclarationImp::NeedSelectorMatching);
                 CSSStyleDeclarationBoard board(style);
                 style->resetComputedStyle();
-                node = updateStyleRules(element, style, parentStyle);
+                updateStyleRules(element, style, parentStyle);
                 style->restoreComputedValues(board);
-            }
+            } else if (expandBinding(element, style))
+                style->updateInlines(element); // TODO ??
             if (!style->getStackingContext())
                 style->computeStackingContext(this, parentStyle, false);
         } else {
@@ -335,7 +336,11 @@ void ViewCSSImp::constructComputedStyle(Node node, CSSStyleDeclarationImp* paren
             if (!style)
                 return;  // TODO: error
             addStyle(element, style);
-            node = updateStyleRules(element, style, parentStyle);
+            updateStyleRules(element, style, parentStyle);
+        }
+        if (HTMLElementImp* imp = dynamic_cast<HTMLElementImp*>(element.self())) {
+            if (html::HTMLTemplateElement shadow = imp->getShadowTree())
+                node = shadow;
         }
     }
     for (Node child = node.getFirstChild(); child; child = child.getNextSibling())

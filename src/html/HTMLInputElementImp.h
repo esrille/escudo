@@ -108,7 +108,7 @@ public:
     void updateStyle();
 
     // XBL 2.0 internal
-    virtual void generateShadowContent(CSSStyleDeclarationImp* style);
+    virtual bool generateShadowContent(CSSStyleDeclarationImp* style);
 
     // HTMLElement
     css::CSSStyleDeclaration getStyle();

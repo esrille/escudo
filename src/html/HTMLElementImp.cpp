@@ -374,13 +374,13 @@ void HTMLElementImp::setShadowTree(HTMLTemplateElementImp* e)
     shadowTree = e;
 }
 
-void HTMLElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
+bool HTMLElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
 {
     if (style->binding.getValue() != CSSBindingValueImp::Uri ||
         style->display.getValue() == CSSDisplayValueImp::None)
-        return;
+        return false;
     if (getShadowTree())  // already attached?
-        return;
+        return false;
     DocumentImp* document = getOwnerDocumentImp();
     assert(document);
     URL base(document->getDocumentURI());
@@ -388,7 +388,7 @@ void HTMLElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
     if (!base.isSameExceptFragments(url)) {
         document = dynamic_cast<DocumentImp*>(document->loadBindingDocument(url).self());
         if (!document || document->getReadyState() != u"complete")
-            return;
+            return false;
     }
 
     std::u16string hash = url.getHash();
@@ -396,13 +396,13 @@ void HTMLElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
         hash.erase(0, 1);
     Element element = document->getElementById(hash);
     if (!element)
-        return;
+        return false;
     auto binding = dynamic_cast<HTMLBindingElementImp*>(element.self());
     if (!binding)
-        return;
+        return false;
     bindingImplementation = binding->getImplementation();
     if (!bindingImplementation)
-        return;
+        return false;
     if (html::HTMLTemplateElement shadowTree = binding->cloneTemplate()) {
         setShadowTree(shadowTree);
         shadowTarget = new(std::nothrow) EventTargetImp;
@@ -413,7 +413,9 @@ void HTMLElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
             shadowImplementation.xblEnteredDocument();
         }
 #endif
+        return true;
     }
+    return false;
 }
 
 void HTMLElementImp::xblEnteredDocument(Node node)

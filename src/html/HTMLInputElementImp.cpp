@@ -283,62 +283,68 @@ void HTMLInputElementImp::handleKeydown(EventListenerImp* listener, events::Even
     }
 }
 
-void HTMLInputElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
+bool HTMLInputElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
 {
+    if (style->display.getValue() == CSSDisplayValueImp::None || getShadowTree())
+        return false;
+
     DocumentImp* document = getOwnerDocumentImp();
     assert(document);
     switch (style->binding.getValue()) {
     case CSSBindingValueImp::InputTextfield: {
-        HTMLTemplateElementImp* element = new(std::nothrow) HTMLTemplateElementImp(document);
-        if (element) {
+        if (HTMLTemplateElementImp* element = new(std::nothrow) HTMLTemplateElementImp(document)) {
             dom::Text text = document->createTextNode(getValue());
             element->appendChild(text, true);
             style->setCssText(u"display: inline-block; white-space: pre; background-color: white; border: 2px inset; text-align: left; padding: 1px; min-height: 1em;");
             setShadowTree(element);
             addEventListener(u"keydown", &keydownListener, false, EventTargetImp::UseDefault);
+            return true;
         }
         break;
     }
     case CSSBindingValueImp::InputButton: {
-        HTMLTemplateElementImp* element = new(std::nothrow) HTMLTemplateElementImp(document);
-        if (element) {
+        if (HTMLTemplateElementImp* element = new(std::nothrow) HTMLTemplateElementImp(document)) {
             dom::Text text = document->createTextNode(getValue());
             element->appendChild(text, true);
             style->setCssText(u"display: inline-block; border: 2px outset; padding: 1px; text-align: center; min-height: 1em;");
             setShadowTree(element);
             addEventListener(u"click", &clickListener, false, EventTargetImp::UseDefault);
+            return true;
         }
         break;
     }
     case CSSBindingValueImp::InputRadio: {
-        HTMLTemplateElementImp* element = new(std::nothrow) HTMLTemplateElementImp(document);
-        if (element) {
+        if (HTMLTemplateElementImp* element = new(std::nothrow) HTMLTemplateElementImp(document)) {
             dom::Text text = document->createTextNode(getChecked() ? u"\u25c9" : u"\u25cb");
             element->appendChild(text, true);
             setShadowTree(element);
+            return true;
         }
         break;
     }
     case CSSBindingValueImp::InputCheckbox: {
-        HTMLTemplateElementImp* element = new(std::nothrow) HTMLTemplateElementImp(document);
-        if (element) {
+        if (HTMLTemplateElementImp* element = new(std::nothrow) HTMLTemplateElementImp(document)) {
             dom::Text text = document->createTextNode(getChecked() ? u"\u2611" : u"\u2610");
             element->appendChild(text, true);
             setShadowTree(element);
+            return true;
         }
         break;
     }
     default:
-        HTMLElementImp::generateShadowContent(style);
-        switch (type) {
-        case SubmitButton:
-            addEventListener(u"click", &clickListener, false, EventTargetImp::UseDefault);
-            break;
-        default:
-            break;
+        if (HTMLElementImp::generateShadowContent(style)) {
+            switch (type) {
+            case SubmitButton:
+                addEventListener(u"click", &clickListener, false, EventTargetImp::UseDefault);
+                break;
+            default:
+                break;
+            }
+            return true;
         }
         break;
     }
+    return false;
 }
 
 std::u16string HTMLInputElementImp::getAccept()
