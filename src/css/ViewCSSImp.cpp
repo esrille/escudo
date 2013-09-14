@@ -285,23 +285,31 @@ Element ViewCSSImp::updateStyleRules(Element element, CSSStyleDeclarationImp* st
         hoverList.clear();
     }
 
-    // Expand binding
-    html::HTMLTemplateElement shadowTree(0);
-    if (style->binding.getValue() != CSSBindingValueImp::None) {
-        if (HTMLElementImp* imp = dynamic_cast<HTMLElementImp*>(element.self())) {
-            imp->generateShadowContent(style);
-            if (shadowTree = imp->getShadowTree()) {
-                if (auto imp = dynamic_cast<HTMLTemplateElementImp*>(shadowTree.self()))
-                    imp->setHost(element);
-            }
-        }
-    } // TODO: detach the shadow tree from element (if any)
+    html::HTMLTemplateElement shadowTree = expandBinding(element, style);
 
     style->updateInlines(element); // TODO ???
 
     style->clearFlags(CSSStyleDeclarationImp::Computed);    // TODO: Only styles of children need to be recomputed
 
     return shadowTree ? shadowTree : element;
+}
+
+html::HTMLTemplateElement ViewCSSImp::expandBinding(Element element, CSSStyleDeclarationImp* style)
+{
+    if (style->binding.getValue() == CSSBindingValueImp::None) {
+        // TODO: detach the shadow tree from element (if any)
+        return 0;
+    }
+
+    html::HTMLTemplateElement shadowTree(0);
+    if (HTMLElementImp* imp = dynamic_cast<HTMLElementImp*>(element.self())) {
+        imp->generateShadowContent(style);
+        if (shadowTree = imp->getShadowTree()) {
+            if (auto imp = dynamic_cast<HTMLTemplateElementImp*>(shadowTree.self()))
+                imp->setHost(element);
+        }
+    }
+    return shadowTree;
 }
 
 void ViewCSSImp::constructComputedStyle(Node node, CSSStyleDeclarationImp* parentStyle)
