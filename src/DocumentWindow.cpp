@@ -22,7 +22,7 @@
 
 #include "DocumentImp.h"
 #include "ECMAScript.h"
-#include "WindowImp.h"
+#include "WindowProxy.h"
 #include "css/ViewCSSImp.h"
 #include "html/MediaQueryListImp.h"
 
@@ -56,7 +56,7 @@ DocumentWindow::~DocumentWindow()
     }
 }
 
-WindowImp* DocumentWindow::getWindowImp() const
+WindowProxy* DocumentWindow::getWindowImp() const
 {
     if (auto imp = dynamic_cast<DocumentImp*>(document.self()))
         return imp->getDefaultWindow();
@@ -72,13 +72,13 @@ void DocumentWindow::setDocument(const Document& document)
     map.clear();
 }
 
-void DocumentWindow::enter(WindowImp* proxy)
+void DocumentWindow::enter(WindowProxy* proxy)
 {
     if (global && isMainThread())
         global->enter(proxy);
 }
 
-void DocumentWindow::exit(WindowImp* proxy)
+void DocumentWindow::exit(WindowProxy* proxy)
 {
     if (global && isMainThread())
         global->exit(proxy);
@@ -135,7 +135,7 @@ void DocumentWindow::handleClick(EventListenerImp* listener, events::Event event
     html::Window defaultView = document.getDefaultView();
     if (!defaultView)
         return;
-    WindowImp* imp = dynamic_cast<WindowImp*>(defaultView.self());
+    WindowProxy* imp = dynamic_cast<WindowProxy*>(defaultView.self());
     if (!imp)
         return;
     ViewCSSImp* view = imp->getView();
@@ -176,7 +176,7 @@ void DocumentWindow::handleMouseMove(EventListenerImp* listener, events::Event e
     html::Window defaultView = document.getDefaultView();
     if (!defaultView)
         return;
-    WindowImp* imp = dynamic_cast<WindowImp*>(defaultView.self());
+    WindowProxy* imp = dynamic_cast<WindowProxy*>(defaultView.self());
     if (!imp)
         return;
     ViewCSSImp* view = imp->getView();

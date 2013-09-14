@@ -25,7 +25,7 @@
 #include "StackingContext.h"
 #include "Table.h"
 #include "ViewCSSImp.h"
-#include "WindowImp.h"
+#include "WindowProxy.h"
 
 #include "html/HTMLReplacedElementImp.h"
 

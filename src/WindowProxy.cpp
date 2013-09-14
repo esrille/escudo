@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "WindowImp.h"
+#include "WindowProxy.h"
 
 #include <new>
 #include <iostream>
@@ -42,7 +42,7 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
-WindowImp::Parser::Parser(DocumentImp* document, int fd, const std::string& optionalEncoding) :
+WindowProxy::Parser::Parser(DocumentImp* document, int fd, const std::string& optionalEncoding) :
     stream(fd, boost::iostreams::close_handle),
     htmlInputStream(stream, optionalEncoding),
     tokenizer(&htmlInputStream),
@@ -51,7 +51,7 @@ WindowImp::Parser::Parser(DocumentImp* document, int fd, const std::string& opti
     document->setCharacterSet(utfconv(htmlInputStream.getEncoding()));
 }
 
-WindowImp::WindowImp(WindowImp* parent, ElementImp* frameElement, unsigned short flags) :
+WindowProxy::WindowProxy(WindowProxy* parent, ElementImp* frameElement, unsigned short flags) :
     request(parent ? parent->getLocation().getHref() : u""),
     history(this),
     backgroundTask(this),
@@ -81,7 +81,7 @@ WindowImp::WindowImp(WindowImp* parent, ElementImp* frameElement, unsigned short
     }
 }
 
-WindowImp::~WindowImp()
+WindowProxy::~WindowProxy()
 {
     if (parent) {
         for (auto i = parent->childWindows.begin(); i != parent->childWindows.end(); ++i) {
@@ -95,7 +95,7 @@ WindowImp::~WindowImp()
     thread.join();
 }
 
-void WindowImp::setSize(unsigned w, unsigned h)
+void WindowProxy::setSize(unsigned w, unsigned h)
 {
     if (width != w || height != h) {
         width = w;
@@ -106,7 +106,7 @@ void WindowImp::setSize(unsigned w, unsigned h)
     }
 }
 
-void WindowImp::setViewFlags(unsigned short flags)
+void WindowProxy::setViewFlags(unsigned short flags)
 {
     if (view) {
         view->setFlags(flags | viewFlags);
@@ -115,29 +115,29 @@ void WindowImp::setViewFlags(unsigned short flags)
         viewFlags |= flags;
 }
 
-void WindowImp::enter()
+void WindowProxy::enter()
 {
     assert(window);
     window->enter(this);
 }
 
-void WindowImp::exit()
+void WindowProxy::exit()
 {
     assert(window);
     window->exit(this);
 }
 
-void WindowImp::enableZoom(bool value)
+void WindowProxy::enableZoom(bool value)
 {
     zoomable = value;
 }
 
-float WindowImp::getZoom() const
+float WindowProxy::getZoom() const
 {
     return zoom;
 }
 
-void WindowImp::setZoom(float value)
+void WindowProxy::setZoom(float value)
 {
     if (zoomable) {
         zoom = value;
@@ -148,7 +148,7 @@ void WindowImp::setZoom(float value)
     }
 }
 
-void WindowImp::updateView(ViewCSSImp* next)
+void WindowProxy::updateView(ViewCSSImp* next)
 {
     if (!next || view == next || !window || !window->getDocument())
         return;
@@ -181,7 +181,7 @@ void WindowImp::updateView(ViewCSSImp* next)
     window->flushMediaQueryLists(view);
 }
 
-void WindowImp::setDocumentWindow(const DocumentWindowPtr& window)
+void WindowProxy::setDocumentWindow(const DocumentWindowPtr& window)
 {
     this->window = window;
     delete view;
@@ -194,7 +194,7 @@ void WindowImp::setDocumentWindow(const DocumentWindowPtr& window)
     setFavicon();
 }
 
-bool WindowImp::isBindingDocumentWindow() const
+bool WindowProxy::isBindingDocumentWindow() const
 {
     if (!parent)
         return false;
@@ -202,7 +202,7 @@ bool WindowImp::isBindingDocumentWindow() const
     return document->isBindingDocumentWindow(this);
 }
 
-bool WindowImp::poll()
+bool WindowProxy::poll()
 {
     if (!window)
         return false;
@@ -245,7 +245,7 @@ bool WindowImp::poll()
     }
 
     for (auto i = childWindows.begin(); i != childWindows.end(); ++i) {
-        WindowImp* child = *i;
+        WindowProxy* child = *i;
         if (child->poll()) {
             redisplay |= true;
             if (view) {
@@ -408,7 +408,7 @@ bool WindowImp::poll()
     return result;
 }
 
-void WindowImp::render(ViewCSSImp* parentView)
+void WindowProxy::render(ViewCSSImp* parentView)
 {
     if (view) {
         recordTime("%*srepaint begin: %s (%s)", windowDepth * 2, "", utfconv(window->getDocument().getReadyState()).c_str(), view ? "render" : "canvas");
@@ -430,7 +430,7 @@ void WindowImp::render(ViewCSSImp* parentView)
         }
         if (2 <= getLogLevel() && backgroundTask.isIdle() && !view->gatherFlags()) {
             unsigned depth = 1;
-            for (WindowImp* w = this; w->parent; w = w->parent)
+            for (WindowProxy* w = this; w->parent; w = w->parent)
                 ++depth;
             std::cout << "\n## " << window->getDocument().getReadyState();
             if (1 < depth)
@@ -445,12 +445,12 @@ void WindowImp::render(ViewCSSImp* parentView)
     canvas.render(width, height);
 }
 
-void WindowImp::mouse(int button, int up, int x, int y, int modifiers)
+void WindowProxy::mouse(int button, int up, int x, int y, int modifiers)
 {
     eventQueue.emplace_back(up ? EventTask::MouseUp : EventTask::MouseDown, modifiers, x, y, button);
 }
 
-void WindowImp::mouseMove(int x, int y, int modifiers)
+void WindowProxy::mouseMove(int x, int y, int modifiers)
 {
     if (!eventQueue.empty()) {
         EventTask& back = eventQueue.back();
@@ -464,17 +464,17 @@ void WindowImp::mouseMove(int x, int y, int modifiers)
     eventQueue.emplace_back(EventTask::MouseMove, modifiers, x, y);
 }
 
-void WindowImp::keydown(unsigned charCode, unsigned keyCode, int modifiers)
+void WindowProxy::keydown(unsigned charCode, unsigned keyCode, int modifiers)
 {
     eventQueue.emplace_back(EventTask::KeyDown, modifiers, charCode, keyCode);
 }
 
-void WindowImp::keyup(unsigned charCode, unsigned keyCode, int modifiers)
+void WindowProxy::keyup(unsigned charCode, unsigned keyCode, int modifiers)
 {
     eventQueue.emplace_back(EventTask::KeyUp, modifiers, charCode, keyCode);
 }
 
-void WindowImp::mouse(const EventTask& task)
+void WindowProxy::mouse(const EventTask& task)
 {
     int button = task.button;
     int up = (task.type == task.MouseUp) ? true : false;
@@ -503,7 +503,7 @@ void WindowImp::mouse(const EventTask& task)
     Box* box = view->boxFromPoint(x, y);
     if (!box)
         return;
-    if (WindowImp* childWindow = box->getChildWindow()) {
+    if (WindowProxy* childWindow = box->getChildWindow()) {
         childWindow->mouse(button, up,
                            x - box->getX() - box->getBlankLeft(), y - box->getY() - box->getBlankTop(),
                            modifiers);
@@ -542,7 +542,7 @@ void WindowImp::mouse(const EventTask& task)
     }
 }
 
-void WindowImp::mouseMove(const EventTask& task)
+void WindowProxy::mouseMove(const EventTask& task)
 {
     int x = task.x;
     int y = task.y;
@@ -559,11 +559,11 @@ void WindowImp::mouseMove(const EventTask& task)
 
     if (prev != target) {
         if (html::Window c = interface_cast<html::HTMLIFrameElement>(prev).getContentWindow()) {
-            if (auto w = dynamic_cast<WindowImp*>(c.self()))
+            if (auto w = dynamic_cast<WindowProxy*>(c.self()))
                 w->mouseMove(-1, -1, modifiers);
         }
     }
-    if (WindowImp* childWindow = box->getChildWindow()) {
+    if (WindowProxy* childWindow = box->getChildWindow()) {
         childWindow->mouseMove(x - box->getX() - box->getBlankLeft(),
                                y - box->getY() - box->getBlankTop(),
                                modifiers);
@@ -600,7 +600,7 @@ void WindowImp::mouseMove(const EventTask& task)
     }
 }
 
-void WindowImp::keydown(const EventTask& task)
+void WindowProxy::keydown(const EventTask& task)
 {
     unsigned charCode = task.charCode;
     unsigned keyCode = task.keyCode;
@@ -614,7 +614,7 @@ void WindowImp::keydown(const EventTask& task)
         return;
 
     if (auto iframe = dynamic_cast<HTMLIFrameElementImp*>(e.self())) {
-        if (auto child = dynamic_cast<WindowImp*>(iframe->getContentWindow().self()))
+        if (auto child = dynamic_cast<WindowProxy*>(iframe->getContentWindow().self()))
             child->keydown(charCode, keyCode, modifiers);
     }
 
@@ -633,7 +633,7 @@ void WindowImp::keydown(const EventTask& task)
     e.dispatchEvent(event);
 }
 
-void WindowImp::keyup(const EventTask& task)
+void WindowProxy::keyup(const EventTask& task)
 {
     unsigned charCode = task.charCode;
     unsigned keyCode = task.keyCode;
@@ -647,7 +647,7 @@ void WindowImp::keyup(const EventTask& task)
         return;
 
     if (auto iframe = dynamic_cast<HTMLIFrameElementImp*>(e.self())) {
-        if (auto child = dynamic_cast<WindowImp*>(iframe->getContentWindow().self()))
+        if (auto child = dynamic_cast<WindowProxy*>(iframe->getContentWindow().self()))
             child->keyup(charCode, keyCode, modifiers);
     }
 
@@ -658,7 +658,7 @@ void WindowImp::keyup(const EventTask& task)
     e.dispatchEvent(event);
 }
 
-void WindowImp::setFavicon(IcoImage* ico, std::FILE* file)
+void WindowProxy::setFavicon(IcoImage* ico, std::FILE* file)
 {
     if (parent) {
         if (parent->getFaviconOverridable())
@@ -675,7 +675,7 @@ void WindowImp::setFavicon(IcoImage* ico, std::FILE* file)
     }
 }
 
-void WindowImp::setFavicon(BoxImage* image)
+void WindowProxy::setFavicon(BoxImage* image)
 {
     if (parent) {
         if (parent->getFaviconOverridable())
@@ -686,9 +686,9 @@ void WindowImp::setFavicon(BoxImage* image)
     setIcon(0, image->getNaturalWidth(), image->getNaturalHeight(), pixels);
 }
 
-void WindowImp::setFavicon()
+void WindowProxy::setFavicon()
 {
-    for (WindowImp* w = this; w; w = w->parent) {
+    for (WindowProxy* w = this; w; w = w->parent) {
         if (w->parent && !w->parent->getFaviconOverridable())
             return;
         if (!w->window)
@@ -712,7 +712,7 @@ void WindowImp::setFavicon()
 // CSSOM View support operations
 //
 
-Element WindowImp::elementFromPoint(float x, float y)
+Element WindowProxy::elementFromPoint(float x, float y)
 {
     if (!view)
         return 0;
@@ -732,202 +732,202 @@ Element WindowImp::elementFromPoint(float x, float y)
 // html::Window
 //
 
-html::Window WindowImp::getWindow()
+html::Window WindowProxy::getWindow()
 {
     return this;
 }
 
-Any WindowImp::getSelf()
+Any WindowProxy::getSelf()
 {
     return this;
 }
 
-void WindowImp::setSelf(Any self)
+void WindowProxy::setSelf(Any self)
 {
     // TODO: implement me!
 }
 
-Document WindowImp::getDocument()
+Document WindowProxy::getDocument()
 {
     return !window ? 0 : window->getDocument();
 }
 
-std::u16string WindowImp::getName()
+std::u16string WindowProxy::getName()
 {
     return name;
 }
 
-void WindowImp::setName(const std::u16string& name)
+void WindowProxy::setName(const std::u16string& name)
 {
     if (!name.empty() && name[0] == u'_')
         return;
     this->name = name;
 }
 
-html::Location WindowImp::getLocation()
+html::Location WindowProxy::getLocation()
 {
     return getDocument().getLocation();
 }
 
-void WindowImp::setLocation(const std::u16string& location)
+void WindowProxy::setLocation(const std::u16string& location)
 {
     getLocation().setHref(location);
 }
 
-html::History WindowImp::getHistory()
+html::History WindowProxy::getHistory()
 {
     return &history;
 }
 
-Any WindowImp::getLocationbar()
+Any WindowProxy::getLocationbar()
 {
     // TODO: implement me!
     return 0;
 }
 
-void WindowImp::setLocationbar(Any locationbar)
+void WindowProxy::setLocationbar(Any locationbar)
 {
     // TODO: implement me!
 }
 
-Any WindowImp::getMenubar()
-{
-    // TODO: implement me!
-    return 0;
-}
-
-void WindowImp::setMenubar(Any menubar)
-{
-    // TODO: implement me!
-}
-
-Any WindowImp::getPersonalbar()
+Any WindowProxy::getMenubar()
 {
     // TODO: implement me!
     return 0;
 }
 
-void WindowImp::setPersonalbar(Any personalbar)
+void WindowProxy::setMenubar(Any menubar)
 {
     // TODO: implement me!
 }
 
-Any WindowImp::getScrollbars()
-{
-    // TODO: implement me!
-    return 0;
-}
-
-void WindowImp::setScrollbars(Any scrollbars)
-{
-    // TODO: implement me!
-}
-
-Any WindowImp::getStatusbar()
+Any WindowProxy::getPersonalbar()
 {
     // TODO: implement me!
     return 0;
 }
 
-void WindowImp::setStatusbar(Any statusbar)
+void WindowProxy::setPersonalbar(Any personalbar)
 {
     // TODO: implement me!
 }
 
-Any WindowImp::getToolbar()
+Any WindowProxy::getScrollbars()
 {
     // TODO: implement me!
     return 0;
 }
 
-void WindowImp::setToolbar(Any toolbar)
+void WindowProxy::setScrollbars(Any scrollbars)
 {
     // TODO: implement me!
 }
 
-std::u16string WindowImp::getStatus()
+Any WindowProxy::getStatusbar()
+{
+    // TODO: implement me!
+    return 0;
+}
+
+void WindowProxy::setStatusbar(Any statusbar)
+{
+    // TODO: implement me!
+}
+
+Any WindowProxy::getToolbar()
+{
+    // TODO: implement me!
+    return 0;
+}
+
+void WindowProxy::setToolbar(Any toolbar)
+{
+    // TODO: implement me!
+}
+
+std::u16string WindowProxy::getStatus()
 {
     // TODO: implement me!
     return u"";
 }
 
-void WindowImp::setStatus(const std::u16string& status)
+void WindowProxy::setStatus(const std::u16string& status)
 {
     // TODO: implement me!
 }
 
-void WindowImp::close()
+void WindowProxy::close()
 {
     // TODO: implement me!
 }
 
-void WindowImp::stop()
+void WindowProxy::stop()
 {
     // TODO: implement me!
 }
 
-void WindowImp::focus()
+void WindowProxy::focus()
 {
     // TODO: implement me!
 }
 
-void WindowImp::blur()
+void WindowProxy::blur()
 {
     // TODO: implement me!
 }
 
-Any WindowImp::getFrames()
+Any WindowProxy::getFrames()
 {
     return this;
 }
 
-void WindowImp::setFrames(Any frames)
+void WindowProxy::setFrames(Any frames)
 {
     // TODO: implement me!
 }
 
-Any WindowImp::getLength()
+Any WindowProxy::getLength()
 {
     return childWindows.size();
 }
 
-void WindowImp::setLength(Any length)
+void WindowProxy::setLength(Any length)
 {
     // TODO: implement me!
 }
 
-html::Window WindowImp::getTop()
+html::Window WindowProxy::getTop()
 {
-    WindowImp* top = this;
+    WindowProxy* top = this;
     while (!top->isTopLevel())
         top = top->parent;
     return top;
 }
 
-html::Window WindowImp::getOpener()
+html::Window WindowProxy::getOpener()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::setOpener(html::Window opener)
+void WindowProxy::setOpener(html::Window opener)
 {
     // TODO: implement me!
 }
 
-html::Window WindowImp::getParent()
+html::Window WindowProxy::getParent()
 {
     if (isTopLevel())
         return this;
     return parent;
 }
 
-Element WindowImp::getFrameElement()
+Element WindowProxy::getFrameElement()
 {
     return frameElement;
 }
 
-void WindowImp::navigateToFragmentIdentifier(URL target)
+void WindowProxy::navigateToFragmentIdentifier(URL target)
 {
     DocumentImp* document = dynamic_cast<DocumentImp*>(window->getDocument().self());
     if (!document)
@@ -953,12 +953,12 @@ void WindowImp::navigateToFragmentIdentifier(URL target)
 }
 
 // cf. http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#the-rules-for-choosing-a-browsing-context-given-a-browsing-context-name
-WindowImp* WindowImp::selectBrowsingContext(std::u16string target, bool& replace)
+WindowProxy* WindowProxy::selectBrowsingContext(std::u16string target, bool& replace)
 {
     if (target.empty())
         return this;
 
-    WindowImp* top = this;
+    WindowProxy* top = this;
     while (!top->isTopLevel())
         top = top->parent;
 
@@ -989,7 +989,7 @@ WindowImp* WindowImp::selectBrowsingContext(std::u16string target, bool& replace
     HTMLIFrameElementImp* iframe = new(std::nothrow) HTMLIFrameElementImp(ownerDocument, TopLevel);
     if (!iframe)
         return 0;
-    WindowImp* context = dynamic_cast<WindowImp*>(iframe->getContentWindow().self());
+    WindowProxy* context = dynamic_cast<WindowProxy*>(iframe->getContentWindow().self());
     if (!context) {
         // TODO: release iframe
         return 0;
@@ -1008,7 +1008,7 @@ WindowImp* WindowImp::selectBrowsingContext(std::u16string target, bool& replace
     return context;
 }
 
-void WindowImp::navigate(std::u16string url, bool replace, WindowImp* srcWindow)
+void WindowProxy::navigate(std::u16string url, bool replace, WindowProxy* srcWindow)
 {
     backgroundTask.restart();
 
@@ -1019,7 +1019,7 @@ void WindowImp::navigate(std::u16string url, bool replace, WindowImp* srcWindow)
             URL resolved(base, url);
             if (this == srcWindow) {
                 if (base.isSameExceptFragments(resolved)) {
-                    Task task(this, boost::bind(&WindowImp::navigateToFragmentIdentifier, this, resolved));
+                    Task task(this, boost::bind(&WindowProxy::navigateToFragmentIdentifier, this, resolved));
                     putTask(task);
                     return;
                 }
@@ -1043,766 +1043,766 @@ void WindowImp::navigate(std::u16string url, bool replace, WindowImp* srcWindow)
     request.send();
 }
 
-html::Window WindowImp::open(const std::u16string& url, const std::u16string& target, const std::u16string& features, bool replace)
+html::Window WindowProxy::open(const std::u16string& url, const std::u16string& target, const std::u16string& features, bool replace)
 {
-    WindowImp* targetWindow = selectBrowsingContext(target, replace);
+    WindowProxy* targetWindow = selectBrowsingContext(target, replace);
     if (!targetWindow)
         return 0;   // TODO: throw an InvalidAccessError exception
     targetWindow->navigate(url, replace, this);
     return targetWindow;
 }
 
-html::Window WindowImp::getElement(unsigned int index)
+html::Window WindowProxy::getElement(unsigned int index)
 {
     if (index < childWindows.size())
         return childWindows[index];
     return 0;
 }
 
-Object WindowImp::getElement(const std::u16string& name)
+Object WindowProxy::getElement(const std::u16string& name)
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-html::Navigator WindowImp::getNavigator()
+html::Navigator WindowProxy::getNavigator()
 {
     return &navigator;
 }
 
-html::External WindowImp::getExternal()
+html::External WindowProxy::getExternal()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-html::ApplicationCache WindowImp::getApplicationCache()
+html::ApplicationCache WindowProxy::getApplicationCache()
 {
     // TODO: implement me!
     return static_cast<Object*>(0);
 }
 
-void WindowImp::alert(const std::u16string& message)
+void WindowProxy::alert(const std::u16string& message)
 {
     std::cerr << message << '\n';
 }
 
-bool WindowImp::confirm(const std::u16string& message)
+bool WindowProxy::confirm(const std::u16string& message)
 {
     // TODO: implement me!
     return 0;
 }
 
-Nullable<std::u16string> WindowImp::prompt(const std::u16string& message)
+Nullable<std::u16string> WindowProxy::prompt(const std::u16string& message)
 {
     // TODO: implement me!
     return u"";
 }
 
-Nullable<std::u16string> WindowImp::prompt(const std::u16string& message, const std::u16string& _default)
+Nullable<std::u16string> WindowProxy::prompt(const std::u16string& message, const std::u16string& _default)
 {
     // TODO: implement me!
     return u"";
 }
 
-void WindowImp::print()
+void WindowProxy::print()
 {
     // TODO: implement me!
 }
 
-Any WindowImp::showModalDialog(const std::u16string& url)
-{
-    // TODO: implement me!
-    return 0;
-}
-
-Any WindowImp::showModalDialog(const std::u16string& url, Any argument)
+Any WindowProxy::showModalDialog(const std::u16string& url)
 {
     // TODO: implement me!
     return 0;
 }
 
-events::EventHandlerNonNull WindowImp::getOnabort()
+Any WindowProxy::showModalDialog(const std::u16string& url, Any argument)
+{
+    // TODO: implement me!
+    return 0;
+}
+
+events::EventHandlerNonNull WindowProxy::getOnabort()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"abort"));
 }
 
-void WindowImp::setOnabort(events::EventHandlerNonNull onabort)
+void WindowProxy::setOnabort(events::EventHandlerNonNull onabort)
 {
     window->setEventHandler(u"abort", onabort);
 }
 
-events::EventHandlerNonNull WindowImp::getOnafterprint()
+events::EventHandlerNonNull WindowProxy::getOnafterprint()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"afterprint"));
 }
 
-void WindowImp::setOnafterprint(events::EventHandlerNonNull onafterprint)
+void WindowProxy::setOnafterprint(events::EventHandlerNonNull onafterprint)
 {
     window->setEventHandler(u"afterprint", onafterprint);
 }
 
-events::EventHandlerNonNull WindowImp::getOnbeforeprint()
+events::EventHandlerNonNull WindowProxy::getOnbeforeprint()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"beforeprint"));
 }
 
-void WindowImp::setOnbeforeprint(events::EventHandlerNonNull onbeforeprint)
+void WindowProxy::setOnbeforeprint(events::EventHandlerNonNull onbeforeprint)
 {
     window->setEventHandler(u"beforeprint", onbeforeprint);
 }
 
-events::EventHandlerNonNull WindowImp::getOnbeforeunload()
+events::EventHandlerNonNull WindowProxy::getOnbeforeunload()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"beforeunload"));
 }
 
-void WindowImp::setOnbeforeunload(events::EventHandlerNonNull onbeforeunload)
+void WindowProxy::setOnbeforeunload(events::EventHandlerNonNull onbeforeunload)
 {
     window->setEventHandler(u"beforeunload", onbeforeunload);
 }
 
-events::EventHandlerNonNull WindowImp::getOnblur()
+events::EventHandlerNonNull WindowProxy::getOnblur()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"blur"));
 }
 
-void WindowImp::setOnblur(events::EventHandlerNonNull onblur)
+void WindowProxy::setOnblur(events::EventHandlerNonNull onblur)
 {
     window->setEventHandler(u"blur", onblur);
 }
 
-events::EventHandlerNonNull WindowImp::getOncancel()
+events::EventHandlerNonNull WindowProxy::getOncancel()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"cancel"));
 }
 
-void WindowImp::setOncancel(events::EventHandlerNonNull oncancel)
+void WindowProxy::setOncancel(events::EventHandlerNonNull oncancel)
 {
     window->setEventHandler(u"cancel", oncancel);
 }
 
-events::EventHandlerNonNull WindowImp::getOncanplay()
+events::EventHandlerNonNull WindowProxy::getOncanplay()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"canplay"));
 }
 
-void WindowImp::setOncanplay(events::EventHandlerNonNull oncanplay)
+void WindowProxy::setOncanplay(events::EventHandlerNonNull oncanplay)
 {
     window->setEventHandler(u"canplay", oncanplay);
 }
 
-events::EventHandlerNonNull WindowImp::getOncanplaythrough()
+events::EventHandlerNonNull WindowProxy::getOncanplaythrough()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"canplaythrough"));
 }
 
-void WindowImp::setOncanplaythrough(events::EventHandlerNonNull oncanplaythrough)
+void WindowProxy::setOncanplaythrough(events::EventHandlerNonNull oncanplaythrough)
 {
     window->setEventHandler(u"canplaythrough", oncanplaythrough);
 }
 
-events::EventHandlerNonNull WindowImp::getOnchange()
+events::EventHandlerNonNull WindowProxy::getOnchange()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"change"));
 }
 
-void WindowImp::setOnchange(events::EventHandlerNonNull onchange)
+void WindowProxy::setOnchange(events::EventHandlerNonNull onchange)
 {
     window->setEventHandler(u"change", onchange);
 }
 
-events::EventHandlerNonNull WindowImp::getOnclick()
+events::EventHandlerNonNull WindowProxy::getOnclick()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"click"));
 }
 
-void WindowImp::setOnclick(events::EventHandlerNonNull onclick)
+void WindowProxy::setOnclick(events::EventHandlerNonNull onclick)
 {
     window->setEventHandler(u"click", onclick);
 }
 
-events::EventHandlerNonNull WindowImp::getOnclose()
+events::EventHandlerNonNull WindowProxy::getOnclose()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"close"));
 }
 
-void WindowImp::setOnclose(events::EventHandlerNonNull onclose)
+void WindowProxy::setOnclose(events::EventHandlerNonNull onclose)
 {
     window->setEventHandler(u"close", onclose);
 }
 
-events::EventHandlerNonNull WindowImp::getOncontextmenu()
+events::EventHandlerNonNull WindowProxy::getOncontextmenu()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"contextmenu"));
 }
 
-void WindowImp::setOncontextmenu(events::EventHandlerNonNull oncontextmenu)
+void WindowProxy::setOncontextmenu(events::EventHandlerNonNull oncontextmenu)
 {
     window->setEventHandler(u"contextmenu", oncontextmenu);
 }
 
-events::EventHandlerNonNull WindowImp::getOncuechange()
+events::EventHandlerNonNull WindowProxy::getOncuechange()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"cuechange"));
 }
 
-void WindowImp::setOncuechange(events::EventHandlerNonNull oncuechange)
+void WindowProxy::setOncuechange(events::EventHandlerNonNull oncuechange)
 {
     window->setEventHandler(u"cuechange", oncuechange);
 }
 
-events::EventHandlerNonNull WindowImp::getOndblclick()
+events::EventHandlerNonNull WindowProxy::getOndblclick()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"dblclick"));
 }
 
-void WindowImp::setOndblclick(events::EventHandlerNonNull ondblclick)
+void WindowProxy::setOndblclick(events::EventHandlerNonNull ondblclick)
 {
     window->setEventHandler(u"dblclick", ondblclick);
 }
 
-events::EventHandlerNonNull WindowImp::getOndrag()
+events::EventHandlerNonNull WindowProxy::getOndrag()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"drag"));
 }
 
-void WindowImp::setOndrag(events::EventHandlerNonNull ondrag)
+void WindowProxy::setOndrag(events::EventHandlerNonNull ondrag)
 {
     window->setEventHandler(u"drag", ondrag);
 }
 
-events::EventHandlerNonNull WindowImp::getOndragend()
+events::EventHandlerNonNull WindowProxy::getOndragend()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"dragend"));
 }
 
-void WindowImp::setOndragend(events::EventHandlerNonNull ondragend)
+void WindowProxy::setOndragend(events::EventHandlerNonNull ondragend)
 {
     window->setEventHandler(u"dragend", ondragend);
 }
 
-events::EventHandlerNonNull WindowImp::getOndragenter()
+events::EventHandlerNonNull WindowProxy::getOndragenter()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"dragenter"));
 }
 
-void WindowImp::setOndragenter(events::EventHandlerNonNull ondragenter)
+void WindowProxy::setOndragenter(events::EventHandlerNonNull ondragenter)
 {
     window->setEventHandler(u"dragenter", ondragenter);
 }
 
-events::EventHandlerNonNull WindowImp::getOndragleave()
+events::EventHandlerNonNull WindowProxy::getOndragleave()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"dragleave"));
 }
 
-void WindowImp::setOndragleave(events::EventHandlerNonNull ondragleave)
+void WindowProxy::setOndragleave(events::EventHandlerNonNull ondragleave)
 {
     window->setEventHandler(u"dragleave", ondragleave);
 }
 
-events::EventHandlerNonNull WindowImp::getOndragover()
+events::EventHandlerNonNull WindowProxy::getOndragover()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"dragover"));
 }
 
-void WindowImp::setOndragover(events::EventHandlerNonNull ondragover)
+void WindowProxy::setOndragover(events::EventHandlerNonNull ondragover)
 {
     window->setEventHandler(u"dragover", ondragover);
 }
 
-events::EventHandlerNonNull WindowImp::getOndragstart()
+events::EventHandlerNonNull WindowProxy::getOndragstart()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"dragstart"));
 }
 
-void WindowImp::setOndragstart(events::EventHandlerNonNull ondragstart)
+void WindowProxy::setOndragstart(events::EventHandlerNonNull ondragstart)
 {
     window->setEventHandler(u"dragstart", ondragstart);
 }
 
-events::EventHandlerNonNull WindowImp::getOndrop()
+events::EventHandlerNonNull WindowProxy::getOndrop()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"drop"));
 }
 
-void WindowImp::setOndrop(events::EventHandlerNonNull ondrop)
+void WindowProxy::setOndrop(events::EventHandlerNonNull ondrop)
 {
     window->setEventHandler(u"drop", ondrop);
 }
 
-events::EventHandlerNonNull WindowImp::getOndurationchange()
+events::EventHandlerNonNull WindowProxy::getOndurationchange()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"durationchange"));
 }
 
-void WindowImp::setOndurationchange(events::EventHandlerNonNull ondurationchange)
+void WindowProxy::setOndurationchange(events::EventHandlerNonNull ondurationchange)
 {
     window->setEventHandler(u"durationchange", ondurationchange);
 }
 
-events::EventHandlerNonNull WindowImp::getOnemptied()
+events::EventHandlerNonNull WindowProxy::getOnemptied()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"emptied"));
 }
 
-void WindowImp::setOnemptied(events::EventHandlerNonNull onemptied)
+void WindowProxy::setOnemptied(events::EventHandlerNonNull onemptied)
 {
     window->setEventHandler(u"emptied", onemptied);
 }
 
-events::EventHandlerNonNull WindowImp::getOnended()
+events::EventHandlerNonNull WindowProxy::getOnended()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"ended"));
 }
 
-void WindowImp::setOnended(events::EventHandlerNonNull onended)
+void WindowProxy::setOnended(events::EventHandlerNonNull onended)
 {
     window->setEventHandler(u"ended", onended);
 }
 
-events::OnErrorEventHandlerNonNull WindowImp::getOnerror()
+events::OnErrorEventHandlerNonNull WindowProxy::getOnerror()
 {
     return interface_cast<events::OnErrorEventHandlerNonNull>(window->getEventHandler(u"error"));
 }
 
-void WindowImp::setOnerror(events::OnErrorEventHandlerNonNull onerror)
+void WindowProxy::setOnerror(events::OnErrorEventHandlerNonNull onerror)
 {
     window->setEventHandler(u"error", onerror);
 }
 
-events::EventHandlerNonNull WindowImp::getOnfocus()
+events::EventHandlerNonNull WindowProxy::getOnfocus()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"focus"));
 }
 
-void WindowImp::setOnfocus(events::EventHandlerNonNull onfocus)
+void WindowProxy::setOnfocus(events::EventHandlerNonNull onfocus)
 {
     window->setEventHandler(u"focus", onfocus);
 }
 
-events::EventHandlerNonNull WindowImp::getOnhashchange()
+events::EventHandlerNonNull WindowProxy::getOnhashchange()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"hashchange"));
 }
 
-void WindowImp::setOnhashchange(events::EventHandlerNonNull onhashchange)
+void WindowProxy::setOnhashchange(events::EventHandlerNonNull onhashchange)
 {
     window->setEventHandler(u"hashchange", onhashchange);
 }
 
-events::EventHandlerNonNull WindowImp::getOninput()
+events::EventHandlerNonNull WindowProxy::getOninput()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"input"));
 }
 
-void WindowImp::setOninput(events::EventHandlerNonNull oninput)
+void WindowProxy::setOninput(events::EventHandlerNonNull oninput)
 {
     window->setEventHandler(u"input", oninput);
 }
 
-events::EventHandlerNonNull WindowImp::getOninvalid()
+events::EventHandlerNonNull WindowProxy::getOninvalid()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"invalid"));
 }
 
-void WindowImp::setOninvalid(events::EventHandlerNonNull oninvalid)
+void WindowProxy::setOninvalid(events::EventHandlerNonNull oninvalid)
 {
     window->setEventHandler(u"invalid", oninvalid);
 }
 
-events::EventHandlerNonNull WindowImp::getOnkeydown()
+events::EventHandlerNonNull WindowProxy::getOnkeydown()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"keydown"));
 }
 
-void WindowImp::setOnkeydown(events::EventHandlerNonNull onkeydown)
+void WindowProxy::setOnkeydown(events::EventHandlerNonNull onkeydown)
 {
     window->setEventHandler(u"keydown", onkeydown);
 }
 
-events::EventHandlerNonNull WindowImp::getOnkeypress()
+events::EventHandlerNonNull WindowProxy::getOnkeypress()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"keypress"));
 }
 
-void WindowImp::setOnkeypress(events::EventHandlerNonNull onkeypress)
+void WindowProxy::setOnkeypress(events::EventHandlerNonNull onkeypress)
 {
     window->setEventHandler(u"keypress", onkeypress);
 }
 
-events::EventHandlerNonNull WindowImp::getOnkeyup()
+events::EventHandlerNonNull WindowProxy::getOnkeyup()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"keyup"));
 }
 
-void WindowImp::setOnkeyup(events::EventHandlerNonNull onkeyup)
+void WindowProxy::setOnkeyup(events::EventHandlerNonNull onkeyup)
 {
     window->setEventHandler(u"keyup", onkeyup);
 }
 
-events::EventHandlerNonNull WindowImp::getOnload()
+events::EventHandlerNonNull WindowProxy::getOnload()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"load"));
 }
 
-void WindowImp::setOnload(events::EventHandlerNonNull onload)
+void WindowProxy::setOnload(events::EventHandlerNonNull onload)
 {
     window->setEventHandler(u"load", onload);
 }
 
-events::EventHandlerNonNull WindowImp::getOnloadeddata()
+events::EventHandlerNonNull WindowProxy::getOnloadeddata()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"loadeddata"));
 }
 
-void WindowImp::setOnloadeddata(events::EventHandlerNonNull onloadeddata)
+void WindowProxy::setOnloadeddata(events::EventHandlerNonNull onloadeddata)
 {
     window->setEventHandler(u"loadeddata", onloadeddata);
 }
 
-events::EventHandlerNonNull WindowImp::getOnloadedmetadata()
+events::EventHandlerNonNull WindowProxy::getOnloadedmetadata()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"loadedmetadata"));
 }
 
-void WindowImp::setOnloadedmetadata(events::EventHandlerNonNull onloadedmetadata)
+void WindowProxy::setOnloadedmetadata(events::EventHandlerNonNull onloadedmetadata)
 {
     window->setEventHandler(u"loadedmetadata", onloadedmetadata);
 }
 
-events::EventHandlerNonNull WindowImp::getOnloadstart()
+events::EventHandlerNonNull WindowProxy::getOnloadstart()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"loadstart"));
 }
 
-void WindowImp::setOnloadstart(events::EventHandlerNonNull onloadstart)
+void WindowProxy::setOnloadstart(events::EventHandlerNonNull onloadstart)
 {
     window->setEventHandler(u"loadstart", onloadstart);
 }
 
-events::EventHandlerNonNull WindowImp::getOnmessage()
+events::EventHandlerNonNull WindowProxy::getOnmessage()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"message"));
 }
 
-void WindowImp::setOnmessage(events::EventHandlerNonNull onmessage)
+void WindowProxy::setOnmessage(events::EventHandlerNonNull onmessage)
 {
     window->setEventHandler(u"message", onmessage);
 }
 
-events::EventHandlerNonNull WindowImp::getOnmousedown()
+events::EventHandlerNonNull WindowProxy::getOnmousedown()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"mousedown"));
 }
 
-void WindowImp::setOnmousedown(events::EventHandlerNonNull onmousedown)
+void WindowProxy::setOnmousedown(events::EventHandlerNonNull onmousedown)
 {
     window->setEventHandler(u"mousedown", onmousedown);
 }
 
-events::EventHandlerNonNull WindowImp::getOnmousemove()
+events::EventHandlerNonNull WindowProxy::getOnmousemove()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"mousemove"));
 }
 
-void WindowImp::setOnmousemove(events::EventHandlerNonNull onmousemove)
+void WindowProxy::setOnmousemove(events::EventHandlerNonNull onmousemove)
 {
     window->setEventHandler(u"mousemove", onmousemove);
 }
 
-events::EventHandlerNonNull WindowImp::getOnmouseout()
+events::EventHandlerNonNull WindowProxy::getOnmouseout()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"mouseout"));
 }
 
-void WindowImp::setOnmouseout(events::EventHandlerNonNull onmouseout)
+void WindowProxy::setOnmouseout(events::EventHandlerNonNull onmouseout)
 {
     window->setEventHandler(u"mouseout", onmouseout);
 }
 
-events::EventHandlerNonNull WindowImp::getOnmouseover()
+events::EventHandlerNonNull WindowProxy::getOnmouseover()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"mouseover"));
 }
 
-void WindowImp::setOnmouseover(events::EventHandlerNonNull onmouseover)
+void WindowProxy::setOnmouseover(events::EventHandlerNonNull onmouseover)
 {
     window->setEventHandler(u"mouseover", onmouseover);
 }
 
-events::EventHandlerNonNull WindowImp::getOnmouseup()
+events::EventHandlerNonNull WindowProxy::getOnmouseup()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"mouseup"));
 }
 
-void WindowImp::setOnmouseup(events::EventHandlerNonNull onmouseup)
+void WindowProxy::setOnmouseup(events::EventHandlerNonNull onmouseup)
 {
     window->setEventHandler(u"mouseup", onmouseup);
 }
 
-events::EventHandlerNonNull WindowImp::getOnmousewheel()
+events::EventHandlerNonNull WindowProxy::getOnmousewheel()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"mousewheel"));
 }
 
-void WindowImp::setOnmousewheel(events::EventHandlerNonNull onmousewheel)
+void WindowProxy::setOnmousewheel(events::EventHandlerNonNull onmousewheel)
 {
     window->setEventHandler(u"mousewheel", onmousewheel);
 }
 
-events::EventHandlerNonNull WindowImp::getOnoffline()
+events::EventHandlerNonNull WindowProxy::getOnoffline()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"offline"));
 }
 
-void WindowImp::setOnoffline(events::EventHandlerNonNull onoffline)
+void WindowProxy::setOnoffline(events::EventHandlerNonNull onoffline)
 {
     window->setEventHandler(u"offline", onoffline);
 }
 
-events::EventHandlerNonNull WindowImp::getOnonline()
+events::EventHandlerNonNull WindowProxy::getOnonline()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"online"));
 }
 
-void WindowImp::setOnonline(events::EventHandlerNonNull ononline)
+void WindowProxy::setOnonline(events::EventHandlerNonNull ononline)
 {
     window->setEventHandler(u"online", ononline);
 }
 
-events::EventHandlerNonNull WindowImp::getOnpause()
+events::EventHandlerNonNull WindowProxy::getOnpause()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"pause"));
 }
 
-void WindowImp::setOnpause(events::EventHandlerNonNull onpause)
+void WindowProxy::setOnpause(events::EventHandlerNonNull onpause)
 {
     window->setEventHandler(u"pause", onpause);
 }
 
-events::EventHandlerNonNull WindowImp::getOnplay()
+events::EventHandlerNonNull WindowProxy::getOnplay()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"play"));
 }
 
-void WindowImp::setOnplay(events::EventHandlerNonNull onplay)
+void WindowProxy::setOnplay(events::EventHandlerNonNull onplay)
 {
     window->setEventHandler(u"play", onplay);
 }
 
-events::EventHandlerNonNull WindowImp::getOnplaying()
+events::EventHandlerNonNull WindowProxy::getOnplaying()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"playing"));
 }
 
-void WindowImp::setOnplaying(events::EventHandlerNonNull onplaying)
+void WindowProxy::setOnplaying(events::EventHandlerNonNull onplaying)
 {
     window->setEventHandler(u"playing", onplaying);
 }
 
-events::EventHandlerNonNull WindowImp::getOnpagehide()
+events::EventHandlerNonNull WindowProxy::getOnpagehide()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"pagehide"));
 }
 
-void WindowImp::setOnpagehide(events::EventHandlerNonNull onpagehide)
+void WindowProxy::setOnpagehide(events::EventHandlerNonNull onpagehide)
 {
     window->setEventHandler(u"pagehide", onpagehide);
 }
 
-events::EventHandlerNonNull WindowImp::getOnpageshow()
+events::EventHandlerNonNull WindowProxy::getOnpageshow()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"pageshow"));
 }
 
-void WindowImp::setOnpageshow(events::EventHandlerNonNull onpageshow)
+void WindowProxy::setOnpageshow(events::EventHandlerNonNull onpageshow)
 {
     window->setEventHandler(u"pageshow", onpageshow);
 }
 
-events::EventHandlerNonNull WindowImp::getOnpopstate()
+events::EventHandlerNonNull WindowProxy::getOnpopstate()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"popstate"));
 }
 
-void WindowImp::setOnpopstate(events::EventHandlerNonNull onpopstate)
+void WindowProxy::setOnpopstate(events::EventHandlerNonNull onpopstate)
 {
     window->setEventHandler(u"popstate", onpopstate);
 }
 
-events::EventHandlerNonNull WindowImp::getOnprogress()
+events::EventHandlerNonNull WindowProxy::getOnprogress()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"progress"));
 }
 
-void WindowImp::setOnprogress(events::EventHandlerNonNull onprogress)
+void WindowProxy::setOnprogress(events::EventHandlerNonNull onprogress)
 {
     window->setEventHandler(u"progress", onprogress);
 }
 
-events::EventHandlerNonNull WindowImp::getOnratechange()
+events::EventHandlerNonNull WindowProxy::getOnratechange()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"ratechange"));
 }
 
-void WindowImp::setOnratechange(events::EventHandlerNonNull onratechange)
+void WindowProxy::setOnratechange(events::EventHandlerNonNull onratechange)
 {
     window->setEventHandler(u"ratechange", onratechange);
 }
 
-events::EventHandlerNonNull WindowImp::getOnreset()
+events::EventHandlerNonNull WindowProxy::getOnreset()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"reset"));
 }
 
-void WindowImp::setOnreset(events::EventHandlerNonNull onreset)
+void WindowProxy::setOnreset(events::EventHandlerNonNull onreset)
 {
     window->setEventHandler(u"reset", onreset);
 }
 
-events::EventHandlerNonNull WindowImp::getOnresize()
+events::EventHandlerNonNull WindowProxy::getOnresize()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"resize"));
 }
 
-void WindowImp::setOnresize(events::EventHandlerNonNull onresize)
+void WindowProxy::setOnresize(events::EventHandlerNonNull onresize)
 {
     window->setEventHandler(u"resize", onresize);
 }
 
-events::EventHandlerNonNull WindowImp::getOnscroll()
+events::EventHandlerNonNull WindowProxy::getOnscroll()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"scroll"));
 }
 
-void WindowImp::setOnscroll(events::EventHandlerNonNull onscroll)
+void WindowProxy::setOnscroll(events::EventHandlerNonNull onscroll)
 {
     window->setEventHandler(u"scroll", onscroll);
 }
 
-events::EventHandlerNonNull WindowImp::getOnseeked()
+events::EventHandlerNonNull WindowProxy::getOnseeked()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"seeked"));
 }
 
-void WindowImp::setOnseeked(events::EventHandlerNonNull onseeked)
+void WindowProxy::setOnseeked(events::EventHandlerNonNull onseeked)
 {
     window->setEventHandler(u"seeked", onseeked);
 }
 
-events::EventHandlerNonNull WindowImp::getOnseeking()
+events::EventHandlerNonNull WindowProxy::getOnseeking()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"seeking"));
 }
 
-void WindowImp::setOnseeking(events::EventHandlerNonNull onseeking)
+void WindowProxy::setOnseeking(events::EventHandlerNonNull onseeking)
 {
     window->setEventHandler(u"seeking", onseeking);
 }
 
-events::EventHandlerNonNull WindowImp::getOnselect()
+events::EventHandlerNonNull WindowProxy::getOnselect()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"select"));
 }
 
-void WindowImp::setOnselect(events::EventHandlerNonNull onselect)
+void WindowProxy::setOnselect(events::EventHandlerNonNull onselect)
 {
     window->setEventHandler(u"select", onselect);
 }
 
-events::EventHandlerNonNull WindowImp::getOnshow()
+events::EventHandlerNonNull WindowProxy::getOnshow()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"show"));
 }
 
-void WindowImp::setOnshow(events::EventHandlerNonNull onshow)
+void WindowProxy::setOnshow(events::EventHandlerNonNull onshow)
 {
     window->setEventHandler(u"show", onshow);
 }
 
-events::EventHandlerNonNull WindowImp::getOnstalled()
+events::EventHandlerNonNull WindowProxy::getOnstalled()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"stalled"));
 }
 
-void WindowImp::setOnstalled(events::EventHandlerNonNull onstalled)
+void WindowProxy::setOnstalled(events::EventHandlerNonNull onstalled)
 {
     window->setEventHandler(u"stalled", onstalled);
 }
 
-events::EventHandlerNonNull WindowImp::getOnstorage()
+events::EventHandlerNonNull WindowProxy::getOnstorage()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"storage"));
 }
 
-void WindowImp::setOnstorage(events::EventHandlerNonNull onstorage)
+void WindowProxy::setOnstorage(events::EventHandlerNonNull onstorage)
 {
     window->setEventHandler(u"storage", onstorage);
 }
 
-events::EventHandlerNonNull WindowImp::getOnsubmit()
+events::EventHandlerNonNull WindowProxy::getOnsubmit()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"submit"));
 }
 
-void WindowImp::setOnsubmit(events::EventHandlerNonNull onsubmit)
+void WindowProxy::setOnsubmit(events::EventHandlerNonNull onsubmit)
 {
     window->setEventHandler(u"submit", onsubmit);
 }
 
-events::EventHandlerNonNull WindowImp::getOnsuspend()
+events::EventHandlerNonNull WindowProxy::getOnsuspend()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"suspend"));
 }
 
-void WindowImp::setOnsuspend(events::EventHandlerNonNull onsuspend)
+void WindowProxy::setOnsuspend(events::EventHandlerNonNull onsuspend)
 {
     window->setEventHandler(u"suspend", onsuspend);
 }
 
-events::EventHandlerNonNull WindowImp::getOntimeupdate()
+events::EventHandlerNonNull WindowProxy::getOntimeupdate()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"timeupdate"));
 }
 
-void WindowImp::setOntimeupdate(events::EventHandlerNonNull ontimeupdate)
+void WindowProxy::setOntimeupdate(events::EventHandlerNonNull ontimeupdate)
 {
     window->setEventHandler(u"timeupdate", ontimeupdate);
 }
 
-events::EventHandlerNonNull WindowImp::getOnunload()
+events::EventHandlerNonNull WindowProxy::getOnunload()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"unload"));
 }
 
-void WindowImp::setOnunload(events::EventHandlerNonNull onunload)
+void WindowProxy::setOnunload(events::EventHandlerNonNull onunload)
 {
     window->setEventHandler(u"unload", onunload);
 }
 
-events::EventHandlerNonNull WindowImp::getOnvolumechange()
+events::EventHandlerNonNull WindowProxy::getOnvolumechange()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"volumechange"));
 }
 
-void WindowImp::setOnvolumechange(events::EventHandlerNonNull onvolumechange)
+void WindowProxy::setOnvolumechange(events::EventHandlerNonNull onvolumechange)
 {
     window->setEventHandler(u"volumechange", onvolumechange);
 }
 
-events::EventHandlerNonNull WindowImp::getOnwaiting()
+events::EventHandlerNonNull WindowProxy::getOnwaiting()
 {
     return interface_cast<events::EventHandlerNonNull>(window->getEventHandler(u"waiting"));
 }
 
-void WindowImp::setOnwaiting(events::EventHandlerNonNull onwaiting)
+void WindowProxy::setOnwaiting(events::EventHandlerNonNull onwaiting)
 {
     window->setEventHandler(u"waiting", onwaiting);
 }
 
-void WindowImp::updateView()
+void WindowProxy::updateView()
 {
     if (parent)
         parent->updateView();
@@ -1835,7 +1835,7 @@ void WindowImp::updateView()
     }
 }
 
-css::CSSStyleDeclaration WindowImp::getComputedStyle(Element elt)
+css::CSSStyleDeclaration WindowProxy::getComputedStyle(Element elt)
 {
     updateView();
     if (!view)
@@ -1843,7 +1843,7 @@ css::CSSStyleDeclaration WindowImp::getComputedStyle(Element elt)
     return view->getStyle(elt);
 }
 
-css::CSSStyleDeclaration WindowImp::getComputedStyle(Element elt, const std::u16string& pseudoElt)
+css::CSSStyleDeclaration WindowProxy::getComputedStyle(Element elt, const std::u16string& pseudoElt)
 {
     updateView();
     if (!view)
@@ -1851,47 +1851,47 @@ css::CSSStyleDeclaration WindowImp::getComputedStyle(Element elt, const std::u16
     return view->getStyle(elt, pseudoElt);
 }
 
-html::MediaQueryList WindowImp::matchMedia(const std::u16string& media_query_list)
+html::MediaQueryList WindowProxy::matchMedia(const std::u16string& media_query_list)
 {
     return window->matchMedia(media_query_list);
 }
 
-html::Screen WindowImp::getScreen()
+html::Screen WindowProxy::getScreen()
 {
     return &screen;
 }
 
-int WindowImp::getInnerWidth()
+int WindowProxy::getInnerWidth()
 {
     return width;
 }
 
-int WindowImp::getInnerHeight()
+int WindowProxy::getInnerHeight()
 {
     return height;
 }
 
-int WindowImp::getScrollX()
+int WindowProxy::getScrollX()
 {
     return window->getScrollX();
 }
 
-int WindowImp::getPageXOffset()
+int WindowProxy::getPageXOffset()
 {
     return getScrollX();
 }
 
-int WindowImp::getScrollY()
+int WindowProxy::getScrollY()
 {
     return window->getScrollY();
 }
 
-int WindowImp::getPageYOffset()
+int WindowProxy::getPageYOffset()
 {
     return getScrollY();
 }
 
-void WindowImp::scroll(int x, int y)
+void WindowProxy::scroll(int x, int y)
 {
     if (!view)
         return;
@@ -1906,140 +1906,140 @@ void WindowImp::scroll(int x, int y)
     view->setFlags(Box::NEED_REPAINT);
 }
 
-void WindowImp::scrollTo(int x, int y)
+void WindowProxy::scrollTo(int x, int y)
 {
     window->scroll(x, y);
 }
 
-void WindowImp::scrollBy(int x, int y)
+void WindowProxy::scrollBy(int x, int y)
 {
     scroll(getScrollX() + x, getScrollY() + y);
 }
 
-int WindowImp::getScreenX()
+int WindowProxy::getScreenX()
 {
     // TODO: implement me!
     return 0;
 }
 
-int WindowImp::getScreenY()
+int WindowProxy::getScreenY()
 {
     // TODO: implement me!
     return 0;
 }
 
-int WindowImp::getOuterWidth()
+int WindowProxy::getOuterWidth()
 {
     // TODO: implement me!
     return 0;
 }
 
-int WindowImp::getOuterHeight()
+int WindowProxy::getOuterHeight()
 {
     // TODO: implement me!
     return 0;
 }
 
-void WindowImp::addEventListener(const std::u16string& type, events::EventListener listener, bool capture)
+void WindowProxy::addEventListener(const std::u16string& type, events::EventListener listener, bool capture)
 {
     if (window)
         window->addEventListener(type, listener, capture);
 }
 
-void WindowImp::removeEventListener(const std::u16string& type, events::EventListener listener, bool capture)
+void WindowProxy::removeEventListener(const std::u16string& type, events::EventListener listener, bool capture)
 {
     if (window)
         window->removeEventListener(type, listener, capture);
 }
 
-bool WindowImp::dispatchEvent(events::Event event)
+bool WindowProxy::dispatchEvent(events::Event event)
 {
     if (window)
         return window->dispatchEvent(event);
     return false;
 }
 
-std::u16string WindowImp::btoa(const std::u16string& btoa)
+std::u16string WindowProxy::btoa(const std::u16string& btoa)
 {
     // TODO: implement me!
     return u"";
 }
 
-std::u16string WindowImp::atob(const std::u16string& atob)
+std::u16string WindowProxy::atob(const std::u16string& atob)
 {
     // TODO: implement me!
     return u"";
 }
 
-int WindowImp::setTimeout(events::EventHandlerNonNull handler)
+int WindowProxy::setTimeout(events::EventHandlerNonNull handler)
 {
     // TODO: implement me!
     return 0;
 }
 
-int WindowImp::setTimeout(events::EventHandlerNonNull handler, int timeout, Variadic<Any> arguments)
+int WindowProxy::setTimeout(events::EventHandlerNonNull handler, int timeout, Variadic<Any> arguments)
 {
     // TODO: implement me!
     return 0;
 }
 
-int WindowImp::setTimeout(const std::u16string& handler)
+int WindowProxy::setTimeout(const std::u16string& handler)
 {
     // TODO: implement me!
     return 0;
 }
 
-int WindowImp::setTimeout(const std::u16string& handler, int timeout, Variadic<Any> arguments)
+int WindowProxy::setTimeout(const std::u16string& handler, int timeout, Variadic<Any> arguments)
 {
     // TODO: implement me!
     return 0;
 }
 
-void WindowImp::clearTimeout(int handle)
+void WindowProxy::clearTimeout(int handle)
 {
     // TODO: implement me!
 }
 
-int WindowImp::setInterval(events::EventHandlerNonNull handler)
-{
-    // TODO: implement me!
-    return 0;
-}
-
-int WindowImp::setInterval(events::EventHandlerNonNull handler, int timeout, Variadic<Any> arguments)
+int WindowProxy::setInterval(events::EventHandlerNonNull handler)
 {
     // TODO: implement me!
     return 0;
 }
 
-int WindowImp::setInterval(const std::u16string& handler)
+int WindowProxy::setInterval(events::EventHandlerNonNull handler, int timeout, Variadic<Any> arguments)
 {
     // TODO: implement me!
     return 0;
 }
 
-int WindowImp::setInterval(const std::u16string& handler, int timeout, Variadic<Any> arguments)
+int WindowProxy::setInterval(const std::u16string& handler)
 {
     // TODO: implement me!
     return 0;
 }
 
-void WindowImp::clearInterval(int handle)
+int WindowProxy::setInterval(const std::u16string& handler, int timeout, Variadic<Any> arguments)
+{
+    // TODO: implement me!
+    return 0;
+}
+
+void WindowProxy::clearInterval(int handle)
 {
     // TODO: implement me!
 }
 
-void WindowImp::postMessage(Any message, const std::u16string& targetOrigin)
+void WindowProxy::postMessage(Any message, const std::u16string& targetOrigin)
 {
     // TODO: implement me!
 }
 
-void WindowImp::postMessage(Any message, const std::u16string& targetOrigin, Sequence<html::Transferable> transfer)
+void WindowProxy::postMessage(Any message, const std::u16string& targetOrigin, Sequence<html::Transferable> transfer)
 {
     // TODO: implement me!
 }
 
-std::u16string WindowImp::toNativeLineEndings(const std::u16string& string)
+std::u16string WindowProxy::toNativeLineEndings(const std::u16string& string)
 {
     // TODO: implement me!
     return u"";

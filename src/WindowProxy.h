@@ -70,9 +70,9 @@ class Box;
 class IcoImage;
 class ViewCSSImp;
 
-// WindowImp implements a browsing context and acts as a WindowProxy object for the browsing context.
+// WindowProxy implements a browsing context and acts as a WindowProxy object for the browsing context.
 // cf. http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#windows
-class WindowImp : public ObjectMixin<WindowImp>
+class WindowProxy : public ObjectMixin<WindowProxy>
 {
 public:
     // flags
@@ -140,7 +140,7 @@ private:
         };
 
     private:
-        WindowImp* window;
+        WindowProxy* window;
         std::mutex mutex;
         std::condition_variable cond;
         volatile int state;
@@ -151,7 +151,7 @@ private:
         void deleteView();
 
     public:
-        BackgroundTask(WindowImp* window);
+        BackgroundTask(WindowProxy* window);
         ~BackgroundTask();
         void operator()();
         unsigned sleep();
@@ -208,8 +208,8 @@ private:
 
     unsigned short flags;
     std::u16string name;
-    WindowImp* parent;
-    std::deque<WindowImp*> childWindows;
+    WindowProxy* parent;
+    std::deque<WindowProxy*> childWindows;
     ElementImp* frameElement;
 
     std::deque<EventTask> eventQueue;
@@ -242,14 +242,14 @@ private:
     void keyup(const EventTask& task);
 
     void navigateToFragmentIdentifier(URL target);
-    WindowImp* selectBrowsingContext(std::u16string target, bool& replace);
-    void navigate(std::u16string url, bool replace, WindowImp* srcWindow);
+    WindowProxy* selectBrowsingContext(std::u16string target, bool& replace);
+    void navigate(std::u16string url, bool replace, WindowProxy* srcWindow);
 
     void updateView(ViewCSSImp* next);
 
 public:
-    WindowImp(WindowImp* parent = 0, ElementImp* frameElement = 0, unsigned short flags = 0);
-    ~WindowImp();
+    WindowProxy(WindowProxy* parent = 0, ElementImp* frameElement = 0, unsigned short flags = 0);
+    ~WindowProxy();
 
     static css::CSSStyleSheet defaultStyleSheet;
 

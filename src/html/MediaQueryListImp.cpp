@@ -20,7 +20,7 @@
 #include <boost/bind.hpp>
 
 #include "Task.h"
-#include "WindowImp.h"
+#include "WindowProxy.h"
 
 namespace org
 {
@@ -31,7 +31,7 @@ namespace dom
 namespace bootstrap
 {
 
-// Note this constructor should be called via WindowImp::matchMedia().
+// Note this constructor should be called via WindowProxy::matchMedia().
 MediaQueryListImp::MediaQueryListImp(DocumentWindowPtr window, std::u16string query) :
     state(Unknown),
     window(window)

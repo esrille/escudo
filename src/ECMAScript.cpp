@@ -17,7 +17,7 @@
 #include "ECMAScript.h"
 
 #include "DocumentWindow.h"
-#include "WindowImp.h"
+#include "WindowProxy.h"
 
 #include "Test.util.h"
 
@@ -45,7 +45,7 @@ void ECMAScriptContext::dispatchEvent(org::w3c::dom::bootstrap::EventListenerImp
 
 ECMAScriptContext* ECMAScriptContext::getCurrentContext()
 {
-    auto window = dynamic_cast<org::w3c::dom::bootstrap::WindowImp*>(current);
+    auto window = dynamic_cast<org::w3c::dom::bootstrap::WindowProxy*>(current);
     if (!window)
         return 0;
     return window->getDocumentWindow()->getContext();

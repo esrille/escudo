@@ -25,7 +25,7 @@
 
 #include "DocumentWindow.h"
 #include "ScriptV8.h"
-#include "WindowImp.h"
+#include "WindowProxy.h"
 
 std::map<std::string, v8::Persistent<v8::FunctionTemplate>> NativeClass::interfaceMap;
 std::map<ObjectImp*, v8::Persistent<v8::Object>> NativeClass::wrapperMap;
@@ -449,7 +449,7 @@ v8::Handle<v8::Object> NativeClass::createJSObject(ObjectImp* imp)
     v8::HandleScope handleScope;
 
     assert(imp);
-    if (auto w = dynamic_cast<org::w3c::dom::bootstrap::WindowImp*>(imp)) {
+    if (auto w = dynamic_cast<org::w3c::dom::bootstrap::WindowProxy*>(imp)) {
         if (w->getDocumentWindow()->getContext()->getCurrent() == imp) {
             assert(v8::Context::InContext());
             return handleScope.Close(v8::Context::GetCurrent()->Global());

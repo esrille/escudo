@@ -28,7 +28,7 @@
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class CSSParserExpr;
-class WindowImp;
+class WindowProxy;
 
 class MediaListImp : public ObjectMixin<MediaListImp>
 {
@@ -156,7 +156,7 @@ public:
     void clear() {
         mediaQueries.clear();
     }
-    bool matches(WindowImp* window);
+    bool matches(WindowProxy* window);
 
     bool contains(const MediaQuery& mediaQuery) const;
 

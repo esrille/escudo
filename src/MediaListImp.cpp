@@ -27,7 +27,7 @@
 #include "css/CSSParser.h"
 #include "css/CSSPropertyValueImp.h"
 #include "css/ViewCSSImp.h"
-#include "WindowImp.h"
+#include "WindowProxy.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -201,7 +201,7 @@ MediaQuery::getMediaText()
 
 // MediaList
 
-bool MediaListImp::matches(WindowImp* window)
+bool MediaListImp::matches(WindowProxy* window)
 {
     if (!window)
         return false;

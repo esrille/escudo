@@ -884,8 +884,8 @@ libeshtml5_a_SOURCES += \
 	src/WheelEventImp.h \
 	src/WheelEventInitImp.cpp \
 	src/WheelEventInitImp.h \
-	src/WindowImp.cpp \
-	src/WindowImp.h \
+	src/WindowProxy.cpp \
+	src/WindowProxy.h \
 	src/XMLDocumentImp.cpp \
 	src/XMLDocumentImp.h \
 	src/XMLSerializerImp.cpp \

@@ -22,7 +22,7 @@
 #include "utf.h"
 
 #include "DocumentImp.h"
-#include "WindowImp.h"
+#include "WindowProxy.h"
 
 namespace org
 {

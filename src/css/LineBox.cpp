@@ -36,7 +36,7 @@
 #include "FormattingContext.h"
 #include "StackingContext.h"
 #include "ViewCSSImp.h"
-#include "WindowImp.h"
+#include "WindowProxy.h"
 
 #include "Test.util.h"
 

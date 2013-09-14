@@ -19,7 +19,7 @@
 
 #include "DOMImplementationImp.h"
 #include "ECMAScript.h"
-#include "WindowImp.h"
+#include "WindowProxy.h"
 #include "font/FontDatabase.h"
 #include "http/HTTPConnection.h"
 
@@ -101,7 +101,7 @@ int main(int argc, char* argv[])
     std::string navigatorPath = profile.getProfilePath() + "/escudo.html";
     if (!profile.hasFile(navigatorPath))
         navigatorPath = std::string(argv[1]) + "/escudo.html";
-    WindowImp* imp = new WindowImp(0, 0, WindowImp::DeskTop);
+    WindowProxy* imp = new WindowProxy(0, 0, WindowProxy::DeskTop);
     window = imp;
     imp->setFaviconOverridable(true);
     imp->enableZoom(false);

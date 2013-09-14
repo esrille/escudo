@@ -37,7 +37,7 @@ namespace dom
 namespace bootstrap
 {
 
-class WindowImp;
+class WindowProxy;
 
 class HistoryImp : public ObjectMixin<HistoryImp>
 {
@@ -63,7 +63,7 @@ class HistoryImp : public ObjectMixin<HistoryImp>
         }
     };
 
-    WindowImp* window;
+    WindowProxy* window;
     std::deque<SessionHistoryEntry> sessionHistory;
     int currentSession;
     bool replace;
@@ -71,7 +71,7 @@ class HistoryImp : public ObjectMixin<HistoryImp>
     void removeAfterCurrent();
 
 public:
-    HistoryImp(WindowImp* window) :
+    HistoryImp(WindowProxy* window) :
         window(window),
         currentSession(0),
         replace(false)

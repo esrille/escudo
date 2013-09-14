@@ -24,15 +24,15 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
-class WindowImp;
+class WindowProxy;
 
 class LocationImp : public ObjectMixin<LocationImp>
 {
-    WindowImp* window;
+    WindowProxy* window;
     URL url;
 
 public:
-    LocationImp(WindowImp* window, const std::u16string& url);
+    LocationImp(WindowProxy* window, const std::u16string& url);
     LocationImp(const LocationImp& other);
 
     // Location

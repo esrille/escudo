@@ -31,7 +31,7 @@ constexpr auto Intern = &one_at_a_time::hash<char16_t>;
 #include "DocumentImp.h"
 #include "EventImp.h"
 #include "ECMAScript.h"
-#include "WindowImp.h"
+#include "WindowProxy.h"
 #include "css/Box.h"
 #include "css/CSSParser.h"
 #include "css/CSSStyleDeclarationImp.h"
@@ -341,7 +341,7 @@ Box* HTMLElementImp::getBox()
     DocumentImp* owner = getOwnerDocumentImp();
     if (!owner)
         return 0;
-    WindowImp* window = owner->getDefaultWindow();
+    WindowProxy* window = owner->getDefaultWindow();
     if (!window || !window->getView())
         return 0;
     // TODO: Fix MVC violation

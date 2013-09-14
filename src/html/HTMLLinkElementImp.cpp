@@ -27,7 +27,7 @@ constexpr auto Intern = &one_at_a_time::hash<char16_t>;
 
 #include "DocumentImp.h"
 #include "DOMTokenListImp.h"
-#include "WindowImp.h"
+#include "WindowProxy.h"
 #include "HTMLUtil.h"
 #include "css/BoxImage.h"
 #include "css/CSSInputStream.h"
@@ -78,7 +78,7 @@ void HTMLLinkElementImp::handleMutation(events::MutationEvent mutation)
             styleSheet.setMedia((mutation.getAttrChange() != events::MutationEvent::REMOVAL) ? mutation.getNewValue() : u"");
             if (DocumentImp* document = getOwnerDocumentImp()) {
                 // TODO: Optimize the following steps later
-                if (WindowImp* view = document->getDefaultWindow())
+                if (WindowProxy* view = document->getDefaultWindow())
                     view->setViewFlags(Box::NEED_SELECTOR_REMATCHING);
             }
         }
@@ -109,7 +109,7 @@ void HTMLLinkElementImp::requestRefresh()
 
     DocumentImp* owner = getOwnerDocumentImp();
     assert(owner);
-    if (WindowImp* window = owner->getDefaultWindow()) {
+    if (WindowProxy* window = owner->getDefaultWindow()) {
         Task task(this, boost::bind(&HTMLLinkElementImp::refresh, this));
         window->putTask(task);
     }
@@ -172,7 +172,7 @@ void HTMLLinkElementImp::linkStyleSheet(HttpRequest* request)
         if (4 <= getLogLevel())
             dumpStyleSheet(std::cerr, styleSheet.self());
         document->resetStyleSheets();
-        if (WindowImp* view = document->getDefaultWindow())
+        if (WindowProxy* view = document->getDefaultWindow())
             view->setViewFlags(Box::NEED_SELECTOR_REMATCHING);
     }
     document->decrementLoadEventDelayCount();
@@ -202,7 +202,7 @@ bool HTMLLinkElementImp::setFavicon(DocumentImp* document)
         if (type == u"image/vnd.microsoft.icon" || type.empty()) {
             IcoImage ico;
             if (ico.open(file)) {
-                if (WindowImp* view = document->getDefaultWindow()) {
+                if (WindowProxy* view = document->getDefaultWindow()) {
                     view->setFavicon(&ico, file);
                     result = true;
                 }
@@ -211,7 +211,7 @@ bool HTMLLinkElementImp::setFavicon(DocumentImp* document)
             BoxImage image;
             image.open(file);
             if (image.getState() == BoxImage::CompletelyAvailable) {
-                if (WindowImp* view = document->getDefaultWindow()) {
+                if (WindowProxy* view = document->getDefaultWindow()) {
                     view->setFavicon(&image);
                     result = true;
                 }

@@ -39,7 +39,7 @@ namespace dom
 namespace bootstrap
 {
 
-class WindowImp;
+class WindowProxy;
 
 class MediaQueryListImp : public ObjectMixin<MediaQueryListImp>
 {

@@ -19,7 +19,7 @@
 
 #include "DOMImplementationImp.h"
 #include "ECMAScript.h"
-#include "WindowImp.h"
+#include "WindowProxy.h"
 #include "font/FontDatabase.h"
 #include "http/HTTPConnection.h"
 
@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
 
     std::thread httpService(std::ref(HttpConnectionManager::getInstance()));
 
-    window = new WindowImp(0, 0, WindowImp::TopLevel);
+    window = new WindowProxy(0, 0, WindowProxy::TopLevel);
     window.open(utfconv(argv[argc - 1]), u"_self", u"", true);
 
     glutMainLoop();

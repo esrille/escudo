@@ -26,7 +26,7 @@
 #include "StackingContext.h"
 #include "Table.h"
 #include "ViewCSSImp.h"
-#include "WindowImp.h"
+#include "WindowProxy.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -2426,7 +2426,7 @@ std::u16string CSSStyleDeclarationImp::item(unsigned int index)
 {
     if (getFlags() & ComputedStyle) {
         if (auto document = dynamic_cast<DocumentImp*>(owner)) {
-            if (WindowImp* window = document->getDefaultWindow())
+            if (WindowProxy* window = document->getDefaultWindow())
                 window->updateView();
         }
         return getProperty(index)->getCssText(this);
@@ -2500,7 +2500,7 @@ void CSSStyleDeclarationImp::setProperty(const std::u16string& property, const s
             DocumentImp* doc = elm->getOwnerDocumentImp();
             if (!doc)
                 return;
-            WindowImp* window = doc->getDefaultWindow();
+            WindowProxy* window = doc->getDefaultWindow();
             if (!window || !window->getView())
                 return;
             CSSStyleDeclarationImp* style = window->getView()->getStyle(elm);

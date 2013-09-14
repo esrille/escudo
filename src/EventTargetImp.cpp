@@ -23,7 +23,7 @@
 #include "EventImp.h"
 #include "NodeImp.h"
 #include "UIEventImp.h"
-#include "WindowImp.h"
+#include "WindowProxy.h"
 #include "html/HTMLTemplateElementImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
@@ -166,7 +166,7 @@ bool EventTargetImp::dispatchEvent(events::Event evt)
 
         // cf. http://www.whatwg.org/specs/web-apps/current-work/multipage/webappapis.html#events-and-the-window-object
         if (document && event->getType() != u"load") {
-            if (WindowImp* view = document->getDefaultWindow())
+            if (WindowProxy* view = document->getDefaultWindow())
                 eventPath.push_front(view->getDocumentWindow().get());
         }
 
@@ -214,7 +214,7 @@ bool EventTargetImp::dispatchEvent(events::Event evt)
         document->exit();
 
     } else if (DocumentWindow* window = dynamic_cast<DocumentWindow*>(this)) {
-        auto proxy = dynamic_cast<WindowImp*>(window->getDocument().getDefaultView().self());
+        auto proxy = dynamic_cast<WindowProxy*>(window->getDocument().getDefaultView().self());
         window->enter(proxy);
         event->setEventPhase(events::Event::AT_TARGET);
         event->setCurrentTarget(this);

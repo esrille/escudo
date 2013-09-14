@@ -47,7 +47,7 @@ class LineBox;
 class Block;
 class TableWrapperBox;
 class ViewCSSImp;
-class WindowImp;
+class WindowProxy;
 
 class ContainingBlock : public ObjectMixin<ContainingBlock>
 {
@@ -150,7 +150,7 @@ protected:
 
     unsigned short flags;
 
-    WindowImp* childWindow;
+    WindowProxy* childWindow;
 
     void renderBorderEdge(ViewCSSImp* view, int edge, unsigned borderStyle, unsigned color,
                           float a, float b, float c, float d,
@@ -168,7 +168,7 @@ public:
     Node getNode() const {
         return node;
     }
-    WindowImp* getChildWindow() const {
+    WindowProxy* getChildWindow() const {
         return childWindow;
     }
 

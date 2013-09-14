@@ -22,7 +22,7 @@
 #include <boost/iostreams/device/file_descriptor.hpp>
 
 #include "DocumentImp.h"
-#include "WindowImp.h"
+#include "WindowProxy.h"
 
 #include "CSSInputStream.h"
 #include "CSSParser.h"
@@ -125,7 +125,7 @@ void CSSImportRuleImp::notify()
     }
     document->decrementLoadEventDelayCount();
 
-    if (WindowImp* view = document->getDefaultWindow())
+    if (WindowProxy* view = document->getDefaultWindow())
         view->setViewFlags(Box::NEED_SELECTOR_REMATCHING);
 }
 

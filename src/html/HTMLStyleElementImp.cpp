@@ -27,7 +27,7 @@ constexpr auto Intern = &one_at_a_time::hash<char16_t>;
 
 #include "TextImp.h"
 #include "DocumentImp.h"
-#include "WindowImp.h"
+#include "WindowProxy.h"
 
 #include "Test.util.h"
 
@@ -85,7 +85,7 @@ void HTMLStyleElementImp::handleMutation(EventListenerImp* listener, events::Eve
                 dumpStyleSheet(std::cerr, imp);
         }
     }
-    if (WindowImp* view = document->getDefaultWindow())
+    if (WindowProxy* view = document->getDefaultWindow())
         view->setViewFlags(Box::NEED_SELECTOR_REMATCHING);
     document->resetStyleSheets();
 }
@@ -100,7 +100,7 @@ void HTMLStyleElementImp::handleMutation(events::MutationEvent mutation)
             styleSheet.setMedia((mutation.getAttrChange() != events::MutationEvent::REMOVAL) ? value : u"");
             if (DocumentImp* document = getOwnerDocumentImp()) {
                 // TODO: Optimize the following steps later
-                if (WindowImp* view = document->getDefaultWindow())
+                if (WindowProxy* view = document->getDefaultWindow())
                     view->setViewFlags(Box::NEED_SELECTOR_REMATCHING);
             }
         }

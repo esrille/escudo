@@ -20,7 +20,7 @@
 #include <org/w3c/dom/html/HTMLImageElement.h>
 
 #include "ViewCSSImp.h"
-#include "WindowImp.h"
+#include "WindowProxy.h"
 
 #include "html/HTMLReplacedElementImp.h"
 
@@ -130,7 +130,7 @@ bool Block::layOutReplacedElement(ViewCSSImp* view, Element element, CSSStyleDec
     if (tag == u"iframe") {
         html::HTMLIFrameElement iframe = interface_cast<html::HTMLIFrameElement>(element);
         html::Window contentWindow = iframe.getContentWindow();
-        if (WindowImp* imp = dynamic_cast<WindowImp*>(contentWindow.self())) {
+        if (WindowProxy* imp = dynamic_cast<WindowProxy*>(contentWindow.self())) {
             imp->setSize(width, height);
             childWindow = imp;
         }

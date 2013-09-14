@@ -16,7 +16,7 @@
 
 #include "LocationImp.h"
 
-#include "WindowImp.h"
+#include "WindowProxy.h"
 #include "http/HTTPConnection.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
@@ -134,7 +134,7 @@ std::u16string LocationImp::resolveURL(const std::u16string& url)
     return resolved;
 }
 
-LocationImp::LocationImp(WindowImp* window, const std::u16string& url) :
+LocationImp::LocationImp(WindowProxy* window, const std::u16string& url) :
     window(window),
     url(url)
 {

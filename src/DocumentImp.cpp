@@ -35,7 +35,7 @@
 #include "NodeListImp.h"
 #include "ObjectArrayImp.h"
 #include "TextImp.h"
-#include "WindowImp.h"
+#include "WindowProxy.h"
 #include "XMLDocumentImp.h"
 #include "css/CSSSerialize.h"
 #include "html/HTMLAnchorElementImp.h"
@@ -163,7 +163,7 @@ bool DocumentImp::processScripts(std::list<html::HTMLScriptElement>& scripts)
     return true;
 }
 
-void DocumentImp::setDefaultView(WindowImp* view)
+void DocumentImp::setDefaultView(WindowProxy* view)
 {
     defaultView = view;
 }
@@ -190,7 +190,7 @@ void DocumentImp::setReadyState(const std::u16string& readyState)
             if (HTMLIFrameElementImp* frame = dynamic_cast<HTMLIFrameElementImp*>(defaultView->getFrameElementImp()))
                 frame->notify(getError());
             if (defaultView->isBindingDocumentWindow()) {
-                if (WindowImp* parent = dynamic_cast<WindowImp*>(defaultView->getParent().self()))
+                if (WindowProxy* parent = dynamic_cast<WindowProxy*>(defaultView->getParent().self()))
                     parent->setViewFlags(Box::NEED_SELECTOR_MATCHING);
             }
         }
@@ -445,9 +445,9 @@ Element DocumentImp::createElement(const std::u16string& localName)
     if (name == u"img")
         return new(std::nothrow) HTMLImageElementImp(this);
     if (name == u"iframe") {
-        WindowImp* context = getDefaultWindow();
+        WindowProxy* context = getDefaultWindow();
         assert(context);
-        return new(std::nothrow) HTMLIFrameElementImp(this, context->isDeskTop() ? WindowImp::TopLevel : 0);
+        return new(std::nothrow) HTMLIFrameElementImp(this, context->isDeskTop() ? WindowProxy::TopLevel : 0);
     }
     if (name == u"embed")
         return new(std::nothrow) HTMLEmbedElementImp(this);
@@ -1707,7 +1707,7 @@ Document DocumentImp::loadBindingDocument(const std::u16string& documentURI)
     if (found != bindingDocuments.end())
         return found->second.getDocument();
 
-    WindowImp* window = new(std::nothrow) WindowImp(defaultView);
+    WindowProxy* window = new(std::nothrow) WindowProxy(defaultView);
     if (!window)
         return 0;
     bindingDocuments.insert(std::pair<std::u16string, html::Window>(documentURI, window));
@@ -1715,7 +1715,7 @@ Document DocumentImp::loadBindingDocument(const std::u16string& documentURI)
     return window->getDocument();
 }
 
-bool DocumentImp::isBindingDocumentWindow(const WindowImp* window) const
+bool DocumentImp::isBindingDocumentWindow(const WindowProxy* window) const
 {
     for (auto i = bindingDocuments.begin(); i != bindingDocuments.end(); ++i) {
         if (i->second.self() == window)

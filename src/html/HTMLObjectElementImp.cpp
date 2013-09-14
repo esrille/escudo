@@ -103,7 +103,7 @@ void HTMLObjectElementImp::requestRefresh()
 
     DocumentImp* owner = getOwnerDocumentImp();
     assert(owner);
-    if (WindowImp* window = owner->getDefaultWindow()) {
+    if (WindowProxy* window = owner->getDefaultWindow()) {
         Task task(this, boost::bind(&HTMLObjectElementImp::refresh, this));
         window->putTask(task);
     }

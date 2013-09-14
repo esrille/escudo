@@ -21,7 +21,7 @@
 #include <mutex>
 #include <vector>
 
-#include "WindowImp.h"
+#include "WindowProxy.h"
 #include "Test.util.h"
 #include "http/HTTPConnection.h"
 
@@ -69,7 +69,7 @@ void reshape(int w, int h)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    if (WindowImp* imp = static_cast<WindowImp*>(window.self()))
+    if (WindowProxy* imp = static_cast<WindowProxy*>(window.self()))
         imp->setSize(w, h);
 }
 
@@ -78,7 +78,7 @@ void display()
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-    if (WindowImp* imp = static_cast<WindowImp*>(window.self())) {
+    if (WindowProxy* imp = static_cast<WindowProxy*>(window.self())) {
         imp->render(0);
 #ifndef NDEBUG
         GLint depth;
@@ -123,13 +123,13 @@ unsigned getCharKeyCode(int key)
 
 void keyboard(unsigned char key, int x, int y)
 {
-    if (WindowImp* imp = static_cast<WindowImp*>(window.self()))
+    if (WindowProxy* imp = static_cast<WindowProxy*>(window.self()))
         imp->keydown(isprint(key) ? key : 0, getCharKeyCode(key), glutGetModifiers());
 }
 
 void keyboardUp(unsigned char key, int x, int y)
 {
-    if (WindowImp* imp = static_cast<WindowImp*>(window.self()))
+    if (WindowProxy* imp = static_cast<WindowProxy*>(window.self()))
         imp->keyup(isprint(key) ? key : 0, getCharKeyCode(key), glutGetModifiers());
 }
 
@@ -189,7 +189,7 @@ void special(int key, int x, int y)
 {
     unsigned keycode = getSpecialKeyCode(key);
     if (keycode) {
-        if (WindowImp* imp = static_cast<WindowImp*>(window.self()))
+        if (WindowProxy* imp = static_cast<WindowProxy*>(window.self()))
             imp->keydown(0, keycode, glutGetModifiers());
     }
 }
@@ -198,27 +198,27 @@ void specialUp(int key, int x, int y)
 {
     unsigned keycode = getSpecialKeyCode(key);
     if (keycode) {
-        if (WindowImp* imp = static_cast<WindowImp*>(window.self()))
+        if (WindowProxy* imp = static_cast<WindowProxy*>(window.self()))
             imp->keyup(0, keycode, glutGetModifiers());
     }
 }
 
 void mouse(int button, int state, int x, int y)
 {
-    if (WindowImp* imp = static_cast<WindowImp*>(window.self()))
+    if (WindowProxy* imp = static_cast<WindowProxy*>(window.self()))
         imp->mouse(button, state, x, y, glutGetModifiers());
 }
 
 void mouseMove(int x, int y)
 {
-    if (WindowImp* imp = static_cast<WindowImp*>(window.self()))
+    if (WindowProxy* imp = static_cast<WindowProxy*>(window.self()))
         imp->mouseMove(x, y, glutGetModifiers());
 }
 
 void entry(int state)
 {
     if (state == GLUT_LEFT) {
-        if (WindowImp* imp = static_cast<WindowImp*>(window.self())) {
+        if (WindowProxy* imp = static_cast<WindowProxy*>(window.self())) {
             // Note glutGetModifiers() cannot be used outside an input callback
             // TODO: Keep modifiers status.
             imp->mouseMove(-1, -1, 0 /* glutGetModifiers() */);
@@ -229,7 +229,7 @@ void entry(int state)
 void timer(int value)
 {
     HttpConnectionManager::getInstance().poll();    // TODO: This line should not be necessary.
-    if (WindowImp* imp = static_cast<WindowImp*>(window.self())) {
+    if (WindowProxy* imp = static_cast<WindowProxy*>(window.self())) {
         if (imp->poll())
             glutPostRedisplay();
     }

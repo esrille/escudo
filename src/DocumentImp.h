@@ -57,7 +57,7 @@
 #include "NodeImp.h"
 #include "DocumentWindow.h"
 #include "EventListenerImp.h"
-#include "WindowImp.h"
+#include "WindowProxy.h"
 #include "html/HTMLScriptElementImp.h"
 
 class HTMLTokenizer;
@@ -84,7 +84,7 @@ class DocumentImp : public ObjectMixin<DocumentImp, NodeImp>
     std::list<html::HTMLScriptElement> asyncScripts;
     std::list<html::HTMLScriptElement> orderedScripts;
 
-    WindowImp* defaultView;
+    WindowProxy* defaultView;
     ElementImp* activeElement;
     int error;
 
@@ -107,10 +107,10 @@ public:
          LimitedQuirksMode
     };
 
-    WindowImp* getDefaultWindow() const {
+    WindowProxy* getDefaultWindow() const {
         return defaultView;
     }
-    void setDefaultView(WindowImp* view);
+    void setDefaultView(WindowProxy* view);
 
     void enter() {
         if (defaultView)
@@ -238,7 +238,7 @@ public:
     }
     unsigned decrementLoadEventDelayCount();
 
-    bool isBindingDocumentWindow(const WindowImp* window) const;
+    bool isBindingDocumentWindow(const WindowProxy* window) const;
 
     // Node - override
     virtual unsigned short getNodeType();

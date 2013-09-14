@@ -37,7 +37,7 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class HttpRequest;
 class MediaQueryListImp;
-class WindowImp;
+class WindowProxy;
 
 // DocumentWindow implements the Window object
 class DocumentWindow : public EventTargetImp
@@ -71,7 +71,7 @@ public:
     DocumentWindow();
     ~DocumentWindow();
 
-    WindowImp* getWindowImp() const;
+    WindowProxy* getWindowImp() const;
 
     Document getDocument() const {
         return document;
@@ -86,8 +86,8 @@ public:
         return global;
     }
 
-    void enter(WindowImp* proxy);
-    void exit(WindowImp* proxy);
+    void enter(WindowProxy* proxy);
+    void exit(WindowProxy* proxy);
 
     void putTask(const Task& task) {
         taskQueue.push(task);

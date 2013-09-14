@@ -45,7 +45,7 @@ class LineBox;
 class Block;
 class StackingContext;
 class ViewCSSImp;
-class WindowImp;
+class WindowProxy;
 
 // SavedFormattingContext stores the initial FormattingContext state for
 // laying out a block-level box.

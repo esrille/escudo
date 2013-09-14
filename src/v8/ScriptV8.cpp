@@ -241,7 +241,7 @@
 #include "html/VideoTrackImp.h"
 #include "html/VideoTrackListImp.h"
 // #include "WindowBase64Imp.h"
-#include "WindowImp.h"
+#include "WindowProxy.h"
 // #include "WindowModalImp.h"
 // #include "WindowTimersImp.h"
 
@@ -541,7 +541,7 @@ void registerClasses(v8::Handle<v8::ObjectTemplate> global)
     ValidityStateImp::setStaticPrivate(new NativeClass(global, ValidityStateImp::getMetaData()));
     VideoTrackImp::setStaticPrivate(new NativeClass(global, VideoTrackImp::getMetaData()));
     VideoTrackListImp::setStaticPrivate(new NativeClass(global, VideoTrackListImp::getMetaData()));
-    WindowImp::setStaticPrivate(new NativeClass(global, WindowImp::getMetaData()));
+    WindowProxy::setStaticPrivate(new NativeClass(global, WindowProxy::getMetaData()));
     RangeImp::setStaticPrivate(new NativeClass(global, RangeImp::getMetaData()));
 //    MediaListImp::setStaticPrivate(new NativeClass(global, MediaListImp::getMetaData()));
 //    StyleSheetImp::setStaticPrivate(new NativeClass(global, StyleSheetImp::getMetaData()));

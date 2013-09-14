@@ -309,7 +309,7 @@ bool HTMLParser::stopParsing()
     // 2.
     while (!openElementStack.empty())
         openElementStack.pop();
-    // The rest of the steps are executed in WindowImp::poll()
+    // The rest of the steps are executed in WindowProxy::poll()
     return true;
 }
 
@@ -1733,7 +1733,7 @@ bool HTMLParser::Text::processEndTag(HTMLParser* parser, Token& token)
         if (--(parser->scriptNestingLevel) == 0)
             parser->pauseFlag = false;
         parser->setInsertionPoint(old);
-        // Note pending parsing-blocking scripts are processed in WindowImp::poll().
+        // Note pending parsing-blocking scripts are processed in WindowProxy::poll().
         return true;
     }
     // Any other end tag

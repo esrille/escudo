@@ -30,7 +30,7 @@ constexpr auto Intern = &one_at_a_time::hash<char16_t>;
 #include "DocumentImp.h"
 #include "DOMTokenListImp.h"
 #include "HTMLUtil.h"
-#include "WindowImp.h"
+#include "WindowProxy.h"
 
 namespace org
 {
@@ -68,7 +68,7 @@ void HTMLAnchorElementImp::handleClick(EventListenerImp* listener, events::Event
         // TODO: Add more details
         DocumentImp* document = getOwnerDocumentImp();
         assert(document);
-        WindowImp* window = document->getDefaultWindow();
+        WindowProxy* window = document->getDefaultWindow();
         assert(window);
         window->open(href, getTarget());
     }

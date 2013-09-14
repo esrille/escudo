@@ -25,7 +25,7 @@ constexpr auto Intern = &one_at_a_time::hash<char16_t>;
 #include "DocumentImp.h"
 #include "EventImp.h"
 #include "HTMLUtil.h"
-#include "WindowImp.h"
+#include "WindowProxy.h"
 
 namespace org
 {
@@ -48,7 +48,7 @@ HTMLIFrameElementImp::HTMLIFrameElementImp(DocumentImp* ownerDocument, unsigned 
             loadInProgess = true;
             ownerDocument->incrementLoadEventDelayCount();
         }
-        window = new(std::nothrow) WindowImp(dynamic_cast<WindowImp*>(ownerDocument->getDefaultView().self()), this, flags);
+        window = new(std::nothrow) WindowProxy(dynamic_cast<WindowProxy*>(ownerDocument->getDefaultView().self()), this, flags);
         window.open(u"about:blank", u"_self");  // TODO: Check how location is created
     }
     addEventListener(u"blur", &blurListener, false, EventTargetImp::UseDefault);

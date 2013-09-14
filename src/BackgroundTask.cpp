@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "WindowImp.h"
+#include "WindowProxy.h"
 
 #include <new>
 #include <iostream>
@@ -32,7 +32,7 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
-WindowImp::BackgroundTask::BackgroundTask(WindowImp* window) :
+WindowProxy::BackgroundTask::BackgroundTask(WindowProxy* window) :
     window(window),
     state(Init),
     flags(0),
@@ -41,12 +41,12 @@ WindowImp::BackgroundTask::BackgroundTask(WindowImp* window) :
 {
 }
 
-WindowImp::BackgroundTask::~BackgroundTask()
+WindowProxy::BackgroundTask::~BackgroundTask()
 {
     deleteView();
 }
 
-void WindowImp::BackgroundTask::deleteView()
+void WindowProxy::BackgroundTask::deleteView()
 {
     if (!xfered)
         delete view;
@@ -54,7 +54,7 @@ void WindowImp::BackgroundTask::deleteView()
     xfered = false;
 }
 
-void WindowImp::BackgroundTask::operator()()
+void WindowProxy::BackgroundTask::operator()()
 {
     if (!window)
         return;
@@ -117,7 +117,7 @@ void WindowImp::BackgroundTask::operator()()
 }
 
 
-unsigned WindowImp::BackgroundTask::sleep()
+unsigned WindowProxy::BackgroundTask::sleep()
 {
     std::unique_lock<std::mutex> lock(mutex);
     cond.notify_all();
@@ -128,7 +128,7 @@ unsigned WindowImp::BackgroundTask::sleep()
     return result;
 }
 
-void WindowImp::BackgroundTask::wakeUp(unsigned flags)
+void WindowProxy::BackgroundTask::wakeUp(unsigned flags)
 {
     std::lock_guard<std::mutex> lock(mutex);
     xfered = false;
@@ -136,13 +136,13 @@ void WindowImp::BackgroundTask::wakeUp(unsigned flags)
     cond.notify_one();
 }
 
-void WindowImp::BackgroundTask::abort()
+void WindowProxy::BackgroundTask::abort()
 {
     // TODO: Cancel ongoing tasks.
     wakeUp(Abort);
 }
 
-void WindowImp::BackgroundTask::restart(unsigned flags)
+void WindowProxy::BackgroundTask::restart(unsigned flags)
 {
     // TODO: Cancel ongoing tasks.
     std::lock_guard<std::mutex> lock(mutex);
@@ -151,7 +151,7 @@ void WindowImp::BackgroundTask::restart(unsigned flags)
     cond.notify_one();
 }
 
-ViewCSSImp* WindowImp::BackgroundTask::getView()
+ViewCSSImp* WindowProxy::BackgroundTask::getView()
 {
     if (state == Done || state == Init) {
         if (!xfered && view) {
@@ -162,7 +162,7 @@ ViewCSSImp* WindowImp::BackgroundTask::getView()
     return 0;
 }
 
-bool WindowImp::BackgroundTask::wait()
+bool WindowProxy::BackgroundTask::wait()
 {
     std::unique_lock<std::mutex> lock(mutex);
     int original = state;

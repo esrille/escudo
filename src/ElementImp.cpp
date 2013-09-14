@@ -627,7 +627,7 @@ Element ElementImp::querySelector(const std::u16string& selectors)
 
     if (!getOwnerDocumentImp())
         return 0;
-    WindowImp* window = getOwnerDocumentImp()->getDefaultWindow();
+    WindowProxy* window = getOwnerDocumentImp()->getDefaultWindow();
     if (!window)
         return 0;
     return querySelector(selectorsGroup.get(), window->getView());
@@ -656,7 +656,7 @@ NodeList ElementImp::querySelectorAll(const std::u16string& selectors)
 
     if (!getOwnerDocumentImp())
         return nodeList;
-    WindowImp* window = getOwnerDocumentImp()->getDefaultWindow();
+    WindowProxy* window = getOwnerDocumentImp()->getDefaultWindow();
     if (!window)
         return nodeList;
     querySelectorAll(nodeList, selectorsGroup.get(), window->getView());
