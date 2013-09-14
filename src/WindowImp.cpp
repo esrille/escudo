@@ -56,7 +56,7 @@ WindowImp::~WindowImp()
     }
 }
 
-WindowProxy* WindowImp::getWindowImp() const
+WindowProxy* WindowImp::getWindowProxy() const
 {
     if (auto imp = dynamic_cast<DocumentImp*>(document.self()))
         return imp->getDefaultWindow();

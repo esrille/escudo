@@ -132,8 +132,8 @@ bool EventTargetImp::dispatchEvent(events::Event evt)
         return false;
 
     event->setDispatchFlag(true);
-    if (auto documentWindow = dynamic_cast<WindowImp*>(this))
-        event->setTarget(documentWindow->getWindowImp());
+    if (auto window = dynamic_cast<WindowImp*>(this))
+        event->setTarget(window->getWindowProxy());
     else
         event->setTarget(this);
 

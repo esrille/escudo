@@ -90,13 +90,13 @@ FontTexture* ViewCSSImp::selectAltFont(CSSStyleDeclarationImp* style, FontTextur
 
 void ViewCSSImp::beginTranslucent()
 {
-    if (auto imp = window->getWindowImp())
+    if (auto imp = window->getWindowProxy())
         imp->beginTranslucent();
 }
 
 void ViewCSSImp::endTranslucent(float alpha)
 {
-    if (auto imp = window->getWindowImp())
+    if (auto imp = window->getWindowProxy())
         imp->endTranslucent(alpha);
 }
 

@@ -71,7 +71,7 @@ public:
     WindowImp();
     ~WindowImp();
 
-    WindowProxy* getWindowImp() const;
+    WindowProxy* getWindowProxy() const;
 
     Document getDocument() const {
         return document;

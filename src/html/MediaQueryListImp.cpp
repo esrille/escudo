@@ -57,7 +57,7 @@ bool MediaQueryListImp::evaluate()
     if (!mediaList)
         return false;
     int old = state;
-    state = dynamic_cast<MediaListImp*>(mediaList.self())->matches(window->getWindowImp()) ? Match : NotMatch;
+    state = dynamic_cast<MediaListImp*>(mediaList.self())->matches(window->getWindowProxy()) ? Match : NotMatch;
     if (old == state || old == Unknown)
         return false;
     for (auto i = listeners.begin(); i != listeners.end(); ++i) {
