@@ -23,7 +23,6 @@
 #include <iostream>
 #include <memory>
 
-#include "DocumentWindow.h"
 #include "ScriptV8.h"
 #include "WindowProxy.h"
 

@@ -16,7 +16,6 @@
 
 #include "ECMAScript.h"
 
-#include "DocumentWindow.h"
 #include "WindowProxy.h"
 
 #include "Test.util.h"

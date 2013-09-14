@@ -646,8 +646,8 @@ libeshtml5_a_SOURCES = \
 	src/CanvasGL.cpp \
 	src/CanvasGL.h \
 	src/BackgroundTask.cpp \
-	src/DocumentWindow.cpp \
-	src/DocumentWindow.h \
+	src/WindowImp.cpp \
+	src/WindowImp.h \
 	src/Profile.cpp \
 	src/Profile.h \
 	src/Queue.h \

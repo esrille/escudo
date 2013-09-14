@@ -27,7 +27,6 @@
 
 #include "utf.h"
 #include "DocumentImp.h"
-#include "DocumentWindow.h"
 #include "U16InputStream.h"
 
 #include "HTMLBindingElementImp.h"

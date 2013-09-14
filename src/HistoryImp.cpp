@@ -47,7 +47,7 @@ void HistoryImp::removeAfterCurrent()
     }
 }
 
-void HistoryImp::update(const URL& url, const DocumentWindowPtr& window)
+void HistoryImp::update(const URL& url, const WindowPtr& window)
 {
     removeAfterCurrent();
     replace = false;
@@ -59,7 +59,7 @@ void HistoryImp::update(const URL& url, const DocumentWindowPtr& window)
         imp->setURL(static_cast<std::u16string>(url));
 }
 
-void HistoryImp::update(const DocumentWindowPtr& window)
+void HistoryImp::update(const WindowPtr& window)
 {
     removeAfterCurrent();
     replace = false;

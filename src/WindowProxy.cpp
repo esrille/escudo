@@ -181,7 +181,7 @@ void WindowProxy::updateView(ViewCSSImp* next)
     window->flushMediaQueryLists(view);
 }
 
-void WindowProxy::setDocumentWindow(const DocumentWindowPtr& window)
+void WindowProxy::setDocumentWindow(const WindowPtr& window)
 {
     this->window = window;
     delete view;
@@ -1036,7 +1036,7 @@ void WindowProxy::navigate(std::u16string url, bool replace, WindowProxy* srcWin
         }
     }
 
-    window = new(std::nothrow) DocumentWindow;
+    window = new(std::nothrow) WindowImp;
     request.abort();
     history.setReplace(replace);
     request.open(u"get", url.empty() ? u"about:blank" : url);

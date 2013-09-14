@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-#include "DocumentWindow.h"
+#include "WindowImp.h"
 
 #include <boost/bind.hpp>
 
@@ -30,20 +30,20 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
-DocumentWindow::DocumentWindow() :
+WindowImp::WindowImp() :
     document(0),
     global(0),
     scrollX(0),
     scrollY(0),
-    clickListener(boost::bind(&DocumentWindow::handleClick, this, _1, _2)),
-    mouseMoveListener(boost::bind(&DocumentWindow::handleMouseMove, this, _1, _2)),
+    clickListener(boost::bind(&WindowImp::handleClick, this, _1, _2)),
+    mouseMoveListener(boost::bind(&WindowImp::handleMouseMove, this, _1, _2)),
     mediaCheck(false)
 {
     addEventListener(u"click", &clickListener, false, EventTargetImp::UseDefault);
     addEventListener(u"mousemove", &mouseMoveListener, false, EventTargetImp::UseDefault);
 }
 
-DocumentWindow::~DocumentWindow()
+WindowImp::~WindowImp()
 {
     if (global) {
         delete global;
@@ -56,14 +56,14 @@ DocumentWindow::~DocumentWindow()
     }
 }
 
-WindowProxy* DocumentWindow::getWindowImp() const
+WindowProxy* WindowImp::getWindowImp() const
 {
     if (auto imp = dynamic_cast<DocumentImp*>(document.self()))
         return imp->getDefaultWindow();
     return 0;
 }
 
-void DocumentWindow::setDocument(const Document& document)
+void WindowImp::setDocument(const Document& document)
 {
     this->document = document;
     if (global)
@@ -72,19 +72,19 @@ void DocumentWindow::setDocument(const Document& document)
     map.clear();
 }
 
-void DocumentWindow::enter(WindowProxy* proxy)
+void WindowImp::enter(WindowProxy* proxy)
 {
     if (global && isMainThread())
         global->enter(proxy);
 }
 
-void DocumentWindow::exit(WindowProxy* proxy)
+void WindowImp::exit(WindowProxy* proxy)
 {
     if (global && isMainThread())
         global->exit(proxy);
 }
 
-void DocumentWindow::setEventHandler(const std::u16string& type, Object handler)
+void WindowImp::setEventHandler(const std::u16string& type, Object handler)
 {
     EventListenerImp* listener = getEventHandlerListener(type);
     if (listener) {
@@ -98,7 +98,7 @@ void DocumentWindow::setEventHandler(const std::u16string& type, Object handler)
     }
 }
 
-HttpRequest* DocumentWindow::preload(const std::u16string& base, const std::u16string& urlString)
+HttpRequest* WindowImp::preload(const std::u16string& base, const std::u16string& urlString)
 {
     URL url(base, urlString);
     if (url.isEmpty())
@@ -114,7 +114,7 @@ HttpRequest* DocumentWindow::preload(const std::u16string& base, const std::u16s
     if (request) {
         cache.push_back(request);
         request->open(u"GET", urlString);
-        request->setHandler(boost::bind(&DocumentWindow::notify, this));
+        request->setHandler(boost::bind(&WindowImp::notify, this));
         if (DocumentImp* imp = dynamic_cast<DocumentImp*>(document.self()))
             imp->incrementLoadEventDelayCount();
         request->send();
@@ -122,13 +122,13 @@ HttpRequest* DocumentWindow::preload(const std::u16string& base, const std::u16s
     return request;
 }
 
-void DocumentWindow::notify()
+void WindowImp::notify()
 {
     if (DocumentImp* imp = dynamic_cast<DocumentImp*>(document.self()))
         imp->decrementLoadEventDelayCount();
 }
 
-void DocumentWindow::handleClick(EventListenerImp* listener, events::Event event)
+void WindowImp::handleClick(EventListenerImp* listener, events::Event event)
 {
     if (event.getDefaultPrevented())
         return;
@@ -169,7 +169,7 @@ void DocumentWindow::handleClick(EventListenerImp* listener, events::Event event
     }
 }
 
-void DocumentWindow::handleMouseMove(EventListenerImp* listener, events::Event event)
+void WindowImp::handleMouseMove(EventListenerImp* listener, events::Event event)
 {
     if (event.getDefaultPrevented())
         return;
@@ -194,7 +194,7 @@ void DocumentWindow::handleMouseMove(EventListenerImp* listener, events::Event e
     moveY = mouse.getScreenY();
 }
 
-CSSStyleDeclarationPtr DocumentWindow::getComputedStyle(Element element)
+CSSStyleDeclarationPtr WindowImp::getComputedStyle(Element element)
 {
     auto found = map.find(element);
     if (found != map.end()) {
@@ -213,12 +213,12 @@ CSSStyleDeclarationPtr DocumentWindow::getComputedStyle(Element element)
     return style;
 }
 
-void DocumentWindow::putComputedStyle(Element element)
+void WindowImp::putComputedStyle(Element element)
 {
     map.erase(element);
 }
 
-html::MediaQueryList DocumentWindow::matchMedia(const std::u16string& media_query_list)
+html::MediaQueryList WindowImp::matchMedia(const std::u16string& media_query_list)
 {
     MediaQueryListImp* mediaQueryList = new(std::nothrow) MediaQueryListImp(this, media_query_list);
     if (mediaQueryList)
@@ -226,7 +226,7 @@ html::MediaQueryList DocumentWindow::matchMedia(const std::u16string& media_quer
     return mediaQueryList;
 }
 
-bool DocumentWindow::evaluateMedia()
+bool WindowImp::evaluateMedia()
 {
     for (auto i = mediaQueryLists.begin(); i != mediaQueryLists.end(); ++i)
         (*i)->evaluate();
@@ -242,12 +242,12 @@ bool DocumentWindow::evaluateMedia()
     return result;
 }
 
-void DocumentWindow::removeMedia(MediaQueryListImp* mediaQueryList)
+void WindowImp::removeMedia(MediaQueryListImp* mediaQueryList)
 {
     mediaQueryLists.remove(mediaQueryList);
 }
 
-void DocumentWindow::flushMediaQueryLists(ViewCSSImp* view)
+void WindowImp::flushMediaQueryLists(ViewCSSImp* view)
 {
     viewMediaQueryLists.clear();
     view->flushMediaQueryLists(viewMediaQueryLists);

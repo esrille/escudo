@@ -141,20 +141,19 @@ libeshtml5_a_AR = $(AR) $(ARFLAGS)
 libeshtml5_a_LIBADD =
 am_libeshtml5_a_OBJECTS = Any.$(OBJEXT) ECMAScript.$(OBJEXT) \
 	utf.$(OBJEXT) U16InputStream.$(OBJEXT) CanvasGL.$(OBJEXT) \
-	BackgroundTask.$(OBJEXT) DocumentWindow.$(OBJEXT) \
-	Profile.$(OBJEXT) Test.util.$(OBJEXT) Test.glut.$(OBJEXT) \
-	Test.x11.$(OBJEXT) URI.$(OBJEXT) URL.$(OBJEXT) \
-	HTTPCache.$(OBJEXT) HTTPConnection.$(OBJEXT) \
-	HTTPHeader.$(OBJEXT) HTTPRequest.$(OBJEXT) \
-	HTTPRequestMessage.$(OBJEXT) HTTPResponseMessage.$(OBJEXT) \
-	HTTPUtil.$(OBJEXT) HTMLFormControlImp.$(OBJEXT) \
-	HTMLInputStream.$(OBJEXT) HTMLParser.$(OBJEXT) \
-	HTMLTokenizer.$(OBJEXT) HTMLUtil.$(OBJEXT) Bmp.$(OBJEXT) \
-	Box.$(OBJEXT) BoxGL.$(OBJEXT) BoxImage.$(OBJEXT) Ico.$(OBJEXT) \
-	FormattingContext.$(OBJEXT) LineBox.$(OBJEXT) \
-	StackingContext.$(OBJEXT) CSSPropertyValueImp.$(OBJEXT) \
-	CSSSerialize.$(OBJEXT) CSSGrammar.$(OBJEXT) \
-	CSSSelector.$(OBJEXT) CSSParser.$(OBJEXT) \
+	BackgroundTask.$(OBJEXT) WindowImp.$(OBJEXT) Profile.$(OBJEXT) \
+	Test.util.$(OBJEXT) Test.glut.$(OBJEXT) Test.x11.$(OBJEXT) \
+	URI.$(OBJEXT) URL.$(OBJEXT) HTTPCache.$(OBJEXT) \
+	HTTPConnection.$(OBJEXT) HTTPHeader.$(OBJEXT) \
+	HTTPRequest.$(OBJEXT) HTTPRequestMessage.$(OBJEXT) \
+	HTTPResponseMessage.$(OBJEXT) HTTPUtil.$(OBJEXT) \
+	HTMLFormControlImp.$(OBJEXT) HTMLInputStream.$(OBJEXT) \
+	HTMLParser.$(OBJEXT) HTMLTokenizer.$(OBJEXT) \
+	HTMLUtil.$(OBJEXT) Bmp.$(OBJEXT) Box.$(OBJEXT) BoxGL.$(OBJEXT) \
+	BoxImage.$(OBJEXT) Ico.$(OBJEXT) FormattingContext.$(OBJEXT) \
+	LineBox.$(OBJEXT) StackingContext.$(OBJEXT) \
+	CSSPropertyValueImp.$(OBJEXT) CSSSerialize.$(OBJEXT) \
+	CSSGrammar.$(OBJEXT) CSSSelector.$(OBJEXT) CSSParser.$(OBJEXT) \
 	CSSValueParser.$(OBJEXT) CSSInputStream.$(OBJEXT) \
 	Replaced.$(OBJEXT) Table.$(OBJEXT) TableGL.$(OBJEXT) \
 	ViewCSSImp.$(OBJEXT) ViewCSSImpGL.$(OBJEXT) AttrImp.$(OBJEXT) \
@@ -1429,11 +1428,11 @@ libeshtml5_a_SOURCES = org/w3c/dom/ObjectArray.h src/one_at_a_time.hpp \
 	src/ECMAScript.cpp src/ECMAScript.h src/utf.h src/utf.cpp \
 	src/TextIterator.h src/U16InputStream.cpp src/U16InputStream.h \
 	src/Canvas.h src/CanvasGL.cpp src/CanvasGL.h \
-	src/BackgroundTask.cpp src/DocumentWindow.cpp \
-	src/DocumentWindow.h src/Profile.cpp src/Profile.h src/Queue.h \
-	src/Test.util.h src/Test.util.cpp src/Test.glut.cpp \
-	src/Test.x11.cpp src/url/URI.h src/url/URI.cpp src/url/URL.h \
-	src/url/URL.cpp src/http/HTTPCache.h src/http/HTTPCache.cpp \
+	src/BackgroundTask.cpp src/WindowImp.cpp src/WindowImp.h \
+	src/Profile.cpp src/Profile.h src/Queue.h src/Test.util.h \
+	src/Test.util.cpp src/Test.glut.cpp src/Test.x11.cpp \
+	src/url/URI.h src/url/URI.cpp src/url/URL.h src/url/URL.cpp \
+	src/http/HTTPCache.h src/http/HTTPCache.cpp \
 	src/http/HTTPConnection.h src/http/HTTPConnection.cpp \
 	src/http/HTTPHeader.h src/http/HTTPHeader.cpp \
 	src/http/HTTPRequest.h src/http/HTTPRequest.cpp \
@@ -2360,7 +2359,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DocumentImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DocumentType.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DocumentTypeImp.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DocumentWindow.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DocumentXBL.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DragEvent.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DragEventImp.Po@am__quote@
@@ -2764,6 +2762,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/WheelEventInitImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Window.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/WindowBase64.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/WindowImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/WindowModal.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/WindowProxy.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/WindowTimers.Po@am__quote@
@@ -2918,19 +2917,19 @@ BackgroundTask.obj: src/BackgroundTask.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o BackgroundTask.obj `if test -f 'src/BackgroundTask.cpp'; then $(CYGPATH_W) 'src/BackgroundTask.cpp'; else $(CYGPATH_W) '$(srcdir)/src/BackgroundTask.cpp'; fi`
 
-DocumentWindow.o: src/DocumentWindow.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DocumentWindow.o -MD -MP -MF $(DEPDIR)/DocumentWindow.Tpo -c -o DocumentWindow.o `test -f 'src/DocumentWindow.cpp' || echo '$(srcdir)/'`src/DocumentWindow.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DocumentWindow.Tpo $(DEPDIR)/DocumentWindow.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/DocumentWindow.cpp' object='DocumentWindow.o' libtool=no @AMDEPBACKSLASH@
+WindowImp.o: src/WindowImp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT WindowImp.o -MD -MP -MF $(DEPDIR)/WindowImp.Tpo -c -o WindowImp.o `test -f 'src/WindowImp.cpp' || echo '$(srcdir)/'`src/WindowImp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/WindowImp.Tpo $(DEPDIR)/WindowImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/WindowImp.cpp' object='WindowImp.o' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DocumentWindow.o `test -f 'src/DocumentWindow.cpp' || echo '$(srcdir)/'`src/DocumentWindow.cpp
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o WindowImp.o `test -f 'src/WindowImp.cpp' || echo '$(srcdir)/'`src/WindowImp.cpp
 
-DocumentWindow.obj: src/DocumentWindow.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DocumentWindow.obj -MD -MP -MF $(DEPDIR)/DocumentWindow.Tpo -c -o DocumentWindow.obj `if test -f 'src/DocumentWindow.cpp'; then $(CYGPATH_W) 'src/DocumentWindow.cpp'; else $(CYGPATH_W) '$(srcdir)/src/DocumentWindow.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DocumentWindow.Tpo $(DEPDIR)/DocumentWindow.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/DocumentWindow.cpp' object='DocumentWindow.obj' libtool=no @AMDEPBACKSLASH@
+WindowImp.obj: src/WindowImp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT WindowImp.obj -MD -MP -MF $(DEPDIR)/WindowImp.Tpo -c -o WindowImp.obj `if test -f 'src/WindowImp.cpp'; then $(CYGPATH_W) 'src/WindowImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/WindowImp.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/WindowImp.Tpo $(DEPDIR)/WindowImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/WindowImp.cpp' object='WindowImp.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DocumentWindow.obj `if test -f 'src/DocumentWindow.cpp'; then $(CYGPATH_W) 'src/DocumentWindow.cpp'; else $(CYGPATH_W) '$(srcdir)/src/DocumentWindow.cpp'; fi`
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o WindowImp.obj `if test -f 'src/WindowImp.cpp'; then $(CYGPATH_W) 'src/WindowImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/WindowImp.cpp'; fi`
 
 Profile.o: src/Profile.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Profile.o -MD -MP -MF $(DEPDIR)/Profile.Tpo -c -o Profile.o `test -f 'src/Profile.cpp' || echo '$(srcdir)/'`src/Profile.cpp

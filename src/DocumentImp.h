@@ -55,7 +55,6 @@
 #include <list>
 
 #include "NodeImp.h"
-#include "DocumentWindow.h"
 #include "EventListenerImp.h"
 #include "WindowProxy.h"
 #include "html/HTMLScriptElementImp.h"

@@ -117,7 +117,7 @@ int main(int argc, char** argv)
     assert(document);
 
     // create the default view
-    DocumentWindowPtr window = new(std::nothrow) DocumentWindow;
+    WindowPtr window = new(std::nothrow) WindowImp;
     window->setDocument(document);
     ViewCSSImp* view = new ViewCSSImp(window);
     view->constructComputedStyles();

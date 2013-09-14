@@ -66,7 +66,7 @@ Block* getCurrentBox(CSSStyleDeclarationImp* style, bool asTablePart)
 
 }
 
-ViewCSSImp::ViewCSSImp(DocumentWindowPtr window) :
+ViewCSSImp::ViewCSSImp(WindowPtr window) :
     window(window),
     dpi(96),
     zoom(1.0f),

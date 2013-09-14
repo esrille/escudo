@@ -26,7 +26,7 @@
 
 #include <map>
 
-#include "DocumentWindow.h"
+#include "WindowImp.h"
 #include "ElementImp.h"
 #include "EventListenerImp.h"
 
@@ -52,7 +52,7 @@ class ViewCSSImp
 
     Retained<ContainingBlock> initialContainingBlock;
 
-    DocumentWindowPtr window;
+    WindowPtr window;
     unsigned dpi;
     unsigned mediumFontSize;  // [px]
     float fontSizeTable[MaxFontSizes];
@@ -95,13 +95,13 @@ class ViewCSSImp
     bool expandBinding(Element element, CSSStyleDeclarationImp* style);
 
 public:
-    ViewCSSImp(DocumentWindowPtr window);
+    ViewCSSImp(WindowPtr window);
     virtual ~ViewCSSImp();
 
     Document getDocument() const {
         return window->getDocument();
     }
-    DocumentWindowPtr getWindow() const {
+    WindowPtr getWindow() const {
         return window;
     }
 

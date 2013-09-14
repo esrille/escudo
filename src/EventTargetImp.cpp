@@ -19,7 +19,7 @@
 #include <org/w3c/dom/events/Event.h>
 
 #include "DocumentImp.h"
-#include "DocumentWindow.h"
+#include "WindowImp.h"
 #include "EventImp.h"
 #include "NodeImp.h"
 #include "UIEventImp.h"
@@ -132,7 +132,7 @@ bool EventTargetImp::dispatchEvent(events::Event evt)
         return false;
 
     event->setDispatchFlag(true);
-    if (auto documentWindow = dynamic_cast<DocumentWindow*>(this))
+    if (auto documentWindow = dynamic_cast<WindowImp*>(this))
         event->setTarget(documentWindow->getWindowImp());
     else
         event->setTarget(this);
@@ -213,7 +213,7 @@ bool EventTargetImp::dispatchEvent(events::Event evt)
 
         document->exit();
 
-    } else if (DocumentWindow* window = dynamic_cast<DocumentWindow*>(this)) {
+    } else if (WindowImp* window = dynamic_cast<WindowImp*>(this)) {
         auto proxy = dynamic_cast<WindowProxy*>(window->getDocument().getDefaultView().self());
         window->enter(proxy);
         event->setEventPhase(events::Event::AT_TARGET);

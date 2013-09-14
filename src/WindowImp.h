@@ -39,8 +39,8 @@ class HttpRequest;
 class MediaQueryListImp;
 class WindowProxy;
 
-// DocumentWindow implements the Window object
-class DocumentWindow : public EventTargetImp
+// WindowImp implements the Window object
+class WindowImp : public EventTargetImp
 {
     Document document;
     TaskQueue taskQueue;
@@ -60,16 +60,16 @@ class DocumentWindow : public EventTargetImp
     std::list<html::MediaQueryList> viewMediaQueryLists;
     bool mediaCheck;
 
-    DocumentWindow(const DocumentWindow& window) = delete;
-    DocumentWindow& operator=(const DocumentWindow&) = delete;
+    WindowImp(const WindowImp& window) = delete;
+    WindowImp& operator=(const WindowImp&) = delete;
 
     void handleClick(EventListenerImp* listener, events::Event event);
     void handleMouseMove(EventListenerImp* listener, events::Event event);
     void notify();
 
 public:
-    DocumentWindow();
-    ~DocumentWindow();
+    WindowImp();
+    ~WindowImp();
 
     WindowProxy* getWindowImp() const;
 
@@ -130,7 +130,7 @@ public:
 
 };
 
-typedef boost::intrusive_ptr<DocumentWindow> DocumentWindowPtr;
+typedef boost::intrusive_ptr<WindowImp> WindowPtr;
 
 }}}}  // org::w3c::dom::bootstrap
 

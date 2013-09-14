@@ -25,7 +25,7 @@
 
 #include <deque>
 
-#include "DocumentWindow.h"
+#include "WindowImp.h"
 #include "url/URL.h"
 
 namespace org
@@ -44,14 +44,14 @@ class HistoryImp : public ObjectMixin<HistoryImp>
     struct SessionHistoryEntry
     {
         URL url;
-        DocumentWindowPtr window;
+        WindowPtr window;
 
-        SessionHistoryEntry(const URL& url, const DocumentWindowPtr& window) :
+        SessionHistoryEntry(const URL& url, const WindowPtr& window) :
             url(url),
             window(window)
         {
         }
-        SessionHistoryEntry(const DocumentWindowPtr& window) :
+        SessionHistoryEntry(const WindowPtr& window) :
             url(window->getDocument().getURL()),
             window(window)
         {
@@ -83,8 +83,8 @@ public:
     }
 
     // Update the session history with the new page
-    void update(const URL& url, const DocumentWindowPtr& window);
-    void update(const DocumentWindowPtr& window);
+    void update(const URL& url, const WindowPtr& window);
+    void update(const WindowPtr& window);
 
     // History
     int getLength();

@@ -32,7 +32,7 @@ namespace bootstrap
 {
 
 // Note this constructor should be called via WindowProxy::matchMedia().
-MediaQueryListImp::MediaQueryListImp(DocumentWindowPtr window, std::u16string query) :
+MediaQueryListImp::MediaQueryListImp(WindowPtr window, std::u16string query) :
     state(Unknown),
     window(window)
 {

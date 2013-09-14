@@ -27,7 +27,7 @@
 
 #include <list>
 
-#include "DocumentWindow.h"
+#include "WindowImp.h"
 #include "MediaListImp.h"
 
 namespace org
@@ -49,12 +49,12 @@ class MediaQueryListImp : public ObjectMixin<MediaQueryListImp>
         NotMatch
     };
     int state;
-    DocumentWindowPtr window;
+    WindowPtr window;
     stylesheets::MediaList mediaList {0};
     std::list<html::MediaQueryListListener> listeners;
 
 public:
-    MediaQueryListImp(DocumentWindowPtr window, std::u16string query = u"");
+    MediaQueryListImp(WindowPtr window, std::u16string query = u"");
     ~MediaQueryListImp();
 
     void setMediaList(stylesheets::MediaList list);  // this is for ViewCSSImp only

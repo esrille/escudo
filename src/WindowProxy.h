@@ -53,7 +53,7 @@
 #include <org/w3c/dom/css/CSSStyleSheet.h>
 
 #include "Canvas.h"
-#include "DocumentWindow.h"
+#include "WindowImp.h"
 #include "ElementImp.h"
 #include "EventTargetImp.h"
 #include "HistoryImp.h"
@@ -202,7 +202,7 @@ private:
     BackgroundTask backgroundTask;
     std::thread thread;
 
-    DocumentWindowPtr window;
+    WindowPtr window;
     ViewCSSImp* view;
     unsigned short viewFlags;
 
@@ -278,10 +278,10 @@ public:
     }
     void render(ViewCSSImp* parentView);
 
-    DocumentWindowPtr getDocumentWindow() const {
+    WindowPtr getDocumentWindow() const {
         return window;
     }
-    void setDocumentWindow(const DocumentWindowPtr& window);
+    void setDocumentWindow(const WindowPtr& window);
 
     float getScrollWidth() const {
         return scrollWidth;
