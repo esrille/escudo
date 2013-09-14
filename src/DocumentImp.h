@@ -122,7 +122,7 @@ public:
 
     ECMAScriptContext* getContext() const {
         if (defaultView)
-            return defaultView->getDocumentWindow()->getContext();
+            return defaultView->getWindowPtr()->getContext();
         return 0;
     }
 

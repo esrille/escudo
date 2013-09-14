@@ -167,7 +167,7 @@ bool EventTargetImp::dispatchEvent(events::Event evt)
         // cf. http://www.whatwg.org/specs/web-apps/current-work/multipage/webappapis.html#events-and-the-window-object
         if (document && event->getType() != u"load") {
             if (WindowProxy* view = document->getDefaultWindow())
-                eventPath.push_front(view->getDocumentWindow().get());
+                eventPath.push_front(view->getWindowPtr().get());
         }
 
         event->setEventPhase(events::Event::CAPTURING_PHASE);

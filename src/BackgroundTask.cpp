@@ -61,7 +61,7 @@ void WindowProxy::BackgroundTask::operator()()
 
     unsigned command;
     while (!((command = sleep()) & Abort)) {
-        if (!window->getDocumentWindow()) {
+        if (!window->getWindowPtr()) {
             state = Init;
             continue;
         }
@@ -87,7 +87,7 @@ void WindowProxy::BackgroundTask::operator()()
             state = Cascading;
             recordTime("%*sselector matching begin", window->windowDepth * 2, "");
             if (!view)
-                view = new(std::nothrow) ViewCSSImp(window->getDocumentWindow());
+                view = new(std::nothrow) ViewCSSImp(window->getWindowPtr());
             if (view) {
                 view->constructComputedStyles();
                 state = Cascaded;

@@ -449,7 +449,7 @@ v8::Handle<v8::Object> NativeClass::createJSObject(ObjectImp* imp)
 
     assert(imp);
     if (auto w = dynamic_cast<org::w3c::dom::bootstrap::WindowProxy*>(imp)) {
-        if (w->getDocumentWindow()->getContext()->getCurrent() == imp) {
+        if (w->getWindowPtr()->getContext()->getCurrent() == imp) {
             assert(v8::Context::InContext());
             return handleScope.Close(v8::Context::GetCurrent()->Global());
         }

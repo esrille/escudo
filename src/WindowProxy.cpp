@@ -181,7 +181,7 @@ void WindowProxy::updateView(ViewCSSImp* next)
     window->flushMediaQueryLists(view);
 }
 
-void WindowProxy::setDocumentWindow(const WindowPtr& window)
+void WindowProxy::setWindowPtr(const WindowPtr& window)
 {
     this->window = window;
     delete view;

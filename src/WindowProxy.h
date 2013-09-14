@@ -278,10 +278,10 @@ public:
     }
     void render(ViewCSSImp* parentView);
 
-    WindowPtr getDocumentWindow() const {
+    WindowPtr getWindowPtr() const {
         return window;
     }
-    void setDocumentWindow(const WindowPtr& window);
+    void setWindowPtr(const WindowPtr& window);
 
     float getScrollWidth() const {
         return scrollWidth;

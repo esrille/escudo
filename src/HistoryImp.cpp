@@ -103,7 +103,7 @@ void HistoryImp::go(int delta)
     if (nextSession != currentSession) {
         currentSession = nextSession;
         SessionHistoryEntry& e = sessionHistory[currentSession];
-        window->setDocumentWindow(e.window);
+        window->setWindowPtr(e.window);
     }
 }
 

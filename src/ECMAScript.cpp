@@ -47,5 +47,5 @@ ECMAScriptContext* ECMAScriptContext::getCurrentContext()
     auto window = dynamic_cast<org::w3c::dom::bootstrap::WindowProxy*>(current);
     if (!window)
         return 0;
-    return window->getDocumentWindow()->getContext();
+    return window->getWindowPtr()->getContext();
 }
