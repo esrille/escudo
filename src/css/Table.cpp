@@ -1824,10 +1824,10 @@ void TableWrapperBox::layOutAbsolute(ViewCSSImp* view)
                 top += before - height;
             maskV = applyAbsoluteMinMaxHeight(containingBlock, top, bottom, maskV);
 
-    #ifndef NDEBUG
+#ifndef NDEBUG
             if (3 <= getLogLevel())
                 std::cout << "Block::" << __func__ << ": skip table reflow\n";
-    #endif
+#endif
             layOutAbsoluteEnd(left, top);
             return;
         }
