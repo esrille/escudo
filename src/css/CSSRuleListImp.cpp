@@ -165,6 +165,9 @@ void CSSRuleListImp::collectRules(RuleSet& set, ViewCSSImp* view, Element& eleme
     // declarations in the style sheet itself.
     // cf. http://www.w3.org/TR/CSS2/cascade.html#cascading-order
     for (auto i = importList.begin(); i != importList.end(); ++i) {
+        if (auto media = dynamic_cast<MediaListImp*>((*i)->getMedia().self()))
+            mediaList = media;
+        // TODO: else ...
         if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>((*i)->getStyleSheet().self())) {
             if (CSSRuleListImp* ruleList = dynamic_cast<CSSRuleListImp*>(sheet->getCssRules().self()))
                 ruleList->collectRules(set, view, element, importance, mediaList);
