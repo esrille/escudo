@@ -37,7 +37,7 @@ class StyleSheetImp : public ObjectMixin<StyleSheetImp>
     stylesheets::StyleSheet parent;
     bool disabled;
 
-    Retained<MediaListImp> mediaList;
+    stylesheets::MediaList mediaList;
 
 public:
     StyleSheetImp();

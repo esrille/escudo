@@ -21,7 +21,8 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 StyleSheetImp::StyleSheetImp() :
     owner(0),
     parent(0),
-    disabled(false)
+    disabled(false),
+    mediaList(new(std::nothrow) MediaListImp)
 {
 }
 
@@ -69,7 +70,7 @@ Nullable<std::u16string> StyleSheetImp::getTitle()
 
 stylesheets::MediaList StyleSheetImp::getMedia()
 {
-    return &mediaList;
+    return mediaList;
 }
 
 void StyleSheetImp::setMedia(const std::u16string& media)
