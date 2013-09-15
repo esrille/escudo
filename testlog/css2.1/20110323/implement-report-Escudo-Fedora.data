@@ -1,5 +1,5 @@
-# Escudo 0.3.2 (2013-07-01 cfd9d900c3) Fedora Linux 18
-# Escudo/0.3.2
+# Escudo 0.3.3 (2013-09-16 603448db89) Fedora Linux 19
+# Escudo/0.3.3
 # http://test.csswg.org/suites/css2.1/20110323/
 # See http://wiki.csswg.org/test/implementation-report for instructions
 testname    result  comment
@@ -300,7 +300,7 @@ html4/at-import-004.htm	pass
 html4/at-import-005.htm	pass
 html4/at-import-006.htm	pass
 html4/at-import-007.htm	pass
-html4/at-import-008.htm	skip
+html4/at-import-008.htm	na
 html4/at-import-009.htm	pass
 html4/at-import-010.htm	pass
 html4/at-import-011.htm	pass
@@ -8168,8 +8168,8 @@ html4/table-anonymous-objects-029.htm	pass
 html4/table-anonymous-objects-030.htm	pass
 html4/table-anonymous-objects-031.htm	pass
 html4/table-anonymous-objects-032.htm	pass
-html4/table-anonymous-objects-033.htm	fail
-html4/table-anonymous-objects-034.htm	fail
+html4/table-anonymous-objects-033.htm	pass
+html4/table-anonymous-objects-034.htm	pass
 html4/table-anonymous-objects-035.htm	pass
 html4/table-anonymous-objects-036.htm	pass
 html4/table-anonymous-objects-037.htm	pass
@@ -8218,8 +8218,8 @@ html4/table-anonymous-objects-085.htm	pass
 html4/table-anonymous-objects-086.htm	pass
 html4/table-anonymous-objects-087.htm	pass
 html4/table-anonymous-objects-088.htm	pass
-html4/table-anonymous-objects-089.htm	fail (check)
-html4/table-anonymous-objects-090.htm	fail (check)
+html4/table-anonymous-objects-089.htm	pass (when no-wrap)
+html4/table-anonymous-objects-090.htm	pass (when no-wrap)
 html4/table-anonymous-objects-091.htm	pass (when no wrap)
 html4/table-anonymous-objects-092.htm	pass (when no wrap)
 html4/table-anonymous-objects-093.htm	pass
