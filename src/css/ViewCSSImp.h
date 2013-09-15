@@ -82,6 +82,7 @@ class ViewCSSImp
     // Repaint
     unsigned clipCount;
     Box* hoveredBox;
+    unsigned short flags{0};
 
     // Animation
     unsigned last;   // in 1/100 sec for GIF
@@ -296,13 +297,18 @@ public:
     void setFlags(unsigned short flags) {
         if (boxTree)
             boxTree->setFlags(flags);
+        else if (flags & Box::NEED_REPAINT)
+            this->flags |= flags;
     }
     unsigned short gatherFlags() const {
-        return boxTree ? boxTree->gatherFlags() : 0;
-    }
-    void clearFlags(unsigned short f = 0xffff) {
         if (boxTree)
-            boxTree->clearFlags(f);
+            return flags | boxTree->gatherFlags();
+        return flags;
+    }
+    void clearFlags(unsigned short flags = 0xffff) {
+        if (boxTree)
+            boxTree->clearFlags(flags);
+        this->flags &= ~flags;
     }
 
     unsigned getLast() const {
