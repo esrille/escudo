@@ -1,3 +1,417 @@
+2013-09-16 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (StyleSheetImp) : Fix not to retain mediaList
+
+2013-09-16 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* testlog/css2.1/20110323/implement-report-Escudo-Fedora.data : Update
+
+2013-09-16 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSStyleDeclarationImp::revert) : Fix a bug
+
+2013-09-16 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/css/Table.cpp : Clean up
+
+2013-09-16 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (ViewCSSImp::setFlags, ViewCSSImp::gatherFlags, ViewCSSImp::clearFlags) : NEED_REPAINT needs to be kept even if no box is created; cf. html4/root-box-003.htm
+
+2013-09-15 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSRuleListImp::collectRules) : Fix a bug; cf. html4/at-import-004.htm
+
+2013-09-15 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (WindowProxy::getWindowPtr) : Rename from getDocumentWindow; all callers changed
+	* (WindowProxy::setWindowPtr) : Rename from setDocumentWindow; all callers changed
+
+2013-09-15 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (WindowImp::getWindowProxy) : Rename from getWindowImp; all callers changed
+
+2013-09-15 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* Rename DocumentWindow to WindowImp; all callers changed
+	* Rename DocumentWindowPtr to WindowPtr; all callers changed
+
+2013-09-15 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* Rename WindowImp to WindowProxy; all callers changed
+
+2013-09-14 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[XBL2] Upon the completion of a binding document loading, reschedule the expansion of the binding document
+
+	* (DocumentImp::setReadyState) : Reschedule a selector matching, which indirectly reschedule the expansion of binding documents
+	* (ViewCSSImp::constructComputedStyle) : Check the status of the shadow tree
+	* (ViewCSSImp::expandBinding, ViewCSSImp::updateStyleRules) : Refine
+	* (HTMLElementImp::generateShadowContent, HTMLInputElementImp::generateShadowContent) : Refine
+
+2013-09-14 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (ViewCSSImp::expandBinding) : Separate from ViewCSSImp::updateStyleRules
+
+2013-09-14 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (WindowImp::poll) : Fix a bug
+
+2013-09-14 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (DocumentImp::loadBindingDocument) : Fix a bug
+
+2013-09-13 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[CSS3-Mediaqueries] Evaluate MediaQueryLists of ViewCSS even during reflow so as not to overlook user environment changes.
+
+	* (WindowImp::setSize, WindowImp::updateView) : Refine
+	* (DocumentWindow::evaluateMedia) : Refine
+	* (DocumentWindow::flushMediaQueryLists, DocumentWindow::getMediaCheck , DocumentWindow::setMediaCheck) : New
+	* (ViewCSSImp::calculateComputedStyles, ViewCSSImp::calculateComputedStyle) : Refine
+	* (ViewCSSImp::flushMediaQueryLists, ViewCSSImp::getMediaCheck , ViewCSSImp::setMediaCheck) : New
+
+2013-09-13 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSRuleListImp::collectRules, CSSRuleListImp::collectRulesByMisc) : Prioritize media rules over other media lists for now
+
+2013-09-12 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[CSS3-Mediaqueries] Reflow the page in response to changes in the user environment
+
+	* (WindowImp::setSize) : Evaluate media queries associated with the current view
+	* (MediaQueryListImp::setMediaList) : New
+	* (MediaQueryListImp::evaluate) : Revise to return true if state has been changed
+	* (ViewCSSImp::matchMedia, ViewCSSImp::evaluateMedia, ViewCSSImp::setMediaCheck) : New
+	* (ViewCSSImp::updateStyleRules) : Collect media lists associated with stylesheets
+	* (ViewCSSImp::calculateComputedStyles, ViewCSSImp::calculateComputedStyle) : Refine
+	* (CSSStyleDeclarationImp::MediaDependent) : Indicate this computed values are associated with media queries
+	* (CSSStyleDeclarationImp::compute) : Refine to check user environment when necessary
+	* (CSSSelector::registerToRuleList, CSSPrimarySelector::registerToRuleList) : Refine
+	* (CSSRuleListImp::PrioritizedRule::getMatches) : New
+	* (CSSRuleListImp::append, CSSRuleListImp::collectRule) : Refine
+
+2013-09-12 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/css/CSSGrammar.yy : Revise media_query grammar for bison
+
+2013-09-12 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Create a single mediaList for CSSImportRuleImp and CSSMediaRuleImp by default.
+
+	* (CSSImportRuleImp::CSSImportRuleImp, CSSImportRuleImp::setMediaList) : Refine
+	* (CSSMediaRuleImp::CSSMediaRuleImp, CSSMediaRuleImp::setMediaList) : Refine
+
+2013-09-10 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Make mediaList sharable between MediaQueryListImp and CSSMediaRuleImp.
+
+	* (MediaQueryListImp::mediaList) : Do not keep mediaList internally
+	* (MediaQueryListImp::MediaQueryListImp, MediaQueryListImp::evaluate, MediaQueryListImp::getMatches) : Refine
+	* (CSSMediaRuleImp::mediaList) : Do not keep mediaList internally
+	* (CSSMediaRuleImp::CSSMediaRuleImp) : Refine
+	* (CSSImportRuleImp::mediaList) : Do not keep mediaList internally
+	* (CSSImportRuleImp::CSSImportRuleImp) : Refine
+	* (CSSParser::parseMediaList) : Return the reference to MediaListImp; all callers changed
+
+2013-09-10 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/css/CSSRuleListImp.h, src/css/CSSStyleDeclarationImp.cpp : Clean up
+
+2013-09-10 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (ViewCSSImp::collectRules) : Rename from findDeclarations (CSSRuleListImp::collectRules, etc.) : Rename from find, etc.
+
+2013-09-10 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[CSSOM] Support the parentRule attribute of the CSSRule Interface.
+
+	* (CSSRuleImp::getParentRule) : Add details
+	* (CSSRuleImp::setParentRule) : New
+	* (CSSMediaRuleImp::append, CSSMediaRuleImp::~CSSMediaRuleImp) : Refine
+	* (CSSRuleListImp::append) : Fix a bug
+
+2013-09-09 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSRuleListImp::find) : Add a comment
+
+2013-09-09 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[CSSOM View] Support the MediaQueryList interface
+
+	* (WindowImp::matchMedia) : Add more details
+	* (MediaQueryListImp) : Add more details
+	* (DocumentWindow::matchMedia, DocumentWindow::evaluateMedia, DocumentWindow::removeMedia) : New
+	* (WindowImp::setSize) : Evaluate MediaQueryLists
+	* testdata/cssomview-001.html : New
+
+2013-09-09 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (DocumentWindow::putTask, DocumentWindow::eventLoop) : New (WindowImp::putTask, WindowImp::eventLoop) : Refine
+
+2013-09-09 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Update the MediaQueryListListener interface definition
+
+	* idl/cssomview.idl (CSSRuleList) : Update from Editor's Draft 6 September 2013
+	* src/html/MediaQueryListListenerImp.cpp : Regenerate with esidl 0.3.2
+	* src/html/MediaQueryListListenerImp.h : Regenerate with esidl 0.3.2
+
+2013-09-06 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* Makefile.am (EXTRA_DIST) : Include src/third_party/icu for OS X
+
+2013-09-05 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* debian/rules : Support parallel make
+
+2013-09-05 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* escudo.spec.in : Support parallel make; cf. Fedora Packaging:Guidelines
+
+2013-09-01 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSRuleListImp::append) : Add a FIXME item
+
+2013-09-01 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/css/CSSStyleSheetImp.h : Clean up
+
+2013-09-01 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[HTML] Support the media attribute on the link element.
+
+	* (HTMLLinkElementImp::handleMutation, HTMLLinkElementImp::refresh, HTMLLinkElementImp::linkStyleSheet) : Refine
+	* (HTMLStyleElementImp::handleMutation) : Refine
+
+2013-09-01 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLStyleElementImp::handleMutation) : Fix a bug
+
+2013-08-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Support media query - step 8: Merge revised grammar rules from errata in REC-css3-mediaqueries-20120619
+
+	* cf. http://lists.w3.org/Archives/Public/www-style/2013Aug/0670.html
+	* src/css/CSSGrammar.yy : Update
+
+2013-08-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Support media query - step 7: Handle more malformed media queries
+
+	* src/css/CSSGrammar.yy (media_query_list_body, media_query_expression) : Refine
+
+2013-08-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/css/CSSStyleSheetImp.cpp : Clean up src/css/CSSRuleListImp.cpp, src/css/CSSRuleListImp.h : Clean up
+
+2013-08-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (MediaListImp::matches) : Support grid feature without a value
+
+2013-08-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Support media query - step 6: Handle invalid, non-positive resolution values gracefully.
+
+	* src/css/CSSGrammar.yy : Move RESOLUTION terms from 'term' to 'numeric_term'
+	* (CSSValueRule::isValid) : Check non-positive resolution values
+
+2013-08-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (ScreenImp::getColorIndex) : Refine
+
+2013-08-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (MediaListImp::matches) : Support color, color-index, and monochrome features without a value
+
+2013-08-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (MediaListImp::matches) : Fix bugs in MinAspectRatio and MinDeviceAspectRatio
+
+2013-08-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSValueParser::initializeRules) : Fix the 'ratio' rule
+
+2013-08-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (MediaListImp::matches) : Support width and height features without a value
+
+2013-08-29 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[CSSOM] getComputedStyle must return the most up-to-date values
+
+	* (WindowImp::getComputedStyle) : Update the view before getting the result
+	* (CSSStyleDeclarationImp::item) : Update the view before getting the result
+	* (WindowImp::updateView) : New
+	* (WindowImp::BackgroundTask::sleep) : Refine to wake up threads waiting at wait()
+	* (WindowImp::BackgroundTask::wait) : New
+	* (HTMLElementImp::getBox) : Refine to use the current view (not the most up-to-date one)
+	* (CSSStyleDeclarationImp::setProperty) : Refine to use the current view (not the most up-to-date one)
+
+2013-08-29 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[CSSOM] getComputedStyle must return the same object for the same element.
+
+	* (ViewCSSImp::constructComputedStyle) : Refine
+	* (DocumentWindow::setDocument) : Refine
+	* (DocumentWindow::getComputedStyle, DocumentWindow::putComputedStyle) : New
+	* (CSSStyleDeclarationImp::reset) : New
+
+2013-08-29 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (DocumentWindow::scroll) : Clean up
+
+2013-08-29 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Delay the load event until at least after the 1st reflow.
+
+	* (WindowImp::poll) : Refine
+	* (WindowImp::Loading) : New
+
+2013-08-29 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HTMLStyleElementImp::handleMutation) : Fix a bug; add a TODO
+
+2013-08-29 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/css/ViewCSSImp.h : Clean up
+
+2013-08-28 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Support media query - step 5: Handle unknown media feature values
+
+	* (MediaListImp::appendMedium) : Refine
+	* (MediaListImp::appendFeature) : Fix a bug
+
+2013-08-28 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Support media query - step 4: Process HTMLStyleElement.media
+
+	* (HTMLStyleElementImp::handleMutation) : Process the media attribute
+	* (HTMLStyleElementImp::getMedia, HTMLStyleElementImp::setMedia) : Refine
+
+2013-08-28 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[CSSOM] Support StyleSheet.media
+
+	* (StyleSheetImp::getMedia, StyleSheetImp::setMedia) : Add details
+	* idl/cssom.idl (StyleSheet) : Update from Editor's Draft 27 August 2013
+
+2013-08-28 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (MediaListImp::appendFeature) : Fix a bug
+
+2013-08-21 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Support media query - step 3: Handle malformed media queries
+
+	* Note: esidl version 0.3.2 is necessary for using this patch.
+	* src/css/CSSGrammar.yy (media_query_list_body) : Deal with errors
+	* (MediaListImp::appendMedium) : Do not add a duplicate query
+	* (MediaListImp::deleteMedium) : Add more details
+	* (MediaListImp::item) : Refine
+	* (CSSMediaRuleImp::getCssRules) : Add more details again
+	* (CSSMediaRuleImp::getCssText) : Refine
+	* (CSSRuleListImp::getCssText) : New
+
+2013-08-19 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (MediaQuery::getMediaText) : Fix a bug
+
+2013-08-19 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Refine iframe load event steps.
+
+	* (HTMLIFrameElementImp::notify) : New for executing iframe load event steps
+	* (HTMLIFrameElementImp::HTMLIFrameElementImp) : Refine
+	* (DocumentImp::setReadyState) : Refine
+
+2013-08-17 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Update the CSSRuleList interface definition
+
+	* idl/cssom.idl (CSSRuleList) : Update from Editor's Draft 14 August 2013
+	* (CSSRuleListImp) : Refine; all callers changed
+	* (CSSStyleSheetImp::getCssRules) : Refine
+	* src/js/Script.cpp (initializeClasses) : Register CSSRuleList
+	* src/v8/ScriptV8.cpp (initializeClasses) : Register CSSRuleList
+	* (CSSMediaRuleImp::getCssRules) : Revert to implement me!
+
+2013-08-17 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Support media query - step 2: Switch over to Media Queries from Media Types in CSS 2.1
+
+	* (MediaListImp::matches) : New to replace MediaListImp::hasMedium()
+	* (HTMLLinkElementImp::refresh, CSSRuleListImp::append) : Refine using MediaListImp::matches()
+	* (ScreenImp) : Add more utility functions for MediaListImp::matches().
+	* (WindowImp::getScreenImp, WindowImp::getPx) : New
+	* (ViewCSSImp::getDPI, ViewCSSImp::setDPI) : Remove; use ScreenImp::getDPI() if necessary
+
+2013-08-16 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Support media query - step 1: Incorporate the media query syntax
+
+	* src/css/CSSGrammar.yy, src/css/CSSTokenizer.re : Incorporate the media query syntax
+	* (MediaListImp) : Refine for supporting media query parser
+	* (CSSValueParser) : Refine for supporting media query parser
+	* (CSSTokenizer) : Add MediaQuery mode
+	* (CSSParserString::compareIgnoreCase) : New
+	* (CSSMediaRuleImp::setMediaList, CSSImportRuleImp::setMediaList, CSSImportRuleImp::CSSImportRuleImp) : Refine
+	* src/MediaFeatureNames.re (MediaListImp::getFeatureID) : New
+	* src/MediaTypeNames.re (MediaListImp::getMediaTypeID) : New
+	* Makefile.am : Add MediaFeatureNames.re and MediaTypeNames.re
+
+2013-08-16 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Support the Screen interface
+
+	* (WindowImp::getScreen) : Add details
+	* (ScreenImp) : Add details using glut
+
+2013-08-16 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSNumericValue) : Support resolution units
+
+2013-08-16 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSPrimitiveValue) : Add CSS_DPPX, CSS_DPI, and CSS_DPCM
+
+2013-08-16 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSMediaRuleImp::getCssText) : Fix a bug
+
+2013-08-16 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSStyleRuleImp::getCssText) : Fix a bug
+
+2013-08-15 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/css/CSSGrammar.yy : Rename 'medium_list' to 'media_list'.
+
+2013-08-13 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Fix a synchronization issue between the main thread and the background threads.
+
+	* (WindowImp::BackgroundTask::operator(), WindowImp::poll) : Refine
+	* (WindowImp::BackgroundTask::isRestarting) : New
+
+2013-07-26 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (WindowImp::selectBrowsingContext) : Clean up
+
+2013-07-26 Yusuke Suzuki <utatane.tea@gmail.com>
+
+	* (WindowImp::selectBrowsingContext) : Remove unused variable "imp"
+
+2013-07-04 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HttpConnection::handleWriteRequest) : Fix a bug that an HTTPConnection can be closed just before
+	  handleWriteReque() is called.
+
+2013-07-04 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* configure.ac (AC_INIT): Set version to 0.3.3
+
 2013-07-01 Shiki Okasaka <Shiki.Okasaka@gmail.com>
 
 	* testlog/css2.1/20110323/implement-report-Escudo-Fedora.data : Update

@@ -1,11 +1,13 @@
 This directory contains Escudo web browser.
 
-Escudo web browser, currently being developed as one of the ES operating
-system projects, contains a totally new CSS/HTML rendering engine written
-in C++11. Escudo can be configured with SpiderMonkey or V8 JavaScript
-engine along with the C++11 Web IDL binding of the esidl Web IDL compiler.
-For the graphics backend, Escudo web browser uses OpenGL for the better
-performance and portability.
+Escudo is a new web browser currently being developed as one of the ES
+operating system projects.
+
+Escudo contains a totally new CSS/HTML rendering engine written in C++11.
+Escudo can be configured with SpiderMonkey or V8 JavaScript engine along
+with the C++11 Web IDL binding of the esidl Web IDL compiler. For the
+graphics backend, Escudo web browser uses OpenGL for the better performance
+and portability.
 
 The core components of the Escudo web browser will be used like a window
 system in today's operating systems in the ES operating system, but before
