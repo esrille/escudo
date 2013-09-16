@@ -1,3 +1,19 @@
+New in 0.3.3 [2013-09-16]:
+
+* Support Media Queries Level 3
+
+* Implement more features from HTML5 and other specifications including:
+
+  - [CSSOM] Support the parentRule attribute of the CSSRule interface
+  - [CSSOM] Support StyleSheet.media and HTMLLinkElement.media
+  - [CSSOM] getComputedStyle now returns the most up-to-date values
+  - [CSSOM View] Support the MediaQueryList interface
+  - [CSSOM View] Support the Screen interface
+
+* Built with esidl Web IDL compiler 0.3.3
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 New in 0.3.2 [2013-07-01]:
 
 * Assigned a new code name "Escudo"
