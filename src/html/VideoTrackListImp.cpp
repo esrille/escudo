@@ -23,13 +23,13 @@ unsigned int VideoTrackListImp::getLength()
 html::VideoTrack VideoTrackListImp::getElement(unsigned int index)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::VideoTrack VideoTrackListImp::getTrackById(const std::u16string& id)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 int VideoTrackListImp::getSelectedIndex()
@@ -41,7 +41,7 @@ int VideoTrackListImp::getSelectedIndex()
 events::EventHandlerNonNull VideoTrackListImp::getOnchange()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void VideoTrackListImp::setOnchange(events::EventHandlerNonNull onchange)
@@ -52,7 +52,7 @@ void VideoTrackListImp::setOnchange(events::EventHandlerNonNull onchange)
 events::EventHandlerNonNull VideoTrackListImp::getOnaddtrack()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void VideoTrackListImp::setOnaddtrack(events::EventHandlerNonNull onaddtrack)
@@ -63,7 +63,7 @@ void VideoTrackListImp::setOnaddtrack(events::EventHandlerNonNull onaddtrack)
 events::EventHandlerNonNull VideoTrackListImp::getOnremovetrack()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void VideoTrackListImp::setOnremovetrack(events::EventHandlerNonNull onremovetrack)

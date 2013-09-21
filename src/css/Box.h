@@ -49,10 +49,15 @@ class TableWrapperBox;
 class ViewCSSImp;
 class WindowProxy;
 
-class ContainingBlock : public ObjectMixin<ContainingBlock>
+typedef std::shared_ptr<WindowProxy> WindowProxyPtr;
+
+class ContainingBlock
 {
+    std::atomic_uint count;
+
 public:
     ContainingBlock() :
+        count(0),
         width(0.0f),
         height(0.0f)
     {
@@ -67,6 +72,18 @@ public:
     }
     float getHeight() const {
         return height;
+    }
+    unsigned retain_() {
+        return ++count;
+    }
+    unsigned release_() {
+        if (0 < count)
+            --count;
+        if (count == 0) {
+            delete this;
+            return 0;
+        }
+        return count;
     }
 };
 
@@ -150,7 +167,7 @@ protected:
 
     unsigned short flags;
 
-    WindowProxy* childWindow;
+    WindowProxyPtr childWindow;
 
     void renderBorderEdge(ViewCSSImp* view, int edge, unsigned borderStyle, unsigned color,
                           float a, float b, float c, float d,
@@ -168,7 +185,7 @@ public:
     Node getNode() const {
         return node;
     }
-    WindowProxy* getChildWindow() const {
+    WindowProxyPtr getChildWindow() const {
         return childWindow;
     }
 
@@ -178,7 +195,7 @@ public:
             if (box->node)
                 return box->node;
         } while ((box = box->parentBox));
-        return 0;
+        return nullptr;
     }
 
     Box* removeChild(Box* item);
@@ -350,10 +367,10 @@ public:
         return this;
     }
 
-    CSSStyleDeclarationImp* getStyle() const {
-        return style.get();
+    CSSStyleDeclarationPtr getStyle() const {
+        return style;
     }
-    void setStyle(CSSStyleDeclarationImp* style);
+    void setStyle(const CSSStyleDeclarationPtr& style);
     void unresolveStyle();
 
     bool isStatic() const {
@@ -415,7 +432,7 @@ public:
 
     virtual void render(ViewCSSImp* view, StackingContext* stackingContext) = 0;
     void renderBorder(ViewCSSImp* view, float left, float top,
-                      CSSStyleDeclarationImp* style, unsigned backgroundColor, BoxImage* backgroundImage,
+                      const CSSStyleDeclarationPtr& style, unsigned backgroundColor, BoxImage* backgroundImage,
                       float ll, float lr, float rl, float rr, float tt, float tb, float bt, float bb,
                       Box* leftEdge, Box* rightEdge);
     void renderBorder(ViewCSSImp* view, float left, float top);
@@ -525,7 +542,7 @@ class Block : public Box
     float remainingHeight;
 
     // for an absolutely positioned box
-    Retained<ContainingBlock> absoluteBlock;
+    ContainingBlock absoluteBlock;
 
     // A list of nodes to be formatted in line boxes; note if a block-level box contains
     // block-level boxes, 'inlines' must be empty.
@@ -546,17 +563,17 @@ class Block : public Box
     float scrollWidth;
     float scrollHeight;
 
-    void getPsuedoStyles(ViewCSSImp* view, FormattingContext* context, CSSStyleDeclarationImp* style,
+    void getPsuedoStyles(ViewCSSImp* view, FormattingContext* context, const CSSStyleDeclarationPtr& style,
                          CSSStyleDeclarationPtr& firstLetterStyle, CSSStyleDeclarationPtr& firstLineStyle);
-    void nextLine(ViewCSSImp* view, FormattingContext* context, CSSStyleDeclarationImp*& activeStyle,
+    void nextLine(ViewCSSImp* view, FormattingContext* context, CSSStyleDeclarationPtr& activeStyle,
                   CSSStyleDeclarationPtr& firstLetterStyle, CSSStyleDeclarationPtr& firstLineStyle,
-                  CSSStyleDeclarationImp* style, bool linefeed, FontTexture*& font, float& point);
-    size_t layOutFloatingFirstLetter(ViewCSSImp* view, FormattingContext* context, const std::u16string& data, CSSStyleDeclarationImp* firstLetterStyle);
-    float measureText(ViewCSSImp* view, CSSStyleDeclarationImp* activeStyle,
+                  const CSSStyleDeclarationPtr& style, bool linefeed, FontTexture*& font, float& point);
+    size_t layOutFloatingFirstLetter(ViewCSSImp* view, FormattingContext* context, const std::u16string& data, const CSSStyleDeclarationPtr& firstLetterStyle);
+    float measureText(ViewCSSImp* view, const CSSStyleDeclarationPtr& activeStyle,
                       const char16_t* text, size_t length, float point, bool isFirstCharacter,
                       FontGlyph*& glyph, std::u16string& transformed);
     bool layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
-                    std::u16string data, Element element, CSSStyleDeclarationImp* style);
+                    std::u16string data, Element element, const CSSStyleDeclarationPtr& style);
     void layOutInlineBlock(ViewCSSImp* view, Node node, Block* inlineBlock, FormattingContext* context);
     void layOutFloat(ViewCSSImp* view, Node node, Block* floatBox, FormattingContext* context);
     void layOutAbsolute(ViewCSSImp* view, Node node, Block* absBox, FormattingContext* context);  // 1st pass
@@ -564,7 +581,7 @@ class Block : public Box
     void layOutInlineBlocks(ViewCSSImp* view);
     void layOutChildren(ViewCSSImp* view, FormattingContext* context);
 
-    bool layOutReplacedElement(ViewCSSImp* view, Element element, CSSStyleDeclarationImp* style);
+    bool layOutReplacedElement(ViewCSSImp* view, Element element, const CSSStyleDeclarationPtr& style);
 
     void applyMinMaxHeight(FormattingContext* context);
 
@@ -590,7 +607,7 @@ protected:
     void moveUpCollapsedThroughMargins(FormattingContext* context);
 
 public:
-    Block(Node node = 0, CSSStyleDeclarationImp* style = 0);
+    Block(Node node = nullptr, const CSSStyleDeclarationPtr& style = nullptr);
     virtual ~Block();
 
     virtual unsigned getBoxType() const {
@@ -754,7 +771,7 @@ class LineBox : public Box
     Block* rightBox;  // the 1st right floating box
 
 public:
-    LineBox(CSSStyleDeclarationImp* style);
+    LineBox(const CSSStyleDeclarationPtr& style);
 
     virtual unsigned getBoxType() const {
         return LINE_BOX;
@@ -821,10 +838,10 @@ class InlineBox : public Box
 
     void renderText(ViewCSSImp* view, const std::u16string& data, float point);
     void renderMultipleBackground(ViewCSSImp* view);
-    void renderEmptyBox(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle);
+    void renderEmptyBox(ViewCSSImp* view, const CSSStyleDeclarationPtr& parentStyle);
 
 public:
-    InlineBox(Node node, CSSStyleDeclarationImp* style);
+    InlineBox(Node node, const CSSStyleDeclarationPtr& style);
 
     virtual unsigned getBoxType() const {
         return INLINE_LEVEL_BOX;
@@ -843,8 +860,8 @@ public:
         return style && style->display.isInline();
     }
 
-    bool isEmptyInlineAtFirst(CSSStyleDeclarationImp* style, Element& element, Node& node);
-    bool isEmptyInlineAtLast(CSSStyleDeclarationImp* style, Element& element, Node& node);
+    bool isEmptyInlineAtFirst(const CSSStyleDeclarationPtr& style, Element& element, Node& node);
+    bool isEmptyInlineAtLast(const CSSStyleDeclarationPtr& style, Element& element, Node& node);
 
     void clearBlankLeft() {
         marginLeft = paddingLeft = borderLeft = 0.0f;
@@ -902,6 +919,16 @@ public:
 };
 
 typedef boost::intrusive_ptr<InlineBox> InlineBoxPtr;
+
+inline void intrusive_ptr_add_ref(Box* imp)
+{
+    imp->retain_();
+}
+
+inline void intrusive_ptr_release(Box* imp)
+{
+    imp->release_();
+}
 
 }}}}  // org::w3c::dom::bootstrap
 

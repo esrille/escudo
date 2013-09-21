@@ -54,13 +54,13 @@ void Uint32ArrayImp::set(ObjectArray<unsigned int> array, unsigned int offset)
 Uint32Array Uint32ArrayImp::subarray(int start, int end)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 ArrayBuffer Uint32ArrayImp::getBuffer()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 unsigned int Uint32ArrayImp::getByteOffset()

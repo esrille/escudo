@@ -17,25 +17,25 @@ namespace bootstrap
 css::CSSPrimitiveValue RectImp::getTop()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 css::CSSPrimitiveValue RectImp::getRight()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 css::CSSPrimitiveValue RectImp::getBottom()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 css::CSSPrimitiveValue RectImp::getLeft()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 }

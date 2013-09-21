@@ -17,7 +17,10 @@
 #ifndef DOMIMPLEMENTATION_IMP_H
 #define DOMIMPLEMENTATION_IMP_H
 
-#include <Object.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <org/w3c/dom/DOMImplementation.h>
 #include <org/w3c/dom/css/CSSStyleSheet.h>
 #include <org/w3c/dom/DOMException.h>
@@ -28,6 +31,7 @@
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class CSSStyleSheetImp;
+typedef std::shared_ptr<CSSStyleSheetImp> CSSStyleSheetPtr;
 
 class DOMImplementationImp : public ObjectMixin<DOMImplementationImp>
 {
@@ -36,13 +40,11 @@ class DOMImplementationImp : public ObjectMixin<DOMImplementationImp>
     css::CSSStyleSheet userStyleSheet;
 
 public:
-    DOMImplementationImp();
-
-    CSSStyleSheetImp* getDefaultStyleSheet() const;
+    CSSStyleSheetPtr getDefaultStyleSheet() const;
     void setDefaultStyleSheet(css::CSSStyleSheet sheet);
-    CSSStyleSheetImp* getPresentationalHints() const;
+    CSSStyleSheetPtr getPresentationalHints() const;
     void setPresentationalHints(css::CSSStyleSheet sheet);
-    CSSStyleSheetImp* getUserStyleSheet() const;
+    CSSStyleSheetPtr getUserStyleSheet() const;
     void setUserStyleSheet(css::CSSStyleSheet sheet);
 
     // DOMImplementation
@@ -64,7 +66,9 @@ public:
     }
 };
 
-DOMImplementationImp* getDOMImplementation();
+typedef std::shared_ptr<DOMImplementationImp> DOMImplementationPtr;
+
+DOMImplementationPtr getDOMImplementation();
 
 }}}}  // org::w3c::dom::bootstrap
 

@@ -171,7 +171,7 @@ void DataViewImp::setFloat64(unsigned int byteOffset, double value, bool littleE
 ArrayBuffer DataViewImp::getBuffer()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 unsigned int DataViewImp::getByteOffset()

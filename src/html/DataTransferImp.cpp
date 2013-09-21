@@ -39,7 +39,7 @@ void DataTransferImp::setEffectAllowed(const std::u16string& effectAllowed)
 html::DataTransferItemList DataTransferImp::getItems()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void DataTransferImp::setDragImage(Element image, int x, int y)
@@ -50,7 +50,7 @@ void DataTransferImp::setDragImage(Element image, int x, int y)
 ObjectArray<std::u16string> DataTransferImp::getTypes()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 std::u16string DataTransferImp::getData(const std::u16string& format)
@@ -77,7 +77,7 @@ void DataTransferImp::clearData(const std::u16string& format)
 file::FileList DataTransferImp::getFiles()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 }

@@ -17,7 +17,7 @@ namespace bootstrap
 ArrayBuffer FileReaderSyncImp::readAsArrayBuffer(file::Blob blob)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 std::u16string FileReaderSyncImp::readAsText(file::Blob blob)

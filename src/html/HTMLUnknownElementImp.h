@@ -27,8 +27,18 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 class HTMLUnknownElementImp : public ObjectMixin<HTMLUnknownElementImp, HTMLElementImp>
 {
 public:
-    // Node
-    virtual Node cloneNode(bool deep = true);
+    HTMLUnknownElementImp(DocumentImp* ownerDocument, const std::u16string& tagName) :
+        ObjectMixin(ownerDocument, tagName)
+    {
+    }
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLUnknownElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
 
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
@@ -37,13 +47,6 @@ public:
     static const char* const getMetaData()
     {
         return html::HTMLUnknownElement::getMetaData();
-    }
-
-    HTMLUnknownElementImp(DocumentImp* ownerDocument, const std::u16string& tagName) :
-        ObjectMixin(ownerDocument, tagName) {
-    }
-    HTMLUnknownElementImp(HTMLUnknownElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
     }
 };
 

@@ -49,13 +49,22 @@ class HTMLIFrameElementImp : public ObjectMixin<HTMLIFrameElementImp, HTMLElemen
     void handleBlur(EventListenerImp* listener, events::Event event);
 
 public:
-    HTMLIFrameElementImp(DocumentImp* ownerDocument, unsigned flags);
-    HTMLIFrameElementImp(HTMLIFrameElementImp* org, bool deep);
+    HTMLIFrameElementImp(DocumentImp* ownerDocument);
+    HTMLIFrameElementImp(const HTMLIFrameElementImp& org);
     ~HTMLIFrameElementImp();
 
     virtual void handleMutation(events::MutationEvent mutation);
 
+    void open(const std::u16string& url, unsigned flags);
     void notify(bool error);
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLIFrameElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
 
     // HTMLIFrameElement
     std::u16string getSrc();
@@ -97,6 +106,8 @@ public:
         return html::HTMLIFrameElement::getMetaData();
     }
 };
+
+typedef std::shared_ptr<HTMLIFrameElementImp> HTMLIFrameElementPtr;
 
 }
 }

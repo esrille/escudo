@@ -37,12 +37,17 @@ class HTMLStyleElementImp : public ObjectMixin<HTMLStyleElementImp, HTMLElementI
 
 public:
     HTMLStyleElementImp(DocumentImp* ownerDocument);
-    HTMLStyleElementImp(HTMLStyleElementImp* org, bool deep);
+    HTMLStyleElementImp(const HTMLStyleElementImp& org);
 
     virtual void handleMutation(events::MutationEvent mutation);
 
-    // Node
-    virtual Node cloneNode(bool deep = true);
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLStyleElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
 
     // HTMLStyleElement
     virtual bool getDisabled();

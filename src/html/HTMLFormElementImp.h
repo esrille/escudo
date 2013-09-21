@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,21 +42,25 @@ class HTMLFormElementImp : public ObjectMixin<HTMLFormElementImp, HTMLElementImp
     html::HTMLFormControlsCollection elements;
     std::map<const std::u16string, Element> pastNamesMap;
 
-    void enumFormDataSet(ElementImp* submitter,
+    void enumFormDataSet(const ElementPtr& submitter,
                          boost::function<void (const std::u16string&, const std::u16string&, const std::u16string&)> callback);
     void appendEncodedFormData(std::u16string* result, const std::u16string& name, const std::u16string& value, const std::u16string& type);
-    std::u16string getEncodedFormData(ElementImp* submitter);
+    std::u16string getEncodedFormData(const ElementPtr& submitter);
 
 public:
     HTMLFormElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"form"),
-        elements(0) {
-    }
-    HTMLFormElementImp(HTMLFormElementImp* org, bool deep) :
-        ObjectMixin(org, deep),
-        elements(0) {
+        ObjectMixin(ownerDocument, u"form")
+    {
     }
     ~HTMLFormElementImp();
+
+    // Node
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLFormElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
 
     // HTMLFormElement
     std::u16string getAcceptCharset();
@@ -81,7 +85,7 @@ public:
     int getLength();
     Any getElement(unsigned int index);
     Any getElement(const std::u16string& name);
-    void submit(ElementImp* submitter = 0);  // Take submitter as a hidden parameter
+    void submit(const ElementPtr& submitter = nullptr);  // Take submitter as a hidden parameter
     void reset();
     bool checkValidity();
     // Object
@@ -94,6 +98,8 @@ public:
         return html::HTMLFormElement::getMetaData();
     }
 };
+
+typedef std::shared_ptr<HTMLFormElementImp> HTMLFormElementPtr;
 
 }
 }

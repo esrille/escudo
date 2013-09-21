@@ -39,16 +39,16 @@ HTMLOListElementImp::HTMLOListElementImp(DocumentImp* ownerDocument) :
     ObjectMixin(ownerDocument, u"ol"),
     mutationListener(boost::bind(&HTMLOListElementImp::handleMutation, this, _1, _2))
 {
-    addEventListener(u"DOMNodeInserted", &mutationListener, false, EventTargetImp::UseDefault);
-    addEventListener(u"DOMNodeRemoved", &mutationListener, false, EventTargetImp::UseDefault);
+    addEventListener(u"DOMNodeInserted", mutationListener, false, EventTargetImp::UseDefault);
+    addEventListener(u"DOMNodeRemoved", mutationListener, false, EventTargetImp::UseDefault);
 }
 
-HTMLOListElementImp::HTMLOListElementImp(HTMLOListElementImp* org, bool deep) :
-    ObjectMixin(org, deep),
+HTMLOListElementImp::HTMLOListElementImp(const HTMLOListElementImp& org) :
+    ObjectMixin(org),
     mutationListener(boost::bind(&HTMLOListElementImp::handleMutation, this, _1, _2))
 {
-    addEventListener(u"DOMNodeInserted", &mutationListener, false, EventTargetImp::UseDefault);
-    addEventListener(u"DOMNodeRemoved", &mutationListener, false, EventTargetImp::UseDefault);
+    addEventListener(u"DOMNodeInserted", mutationListener, false, EventTargetImp::UseDefault);
+    addEventListener(u"DOMNodeRemoved", mutationListener, false, EventTargetImp::UseDefault);
 }
 
 int HTMLOListElementImp::getStart(const std::u16string& value)
@@ -61,7 +61,7 @@ int HTMLOListElementImp::getStart(const std::u16string& value)
     // return the number of child li elements
     start = 0;
     for (auto i = getFirstElementChild(); i; i = i.getNextElementSibling()) {
-        if (dynamic_cast<HTMLLIElementImp*>(i.self()))
+        if (std::dynamic_pointer_cast<HTMLLIElementImp>(i.self()))
             ++start;
     }
     return start;
@@ -70,7 +70,7 @@ int HTMLOListElementImp::getStart(const std::u16string& value)
 void HTMLOListElementImp::handleMutation(EventListenerImp* listener, events::Event event)
 {
     events::MutationEvent mutation(interface_cast<events::MutationEvent>(event));
-    if (this != mutation.getRelatedNode())
+    if (this != mutation.getRelatedNode().self().get())
         return;
     Node child = interface_cast<Node>(event.getTarget());
     if (!Element::hasInstance(child))

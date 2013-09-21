@@ -27,8 +27,18 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 class HTMLTitleElementImp : public ObjectMixin<HTMLTitleElementImp, HTMLElementImp>
 {
 public:
-    // Node
-    virtual Node cloneNode(bool deep = true);
+    HTMLTitleElementImp(DocumentImp* ownerDocument) :
+        ObjectMixin(ownerDocument, u"title")
+    {
+    }
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLTitleElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
 
     // HTMLTitleElement
     virtual std::u16string getText();
@@ -41,13 +51,6 @@ public:
     static const char* const getMetaData()
     {
         return html::HTMLTitleElement::getMetaData();
-    }
-
-    HTMLTitleElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"title") {
-    }
-    HTMLTitleElementImp(HTMLTitleElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
     }
 };
 

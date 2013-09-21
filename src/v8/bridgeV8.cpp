@@ -92,15 +92,16 @@ inline uint32_t uc_one_at_a_time(const char16_t* key, size_t len)
     return hash;
 }
 
-Object* convertObject(v8::Handle<v8::Object> obj)
+Object convertObject(v8::Handle<v8::Object> obj)
 {
     // TODO: We would need to check more strictly whether obj is an ObjectImp.
     if (obj->InternalFieldCount() == 1) {
         auto wrap = v8::Handle<v8::External>::Cast(obj->GetInternalField(0));
-        return static_cast<ObjectImp*>(wrap->Value());
+        return static_cast<Object*>(wrap->Value());
     }
     // obj is a JavaScript object. Create a proxy for obj.
-    return new(std::nothrow) ProxyObject(obj);
+    Object proxy(std::make_shared<ProxyObject>(obj));
+    return proxy;
 }
 
 Any convert(v8::Handle<v8::Value> v)
@@ -108,7 +109,7 @@ Any convert(v8::Handle<v8::Value> v)
     if (v.IsEmpty() || v->IsUndefined())
         return Any();
     if (v->IsNull())
-        return Any(static_cast<Object*>(0));
+        return Any(nullptr);
     if (v->IsInt32())
         return v->Int32Value();
     if (v->IsUint32())
@@ -141,9 +142,9 @@ Any convert(v8::Handle<v8::String> property)
 v8::Handle<v8::Object> convertObject(Object* obj)
 {
     if (obj) {
-        if (ProxyObject* proxy = dynamic_cast<ProxyObject*>(obj->self()))
+        if (auto proxy = dynamic_cast<ProxyObject*>(obj->self().get()))
             return proxy->getJSObject();
-        if (ObjectImp* imp = dynamic_cast<ObjectImp*>(obj->self()))
+        if (auto imp = dynamic_cast<ObjectImp*>(obj->self().get()))
             return static_cast<NativeClass*>(imp->getStaticPrivate())->createJSObject(imp);
     }
     return v8::Handle<v8::Object>();
@@ -366,11 +367,15 @@ v8::Handle<v8::Value> NativeClass::staticOperation(const v8::Arguments& args)
 void NativeClass::finalize(v8::Persistent<v8::Value> object, void* parameter)
 {
     assert(parameter);
-    ObjectImp* imp = static_cast<ObjectImp*>(parameter);
-    wrapperMap.erase(imp);
-    if (imp && imp->getPrivate()) {
-        imp->setPrivate(0);
-        imp->release_();
+    Object* clone = static_cast<Object*>(parameter);
+    assert(clone);
+    ObjectImp* imp = static_cast<ObjectImp*>(clone->self().get());
+    if (imp) {
+        wrapperMap.erase(imp);
+        if (imp->getPrivate()) {
+            imp->setPrivate(nullptr);
+            delete clone;
+        }
     }
     object.Dispose();
     object.Clear();
@@ -391,13 +396,17 @@ v8::Handle<v8::Value> NativeClass::constructor(const v8::Arguments& args)
         for (int i = 0; i < argc; ++i)
             arguments[i] = convert(args[i]);
         Any result = getConstructor().message_(0, "", argc, arguments).toObject();
-        if (auto imp = dynamic_cast<ObjectImp*>(result.toObject()->self())) {
+        if (auto imp = dynamic_cast<ObjectImp*>(result.toObject()->self().get())) {
+
+            Object* clone = new(std::nothrow) Object(imp);
+            if (!clone)
+                return v8::Handle<v8::Object>();
+
             v8::Persistent<v8::Object> obj = v8::Persistent<v8::Object>::New(args.This());
             obj.MakeWeak(imp, finalize);
             wrapperMap[imp] = obj;
-            imp->retain_();
             imp->setPrivate(static_cast<void*>(*args.This()));
-            args.This()->SetInternalField(0, v8::External::New(imp));
+            args.This()->SetInternalField(0, v8::External::New(clone));
             return args.This();
         }
     }
@@ -458,13 +467,16 @@ v8::Handle<v8::Object> NativeClass::createJSObject(ObjectImp* imp)
     if (0 < wrapperMap.count(imp))
         return wrapperMap[imp];
 
+    Object* clone = new(std::nothrow) Object(imp->self());
+    if (!clone)
+        return v8::Handle<v8::Object>();
+
     v8::Handle<v8::Function> ctor = classTemplate->GetFunction();
-    v8::Handle<v8::Value> external = v8::External::New(imp);
+    v8::Handle<v8::Value> external = v8::External::New(clone);
     v8::Persistent<v8::Object> obj = v8::Persistent<v8::Object>::New(ctor->NewInstance(1, &external));
-    obj->SetInternalField(0, v8::External::New(imp));
+    obj->SetInternalField(0, external); // TODO: has been set already?
     obj.MakeWeak(imp, finalize);
     wrapperMap[imp] = obj;
-    imp->retain_();
     imp->setPrivate(static_cast<void*>(*obj));
     return handleScope.Close(obj);
 }
@@ -577,21 +589,21 @@ NativeClass::NativeClass(v8::Handle<v8::ObjectTemplate> global, const char* meta
 
 Any ProxyObject::message_(uint32_t selector, const char* id, int argc, Any* argv)
 {
-    bool callback = (CALLBACK_ <= argc);
+    bool callback = (Object::CALLBACK_ <= argc);
     if (callback)
-        argc -= CALLBACK_;
+        argc -= Object::CALLBACK_;
     v8::Handle<v8::Value> result;
     switch (argc) {
-    case GETTER_:
+    case Object::GETTER_:
         return convert(jsobject->Get(v8::String::New(id)));
         break;
-    case SETTER_:
+    case Object::SETTER_:
         result = convert(argv[0]);
         return jsobject->Set(v8::String::New(id), result);
-    case HAS_PROPERTY_:
-    case HAS_OPERATION_:  // TODO: refine HAS_OPERATION_ path
+    case Object::HAS_PROPERTY_:
+    case Object::HAS_OPERATION_:  // TODO: refine HAS_OPERATION_ path
         return jsobject->Has(v8::String::New(id));
-    case SPECIAL_GETTER_:
+    case Object::SPECIAL_GETTER_:
         if (argv[0].getType() == Any::Uint32) {
             uint32_t index = static_cast<uint32_t>(argv[0]);
             return convert(jsobject->Get(index));
@@ -600,9 +612,9 @@ Any ProxyObject::message_(uint32_t selector, const char* id, int argc, Any* argv
             return convert(jsobject->Get(v8::String::New(reinterpret_cast<const uint16_t*>(name.c_str()), name.length())));
         }
         break;
-    case SPECIAL_SETTER_:
-    case SPECIAL_CREATOR_:
-    case SPECIAL_SETTER_CREATOR_:
+    case Object::SPECIAL_SETTER_:
+    case Object::SPECIAL_CREATOR_:
+    case Object::SPECIAL_SETTER_CREATOR_:
         result = convert(argv[1]);
         if (argv[0].getType() == Any::Uint32) {
             uint32_t index = static_cast<uint32_t>(argv[0]);
@@ -612,7 +624,7 @@ Any ProxyObject::message_(uint32_t selector, const char* id, int argc, Any* argv
             return jsobject->Set(v8::String::New(reinterpret_cast<const uint16_t*>(name.c_str()), name.length()), result);
         }
         break;
-    case SPECIAL_DELETER_:
+    case Object::SPECIAL_DELETER_:
         if (argv[0].getType() == Any::Uint32) {
             uint32_t index = static_cast<uint32_t>(argv[0]);
             return jsobject->Delete(index);
@@ -621,7 +633,7 @@ Any ProxyObject::message_(uint32_t selector, const char* id, int argc, Any* argv
             return jsobject->Delete(v8::String::New(reinterpret_cast<const uint16_t*>(name.c_str()), name.length()));
         }
         break;
-    case STRINGIFY_: {
+    case Object::STRINGIFY_: {
         auto functionObject = v8::Local<v8::Function>::Cast(jsobject->Get(v8::String::New("toString")));
         if (!functionObject.IsEmpty()) {
             Any result = call(jsobject, functionObject, 0, 0);
@@ -629,7 +641,7 @@ Any ProxyObject::message_(uint32_t selector, const char* id, int argc, Any* argv
         }
         }
         break;
-    case IS_KIND_OF_:
+    case Object::IS_KIND_OF_:
         return true;    // TODO: check more conditions
         break;
     default: {
@@ -656,8 +668,8 @@ Any ECMAScriptContext::callFunction(Object thisObject, Object functionObject, in
     assert(0 <= argc);
     if (!thisObject || !functionObject)
         return Any();
-    v8::Handle<v8::Object> self = convertObject(thisObject.self());
-    v8::Handle<v8::Function> func = v8::Handle<v8::Function>::Cast(convertObject(functionObject.self()));
+    v8::Handle<v8::Object> self = convertObject(&thisObject);
+    v8::Handle<v8::Function> func = v8::Handle<v8::Function>::Cast(convertObject(&functionObject));
     return call(self, func, argc, argv);
 }
 
@@ -672,7 +684,7 @@ Any ECMAScriptContext::evaluate(const std::u16string& source)
     return convert(script->Run());
 }
 
-Object* ECMAScriptContext::Impl::compileFunction(const std::u16string& body)
+Object ECMAScriptContext::Impl::compileFunction(const std::u16string& body)
 {
     v8::HandleScope handleScope;
 
@@ -681,16 +693,17 @@ Object* ECMAScriptContext::Impl::compileFunction(const std::u16string& body)
     return convertObject(function->NewInstance(1, &source));
 }
 
-Object* ECMAScriptContext::Impl::xblCreateImplementation(Object object, Object prototype, Object boundElement, Object shadowTree)
+Object ECMAScriptContext::Impl::xblCreateImplementation(Object object, Object prototype, Object boundElement, Object shadowTree)
 {
-    v8::Handle<v8::Object> imp = convertObject(object.self());
+    v8::Handle<v8::Object> imp = convertObject(&object);
     if (prototype) {
-        v8::Handle<v8::Object> p = convertObject(prototype.self());
+        v8::Handle<v8::Object> p = convertObject(&prototype);
         p->SetPrototype(imp->GetPrototype());
         imp->SetPrototype(p);
     }
     // TODO: Create an external object.
-    imp->Set(v8::String::New("boundElement"), convertObject(boundElement.self()));
-    imp->Set(v8::String::New("shadowTree"), convertObject(shadowTree.self()));
-    return new(std::nothrow) ProxyObject(imp);
+    imp->Set(v8::String::New("boundElement"), convertObject(&boundElement));
+    imp->Set(v8::String::New("shadowTree"), convertObject(&shadowTree));
+    Object proxy(std::make_shared<ProxyObject>(imp));
+    return proxy;
 }

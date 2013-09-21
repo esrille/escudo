@@ -23,6 +23,7 @@
 
 #include <org/w3c/dom/html/HTMLTableCellElement.h>
 #include "HTMLElementImp.h"
+#include <boost/concept_check.hpp>
 
 #include <org/w3c/dom/html/HTMLElement.h>
 #include <org/w3c/dom/DOMSettableTokenList.h>
@@ -42,12 +43,16 @@ public:
         ObjectMixin(ownerDocument, localName)
     {
     }
-    HTMLTableCellElementImp(HTMLTableCellElementImp* org, bool deep) :
-        ObjectMixin(org, deep)
-    {
-    }
 
     virtual void handleMutation(events::MutationEvent mutation);
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLTableCellElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
 
     // HTMLTableCellElement
     unsigned int getColSpan();

@@ -45,19 +45,19 @@ void HTMLTableSectionElementImp::handleMutation(events::MutationEvent mutation)
 html::HTMLCollection HTMLTableSectionElementImp::getRows()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::HTMLElement HTMLTableSectionElementImp::insertRow()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::HTMLElement HTMLTableSectionElementImp::insertRow(int index)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void HTMLTableSectionElementImp::deleteRow(int index)

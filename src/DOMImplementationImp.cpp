@@ -23,16 +23,9 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
-DOMImplementationImp::DOMImplementationImp() :
-    defaultStyleSheet(0),
-    presHintsStyleSheet(0),
-    userStyleSheet(0)
+CSSStyleSheetPtr DOMImplementationImp::getDefaultStyleSheet() const
 {
-}
-
-CSSStyleSheetImp* DOMImplementationImp::getDefaultStyleSheet() const
-{
-    return dynamic_cast<CSSStyleSheetImp*>(defaultStyleSheet.self());
+    return std::dynamic_pointer_cast<CSSStyleSheetImp>(defaultStyleSheet.self());
 }
 
 void DOMImplementationImp::setDefaultStyleSheet(css::CSSStyleSheet sheet)
@@ -40,9 +33,9 @@ void DOMImplementationImp::setDefaultStyleSheet(css::CSSStyleSheet sheet)
     defaultStyleSheet = sheet;
 }
 
-CSSStyleSheetImp* DOMImplementationImp::getPresentationalHints() const
+CSSStyleSheetPtr DOMImplementationImp::getPresentationalHints() const
 {
-    return dynamic_cast<CSSStyleSheetImp*>(presHintsStyleSheet.self());
+    return std::dynamic_pointer_cast<CSSStyleSheetImp>(presHintsStyleSheet.self());
 }
 
 void DOMImplementationImp::setPresentationalHints(css::CSSStyleSheet sheet)
@@ -50,9 +43,9 @@ void DOMImplementationImp::setPresentationalHints(css::CSSStyleSheet sheet)
     presHintsStyleSheet = sheet;
 }
 
-CSSStyleSheetImp* DOMImplementationImp::getUserStyleSheet() const
+CSSStyleSheetPtr DOMImplementationImp::getUserStyleSheet() const
 {
-    return dynamic_cast<CSSStyleSheetImp*>(userStyleSheet.self());
+    return std::dynamic_pointer_cast<CSSStyleSheetImp>(userStyleSheet.self());
 }
 
 void DOMImplementationImp::setUserStyleSheet(css::CSSStyleSheet sheet)
@@ -62,24 +55,24 @@ void DOMImplementationImp::setUserStyleSheet(css::CSSStyleSheet sheet)
 
 DocumentType DOMImplementationImp::createDocumentType(const std::u16string& qualifiedName, const std::u16string& publicId, const std::u16string& systemId)
 {
-    return new(std::nothrow) DocumentTypeImp(qualifiedName, publicId, systemId); // TODO: set node document
+    return std::make_shared<DocumentTypeImp>(qualifiedName, publicId, systemId);    // TODO: set node document
 }
 
 XMLDocument DOMImplementationImp::createDocument(const Nullable<std::u16string>& _namespace, const std::u16string& qualifiedName, DocumentType doctype)
 {
-    return new(std::nothrow) DocumentImp;   // TODO: Create XMLDocumentImp once createHTMLDocument is supported
+    return std::make_shared<DocumentImp>();  // TODO: Create XMLDocumentImp once createHTMLDocument is supported
 }
 
 Document DOMImplementationImp::createHTMLDocument()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 Document DOMImplementationImp::createHTMLDocument(const std::u16string& title)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 bool DOMImplementationImp::hasFeature(const std::u16string& feature, const std::u16string& version)
@@ -91,13 +84,13 @@ bool DOMImplementationImp::hasFeature(const std::u16string& feature, const std::
 css::CSSStyleSheet DOMImplementationImp::createCSSStyleSheet(const std::u16string& title, const std::u16string& media) throw(DOMException)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
-DOMImplementationImp* getDOMImplementation()
+DOMImplementationPtr getDOMImplementation()
 {
     static Retained<DOMImplementationImp> domImplementation;
-    return &domImplementation;
+    return domImplementation;
 }
 
 }}}}  // org::w3c::dom::bootstrap

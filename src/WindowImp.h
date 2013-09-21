@@ -22,7 +22,6 @@
 #endif
 
 #include <map>
-#include <boost/intrusive_ptr.hpp>
 
 #include <org/w3c/dom/Document.h>
 #include <org/w3c/dom/html/MediaQueryList.h>
@@ -39,10 +38,13 @@ class HttpRequest;
 class MediaQueryListImp;
 class WindowProxy;
 
+typedef std::shared_ptr<DocumentImp> DocumentPtr;
+typedef std::shared_ptr<WindowProxy> WindowProxyPtr;
+
 // WindowImp implements the Window object
 class WindowImp : public EventTargetImp
 {
-    Document document;
+    DocumentPtr document;
     TaskQueue taskQueue;
     ECMAScriptContext* global;
     std::list<HttpRequest*> cache;
@@ -56,7 +58,7 @@ class WindowImp : public EventTargetImp
     // computed style memory manager
     std::map<Element, CSSStyleDeclarationPtr> map;
 
-    std::list<MediaQueryListImp*> mediaQueryLists;
+    std::list<html::MediaQueryList> mediaQueryLists;
     std::list<html::MediaQueryList> viewMediaQueryLists;
     bool mediaCheck;
 
@@ -71,12 +73,12 @@ public:
     WindowImp();
     ~WindowImp();
 
-    WindowProxy* getWindowProxy() const;
+    WindowProxyPtr getWindowProxy() const;
 
-    Document getDocument() const {
+    DocumentPtr getDocument() const {
         return document;
     }
-    void setDocument(const Document& document);
+    void setDocument(const DocumentPtr& document);
 
     TaskQueue& getTaskQueue() {
         return taskQueue;
@@ -106,7 +108,7 @@ public:
     void putComputedStyle(Element elt);
 
     bool evaluateMedia();
-    void removeMedia(MediaQueryListImp* mediaQueryList);
+    void removeMedia(html::MediaQueryList mediaQueryList);
     void flushMediaQueryLists(ViewCSSImp* view);
     bool getMediaCheck() const {
         return mediaCheck;
@@ -127,10 +129,9 @@ public:
         scrollX = x;
         scrollY = y;
     }
-
 };
 
-typedef boost::intrusive_ptr<WindowImp> WindowPtr;
+typedef std::shared_ptr<WindowImp> WindowPtr;
 
 }}}}  // org::w3c::dom::bootstrap
 

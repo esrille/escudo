@@ -54,13 +54,13 @@ void Int8ArrayImp::set(ObjectArray<signed char> array, unsigned int offset)
 Int8Array Int8ArrayImp::subarray(int start, int end)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 ArrayBuffer Int8ArrayImp::getBuffer()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 unsigned int Int8ArrayImp::getByteOffset()

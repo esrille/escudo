@@ -663,13 +663,13 @@ void ECMAScriptContext::exit(ObjectImp* window)
     pimpl->exit(window);
 }
 
-Object* ECMAScriptContext::compileFunction(const std::u16string& body)
+Object ECMAScriptContext::compileFunction(const std::u16string& body)
 {
     assert(getCurrentContext() == this);
     return pimpl->compileFunction(body);
 }
 
-Object* ECMAScriptContext::xblCreateImplementation(Object object, Object prototype, Object boundElement, Object shadowTree)
+Object ECMAScriptContext::xblCreateImplementation(Object object, Object prototype, Object boundElement, Object shadowTree)
 {
     assert(getCurrentContext() == this);
     return pimpl->xblCreateImplementation(object, prototype, boundElement, shadowTree);

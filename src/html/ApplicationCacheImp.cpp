@@ -38,7 +38,7 @@ void ApplicationCacheImp::swapCache()
 events::EventHandlerNonNull ApplicationCacheImp::getOnchecking()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void ApplicationCacheImp::setOnchecking(events::EventHandlerNonNull onchecking)
@@ -49,7 +49,7 @@ void ApplicationCacheImp::setOnchecking(events::EventHandlerNonNull onchecking)
 events::EventHandlerNonNull ApplicationCacheImp::getOnerror()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void ApplicationCacheImp::setOnerror(events::EventHandlerNonNull onerror)
@@ -60,7 +60,7 @@ void ApplicationCacheImp::setOnerror(events::EventHandlerNonNull onerror)
 events::EventHandlerNonNull ApplicationCacheImp::getOnnoupdate()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void ApplicationCacheImp::setOnnoupdate(events::EventHandlerNonNull onnoupdate)
@@ -71,7 +71,7 @@ void ApplicationCacheImp::setOnnoupdate(events::EventHandlerNonNull onnoupdate)
 events::EventHandlerNonNull ApplicationCacheImp::getOndownloading()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void ApplicationCacheImp::setOndownloading(events::EventHandlerNonNull ondownloading)
@@ -82,7 +82,7 @@ void ApplicationCacheImp::setOndownloading(events::EventHandlerNonNull ondownloa
 events::EventHandlerNonNull ApplicationCacheImp::getOnprogress()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void ApplicationCacheImp::setOnprogress(events::EventHandlerNonNull onprogress)
@@ -93,7 +93,7 @@ void ApplicationCacheImp::setOnprogress(events::EventHandlerNonNull onprogress)
 events::EventHandlerNonNull ApplicationCacheImp::getOnupdateready()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void ApplicationCacheImp::setOnupdateready(events::EventHandlerNonNull onupdateready)
@@ -104,7 +104,7 @@ void ApplicationCacheImp::setOnupdateready(events::EventHandlerNonNull onupdater
 events::EventHandlerNonNull ApplicationCacheImp::getOncached()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void ApplicationCacheImp::setOncached(events::EventHandlerNonNull oncached)
@@ -115,7 +115,7 @@ void ApplicationCacheImp::setOncached(events::EventHandlerNonNull oncached)
 events::EventHandlerNonNull ApplicationCacheImp::getOnobsolete()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void ApplicationCacheImp::setOnobsolete(events::EventHandlerNonNull onobsolete)

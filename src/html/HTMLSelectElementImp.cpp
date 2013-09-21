@@ -50,7 +50,7 @@ void HTMLSelectElementImp::setDisabled(bool disabled)
 html::HTMLFormElement HTMLSelectElementImp::getForm()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 bool HTMLSelectElementImp::getMultiple()
@@ -105,7 +105,7 @@ std::u16string HTMLSelectElementImp::getType()
 html::HTMLOptionsCollection HTMLSelectElementImp::getOptions()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 unsigned int HTMLSelectElementImp::getLength()
@@ -122,13 +122,13 @@ void HTMLSelectElementImp::setLength(unsigned int length)
 Element HTMLSelectElementImp::item(unsigned int index)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 Object HTMLSelectElementImp::namedItem(const std::u16string& name)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void HTMLSelectElementImp::add(Any element)
@@ -154,7 +154,7 @@ void HTMLSelectElementImp::setElement(unsigned int index, html::HTMLOptionElemen
 html::HTMLCollection HTMLSelectElementImp::getSelectedOptions()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 int HTMLSelectElementImp::getSelectedIndex()
@@ -188,7 +188,7 @@ bool HTMLSelectElementImp::getWillValidate()
 html::ValidityState HTMLSelectElementImp::getValidity()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 std::u16string HTMLSelectElementImp::getValidationMessage()
@@ -211,7 +211,7 @@ void HTMLSelectElementImp::setCustomValidity(const std::u16string& error)
 NodeList HTMLSelectElementImp::getLabels()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 }

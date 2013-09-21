@@ -28,7 +28,7 @@ unsigned short TextImp::getNodeType()
 Text TextImp::splitText(unsigned int offset)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 std::u16string TextImp::getWholeText()

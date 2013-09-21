@@ -17,12 +17,15 @@
 #ifndef ES_CSSPARSER_H
 #define ES_CSSPARSER_H
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <cstring>
 #include <deque>
 #include <iostream>
 #include <string>
 
-#include <Object.h>
 #include <org/w3c/dom/css/CSSPrimitiveValue.h>
 #include <org/w3c/dom/css/CSSStyleDeclaration.h>
 #include <org/w3c/dom/css/CSSStyleSheet.h>
@@ -36,14 +39,23 @@ extern int getLogLevel();
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
-class DocumentImp;
+class CSSImportRuleImp;
+class CSSMediaRuleImp;
 class CSSParser;
+class CSSRuleImp;
 class CSSSelectorsGroup;
+class CSSStyleDeclarationImp;
 class CSSStyleRuleImp;
 class CSSStyleSheetImp;
-class CSSStyleDeclarationImp;
-class CSSMediaRuleImp;
-class CSSRuleImp;
+class DocumentImp;
+
+typedef std::shared_ptr<CSSImportRuleImp> CSSImportRulePtr;
+typedef std::shared_ptr<CSSMediaRuleImp> CSSMediaRulePtr;
+typedef std::shared_ptr<CSSRuleImp> CSSRulePtr;
+typedef std::shared_ptr<CSSStyleDeclarationImp> CSSStyleDeclarationPtr;
+typedef std::shared_ptr<CSSStyleRuleImp> CSSStyleRulePtr;
+typedef std::shared_ptr<CSSStyleSheetImp> CSSStyleSheetPtr;
+typedef std::shared_ptr<DocumentImp> DocumentPtr;
 
 struct CSSParserNumber
 {
@@ -255,17 +267,18 @@ struct CSSParserExpr
 class CSSParser
 {
     URL baseURL;
-    DocumentImp* document;
+    DocumentPtr document;
     CSSTokenizer tokenizer;
-    CSSStyleSheetImp* styleSheet;
-    CSSStyleDeclarationImp* styleDeclaration;
+    CSSStyleSheetPtr styleSheet;
+    CSSStyleDeclarationPtr styleDeclaration;
     CSSParserExpr* styleExpression;
     CSSSelectorsGroup* selectorsGroup;
-    CSSMediaRuleImp* mediaRule;
+    CSSMediaRulePtr mediaRule;
     bool caseSensitive;  // for element names and attribute names.
     bool importable;
 
-    Retained<MediaListImp> mediaList;
+    MediaListPtr mediaList;
+    CSSRulePtr rule;
 
     void reset(const std::u16string cssText) {
         tokenizer.reset(cssText);
@@ -273,9 +286,7 @@ class CSSParser
 public:
     CSSParser(const std::u16string base = u"") :
         baseURL(base),
-        document(0),
         styleSheet(0),
-        styleDeclaration(0),
         styleExpression(0),
         selectorsGroup(0),
         mediaRule(0),
@@ -292,26 +303,26 @@ public:
         return href;
     }
 
-    css::CSSStyleSheet parse(DocumentImp* document, const std::u16string& cssText);
+    css::CSSStyleSheet parse(const DocumentPtr& document, const std::u16string& cssText);
     css::CSSStyleDeclaration parseDeclarations(const std::u16string& cssDecl);
     CSSParserExpr* parseExpression(const std::u16string& cssExpr);
-    MediaListImp& parseMediaList(const std::u16string& mediaText);
+    MediaListPtr parseMediaList(const std::u16string& mediaText);
     CSSSelectorsGroup* parseSelectorsGroup(const std::u16string& selectors);
 
-    DocumentImp* getDocument() const {
+    DocumentPtr getDocument() const {
         return document;
     }
 
     CSSTokenizer* getTokenizer() {
         return &tokenizer;
     }
-    CSSStyleSheetImp* getStyleSheet() {
+    CSSStyleSheetPtr getStyleSheet() {
         return styleSheet;
     }
-    void setStyleDeclaration(CSSStyleDeclarationImp* styleDeclaration) {
+    void setStyleDeclaration(CSSStyleDeclarationPtr styleDeclaration) {
         this->styleDeclaration = styleDeclaration;
     }
-    CSSStyleDeclarationImp* getStyleDeclaration() {
+    CSSStyleDeclarationPtr getStyleDeclaration() {
         return styleDeclaration;
     }
 
@@ -329,15 +340,27 @@ public:
         return selectorsGroup;
     }
 
-    void setMediaRule(CSSMediaRuleImp* mediaRule) {
+    void setMediaRule(CSSMediaRulePtr mediaRule) {
         this->mediaRule = mediaRule;
     }
-    CSSMediaRuleImp* getMediaRule() {
+    CSSMediaRulePtr getMediaRule() {
         return mediaRule;
     }
 
-    MediaListImp& getMediaList() {
+    void setMediaList(MediaListPtr mediaList) {
+        this->mediaList = mediaList;
+    }
+    MediaListPtr getMediaList() {
+        if (!mediaList)
+            mediaList = std::make_shared<MediaListImp>();
         return mediaList;
+    }
+
+    void setRule(CSSRulePtr rule) {
+        this->rule = rule;
+    }
+    CSSRulePtr getRule() {
+        return rule;
     }
 
     bool getCaseSensitivity() const {

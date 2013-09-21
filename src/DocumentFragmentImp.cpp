@@ -30,13 +30,13 @@ namespace bootstrap
 Element DocumentFragmentImp::querySelector(const std::u16string& selectors)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 NodeList DocumentFragmentImp::querySelectorAll(const std::u16string& selectors)
 {
     // TODO: implement me!
-    return new(std::nothrow) NodeListImp;
+    return std::make_shared<NodeListImp>();
 }
 
 }

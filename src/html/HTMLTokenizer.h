@@ -17,7 +17,10 @@
 #ifndef ES_HTMLTOKENIZER_H
 #define ES_HTMLTOKENIZER_H
 
-#include <Object.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <org/w3c/dom/Attr.h>
 #include <org/w3c/dom/Element.h>
 

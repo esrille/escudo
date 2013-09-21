@@ -17,7 +17,7 @@ namespace bootstrap
 css::CSSStyleDeclaration DocumentCSSImp::getOverrideStyle(Element elt, const Nullable<std::u16string>& pseudoElt)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 }

@@ -17,7 +17,7 @@ namespace bootstrap
 events::EventHandlerNonNull XMLHttpRequestImp::getOnreadystatechange()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void XMLHttpRequestImp::setOnreadystatechange(events::EventHandlerNonNull onreadystatechange)
@@ -81,7 +81,7 @@ void XMLHttpRequestImp::setWithCredentials(bool withCredentials)
 XMLHttpRequestUpload XMLHttpRequestImp::getUpload()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void XMLHttpRequestImp::send()
@@ -154,7 +154,7 @@ std::u16string XMLHttpRequestImp::getResponseText()
 Document XMLHttpRequestImp::getResponseXML()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 }

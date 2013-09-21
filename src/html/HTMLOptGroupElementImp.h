@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,19 @@ namespace bootstrap
 class HTMLOptGroupElementImp : public ObjectMixin<HTMLOptGroupElementImp, HTMLElementImp>
 {
 public:
+    HTMLOptGroupElementImp(DocumentImp* ownerDocument) :
+        ObjectMixin(ownerDocument, u"optgroup")
+    {
+    }
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLOptGroupElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
+
     // HTMLOptGroupElement
     bool getDisabled();
     void setDisabled(bool disabled);
@@ -50,12 +63,6 @@ public:
     static const char* const getMetaData()
     {
         return html::HTMLOptGroupElement::getMetaData();
-    }
-    HTMLOptGroupElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"optgroup") {
-    }
-    HTMLOptGroupElementImp(HTMLOptGroupElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
     }
 };
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,19 @@ namespace bootstrap
 class HTMLDetailsElementImp : public ObjectMixin<HTMLDetailsElementImp, HTMLElementImp>
 {
 public:
+    HTMLDetailsElementImp(DocumentImp* ownerDocument) :
+        ObjectMixin(ownerDocument, u"details")
+    {
+    }
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLDetailsElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
+
     // HTMLDetailsElement
     bool getOpen();
     void setOpen(bool open);
@@ -48,12 +61,6 @@ public:
     static const char* const getMetaData()
     {
         return html::HTMLDetailsElement::getMetaData();
-    }
-    HTMLDetailsElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"details") {
-    }
-    HTMLDetailsElementImp(HTMLDetailsElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
     }
 };
 

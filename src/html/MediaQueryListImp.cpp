@@ -20,6 +20,8 @@
 #include <boost/bind.hpp>
 
 #include "Task.h"
+#include "MediaListImp.h"
+#include "WindowImp.h"
 #include "WindowProxy.h"
 
 namespace org
@@ -32,19 +34,14 @@ namespace bootstrap
 {
 
 // Note this constructor should be called via WindowProxy::matchMedia().
-MediaQueryListImp::MediaQueryListImp(WindowPtr window, std::u16string query) :
+MediaQueryListImp::MediaQueryListImp(WindowPtr window, const std::u16string& query) :
     state(Unknown),
     window(window)
 {
     if (!query.empty()) {
-        mediaList = new(std::nothrow) MediaListImp;
+        mediaList = std::make_shared<MediaListImp>();
         mediaList.setMediaText(query);
     }
-}
-
-MediaQueryListImp::~MediaQueryListImp()
-{
-    window->removeMedia(this);
 }
 
 void MediaQueryListImp::setMediaList(stylesheets::MediaList list)
@@ -54,10 +51,11 @@ void MediaQueryListImp::setMediaList(stylesheets::MediaList list)
 
 bool MediaQueryListImp::evaluate()
 {
-    if (!mediaList)
+    auto window = getWindow();
+    if (!mediaList || !window)
         return false;
     int old = state;
-    state = dynamic_cast<MediaListImp*>(mediaList.self())->matches(window->getWindowProxy()) ? Match : NotMatch;
+    state = std::dynamic_pointer_cast<MediaListImp>(mediaList.self())->matches(window->getWindowProxy()) ? Match : NotMatch;
     if (old == state || old == Unknown)
         return false;
     for (auto i = listeners.begin(); i != listeners.end(); ++i) {

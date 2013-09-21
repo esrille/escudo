@@ -39,7 +39,7 @@ void MouseEventInitImp::setCancelable(bool cancelable)
 html::Window MouseEventInitImp::getView()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void MouseEventInitImp::setView(html::Window view)
@@ -171,7 +171,7 @@ void MouseEventInitImp::setButtons(unsigned short buttons)
 events::EventTarget MouseEventInitImp::getRelatedTarget()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void MouseEventInitImp::setRelatedTarget(events::EventTarget relatedTarget)

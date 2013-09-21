@@ -21,6 +21,12 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 using namespace css;
 
+void CSSStyleRuleImp::setStyle(const CSSStyleDeclarationPtr& style)
+{
+    styleDeclaration = style;
+    style->setParentRule(std::static_pointer_cast<CSSStyleRuleImp>(self()));
+}
+
 // CSSRule
 unsigned short CSSStyleRuleImp::getType()
 {
@@ -29,7 +35,11 @@ unsigned short CSSStyleRuleImp::getType()
 
 std::u16string CSSStyleRuleImp::getCssText()
 {
-    return getSelectorText() + u" { " + styleDeclaration.getCssText() + u" }";
+    std::u16string text = getSelectorText() + u" {";
+    if (styleDeclaration)
+        text += u' ' + styleDeclaration->getCssText() + u' ';
+    text +=  u'}';
+    return text;
 }
 
 // CSSStyleRule
@@ -51,12 +61,9 @@ CSSStyleDeclaration CSSStyleRuleImp::getStyle()
     return styleDeclaration;
 }
 
-CSSStyleRuleImp::CSSStyleRuleImp(CSSSelectorsGroup* selectorsGroup, css::CSSStyleDeclaration styleDeclaration) :
-    selectorsGroup(selectorsGroup),
-    styleDeclaration(styleDeclaration)
+CSSStyleRuleImp::CSSStyleRuleImp(CSSSelectorsGroup* selectorsGroup) :
+    selectorsGroup(selectorsGroup)
 {
-    if (CSSStyleDeclarationImp* imp = dynamic_cast<CSSStyleDeclarationImp*>(styleDeclaration.self()))
-        imp->setParentRule(this);
 }
 
 }}}}  // org::w3c::dom::bootstrap

@@ -63,7 +63,7 @@ void Uint8ClampedArrayImp::set(ObjectArray<unsigned char> array, unsigned int of
 Uint8Array /* Uint8ClampedArray */ Uint8ClampedArrayImp::subarray(int start, int end)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 }

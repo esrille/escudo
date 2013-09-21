@@ -21,6 +21,7 @@
 constexpr auto Intern = &one_at_a_time::hash<char16_t>;
 
 #include "DocumentImp.h"
+#include "ECMAScript.h"
 #include "HTMLUtil.h"
 
 namespace org
@@ -34,11 +35,6 @@ namespace bootstrap
 
 HTMLMarqueeElementImp::HTMLMarqueeElementImp(DocumentImp* ownerDocument) :
     ObjectMixin(ownerDocument, u"marquee")
-{
-}
-
-HTMLMarqueeElementImp::HTMLMarqueeElementImp(HTMLMarqueeElementImp* org, bool deep) :
-    ObjectMixin(org, deep)
 {
 }
 
@@ -86,13 +82,13 @@ void HTMLMarqueeElementImp::handleMutation(events::MutationEvent mutation)
         break;
     // Event handlers
     case Intern(u"onbounce"):
-        setOnbounce(compile ? context->compileFunction(value) : 0);
+        setOnbounce(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onfinish"):
-        setOnfinish(compile ? context->compileFunction(value) : 0);
+        setOnfinish(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onstart"):
-        setOnstart(compile ? context->compileFunction(value) : 0);
+        setOnstart(compile ? context->compileFunction(value).self() : nullptr);
         break;
     default:
         HTMLElementImp::handleMutation(mutation);

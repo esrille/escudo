@@ -28,7 +28,7 @@ void HTMLOptionsCollectionImp::setLength(unsigned int length)
 Object HTMLOptionsCollectionImp::namedItem(const std::u16string& name)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void HTMLOptionsCollectionImp::setElement(unsigned int index, html::HTMLOptionElement option)

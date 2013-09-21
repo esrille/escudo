@@ -28,13 +28,13 @@ void HTMLMapElementImp::setName(const std::u16string& name)
 html::HTMLCollection HTMLMapElementImp::getAreas()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::HTMLCollection HTMLMapElementImp::getImages()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 }

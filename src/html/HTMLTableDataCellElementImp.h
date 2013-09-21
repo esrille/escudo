@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Esrille Inc.
+ * Copyright 2012, 2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,19 @@ namespace bootstrap
 class HTMLTableDataCellElementImp : public ObjectMixin<HTMLTableDataCellElementImp, HTMLTableCellElementImp>
 {
 public:
+    HTMLTableDataCellElementImp(DocumentImp* ownerDocument) :
+        ObjectMixin(ownerDocument, u"td")
+    {
+    }
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLTableDataCellElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
+
     // HTMLTableDataCellElement
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
@@ -46,12 +59,6 @@ public:
     static const char* const getMetaData()
     {
         return html::HTMLTableDataCellElement::getMetaData();
-    }
-    HTMLTableDataCellElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"td") {
-    }
-    HTMLTableDataCellElementImp(HTMLTableDataCellElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
     }
 };
 

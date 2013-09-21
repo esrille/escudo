@@ -23,8 +23,6 @@
 
 #include <org/w3c/dom/html/HTMLTableElement.h>
 
-#include <boost/intrusive_ptr.hpp>
-
 #include <org/w3c/dom/html/HTMLTableCaptionElement.h>
 #include <org/w3c/dom/html/HTMLTableRowElement.h>
 #include <org/w3c/dom/html/HTMLTableSectionElement.h>
@@ -46,7 +44,7 @@ class HTMLTableElementImp : public ObjectMixin<HTMLTableElementImp, HTMLElementI
     // HTMLCollection for rows
     class Rows : public HTMLCollectionImp
     {
-        boost::intrusive_ptr<HTMLTableElementImp> table;
+        std::shared_ptr<HTMLTableElementImp> table;
     public:
         Rows(HTMLTableElementImp* table);
 
@@ -54,17 +52,23 @@ class HTMLTableElementImp : public ObjectMixin<HTMLTableElementImp, HTMLElementI
         virtual unsigned int getLength();
         virtual Element item(unsigned int index);
         virtual Object namedItem(const std::u16string& name) {
-            return 0;
+            return nullptr;
         }
     };
 
 public:
     HTMLTableElementImp(DocumentImp* ownerDocument) :
         ObjectMixin(ownerDocument, u"table")
-    {}
-    HTMLTableElementImp(HTMLTableElementImp* org, bool deep) :
-        ObjectMixin(org, deep)
-    {}
+    {
+    }
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLTableElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
 
     virtual void handleMutation(events::MutationEvent mutation);
 

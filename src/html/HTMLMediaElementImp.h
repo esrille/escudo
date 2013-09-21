@@ -45,10 +45,16 @@ class HTMLMediaElementImp : public ObjectMixin<HTMLMediaElementImp, HTMLElementI
 {
 public:
     HTMLMediaElementImp(DocumentImp* ownerDocument, const std::u16string& localName) :
-        ObjectMixin(ownerDocument, localName) {
+        ObjectMixin(ownerDocument, localName)
+    {
     }
-    HTMLMediaElementImp(HTMLMediaElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLMediaElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
     }
 
     // HTMLMediaElement

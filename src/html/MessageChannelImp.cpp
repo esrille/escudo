@@ -17,13 +17,13 @@ namespace bootstrap
 html::MessagePort MessageChannelImp::getPort1()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::MessagePort MessageChannelImp::getPort2()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 }

@@ -30,38 +30,15 @@
 #include "DOMTokenListImp.h"
 #include "MutationEventImp.h"
 #include "NodeListImp.h"
+#include "ObjectArrayImp.h"
 #include "XMLDocumentImp.h"
+#include "WindowProxy.h"
 #include "css/CSSSerialize.h"
 #include "html/HTMLCollectionImp.h"
+#include "html/HTMLParser.h"
 #include "html/HTMLTokenizer.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
-
-class AttrArray : public Object
-{
-    ElementImp* element;
-public:
-    virtual unsigned int getLength() {
-        return element->attributes.size();
-    }
-    virtual void setLength(unsigned int length) {
-    }
-    virtual Attr getElement(unsigned int index) {
-        if (element->attributes.size() <= index)
-            return 0;
-        return element->attributes[index];
-    }
-    virtual void setElement(unsigned int index, Attr value) {
-    }
-    // Object
-    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
-        return ObjectArray<Attr>::dispatch(this, selector, id, argc, argv);
-    }
-    AttrArray(ElementImp* element) :
-        Object(this),
-        element(element) {
-    }
-};
 
 void ElementImp::setAttributes(const std::deque<Attr>& attributes)
 {
@@ -71,22 +48,22 @@ void ElementImp::setAttributes(const std::deque<Attr>& attributes)
     }
 }
 
-ElementImp* ElementImp::getNextElement(ElementImp* root)
+ElementPtr ElementImp::getNextElement(const ElementPtr& root)
 {
-    NodeImp* n = this;
+    auto n = std::dynamic_pointer_cast<NodeImp>(self());
     for (auto i = n->firstChild; i; i = i->nextSibling) {
         if (i->getNodeType() == Node::ELEMENT_NODE)
-            return dynamic_cast<ElementImp*>(i);
+            return std::dynamic_pointer_cast<ElementImp>(i);
     }
     while (n != root) {
         while (n->nextSibling) {
             n = n->nextSibling;
             if (n->getNodeType() == Node::ELEMENT_NODE)
-                return dynamic_cast<ElementImp*>(n);
+                return std::dynamic_pointer_cast<ElementImp>(n);
         }
-        n = n->parentNode;
+        n = n->getParent();
     }
-    return 0;
+    return nullptr;
 }
 
 // Node
@@ -94,11 +71,6 @@ ElementImp* ElementImp::getNextElement(ElementImp* root)
 unsigned short ElementImp::getNodeType()
 {
     return Node::ELEMENT_NODE;
-}
-
-Node ElementImp::cloneNode(bool deep)
-{
-    return new(std::nothrow) ElementImp(this, deep);
 }
 
 Nullable<std::u16string> ElementImp::getTextContent()
@@ -120,15 +92,17 @@ void ElementImp::setTextContent(const Nullable<std::u16string>& textContent)
         removeChild(getFirstChild());
     std::u16string content = static_cast<std::u16string>(textContent);
     if (!content.empty()) {
-        org::w3c::dom::Text text = ownerDocument->createTextNode(content);
-        appendChild(text);
+        if (auto owner = getOwnerDocumentImp()) {
+            org::w3c::dom::Text text = owner->createTextNode(content);
+            appendChild(text);
+        }
     }
 }
 
 bool ElementImp::isEqualNode(Node arg)
 {
-    ElementImp* element = dynamic_cast<ElementImp*>(arg.self());
-    if (this == element)
+    auto element = std::dynamic_pointer_cast<ElementImp>(arg.self());
+    if (element.get() == this)
         return true;
     if (!element)
         return false;
@@ -201,12 +175,12 @@ void ElementImp::setClassName(const std::u16string& className)
 
 DOMTokenList ElementImp::getClassList()
 {
-    return new(std::nothrow) DOMTokenListImp(this, u"class");
+    return std::make_shared<DOMTokenListImp>(this, u"class");
 }
 
 dom::ObjectArray<Attr> ElementImp:: getAttributes()
 {
-    return new(std::nothrow) AttrArray(this);
+    return std::make_shared<ObjectArrayImp<ElementImp, Attr, &ElementImp::attributes>>(std::static_pointer_cast<ElementImp>(self()));
 }
 
 Nullable<std::u16string> ElementImp::getAttribute(const std::u16string& name)
@@ -245,7 +219,7 @@ void ElementImp::setAttribute(const std::u16string& name, const std::u16string& 
             std::u16string prevValue = attr.getValue();
             if (prevValue != value) {
                 attr.setValue(value);
-                events::MutationEvent event = new(std::nothrow) MutationEventImp;
+                events::MutationEvent event = std::make_shared<MutationEventImp>();
                 event.initMutationEvent(u"DOMAttrModified",
                                         true, false, attr, prevValue, value, n, events::MutationEvent::MODIFICATION);
                 this->dispatchEvent(event);
@@ -253,9 +227,9 @@ void ElementImp::setAttribute(const std::u16string& name, const std::u16string& 
             return;
         }
     }
-    if (Attr attr = new(std::nothrow) AttrImp(Nullable<std::u16string>(), Nullable<std::u16string>(), n, value)) {
+    if (Attr attr = std::make_shared<AttrImp>(Nullable<std::u16string>(), Nullable<std::u16string>(), n, value)) {
         attributes.push_back(attr);
-        events::MutationEvent event = new(std::nothrow) MutationEventImp;
+        events::MutationEvent event = std::make_shared<MutationEventImp>();
         event.initMutationEvent(u"DOMAttrModified",
                                 true, false, attr, u"", value, n, events::MutationEvent::ADDITION);
         this->dispatchEvent(event);
@@ -293,7 +267,7 @@ void ElementImp::setAttributeNS(const Nullable<std::u16string>& namespaceURI, co
                 attr.setValue(value);
                 // TODO: set prefix, too.
 
-                events::MutationEvent event = new(std::nothrow) MutationEventImp;
+                events::MutationEvent event = std::make_shared<MutationEventImp>();
                 event.initMutationEvent(u"DOMAttrModified",
                                         true, false, attr, prevValue, value, localName, events::MutationEvent::MODIFICATION);
                 dispatchEvent(event);
@@ -301,9 +275,9 @@ void ElementImp::setAttributeNS(const Nullable<std::u16string>& namespaceURI, co
             return;
         }
     }
-    if (Attr attr = new(std::nothrow) AttrImp(namespaceURI, prefix, localName, value)) {
+    if (Attr attr = std::make_shared<AttrImp>(namespaceURI, prefix, localName, value)) {
         attributes.push_back(attr);
-        events::MutationEvent event = new(std::nothrow) MutationEventImp;
+        events::MutationEvent event = std::make_shared<MutationEventImp>();
         event.initMutationEvent(u"DOMAttrModified",
                                 true, false, attr, u"", value, localName, events::MutationEvent::ADDITION);
         dispatchEvent(event);
@@ -318,7 +292,7 @@ void ElementImp::removeAttribute(const std::u16string& name)
     for (auto i = attributes.begin(); i != attributes.end();) {
         Attr attr = *i;
         if (attr.getName() == n) {
-            events::MutationEvent event = new(std::nothrow) MutationEventImp;
+            events::MutationEvent event = std::make_shared<MutationEventImp>();
             event.initMutationEvent(u"DOMAttrModified",
                                     true, false, attr, attr.getValue(), u"", n, events::MutationEvent::REMOVAL);
             this->dispatchEvent(event);
@@ -333,7 +307,7 @@ void ElementImp::removeAttributeNS(const Nullable<std::u16string>& namespaceURI,
     for (auto i = attributes.begin(); i != attributes.end();) {
         Attr attr = *i;
         if (static_cast<std::u16string>(attr.getNamespaceURI()) == static_cast<std::u16string>(namespaceURI) && attr.getLocalName() == localName) {
-            events::MutationEvent event = new(std::nothrow) MutationEventImp;
+            events::MutationEvent event = std::make_shared<MutationEventImp>();
             event.initMutationEvent(u"DOMAttrModified",
                                     true, false, attr, attr.getValue(), u"", localName, events::MutationEvent::REMOVAL);
             this->dispatchEvent(event);
@@ -369,21 +343,21 @@ bool ElementImp::hasAttributeNS(const Nullable<std::u16string>& namespaceURI, co
 html::HTMLCollection ElementImp::getChildren()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
-HTMLCollectionImp* ElementImp::getElementsByTagName(ElementImp* element, const std::u16string& localName)
+HTMLCollectionPtr ElementImp::getElementsByTagName(const ElementPtr& element, const std::u16string& localName)
 {
-    HTMLCollectionImp* list = new(std::nothrow) HTMLCollectionImp;
+    HTMLCollectionPtr list = std::make_shared<HTMLCollectionImp>();
     if (!list)
-        return 0;
+        return nullptr;
 
     if (localName == u"*") {
-        for (ElementImp* e = element; e; e = e->getNextElement())
+        for (ElementPtr e = element; e; e = e->getNextElement())
             list->addItem(e);
     } else {
         // TODO: Support non HTML document
-        for (ElementImp* e = element; e; e = e->getNextElement()) {
+        for (ElementPtr e = element; e; e = e->getNextElement()) {
             if (e->getLocalName() == localName)
                 list->addItem(e);
         }
@@ -393,24 +367,24 @@ HTMLCollectionImp* ElementImp::getElementsByTagName(ElementImp* element, const s
 
 html::HTMLCollection ElementImp::getElementsByTagName(const std::u16string& localName)
 {
-    return getElementsByTagName(this, localName);
+    return getElementsByTagName(std::static_pointer_cast<ElementImp>(self()), localName);
 }
 
 html::HTMLCollection ElementImp::getElementsByTagNameNS(const Nullable<std::u16string>& namespaceURI, const std::u16string& localName)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
-HTMLCollectionImp* ElementImp::getElementsByClassName(ElementImp* element, const std::u16string& classNames)
+HTMLCollectionPtr ElementImp::getElementsByClassName(const ElementPtr& element, const std::u16string& classNames)
 {
-    HTMLCollectionImp* list = new(std::nothrow) HTMLCollectionImp;
+    HTMLCollectionPtr list = std::make_shared<HTMLCollectionImp>();
     if (!list)
-        return 0;
+        return nullptr;
 
     std::vector<std::u16string> classes;
     boost::algorithm::split(classes, classNames, isSpace);
-    for (ElementImp* e = element; e; e = e->getNextElement()) {
+    for (ElementPtr e = element; e; e = e->getNextElement()) {
         std::u16string c = e->getClassName();
         std::vector<std::u16string> v;
         boost::algorithm::split(v, c, isSpace);
@@ -429,52 +403,52 @@ HTMLCollectionImp* ElementImp::getElementsByClassName(ElementImp* element, const
 
 html::HTMLCollection ElementImp::getElementsByClassName(const std::u16string& classNames)
 {
-    return getElementsByClassName(this, classNames);
+    return getElementsByClassName(std::static_pointer_cast<ElementImp>(self()), classNames);
 }
 
 Element ElementImp::getFirstElementChild()
 {
-    for (NodeImp* n = this->firstChild; n; n = n->nextSibling) {
-        if (dynamic_cast<ElementImp*>(n))
+    for (NodePtr n = this->firstChild; n; n = n->nextSibling) {
+        if (std::dynamic_pointer_cast<ElementImp>(n))
             return n;
     }
-    return 0;
+    return nullptr;
 }
 
 Element ElementImp::getLastElementChild()
 {
-    for (NodeImp* n = this->lastChild; n; n = n->previousSibling) {
-        if (dynamic_cast<ElementImp*>(n))
+    for (NodePtr n = this->lastChild; n; n = n->previousSibling) {
+        if (std::dynamic_pointer_cast<ElementImp>(n))
             return n;
     }
-    return 0;
+    return nullptr;
 }
 
 Element ElementImp::getPreviousElementSibling()
 {
-    NodeImp* n = this;
+    NodePtr n = std::static_pointer_cast<ElementImp>(self());
     while (n = n->previousSibling) {
-        if (dynamic_cast<ElementImp*>(n))
+        if (std::dynamic_pointer_cast<ElementImp>(n))
             return n;
     }
-    return 0;
+    return nullptr;
 }
 
 Element ElementImp::getNextElementSibling()
 {
-    NodeImp* n = this;
+    NodePtr n = std::static_pointer_cast<ElementImp>(self());
     while (n = n->nextSibling) {
-        if (dynamic_cast<ElementImp*>(n))
+        if (std::dynamic_pointer_cast<ElementImp>(n))
             return n;
     }
-    return 0;
+    return nullptr;
 }
 
 unsigned int ElementImp::getChildElementCount()
 {
     unsigned int count = 0;
-    for (NodeImp* n = this->firstChild; n; n = n->nextSibling) {
-        if (dynamic_cast<ElementImp*>(n))
+    for (NodePtr n = this->firstChild; n; n = n->nextSibling) {
+        if (std::dynamic_pointer_cast<ElementImp>(n))
             ++count;
     }
     return count;
@@ -483,19 +457,19 @@ unsigned int ElementImp::getChildElementCount()
 css::CSSStyleDeclaration ElementImp::getStyle()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 views::ClientRectList ElementImp::getClientRects()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 views::ClientRect ElementImp::getBoundingClientRect()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void ElementImp::scrollIntoView(bool top)
@@ -569,11 +543,11 @@ std::u16string ElementImp::getInnerHTML()
 
 void ElementImp::setInnerHTML(const std::u16string& innerHTML)
 {
-    Document document = new(std::nothrow) DocumentImp;
+    DocumentPtr document(std::make_shared<DocumentImp>());
     if (!document)
         return;
-    HTMLParser::parseFragment(document, innerHTML, this);
-    Element root = document.getDocumentElement();
+    HTMLParser::parseFragment(document, innerHTML, std::static_pointer_cast<ElementImp>(self()));
+    Element root = document->getDocumentElement();
     if (!root)
         return;
 
@@ -607,15 +581,15 @@ void ElementImp::insertAdjacentHTML(const insertAdjacentHTMLPosition& position, 
 
 Element ElementImp::querySelector(CSSSelectorsGroup* selectorsGroup, ViewCSSImp* view)
 {
-    if (selectorsGroup->evaluate(this, view))
-        return this;
+    if (selectorsGroup->evaluate(std::static_pointer_cast<ElementImp>(self()), view))
+        return self();
     for (auto i = getFirstElementChild(); i; i = i.getNextElementSibling()) {
-        if (auto imp = dynamic_cast<ElementImp*>(i.self())) {
+        if (auto imp = std::dynamic_pointer_cast<ElementImp>(i.self())) {
             if (Element e = imp->querySelector(selectorsGroup, view))
                 return e;
         }
     }
-    return 0;
+    return nullptr;
 }
 
 Element ElementImp::querySelector(const std::u16string& selectors)
@@ -623,31 +597,31 @@ Element ElementImp::querySelector(const std::u16string& selectors)
     CSSParser parser;
     std::unique_ptr<CSSSelectorsGroup> selectorsGroup(parser.parseSelectorsGroup(selectors));
     if (!selectorsGroup)
-        return 0;
+        return nullptr;
 
     if (!getOwnerDocumentImp())
-        return 0;
-    WindowProxy* window = getOwnerDocumentImp()->getDefaultWindow();
+        return nullptr;
+    WindowProxyPtr window = getOwnerDocumentImp()->getDefaultWindow();
     if (!window)
-        return 0;
+        return nullptr;
     return querySelector(selectorsGroup.get(), window->getView());
 }
 
-void ElementImp::querySelectorAll(NodeListImp* nodeList, CSSSelectorsGroup* selectorsGroup, ViewCSSImp* view)
+void ElementImp::querySelectorAll(NodeListPtr nodeList, CSSSelectorsGroup* selectorsGroup, ViewCSSImp* view)
 {
-    if (selectorsGroup->evaluate(this, view))
-        nodeList->addItem(this);
+    if (selectorsGroup->evaluate(std::static_pointer_cast<ElementImp>(self()), view))
+        nodeList->addItem(std::static_pointer_cast<ElementImp>(self()));
     for (auto i = getFirstElementChild(); i; i = i.getNextElementSibling()) {
-        if (auto imp = dynamic_cast<ElementImp*>(i.self()))
+        if (auto imp = std::dynamic_pointer_cast<ElementImp>(i.self()))
             imp->querySelectorAll(nodeList, selectorsGroup, view);
     }
 }
 
 NodeList ElementImp::querySelectorAll(const std::u16string& selectors)
 {
-    NodeListImp* nodeList = new(std::nothrow) NodeListImp;
+    NodeListPtr nodeList = std::make_shared<NodeListImp>();
     if (!nodeList)
-        return 0;
+        return nullptr;
 
     CSSParser parser;
     std::unique_ptr<CSSSelectorsGroup> selectorsGroup(parser.parseSelectorsGroup(selectors));
@@ -656,7 +630,7 @@ NodeList ElementImp::querySelectorAll(const std::u16string& selectors)
 
     if (!getOwnerDocumentImp())
         return nodeList;
-    WindowProxy* window = getOwnerDocumentImp()->getDefaultWindow();
+    WindowProxyPtr window = getOwnerDocumentImp()->getDefaultWindow();
     if (!window)
         return nodeList;
     querySelectorAll(nodeList, selectorsGroup.get(), window->getView());
@@ -666,7 +640,7 @@ NodeList ElementImp::querySelectorAll(const std::u16string& selectors)
 xbl2::XBLImplementationList ElementImp::getXblImplementations()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void ElementImp::addBinding(const std::u16string& bindingURI)
@@ -700,15 +674,15 @@ ElementImp::ElementImp(DocumentImp* ownerDocument, const std::u16string& localNa
         toUpper(nodeName);
 }
 
-ElementImp::ElementImp(ElementImp* org, bool deep) :
-    ObjectMixin(org, deep)
+ElementImp::ElementImp(const ElementImp& org) :
+    ObjectMixin(org),
+    namespaceURI(org.namespaceURI),
+    prefix(org.prefix),
+    localName(org.localName)
 {
-    namespaceURI = org->namespaceURI;
-    prefix = org->prefix;
-    localName = org->localName;
-    for (auto i = org->attributes.begin(); i != org->attributes.end(); ++i) {
-        if (Attr attr = new(std::nothrow) AttrImp(*dynamic_cast<AttrImp*>((*i).self())))
-            attributes.push_back(attr);
+    for (auto i = org.attributes.begin(); i != org.attributes.end(); ++i) {
+        AttrPtr attr = std::dynamic_pointer_cast<AttrImp>((*i).self());
+        attributes.push_back(attr); // TODO: dup?
     }
 }
 

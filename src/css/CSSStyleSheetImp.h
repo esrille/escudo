@@ -34,13 +34,14 @@
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class DocumentImp;
+typedef std::shared_ptr<DocumentImp> DocumentPtr;
 
 class CSSStyleSheetImp : public ObjectMixin<CSSStyleSheetImp, StyleSheetImp>
 {
     Retained<CSSRuleListImp> ruleList;
 
 public:
-    void append(css::CSSRule rule, DocumentImp* document);
+    void append(css::CSSRule rule, const DocumentPtr& document);
 
     // StyleSheet
     virtual std::u16string getType();
@@ -60,6 +61,8 @@ public:
         return css::CSSStyleSheet::getMetaData();
     }
 };
+
+typedef std::shared_ptr<CSSStyleSheetImp> CSSStyleSheetPtr;
 
 }}}}  // org::w3c::dom::bootstrap
 

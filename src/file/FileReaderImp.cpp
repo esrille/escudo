@@ -54,13 +54,13 @@ Any FileReaderImp::getResult()
 DOMError FileReaderImp::getError()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 events::EventHandlerNonNull FileReaderImp::getOnloadstart()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void FileReaderImp::setOnloadstart(events::EventHandlerNonNull onloadstart)
@@ -71,7 +71,7 @@ void FileReaderImp::setOnloadstart(events::EventHandlerNonNull onloadstart)
 events::EventHandlerNonNull FileReaderImp::getOnprogress()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void FileReaderImp::setOnprogress(events::EventHandlerNonNull onprogress)
@@ -82,7 +82,7 @@ void FileReaderImp::setOnprogress(events::EventHandlerNonNull onprogress)
 events::EventHandlerNonNull FileReaderImp::getOnload()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void FileReaderImp::setOnload(events::EventHandlerNonNull onload)
@@ -93,7 +93,7 @@ void FileReaderImp::setOnload(events::EventHandlerNonNull onload)
 events::EventHandlerNonNull FileReaderImp::getOnabort()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void FileReaderImp::setOnabort(events::EventHandlerNonNull onabort)
@@ -104,7 +104,7 @@ void FileReaderImp::setOnabort(events::EventHandlerNonNull onabort)
 events::EventHandlerNonNull FileReaderImp::getOnerror()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void FileReaderImp::setOnerror(events::EventHandlerNonNull onerror)
@@ -115,7 +115,7 @@ void FileReaderImp::setOnerror(events::EventHandlerNonNull onerror)
 events::EventHandlerNonNull FileReaderImp::getOnloadend()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void FileReaderImp::setOnloadend(events::EventHandlerNonNull onloadend)

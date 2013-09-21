@@ -17,7 +17,7 @@ namespace bootstrap
 events::EventTarget FocusEventImp::getRelatedTarget()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void FocusEventImp::initFocusEvent(const std::u16string& typeArg, bool canBubbleArg, bool cancelableArg, html::Window viewArg, int detailArg, events::EventTarget relatedTargetArg)

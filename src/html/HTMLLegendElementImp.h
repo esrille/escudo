@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,19 @@ namespace bootstrap
 class HTMLLegendElementImp : public ObjectMixin<HTMLLegendElementImp, HTMLElementImp>
 {
 public:
+    HTMLLegendElementImp(DocumentImp* ownerDocument) :
+        ObjectMixin(ownerDocument, u"legend")
+    {
+    }
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLLegendElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
+
     // HTMLLegendElement
     html::HTMLFormElement getForm();
     // HTMLLegendElement-18
@@ -51,12 +64,6 @@ public:
     static const char* const getMetaData()
     {
         return html::HTMLLegendElement::getMetaData();
-    }
-    HTMLLegendElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"legend") {
-    }
-    HTMLLegendElementImp(HTMLLegendElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
     }
 };
 

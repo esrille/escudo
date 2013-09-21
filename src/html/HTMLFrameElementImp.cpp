@@ -83,13 +83,13 @@ void HTMLFrameElementImp::setNoResize(bool noResize)
 Document HTMLFrameElementImp::getContentDocument()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::Window HTMLFrameElementImp::getContentWindow()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 std::u16string HTMLFrameElementImp::getMarginHeight()

@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,6 @@ class MutationEventImp : public ObjectMixin<MutationEventImp, EventImp>
     unsigned short attrChange;
 public:
     MutationEventImp() :
-        relatedNode(0),
         attrChange(0)
     {
     }

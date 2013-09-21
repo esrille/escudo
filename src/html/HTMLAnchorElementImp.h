@@ -44,10 +44,18 @@ class HTMLAnchorElementImp : public ObjectMixin<HTMLAnchorElementImp, HTMLElemen
 
 public:
     HTMLAnchorElementImp(DocumentImp* ownerDocument);
-    HTMLAnchorElementImp(HTMLAnchorElementImp* org, bool deep);
+    HTMLAnchorElementImp(const HTMLAnchorElementImp& org);
     ~HTMLAnchorElementImp();
 
     virtual void handleMutation(events::MutationEvent mutation);
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLAnchorElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
 
     // HTMLAnchorElement
     std::u16string getHref();

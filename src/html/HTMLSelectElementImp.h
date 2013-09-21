@@ -47,10 +47,16 @@ class HTMLSelectElementImp : public ObjectMixin<HTMLSelectElementImp, HTMLElemen
 {
 public:
     HTMLSelectElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"select") {
+        ObjectMixin(ownerDocument, u"select")
+    {
     }
-    HTMLSelectElementImp(HTMLSelectElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLSelectElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
     }
 
     // HTMLSelectElement

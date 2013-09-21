@@ -17,13 +17,13 @@ namespace bootstrap
 Node NodeIteratorImp::getRoot()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 Node NodeIteratorImp::getReferenceNode()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 bool NodeIteratorImp::getPointerBeforeReferenceNode()
@@ -41,19 +41,19 @@ unsigned int NodeIteratorImp::getWhatToShow()
 traversal::NodeFilter NodeIteratorImp::getFilter()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 Node NodeIteratorImp::nextNode()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 Node NodeIteratorImp::previousNode()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void NodeIteratorImp::detach()

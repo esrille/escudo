@@ -71,12 +71,12 @@ int main(int argc, char* argv[])
 
     std::thread httpService(std::ref(HttpConnectionManager::getInstance()));
 
-    window = new WindowProxy(0, 0, WindowProxy::TopLevel);
+    window = std::make_shared<WindowProxy>(WindowProxy::TopLevel);
     window.open(utfconv(argv[argc - 1]), u"_self", u"", true);
 
     glutMainLoop();
 
-    window = 0;
+    window = nullptr;
 
     ECMAScriptContext::shutDown();
 

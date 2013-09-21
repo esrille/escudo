@@ -109,30 +109,14 @@ public:
     }
 };
 
-class ProxyObject : public Object
+class ProxyObject : public Imp
 {
     JSContext* jscontext;
     JSObject* jsobject;
-    unsigned int count;
-protected:
-    virtual unsigned int retain_() {
-        return ++count;
-    };
-    virtual unsigned int release_() {
-        if (0 < count)
-            --count;
-        if (count == 0) {
-            delete this;
-            return 0;
-        }
-        return count;
-    };
 public:
     ProxyObject(JSContext* jscontext, JSObject* obj) :
-        Object(this),
         jscontext(jscontext),
-        jsobject(obj),
-        count(0)
+        jsobject(obj)
     {
         JS_AddObjectRoot(jscontext, &jsobject);
     }

@@ -83,7 +83,7 @@ void HTMLMeterElementImp::setOptimum(double optimum)
 NodeList HTMLMeterElementImp::getLabels()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 }

@@ -37,6 +37,19 @@ namespace bootstrap
 class HTMLTableHeaderCellElementImp : public ObjectMixin<HTMLTableHeaderCellElementImp, HTMLTableCellElementImp>
 {
 public:
+    HTMLTableHeaderCellElementImp(DocumentImp* ownerDocument) :
+        ObjectMixin(ownerDocument, u"th")
+    {
+    }
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLTableHeaderCellElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
+
     // HTMLTableHeaderCellElement
     std::u16string getScope();
     void setScope(const std::u16string& scope);
@@ -50,12 +63,6 @@ public:
     static const char* const getMetaData()
     {
         return html::HTMLTableHeaderCellElement::getMetaData();
-    }
-    HTMLTableHeaderCellElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"th") {
-    }
-    HTMLTableHeaderCellElementImp(HTMLTableHeaderCellElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
     }
 };
 

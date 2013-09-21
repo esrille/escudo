@@ -39,7 +39,7 @@ void KeyboardEventInitImp::setCancelable(bool cancelable)
 html::Window KeyboardEventInitImp::getView()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void KeyboardEventInitImp::setView(html::Window view)

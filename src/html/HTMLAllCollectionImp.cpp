@@ -17,13 +17,13 @@ namespace bootstrap
 Object HTMLAllCollectionImp::namedItem(const std::u16string& name)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::HTMLAllCollection HTMLAllCollectionImp::tags(const std::u16string& tagName)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 }

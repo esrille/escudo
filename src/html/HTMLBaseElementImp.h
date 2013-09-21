@@ -27,8 +27,18 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 class HTMLBaseElementImp : public ObjectMixin<HTMLBaseElementImp, HTMLElementImp>
 {
 public:
-    // Node
-    virtual Node cloneNode(bool deep = true);
+    HTMLBaseElementImp(DocumentImp* ownerDocument) :
+        ObjectMixin(ownerDocument, u"base")
+    {
+    }
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLBaseElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
 
     // HTMLBaseElement
     virtual std::u16string getHref();
@@ -43,13 +53,6 @@ public:
     static const char* const getMetaData()
     {
         return html::HTMLBaseElement::getMetaData();
-    }
-
-    HTMLBaseElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"base") {
-    }
-    HTMLBaseElementImp(HTMLBaseElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
     }
 };
 

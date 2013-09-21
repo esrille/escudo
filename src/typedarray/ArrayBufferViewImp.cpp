@@ -17,7 +17,7 @@ namespace bootstrap
 ArrayBuffer ArrayBufferViewImp::getBuffer()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 unsigned int ArrayBufferViewImp::getByteOffset()

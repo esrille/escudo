@@ -33,6 +33,7 @@
 #include "CSSSerialize.h"
 #include "CSSStyleDeclarationImp.h"
 #include "CSSTokenizer.h"
+#include "DocumentImp.h"
 #include "FormattingContext.h"
 #include "StackingContext.h"
 #include "ViewCSSImp.h"
@@ -44,7 +45,7 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 namespace {
 
-CSSStyleDeclarationImp* setActiveStyle(ViewCSSImp* view, CSSStyleDeclarationImp* style, FontTexture*& font, float& point)
+CSSStyleDeclarationPtr setActiveStyle(ViewCSSImp* view, const CSSStyleDeclarationPtr& style, FontTexture*& font, float& point)
 {
     font = style->getFontTexture();
     point = view->getPointFromPx(style->fontSize.getPx());
@@ -67,27 +68,27 @@ size_t getfirstLetterLength(const std::u16string& data, size_t position)
 
 }
 
-void Block::nextLine(ViewCSSImp* view, FormattingContext* context, CSSStyleDeclarationImp*& activeStyle,
+void Block::nextLine(ViewCSSImp* view, FormattingContext* context, CSSStyleDeclarationPtr& activeStyle,
                      CSSStyleDeclarationPtr& firstLetterStyle, CSSStyleDeclarationPtr& firstLineStyle,
-                     CSSStyleDeclarationImp* style, bool linefeed,
+                     const CSSStyleDeclarationPtr& style, bool linefeed,
                      FontTexture*& font, float& point)
 {
     if (firstLetterStyle) {
-        firstLetterStyle = 0;
+        firstLetterStyle = nullptr;
         if (firstLineStyle)
-            activeStyle = setActiveStyle(view, firstLineStyle.get(), font, point);
+            activeStyle = setActiveStyle(view, firstLineStyle, font, point);
         else
             activeStyle = setActiveStyle(view, style, font, point);
     } else {
         context->nextLine(view, this, linefeed);
         if (firstLineStyle) {
-            firstLineStyle = 0;
+            firstLineStyle = nullptr;
             activeStyle = setActiveStyle(view, style, font, point);
         }
     }
 }
 
-void Block::getPsuedoStyles(ViewCSSImp* view, FormattingContext* context, CSSStyleDeclarationImp* style,
+void Block::getPsuedoStyles(ViewCSSImp* view, FormattingContext* context, const CSSStyleDeclarationPtr& style,
                             CSSStyleDeclarationPtr& firstLetterStyle, CSSStyleDeclarationPtr& firstLineStyle)
 {
     bool isFirstLetter = true;
@@ -101,15 +102,15 @@ void Block::getPsuedoStyles(ViewCSSImp* view, FormattingContext* context, CSSSty
     // The current line box is the 1st line of this block box.
     // style to use can be a pseudo element styles from any ancestor elements.
     // Note the :first-line, first-letter pseudo-elements can only be attached to a block container element.
-    std::list<CSSStyleDeclarationImp*> firstLineStyles;
-    std::list<CSSStyleDeclarationImp*> firstLetterStyles;
+    std::list<CSSStyleDeclarationPtr> firstLineStyles;
+    std::list<CSSStyleDeclarationPtr> firstLetterStyles;
     Box* box = this;
     for (;;) {
-        if (CSSStyleDeclarationImp* s = box->getStyle()) {
-            if (CSSStyleDeclarationImp* p = s->getPseudoElementStyle(CSSPseudoElementSelector::FirstLine))
+        if (CSSStyleDeclarationPtr s = box->getStyle()) {
+            if (CSSStyleDeclarationPtr p = s->getPseudoElementStyle(CSSPseudoElementSelector::FirstLine))
                 firstLineStyles.push_front(p);
             if (isFirstLetter) {
-                if (CSSStyleDeclarationImp* p = s->getPseudoElementStyle(CSSPseudoElementSelector::FirstLetter))
+                if (CSSStyleDeclarationPtr p = s->getPseudoElementStyle(CSSPseudoElementSelector::FirstLetter))
                     firstLetterStyles.push_front(p);
                 if (s->getPseudoElementSelectorType() == CSSPseudoElementSelector::Marker)
                     isFirstLetter = false;
@@ -121,7 +122,7 @@ void Block::getPsuedoStyles(ViewCSSImp* view, FormattingContext* context, CSSSty
         box = parent;
     }
     if (!firstLineStyles.empty()) {
-        firstLineStyle = new(std::nothrow) CSSStyleDeclarationImp(CSSPseudoElementSelector::FirstLine);
+        firstLineStyle = std::make_shared<CSSStyleDeclarationImp>(CSSPseudoElementSelector::FirstLine);
         if (firstLineStyle) {
             for (auto i = firstLineStyles.begin(); i != firstLineStyles.end(); ++i)
                 firstLineStyle->specify(*i);
@@ -131,34 +132,34 @@ void Block::getPsuedoStyles(ViewCSSImp* view, FormattingContext* context, CSSSty
                 // cf. http://test.csswg.org/suites/css2.1/20110323/html4/first-line-pseudo-021.htm
                 firstLineStyle->specifyWithoutInherited(style);
             }
-            firstLineStyle->compute(view, getStyle(), 0);
+            firstLineStyle->compute(view, getStyle(), nullptr);
             firstLineStyle->resolve(view, this);
         }
     }
     if (!firstLetterStyles.empty()) {
-        firstLetterStyle = new(std::nothrow) CSSStyleDeclarationImp(CSSPseudoElementSelector::FirstLetter);
+        firstLetterStyle = std::make_shared<CSSStyleDeclarationImp>(CSSPseudoElementSelector::FirstLetter);
         if (firstLetterStyle) {
             for (auto i = firstLetterStyles.begin(); i != firstLetterStyles.end(); ++i)
                 firstLetterStyle->specify(*i);
             if (style->display.isInline() && style->getPseudoElementSelectorType() == CSSPseudoElementSelector::NonPseudo)
                 firstLetterStyle->specify(style);
-            firstLetterStyle->compute(view, firstLineStyle.get() ? firstLineStyle.get() : style, 0);
+            firstLetterStyle->compute(view, firstLineStyle ? firstLineStyle : style, nullptr);
             firstLetterStyle->resolve(view, this);
         }
     }
 }
 
-size_t Block::layOutFloatingFirstLetter(ViewCSSImp* view, FormattingContext* context, const std::u16string& data, CSSStyleDeclarationImp* firstLetterStyle)
+size_t Block::layOutFloatingFirstLetter(ViewCSSImp* view, FormattingContext* context, const std::u16string& data, const CSSStyleDeclarationPtr& firstLetterStyle)
 {
-    Document document = view->getDocument();
+    DocumentPtr document = view->getDocument();
     if (!floatingFirstLetter)
-        floatingFirstLetter = document.createElement(u"div");
+        floatingFirstLetter = document->createElement(u"div");
     else {
         while (Node child = floatingFirstLetter.getFirstChild())
             floatingFirstLetter.removeChild(child);
     }
     size_t length = getfirstLetterLength(data, 0);  // TODO: position?
-    Text text = document.createTextNode(data.substr(0, length));
+    Text text = document->createTextNode(data.substr(0, length));
     floatingFirstLetter.appendChild(text);
     Block* floatingBox = view->createBlock(floatingFirstLetter, this, firstLetterStyle, true);
     floatingBox->insertInline(text);
@@ -171,7 +172,7 @@ size_t Block::layOutFloatingFirstLetter(ViewCSSImp* view, FormattingContext* con
     return length;
 }
 
-float Block::measureText(ViewCSSImp* view, CSSStyleDeclarationImp* activeStyle,
+float Block::measureText(ViewCSSImp* view, const CSSStyleDeclarationPtr& activeStyle,
                                  const char16_t* text, size_t length, float point, bool isFirstCharacter,
                                  FontGlyph*& glyph, std::u16string& transformed)
 {
@@ -233,7 +234,7 @@ float Block::measureText(ViewCSSImp* view, CSSStyleDeclarationImp* activeStyle,
 }
 
 bool Block::layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
-                       std::u16string data, Element element, CSSStyleDeclarationImp* style)
+                       std::u16string data, Element element, const CSSStyleDeclarationPtr& style)
 {
     assert(element);
     assert(style);
@@ -258,7 +259,7 @@ bool Block::layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
     bool psuedoChecked = isAnonymous() && getParentBox()->getFirstChild() != this;
     CSSStyleDeclarationPtr firstLineStyle;
     CSSStyleDeclarationPtr firstLetterStyle;
-    CSSStyleDeclarationImp* activeStyle;
+    CSSStyleDeclarationPtr activeStyle;
     FontTexture* font;
     float point;
     activeStyle = setActiveStyle(view, style, font, point);
@@ -284,16 +285,16 @@ bool Block::layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
             psuedoChecked = true;
             getPsuedoStyles(view, context, style, firstLetterStyle, firstLineStyle);
             if (firstLetterStyle) {
-                activeStyle = setActiveStyle(view, firstLetterStyle.get(), font, point);
+                activeStyle = setActiveStyle(view, firstLetterStyle, font, point);
                 if (firstLetterStyle->isFloat()) {
-                    position += layOutFloatingFirstLetter(view, context, data, firstLetterStyle.get());
+                    position += layOutFloatingFirstLetter(view, context, data, firstLetterStyle);
                     if (data.length() <= position)
                         break;
                     nextLine(view, context, activeStyle, firstLetterStyle, firstLineStyle, style, false, font, point);
                     continue;
                 }
             } else if (firstLineStyle)
-                activeStyle = setActiveStyle(view, firstLineStyle.get(), font, point);
+                activeStyle = setActiveStyle(view, firstLineStyle, font, point);
         }
         LineBox* lineBox = context->lineBox;
 
@@ -403,7 +404,7 @@ bool Block::layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
                                 bool isFirstCharacter = true;
                                 for (InlineBox* box = wrapBox; box; box = dynamic_cast<InlineBox*>(box->getNextSibling())) {
                                     Node node = box->getNode();
-                                    CSSStyleDeclarationImp* wrapStyle = view->getStyle(interface_cast<Element>(node));
+                                    CSSStyleDeclarationPtr wrapStyle = view->getStyle(interface_cast<Element>(node));
                                     if (!wrapStyle)
                                         wrapStyle = getStyle();
                                     FontTexture* font;
@@ -500,8 +501,8 @@ bool Block::layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
     return true;
 }
 
-LineBox::LineBox(CSSStyleDeclarationImp* style) :
-    Box(0),
+LineBox::LineBox(const CSSStyleDeclarationPtr& style) :
+    Box(nullptr),
     baseline(0.0f),
     underlinePosition(0.0f),
     underlineThickness(1.0f),
@@ -522,9 +523,9 @@ bool LineBox::layOut(ViewCSSImp* view, FormattingContext* context)
         if (box->isAbsolutelyPositioned())
             continue;
         if (InlineBox* inlineBox = dynamic_cast<InlineBox*>(box)) {
-            CSSStyleDeclarationImp* style = box->getStyle();
+            const CSSStyleDeclarationPtr& style = box->getStyle();
             if (style && style->display.isInlineLevel())
-                inlineBox->offsetV = style->verticalAlign.getOffset(view, style, this, inlineBox);
+                inlineBox->offsetV = style->verticalAlign.getOffset(view, style.get(), this, inlineBox);
             else {
                 float leading = inlineBox->getLeading() / 2.0f;
                 inlineBox->offsetV = getBaseline() - (leading + inlineBox->getBaseline());
@@ -657,7 +658,7 @@ void LineBox::dump(std::string indent)
         child->dump(indent);
 }
 
-InlineBox::InlineBox(Node node, CSSStyleDeclarationImp* style) :
+InlineBox::InlineBox(Node node, const CSSStyleDeclarationPtr& style) :
     Box(node),
     font(0),
     point(0.0f),
@@ -673,7 +674,7 @@ InlineBox::InlineBox(Node node, CSSStyleDeclarationImp* style) :
     }
 }
 
-bool InlineBox::isEmptyInlineAtFirst(CSSStyleDeclarationImp* style, Element& element, Node& node)
+bool InlineBox::isEmptyInlineAtFirst(const CSSStyleDeclarationPtr& style, Element& element, Node& node)
 {
     if (element != node)
         return (element.getFirstChild() == node) && !(style->getEmptyInline() & 1);
@@ -682,7 +683,7 @@ bool InlineBox::isEmptyInlineAtFirst(CSSStyleDeclarationImp* style, Element& ele
     return (emptyInline & 1) || emptyInline == 4;
 }
 
-bool InlineBox::isEmptyInlineAtLast(CSSStyleDeclarationImp* style, Element& element, Node& node)
+bool InlineBox::isEmptyInlineAtLast(const CSSStyleDeclarationPtr& style, Element& element, Node& node)
 {
     if (element != node)
         return (element.getLastChild() == node) && !(style->getEmptyInline() & 2);

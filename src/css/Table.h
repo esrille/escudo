@@ -42,7 +42,7 @@ class CellBox : public Block
     float getBaseline(const Box* box) const;
 
 public:
-    CellBox(Element element = 0, CSSStyleDeclarationImp* style = 0);
+    CellBox(Element element = nullptr, const CSSStyleDeclarationPtr& style = nullptr);
 
     virtual void fit(float w, FormattingContext* context);
 
@@ -79,7 +79,7 @@ public:
         return row + rowSpan != y;
     }
 
-    void separateBorders(CSSStyleDeclarationPtr style, unsigned xWidth, unsigned yHeight);
+    void separateBorders(const CSSStyleDeclarationPtr& style, unsigned xWidth, unsigned yHeight);
     void collapseBorder(TableWrapperBox* wrapper);
 
     unsigned getVerticalAlign() const {
@@ -194,13 +194,13 @@ class TableWrapperBox : public Block
     unsigned appendRow();
     unsigned appendColumn();
 
-    void processCol(Element col, CSSStyleDeclarationImp* colStyle, Element colgroup);
+    void processCol(Element col, const CSSStyleDeclarationPtr& colStyle, Element colgroup);
     void processColGroup(Element colgroup);
     void processRow(Element row);
-    void processRowChild(Node node, CSSStyleDeclarationImp* rowStyle);
+    void processRowChild(Node node, const CSSStyleDeclarationPtr& rowStyle);
     void endRow();
     void processRowGroup(Element section);
-    void processRowGroupChild(Node node, CSSStyleDeclarationImp* sectionStyle);
+    void processRowGroupChild(Node node, const CSSStyleDeclarationPtr& sectionStyle);
     void endRowGroup();
     void processHeader();
     void processFooter();
@@ -212,7 +212,7 @@ class TableWrapperBox : public Block
     void computeTableBorders();
 
     void formCSSTable();
-    CellBox* processCell(Element current, Block* parentBox, CSSStyleDeclarationImp* style, CSSStyleDeclarationImp* rowStyle);
+    CellBox* processCell(Element current, Block* parentBox, const CSSStyleDeclarationPtr& style, const CSSStyleDeclarationPtr& rowStyle);
 
     void layOutFixed(ViewCSSImp* view, const ContainingBlock* containingBlock, bool collapsingModel);
     void layOutAuto(ViewCSSImp* view, const ContainingBlock* containingBlock);
@@ -221,11 +221,11 @@ class TableWrapperBox : public Block
     void layOutTableParts();
     void resetCellBoxWidths();
 
-    void renderBackground(ViewCSSImp* view, CSSStyleDeclarationImp* style, float x, float y, float left, float top, float right, float bottom, float width, float height, unsigned backgroundColor, BoxImage* backgroundImage);
+    void renderBackground(ViewCSSImp* view, const CSSStyleDeclarationPtr& style, float x, float y, float left, float top, float right, float bottom, float width, float height, unsigned backgroundColor, BoxImage* backgroundImage);
     void renderLayers(ViewCSSImp* view);
 
 public:
-    TableWrapperBox(ViewCSSImp* view, Element element, CSSStyleDeclarationImp* style);
+    TableWrapperBox(ViewCSSImp* view, Element element, const CSSStyleDeclarationPtr& style);
     ~TableWrapperBox();
 
     void constructBlocks();
@@ -257,7 +257,7 @@ public:
         return yHeight;
     }
 
-    bool processTableChild(Node node, CSSStyleDeclarationImp* style);
+    bool processTableChild(Node node, const CSSStyleDeclarationPtr& style);
 
     float getBaseline() const;
 

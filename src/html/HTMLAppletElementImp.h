@@ -40,11 +40,16 @@ public:
     HTMLAppletElementImp(DocumentImp* ownerDocument) :
         ObjectMixin(ownerDocument, u"applet")
     {}
-    HTMLAppletElementImp(HTMLAppletElementImp* org, bool deep) :
-        ObjectMixin(org, deep)
-    {}
 
     virtual void handleMutation(events::MutationEvent mutation);
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLAppletElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
 
     // HTMLAppletElement
     std::u16string getAlign();

@@ -29,7 +29,7 @@ unsigned short EventSourceImp::getReadyState()
 events::EventHandlerNonNull EventSourceImp::getOnopen()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void EventSourceImp::setOnopen(events::EventHandlerNonNull onopen)
@@ -40,7 +40,7 @@ void EventSourceImp::setOnopen(events::EventHandlerNonNull onopen)
 events::EventHandlerNonNull EventSourceImp::getOnmessage()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void EventSourceImp::setOnmessage(events::EventHandlerNonNull onmessage)
@@ -51,7 +51,7 @@ void EventSourceImp::setOnmessage(events::EventHandlerNonNull onmessage)
 events::EventHandlerNonNull EventSourceImp::getOnerror()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void EventSourceImp::setOnerror(events::EventHandlerNonNull onerror)

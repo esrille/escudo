@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,19 @@ namespace bootstrap
 class HTMLLabelElementImp : public ObjectMixin<HTMLLabelElementImp, HTMLElementImp>
 {
 public:
+    HTMLLabelElementImp(DocumentImp* ownerDocument) :
+        ObjectMixin(ownerDocument, u"label")
+    {
+    }
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLLabelElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
+
     // HTMLLabelElement
     html::HTMLFormElement getForm();
     std::u16string getHtmlFor();
@@ -51,12 +64,6 @@ public:
     static const char* const getMetaData()
     {
         return html::HTMLLabelElement::getMetaData();
-    }
-    HTMLLabelElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"label") {
-    }
-    HTMLLabelElementImp(HTMLLabelElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
     }
 };
 

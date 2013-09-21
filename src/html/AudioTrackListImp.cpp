@@ -23,19 +23,19 @@ unsigned int AudioTrackListImp::getLength()
 html::AudioTrack AudioTrackListImp::getElement(unsigned int index)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::AudioTrack AudioTrackListImp::getTrackById(const std::u16string& id)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 events::EventHandlerNonNull AudioTrackListImp::getOnchange()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void AudioTrackListImp::setOnchange(events::EventHandlerNonNull onchange)
@@ -46,7 +46,7 @@ void AudioTrackListImp::setOnchange(events::EventHandlerNonNull onchange)
 events::EventHandlerNonNull AudioTrackListImp::getOnaddtrack()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void AudioTrackListImp::setOnaddtrack(events::EventHandlerNonNull onaddtrack)
@@ -57,7 +57,7 @@ void AudioTrackListImp::setOnaddtrack(events::EventHandlerNonNull onaddtrack)
 events::EventHandlerNonNull AudioTrackListImp::getOnremovetrack()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void AudioTrackListImp::setOnremovetrack(events::EventHandlerNonNull onremovetrack)

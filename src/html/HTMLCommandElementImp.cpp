@@ -18,12 +18,6 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
-// Node
-Node HTMLCommandElementImp::cloneNode(bool deep)
-{
-    return new(std::nothrow) HTMLCommandElementImp(this, deep);
-}
-
 // HTMLCommandElement
 std::u16string HTMLCommandElementImp::getType()
 {
@@ -94,7 +88,7 @@ void HTMLCommandElementImp::setRadiogroup(const std::u16string& radiogroup)
 html::HTMLElement HTMLCommandElementImp::getCommand()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 }}}}  // org::w3c::dom::bootstrap

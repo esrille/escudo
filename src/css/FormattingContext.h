@@ -24,8 +24,6 @@
 #include <list>
 #include <string>
 
-#include <boost/intrusive_ptr.hpp>
-
 #include "TextIterator.h"
 #include "http/HTTPRequest.h"
 #include "css/CSSStyleDeclarationImp.h"
@@ -168,7 +166,7 @@ public:
     float shiftDown(float* e = 0);
     bool shiftDownLineBox(ViewCSSImp* view);
     bool hasNewFloats() const;
-    void appendInlineBox(ViewCSSImp* view, InlineBox* inlineBox, CSSStyleDeclarationImp* activeStyle);
+    void appendInlineBox(ViewCSSImp* view, InlineBox* inlineBox, const CSSStyleDeclarationPtr& activeStyle);
     void dontWrap();
     void nextLine(ViewCSSImp* view, Block* parentBox, bool linefeed);
     void tryAddFloat(ViewCSSImp* view);

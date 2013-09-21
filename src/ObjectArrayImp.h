@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Esrille Inc.
+ * Copyright 2010, 2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,10 @@
 #ifndef OBJECTARRAY_IMP_H
 #define OBJECTARRAY_IMP_H
 
-#include <Object.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <org/w3c/dom/ObjectArray.h>
 
 #include <deque>
@@ -25,19 +28,19 @@
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 template <typename IMP, typename E, std::deque<E> IMP::* array>
-class ObjectArrayImp : public Object
+class ObjectArrayImp : public Imp
 {
-    Object imp;
+    std::shared_ptr<IMP> pimpl;
 public:
     virtual unsigned int getLength() {
-        return (static_cast<IMP*>(imp.self())->*array).size();
+        return (static_cast<IMP*>(pimpl.get())->*array).size();
     }
     virtual void setLength(unsigned int length) {
     }
     virtual E getElement(unsigned int index) {
         if (getLength() <= index)
-            return 0;
-        return (static_cast<IMP*>(imp.self())->*array)[index];
+            return nullptr;
+        return (static_cast<IMP*>(pimpl.get())->*array)[index];
     }
     virtual void setElement(unsigned int index, E value) {
     }
@@ -45,10 +48,10 @@ public:
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
         return ObjectArray<E>::dispatch(this, selector, id, argc, argv);
     }
-    ObjectArrayImp(IMP* imp) :
-        Object(this),
-        imp(imp) {
-    }
+    ObjectArrayImp() = default;
+    ObjectArrayImp(const std::shared_ptr<IMP>& pimpl) :
+        pimpl(pimpl)
+    {}
 };
 
 }}}}  // org::w3c::dom::bootstrap

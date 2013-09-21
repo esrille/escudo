@@ -45,6 +45,9 @@ class Box;
 class CSSStyleDeclarationImp;
 class HTMLTemplateElementImp;
 
+typedef std::shared_ptr<CSSStyleDeclarationImp> CSSStyleDeclarationPtr;
+typedef std::shared_ptr<HTMLTemplateElementImp> HTMLTemplateElementPtr;
+
 class HTMLElementImp : public ObjectMixin<HTMLElementImp, ElementImp>
 {
     css::CSSStyleDeclaration style;
@@ -62,11 +65,11 @@ class HTMLElementImp : public ObjectMixin<HTMLElementImp, ElementImp>
 
     // XBL 2.0
     Object bindingImplementation;
-    html::HTMLTemplateElement shadowTree;
+    HTMLTemplateElementPtr shadowTree;
     events::EventTarget shadowTarget;
     xbl2::XBLImplementation shadowImplementation;
 
-    void invokeShadowTarget(EventImp* event);
+    void invokeShadowTarget(const EventPtr& event);
 
 protected:
     int tabIndex;
@@ -75,23 +78,20 @@ protected:
 
 public:
     HTMLElementImp(DocumentImp* ownerDocument, const std::u16string& localName);
-    HTMLElementImp(HTMLElementImp* org, bool deep);
+    HTMLElementImp(const HTMLElementImp& org);
     ~HTMLElementImp();
 
     virtual void handleMutation(events::MutationEvent mutation);
 
     Box* getBox();
     bool hasStyle() const {
-        return style;
+        return static_cast<bool>(style);
     }
 
     // XBL 2.0 internal
-    virtual void invoke(EventImp* event);
-    void setShadowTree(HTMLTemplateElementImp* e);
-    void setShadowTree(html::HTMLTemplateElement& e) {
-        shadowTree = e;
-    }
-    html::HTMLTemplateElement getShadowTree() {
+    virtual void invoke(const EventPtr& event);
+    void setShadowTree(const HTMLTemplateElementPtr& e);
+    HTMLTemplateElementPtr getShadowTree() {
         return shadowTree;
     }
     void setShadowImplementation(xbl2::XBLImplementation& t) {
@@ -101,10 +101,15 @@ public:
         return shadowImplementation;
     }
 
-    virtual bool generateShadowContent(CSSStyleDeclarationImp* style);
+    virtual bool generateShadowContent(const CSSStyleDeclarationPtr& style);
 
     // Node
-    virtual Node cloneNode(bool deep = true);
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
 
     // Element (CSSOM view)
     virtual views::ClientRectList getClientRects();

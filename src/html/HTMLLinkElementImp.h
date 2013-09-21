@@ -41,7 +41,7 @@ class HTMLLinkElementImp : public ObjectMixin<HTMLLinkElementImp, HTMLElementImp
 
 public:
     HTMLLinkElementImp(DocumentImp* ownerDocument);
-    HTMLLinkElementImp(HTMLLinkElementImp* org, bool deep);
+    HTMLLinkElementImp(const HTMLLinkElementImp& org);
     ~HTMLLinkElementImp();
 
     virtual void notify(NotificationType type);
@@ -52,10 +52,15 @@ public:
 
     void linkStyleSheet(HttpRequest* request);
     void linkIcon(HttpRequest* request);
-    bool setFavicon(DocumentImp* document);
+    bool setFavicon(const DocumentPtr& document);
 
-    // Node
-    virtual Node cloneNode(bool deep = true);
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLLinkElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
 
     // HTMLLinkElement
     virtual bool getDisabled();

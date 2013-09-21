@@ -27,8 +27,17 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 class HTMLHeadElementImp : public ObjectMixin<HTMLHeadElementImp, HTMLElementImp>
 {
 public:
-    // Node
-    virtual Node cloneNode(bool deep = true);
+    HTMLHeadElementImp(DocumentImp* ownerDocument) :
+        ObjectMixin(ownerDocument, u"head") {
+    }
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLHeadElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
 
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
@@ -37,13 +46,6 @@ public:
     static const char* const getMetaData()
     {
         return html::HTMLHeadElement::getMetaData();
-    }
-
-    HTMLHeadElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"head") {
-    }
-    HTMLHeadElementImp(HTMLHeadElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
     }
 };
 

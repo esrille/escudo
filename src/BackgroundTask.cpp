@@ -61,58 +61,64 @@ void WindowProxy::BackgroundTask::operator()()
 
     unsigned command;
     while (!((command = sleep()) & Abort)) {
-        if (!window->getWindowPtr()) {
-            state = Init;
-            continue;
-        }
-
-        //
-        // Restart
-        //
-        if (command & Restart) {
-            deleteView();
-            state = Init;
-        }
-
-        // A binding document does not need a view.
-        if (window->isBindingDocumentWindow()) {
-            state = Done;
-            continue;
-        }
-
-        //
-        // Cascade
-        //
-        if (!view || (command & Cascade)) {
-            state = Cascading;
-            recordTime("%*sselector matching begin", window->windowDepth * 2, "");
-            if (!view)
-                view = new(std::nothrow) ViewCSSImp(window->getWindowPtr());
-            if (view) {
-                view->constructComputedStyles();
-                state = Cascaded;
-            } else
+        try {
+            if (!window->getWindowPtr()) {
                 state = Init;
-            recordTime("%*sselector matching end", window->windowDepth * 2, "");
-            continue;
-        }
+                continue;
+            }
 
-        //
-        // Layout
-        //
-        if (command & Layout) {
-            state = Layouting;
-            view->setSize(window->width, window->height);   // TODO: sync with mainloop
-            recordTime("%*sstyle recalculation begin", window->windowDepth * 2, "");
-            view->calculateComputedStyles();
-            recordTime("%*sstyle recalculation end", window->windowDepth * 2, "");
-            recordTime("%*sreflow begin", window->windowDepth * 2, "");
-            view->layOut();
-            recordTime("%*sreflow end", window->windowDepth * 2, "");
-            view->setFlags(Box::NEED_REPAINT);
-        }
+            //
+            // Restart
+            //
+            if (command & Restart) {
+                deleteView();
+                state = Init;
+            }
 
-        state = Done;
+            // A binding document does not need a view.
+            if (window->isBindingDocumentWindow()) {
+                state = Done;
+                continue;
+            }
+
+            //
+            // Cascade
+            //
+            if (!view || (command & Cascade)) {
+                state = Cascading;
+                recordTime("%*sselector matching begin", window->windowDepth * 2, "");
+                if (!view)
+                    view = new(std::nothrow) ViewCSSImp(window->getWindowPtr());
+                if (view) {
+                    view->constructComputedStyles();
+                    state = Cascaded;
+                } else
+                    state = Init;
+                recordTime("%*sselector matching end", window->windowDepth * 2, "");
+                continue;
+            }
+
+            //
+            // Layout
+            //
+            if (command & Layout) {
+                state = Layouting;
+                view->setSize(window->width, window->height);   // TODO: sync with mainloop
+                recordTime("%*sstyle recalculation begin", window->windowDepth * 2, "");
+                view->calculateComputedStyles();
+                recordTime("%*sstyle recalculation end", window->windowDepth * 2, "");
+                recordTime("%*sreflow begin", window->windowDepth * 2, "");
+                view->layOut();
+                recordTime("%*sreflow end", window->windowDepth * 2, "");
+                view->setFlags(Box::NEED_REPAINT);
+            }
+
+            state = Done;
+        } catch (const std::exception& e) {
+            std::cerr << "WindowProxy::BackgroundTask: " << e.what() << "\n";
+            throw;
+            // TODO: Recover from exceptions
+        }
     }
 }
 

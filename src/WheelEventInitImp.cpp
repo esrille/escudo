@@ -39,7 +39,7 @@ void WheelEventInitImp::setCancelable(bool cancelable)
 html::Window WheelEventInitImp::getView()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void WheelEventInitImp::setView(html::Window view)
@@ -171,7 +171,7 @@ void WheelEventInitImp::setButtons(unsigned short buttons)
 events::EventTarget WheelEventInitImp::getRelatedTarget()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void WheelEventInitImp::setRelatedTarget(events::EventTarget relatedTarget)

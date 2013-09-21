@@ -17,7 +17,7 @@ namespace bootstrap
 html::HTMLFormElement HTMLLegendElementImp::getForm()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 std::u16string HTMLLegendElementImp::getAlign()

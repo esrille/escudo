@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -251,7 +251,7 @@ std::u16string Any::toString() const
         if (vtable->getType() == typeid(std::u16string))
             return *reinterpret_cast<const std::u16string*>(&heap);
         if (vtable->getType() == typeid(Object))
-            return ::toString(const_cast<Object*>(reinterpret_cast<const Object*>(&heap)->self()));
+            return ::toString(const_cast<Object*>(reinterpret_cast<const Object*>(&heap)));
         break;
     default:
         break;
@@ -341,7 +341,6 @@ unsigned int Any::toArrayIndex() const
     return UINT_MAX;
 }
 
-
 // toBoolean
 // Object returns true. Otherwise, false.
 // NAN returns false.
@@ -381,6 +380,6 @@ bool Any::isObject() const
 Object* Any::toObject() const
 {
     if (isObject())
-        return reinterpret_cast<const Object*>(&heap)->self();
+        return const_cast<Object*>(reinterpret_cast<const Object*>(&heap));
     return 0;
 }

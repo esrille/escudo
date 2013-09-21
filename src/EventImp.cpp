@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,6 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 EventImp::EventImp() :
     ObjectMixin(),
-    target(0),
-    currentTarget(0),
     phase(0),
     stopPropagationFlag(false),
     stopImmediatePropagationFlag(false),
@@ -36,8 +34,6 @@ EventImp::EventImp() :
 
 EventImp::EventImp(const std::u16string& type) :
     ObjectMixin(),
-    target(0),
-    currentTarget(0),
     dispatchFlag(false)
 {
     initEvent(type, true, false);
@@ -45,8 +41,6 @@ EventImp::EventImp(const std::u16string& type) :
 
 EventImp::EventImp(const std::u16string& type, events::EventInit eventInitDict) :
     ObjectMixin(),
-    target(0),
-    currentTarget(0),
     dispatchFlag(false)
 {
     initEvent(type, eventInitDict.getBubbles(), eventInitDict.getCancelable());
@@ -125,7 +119,7 @@ void EventImp::initEvent(const std::u16string&  type, bool bubbles, bool cancela
     stopImmediatePropagationFlag = false;
     canceledFlag = false;
     trustedFlag = false;
-    target = 0;
+    target = nullptr;
     this->type = type;
     if (bubbles)
         bubbleFlag = true;
@@ -149,13 +143,13 @@ class Constructor : public Object
 public:
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
-        bootstrap::EventImp* evt = 0;
+        bootstrap::EventPtr evt;
         switch (argc) {
         case 1:
-            evt = new(std::nothrow) bootstrap::EventImp(argv[0].toString());
+            evt = std::make_shared<bootstrap::EventImp>(argv[0].toString());
             break;
         case 2:
-            evt = new(std::nothrow) bootstrap::EventImp(argv[0].toString(), argv[1].toObject());
+            evt = std::make_shared<bootstrap::EventImp>(argv[0].toString(), argv[1].toObject());
             break;
         default:
             break;

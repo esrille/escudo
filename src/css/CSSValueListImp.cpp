@@ -23,7 +23,7 @@ unsigned int CSSValueListImp::getLength()
 css::CSSValue CSSValueListImp::item(unsigned int index)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 }

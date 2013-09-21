@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,19 @@ namespace bootstrap
 class HTMLMeterElementImp : public ObjectMixin<HTMLMeterElementImp, HTMLElementImp>
 {
 public:
+    HTMLMeterElementImp(DocumentImp* ownerDocument) :
+        ObjectMixin(ownerDocument, u"meter")
+    {
+    }
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLMeterElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
+
     // HTMLMeterElement
     double getValue();
     void setValue(double value);
@@ -60,12 +73,6 @@ public:
     static const char* const getMetaData()
     {
         return html::HTMLMeterElement::getMetaData();
-    }
-    HTMLMeterElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"meter") {
-    }
-    HTMLMeterElementImp(HTMLMeterElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
     }
 };
 

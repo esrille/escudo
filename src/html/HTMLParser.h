@@ -17,17 +17,21 @@
 #ifndef ES_HTMLPARSER_H
 #define ES_HTMLPARSER_H
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#include <assert.h>
+
 #include <algorithm>
 #include <initializer_list>
 #include <deque>
 #include <list>
 #include <string>
 
-#include <Object.h>
 #include <org/w3c/dom/DOMImplementation.h>
-#include <org/w3c/dom/Element.h>
-#include <org/w3c/dom/Document.h>
 
+#include "DocumentImp.h"
 #include "ElementImp.h"
 #include "HTMLTokenizer.h"
 
@@ -407,7 +411,7 @@ class HTMLParser
 
     static InBinding inBinding;
 
-    Document document;
+    bootstrap::DocumentPtr document;
     HTMLTokenizer* tokenizer;
 
     InsertionMode* insertionMode;
@@ -443,7 +447,7 @@ class HTMLParser
         std::deque<Element> stack;
 
         void notify(Element element, bootstrap::ElementImp::NotificationType type) {
-            if (auto imp = dynamic_cast<bootstrap::ElementImp*>(element.self()))
+            if (auto imp = std::dynamic_pointer_cast<bootstrap::ElementImp>(element.self()))
                 imp->notify(type);
         }
 
@@ -472,7 +476,7 @@ class HTMLParser
         Element pop() {
             assert(!empty());
             if (empty())
-                return 0;
+                return nullptr;
             Element current(currentNode());
             stack.pop_back();
             notify(current, bootstrap::ElementImp::NotificationType::Popped);
@@ -577,14 +581,14 @@ class HTMLParser
     bool stopParsing();
 
 public:
-    HTMLParser(Document document, HTMLTokenizer* tokenizer, bool enableXBL = true);
+    HTMLParser(const bootstrap::DocumentPtr& document, HTMLTokenizer* tokenizer, bool enableXBL = true);
     void mainLoop();
 
     bool processToken(Token& token);
 
     bool processPendingParsingBlockingScript();
 
-    static void parseFragment(Document document, const std::u16string& markup, Element context);
+    static void parseFragment(const bootstrap::DocumentPtr&, const std::u16string& markup, Element context);
 };
 
 #endif  // ES_HTMLPARSER_H

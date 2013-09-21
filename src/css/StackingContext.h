@@ -18,8 +18,8 @@
 #define ES_CSSSTACKINGCONTEXT_H
 
 #include <atomic>
+#include <memory>
 #include <string>
-
 #include <boost/intrusive_ptr.hpp>
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
@@ -29,11 +29,13 @@ class Block;
 class ViewCSSImp;
 class CSSStyleDeclarationImp;
 
+typedef std::shared_ptr<CSSStyleDeclarationImp> CSSStyleDeclarationPtr;
+
 class StackingContext
 {
     std::atomic_uint count;
 
-    CSSStyleDeclarationImp* style;
+    std::weak_ptr<CSSStyleDeclarationImp> style;
     bool needStaticPosition;
     bool auto_;
     int zIndex;
@@ -98,7 +100,7 @@ class StackingContext
     void updateClipBox(StackingContext* s);
 
 public:
-    StackingContext(bool auto_, int zIndex, CSSStyleDeclarationImp* style);
+    StackingContext(bool auto_, int zIndex, const CSSStyleDeclarationPtr& style);
     ~StackingContext();
 
     unsigned int count_() const {
@@ -117,13 +119,13 @@ public:
         return count;
     }
 
-    StackingContext* getAuto(CSSStyleDeclarationImp* style) {
+    StackingContext* getAuto(const CSSStyleDeclarationPtr& style) {
         return addContext(true, 0, style);
     }
-    StackingContext* addContext(int zIndex, CSSStyleDeclarationImp* style) {
+    StackingContext* addContext(int zIndex, const CSSStyleDeclarationPtr& style) {
         return addContext(false, zIndex, style);
     }
-    StackingContext* addContext(bool auto_, int zIndex, CSSStyleDeclarationImp* style);
+    StackingContext* addContext(bool auto_, int zIndex, const CSSStyleDeclarationPtr& style);
 
     void setZIndex(bool auto_, int index = 0);
 
@@ -132,8 +134,8 @@ public:
         return !parent;
     }
 
-    const CSSStyleDeclarationImp* getStyle() const {
-        return style;
+    CSSStyleDeclarationPtr getStyle() const {
+        return style.lock();
     }
 
     void clearBase() {

@@ -29,25 +29,25 @@ std::u16string BlobImp::getType()
 file::Blob BlobImp::slice()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 file::Blob BlobImp::slice(long long start)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 file::Blob BlobImp::slice(long long start, long long end)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 file::Blob BlobImp::slice(long long start, long long end, const std::u16string& contentType)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void BlobImp::close()

@@ -32,7 +32,7 @@ HTMLCollectionImp::~HTMLCollectionImp()
 
 void HTMLCollectionImp::addItem(Element element)
 {
-    if (auto e = dynamic_cast<ElementImp*>(element.self())) {
+    if (auto e = std::dynamic_pointer_cast<ElementImp>(element.self())) {
         list.push_back(e);
         std::u16string id(e->getId());
         if (map.find(id) == map.end())
@@ -51,7 +51,7 @@ void HTMLCollectionImp::addItem(Element element)
 
 void HTMLCollectionImp::addItem(Element element, const std::u16string& name)
 {
-    if (auto e = dynamic_cast<ElementImp*>(element.self())) {
+    if (auto e = std::dynamic_pointer_cast<ElementImp>(element.self())) {
         list.push_back(e);
         if (!name.empty() && map.find(name) == map.end())
             map.insert({ name, element });
@@ -66,7 +66,7 @@ unsigned int HTMLCollectionImp::getLength()
 Element HTMLCollectionImp::item(unsigned int index)
 {
     if (getLength() <= index)
-        return 0;
+        return nullptr;
     else
         return list[index];
 }
@@ -75,7 +75,7 @@ Object HTMLCollectionImp::namedItem(const std::u16string& name)
 {
     auto it = map.find(name);
     if (it == map.end())
-        return 0;
+        return nullptr;
     else
         return it->second;
 }

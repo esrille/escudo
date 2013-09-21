@@ -83,67 +83,67 @@ void SVGMatrixImp::setF(float f)
 svg::SVGMatrix SVGMatrixImp::multiply(svg::SVGMatrix secondMatrix)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 svg::SVGMatrix SVGMatrixImp::inverse()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 svg::SVGMatrix SVGMatrixImp::translate(float x, float y)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 svg::SVGMatrix SVGMatrixImp::scale(float scaleFactor)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 svg::SVGMatrix SVGMatrixImp::scaleNonUniform(float scaleFactorX, float scaleFactorY)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 svg::SVGMatrix SVGMatrixImp::rotate(float angle)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 svg::SVGMatrix SVGMatrixImp::rotateFromVector(float x, float y)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 svg::SVGMatrix SVGMatrixImp::flipX()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 svg::SVGMatrix SVGMatrixImp::flipY()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 svg::SVGMatrix SVGMatrixImp::skewX(float angle)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 svg::SVGMatrix SVGMatrixImp::skewY(float angle)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 }

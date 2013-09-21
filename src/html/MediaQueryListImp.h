@@ -49,16 +49,19 @@ class MediaQueryListImp : public ObjectMixin<MediaQueryListImp>
         NotMatch
     };
     int state;
-    WindowPtr window;
-    stylesheets::MediaList mediaList {0};
+    std::weak_ptr<WindowImp> window;
+    stylesheets::MediaList mediaList;
     std::list<html::MediaQueryListListener> listeners;
 
 public:
-    MediaQueryListImp(WindowPtr window, std::u16string query = u"");
-    ~MediaQueryListImp();
+    MediaQueryListImp(WindowPtr window, const std::u16string& query = u"");
 
     void setMediaList(stylesheets::MediaList list);  // this is for ViewCSSImp only
     bool evaluate();  // returns true if state has been changed
+
+    WindowPtr getWindow() const {
+        return window.lock();
+    }
 
     // MediaQueryList
     std::u16string getMedia();
@@ -75,6 +78,8 @@ public:
         return html::MediaQueryList::getMetaData();
     }
 };
+
+typedef std::shared_ptr<MediaQueryListImp> MediaQueryListPtr;
 
 }
 }

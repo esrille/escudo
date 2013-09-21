@@ -36,7 +36,7 @@ enum
 
 }
 
-void TableWrapperBox::renderBackground(ViewCSSImp* view, CSSStyleDeclarationImp* style, float x, float y, float left, float top, float right, float bottom, float width, float height, unsigned backgroundColor, BoxImage* backgroundImage)
+void TableWrapperBox::renderBackground(ViewCSSImp* view, const CSSStyleDeclarationPtr& style, float x, float y, float left, float top, float right, float bottom, float width, float height, unsigned backgroundColor, BoxImage* backgroundImage)
 {
     glDisable(GL_TEXTURE_2D);
 
@@ -52,7 +52,7 @@ void TableWrapperBox::renderBackground(ViewCSSImp* view, CSSStyleDeclarationImp*
 
     if (backgroundImage && backgroundImage->getState() == BoxImage::CompletelyAvailable) {
         // TODO: Check style->backgroundAttachment.isFixed()
-        style->backgroundPosition.resolve(view, backgroundImage, style, width, height);
+        style->backgroundPosition.resolve(view, backgroundImage, style.get(), width, height);
         backgroundLeft = style->backgroundPosition.getLeftPx();
         backgroundTop = style->backgroundPosition.getTopPx();
         GLfloat border[] = { ((backgroundColor >> 16) & 0xff) / 255.0f,
@@ -81,7 +81,7 @@ void TableWrapperBox::renderLayers(ViewCSSImp* view)
     // column groups
     w = tableBox->getX() + tableBox->getMarginLeft();
     for (unsigned x = 0; x < xWidth;) {
-        CSSStyleDeclarationImp* columnGroupStyle = columnGroups[x].get();
+        CSSStyleDeclarationPtr columnGroupStyle = columnGroups[x];
         if (columnGroupStyle && (columnGroupImages[x] || columnGroupStyle->backgroundColor.getARGB())) {
             BoxImage* image = columnGroupImages[x];
             h = tableBox->getY() + tableBox->getMarginTop();
@@ -90,7 +90,7 @@ void TableWrapperBox::renderLayers(ViewCSSImp* view)
             float wN = w0 + widths[x];
             float hN = h0 + tableBox->height;
             size_t elements = 1;
-            while (columnGroupStyle == columnGroups[x + elements].get()) {
+            while (columnGroupStyle == columnGroups[x + elements]) {
                 wN += widths[x + elements];
                 ++elements;
             }
@@ -141,7 +141,7 @@ void TableWrapperBox::renderLayers(ViewCSSImp* view)
     // columns
     w = tableBox->getX() + tableBox->getMarginLeft();
     for (unsigned x = 0; x < xWidth; w += widths[x], ++x) {
-        CSSStyleDeclarationImp* columnStyle = columns[x].get();
+        CSSStyleDeclarationPtr columnStyle = columns[x];
         if (columnStyle && (columnImages[x] || columnStyle->backgroundColor.getARGB())) {
             h = tableBox->getY() + tableBox->getMarginTop();
             float w0 = w;
@@ -187,7 +187,7 @@ void TableWrapperBox::renderLayers(ViewCSSImp* view)
     // row groups
     h = tableBox->getY() + tableBox->getMarginTop();
     for (unsigned y = 0; y < yHeight;) {
-        CSSStyleDeclarationImp* rowGroupStyle = rowGroups[y].get();
+        CSSStyleDeclarationPtr rowGroupStyle = rowGroups[y];
         if (rowGroupStyle && (rowGroupImages[y] || rowGroupStyle->backgroundColor.getARGB())) {
             BoxImage* image = rowGroupImages[y];
             w = tableBox->getX() + tableBox->getMarginLeft();
@@ -196,7 +196,7 @@ void TableWrapperBox::renderLayers(ViewCSSImp* view)
             float wN = w0 + tableBox->width;
             float hN = h0 + heights[y];
             size_t elements = 1;
-            while (rowGroupStyle == rowGroups[y + elements].get()) {
+            while (rowGroupStyle == rowGroups[y + elements]) {
                 hN += heights[y + elements];
                 ++elements;
             }
@@ -247,7 +247,7 @@ void TableWrapperBox::renderLayers(ViewCSSImp* view)
     // rows
     h = tableBox->getY() + tableBox->getMarginTop();
     for (unsigned y = 0; y < yHeight; h += heights[y], ++y) {
-        CSSStyleDeclarationImp* rowStyle = rows[y].get();
+        CSSStyleDeclarationPtr rowStyle = rows[y];
         if (rowStyle && (rowImages[y] || rowStyle->backgroundColor.getARGB())) {
             w = tableBox->getX() + tableBox->getMarginLeft();
             float w0 = w;
@@ -367,11 +367,11 @@ void TableWrapperBox::renderTableOutlines(ViewCSSImp* view)
     // row groups
     float h = tableBox->getY() + tableBox->getMarginTop();
     for (unsigned y = 0; y < yHeight;) {
-        CSSStyleDeclarationImp* rowGroupStyle = rowGroups[y].get();
+        CSSStyleDeclarationPtr rowGroupStyle = rowGroups[y];
         if (rowGroupStyle) {
             float h0 = h;
             h += heights[y];
-            for (++y; rowGroupStyle == rowGroups[y].get(); ++y)
+            for (++y; rowGroupStyle == rowGroups[y]; ++y)
                 h += heights[y];
             if (0.0f < rowGroupStyle->outlineWidth.getPx())
                 renderOutline(view, tableBox->getX(), h0, tableBox->getX() + tableBox->width, h,
@@ -385,7 +385,7 @@ void TableWrapperBox::renderTableOutlines(ViewCSSImp* view)
     // rows
     h = tableBox->getY() + tableBox->getMarginTop();
     for (unsigned y = 0; y < yHeight; h += heights[y], ++y) {
-        CSSStyleDeclarationImp* rowStyle = rows[y].get();
+        CSSStyleDeclarationPtr rowStyle = rows[y];
         if (rowStyle && 0.0f < rowStyle->outlineWidth.getPx())
             renderOutline(view, tableBox->getX(), h, tableBox->getX() + tableBox->width, h + heights[y],
                           rowStyle->outlineWidth.getPx(), rowStyle->outlineStyle.getValue(), rowStyle->outlineColor.getARGB());

@@ -217,7 +217,7 @@ Element HTMLParser::OpenElementStack::getFosterParent(Element& table)
 
 Element HTMLParser::insertHtmlElement(const std::u16string& name)
 {
-    Element element = document.createElement(name);
+    Element element = document->createElement(name);
     if (element) {
         if (!insertFromTable)
             currentNode().appendChild(element);
@@ -232,8 +232,8 @@ Element HTMLParser::insertHtmlElement(Token& token)
 {
     Element element = insertHtmlElement(token.getName());
     if (!element)
-        return 0;
-    if (ElementImp* imp = dynamic_cast<ElementImp*>(element.self()))
+        return nullptr;
+    if (auto imp = std::dynamic_pointer_cast<ElementImp>(element.self()))
         imp->setAttributes(token.getAttributes());
     return element;
 }
@@ -245,7 +245,7 @@ void HTMLParser::insertCharacter(Node node, const std::u16string& data)
         org::w3c::dom::Text text = interface_cast<org::w3c::dom::Text>(last);
         text.appendData(data);
     } else {
-        org::w3c::dom::Text text = document.createTextNode(data);
+        org::w3c::dom::Text text = document->createTextNode(data);
         node.appendChild(text);
     }
 }
@@ -255,7 +255,7 @@ void HTMLParser::insertCharacter(const std::u16string& data)
     if (!insertFromTable)
         insertCharacter(currentNode(), data);
     else {
-        Element table(0);
+        Element table;
         Element fosterParent = openElementStack.getFosterParent(table);
         if (table) {
             Node prev = table.getPreviousSibling();
@@ -273,7 +273,7 @@ void HTMLParser::insertCharacter(const std::u16string& data)
                     }
                 }
             }
-            org::w3c::dom::Text text = document.createTextNode(data);
+            org::w3c::dom::Text text = document->createTextNode(data);
             fosterParent.insertBefore(text, table);
             return;
         } else
@@ -289,7 +289,7 @@ void HTMLParser::insertCharacter(Token& token)
 
 void HTMLParser::fosterNode(Node node)
 {
-    Element table(0);
+    Element table;
     Element fosterParent = openElementStack.getFosterParent(table);
     if (table)
         fosterParent.insertBefore(node, table);
@@ -300,7 +300,7 @@ void HTMLParser::fosterNode(Node node)
 // cf. http://www.whatwg.org/specs/web-apps/current-work/multipage/the-end.html#the-end
 bool HTMLParser::stopParsing()
 {
-    DocumentImp* imp = dynamic_cast<DocumentImp*>(document.self());
+    auto imp = std::dynamic_pointer_cast<DocumentImp>(document->self());
     assert(imp);
 
     // 1.
@@ -395,7 +395,7 @@ void HTMLParser::resetInsertionMode()
 
 bool HTMLParser::setInsertionPoint(bool defined)
 {
-    DocumentImp* imp = dynamic_cast<DocumentImp*>(document.self());
+    auto imp = std::dynamic_pointer_cast<DocumentImp>(document->self());
     assert(imp);
 
     HTMLTokenizer* old = imp->getInsertionPoint();
@@ -459,7 +459,7 @@ void HTMLParser::reconstructActiveFormattingElements()
 void HTMLParser::clearActiveFormattingElements()
 {
     // TODO: review this
-    Element entry(0);
+    Element entry;
     do {
         entry = activeFormattingElements.back();
         activeFormattingElements.pop_back();
@@ -566,8 +566,8 @@ bool HTMLParser::Initial::processEOF(HTMLParser* parser, Token& token)
 
 bool HTMLParser::Initial::processComment(HTMLParser* parser, Token& token)
 {
-    Comment comment = parser->document.createComment(token.getName());
-    parser->document.appendChild(comment);
+    Comment comment = parser->document->createComment(token.getName());
+    parser->document->appendChild(comment);
     return true;
 }
 
@@ -595,7 +595,7 @@ bool HTMLParser::Initial::processDoctype(HTMLParser* parser, Token& token)
     DocumentType doctype = getDOMImplementation()->createDocumentType(token.getName(),
                                                                       token.hasPublicId() ? token.getPublicId() : u"",
                                                                       token.hasSystemId() ? token.getSystemId() : u"");
-    parser->document.appendChild(doctype);
+    parser->document->appendChild(doctype);
 
     int mode = DocumentImp::NoQuirksMode;
     if ((token.getFlags() & Token::ForceQuirks) || token.getName() != u"html")
@@ -670,8 +670,8 @@ bool HTMLParser::Initial::processDoctype(HTMLParser* parser, Token& token)
     if (token.hasSystemId() && isSetTo(token.getSystemId(), u"http://www.ibm.com/data/dtd/v11/ibmxhtml1-transitional.dtd"))
         mode = DocumentImp::QuirksMode;
     if (mode != DocumentImp::NoQuirksMode) {
-        if (DocumentImp* documentImp = dynamic_cast<DocumentImp*>(parser->document.self()))
-            documentImp->setMode(mode);
+        if (auto imp = std::dynamic_pointer_cast<DocumentImp>(parser->document->self()))
+            imp->setMode(mode);
     }
     parser->setInsertionMode(&parser->beforeHtml);
     return true;
@@ -707,9 +707,9 @@ bool HTMLParser::BeforeHtml::anythingElse(HTMLParser* parser, Token& token)
 
 Element HTMLParser::BeforeHtml::insertHtmlElement(HTMLParser* parser)
 {
-    Document document = parser->document;
-    Element element = document.createElement(u"html");
-    document.appendChild(element);
+    DocumentPtr document = parser->document;
+    Element element = document->createElement(u"html");
+    document->appendChild(element);
     parser->openElementStack.push(element);
     return element;
 }
@@ -721,8 +721,8 @@ bool HTMLParser::BeforeHtml::processEOF(HTMLParser* parser, Token& token)
 
 bool HTMLParser::BeforeHtml::processComment(HTMLParser* parser, Token& token)
 {
-    Comment comment = parser->document.createComment(token.getName());
-    parser->document.appendChild(comment);
+    Comment comment = parser->document->createComment(token.getName());
+    parser->document->appendChild(comment);
     return true;
 }
 
@@ -743,7 +743,7 @@ bool HTMLParser::BeforeHtml::processStartTag(HTMLParser* parser, Token& token)
 {
     Element element = insertHtmlElement(parser);
     if (token.getName() == u"html") {
-        if (ElementImp* imp = dynamic_cast<ElementImp*>(element.self()))
+        if (auto imp = std::dynamic_pointer_cast<ElementImp>(element.self()))
             imp->setAttributes(token.getAttributes());
         parser->setInsertionMode(&parser->beforeHead);
     } else
@@ -778,7 +778,7 @@ bool HTMLParser::BeforeHead::processEOF(HTMLParser* parser, Token& token)
 
 bool HTMLParser::BeforeHead::processComment(HTMLParser* parser, Token& token)
 {
-    Comment comment = parser->document.createComment(token.getName());
+    Comment comment = parser->document->createComment(token.getName());
     parser->currentNode().appendChild(comment);
     return true;
 }
@@ -835,7 +835,7 @@ bool HTMLParser::InHead::processEOF(HTMLParser* parser, Token& token)
 
 bool HTMLParser::InHead::processComment(HTMLParser* parser, Token& token)
 {
-    Comment comment = parser->document.createComment(token.getName());
+    Comment comment = parser->document->createComment(token.getName());
     parser->currentNode().appendChild(comment);
     return true;
 }
@@ -888,7 +888,7 @@ bool HTMLParser::InHead::processStartTag(HTMLParser* parser, Token& token)
     }
     if (token.getName() == u"script") {
         Element script = parser->insertHtmlElement(token);
-        if (HTMLScriptElementImp* imp = dynamic_cast<HTMLScriptElementImp*>(script.self())) {
+        if (auto imp = std::dynamic_pointer_cast<HTMLScriptElementImp>(script.self())) {
             imp->markAsParserInserted();
             // TODO: fragment case
         }
@@ -1013,7 +1013,7 @@ bool HTMLParser::AfterHead::processEOF(HTMLParser* parser, Token& token)
 
 bool HTMLParser::AfterHead::processComment(HTMLParser* parser, Token& token)
 {
-    Comment comment = parser->document.createComment(token.getName());
+    Comment comment = parser->document->createComment(token.getName());
     parser->currentNode().appendChild(comment);
     return true;
 }
@@ -1087,7 +1087,7 @@ bool HTMLParser::InBody::processEOF(HTMLParser* parser, Token& token)
 
 bool HTMLParser::InBody::processComment(HTMLParser* parser, Token& token)
 {
-    Comment comment = parser->document.createComment(token.getName());
+    Comment comment = parser->document->createComment(token.getName());
     parser->currentNode().appendChild(comment);
     return true;
 }
@@ -1269,12 +1269,12 @@ bool HTMLParser::InBody::processStartTag(HTMLParser* parser, Token& token)
     if (isOneOf(token.getName(), { u"applet", u"marquee", u"object" })) {
         parser->reconstructActiveFormattingElements();
         parser->insertHtmlElement(token);
-        parser->addFormattingElement(0);
+        parser->addFormattingElement(nullptr);
         parser->framesetOkFlag = false;
         return true;
     }
     if (token.getName() == u"table") {
-        if (parser->document.getCompatMode() != u"BackCompat" && parser->elementInButtonScope(u"p"))
+        if (parser->document->getCompatMode() != u"BackCompat" && parser->elementInButtonScope(u"p"))
             processEndTag(parser, endTagP);
         parser->insertHtmlElement(token);
         parser->framesetOkFlag = false;
@@ -1458,7 +1458,7 @@ bool HTMLParser::InBody::processEndTag(HTMLParser* parser, Token& token)
     }
     if (token.getName() == u"form") {
         Element node = parser->formElement;
-        parser->formElement = 0;
+        parser->formElement = nullptr;
         if (!node || !parser->elementInScope(node)) {
             parser->parseError();
             return false;
@@ -1728,7 +1728,7 @@ bool HTMLParser::Text::processEndTag(HTMLParser* parser, Token& token)
         parser->setInsertionMode(parser->originalInsertionMode);
         bool old = parser->setInsertionPoint();
         ++(parser->scriptNestingLevel);
-        if (HTMLScriptElementImp* imp = dynamic_cast<HTMLScriptElementImp*>(script.self()))
+        if (auto imp = std::dynamic_pointer_cast<HTMLScriptElementImp>(script.self()))
             imp->prepare();
         if (--(parser->scriptNestingLevel) == 0)
             parser->pauseFlag = false;
@@ -1771,7 +1771,7 @@ bool HTMLParser::InTable::processEOF(HTMLParser* parser, Token& token)
 
 bool HTMLParser::InTable::processComment(HTMLParser* parser, Token& token)
 {
-    Comment comment = parser->document.createComment(token.getName());
+    Comment comment = parser->document->createComment(token.getName());
     parser->currentNode().appendChild(comment);
     return true;
 }
@@ -1798,7 +1798,7 @@ bool HTMLParser::InTable::processStartTag(HTMLParser* parser, Token& token)
 
     if (token.getName() == u"caption") {
         clearStackBackToTableContext(parser);
-        parser->activeFormattingElements.push_back(0);
+        parser->activeFormattingElements.push_back(nullptr);
         parser->insertHtmlElement(token);
         parser->setInsertionMode(&parser->inCaption);
         return true;
@@ -2013,7 +2013,7 @@ bool HTMLParser::InColumnGroup::processEOF(HTMLParser* parser, Token& token)
 
 bool HTMLParser::InColumnGroup::processComment(HTMLParser* parser, Token& token)
 {
-    Comment comment = parser->document.createComment(token.getName());
+    Comment comment = parser->document->createComment(token.getName());
     parser->currentNode().appendChild(comment);
     return true;
 }
@@ -2199,7 +2199,7 @@ bool HTMLParser::InRow::processStartTag(HTMLParser* parser, Token& token)
         clearStackBackToTableRowContext(parser);
         parser->insertHtmlElement(token);
         parser->setInsertionMode(&parser->inCell);
-        parser->activeFormattingElements.push_back(0);
+        parser->activeFormattingElements.push_back(nullptr);
         return true;
     }
     if (isOneOf(token.getName(), { u"caption", u"col", u"colgroup", u"tbody", u"tfoot", u"thead", u"tr" })) {
@@ -2347,7 +2347,7 @@ bool HTMLParser::InSelect::processEOF(HTMLParser* parser, Token& token)
 
 bool HTMLParser::InSelect::processComment(HTMLParser* parser, Token& token)
 {
-    Comment comment = parser->document.createComment(token.getName());
+    Comment comment = parser->document->createComment(token.getName());
     parser->currentNode().appendChild(comment);
     return true;
 }
@@ -2561,7 +2561,7 @@ bool HTMLParser::AfterBody::processEOF(HTMLParser* parser, Token& token)
 
 bool HTMLParser::AfterBody::processComment(HTMLParser* parser, Token& token)
 {
-    Comment comment = parser->document.createComment(token.getName());
+    Comment comment = parser->document->createComment(token.getName());
     parser->openElementStack.top().appendChild(comment);
     return true;
 }
@@ -2618,7 +2618,7 @@ bool HTMLParser::InFrameset::processEOF(HTMLParser* parser, Token& token)
 
 bool HTMLParser::InFrameset::processComment(HTMLParser* parser, Token& token)
 {
-    Comment comment = parser->document.createComment(token.getName());
+    Comment comment = parser->document->createComment(token.getName());
     parser->currentNode().appendChild(comment);
     return true;
 }
@@ -2687,7 +2687,7 @@ bool HTMLParser::AfterFrameset::processEOF(HTMLParser* parser, Token& token)
 
 bool HTMLParser::AfterFrameset::processComment(HTMLParser* parser, Token& token)
 {
-    Comment comment = parser->document.createComment(token.getName());
+    Comment comment = parser->document->createComment(token.getName());
     parser->currentNode().appendChild(comment);
     return true;
 }
@@ -2741,8 +2741,8 @@ bool HTMLParser::AfterAfterBody::processEOF(HTMLParser* parser, Token& token)
 
 bool HTMLParser::AfterAfterBody::processComment(HTMLParser* parser, Token& token)
 {
-    Comment comment = parser->document.createComment(token.getName());
-    parser->document.appendChild(comment);
+    Comment comment = parser->document->createComment(token.getName());
+    parser->document->appendChild(comment);
     return true;
 }
 
@@ -2788,9 +2788,9 @@ bool HTMLParser::AfterAfterFrameset::processEOF(HTMLParser* parser, Token& token
 
 bool HTMLParser::AfterAfterFrameset::processComment(HTMLParser* parser, Token& token)
 {
-    Document document = parser->document;
-    Comment comment = document.createComment(token.getName());
-    document.appendChild(comment);
+    DocumentPtr document = parser->document;
+    Comment comment = document->createComment(token.getName());
+    document->appendChild(comment);
     return true;
 }
 
@@ -2853,7 +2853,7 @@ bool HTMLParser::InBinding::processStartTag(HTMLParser* parser, Token& token)
 {
     if (token.getName() == u"implementation") {
         Element script = parser->insertHtmlElement(token);
-        if (HTMLScriptElementImp* imp = dynamic_cast<HTMLScriptElementImp*>(script.self())) {
+        if (auto imp = std::dynamic_pointer_cast<HTMLScriptElementImp>(script.self())) {
             imp->markAsParserInserted();
             // TODO: fragment case
         }
@@ -2887,7 +2887,7 @@ bool HTMLParser::InBinding::processEndTag(HTMLParser* parser, Token& token)
     return anythingElse(parser, token);
 }
 
-HTMLParser::HTMLParser(Document document, HTMLTokenizer* tokenizer, bool enableXBL) :
+HTMLParser::HTMLParser(const DocumentPtr& document, HTMLTokenizer* tokenizer, bool enableXBL) :
     document(document),
     tokenizer(tokenizer),
     insertionMode(&initial),
@@ -2895,14 +2895,11 @@ HTMLParser::HTMLParser(Document document, HTMLTokenizer* tokenizer, bool enableX
     secondaryInsertionMode(0),
     scriptNestingLevel(0),
     pauseFlag(false),
-    headElement(0),
-    formElement(0),
     scriptingFlag(true),
     framesetOkFlag(false),
     insertFromTable(false),
     innerHTML(false),
-    enableXBL(enableXBL),
-    contextElement(0)
+    enableXBL(enableXBL)
 {
 }
 
@@ -2922,9 +2919,9 @@ void HTMLParser::mainLoop()
 
 bool HTMLParser::processPendingParsingBlockingScript()
 {
-    DocumentImp* imp = dynamic_cast<DocumentImp*>(document.self());
+    auto imp = std::dynamic_pointer_cast<DocumentImp>(document->self());
     assert(imp);
-    HTMLScriptElementImp* script = imp->getPendingParsingBlockingScript();
+    HTMLScriptElementPtr script = imp->getPendingParsingBlockingScript();
     if (!script)
         return true;
     if (!script->isReadyToBeParserExecuted())
@@ -2940,7 +2937,7 @@ bool HTMLParser::processPendingParsingBlockingScript()
     return true;
 }
 
-void HTMLParser::parseFragment(Document document, const std::u16string& markup, Element context)
+void HTMLParser::parseFragment(const DocumentPtr& document, const std::u16string& markup, Element context)
 {
     std::basic_stringstream<char16_t> sstream(markup);
     U16TrivialInputStream stream(sstream);
@@ -2951,12 +2948,13 @@ void HTMLParser::parseFragment(Document document, const std::u16string& markup, 
         parser.contextElement = context;
         tokenizer.setContext(context);
     }
-    Element root = document.createElement(u"html");
-    document.appendChild(root);
+    Element root = document->createElement(u"html");
+    document->appendChild(root);
     parser.openElementStack.push(root);
     parser.resetInsertionMode();
     for (auto i = context; i; i = i.getParentElement()) {
-        if (auto form = dynamic_cast<HTMLFormElementImp*>(i.self())) {
+        auto form(std::dynamic_pointer_cast<HTMLFormElementImp>(i.self()));
+        if (form) {
             parser.formElement = form;
             break;
         }

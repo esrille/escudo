@@ -31,8 +31,8 @@ html::HTMLTemplateElement HTMLBindingElementImp::cloneTemplate()
 {
     html::HTMLTemplateElement t = getTemplate();
     if (!t)
-        return 0;
-    return interface_cast<html::HTMLTemplateElement>(t.cloneNode(true));
+        return nullptr;
+    return t.cloneNode(true).self();
 }
 
 // HTMLBindingElement
@@ -40,10 +40,10 @@ html::HTMLTemplateElement HTMLBindingElementImp::cloneTemplate()
 html::HTMLTemplateElement HTMLBindingElementImp::getTemplate()
 {
     for (auto i = getFirstElementChild(); i; i = i.getNextElementSibling()) {
-        if (dynamic_cast<HTMLTemplateElementImp*>(i.self()))
+        if (std::dynamic_pointer_cast<HTMLTemplateElementImp>(i.self()))
             return interface_cast<html::HTMLTemplateElement>(i);
     }
-    return 0;
+    return nullptr;
 }
 
 void HTMLBindingElementImp::setImplementation(Object implementationPrototypeObject)

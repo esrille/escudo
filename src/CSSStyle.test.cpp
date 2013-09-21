@@ -99,8 +99,8 @@ const char* htmlDocument =
 
 int main(int argc, char** argv)
 {
-    css::CSSStyleSheet defaultStyleSheet(0);
-    Document document(0);
+    css::CSSStyleSheet defaultStyleSheet;
+    Document document;
 
     // Load the default CSS file
     if (1 < argc) {
@@ -117,8 +117,8 @@ int main(int argc, char** argv)
     assert(document);
 
     // create the default view
-    WindowPtr window = new(std::nothrow) WindowImp;
-    window->setDocument(document);
+    WindowPtr window = std::make_shared<WindowImp>();
+    window->setDocument(std::static_pointer_cast<bootstrap::DocumentImp>(document.self()));
     ViewCSSImp* view = new ViewCSSImp(window);
     view->constructComputedStyles();
     view->calculateComputedStyles();

@@ -35,13 +35,13 @@ std::u16string MessageEventImp::getLastEventId()
 html::Window MessageEventImp::getSource()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 ObjectArray<html::MessagePort> MessageEventImp::getPorts()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return ObjectArray<html::MessagePort>();
 }
 
 }

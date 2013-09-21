@@ -35,14 +35,17 @@ public:
         ObjectMixin(ownerDocument),
         data(data) {
     }
-    CharacterDataImp(CharacterDataImp* org, bool deep) :
-        ObjectMixin(org, deep),
-        data(org->data)
+    CharacterDataImp(const CharacterDataImp& org) :
+        ObjectMixin(org),
+        data(org.data)
     {}
 
     // Node - override
     virtual Node cloneNode(bool deep = true) {
-        return new(std::nothrow) CharacterDataImp(this, deep);
+        auto node = std::make_shared<CharacterDataImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
     }
     virtual Nullable<std::u16string> getTextContent();
     virtual void setTextContent(const Nullable<std::u16string>& textContent);
@@ -67,6 +70,8 @@ public:
         return CharacterData::getMetaData();
     }
 };
+
+typedef std::shared_ptr<CharacterDataImp> CharacterDataPtr;
 
 }}}}  // org::w3c::dom::bootstrap
 

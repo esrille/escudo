@@ -37,10 +37,16 @@ class HTMLAudioElementImp : public ObjectMixin<HTMLAudioElementImp, HTMLMediaEle
 {
 public:
     HTMLAudioElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"audio") {
+        ObjectMixin(ownerDocument, u"audio")
+    {
     }
-    HTMLAudioElementImp(HTMLAudioElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLAudioElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
     }
 
     // HTMLAudioElement

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,18 @@ namespace bootstrap
 class HTMLDataListElementImp : public ObjectMixin<HTMLDataListElementImp, HTMLElementImp>
 {
 public:
+    HTMLDataListElementImp(DocumentImp* ownerDocument) :
+        ObjectMixin(ownerDocument, u"datalist") {
+    }
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLDataListElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
+
     // HTMLDataListElement
     html::HTMLCollection getOptions();
     // Object
@@ -49,13 +61,6 @@ public:
     {
         return html::HTMLDataListElement::getMetaData();
     }
-    HTMLDataListElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"datalist") {
-    }
-    HTMLDataListElementImp(HTMLDataListElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
-    }
-
 };
 
 }

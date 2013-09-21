@@ -34,6 +34,9 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 class EventImp;
 class EventListenerImp;
 
+typedef std::shared_ptr<EventImp> EventPtr;
+typedef std::shared_ptr<EventListenerImp> EventListenerPtr;
+
 class EventTargetImp : public ObjectMixin<EventTargetImp>
 {
 public:
@@ -72,11 +75,11 @@ private:
 
 public:
     EventTargetImp();
-    EventTargetImp(EventTargetImp* org);
+    EventTargetImp(const EventTargetImp& other);
 
-    virtual void invoke(EventImp* event);
+    virtual void invoke(const EventPtr& event);
 
-    EventListenerImp* getEventHandlerListener(const std::u16string& type);
+    EventListenerPtr getEventHandlerListener(const std::u16string& type);
 
     Object getEventHandler(const std::u16string& type);
     virtual void setEventHandler(const std::u16string& type, Object handler) {}
@@ -95,6 +98,8 @@ public:
         return events::EventTarget::getMetaData();
     }
 };
+
+typedef std::shared_ptr<EventTargetImp> EventTargetPtr;
 
 }}}}  // org::w3c::dom::bootstrap
 

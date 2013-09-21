@@ -664,7 +664,7 @@ Any ECMAScriptContext::evaluate(const std::u16string& script)
     return pimpl->evaluate(script);
 }
 
-Object* ECMAScriptContext::compileFunction(const std::u16string& body)
+Object ECMAScriptContext::compileFunction(const std::u16string& body)
 {
     return pimpl->compileFunction(body);
 }
@@ -674,7 +674,7 @@ Any ECMAScriptContext::callFunction(Object thisObject, Object functionObject, in
     return pimpl->callFunction(thisObject, functionObject, argc, argv);
 }
 
-Object* ECMAScriptContext::xblCreateImplementation(Object object, Object prototype, Object boundElement, Object shadowTree)
+Object ECMAScriptContext::xblCreateImplementation(Object object, Object prototype, Object boundElement, Object shadowTree)
 {
     return pimpl->xblCreateImplementation(object, prototype, boundElement, shadowTree);
 }

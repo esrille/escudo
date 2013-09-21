@@ -21,11 +21,11 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
-void CSSStyleSheetImp::append(css::CSSRule rule, DocumentImp* document)
+void CSSStyleSheetImp::append(css::CSSRule rule, const DocumentPtr& document)
 {
-    if (auto imp = dynamic_cast<CSSRuleImp*>(rule.self())) {
-        imp->setParentStyleSheet(this);
-        ruleList.append(rule, document, 0);
+    if (auto imp = std::dynamic_pointer_cast<CSSRuleImp>(rule.self())) {
+        imp->setParentStyleSheet(std::static_pointer_cast<CSSStyleSheetImp>(self()));
+        ruleList->append(rule, document, 0);
     }
 }
 
@@ -39,22 +39,22 @@ std::u16string CSSStyleSheetImp::getType()
 css::CSSRule CSSStyleSheetImp::getOwnerRule()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 css::CSSRuleList CSSStyleSheetImp::getCssRules()
 {
-    return &ruleList;
+    return ruleList;
 }
 
 unsigned int CSSStyleSheetImp::insertRule(const std::u16string& rule, unsigned int index)
 {
-    return ruleList.insertRule(rule, index);
+    return ruleList->insertRule(rule, index);
 }
 
 void CSSStyleSheetImp::deleteRule(unsigned int index)
 {
-    ruleList.deleteRule(index);
+    ruleList->deleteRule(index);
 }
 
 }}}}  // org::w3c::dom::bootstrap

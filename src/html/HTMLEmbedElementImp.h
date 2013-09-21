@@ -41,12 +41,16 @@ public:
         ObjectMixin(ownerDocument, u"embed")
     {
     }
-    HTMLEmbedElementImp(HTMLEmbedElementImp* org, bool deep) :
-        ObjectMixin(org, deep)
-    {
-    }
 
     virtual void handleMutation(events::MutationEvent mutation);
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLEmbedElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
 
     // HTMLEmbedElement
     std::u16string getSrc();

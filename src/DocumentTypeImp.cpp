@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +42,8 @@ unsigned short DocumentTypeImp::getNodeType()
 
 bool DocumentTypeImp::isEqualNode(Node arg)
 {
-    DocumentTypeImp* documentType = dynamic_cast<DocumentTypeImp*>(arg.self());
-    if (this == documentType)
+    auto documentType = std::dynamic_pointer_cast<DocumentTypeImp>(arg.self());
+    if (documentType.get() == this)
         return true;
     if (!documentType)
         return false;

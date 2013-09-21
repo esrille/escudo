@@ -38,7 +38,20 @@ namespace bootstrap
 class HTMLTableSectionElementImp : public ObjectMixin<HTMLTableSectionElementImp, HTMLElementImp>
 {
 public:
+    HTMLTableSectionElementImp(DocumentImp* ownerDocument, const std::u16string& localName) :
+        ObjectMixin(ownerDocument, localName)
+    {
+    }
+
     virtual void handleMutation(events::MutationEvent mutation);
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLTableSectionElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
 
     // HTMLTableSectionElement
     html::HTMLCollection getRows();
@@ -62,12 +75,6 @@ public:
     static const char* const getMetaData()
     {
         return html::HTMLTableSectionElement::getMetaData();
-    }
-    HTMLTableSectionElementImp(DocumentImp* ownerDocument, const std::u16string& localName) :
-        ObjectMixin(ownerDocument, localName) {
-    }
-    HTMLTableSectionElementImp(HTMLTableSectionElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
     }
 };
 

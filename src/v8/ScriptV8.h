@@ -33,8 +33,8 @@ public:
     void enter(ObjectImp* window);
     void exit(ObjectImp* window);
 
-    Object* compileFunction(const std::u16string& body);
-    Object* xblCreateImplementation(Object object, Object prototype, Object boundElement, Object shadowTree);
+    Object compileFunction(const std::u16string& body);
+    Object xblCreateImplementation(Object object, Object prototype, Object boundElement, Object shadowTree);
 
     static void shutDown();
 };

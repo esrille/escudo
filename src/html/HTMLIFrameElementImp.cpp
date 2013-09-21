@@ -36,51 +36,57 @@ namespace dom
 namespace bootstrap
 {
 
-HTMLIFrameElementImp::HTMLIFrameElementImp(DocumentImp* ownerDocument, unsigned flags) :
+HTMLIFrameElementImp::HTMLIFrameElementImp(DocumentImp* ownerDocument) :
     ObjectMixin(ownerDocument, u"iframe"),
-    window(0),
     blurListener(boost::bind(&HTMLIFrameElementImp::handleBlur, this, _1, _2)),
     loadInProgess(false)
 {
     tabIndex = 0;
-    if (ownerDocument) {
-        if (ownerDocument->getReadyState() != u"complete") {
-            loadInProgess = true;
-            ownerDocument->incrementLoadEventDelayCount();
-        }
-        window = new(std::nothrow) WindowProxy(dynamic_cast<WindowProxy*>(ownerDocument->getDefaultView().self()), this, flags);
-        window.open(u"about:blank", u"_self");  // TODO: Check how location is created
-    }
-    addEventListener(u"blur", &blurListener, false, EventTargetImp::UseDefault);
+    addEventListener(u"blur", blurListener, false, EventTargetImp::UseDefault);
 }
 
-HTMLIFrameElementImp::HTMLIFrameElementImp(HTMLIFrameElementImp* org, bool deep) :
-    ObjectMixin(org, deep),
-    window(org->window),
+HTMLIFrameElementImp::HTMLIFrameElementImp(const HTMLIFrameElementImp& org) :
+    ObjectMixin(org),
+    window(org.window),
     blurListener(boost::bind(&HTMLIFrameElementImp::handleBlur, this, _1, _2)),
     loadInProgess(false)
 {
-    tabIndex = org->tabIndex;
-    addEventListener(u"blur", &blurListener, false, EventTargetImp::UseDefault);
+    tabIndex = org.tabIndex;
+    addEventListener(u"blur", blurListener, false, EventTargetImp::UseDefault);
 }
 
 HTMLIFrameElementImp::~HTMLIFrameElementImp()
 {
 }
 
+void HTMLIFrameElementImp::open(const std::u16string& url, unsigned flags)
+{
+    auto owner = getOwnerDocumentImp();
+    if (!owner)
+        return;
+    if (owner->getReadyState() != u"complete") {
+        loadInProgess = true;
+        owner->incrementLoadEventDelayCount();
+    }
+    if (auto proxy = owner->getDefaultWindow()->createWindowProxy(std::static_pointer_cast<HTMLIFrameElementImp>(self()), flags)) {
+        window = proxy;
+        proxy->open(url, u"_self");  // TODO: Check how location is created
+    }  // TODO: else ...
+}
+
 void HTMLIFrameElementImp::notify(bool error)
 {
     // The iframe load event steps
-    events::Event event = new(std::nothrow) EventImp;
+    auto event = std::make_shared<EventImp>();
     if (!error)
-        event.initEvent(u"load", false, false);
+        event->initEvent(u"load", false, false);
     else
-        event.initEvent(u"error", false, false);
+        event->initEvent(u"error", false, false);
     dispatchEvent(event);
     if (!loadInProgess)
         return;
-    if (DocumentImp* ownerDocument = getOwnerDocumentImp()) {
-        ownerDocument->decrementLoadEventDelayCount();
+    if (auto owner = getOwnerDocumentImp()) {
+        owner->decrementLoadEventDelayCount();
         loadInProgess = false;
     }
 }
@@ -123,7 +129,7 @@ void HTMLIFrameElementImp::handleMutation(events::MutationEvent mutation)
 
 void HTMLIFrameElementImp::handleBlur(EventListenerImp* listener, events::Event event)
 {
-    if (auto imp = dynamic_cast<DocumentImp*>(window.getDocument().self()))
+    if (auto imp = std::dynamic_pointer_cast<DocumentImp>(window.getDocument().self()))
         imp->setFocus(0);
 }
 
@@ -166,7 +172,7 @@ void HTMLIFrameElementImp::setName(const std::u16string& name)
 DOMSettableTokenList HTMLIFrameElementImp::getSandbox()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void HTMLIFrameElementImp::setSandbox(const std::u16string& sandbox)

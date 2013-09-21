@@ -54,18 +54,26 @@ public:
         imageStart(getTick())
     {
     }
-    HTMLReplacedElementImp(HTMLReplacedElementImp* org, bool deep) :
-        HTMLElementImp(org, deep),
+    HTMLReplacedElementImp(const HTMLReplacedElementImp& org) :
+        HTMLElementImp(org),
         current(0),     // TODO
-        active(org->active),
+        active(org.active),
         image(0),       // TODO
-        imageStart(getTick())
+        imageStart(org.imageStart)
     {
     }
     ~HTMLReplacedElementImp()
     {
         delete current;
         delete image;
+    }
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLReplacedElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
     }
 
     bool getIntrinsicSize(float& w, float& h) const {

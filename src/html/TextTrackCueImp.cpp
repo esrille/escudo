@@ -17,7 +17,7 @@ namespace bootstrap
 html::TextTrack TextTrackCueImp::getTrack()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 std::u16string TextTrackCueImp::getId()
@@ -144,13 +144,13 @@ void TextTrackCueImp::setText(const std::u16string& text)
 DocumentFragment TextTrackCueImp::getCueAsHTML()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 events::EventHandlerNonNull TextTrackCueImp::getOnenter()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void TextTrackCueImp::setOnenter(events::EventHandlerNonNull onenter)
@@ -161,7 +161,7 @@ void TextTrackCueImp::setOnenter(events::EventHandlerNonNull onenter)
 events::EventHandlerNonNull TextTrackCueImp::getOnexit()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void TextTrackCueImp::setOnexit(events::EventHandlerNonNull onexit)

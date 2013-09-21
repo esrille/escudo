@@ -17,7 +17,7 @@ namespace bootstrap
 DOMSettableTokenList HTMLOutputElementImp::getHtmlFor()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void HTMLOutputElementImp::setHtmlFor(const std::u16string& htmlFor)
@@ -28,7 +28,7 @@ void HTMLOutputElementImp::setHtmlFor(const std::u16string& htmlFor)
 html::HTMLFormElement HTMLOutputElementImp::getForm()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 std::u16string HTMLOutputElementImp::getName()
@@ -79,7 +79,7 @@ bool HTMLOutputElementImp::getWillValidate()
 html::ValidityState HTMLOutputElementImp::getValidity()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 std::u16string HTMLOutputElementImp::getValidationMessage()
@@ -102,7 +102,7 @@ void HTMLOutputElementImp::setCustomValidity(const std::u16string& error)
 NodeList HTMLOutputElementImp::getLabels()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 }

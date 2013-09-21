@@ -22,7 +22,6 @@
 #endif
 
 #include <org/w3c/dom/Document.h>
-#include "NodeImp.h"
 
 #include <org/w3c/dom/stylesheets/StyleSheet.h>
 #include <org/w3c/dom/css/CSSStyleDeclaration.h>
@@ -56,12 +55,15 @@
 
 #include "NodeImp.h"
 #include "EventListenerImp.h"
-#include "WindowProxy.h"
 #include "html/HTMLScriptElementImp.h"
 
+class ECMAScriptContext;
 class HTMLTokenizer;
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
+
+class WindowProxy;
+typedef std::shared_ptr<WindowProxy> WindowProxyPtr;
 
 class DocumentImp : public ObjectMixin<DocumentImp, NodeImp>
 {
@@ -78,19 +80,19 @@ class DocumentImp : public ObjectMixin<DocumentImp, NodeImp>
     HTMLTokenizer* insertionPoint;
 
     long long lastModified; // in GMT
-    HTMLScriptElementImp* pendingParsingBlockingScript;
+    std::weak_ptr<HTMLScriptElementImp> pendingParsingBlockingScript;
     std::list<html::HTMLScriptElement> deferScripts;
     std::list<html::HTMLScriptElement> asyncScripts;
     std::list<html::HTMLScriptElement> orderedScripts;
 
-    WindowProxy* defaultView;
-    ElementImp* activeElement;
+    WindowProxyPtr defaultView;
+    std::weak_ptr<ElementImp> activeElement;
     int error;
 
     virtual void setEventHandler(const std::u16string& type, Object handler);
 
     // XBL 2.0
-    std::map<const std::u16string, html::Window> bindingDocuments;
+    std::map<const std::u16string, WindowProxyPtr> bindingDocuments;
 
     bool processScripts(std::list<html::HTMLScriptElement>& scripts);
     void write(const Variadic<std::u16string>& text, bool linefeed);
@@ -106,25 +108,16 @@ public:
          LimitedQuirksMode
     };
 
-    WindowProxy* getDefaultWindow() const {
+    WindowProxyPtr getDefaultWindow() const {
         return defaultView;
     }
-    void setDefaultView(WindowProxy* view);
-
-    void enter() {
-        if (defaultView)
-            defaultView->enter();
-    }
-    void exit() {
-        if (defaultView)
-            defaultView->exit();
+    void setDefaultView(WindowProxyPtr view) {
+        defaultView = view;
     }
 
-    ECMAScriptContext* getContext() const {
-        if (defaultView)
-            return defaultView->getWindowPtr()->getContext();
-        return 0;
-    }
+    void enter();
+    void exit();
+    ECMAScriptContext* getContext() const;
 
     int getMode() const {
         return mode;
@@ -146,34 +139,34 @@ public:
         return old;
     }
 
-    void addDeferScript(HTMLScriptElementImp* script) {
+    void addDeferScript(html::HTMLScriptElement script) {
         deferScripts.push_back(script);
     }
-    void addAsyncScript(HTMLScriptElementImp* script) {
+    void addAsyncScript(html::HTMLScriptElement script) {
         asyncScripts.push_back(script);
     }
-    void addOrderedScript(HTMLScriptElementImp* script) {
+    void addOrderedScript(html::HTMLScriptElement script) {
         orderedScripts.push_back(script);
     }
-    void removeDeferScript(HTMLScriptElementImp* script) {
+    void removeDeferScript(html::HTMLScriptElement script) {
         for (auto i = deferScripts.begin(); i != deferScripts.end(); ++i) {
-            if (i->self() == script) {
+            if (*i == script) {
                 deferScripts.erase(i);
                 break;
             }
         }
     }
-    void removeAsyncScript(HTMLScriptElementImp* script) {
+    void removeAsyncScript(html::HTMLScriptElement script) {
         for (auto i = asyncScripts.begin(); i != asyncScripts.end(); ++i) {
-            if (i->self() == script) {
+            if (*i == script) {
                 asyncScripts.erase(i);
                 break;
             }
         }
     }
-    void removeOrderedScript(HTMLScriptElementImp* script) {
+    void removeOrderedScript(html::HTMLScriptElement script) {
         for (auto i = orderedScripts.begin(); i != orderedScripts.end(); ++i) {
-            if (i->self() == script) {
+            if (*i == script) {
                 orderedScripts.erase(i);
                 break;
             }
@@ -205,10 +198,10 @@ public:
         error = value;
     }
 
-    HTMLScriptElementImp* getPendingParsingBlockingScript() const {
-        return pendingParsingBlockingScript;
+    HTMLScriptElementPtr getPendingParsingBlockingScript() const {
+        return pendingParsingBlockingScript.lock();
     }
-    void setPendingParsingBlockingScript(HTMLScriptElementImp* element) {
+    void setPendingParsingBlockingScript(const HTMLScriptElementPtr& element) {
         pendingParsingBlockingScript = element;
     }
 
@@ -227,21 +220,21 @@ public:
     void setContentType(const std::u16string& type);
     void setDoctype(DocumentType type);
 
-    ElementImp* getFocus() const {
-        return activeElement;
+    ElementPtr getFocus() const {
+        return activeElement.lock();
     }
-    void setFocus(ElementImp* element);
+    void setFocus(const ElementPtr& element);
 
     unsigned incrementLoadEventDelayCount() {
         return ++loadEventDelayCount;
     }
     unsigned decrementLoadEventDelayCount();
 
-    bool isBindingDocumentWindow(const WindowProxy* window) const;
+    bool isBindingDocumentWindow(const WindowProxyPtr& window) const;
 
     // Node - override
     virtual unsigned short getNodeType();
-    virtual Node appendChild(Node newChild) throw(DOMException);
+    virtual Node appendChild(Node newChild);
 
     // Document
     DOMImplementation getImplementation();
@@ -267,8 +260,8 @@ public:
     Node adoptNode(Node node);
     events::Event createEvent(const std::u16string& eventInterfaceName);
     ranges::Range createRange();
-    traversal::NodeIterator createNodeIterator(Node root, unsigned int whatToShow = 0xFFFFFFFF, traversal::NodeFilter filter = 0);
-    traversal::TreeWalker createTreeWalker(Node root, unsigned int whatToShow = 0xFFFFFFFF, traversal::NodeFilter filter = 0);
+    traversal::NodeIterator createNodeIterator(Node root, unsigned int whatToShow = 0xFFFFFFFF, traversal::NodeFilter filter = nullptr);
+    traversal::TreeWalker createTreeWalker(Node root, unsigned int whatToShow = 0xFFFFFFFF, traversal::NodeFilter filter = nullptr);
     // DocumentCSS
     css::CSSStyleDeclaration getOverrideStyle(Element elt, const Nullable<std::u16string>& pseudoElt);
     // Document-47
@@ -469,6 +462,8 @@ public:
         return Document::getMetaData();
     }
 };
+
+typedef std::shared_ptr<DocumentImp> DocumentPtr;
 
 }
 }

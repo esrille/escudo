@@ -46,25 +46,31 @@ class HTMLCollectionImp;
 class NodeListImp;
 class ViewCSSImp;
 
+typedef std::shared_ptr<HTMLCollectionImp> HTMLCollectionPtr;
+typedef std::shared_ptr<NodeListImp> NodeListPtr;
+
+class ElementImp;
+typedef std::shared_ptr<ElementImp> ElementPtr;
+
 class ElementImp : public ObjectMixin<ElementImp, NodeImp>
 {
     friend class AttrArray;
     friend class ViewCSSImp;
 
-    std::deque<Attr> attributes;
     std::u16string namespaceURI;
     std::u16string prefix;
     std::u16string localName;
+    std::deque<Attr> attributes;
 
     Element querySelector(CSSSelectorsGroup* selectorsGroup, ViewCSSImp* view);
-    void querySelectorAll(NodeListImp* nodeList, CSSSelectorsGroup* selectorsGroup, ViewCSSImp* view);
+    void querySelectorAll(NodeListPtr nodeList, CSSSelectorsGroup* selectorsGroup, ViewCSSImp* view);
 
 public:
     ElementImp(DocumentImp* ownerDocument, const std::u16string& localName, const std::u16string& namespaceURI, const std::u16string& prefix = u"");
-    ElementImp(ElementImp* org, bool deep);
+    ElementImp(const ElementImp& org);
 
     void setAttributes(const std::deque<Attr>& attributes);
-    ElementImp* getNextElement(ElementImp* root = 0);
+    ElementPtr getNextElement(const ElementPtr& root = nullptr);
 
     // notify() is called when conditions that are not handled by DOM events
     // but still needed be processed occur; e.g., the element is popped off
@@ -76,7 +82,12 @@ public:
 
     // Node
     virtual unsigned short getNodeType();
-    virtual Node cloneNode(bool deep = true);
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<ElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
     virtual Nullable<std::u16string> getTextContent();
     virtual void setTextContent(const Nullable<std::u16string>& textContent);
     virtual bool isEqualNode(Node arg);
@@ -151,8 +162,8 @@ public:
         return Element::getMetaData();
     }
 
-    static HTMLCollectionImp* getElementsByTagName(ElementImp* element, const std::u16string& localName);
-    static HTMLCollectionImp* getElementsByClassName(ElementImp* element, const std::u16string& classNames);
+    static HTMLCollectionPtr getElementsByTagName(const ElementPtr& element, const std::u16string& localName);
+    static HTMLCollectionPtr getElementsByClassName(const ElementPtr& element, const std::u16string& classNames);
 };
 
 }}}}  // org::w3c::dom::bootstrap

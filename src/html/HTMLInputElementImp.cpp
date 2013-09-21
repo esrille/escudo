@@ -75,7 +75,6 @@ const char16_t* typeKeywords[] = {
 HTMLInputElementImp::HTMLInputElementImp(DocumentImp* ownerDocument) :
     ObjectMixin(ownerDocument, u"input"),
     type(Text),
-    form(0),
     clickListener(boost::bind(&HTMLInputElementImp::handleClick, this, _1, _2)),
     keydownListener(boost::bind(&HTMLInputElementImp::handleKeydown, this, _1, _2)),
     cursor(0),
@@ -84,14 +83,13 @@ HTMLInputElementImp::HTMLInputElementImp(DocumentImp* ownerDocument) :
     tabIndex = 0;
 }
 
-HTMLInputElementImp::HTMLInputElementImp(HTMLInputElementImp* org, bool deep) :
-    ObjectMixin(org, deep),
-    type(org->type),
-    form(0),
+HTMLInputElementImp::HTMLInputElementImp(const HTMLInputElementImp& org) :
+    ObjectMixin(org),
+    type(org.type),
     clickListener(boost::bind(&HTMLInputElementImp::handleClick, this, _1, _2)),
     keydownListener(boost::bind(&HTMLInputElementImp::handleKeydown, this, _1, _2)),
     cursor(0),
-    checked(org->checked)
+    checked(org.checked)
 {
 }
 
@@ -100,7 +98,7 @@ css::CSSStyleDeclaration HTMLInputElementImp::getStyle()
     if (hasStyle())
         return HTMLElementImp::getStyle();
     css::CSSStyleDeclaration style = HTMLElementImp::getStyle();
-    if (dynamic_cast<CSSStyleDeclarationImp*>(style.self())) {
+    if (auto imp = std::dynamic_pointer_cast<CSSStyleDeclarationImp>(style.self())) {
         switch (type) {
         case Text:
         case Search:
@@ -108,7 +106,7 @@ css::CSSStyleDeclaration HTMLInputElementImp::getStyle()
         case URL:
         case Email:
         case Password:
-            style.setProperty(u"width", boost::lexical_cast<std::u16string>(getSize()) + u"em", u"non-css");
+            imp->setProperty(u"width", boost::lexical_cast<std::u16string>(getSize()) + u"em", u"non-css");
             break;
         default:
             break;
@@ -120,7 +118,7 @@ css::CSSStyleDeclaration HTMLInputElementImp::getStyle()
 void HTMLInputElementImp::updateStyle()
 {
     css::CSSStyleDeclaration style = HTMLElementImp::getStyle();
-    if (dynamic_cast<CSSStyleDeclarationImp*>(style.self())) {
+    if (auto imp = std::dynamic_pointer_cast<CSSStyleDeclarationImp>(style.self())) {
         switch (type) {
         case Text:
         case Search:
@@ -128,20 +126,20 @@ void HTMLInputElementImp::updateStyle()
         case URL:
         case Email:
         case Password:
-            style.setProperty(u"height", u"", u"non-css");
-            style.setProperty(u"width", boost::lexical_cast<std::u16string>(getSize()) + u"em", u"non-css");
+            imp->setProperty(u"height", u"", u"non-css");
+            imp->setProperty(u"width", boost::lexical_cast<std::u16string>(getSize()) + u"em", u"non-css");
             break;
         case ImageButton: {
             std::u16string value;
             value = getAttribute(u"height");
-            style.setProperty(u"height", mapToPixelLength(value) ? value : u"", u"non-css");
+            imp->setProperty(u"height", mapToPixelLength(value) ? value : u"", u"non-css");
             value = getAttribute(u"width");
-            style.setProperty(u"width", mapToPixelLength(value) ? value : u"", u"non-css");
+            imp->setProperty(u"width", mapToPixelLength(value) ? value : u"", u"non-css");
             break;
         }
         default:
-            style.setProperty(u"height", u"", u"non-css");
-            style.setProperty(u"width", u"", u"non-css");
+            imp->setProperty(u"height", u"", u"non-css");
+            imp->setProperty(u"width", u"", u"non-css");
             break;
         }
     }
@@ -230,8 +228,8 @@ void HTMLInputElementImp::handleClick(EventListenerImp* listener, events::Event 
 {
     if (type == SubmitButton) {
         html::HTMLFormElement form = getForm();
-        if (HTMLFormElementImp* imp = dynamic_cast<HTMLFormElementImp*>(form.self()))
-            imp->submit(this);
+        if (auto imp = std::dynamic_pointer_cast<HTMLFormElementImp>(form.self()))
+            imp->submit(std::static_pointer_cast<HTMLInputElementImp>(self()));
     }
 }
 
@@ -283,38 +281,38 @@ void HTMLInputElementImp::handleKeydown(EventListenerImp* listener, events::Even
     }
 }
 
-bool HTMLInputElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
+bool HTMLInputElementImp::generateShadowContent(const CSSStyleDeclarationPtr& style)
 {
     if (style->display.getValue() == CSSDisplayValueImp::None || getShadowTree())
         return false;
 
-    DocumentImp* document = getOwnerDocumentImp();
+    DocumentPtr document = getOwnerDocumentImp();
     assert(document);
     switch (style->binding.getValue()) {
     case CSSBindingValueImp::InputTextfield: {
-        if (HTMLTemplateElementImp* element = new(std::nothrow) HTMLTemplateElementImp(document)) {
+        if (auto element = std::make_shared<HTMLTemplateElementImp>(document.get())) {
             dom::Text text = document->createTextNode(getValue());
             element->appendChild(text, true);
             style->setCssText(u"display: inline-block; white-space: pre; background-color: white; border: 2px inset; text-align: left; padding: 1px; min-height: 1em;");
             setShadowTree(element);
-            addEventListener(u"keydown", &keydownListener, false, EventTargetImp::UseDefault);
+            addEventListener(u"keydown", keydownListener, false, EventTargetImp::UseDefault);
             return true;
         }
         break;
     }
     case CSSBindingValueImp::InputButton: {
-        if (HTMLTemplateElementImp* element = new(std::nothrow) HTMLTemplateElementImp(document)) {
+        if (auto element = std::make_shared<HTMLTemplateElementImp>(document.get())) {
             dom::Text text = document->createTextNode(getValue());
             element->appendChild(text, true);
             style->setCssText(u"display: inline-block; border: 2px outset; padding: 1px; text-align: center; min-height: 1em;");
             setShadowTree(element);
-            addEventListener(u"click", &clickListener, false, EventTargetImp::UseDefault);
+            addEventListener(u"click", clickListener, false, EventTargetImp::UseDefault);
             return true;
         }
         break;
     }
     case CSSBindingValueImp::InputRadio: {
-        if (HTMLTemplateElementImp* element = new(std::nothrow) HTMLTemplateElementImp(document)) {
+        if (auto element = std::make_shared<HTMLTemplateElementImp>(document.get())) {
             dom::Text text = document->createTextNode(getChecked() ? u"\u25c9" : u"\u25cb");
             element->appendChild(text, true);
             setShadowTree(element);
@@ -323,7 +321,7 @@ bool HTMLInputElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
         break;
     }
     case CSSBindingValueImp::InputCheckbox: {
-        if (HTMLTemplateElementImp* element = new(std::nothrow) HTMLTemplateElementImp(document)) {
+        if (auto element = std::make_shared<HTMLTemplateElementImp>(document.get())) {
             dom::Text text = document->createTextNode(getChecked() ? u"\u2611" : u"\u2610");
             element->appendChild(text, true);
             setShadowTree(element);
@@ -335,7 +333,7 @@ bool HTMLInputElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
         if (HTMLElementImp::generateShadowContent(style)) {
             switch (type) {
             case SubmitButton:
-                addEventListener(u"click", &clickListener, false, EventTargetImp::UseDefault);
+                addEventListener(u"click", clickListener, false, EventTargetImp::UseDefault);
                 break;
             default:
                 break;
@@ -435,19 +433,19 @@ void HTMLInputElementImp::setDisabled(bool disabled)
 
 html::HTMLFormElement HTMLInputElementImp::getForm()
 {
-    if (form)
-        return form;
+    if (!form.expired())
+        return form.lock();
     for (Element parent = getParentElement(); parent; parent = parent.getParentElement()) {
         if (html::HTMLFormElement::hasInstance(parent))
             return interface_cast<html::HTMLFormElement>(parent);
     }
-    return 0;
+    return nullptr;
 }
 
 file::FileList HTMLInputElementImp::getFiles()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 std::u16string HTMLInputElementImp::getFormAction()
@@ -530,7 +528,7 @@ void HTMLInputElementImp::setIndeterminate(bool indeterminate)
 html::HTMLElement HTMLInputElementImp::getList()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 std::u16string HTMLInputElementImp::getMax()
@@ -756,7 +754,7 @@ bool HTMLInputElementImp::getWillValidate()
 html::ValidityState HTMLInputElementImp::getValidity()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 std::u16string HTMLInputElementImp::getValidationMessage()
@@ -779,7 +777,7 @@ void HTMLInputElementImp::setCustomValidity(const std::u16string& error)
 NodeList HTMLInputElementImp::getLabels()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void HTMLInputElementImp::select()

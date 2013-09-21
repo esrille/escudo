@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Esrille Inc.
+ * Copyright 2012, 2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,11 +40,16 @@ public:
     HTMLFontElementImp(DocumentImp* ownerDocument) :
         ObjectMixin(ownerDocument, u"font")
     {}
-    HTMLFontElementImp(HTMLFontElementImp* org, bool deep) :
-        ObjectMixin(org, deep)
-    {}
 
     virtual void handleMutation(events::MutationEvent mutation);
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLFontElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
 
     // HTMLFontElement
     std::u16string getColor();

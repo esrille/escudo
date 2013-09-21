@@ -41,12 +41,16 @@ public:
         ObjectMixin(ownerDocument, localName)
     {
     }
-    HTMLDivElementImp(HTMLDivElementImp* org, bool deep) :
-        ObjectMixin(org, deep)
-    {
-    }
 
     virtual void handleMutation(events::MutationEvent mutation);
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLDivElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
 
     // HTMLElement
     css::CSSStyleDeclaration getStyle();

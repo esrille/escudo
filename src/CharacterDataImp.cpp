@@ -21,7 +21,7 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 void CharacterDataImp::dispatchMutationEvent(const std::u16string& prev)
 {
-    events::MutationEvent event = new(std::nothrow) MutationEventImp;
+    events::MutationEvent event = std::make_shared<MutationEventImp>();
     event.initMutationEvent(u"DOMCharacterDataModified",
                             true, false, getParentNode(), prev, data, u"", 0);
     dispatchEvent(event);
@@ -42,8 +42,8 @@ void CharacterDataImp::setTextContent(const Nullable<std::u16string>& textConten
 
 bool CharacterDataImp::isEqualNode(Node arg)
 {
-    CharacterDataImp* characterData = dynamic_cast<CharacterDataImp*>(arg.self());
-    if (this == characterData)
+    auto characterData = std::dynamic_pointer_cast<CharacterDataImp>(arg.self());
+    if (self() == characterData)
         return true;
     if (!characterData)
         return false;

@@ -17,7 +17,7 @@ namespace bootstrap
 html::HTMLCanvasElement CanvasRenderingContext2DImp::getCanvas()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void CanvasRenderingContext2DImp::save()
@@ -102,19 +102,19 @@ void CanvasRenderingContext2DImp::setFillStyle(Any fillStyle)
 html::CanvasGradient CanvasRenderingContext2DImp::createLinearGradient(double x0, double y0, double x1, double y1)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::CanvasGradient CanvasRenderingContext2DImp::createRadialGradient(double x0, double y0, double r0, double x1, double y1, double r1)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::CanvasPattern CanvasRenderingContext2DImp::createPattern(Any image, const std::u16string& repetition)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 double CanvasRenderingContext2DImp::getShadowOffsetX()
@@ -278,7 +278,7 @@ void CanvasRenderingContext2DImp::strokeText(const std::u16string& text, double 
 html::TextMetrics CanvasRenderingContext2DImp::measureText(const std::u16string& text)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void CanvasRenderingContext2DImp::drawImage(Any image, double dx, double dy)
@@ -309,19 +309,19 @@ void CanvasRenderingContext2DImp::removeHitRegion(html::HitRegionOptions options
 html::ImageData CanvasRenderingContext2DImp::createImageData(double sw, double sh)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::ImageData CanvasRenderingContext2DImp::createImageData(html::ImageData imagedata)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::ImageData CanvasRenderingContext2DImp::getImageData(double sx, double sy, double sw, double sh)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void CanvasRenderingContext2DImp::putImageData(html::ImageData imagedata, double dx, double dy, double dirtyX, double dirtyY, double dirtyWidth, double dirtyHeight)

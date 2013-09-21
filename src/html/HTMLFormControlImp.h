@@ -45,12 +45,16 @@ public:
     {
         tabIndex = 0;
     }
-    HTMLFormControlImp(HTMLFormControlImp* org, bool deep) :
-        HTMLElementImp(org, deep)
-    {
-    }
 
     virtual void handleMutation(events::MutationEvent mutation);
+
+    // Node
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLFormControlImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
 
     bool getAutofocus();
     void setAutofocus(bool autofocus);

@@ -15,23 +15,16 @@
  */
 
 #include "CSSRuleImp.h"
+#include "CSSStyleSheetImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
-using namespace css;
-
-CSSRuleImp::CSSRuleImp() :
-    parentStyleSheet(0),
-    parentRule(0)
-{
-}
-
-void CSSRuleImp::setParentStyleSheet(css::CSSStyleSheet sheet)
+void CSSRuleImp::setParentStyleSheet(const CSSStyleSheetPtr& sheet)
 {
     parentStyleSheet = sheet;
 }
 
-void CSSRuleImp::setParentRule(CSSRuleImp* rule)
+void CSSRuleImp::setParentRule(const CSSRulePtr& rule)
 {
     parentRule = rule;
 }
@@ -53,12 +46,12 @@ void CSSRuleImp::setCssText(const std::u16string& cssText)
 
 css::CSSRule CSSRuleImp::getParentRule()
 {
-    return parentRule;
+    return parentRule.lock();
 }
 
 css::CSSStyleSheet CSSRuleImp::getParentStyleSheet()
 {
-    return parentStyleSheet;
+    return parentStyleSheet.lock();
 }
 
 }}}}  // org::w3c::dom::bootstrap

@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,19 @@ namespace bootstrap
 class HTMLLIElementImp : public ObjectMixin<HTMLLIElementImp, HTMLElementImp>
 {
 public:
+    HTMLLIElementImp(DocumentImp* ownerDocument) :
+        ObjectMixin(ownerDocument, u"li")
+    {
+    }
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLLIElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
+
     // HTMLLIElement
     int getValue();
     void setValue(int value);
@@ -51,12 +64,6 @@ public:
     static const char* const getMetaData()
     {
         return html::HTMLLIElement::getMetaData();
-    }
-    HTMLLIElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"li") {
-    }
-    HTMLLIElementImp(HTMLLIElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
     }
 };
 

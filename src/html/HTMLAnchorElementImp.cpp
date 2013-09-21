@@ -41,19 +41,19 @@ namespace dom
 namespace bootstrap
 {
 
-HTMLAnchorElementImp::HTMLAnchorElementImp(HTMLAnchorElementImp* org, bool deep) :
-    ObjectMixin(org, deep),
-    clickListener(boost::bind(&HTMLAnchorElementImp::handleClick, this, _1, _2))
-{
-    tabIndex = -1;
-    addEventListener(u"click", &clickListener, false, EventTargetImp::UseDefault);
-}
-
 HTMLAnchorElementImp::HTMLAnchorElementImp(DocumentImp* ownerDocument) :
     ObjectMixin(ownerDocument, u"a"),
     clickListener(boost::bind(&HTMLAnchorElementImp::handleClick, this, _1, _2))
 {
-    addEventListener(u"click", &clickListener, false, EventTargetImp::UseDefault);
+    addEventListener(u"click", clickListener, false, EventTargetImp::UseDefault);
+}
+
+HTMLAnchorElementImp::HTMLAnchorElementImp(const HTMLAnchorElementImp& org) :
+    ObjectMixin(org),
+    clickListener(boost::bind(&HTMLAnchorElementImp::handleClick, this, _1, _2))
+{
+    tabIndex = -1;
+    addEventListener(u"click", clickListener, false, EventTargetImp::UseDefault);
 }
 
 HTMLAnchorElementImp::~HTMLAnchorElementImp()
@@ -66,9 +66,9 @@ void HTMLAnchorElementImp::handleClick(EventListenerImp* listener, events::Event
     std::u16string href = getHref();
     if (!href.empty() && mouse.getButton() == 0) {
         // TODO: Add more details
-        DocumentImp* document = getOwnerDocumentImp();
+        DocumentPtr document = getOwnerDocumentImp();
         assert(document);
-        WindowProxy* window = document->getDefaultWindow();
+        WindowProxyPtr window = document->getDefaultWindow();
         assert(window);
         window->open(href, getTarget());
     }
@@ -122,7 +122,7 @@ void HTMLAnchorElementImp::setRel(const std::u16string& rel)
 
 DOMTokenList HTMLAnchorElementImp::getRelList()
 {
-    return new(std::nothrow) DOMTokenListImp(this, u"rel");
+    return std::make_shared<DOMTokenListImp>(this, u"rel");
 }
 
 std::u16string HTMLAnchorElementImp::getMedia()

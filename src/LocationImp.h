@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,15 +25,16 @@
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class WindowProxy;
+typedef std::shared_ptr<WindowProxy> WindowProxyPtr;
 
 class LocationImp : public ObjectMixin<LocationImp>
 {
-    WindowProxy* window;
+    WindowProxyPtr window;
     URL url;
 
 public:
-    LocationImp(WindowProxy* window, const std::u16string& url);
-    LocationImp(const LocationImp& other);
+    LocationImp(const WindowProxyPtr& window, const std::u16string& url);
+    LocationImp(const LocationImp& other) = default;
 
     // Location
     virtual std::u16string getHref();

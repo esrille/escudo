@@ -483,7 +483,7 @@ bool FormattingContext::hasNewFloats() const
     return false;
 }
 
-void FormattingContext::appendInlineBox(ViewCSSImp* view, InlineBox* inlineBox, CSSStyleDeclarationImp* activeStyle)
+void FormattingContext::appendInlineBox(ViewCSSImp* view, InlineBox* inlineBox, const CSSStyleDeclarationPtr& activeStyle)
 {
     assert(lineBox);
     baseline = lineBox->baseline;
@@ -493,7 +493,7 @@ void FormattingContext::appendInlineBox(ViewCSSImp* view, InlineBox* inlineBox, 
         Block* parentBox = dynamic_cast<Block*>(lineBox->getParentBox());
         assert(parentBox);
         if (parentBox->defaultBaseline == 0.0f && parentBox->defaultLineHeight == 0.0f) {
-            CSSStyleDeclarationImp* parentStyle = parentBox->getStyle();
+            CSSStyleDeclarationPtr parentStyle = parentBox->getStyle();
             assert(parentStyle);
             FontTexture* font = view->selectFont(parentStyle);
             assert(font);
@@ -509,7 +509,7 @@ void FormattingContext::appendInlineBox(ViewCSSImp* view, InlineBox* inlineBox, 
     assert(activeStyle);
     float offset;
     if (activeStyle->display.isInlineLevel())
-        offset = activeStyle->verticalAlign.getOffset(view, activeStyle, lineBox, inlineBox);
+        offset = activeStyle->verticalAlign.getOffset(view, activeStyle.get(), lineBox, inlineBox);
     else {
         float leading = inlineBox->getLeading() / 2.0f;
         offset = lineBox->baseline - (leading + inlineBox->getBaseline());

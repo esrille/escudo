@@ -286,7 +286,7 @@ bool CSSPseudoClassSelector::match(Element& element, ViewCSSImp* view, bool dyna
             // It it the responsibility of the reflow and repaint operation to actually
             // check the status of each element.
             if (view)
-                view->hoverList.push_back(element.self());
+                view->hoverList.push_back(element);
             return true;
         } else if (view)
             return view->isHovered(element);
@@ -374,14 +374,14 @@ bool CSSSelector::hasPseudoClassSelector(int type) const
     return false;
 }
 
-void CSSSelector::registerToRuleList(CSSRuleListImp* ruleList, CSSStyleDeclarationImp* declaration, MediaListImp* mediaList)
+void CSSSelector::registerToRuleList(CSSRuleListImp* ruleList, const CSSStyleDeclarationPtr& declaration, const MediaListPtr& mediaList)
 {
     if (simpleSelectors.empty())
         return;
     simpleSelectors.back()->registerToRuleList(ruleList, this, declaration, mediaList);
 }
 
-void CSSPrimarySelector::registerToRuleList(CSSRuleListImp* ruleList, CSSSelector* selector, CSSStyleDeclarationImp* declaration, MediaListImp* mediaList)
+void CSSPrimarySelector::registerToRuleList(CSSRuleListImp* ruleList, CSSSelector* selector, const CSSStyleDeclarationPtr& declaration, const MediaListPtr& mediaList)
 {
     if (chain.empty()) {
         if (name == u"*")

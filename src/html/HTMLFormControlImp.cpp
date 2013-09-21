@@ -63,7 +63,7 @@ void HTMLFormControlImp::setDisabled(bool disabled)
 html::HTMLFormElement HTMLFormControlImp::getForm()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 std::u16string HTMLFormControlImp::getFormAction()
@@ -162,7 +162,7 @@ bool HTMLFormControlImp::getWillValidate()
 html::ValidityState HTMLFormControlImp::getValidity()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 std::u16string HTMLFormControlImp::getValidationMessage()
@@ -185,7 +185,7 @@ void HTMLFormControlImp::setCustomValidity(const std::u16string& error)
 NodeList HTMLFormControlImp::getLabels()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 }

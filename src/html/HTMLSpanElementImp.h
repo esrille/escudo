@@ -27,8 +27,18 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 class HTMLSpanElementImp : public ObjectMixin<HTMLSpanElementImp, HTMLElementImp>
 {
 public:
-    // Node
-    virtual Node cloneNode(bool deep = true);
+    HTMLSpanElementImp(DocumentImp* ownerDocument) :
+        ObjectMixin(ownerDocument, u"span")
+    {
+    }
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLSpanElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
 
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
@@ -37,13 +47,6 @@ public:
     static const char* const getMetaData()
     {
         return html::HTMLSpanElement::getMetaData();
-    }
-
-    HTMLSpanElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"span") {
-    }
-    HTMLSpanElementImp(HTMLSpanElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
     }
 };
 

@@ -40,13 +40,7 @@ class HTMLTemplateElementImp : public ObjectMixin<HTMLTemplateElementImp, HTMLEl
     Element host;
 public:
     HTMLTemplateElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"template"),
-        host(0)
-    {
-    }
-    HTMLTemplateElementImp(HTMLTemplateElementImp* org, bool deep) :
-        ObjectMixin(org, deep),
-        host(0)
+        ObjectMixin(ownerDocument, u"template")
     {
     }
 
@@ -59,7 +53,10 @@ public:
 
     // Node - override
     virtual Node cloneNode(bool deep = true) {
-        return new(std::nothrow) HTMLTemplateElementImp(this, deep);
+        auto node = std::make_shared<HTMLTemplateElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
     }
 
     // HTMLTemplateElement

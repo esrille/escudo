@@ -39,10 +39,16 @@ class HTMLCanvasElementImp : public ObjectMixin<HTMLCanvasElementImp, HTMLElemen
 {
 public:
     HTMLCanvasElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"canvas") {
+        ObjectMixin(ownerDocument, u"canvas")
+    {
     }
-    HTMLCanvasElementImp(HTMLCanvasElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLCanvasElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
     }
 
     // HTMLCanvasElement

@@ -29,12 +29,12 @@ std::u16string CSSParserTerm::getURL() const
     return parser->getURL(getString());
 }
 
-CSSStyleSheet CSSParser::parse(DocumentImp* document, const std::u16string& cssText)
+CSSStyleSheet CSSParser::parse(const DocumentPtr& document, const std::u16string& cssText)
 {
     this->document = document;
-    styleSheet = new(std::nothrow) CSSStyleSheetImp;
+    styleSheet = std::make_shared<CSSStyleSheetImp>();
     if (!styleSheet)
-        return 0;
+        return nullptr;
     styleSheet->setHref(baseURL);
     tokenizer.reset(cssText);
     CSSparse(this);
@@ -44,9 +44,9 @@ CSSStyleSheet CSSParser::parse(DocumentImp* document, const std::u16string& cssT
 CSSStyleDeclaration CSSParser::parseDeclarations(const std::u16string& cssDecl)
 {
     if (!styleDeclaration)
-        styleDeclaration = new(std::nothrow) CSSStyleDeclarationImp;
+        styleDeclaration = std::make_shared<CSSStyleDeclarationImp>();
     if (!styleDeclaration)
-        return 0;
+        return nullptr;
     tokenizer.reset(cssDecl, CSSTokenizer::StartDeclarationList);
     CSSparse(this);
     return styleDeclaration;
@@ -59,7 +59,7 @@ CSSParserExpr* CSSParser::parseExpression(const std::u16string& cssExpr)
     return getExpression();
 }
 
-MediaListImp& CSSParser::parseMediaList(const std::u16string& mediaText)
+MediaListPtr CSSParser::parseMediaList(const std::u16string& mediaText)
 {
     tokenizer.reset(mediaText, CSSTokenizer::StartMediaList);
     CSSparse(this);

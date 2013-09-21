@@ -17,7 +17,7 @@ namespace bootstrap
 html::Path HitRegionOptionsImp::getPath()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void HitRegionOptionsImp::setPath(html::Path path)
@@ -61,7 +61,7 @@ void HitRegionOptionsImp::setCursor(const std::u16string& cursor)
 Element HitRegionOptionsImp::getControl()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void HitRegionOptionsImp::setControl(Element control)

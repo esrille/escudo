@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,19 @@ namespace bootstrap
 class HTMLMapElementImp : public ObjectMixin<HTMLMapElementImp, HTMLElementImp>
 {
 public:
+    HTMLMapElementImp(DocumentImp* ownerDocument) :
+        ObjectMixin(ownerDocument, u"map")
+    {
+    }
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLMapElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
+
     // HTMLMapElement
     std::u16string getName();
     void setName(const std::u16string& name);
@@ -51,12 +64,6 @@ public:
     static const char* const getMetaData()
     {
         return html::HTMLMapElement::getMetaData();
-    }
-    HTMLMapElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"map") {
-    }
-    HTMLMapElementImp(HTMLMapElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
     }
 };
 

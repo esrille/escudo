@@ -114,6 +114,8 @@ public:
     }
 };
 
+typedef std::shared_ptr<EventImp> EventPtr;
+
 }
 }
 }

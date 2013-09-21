@@ -76,7 +76,7 @@ StackingContext* StackingContext::appendChild(StackingContext* item)
     return item;
 }
 
-StackingContext::StackingContext(bool auto_, int zIndex, CSSStyleDeclarationImp* style) :
+StackingContext::StackingContext(bool auto_, int zIndex, const CSSStyleDeclarationPtr& style) :
     count(0),
     style(style),
     needStaticPosition(false),
@@ -105,7 +105,7 @@ StackingContext::~StackingContext()
     detach();
 }
 
-StackingContext* StackingContext::addContext(bool auto_, int zIndex, CSSStyleDeclarationImp* style)
+StackingContext* StackingContext::addContext(bool auto_, int zIndex, const CSSStyleDeclarationPtr& style)
 {
     StackingContext* item = new(std::nothrow) StackingContext(auto_, zIndex, style);
     if (item)
@@ -185,8 +185,10 @@ void StackingContext::detach()
         parent->removeChild(this);
         parent = 0;
     }
-    if (style->getStackingContext() == this)
-        style->clearStackingContext();
+    if (auto style = getStyle()) {
+        if (style->getStackingContext().get() == this)
+            style->clearStackingContext();
+    }
     positioned = 0;
 }
 
@@ -202,15 +204,16 @@ void StackingContext::resolveScrollSize(ViewCSSImp* view)
 {
     relativeX = relativeY = 0.0f;
     for (StackingContext* s = this; s != parent; s = s->positioned) {
-        assert(s->style);
-        CSSStyleDeclarationImp* style = s->style;
+        assert(s->getStyle());
+        CSSStyleDeclarationPtr style = s->getStyle();
         if (!style->isResolved()) {
             if (Box* b = style->getBox()) {
                 if (auto c = b->getContainingBlock(view)) {
-                    style->left.resolve(view, style, c->width);
-                    style->right.resolve(view, style, c->width);
-                    style->top.resolve(view, style, c->height);
-                    style->bottom.resolve(view, style, c->height);
+                    auto imp = style.get();
+                    imp->left.resolve(view, imp, c->width);
+                    imp->right.resolve(view, imp, c->width);
+                    imp->top.resolve(view, imp, c->height);
+                    imp->bottom.resolve(view, imp, c->height);
                 }
             }
         }
@@ -263,6 +266,8 @@ bool StackingContext::hasClipBox()
 
 void StackingContext::render(ViewCSSImp* view)
 {
+    auto style = getStyle();
+    assert(style);
     if (hasClipBox())
         view->clip(clipLeft, clipTop, clipWidth, clipHeight);
     glPushMatrix();

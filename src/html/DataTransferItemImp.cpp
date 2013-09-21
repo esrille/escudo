@@ -34,7 +34,7 @@ void DataTransferItemImp::getAsString(html::FunctionStringCallback callback)
 file::File DataTransferItemImp::getAsFile()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 }

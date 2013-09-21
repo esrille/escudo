@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,19 @@ namespace bootstrap
 class HTMLKeygenElementImp : public ObjectMixin<HTMLKeygenElementImp, HTMLElementImp>
 {
 public:
+    HTMLKeygenElementImp(DocumentImp* ownerDocument) :
+        ObjectMixin(ownerDocument, u"keygen")
+    {
+    }
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLKeygenElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
+
     // HTMLKeygenElement
     bool getAutofocus();
     void setAutofocus(bool autofocus);
@@ -67,12 +80,6 @@ public:
     static const char* const getMetaData()
     {
         return html::HTMLKeygenElement::getMetaData();
-    }
-    HTMLKeygenElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"keygen") {
-    }
-    HTMLKeygenElementImp(HTMLKeygenElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
     }
 };
 

@@ -78,7 +78,7 @@ unsigned short HTMLTrackElementImp::getReadyState()
 html::TextTrack HTMLTrackElementImp::getTrack()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 }

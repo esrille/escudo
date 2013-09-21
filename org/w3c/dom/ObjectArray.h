@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2013 Esrille Inc.
  * Copyright 2010 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,19 +55,23 @@ public:
         arguments[2] = value;
         message_(0x58994e97, "setElement", SPECIAL_SETTER_, &arguments);
     }
-    ObjectArray(Object* object) :
+
+    constexpr ObjectArray() = default;
+    ObjectArray(const ObjectArray&) = default;
+    ObjectArray(ObjectArray&&) = default;
+    ObjectArray& operator=(const ObjectArray&) = default;
+    ObjectArray& operator=(ObjectArray&&) = default;
+
+    ObjectArray(const Object* object) :
         Object(object)
     {
     }
-    ObjectArray(const ObjectArray& object) :
-        Object(object)
-    {
-    }
-    ObjectArray& operator=(const ObjectArray& object)
-    {
-        Object::operator =(object);
-        return *this;
-    }
+
+    template <class IMP>
+    ObjectArray(const std::shared_ptr<IMP>& pimpl) :
+        Object(std::static_pointer_cast<Imp>(pimpl))
+    {}
+
     template <class IMP>
     static Any dispatch(IMP* self, uint32_t selector, const char* id, int argumentCount, Any* arguments)
     {

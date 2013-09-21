@@ -155,7 +155,7 @@ const char16_t* CSSStyleDeclarationImp::PropertyNames[MaxProperties] = {
     u"opacity",
 };
 
-CSSStyleDeclarationBoard::CSSStyleDeclarationBoard(CSSStyleDeclarationImp* style) :
+CSSStyleDeclarationBoard::CSSStyleDeclarationBoard(const CSSStyleDeclarationPtr& style) :
     counterIncrement(1),
     counterReset(0)
 {
@@ -282,7 +282,7 @@ void CSSStyleDeclarationImp::restoreComputedValues(CSSStyleDeclarationBoard& boa
     htmlAlign.specify(board.htmlAlign);
 }
 
-unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
+unsigned CSSStyleDeclarationBoard::compare(const CSSStyleDeclarationPtr& style)
 {
     unsigned flags = 0;
     //
@@ -298,7 +298,7 @@ unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style)
         if (style->listStylePosition != listStylePosition)
             flags |= Box::NEED_EXPANSION;
         if (flags & Box::NEED_EXPANSION)
-            style->marker = 0;
+            style->marker = nullptr;
     }
 
     if (style->display != display) {
@@ -899,7 +899,7 @@ int CSSStyleDeclarationImp::cancelAppend()
     return propertyID;
 }
 
-void CSSStyleDeclarationImp::specify(const CSSStyleDeclarationImp* decl, unsigned id)
+void CSSStyleDeclarationImp::specify(const CSSStyleDeclarationPtr& decl, unsigned id)
 {
     switch (id) {
     case Top:
@@ -1192,14 +1192,15 @@ void CSSStyleDeclarationImp::specify(const CSSStyleDeclarationImp* decl, unsigne
     }
 }
 
-void CSSStyleDeclarationImp::specify(const CSSStyleDeclarationImp* decl, const std::bitset<MaxProperties>& set)
+void CSSStyleDeclarationImp::specify(const CSSStyleDeclarationPtr& decl, const std::bitset<MaxProperties>& set)
 {
-    for (unsigned id = 1; id < MaxProperties; ++id) {
+    unsigned id;
+    for (id = 1; id < MaxProperties; ++id) {
         if (!set.test(id))
             continue;
-        if (decl->inheritSet.test(id))
+        if (decl->inheritSet.test(id)) {
             setInherit(id);
-        else {
+        } else {
             resetInherit(id);
             specify(decl, id);
         }
@@ -1207,7 +1208,7 @@ void CSSStyleDeclarationImp::specify(const CSSStyleDeclarationImp* decl, const s
     }
 }
 
-void CSSStyleDeclarationImp::specifyWithoutInherited(const CSSStyleDeclarationImp* style)
+void CSSStyleDeclarationImp::specifyWithoutInherited(const CSSStyleDeclarationPtr& style)
 {
     if (!style)
         return;
@@ -1221,13 +1222,13 @@ void CSSStyleDeclarationImp::specifyWithoutInherited(const CSSStyleDeclarationIm
     }
 }
 
-void CSSStyleDeclarationImp::specify(const CSSStyleDeclarationImp* style)
+void CSSStyleDeclarationImp::specify(const CSSStyleDeclarationPtr& style)
 {
     if (style)
         specify(style, style->propertySet);
 }
 
-void CSSStyleDeclarationImp::specifyImportant(const CSSStyleDeclarationImp* style)
+void CSSStyleDeclarationImp::specifyImportant(const CSSStyleDeclarationPtr& style)
 {
     if (style)
         specify(style, style->importantSet);
@@ -1587,7 +1588,7 @@ void CSSStyleDeclarationImp::resetInheritedProperties()
     }
 }
 
-void CSSStyleDeclarationImp::inherit(const CSSStyleDeclarationImp* parentStyle, unsigned id)
+void CSSStyleDeclarationImp::inherit(const CSSStyleDeclarationPtr& parentStyle, unsigned id)
 {
     assert(parentStyle);
     if (!inheritSet.test(id))
@@ -1708,23 +1709,23 @@ void CSSStyleDeclarationImp::inherit(const CSSStyleDeclarationImp* parentStyle, 
     }
 }
 
-void CSSStyleDeclarationImp::inheritProperties(const CSSStyleDeclarationImp* parentStyle)
+void CSSStyleDeclarationImp::inheritProperties(const CSSStyleDeclarationPtr& parentStyle)
 {
     assert(parentStyle);
     for (unsigned id = 1; id < MaxProperties; ++id)
         inherit(parentStyle, id);
 }
 
-void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle, Element element)
+void CSSStyleDeclarationImp::compute(ViewCSSImp* view, const CSSStyleDeclarationPtr& parentStyle, Element element)
 {
     unresolve();
 
-    if (this == parentStyle)
+    if (this == parentStyle.get())
         return;
 
     bool wasPositioned = isPositioned();
 
-    html::HTMLElement htmlElement(0);
+    html::HTMLElement htmlElement;
     if (html::HTMLElement::hasInstance(element))
         htmlElement = interface_cast<html::HTMLElement>(element);
 
@@ -1733,38 +1734,38 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
         // TODO: Do the same for pseudo elements:
         for (unsigned i = 1; i < MaxProperties; ++i)
             reset(i);
-        CSSStyleDeclarationImp* elementDecl(0);
+        CSSStyleDeclarationPtr elementDecl;
         if (htmlElement)
-            elementDecl = dynamic_cast<CSSStyleDeclarationImp*>(htmlElement.getStyle().self());
+            elementDecl = std::dynamic_pointer_cast<CSSStyleDeclarationImp>(htmlElement.getStyle().self());
         // Normal declarations
         for (auto i = ruleSet.begin(); i != ruleSet.end(); ++i) {
-            if (CSSStyleDeclarationImp* pseudo = createPseudoElementStyle(i->getPseudoElementID())) {
+            if (CSSStyleDeclarationPtr pseudo = createPseudoElementStyle(i->getPseudoElementID())) {
                 if (i->mql)
                     setFlags(MediaDependent);
-                if (i->getMatches() && i->isActive(element, view))
-                    pseudo->specify(i->getDeclaration());
+                if (i->getMatches() && i->isActive(element, view) && i->getDeclaration())
+                    pseudo->specify(i->getDeclaration()->getCSSStyleDeclarationPtr());
             }
         }
         if (elementDecl)
             specify(elementDecl);
         // Author important declarations
         for (auto i = ruleSet.begin(); i != ruleSet.end(); ++i) {
-            if (CSSStyleDeclarationImp* pseudo = createPseudoElementStyle(i->getPseudoElementID())) {
+            if (CSSStyleDeclarationPtr pseudo = createPseudoElementStyle(i->getPseudoElementID())) {
                 if (i->mql)
                     setFlags(MediaDependent);
-                if (i->getMatches() && i->isActive(element, view) && !i->isUserStyle())
-                    pseudo->specifyImportant(i->getDeclaration());
+                if (i->getMatches() && i->isActive(element, view) && !i->isUserStyle() && i->getDeclaration())
+                    pseudo->specifyImportant(i->getDeclaration()->getCSSStyleDeclarationPtr());
             }
         }
         if (elementDecl)
             specifyImportant(elementDecl);
         // User important declarations
         for (auto i = ruleSet.begin(); i != ruleSet.end(); ++i) {
-            if (CSSStyleDeclarationImp* pseudo = createPseudoElementStyle(i->getPseudoElementID())) {
+            if (CSSStyleDeclarationPtr pseudo = createPseudoElementStyle(i->getPseudoElementID())) {
                 if (i->mql)
                     setFlags(MediaDependent);
-                if (i->getMatches() && i->isActive(element, view) && i->isUserStyle())
-                    pseudo->specifyImportant(i->getDeclaration());
+                if (i->getMatches() && i->isActive(element, view) && i->isUserStyle() && i->getDeclaration())
+                    pseudo->specifyImportant(i->getDeclaration()->getCSSStyleDeclarationPtr());
             }
         }
     }
@@ -1791,7 +1792,7 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     display.compute(this, element);
     fontSize.compute(view, parentStyle);
     fontWeight.compute(view, parentStyle);
-    fontTexture = view->selectFont(this);
+    fontTexture = view->selectFont(getCSSStyleDeclarationPtr());
     lineHeight.compute(view, this);
     verticalAlign.compute(view, this);
 
@@ -1830,7 +1831,7 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     borderBottomColor.compute(this);
     borderLeftColor.compute(this);
 
-    backgroundImage.compute(view, this);
+    backgroundImage.compute(view);
     backgroundPosition.compute(view, this);
 
     borderSpacing.compute(view, this);
@@ -1855,27 +1856,27 @@ void CSSStyleDeclarationImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* p
     // Note the parent style of a pseudo element style is not always the corresponding element's style.
     // It will be computed layter by layout().
 
-    if (bodyStyle) {
-        bodyStyle->clearFlags(CSSStyleDeclarationImp::Computed);
-        bodyStyle->compute(view, this, view->getDocument().getBody());
+    if (auto body = bodyStyle.lock()) {
+        body->clearFlags(CSSStyleDeclarationImp::Computed);
+        body->compute(view, getCSSStyleDeclarationPtr(), view->getDocument()->getBody());
         if (overflow.getValue() == CSSOverflowValueImp::Visible)
-            overflow.useBodyValue(bodyStyle->overflow);
+            overflow.useBodyValue(body->overflow);
         if (backgroundColor.getARGB() == 0 && backgroundImage.isNone()) {
-            background.specify(this, bodyStyle);
-            bodyStyle->fontSize.compute(view, this);
-            backgroundImage.compute(view, bodyStyle);
+            background.specify(this, body);
+            body->fontSize.compute(view, getCSSStyleDeclarationPtr());
+            backgroundImage.compute(view);
             // Note if the lengths are given by 'em' or 'ex', the referred font size is
             // the one of the 'body' style.
-            backgroundPosition.compute(view, bodyStyle);
-            bodyStyle->backgroundColor.setValue(CSSColorValueImp::Transparent);
-            bodyStyle->backgroundImage.setValue();
+            backgroundPosition.compute(view, body.get());
+            body->backgroundColor.setValue(CSSColorValueImp::Transparent);
+            body->backgroundImage.setValue();
         }
     }
 
     setFlags(Computed);
 }
 
-void CSSStyleDeclarationImp::computeStackingContext(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle, bool wasPositioned)
+void CSSStyleDeclarationImp::computeStackingContext(ViewCSSImp* view, const CSSStyleDeclarationPtr& parentStyle, bool wasPositioned)
 {
     // Reorganize the stacking context if the 'position' value has been changed
     if (wasPositioned ^ isPositioned())
@@ -1884,16 +1885,16 @@ void CSSStyleDeclarationImp::computeStackingContext(ViewCSSImp* view, CSSStyleDe
     int zValue = (position.getValue() == CSSPositionValueImp::Static) ? 0 : zIndex.getValue();
     if (!parentStyle) {
         if (view->getStackingContexts() == 0) {
-            view->setStackingContexts(new(std::nothrow) StackingContext(false, zValue, this));
+            view->setStackingContexts(new(std::nothrow) StackingContext(false, zValue, getCSSStyleDeclarationPtr()));
             stackingContext = view->getStackingContexts();
         }
     } else if (isPositioned()) {
         bool isAuto = (opacity.getValue() < 1.0f) ? false : zIndex.isAuto();
         if (!stackingContext) {
             if (isAuto)
-                stackingContext = parentStyle->stackingContext->getAuto(this);
+                stackingContext = parentStyle->stackingContext->getAuto(getCSSStyleDeclarationPtr());
             else
-                stackingContext = parentStyle->stackingContext->addContext(zValue, this);
+                stackingContext = parentStyle->stackingContext->addContext(zValue, getCSSStyleDeclarationPtr());
         } else {
             // Update z-index
             stackingContext->setZIndex(isAuto, zValue);
@@ -1937,6 +1938,7 @@ unsigned CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock
     else if (isResolved())
         return result;
 
+    auto parentStyle = getParentStyle();
     if (parentStyle) {
         // TODO: Refine
         if (!propertySet.test(Margin) && !propertySet.test(MarginLeft) && !propertySet.test(MarginRight) &&
@@ -1977,7 +1979,7 @@ unsigned CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock
     bool nonExplicitWidth = false;
     bool nonExplicitHeight = false;
     if (const Box* containingBox = dynamic_cast<const Box*>(containingBlock)) {
-        CSSStyleDeclarationImp* containingStyle = containingBox->getStyle();
+        CSSStyleDeclarationPtr containingStyle = containingBox->getStyle();
         if (containingStyle && !isAbsolutelyPositioned()) {
             // While it is not defined in CSS 2.1, we treat an unknown percentage width as
             // 'auto'. A percentage width is unknown if the style associated with the
@@ -2159,7 +2161,7 @@ size_t CSSStyleDeclarationImp::processLineHeadWhiteSpace(const std::u16string& d
 
 FontTexture* CSSStyleDeclarationImp::getAltFontTexture(ViewCSSImp* view, FontTexture* current, char32_t u)
 {
-    return view->selectAltFont(this, current, u);
+    return view->selectAltFont(getCSSStyleDeclarationPtr(), current, u);
 }
 
 bool CSSStyleDeclarationImp::isFlowRoot() const
@@ -2190,14 +2192,14 @@ void CSSStyleDeclarationImp::addBox(Box* b)
             box = lastBox = b;
         else
             lastBox = b;
-        if (parentStyle)
+        if (auto parentStyle = getParentStyle())
             parentStyle->addBox(b);
     }
 }
 
 void CSSStyleDeclarationImp::removeBox(Box* b)
 {
-    CSSStyleDeclarationImp* style = this;
+    CSSStyleDeclarationPtr style = getCSSStyleDeclarationPtr();
     do {
         if (style->box == b && style->lastBox == b)
             style->box = style->lastBox = 0;
@@ -2207,12 +2209,12 @@ void CSSStyleDeclarationImp::removeBox(Box* b)
             style->lastBox = style->box;
         else
             break;
-    } while (style = style->parentStyle);
+    } while (style = style->getParentStyle());
 }
 
 Block* CSSStyleDeclarationImp::updateInlines(Element element)
 {
-    CSSStyleDeclarationImp* style = this;
+    CSSStyleDeclarationPtr style = getCSSStyleDeclarationPtr();
     do {
         switch (style->display.getValue()) {
         case CSSDisplayValueImp::None:
@@ -2254,6 +2256,7 @@ Block* CSSStyleDeclarationImp::updateInlines(Element element)
 
 Block* CSSStyleDeclarationImp::revert(Element element)
 {
+    auto parentStyle = getParentStyle();
     if (parentStyle && stackingContext && parentStyle->stackingContext != stackingContext) {
         stackingContext->detach();
         stackingContext = 0;
@@ -2315,7 +2318,7 @@ Block* CSSStyleDeclarationImp::revert(Element element)
 
 void CSSStyleDeclarationImp::requestReconstruct(unsigned short flags)
 {
-    for (CSSStyleDeclarationImp* style = this; style; style = style->getParentStyle()) {
+    for (CSSStyleDeclarationPtr style = getCSSStyleDeclarationPtr(); style; style = style->getParentStyle()) {
         if (Block* block = dynamic_cast<Block*>(style->getBox())) {
             block->setFlags(flags);
             return;
@@ -2327,25 +2330,26 @@ void CSSStyleDeclarationImp::clearFlags(unsigned f)
 {
     flags &= ~f;
     if (f & Computed) {
-        for (int id = 0; id < CSSPseudoElementSelector::MaxPseudoElements; ++id) {
+        for (int id = 1; id < CSSPseudoElementSelector::MaxPseudoElements; ++id) {
             if (CSSStyleDeclarationImp* pseudo = pseudoElements[id].get()) {
                 if (pseudo != this)
                     pseudo->clearFlags(Computed);
             }
         }
-        if (parentStyle && parentStyle->bodyStyle == this)
+        auto parentStyle = getParentStyle();
+        if (parentStyle && parentStyle->getBodyStyle().get() == this)
             parentStyle->clearFlags(Computed);
     }
 }
 
-CSSStyleDeclarationImp* CSSStyleDeclarationImp::getPseudoElementStyle(int id)
+CSSStyleDeclarationPtr CSSStyleDeclarationImp::getPseudoElementStyle(int id)
 {
     assert(0 <= id && id < CSSPseudoElementSelector::MaxPseudoElements);
     if (id == CSSPseudoElementSelector::Marker) {
         // Check marker
         if (!display.isListItem())
-            return 0;
-        CSSStyleDeclarationImp* markerStyle = pseudoElements[id].get();
+            return nullptr;
+        CSSStyleDeclarationPtr markerStyle = pseudoElements[id];
         if (!markerStyle) {
             if (markerStyle = createPseudoElementStyle(CSSPseudoElementSelector::Marker)) {
                 // Set the default marker style
@@ -2356,38 +2360,40 @@ CSSStyleDeclarationImp* CSSStyleDeclarationImp::getPseudoElementStyle(int id)
             }
         }
     }
-    return pseudoElements[id].get();
+    return (id == 0) ? getCSSStyleDeclarationPtr() : pseudoElements[id];
 }
 
-CSSStyleDeclarationImp* CSSStyleDeclarationImp::getPseudoElementStyle(const std::u16string& name)
+CSSStyleDeclarationPtr CSSStyleDeclarationImp::getPseudoElementStyle(const std::u16string& name)
 {
     return getPseudoElementStyle(CSSPseudoElementSelector::getPseudoElementID(name));
 }
 
-CSSStyleDeclarationImp* CSSStyleDeclarationImp::createPseudoElementStyle(int id)
+CSSStyleDeclarationPtr CSSStyleDeclarationImp::createPseudoElementStyle(int id)
 {
     assert(0 <= id && id < CSSPseudoElementSelector::MaxPseudoElements);
-    CSSStyleDeclarationImp* style = pseudoElements[id].get();
+    if (id == 0)
+        return getCSSStyleDeclarationPtr();
+    CSSStyleDeclarationPtr style = pseudoElements[id];
     if (!style) {
-        if (style = new(std::nothrow) CSSStyleDeclarationImp(id))
+        if (style = std::make_shared<CSSStyleDeclarationImp>(id))
             pseudoElements[id] = style;
     }
     return style;
 }
 
-CSSStyleDeclarationImp* CSSStyleDeclarationImp::getAffectedByHover() const
+CSSStyleDeclarationPtr CSSStyleDeclarationImp::getAffectedByHover()
 {
-    const CSSStyleDeclarationImp* affected = 0;
-    for (const CSSStyleDeclarationImp* style = this; style; style = style->parentStyle) {
+    CSSStyleDeclarationPtr affected;
+    for (CSSStyleDeclarationPtr style = getCSSStyleDeclarationPtr(); style; style = style->getParentStyle()) {
         if (style->affectedBits & (1u << CSSPseudoClassSelector::Hover))
             affected = style;
     }
-    return const_cast<CSSStyleDeclarationImp*>(affected);
+    return affected;
 }
 
-std::u16string CSSStyleDeclarationImp::resolveRelativeURL(const std::u16string& url) const
+std::u16string CSSStyleDeclarationImp::resolveRelativeURL(const std::u16string& url)
 {
-    std::u16string href = parentRule.getParentStyleSheet().getHref();
+    std::u16string href = getParentRule().getParentStyleSheet().getHref();
     if (href.empty())
         return url;
     URL base(href);
@@ -2425,7 +2431,7 @@ std::u16string CSSStyleDeclarationImp::getCssText()
 void CSSStyleDeclarationImp::setCssText(const std::u16string& cssText)
 {
     CSSParser parser;
-    parser.setStyleDeclaration(this);
+    parser.setStyleDeclaration(getCSSStyleDeclarationPtr());
     parser.parseDeclarations(cssText);
 }
 
@@ -2437,8 +2443,8 @@ unsigned int CSSStyleDeclarationImp::getLength()
 std::u16string CSSStyleDeclarationImp::item(unsigned int index)
 {
     if (getFlags() & ComputedStyle) {
-        if (auto document = dynamic_cast<DocumentImp*>(owner)) {
-            if (WindowProxy* window = document->getDefaultWindow())
+        if (auto document = std::dynamic_pointer_cast<DocumentImp>(getOwner().self())) {
+            if (WindowProxyPtr window = document->getDefaultWindow())
                 window->updateView();
         }
         return getProperty(index)->getCssText(this);
@@ -2483,9 +2489,10 @@ void CSSStyleDeclarationImp::setProperty(int id, Nullable<std::u16string> value,
         }
     }
 
+    auto owner = getOwner();
     if (owner && html::HTMLElement::hasInstance(owner)) {
         assert(getPseudoElementSelectorType() == CSSPseudoElementSelector::NonPseudo);
-        html::HTMLElement element(owner);
+        html::HTMLElement element(owner.self());
         // Note the mutation event triggered by the following operation must be ignored in the element.
         setFlags(Mutated);
         element.setAttribute(u"style", getCssText());
@@ -2504,18 +2511,18 @@ void CSSStyleDeclarationImp::setProperty(const std::u16string& property, const s
 void CSSStyleDeclarationImp::setProperty(const std::u16string& property, const std::u16string& value, const std::u16string& priority)
 {
     if (priority == u"non-css") {  // ES extension
-        if (CSSStyleDeclarationImp* nonCSS = createPseudoElementStyle(CSSPseudoElementSelector::NonCSS)) {
+        if (CSSStyleDeclarationPtr nonCSS = createPseudoElementStyle(CSSPseudoElementSelector::NonCSS)) {
             nonCSS->setProperty(property, value);
-            ElementImp* elm = dynamic_cast<ElementImp*>(owner);
+            ElementPtr elm = std::dynamic_pointer_cast<ElementImp>(getOwner().self());
             if (!elm)
                 return;
-            DocumentImp* doc = elm->getOwnerDocumentImp();
+            DocumentPtr doc = elm->getOwnerDocumentImp();
             if (!doc)
                 return;
-            WindowProxy* window = doc->getDefaultWindow();
+            WindowProxyPtr window = doc->getDefaultWindow();
             if (!window || !window->getView())
                 return;
-            CSSStyleDeclarationImp* style = window->getView()->getStyle(elm);
+            CSSStyleDeclarationPtr style = window->getView()->getStyle(elm);
             if (!style)
                 return;
             style->requestReconstruct(Box::NEED_STYLE_RECALCULATION);
@@ -2539,8 +2546,9 @@ std::u16string CSSStyleDeclarationImp::removeProperty(int id)
 std::u16string CSSStyleDeclarationImp::removeProperty(const std::u16string& property)
 {
     std::u16string result = removeProperty(getPropertyID(property));
+    auto owner = getOwner();
     if (owner && html::HTMLElement::hasInstance(owner)) {
-        html::HTMLElement element(owner);
+        html::HTMLElement element(owner.self());
         // Note the mutation event triggered by the following operation must be ignored in the element.
         setFlags(Mutated);
         element.setAttribute(u"style", getCssText());
@@ -2551,7 +2559,7 @@ std::u16string CSSStyleDeclarationImp::removeProperty(const std::u16string& prop
 
 css::CSSRule CSSStyleDeclarationImp::getParentRule()
 {
-    return parentRule;
+    return parentRule.lock();
 }
 
 //
@@ -3843,7 +3851,7 @@ void CSSStyleDeclarationImp::setOpacity(const Nullable<std::u16string>& opacity)
     setProperty(Opacity, opacity);
 }
 
-void CSSStyleDeclarationImp::initialize()
+void CSSStyleDeclarationImp::initialize(bool ctor)
 {
     const static int defaultInherit[] = {
         Azimuth,
@@ -3893,7 +3901,7 @@ void CSSStyleDeclarationImp::initialize()
     inheritSet.reset();
     for (unsigned i = 0; i < sizeof defaultInherit / sizeof defaultInherit[0]; ++i)
         setInherit(defaultInherit[i]);
-    if (!parentStyle) {
+    if (!ctor && !getParentStyle()) {
         // for the interaction with the "body" element.
         overflow.setValue();
         background.reset(this);
@@ -3913,16 +3921,16 @@ void CSSStyleDeclarationImp::resetComputedStyle()
     ruleSet.clear();
     affectedBits = 0;
     for (int i = CSSPseudoElementSelector::NonCSS; i < CSSPseudoElementSelector::MaxPseudoElements; ++i)
-        pseudoElements[i] = 0;
-    marker = before = after = 0;
+        pseudoElements[i] = nullptr;
+    marker = before = after = nullptr;
 }
 
 void CSSStyleDeclarationImp::reset()
 {
-    parentRule = 0;
+    parentRule.reset();
     flags = 0;
-    parentStyle = 0;
-    bodyStyle = 0;
+    parentStyle.reset();
+    bodyStyle.reset();
     stackingContext = 0;
     fontTexture = 0;
     clearProperties();
@@ -3931,21 +3939,14 @@ void CSSStyleDeclarationImp::reset()
 }
 
 CSSStyleDeclarationImp::CSSStyleDeclarationImp(int pseudoElementSelectorType) :
-    owner(0),
-    parentRule(0),
     propertyID(Unknown),
     expression(0),
     flags(0),
     affectedBits(0),
-    parentStyle(0),
-    bodyStyle(0),
     emptyInline(0),
     stackingContext(0),
     fontTexture(0),
     pseudoElementSelectorType(pseudoElementSelectorType),
-    marker(0),
-    before(0),
-    after(0),
     containingBlockWidth(0.0f),
     containingBlockHeight(0.0f),
     box(0),
@@ -3966,29 +3967,21 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp(int pseudoElementSelectorType) :
     textIndent(0.0f, css::CSSPrimitiveValue::CSS_PX),
     opacity(1.0f)
 {
-    pseudoElements[CSSPseudoElementSelector::NonPseudo] = this;
-    initialize();
-    for (int i = 1; i < CSSPseudoElementSelector::MaxPseudoElements; ++i)
+    initialize(true);
+    for (int i = 0; i < CSSPseudoElementSelector::MaxPseudoElements; ++i)
         pseudoElements[i] = 0;
 }
 
 // for cloneNode()
-CSSStyleDeclarationImp::CSSStyleDeclarationImp(CSSStyleDeclarationImp* org) :
-    owner(0),   // TODO: set later
-    parentRule(0),
+CSSStyleDeclarationImp::CSSStyleDeclarationImp(const CSSStyleDeclarationPtr& org) :
     propertyID(Unknown),
     expression(0),
     flags(0),
     affectedBits(0),
-    parentStyle(0),
-    bodyStyle(0),
     emptyInline(0),
     stackingContext(0),
     fontTexture(0),
     pseudoElementSelectorType(org->pseudoElementSelectorType),
-    marker(0),
-    before(0),
-    after(0),
     containingBlockWidth(0.0f),
     containingBlockHeight(0.0f),
     box(0),
@@ -4009,8 +4002,7 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp(CSSStyleDeclarationImp* org) :
     textIndent(0.0f, css::CSSPrimitiveValue::CSS_PX),
     opacity(1.0f)
 {
-    pseudoElements[CSSPseudoElementSelector::NonPseudo] = this;
-    for (int i = 1; i < CSSPseudoElementSelector::MaxPseudoElements; ++i)
+    for (int i = 0; i < CSSPseudoElementSelector::MaxPseudoElements; ++i)
         pseudoElements[i] = 0;
     specify(org);
     specifyImportant(org);

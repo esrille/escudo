@@ -61,7 +61,7 @@ void HTMLKeygenElementImp::setDisabled(bool disabled)
 html::HTMLFormElement HTMLKeygenElementImp::getForm()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 std::u16string HTMLKeygenElementImp::getKeytype()
@@ -99,7 +99,7 @@ bool HTMLKeygenElementImp::getWillValidate()
 html::ValidityState HTMLKeygenElementImp::getValidity()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 std::u16string HTMLKeygenElementImp::getValidationMessage()
@@ -122,7 +122,7 @@ void HTMLKeygenElementImp::setCustomValidity(const std::u16string& error)
 NodeList HTMLKeygenElementImp::getLabels()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 }

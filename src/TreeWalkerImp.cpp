@@ -17,7 +17,7 @@ namespace bootstrap
 Node TreeWalkerImp::getRoot()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 unsigned int TreeWalkerImp::getWhatToShow()
@@ -29,7 +29,7 @@ unsigned int TreeWalkerImp::getWhatToShow()
 traversal::NodeFilter TreeWalkerImp::getFilter()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 bool TreeWalkerImp::getExpandEntityReferences()
@@ -41,7 +41,7 @@ bool TreeWalkerImp::getExpandEntityReferences()
 Node TreeWalkerImp::getCurrentNode()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void TreeWalkerImp::setCurrentNode(Node currentNode) throw(DOMException)
@@ -52,43 +52,43 @@ void TreeWalkerImp::setCurrentNode(Node currentNode) throw(DOMException)
 Node TreeWalkerImp::parentNode()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 Node TreeWalkerImp::firstChild()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 Node TreeWalkerImp::lastChild()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 Node TreeWalkerImp::previousSibling()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 Node TreeWalkerImp::nextSibling()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 Node TreeWalkerImp::previousNode()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 Node TreeWalkerImp::nextNode()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 }

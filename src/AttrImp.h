@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-#ifndef ATTR_IMP_H
-#define ATTR_IMP_H
+#ifndef ORG_W3C_DOM_BOOTSTRAP_ATTRIMP_H_INCLUDED
+#define ORG_W3C_DOM_BOOTSTRAP_ATTRIMP_H_INCLUDED
 
-#include <Object.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <org/w3c/dom/Attr.h>
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
@@ -51,6 +54,8 @@ public:
     }
 };
 
+typedef std::shared_ptr<AttrImp> AttrPtr;
+
 }}}}  // org::w3c::dom::bootstrap
 
-#endif  // ATTR_IMP_H
+#endif  // ORG_W3C_DOM_BOOTSTRAP_ATTRIMP_H_INCLUDED

@@ -145,7 +145,7 @@ css::CSSStyleSheet loadStyleSheet(const char* path)
     CSSParser parser;
     CSSInputStream cssStream(stream, "utf-8");
     css::CSSStyleSheet sheet = parser.parse(0, cssStream);
-    if (auto imp = dynamic_cast<CSSStyleSheetImp*>(sheet.self()))
+    if (auto imp = std::dynamic_pointer_cast<CSSStyleSheetImp>(sheet.self()))
         imp->setHref(toString(url));
     return sheet;
 }
@@ -154,7 +154,7 @@ Document loadDocument(std::istream& stream)
 {
     HTMLInputStream htmlInputStream(stream, "utf-8");
     HTMLTokenizer tokenizer(&htmlInputStream);
-    Document document = bootstrap::getDOMImplementation()->createDocument(u"", u"", 0);
+    bootstrap::DocumentPtr document = std::static_pointer_cast<bootstrap::DocumentImp>(bootstrap::getDOMImplementation()->createDocument(u"", u"", nullptr).self());
     HTMLParser parser(document, &tokenizer);
     parser.mainLoop();
     return document;

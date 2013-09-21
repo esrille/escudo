@@ -46,21 +46,9 @@ class HistoryImp : public ObjectMixin<HistoryImp>
         URL url;
         WindowPtr window;
 
-        SessionHistoryEntry(const URL& url, const WindowPtr& window) :
-            url(url),
-            window(window)
-        {
-        }
-        SessionHistoryEntry(const WindowPtr& window) :
-            url(window->getDocument().getURL()),
-            window(window)
-        {
-        }
-        SessionHistoryEntry(const SessionHistoryEntry& other) :
-            url(other.url),
-            window(other.window)
-        {
-        }
+        SessionHistoryEntry(const URL& url, const WindowPtr& window);
+        SessionHistoryEntry(const WindowPtr& window);
+        SessionHistoryEntry(const SessionHistoryEntry& other);
     };
 
     WindowProxy* window;

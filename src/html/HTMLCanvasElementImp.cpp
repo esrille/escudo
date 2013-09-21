@@ -61,7 +61,7 @@ void HTMLCanvasElementImp::toBlob(file::FileCallback callback, const std::u16str
 Object HTMLCanvasElementImp::getContext(const std::u16string& contextId, Variadic<Any> arguments)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 }

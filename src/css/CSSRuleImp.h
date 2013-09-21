@@ -17,23 +17,28 @@
 #ifndef CSSRULE_IMP_H
 #define CSSRULE_IMP_H
 
-#include <Object.h>
-#include <org/w3c/dom/css/CSSRule.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
-#include <org/w3c/dom/css/CSSStyleSheet.h>
+#include <org/w3c/dom/css/CSSRule.h>
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
+class CSSStyleSheetImp;
+typedef std::shared_ptr<CSSStyleSheetImp> CSSStyleSheetPtr;
+
+class CSSRuleImp;
+typedef std::shared_ptr<CSSRuleImp> CSSRulePtr;
+
 class CSSRuleImp : public ObjectMixin<CSSRuleImp>
 {
-    css::CSSStyleSheet parentStyleSheet;
-    CSSRuleImp* parentRule;
+    std::weak_ptr<CSSStyleSheetImp> parentStyleSheet;
+    std::weak_ptr<CSSRuleImp> parentRule;
 
 public:
-    CSSRuleImp();
-
-    void setParentStyleSheet(css::CSSStyleSheet sheet);
-    void setParentRule(CSSRuleImp* rule);
+    void setParentStyleSheet(const CSSStyleSheetPtr& sheet);
+    void setParentRule(const CSSRulePtr& rule);
 
     // CSSRule
     virtual unsigned short getType();

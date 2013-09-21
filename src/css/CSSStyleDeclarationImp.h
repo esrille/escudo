@@ -28,7 +28,6 @@
 #include <bitset>
 #include <list>
 #include <map>
-#include <boost/intrusive_ptr.hpp>
 
 #include "CSSParser.h"
 #include "CSSPropertyValueImp.h"
@@ -44,6 +43,8 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 class Box;
 class Block;
 class CSSStyleDeclarationImp;
+
+typedef std::shared_ptr<CSSStyleDeclarationImp> CSSStyleDeclarationPtr;
 
 struct CSSStyleDeclarationBoard
 {
@@ -108,11 +109,9 @@ struct CSSStyleDeclarationBoard
     CSSBindingValueImp binding;                             // B
     HTMLAlignValueImp htmlAlign;                            // F         R
 
-    CSSStyleDeclarationBoard(CSSStyleDeclarationImp* style);
-    unsigned compare(CSSStyleDeclarationImp* style);
+    CSSStyleDeclarationBoard(const CSSStyleDeclarationPtr& style);
+    unsigned compare(const CSSStyleDeclarationPtr& style);
 };
-
-typedef boost::intrusive_ptr<CSSStyleDeclarationImp> CSSStyleDeclarationPtr;
 
 class CSSStyleDeclarationImp : public ObjectMixin<CSSStyleDeclarationImp>
 {
@@ -126,7 +125,7 @@ class CSSStyleDeclarationImp : public ObjectMixin<CSSStyleDeclarationImp>
     friend class CSSPaddingShorthandImp;
     friend class ViewCSSImp;
 
-    friend unsigned CSSStyleDeclarationBoard::compare(CSSStyleDeclarationImp* style);
+    friend unsigned CSSStyleDeclarationBoard::compare(const CSSStyleDeclarationPtr& style);
 
 public:
     enum
@@ -277,9 +276,9 @@ public:
         bool hasDecoration() const {
             return decoration != CSSTextDecorationValueImp::None;
         }
-        void update(CSSStyleDeclarationImp* style) {
-            color = style->color.getARGB();
-            decoration = style->textDecoration.getValue();
+        void update(CSSStyleDeclarationImp* self) {
+            color = self->color.getARGB();
+            decoration = self->textDecoration.getValue();
         }
     };
 
@@ -295,8 +294,8 @@ public:
 private:
     static const char16_t* PropertyNames[MaxProperties];
 
-    Object* owner;
-    mutable css::CSSRule parentRule;
+    Weak<Object> owner;
+    std::weak_ptr<CSSRuleImp> parentRule;
     std::bitset<MaxProperties> propertySet;
     std::bitset<MaxProperties> importantSet;
     std::bitset<MaxProperties> inheritSet;
@@ -315,8 +314,8 @@ private:
 
     CSSRuleListImp::RuleSet ruleSet;
     unsigned affectedBits;  // 1u << CSSPseudoClassSelector::Hover, etc.
-    CSSStyleDeclarationImp* parentStyle;
-    CSSStyleDeclarationImp* bodyStyle;
+    std::weak_ptr<CSSStyleDeclarationImp> parentStyle;
+    std::weak_ptr<CSSStyleDeclarationImp> bodyStyle;
     int emptyInline;    // 0: none, 1: first, 2: last, 3: both, 4: empty
     StackingContextPtr stackingContext;
     FontTexture* fontTexture;
@@ -334,10 +333,10 @@ private:
     Box* box;
     Box* lastBox;   // for inline
 
-    void initialize();
+    void initialize(bool ctor = false);
 
-    void specify(const CSSStyleDeclarationImp* decl, unsigned id);
-    void specify(const CSSStyleDeclarationImp* decl, const std::bitset<MaxProperties>& set);
+    void specify(const CSSStyleDeclarationPtr& decl, unsigned id);
+    void specify(const CSSStyleDeclarationPtr& decl, const std::bitset<MaxProperties>& set);
 
     void setInherit(unsigned id);
     void resetInherit(unsigned id);
@@ -461,7 +460,7 @@ public:
 
 public:
     CSSStyleDeclarationImp(int pseudoElementSelectorType = CSSPseudoElementSelector::NonPseudo);
-    CSSStyleDeclarationImp(CSSStyleDeclarationImp* org);  // for cloneNode()
+    CSSStyleDeclarationImp(const CSSStyleDeclarationPtr& org);  // for cloneNode()
     ~CSSStyleDeclarationImp();
 
     void clearProperties();
@@ -471,12 +470,15 @@ public:
 
     void reset();
 
-    void setOwner(Object* owner) {
+    Object getOwner() const {
+        return owner.lock();
+    }
+    void setOwner(Object owner) {
         this->owner = owner;
     }
 
-    void setParentRule(css::CSSRule parentRule) {
-        this->parentRule = parentRule;
+    void setParentRule(const CSSRulePtr& rule) {
+        parentRule = rule;
     }
 
     unsigned getFlags() const {
@@ -512,24 +514,24 @@ public:
     int getPseudoElementSelectorType() const {
         return pseudoElementSelectorType;
     }
-    CSSStyleDeclarationImp* getPseudoElementStyle(int id);
-    CSSStyleDeclarationImp* getPseudoElementStyle(const std::u16string& name);
-    CSSStyleDeclarationImp* createPseudoElementStyle(int id);
+    CSSStyleDeclarationPtr getPseudoElementStyle(int id);
+    CSSStyleDeclarationPtr getPseudoElementStyle(const std::u16string& name);
+    CSSStyleDeclarationPtr createPseudoElementStyle(int id);
 
-    CSSStyleDeclarationImp* getAffectedByHover() const;
+    CSSStyleDeclarationPtr getAffectedByHover();
 
-    void specifyWithoutInherited(const CSSStyleDeclarationImp* style);
-    void specify(const CSSStyleDeclarationImp* style);
-    void specifyImportant(const CSSStyleDeclarationImp* style);
+    void specifyWithoutInherited(const CSSStyleDeclarationPtr& style);
+    void specify(const CSSStyleDeclarationPtr& style);
+    void specifyImportant(const CSSStyleDeclarationPtr& style);
 
     void reset(unsigned id);
     void resetInheritedProperties();
 
-    void inherit(const CSSStyleDeclarationImp* parentStyle, unsigned id);
-    void inheritProperties(const CSSStyleDeclarationImp* parentStyle);
+    void inherit(const CSSStyleDeclarationPtr& parentStyle, unsigned id);
+    void inheritProperties(const CSSStyleDeclarationPtr& parentStyle);
 
-    void compute(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle, Element element);
-    void computeStackingContext(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle, bool wasPositioned);
+    void compute(ViewCSSImp* view, const CSSStyleDeclarationPtr& parentStyle, Element element);
+    void computeStackingContext(ViewCSSImp* view, const CSSStyleDeclarationPtr& parentStyle, bool wasPositioned);
     unsigned resolve(ViewCSSImp* view, const ContainingBlock* containingBlock);
     void unresolve() {
         clearFlags(Resolved);
@@ -584,8 +586,11 @@ public:
         return getUsedPosition() != CSSPositionValueImp::Static;
     }
 
-    CSSStyleDeclarationImp* getParentStyle() const {
-        return parentStyle;
+    CSSStyleDeclarationPtr getParentStyle() const {
+        return parentStyle.lock();
+    }
+    CSSStyleDeclarationPtr getBodyStyle() const {
+        return bodyStyle.lock();
     }
 
     void clearBox();
@@ -606,8 +611,8 @@ public:
     Block* revert(Element element);
     void requestReconstruct(unsigned short flags);
 
-    StackingContext* getStackingContext() const {
-        return stackingContext.get();
+    StackingContextPtr getStackingContext() const {
+        return stackingContext;
     }
     void clearStackingContext() {
         stackingContext = 0;
@@ -634,7 +639,11 @@ public:
     void setProperty(int id, Nullable<std::u16string> value, const std::u16string& prio = u"");
     std::u16string removeProperty(int id);
 
-    std::u16string resolveRelativeURL(const std::u16string& url) const;
+    std::u16string resolveRelativeURL(const std::u16string& url);
+
+    CSSStyleDeclarationPtr getCSSStyleDeclarationPtr() {
+        return std::static_pointer_cast<CSSStyleDeclarationImp>(self());
+    }
 
     // CSSStyleDeclaration
     virtual std::u16string getCssText();

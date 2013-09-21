@@ -23,13 +23,13 @@ unsigned short MediaControllerImp::getReadyState()
 html::TimeRanges MediaControllerImp::getBuffered()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::TimeRanges MediaControllerImp::getSeekable()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 double MediaControllerImp::getDuration()
@@ -64,7 +64,7 @@ html::MediaControllerPlaybackState MediaControllerImp::getPlaybackState()
 html::TimeRanges MediaControllerImp::getPlayed()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void MediaControllerImp::pause()
@@ -129,7 +129,7 @@ void MediaControllerImp::setMuted(bool muted)
 events::EventHandlerNonNull MediaControllerImp::getOnemptied()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void MediaControllerImp::setOnemptied(events::EventHandlerNonNull onemptied)
@@ -140,7 +140,7 @@ void MediaControllerImp::setOnemptied(events::EventHandlerNonNull onemptied)
 events::EventHandlerNonNull MediaControllerImp::getOnloadedmetadata()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void MediaControllerImp::setOnloadedmetadata(events::EventHandlerNonNull onloadedmetadata)
@@ -151,7 +151,7 @@ void MediaControllerImp::setOnloadedmetadata(events::EventHandlerNonNull onloade
 events::EventHandlerNonNull MediaControllerImp::getOnloadeddata()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void MediaControllerImp::setOnloadeddata(events::EventHandlerNonNull onloadeddata)
@@ -162,7 +162,7 @@ void MediaControllerImp::setOnloadeddata(events::EventHandlerNonNull onloadeddat
 events::EventHandlerNonNull MediaControllerImp::getOncanplay()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void MediaControllerImp::setOncanplay(events::EventHandlerNonNull oncanplay)
@@ -173,7 +173,7 @@ void MediaControllerImp::setOncanplay(events::EventHandlerNonNull oncanplay)
 events::EventHandlerNonNull MediaControllerImp::getOncanplaythrough()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void MediaControllerImp::setOncanplaythrough(events::EventHandlerNonNull oncanplaythrough)
@@ -184,7 +184,7 @@ void MediaControllerImp::setOncanplaythrough(events::EventHandlerNonNull oncanpl
 events::EventHandlerNonNull MediaControllerImp::getOnplaying()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void MediaControllerImp::setOnplaying(events::EventHandlerNonNull onplaying)
@@ -195,7 +195,7 @@ void MediaControllerImp::setOnplaying(events::EventHandlerNonNull onplaying)
 events::EventHandlerNonNull MediaControllerImp::getOnended()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void MediaControllerImp::setOnended(events::EventHandlerNonNull onended)
@@ -206,7 +206,7 @@ void MediaControllerImp::setOnended(events::EventHandlerNonNull onended)
 events::EventHandlerNonNull MediaControllerImp::getOnwaiting()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void MediaControllerImp::setOnwaiting(events::EventHandlerNonNull onwaiting)
@@ -217,7 +217,7 @@ void MediaControllerImp::setOnwaiting(events::EventHandlerNonNull onwaiting)
 events::EventHandlerNonNull MediaControllerImp::getOndurationchange()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void MediaControllerImp::setOndurationchange(events::EventHandlerNonNull ondurationchange)
@@ -228,7 +228,7 @@ void MediaControllerImp::setOndurationchange(events::EventHandlerNonNull ondurat
 events::EventHandlerNonNull MediaControllerImp::getOntimeupdate()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void MediaControllerImp::setOntimeupdate(events::EventHandlerNonNull ontimeupdate)
@@ -239,7 +239,7 @@ void MediaControllerImp::setOntimeupdate(events::EventHandlerNonNull ontimeupdat
 events::EventHandlerNonNull MediaControllerImp::getOnplay()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void MediaControllerImp::setOnplay(events::EventHandlerNonNull onplay)
@@ -250,7 +250,7 @@ void MediaControllerImp::setOnplay(events::EventHandlerNonNull onplay)
 events::EventHandlerNonNull MediaControllerImp::getOnpause()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void MediaControllerImp::setOnpause(events::EventHandlerNonNull onpause)
@@ -261,7 +261,7 @@ void MediaControllerImp::setOnpause(events::EventHandlerNonNull onpause)
 events::EventHandlerNonNull MediaControllerImp::getOnratechange()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void MediaControllerImp::setOnratechange(events::EventHandlerNonNull onratechange)
@@ -272,7 +272,7 @@ void MediaControllerImp::setOnratechange(events::EventHandlerNonNull onratechang
 events::EventHandlerNonNull MediaControllerImp::getOnvolumechange()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void MediaControllerImp::setOnvolumechange(events::EventHandlerNonNull onvolumechange)

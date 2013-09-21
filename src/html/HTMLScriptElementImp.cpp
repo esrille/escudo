@@ -44,8 +44,8 @@ HTMLScriptElementImp::HTMLScriptElementImp(DocumentImp* ownerDocument, const std
 {
 }
 
-HTMLScriptElementImp::HTMLScriptElementImp(HTMLScriptElementImp* org, bool deep) :
-    ObjectMixin(org, deep),
+HTMLScriptElementImp::HTMLScriptElementImp(const HTMLScriptElementImp& org) :
+    ObjectMixin(org),
     alreadyStarted(false),
     parserInserted(false),
     wasParserInserted(false),
@@ -85,7 +85,7 @@ bool HTMLScriptElementImp::prepare()
     alreadyStarted = true;
 
     // TODO 10. - 13.
-    DocumentImp* document = getOwnerDocumentImp();
+    DocumentPtr document = getOwnerDocumentImp();
 
     if (hasAttribute(u"src")) {
         std::u16string src = getSrc();
@@ -100,16 +100,16 @@ bool HTMLScriptElementImp::prepare()
             document->incrementLoadEventDelayCount();
             if (hasDefer && parserInserted && !hasAsync) {
                 type = Defer;
-                document->addDeferScript(this);
+                document->addDeferScript(self());
             } else if (parserInserted && !hasAsync) {
                 type = Blocking;
-                document->setPendingParsingBlockingScript(this);
+                document->setPendingParsingBlockingScript(std::static_pointer_cast<HTMLScriptElementImp>(self()));
             } else if (!hasAsync && !forceAsync) {
                 type = Ordered;
-                document->addOrderedScript(this);
+                document->addOrderedScript(self());
             } else {
                 type = Async;
-                document->addAsyncScript(this);
+                document->addAsyncScript(self());
             }
             request->send();
         }
@@ -121,7 +121,7 @@ bool HTMLScriptElementImp::prepare()
 
 void HTMLScriptElementImp::notify()
 {
-    DocumentImp* document = getOwnerDocumentImp();
+    DocumentPtr document = getOwnerDocumentImp();
     if (request->getStatus() == 200) {
         readyToBeParserExecuted = true;
         switch (type) {
@@ -130,7 +130,7 @@ void HTMLScriptElementImp::notify()
             break;
         case Async:
             execute();
-            document->removeAsyncScript(this);
+            document->removeAsyncScript(self());
             document->decrementLoadEventDelayCount();
             break;
         case Ordered:
@@ -142,17 +142,17 @@ void HTMLScriptElementImp::notify()
     } else {
         switch (type) {
         case Blocking:
-            assert(document->getPendingParsingBlockingScript() == this);
+            assert(document->getPendingParsingBlockingScript().get() == this);
             document->setPendingParsingBlockingScript(0);
             break;
         case Defer:
-            document->removeDeferScript(this);
+            document->removeDeferScript(self());
             break;
         case Async:
-            document->removeAsyncScript(this);
+            document->removeAsyncScript(self());
             break;
         case Ordered:
-            document->removeOrderedScript(this);
+            document->removeOrderedScript(self());
             document->processOrderedScripts();
             break;
         default:
@@ -183,18 +183,12 @@ bool HTMLScriptElementImp::execute()
     }
     if (ECMAScriptContext* context = getOwnerDocumentImp()->getContext()) {
         Any result = context->evaluate(script);
-        if (auto binding = dynamic_cast<HTMLBindingElementImp*>(getParentElement().self())) {
+        if (auto binding = std::dynamic_pointer_cast<HTMLBindingElementImp>(getParentElement().self())) {
             if (result.isObject() && !binding->getImplementation())
                 binding->setImplementation(result.toObject());
         }
     }
     return true;
-}
-
-// Node
-Node HTMLScriptElementImp::cloneNode(bool deep)
-{
-    return new(std::nothrow) HTMLScriptElementImp(this, deep);
 }
 
 // HTMLScriptElement

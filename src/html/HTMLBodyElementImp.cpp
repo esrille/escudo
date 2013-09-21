@@ -23,6 +23,7 @@
 constexpr auto Intern = &one_at_a_time::hash<char16_t>;
 
 #include "DocumentImp.h"
+#include "ECMAScript.h"
 #include "HTMLUtil.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
@@ -97,66 +98,60 @@ void HTMLBodyElementImp::handleMutation(events::MutationEvent mutation)
         break;
     // Event handlers
     case Intern(u"onafterprint"):
-        setOnafterprint(compile ? context->compileFunction(value) : 0);
+        setOnafterprint(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onbeforeprint"):
-        setOnbeforeprint(compile ? context->compileFunction(value) : 0);
+        setOnbeforeprint(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onbeforeunload"):
-        setOnbeforeunload(compile ? context->compileFunction(value) : 0);
+        setOnbeforeunload(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onblur"):
-        setOnblur(compile ? context->compileFunction(value) : 0);
+        setOnblur(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onerror"):
-        setOnerror(compile ? context->compileFunction(value) : 0);
+        setOnerror(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onfocus"):
-        setOnfocus(compile ? context->compileFunction(value) : 0);
+        setOnfocus(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onhashchange"):
-        setOnhashchange(compile ? context->compileFunction(value) : 0);
+        setOnhashchange(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onload"):
-        setOnload(compile ? context->compileFunction(value) : 0);
+        setOnload(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onmessage"):
-        setOnmessage(compile ? context->compileFunction(value) : 0);
+        setOnmessage(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onoffline"):
-        setOnoffline(compile ? context->compileFunction(value) : 0);
+        setOnoffline(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"ononline"):
-        setOnonline(compile ? context->compileFunction(value) : 0);
+        setOnonline(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onpopstate"):
-        setOnpopstate(compile ? context->compileFunction(value) : 0);
+        setOnpopstate(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onpagehide"):
-        setOnpagehide(compile ? context->compileFunction(value) : 0);
+        setOnpagehide(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onresize"):
-        setOnresize(compile ? context->compileFunction(value) : 0);
+        setOnresize(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onscroll"):
-        setOnscroll(compile ? context->compileFunction(value) : 0);
+        setOnscroll(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onstorage"):
-        setOnstorage(compile ? context->compileFunction(value) : 0);
+        setOnstorage(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onunload"):
-        setOnunload(compile ? context->compileFunction(value) : 0);
+        setOnunload(compile ? context->compileFunction(value).self() : nullptr);
         break;
     default:
         HTMLElementImp::handleMutation(mutation);
         break;
     }
-}
-
-// Node
-Node HTMLBodyElementImp::cloneNode(bool deep)
-{
-    return new(std::nothrow) HTMLBodyElementImp(this, deep);
 }
 
 // HTMLBodyElement

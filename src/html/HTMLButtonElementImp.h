@@ -43,11 +43,16 @@ public:
     HTMLButtonElementImp(DocumentImp* ownerDocument) :
         ObjectMixin(ownerDocument, u"button") {
     }
-    HTMLButtonElementImp(HTMLButtonElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
-    }
 
     virtual void handleMutation(events::MutationEvent mutation);
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLButtonElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
 
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)

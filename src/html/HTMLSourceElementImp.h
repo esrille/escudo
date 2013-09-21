@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,19 @@ namespace bootstrap
 class HTMLSourceElementImp : public ObjectMixin<HTMLSourceElementImp, HTMLElementImp>
 {
 public:
+    HTMLSourceElementImp(DocumentImp* ownerDocument) :
+        ObjectMixin(ownerDocument, u"source")
+    {
+    }
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLSourceElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
+
     // HTMLSourceElement
     std::u16string getSrc();
     void setSrc(const std::u16string& src);
@@ -52,12 +65,6 @@ public:
     static const char* const getMetaData()
     {
         return html::HTMLSourceElement::getMetaData();
-    }
-    HTMLSourceElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"source") {
-    }
-    HTMLSourceElementImp(HTMLSourceElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
     }
 };
 

@@ -28,13 +28,13 @@ namespace bootstrap
 Object /* html::PropertyNodeList */ HTMLPropertiesCollectionImp::namedItem(const std::u16string& name)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 DOMStringList HTMLPropertiesCollectionImp::getNames()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 }

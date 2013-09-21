@@ -23,13 +23,13 @@ unsigned int TextTrackListImp::getLength()
 html::TextTrack TextTrackListImp::getElement(unsigned int index)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 events::EventHandlerNonNull TextTrackListImp::getOnaddtrack()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void TextTrackListImp::setOnaddtrack(events::EventHandlerNonNull onaddtrack)
@@ -40,7 +40,7 @@ void TextTrackListImp::setOnaddtrack(events::EventHandlerNonNull onaddtrack)
 events::EventHandlerNonNull TextTrackListImp::getOnremovetrack()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void TextTrackListImp::setOnremovetrack(events::EventHandlerNonNull onremovetrack)

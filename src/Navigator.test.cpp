@@ -95,7 +95,7 @@ int main(int argc, char* argv[])
     std::thread httpService(std::ref(HttpConnectionManager::getInstance()));
 
     std::string navigatorUrl = getFileURL(profile.getProfilePath()) + "/escudo.html";
-    WindowProxy* imp = new WindowProxy(0, 0, WindowProxy::DeskTop);
+    auto imp = std::make_shared<WindowProxy>(WindowProxy::DeskTop);
     window = imp;
     imp->setFaviconOverridable(true);
     imp->enableZoom(false);
@@ -103,7 +103,7 @@ int main(int argc, char* argv[])
 
     glutMainLoop();
 
-    window = 0;
+    window = nullptr;
 
     ECMAScriptContext::shutDown();
 

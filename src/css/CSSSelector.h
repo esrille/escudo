@@ -165,7 +165,7 @@ public:
     virtual bool match(Element& element, ViewCSSImp* view, bool dynamic);
     virtual bool isValid() const;
     virtual bool hasPseudoClassSelector(int type) const;
-    void registerToRuleList(CSSRuleListImp* ruleList, CSSSelector* selector, CSSStyleDeclarationImp* declaration, MediaListImp* mediaList);
+    void registerToRuleList(CSSRuleListImp* ruleList, CSSSelector* selector, const CSSStyleDeclarationPtr& declaration, const MediaListPtr& mediaList);
     CSSPseudoElementSelector* getPseudoElement() const;
 };
 
@@ -461,7 +461,7 @@ public:
     bool hasHover() const {
         return hasPseudoClassSelector(CSSPseudoClassSelector::Hover);
     }
-    void registerToRuleList(CSSRuleListImp* ruleList, CSSStyleDeclarationImp* declaration, MediaListImp* mediaList);
+    void registerToRuleList(CSSRuleListImp* ruleList, const CSSStyleDeclarationPtr& declaration, const MediaListPtr& mediaList);
 };
 
 class CSSSelectorsGroup

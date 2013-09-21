@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ namespace bootstrap
 {
 
 class HTMLFormElementImp;
+typedef std::shared_ptr<HTMLFormElementImp> HTMLFormElementPtr;
 
 // Note even though HTMLFormControlsCollection inherits HTMLCollection, there
 // doesn't seem to be a practical inheritance relationship between the two interfaces.
@@ -48,7 +49,7 @@ class HTMLFormControlsCollectionImp : public ObjectMixin<HTMLFormControlsCollect
     std::map<const std::u16string, Object> map;
 
 public:
-    HTMLFormControlsCollectionImp(HTMLFormElementImp* form);
+    HTMLFormControlsCollectionImp(const HTMLFormElementPtr& form);
     ~HTMLFormControlsCollectionImp();
 
     // HTMLCollection

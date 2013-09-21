@@ -17,7 +17,7 @@ namespace bootstrap
 Node RangeImp::getStartContainer()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 unsigned int RangeImp::getStartOffset()
@@ -29,7 +29,7 @@ unsigned int RangeImp::getStartOffset()
 Node RangeImp::getEndContainer()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 unsigned int RangeImp::getEndOffset()
@@ -47,7 +47,7 @@ bool RangeImp::getCollapsed()
 Node RangeImp::getCommonAncestorContainer()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void RangeImp::setStart(Node refNode, unsigned int offset)
@@ -109,13 +109,13 @@ void RangeImp::deleteContents()
 DocumentFragment RangeImp::extractContents()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 DocumentFragment RangeImp::cloneContents()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void RangeImp::insertNode(Node node)
@@ -131,7 +131,7 @@ void RangeImp::surroundContents(Node newParent)
 ranges::Range RangeImp::cloneRange()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void RangeImp::detach()
@@ -166,19 +166,19 @@ std::u16string RangeImp::toString()
 DocumentFragment RangeImp::createContextualFragment(const std::u16string& fragment)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 views::ClientRectList RangeImp::getClientRects()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 views::ClientRect RangeImp::getBoundingClientRect()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 }

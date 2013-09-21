@@ -17,7 +17,7 @@ namespace bootstrap
 html::MediaError HTMLMediaElementImp::getError()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 std::u16string HTMLMediaElementImp::getSrc()
@@ -68,7 +68,7 @@ void HTMLMediaElementImp::setPreload(const std::u16string& preload)
 html::TimeRanges HTMLMediaElementImp::getBuffered()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void HTMLMediaElementImp::load()
@@ -148,13 +148,13 @@ void HTMLMediaElementImp::setPlaybackRate(double playbackRate)
 html::TimeRanges HTMLMediaElementImp::getPlayed()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::TimeRanges HTMLMediaElementImp::getSeekable()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 bool HTMLMediaElementImp::getEnded()
@@ -209,7 +209,7 @@ void HTMLMediaElementImp::setMediaGroup(const std::u16string& mediaGroup)
 html::MediaController HTMLMediaElementImp::getController()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void HTMLMediaElementImp::setController(html::MediaController controller)
@@ -264,37 +264,37 @@ void HTMLMediaElementImp::setDefaultMuted(bool defaultMuted)
 html::AudioTrackList HTMLMediaElementImp::getAudioTracks()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::VideoTrackList HTMLMediaElementImp::getVideoTracks()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::TextTrackList HTMLMediaElementImp::getTextTracks()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::TextTrack HTMLMediaElementImp::addTextTrack(const std::u16string& kind)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::TextTrack HTMLMediaElementImp::addTextTrack(const std::u16string& kind, const std::u16string& label)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::TextTrack HTMLMediaElementImp::addTextTrack(const std::u16string& kind, const std::u16string& label, const std::u16string& language)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 }

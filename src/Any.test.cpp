@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,17 +28,25 @@ int check(bool cond)
     return cond ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
-class X : public Object
+class X : public Imp
 {
+    const char* msg;
 public:
+    X (const char* msg) : msg(msg) {}
     ~X() {
-        std::cout << __func__ << '\n';
+        std::cout << msg << '\n';
+    }
+    void hello() {
+        std::cout << msg << '\n';
     }
 };
 
+std::weak_ptr<Imp> w;
+
 Any testRet()
 {
-    X x;
+    Object x(std::make_shared<X>("hello"));
+    w = x.self();
     Any y(x);
     return y;
 }
@@ -47,7 +55,8 @@ int testAssign()
 {
     Any z;
     z = testRet();
-    return static_cast<int>(z);
+    std::cout << "object: " << z.isObject() << '\n';
+    return 0;
 }
 
 int main()
@@ -58,7 +67,7 @@ int main()
     std::cout << "undefined: " << x.isUndefined() << '\n';
     result += check(x.isUndefined());
 
-    Any e(static_cast<Object*>(0));
+    Any e(nullptr);
     std::cout << "null: " << e.isNull() << '\n';
     result += check(e.isNull());
     std::cout << "null: " << e.isNull() << '\n';

@@ -42,7 +42,7 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
-WindowProxy::Parser::Parser(DocumentImp* document, int fd, const std::string& optionalEncoding) :
+WindowProxy::Parser::Parser(const DocumentPtr& document, int fd, const std::string& optionalEncoding) :
     stream(fd, boost::iostreams::close_handle),
     htmlInputStream(stream, optionalEncoding),
     tokenizer(&htmlInputStream),
@@ -51,18 +51,13 @@ WindowProxy::Parser::Parser(DocumentImp* document, int fd, const std::string& op
     document->setCharacterSet(utfconv(htmlInputStream.getEncoding()));
 }
 
-WindowProxy::WindowProxy(WindowProxy* parent, ElementImp* frameElement, unsigned short flags) :
-    request(parent ? parent->getLocation().getHref() : u""),
+WindowProxy::WindowProxy(unsigned short flags) :
     history(this),
     backgroundTask(this),
     thread(std::ref(backgroundTask)),
-    window(0),
     view(0),
     viewFlags(0),
     flags(flags),
-    parent(parent),
-    frameElement(frameElement),
-    clickTarget(0),
     detail(0),
     buttons(0),
     scrollWidth(0),
@@ -75,17 +70,13 @@ WindowProxy::WindowProxy(WindowProxy* parent, ElementImp* frameElement, unsigned
     faviconOverridable(false),
     windowDepth(0)
 {
-    if (parent) {
-        parent->childWindows.push_back(this);
-        windowDepth = parent->windowDepth + 1;
-    }
 }
 
 WindowProxy::~WindowProxy()
 {
-    if (parent) {
+    if (auto parent = getParentProxy()) {
         for (auto i = parent->childWindows.begin(); i != parent->childWindows.end(); ++i) {
-            if (*i == this) {
+            if (i->get() == this) {
                 parent->childWindows.erase(i);
                 break;
             }
@@ -93,6 +84,19 @@ WindowProxy::~WindowProxy()
     }
     backgroundTask.abort();
     thread.join();
+}
+
+WindowProxyPtr WindowProxy::createWindowProxy(const HTMLIFrameElementPtr& iframe, unsigned short flags)
+{
+    auto child = std::make_shared<WindowProxy>(flags);
+    if (child) {
+        childWindows.push_back(child);
+        child->parent = std::static_pointer_cast<WindowProxy>(self());
+        child->frameElement = iframe;
+        child->setBase(getLocation().getHref());
+        child->windowDepth = windowDepth + 1;
+    }
+    return child;
 }
 
 void WindowProxy::setSize(unsigned w, unsigned h)
@@ -173,8 +177,8 @@ void WindowProxy::updateView(ViewCSSImp* next)
         canvas.endRender();
     }
 
-    if (!parent) {
-        std::u16string title = view->getDocument().getTitle();
+    if (!getParentProxy()) {
+        std::u16string title = view->getDocument()->getTitle();
         setWindowTitle(utfconv(title).c_str());
     }
 
@@ -194,19 +198,20 @@ void WindowProxy::setWindowPtr(const WindowPtr& window)
     setFavicon();
 }
 
-bool WindowProxy::isBindingDocumentWindow() const
+bool WindowProxy::isBindingDocumentWindow()
 {
-    if (!parent)
-        return false;
-    DocumentImp* document = dynamic_cast<DocumentImp*>(parent->getDocument().self());
-    return document->isBindingDocumentWindow(this);
+    if (auto parent = getParentProxy()) {
+        auto document = std::static_pointer_cast<DocumentImp>(parent->getDocument().self());
+        return document->isBindingDocumentWindow(std::static_pointer_cast<WindowProxy>(self()));
+    }
+    return false;
 }
 
 bool WindowProxy::poll()
 {
     if (!window)
         return false;
-    DocumentImp* document = dynamic_cast<DocumentImp*>(window->getDocument().self());
+    auto document = window->getDocument();
 
     // Update the canvas before processing events.
     if (request.getReadyState() == HttpRequest::DONE && document && backgroundTask.getState() == BackgroundTask::Done) {
@@ -245,7 +250,7 @@ bool WindowProxy::poll()
     }
 
     for (auto i = childWindows.begin(); i != childWindows.end(); ++i) {
-        WindowProxy* child = *i;
+        auto child = *i;
         if (child->poll()) {
             redisplay |= true;
             if (view) {
@@ -268,15 +273,15 @@ bool WindowProxy::poll()
         if (!document) {
             recordTime("%*shttp request done", windowDepth * 2, "");
             // TODO: Check header
-            Document newDocument = getDOMImplementation()->createDocument(u"", u"", 0); // TODO: Create HTML document
-            if ((document = dynamic_cast<DocumentImp*>(newDocument.self()))) {
+            Document newDocument = getDOMImplementation()->createDocument(u"", u"", nullptr); // TODO: Create HTML document
+            if ((document = std::dynamic_pointer_cast<DocumentImp>(newDocument.self()))) {
                 // TODO: Fire a simple unload event.
-                document->setDefaultView(this);
+                document->setDefaultView(std::static_pointer_cast<WindowProxy>(self()));
                 document->setURL(request.getRequestMessage().getURL());
                 document->setLastModified(request.getLastModified());
-                window->setDocument(newDocument);
+                window->setDocument(document);
                 if (!request.getError())
-                    history.update(window);
+                    history->update(window);
                 else
                     document->setError(request.getError());
                 document->enter();
@@ -349,7 +354,7 @@ bool WindowProxy::poll()
                     // TODO: Check there's no style sheet that is blocking scripts.
                     if (document->processDeferScripts()) {
                         if (!document->hasContentLoaded()) {
-                            if (events::Event event = new(std::nothrow) EventImp) {
+                            if (events::Event event = std::make_shared<EventImp>()) {
                                 event.initEvent(u"DOMContentLoaded", true, false);
                                 document->dispatchEvent(event);
                             }
@@ -411,7 +416,8 @@ bool WindowProxy::poll()
 void WindowProxy::render(ViewCSSImp* parentView)
 {
     if (view) {
-        recordTime("%*srepaint begin: %s (%s)", windowDepth * 2, "", utfconv(window->getDocument().getReadyState()).c_str(), view ? "render" : "canvas");
+        std::string readyState = window->getDocument() ? utfconv(window->getDocument()->getReadyState()) : "";
+        recordTime("%*srepaint begin: %s (%s)", windowDepth * 2, "", readyState.c_str(), view ? "render" : "canvas");
         if (view->gatherFlags() & Box::NEED_REPAINT) {
             view->clearFlags(Box::NEED_REPAINT);
             // TODO: if the size of the canvas has not been changed, reuse the same canvas.
@@ -419,7 +425,7 @@ void WindowProxy::render(ViewCSSImp* parentView)
             canvas.setup(width, height);
 
             unsigned backgroundColor = view->getBackgroundColor();
-            if (backgroundColor == 0 && !parent)
+            if (backgroundColor == 0 && !getParent())
                 backgroundColor = 0xffffffff;
             canvas.beginRender(backgroundColor);
 
@@ -430,9 +436,9 @@ void WindowProxy::render(ViewCSSImp* parentView)
         }
         if (2 <= getLogLevel() && backgroundTask.isIdle() && !view->gatherFlags()) {
             unsigned depth = 1;
-            for (WindowProxy* w = this; w->parent; w = w->parent)
+            for (WindowProxyPtr w = getParentProxy(); w; w = w->getParentProxy())
                 ++depth;
-            std::cout << "\n## " << window->getDocument().getReadyState();
+            std::cout << "\n## " << readyState;
             if (1 < depth)
                 std::cout << " (" << depth << ')';
             std::cout << '\n';
@@ -497,13 +503,10 @@ void WindowProxy::mouse(const EventTask& task)
     else
         buttons |= (1u << shift);
 
-    events::MouseEvent event(0);
-    MouseEventImp* imp = 0;
-
     Box* box = view->boxFromPoint(x, y);
     if (!box)
         return;
-    if (WindowProxy* childWindow = box->getChildWindow()) {
+    if (WindowProxyPtr childWindow = box->getChildWindow()) {
         childWindow->mouse(button, up,
                            x - box->getX() - box->getBlankLeft(), y - box->getY() - box->getBlankTop(),
                            modifiers);
@@ -512,16 +515,15 @@ void WindowProxy::mouse(const EventTask& task)
     Element target = Box::getContainingElement(box->getTargetNode());
 
     // mousedown, mousemove
-    if ((imp = new(std::nothrow) MouseEventImp)) {
-        event = imp;
+    if (auto event = std::make_shared<MouseEventImp>()) {
         if (!up) {
             clickTarget = target;
             ++detail;
         }
-        imp->initMouseEvent(up ? u"mouseup" : u"mousedown",
-                            true, true, this, detail, x, y, x, y,
-                            modifiers & 2, modifiers & 4, modifiers & 1, false, button, 0);
-        imp->setButtons(buttons);
+        event->initMouseEvent(up ? u"mouseup" : u"mousedown",
+                            true, true, self(), detail, x, y, x, y,
+                            modifiers & 2, modifiers & 4, modifiers & 1, false, button, nullptr);
+        event->setButtons(buttons);
         target.dispatchEvent(event);
     }
 
@@ -532,12 +534,11 @@ void WindowProxy::mouse(const EventTask& task)
         return;
 
     // click
-    if ((imp = new(std::nothrow) MouseEventImp)) {
-        event = imp;
-        imp->initMouseEvent(u"click",
-                            true, true, this, detail, x, y, x, y,
-                            modifiers & 2, modifiers & 4, modifiers & 1, false, button, 0);
-        imp->setButtons(buttons);
+    if (auto event = std::make_shared<MouseEventImp>()) {
+        event->initMouseEvent(u"click",
+                            true, true, self(), detail, x, y, x, y,
+                            modifiers & 2, modifiers & 4, modifiers & 1, false, button, nullptr);
+        event->setButtons(buttons);
         target.dispatchEvent(event);
     }
 }
@@ -559,44 +560,44 @@ void WindowProxy::mouseMove(const EventTask& task)
 
     if (prev != target) {
         if (html::Window c = interface_cast<html::HTMLIFrameElement>(prev).getContentWindow()) {
-            if (auto w = dynamic_cast<WindowProxy*>(c.self()))
+            if (auto w = std::dynamic_pointer_cast<WindowProxy>(c.self()))
                 w->mouseMove(-1, -1, modifiers);
         }
     }
-    if (WindowProxy* childWindow = box->getChildWindow()) {
+    if (auto childWindow = box->getChildWindow()) {
         childWindow->mouseMove(x - box->getX() - box->getBlankLeft(),
                                y - box->getY() - box->getBlankTop(),
                                modifiers);
     }
     if (prev != target) {
         // mouseout
-        if (MouseEventImp* imp = new(std::nothrow) MouseEventImp) {
-            imp->initMouseEvent(u"mouseout",
-                                true, true, this, 0, x, y, x, y,
-                                modifiers & 2, modifiers & 4, modifiers & 1, false, 0, 0);
-            imp->setButtons(buttons);
-            prev.dispatchEvent(imp);
+        if (auto event = std::make_shared<MouseEventImp>()) {
+            event->initMouseEvent(u"mouseout",
+                                true, true, self(), 0, x, y, x, y,
+                                modifiers & 2, modifiers & 4, modifiers & 1, false, 0, nullptr);
+            event->setButtons(buttons);
+            prev.dispatchEvent(event);
         }
 
         // mouseover
-        if (MouseEventImp* imp = new(std::nothrow) MouseEventImp) {
-            imp->initMouseEvent(u"mouseover",
-                                true, true, this, 0, x, y, x, y,
-                                modifiers & 2, modifiers & 4, modifiers & 1, false, 0, 0);
-            imp->setButtons(buttons);
-            target.dispatchEvent(imp);
+        if (auto event = std::make_shared<MouseEventImp>()) {
+            event->initMouseEvent(u"mouseover",
+                                true, true, self(), 0, x, y, x, y,
+                                modifiers & 2, modifiers & 4, modifiers & 1, false, 0, nullptr);
+            event->setButtons(buttons);
+            target.dispatchEvent(event);
         }
     }
 
     // mousemove
-    if (MouseEventImp* imp = new(std::nothrow) MouseEventImp) {
+    if (auto event = std::make_shared<MouseEventImp>()) {
         if (target != clickTarget)
             detail = 0;
-        imp->initMouseEvent(u"mousemove",
-                            true, true, this, detail, x, y, x, y,
-                            modifiers & 2, modifiers & 4, modifiers & 1, false, 0, 0);
-        imp->setButtons(buttons);
-        target.dispatchEvent(imp);
+        event->initMouseEvent(u"mousemove",
+                            true, true, self(), detail, x, y, x, y,
+                            modifiers & 2, modifiers & 4, modifiers & 1, false, 0, nullptr);
+        event->setButtons(buttons);
+        target.dispatchEvent(event);
     }
 }
 
@@ -613,23 +614,19 @@ void WindowProxy::keydown(const EventTask& task)
     if (!e)
         return;
 
-    if (auto iframe = dynamic_cast<HTMLIFrameElementImp*>(e.self())) {
-        if (auto child = dynamic_cast<WindowProxy*>(iframe->getContentWindow().self()))
+    if (auto iframe = std::dynamic_pointer_cast<HTMLIFrameElementImp>(e.self())) {
+        if (auto child = std::dynamic_pointer_cast<WindowProxy>(iframe->getContentWindow().self()))
             child->keydown(charCode, keyCode, modifiers);
     }
 
-    KeyboardEventImp* imp = new(std::nothrow) KeyboardEventImp(modifiers, charCode, keyCode, 0);
-    events::KeyboardEvent event = imp;
-    imp->initKeyboardEvent(u"keydown", true, true, this,
-                           u"", u"", 0, u"", false, u"");
+    auto event = std::make_shared<KeyboardEventImp>(modifiers, charCode, keyCode, 0);
+    event->initKeyboardEvent(u"keydown", true, true, self(), u"", u"", 0, u"", false, u"");
     e.dispatchEvent(event);
 
     if (!charCode)
         return;
-    imp = new(std::nothrow) KeyboardEventImp(modifiers, charCode, keyCode, 0);
-    event = imp;
-    imp->initKeyboardEvent(u"keypress", true, true, this,
-                           u"", u"", 0, u"", false, u"");
+    event = std::make_shared<KeyboardEventImp>(modifiers, charCode, keyCode, 0);
+    event->initKeyboardEvent(u"keypress", true, true, self(), u"", u"", 0, u"", false, u"");
     e.dispatchEvent(event);
 }
 
@@ -646,21 +643,19 @@ void WindowProxy::keyup(const EventTask& task)
     if (!e)
         return;
 
-    if (auto iframe = dynamic_cast<HTMLIFrameElementImp*>(e.self())) {
-        if (auto child = dynamic_cast<WindowProxy*>(iframe->getContentWindow().self()))
+    if (auto iframe = std::dynamic_pointer_cast<HTMLIFrameElementImp>(e.self())) {
+        if (auto child = std::dynamic_pointer_cast<WindowProxy>(iframe->getContentWindow().self()))
             child->keyup(charCode, keyCode, modifiers);
     }
 
-    KeyboardEventImp* imp = new(std::nothrow) KeyboardEventImp(modifiers, charCode, keyCode, 0);
-    events::KeyboardEvent event(imp);
-    imp->initKeyboardEvent(u"keyup", true, true, this,
-                           u"", u"", 0, u"", false, u"");
+    auto event = std::make_shared<KeyboardEventImp>(modifiers, charCode, keyCode, 0);
+    event->initKeyboardEvent(u"keyup", true, true, self(), u"", u"", 0, u"", false, u"");
     e.dispatchEvent(event);
 }
 
 void WindowProxy::setFavicon(IcoImage* ico, std::FILE* file)
 {
-    if (parent) {
+    if (auto parent = getParentProxy()) {
         if (parent->getFaviconOverridable())
             parent->setFavicon(ico, file);
         return;
@@ -677,7 +672,7 @@ void WindowProxy::setFavicon(IcoImage* ico, std::FILE* file)
 
 void WindowProxy::setFavicon(BoxImage* image)
 {
-    if (parent) {
+    if (auto parent = getParentProxy()) {
         if (parent->getFaviconOverridable())
             parent->setFavicon(image);
         return;
@@ -688,19 +683,19 @@ void WindowProxy::setFavicon(BoxImage* image)
 
 void WindowProxy::setFavicon()
 {
-    for (WindowProxy* w = this; w; w = w->parent) {
-        if (w->parent && !w->parent->getFaviconOverridable())
+    for (WindowProxyPtr w = std::static_pointer_cast<WindowProxy>(self()); w; w = w->getParentProxy()) {
+        if (w->getParentProxy() && !w->getParentProxy()->getFaviconOverridable())
             return;
         if (!w->window)
             continue;
-        DocumentImp* document = dynamic_cast<DocumentImp*>(w->window->getDocument().self());
+        auto document = w->window->getDocument();
         if (!document)
             continue;
         html::HTMLHeadElement head = document->getHead();
         if (!head)
             continue;
         for (auto i = head.getFirstElementChild(); i; i = i.getNextElementSibling()) {
-            if (auto link = dynamic_cast<HTMLLinkElementImp*>(i.self())) {
+            if (auto link = std::dynamic_pointer_cast<HTMLLinkElementImp>(i.self())) {
                 if (link->setFavicon(document))
                     return;
             }
@@ -715,17 +710,17 @@ void WindowProxy::setFavicon()
 Element WindowProxy::elementFromPoint(float x, float y)
 {
     if (!view)
-        return 0;
+        return nullptr;
     if (x < 0.0f || width < x || y < 0.0f || height < y)
-        return 0;
+        return nullptr;
     Box* box = view->boxFromPoint(x, y);
     if (!box)
-        return 0;
+        return nullptr;
     for (Node node = box->getTargetNode(); node; node = node.getParentNode()) {
         if (node.getNodeType() == Node::ELEMENT_NODE)
             return interface_cast<Element>(node);
     }
-    return 0;
+    return nullptr;
 }
 
 //
@@ -734,12 +729,12 @@ Element WindowProxy::elementFromPoint(float x, float y)
 
 html::Window WindowProxy::getWindow()
 {
-    return this;
+    return self();
 }
 
 Any WindowProxy::getSelf()
 {
-    return this;
+    return self();
 }
 
 void WindowProxy::setSelf(Any self)
@@ -776,7 +771,7 @@ void WindowProxy::setLocation(const std::u16string& location)
 
 html::History WindowProxy::getHistory()
 {
-    return &history;
+    return history;
 }
 
 Any WindowProxy::getLocationbar()
@@ -898,16 +893,16 @@ void WindowProxy::setLength(Any length)
 
 html::Window WindowProxy::getTop()
 {
-    WindowProxy* top = this;
+    WindowProxyPtr top = std::static_pointer_cast<WindowProxy>(self());
     while (!top->isTopLevel())
-        top = top->parent;
+        top = top->getParentProxy();
     return top;
 }
 
 html::Window WindowProxy::getOpener()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void WindowProxy::setOpener(html::Window opener)
@@ -918,25 +913,25 @@ void WindowProxy::setOpener(html::Window opener)
 html::Window WindowProxy::getParent()
 {
     if (isTopLevel())
-        return this;
-    return parent;
+        return std::static_pointer_cast<WindowProxy>(self());
+    return getParentProxy();
 }
 
 Element WindowProxy::getFrameElement()
 {
-    return frameElement;
+    return getFrameElementImp();
 }
 
 void WindowProxy::navigateToFragmentIdentifier(URL target)
 {
-    DocumentImp* document = dynamic_cast<DocumentImp*>(window->getDocument().self());
+    auto document = window->getDocument();
     if (!document)
         return;
 
     std::u16string oldURL = document->getURL();
 
     // cf. http://www.w3.org/TR/html5/browsers.html#scroll-to-fragid
-    history.update(target, window);
+    history->update(target, window);
 
     // TODO: Remove any tasks queued by the history traversal task source that
     //       are associated with any Document objects in the top-level
@@ -948,62 +943,66 @@ void WindowProxy::navigateToFragmentIdentifier(URL target)
     if (Element element = document->getElementById(hash))
         element.scrollIntoView(true);
 
-    html::HashChangeEvent event(new(std::nothrow) HashChangeEventImp(u"hashchange", oldURL, static_cast<std::u16string>(target)));    // TODO: set oldURL
+    auto event = std::make_shared<HashChangeEventImp>(u"hashchange", oldURL, static_cast<std::u16string>(target));    // TODO: set oldURL
     window->dispatchEvent(event);
 }
 
 // cf. http://www.whatwg.org/specs/web-apps/current-work/multipage/browsers.html#the-rules-for-choosing-a-browsing-context-given-a-browsing-context-name
-WindowProxy* WindowProxy::selectBrowsingContext(std::u16string target, bool& replace)
+WindowProxyPtr WindowProxy::selectBrowsingContext(std::u16string target, bool& replace)
 {
+    WindowProxyPtr current = std::static_pointer_cast<WindowProxy>(self());
     if (target.empty())
-        return this;
+        return current;
 
-    WindowProxy* top = this;
+    WindowProxyPtr top = current;
     while (!top->isTopLevel())
-        top = top->parent;
+        top = top->getParentProxy();
 
     if (target[0] == u'_') {
         toLower(target);
         if (target == u"_self")
-            return this;
+            return current;
         if (target == u"_parent") {
-            if (parent)
+            if (auto parent = getParentProxy())
                 return parent;
-            return this;
+            return current;
         }
         if (target == u"_top")
             return top;
         if (target != u"_blank")
-            return 0;
+            return nullptr;
     } else {
         // TODO: implement me!
-        return 0;
+        return nullptr;
     }
 
-    if (!top->parent)
-        return this;
-    DocumentImp* ownerDocument = dynamic_cast<DocumentImp*>(top->parent->getDocument().self());
+    if (!top->getParentProxy())
+        return current;
+    auto ownerDocument = std::dynamic_pointer_cast<DocumentImp>(top->getParentProxy()->getDocument().self());
     if (!ownerDocument)
-        return this;
+        return current;
 
-    HTMLIFrameElementImp* iframe = new(std::nothrow) HTMLIFrameElementImp(ownerDocument, TopLevel);
+    auto iframe = std::make_shared<HTMLIFrameElementImp>(ownerDocument.get());
     if (!iframe)
-        return 0;
-    WindowProxy* context = dynamic_cast<WindowProxy*>(iframe->getContentWindow().self());
+        return nullptr;
+    iframe->open(u"about:blank", TopLevel);
+    auto context = std::dynamic_pointer_cast<WindowProxy>(iframe->getContentWindow().self());
     if (!context) {
         // TODO: release iframe
-        return 0;
+        return nullptr;
     }
     replace = true;
     if (target != u"_blank")
         context->name = target;
 
-    top->parent->enter();
-    if (Node next = frameElement->getNextSibling())
-        frameElement->getParentNode().insertBefore(iframe, next);
-    else
-        frameElement->getParentNode().appendChild(iframe);
-    top->parent->exit();
+    top->getParentProxy()->enter();
+    if (auto frameElement = getFrameElementImp()) {
+        if (Node next = frameElement->getNextSibling())
+            frameElement->getParentNode().insertBefore(iframe, next);
+        else
+            frameElement->getParentNode().appendChild(iframe);
+    }
+    top->getParentProxy()->exit();
 
     return context;
 }
@@ -1014,40 +1013,42 @@ void WindowProxy::navigate(std::u16string url, bool replace, WindowProxy* srcWin
 
     // TODO: add more details
     if (srcWindow->window) {
-        if (DocumentImp* document = dynamic_cast<DocumentImp*>(srcWindow->window->getDocument().self())) {
+        if (auto document = srcWindow->window->getDocument()) {
             URL base(document->getDocumentURI());
             URL resolved(base, url);
             if (this == srcWindow) {
                 if (base.isSameExceptFragments(resolved)) {
-                    Task task(this, boost::bind(&WindowProxy::navigateToFragmentIdentifier, this, resolved));
+                    Task task(self(), boost::bind(&WindowProxy::navigateToFragmentIdentifier, this, resolved));
                     putTask(task);
                     return;
                 }
                 // Prompt to unload the Document object.
-                if (html::BeforeUnloadEvent event = new(std::nothrow) BeforeUnloadEventImp) {
+                if (html::BeforeUnloadEvent event = std::make_shared<BeforeUnloadEventImp>()) {
                     window->dispatchEvent(event);
                     if (!event.getReturnValue().empty() || event.getDefaultPrevented())
                         return;
-                    if (parent && parent->getFaviconOverridable())
-                        parent->setFavicon();
+                    if (auto parent = getParentProxy()) {
+                        if (parent->getFaviconOverridable())
+                            parent->setFavicon();
+                    }
                 }
             }
             url = resolved;
         }
     }
 
-    window = new(std::nothrow) WindowImp;
+    window = std::make_shared<WindowImp>();
     request.abort();
-    history.setReplace(replace);
+    history->setReplace(replace);
     request.open(u"get", url.empty() ? u"about:blank" : url);
     request.send();
 }
 
 html::Window WindowProxy::open(const std::u16string& url, const std::u16string& target, const std::u16string& features, bool replace)
 {
-    WindowProxy* targetWindow = selectBrowsingContext(target, replace);
+    WindowProxyPtr targetWindow = selectBrowsingContext(target, replace);
     if (!targetWindow)
-        return 0;   // TODO: throw an InvalidAccessError exception
+        return nullptr;   // TODO: throw an InvalidAccessError exception
     targetWindow->navigate(url, replace, this);
     return targetWindow;
 }
@@ -1056,30 +1057,30 @@ html::Window WindowProxy::getElement(unsigned int index)
 {
     if (index < childWindows.size())
         return childWindows[index];
-    return 0;
+    return nullptr;
 }
 
 Object WindowProxy::getElement(const std::u16string& name)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::Navigator WindowProxy::getNavigator()
 {
-    return &navigator;
+    return navigator;
 }
 
 html::External WindowProxy::getExternal()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::ApplicationCache WindowProxy::getApplicationCache()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void WindowProxy::alert(const std::u16string& message)
@@ -1804,7 +1805,7 @@ void WindowProxy::setOnwaiting(events::EventHandlerNonNull onwaiting)
 
 void WindowProxy::updateView()
 {
-    if (parent)
+    if (auto parent = getParentProxy())
         parent->updateView();
     while (view) {
         unsigned flags = view->gatherFlags();
@@ -1825,7 +1826,7 @@ void WindowProxy::updateView()
         {
             backgroundTask.wait();
             if (backgroundTask.getState() == BackgroundTask::Cascaded) {
-                if (DocumentImp* document = dynamic_cast<DocumentImp*>(window->getDocument().self()))
+                if (auto document = window->getDocument())
                     HTMLElementImp::xblEnteredDocument(document);
                 backgroundTask.wakeUp(BackgroundTask::Layout);
             }
@@ -1839,7 +1840,7 @@ css::CSSStyleDeclaration WindowProxy::getComputedStyle(Element elt)
 {
     updateView();
     if (!view)
-        return 0;
+        return nullptr;
     return view->getStyle(elt);
 }
 
@@ -1847,7 +1848,7 @@ css::CSSStyleDeclaration WindowProxy::getComputedStyle(Element elt, const std::u
 {
     updateView();
     if (!view)
-        return 0;
+        return nullptr;
     return view->getStyle(elt, pseudoElt);
 }
 
@@ -1858,7 +1859,7 @@ html::MediaQueryList WindowProxy::matchMedia(const std::u16string& media_query_l
 
 html::Screen WindowProxy::getScreen()
 {
-    return &screen;
+    return screen;
 }
 
 int WindowProxy::getInnerWidth()

@@ -34,14 +34,15 @@ public:
         ObjectMixin(ownerDocument, data) {
         nodeName = u"#text";
     }
-    TextImp(TextImp* org, bool deep) :
-        ObjectMixin(org, deep)
-    {}
 
     // Node - override
     virtual Node cloneNode(bool deep = true) {
-        return new(std::nothrow) TextImp(this, deep);
+        auto node = std::make_shared<TextImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
     }
+
     virtual unsigned short getNodeType();
 
     // Text

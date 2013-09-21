@@ -17,7 +17,7 @@ namespace bootstrap
 xbl2::XBLImplementation XBLImplementationListImp::item(unsigned int index)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 unsigned int XBLImplementationListImp::getLength()

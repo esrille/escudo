@@ -45,19 +45,19 @@ std::u16string CSSPrimitiveValueImp::getStringValue() throw(DOMException)
 css::Counter CSSPrimitiveValueImp::getCounterValue() throw(DOMException)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 css::Rect CSSPrimitiveValueImp::getRectValue() throw(DOMException)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 css::RGBColor CSSPrimitiveValueImp::getRGBColorValue() throw(DOMException)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 }

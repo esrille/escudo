@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,80 +17,109 @@
 #ifndef ES_OBJECT_H
 #define ES_OBJECT_H
 
+#include <cstring>
+#include <memory>
+#include <type_traits>
+
 #include <Any.h>
 #include <nullable.h>
 #include <sequence.h>
 #include <Variadic.h>
 
-#include <atomic>
-#include <type_traits>
+class Imp : public std::enable_shared_from_this<Imp>
+{
+public:
+    virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
+        return nullptr;
+    }
+    // Note this->self() cannot be used inside the constructor.
+    std::shared_ptr<Imp> self() {
+        return shared_from_this();
+    }
+};
 
-#include <assert.h>
-#include <cstring>
+template<class O> class Weak
+{
+    std::weak_ptr<Imp> pimpl;
+public:
+    Weak() = default;
+    Weak(std::nullptr_t) {}
+    Weak(O const& other) : pimpl(other.self()) {}
+    Weak& operator=(O const& other) {
+        pimpl = other.self();
+        return *this;
+    }
+
+    void reset() {
+        pimpl.reset();
+    }
+    bool expired() const {
+        return pimpl.expired();
+    }
+    O lock() const {
+        return O(pimpl.lock());
+    }
+};
 
 class Object
 {
 protected:
-    Object* object;
+    std::shared_ptr<Imp> pimpl;
 
 public:
-    virtual unsigned int retain_() {
-        if (object && object != this)
-            return object->retain_();
-        return 1;
+    Object() = default;
+    Object(const Object& object) = default;
+    Object(Object&& object) = default;
+    Object& operator=(const Object& other) = default;
+    Object& operator=(Object&& other) = default;
+    ~Object() = default;
+
+    Object(const Object* object) {
+        if (object && object->pimpl)
+            pimpl = object->pimpl;
     }
-    virtual unsigned int release_() {
-        if (object && object != this) {
-            unsigned count = object->release_();
-            if (0 < count)
-                return count;
-            object = 0;
-        }
-        return 0;
+    explicit Object(Imp* pimpl) : pimpl(pimpl) {}
+    Object(std::nullptr_t) {}
+
+    template <class IMP>
+    Object(const std::shared_ptr<IMP>& pimpl) : pimpl(std::static_pointer_cast<Imp>(pimpl)) {}
+    Object(const std::shared_ptr<Imp>& pimpl) : pimpl(pimpl) {}
+    template <class IMP>
+    Object(std::shared_ptr<IMP>&& pimpl) : pimpl(std::static_pointer_cast<Imp>(pimpl)) {}
+    Object(std::shared_ptr<Imp>&& pimpl) : pimpl(pimpl) {}
+
+    template <class IMP>
+    Object& operator=(const std::shared_ptr<IMP>& other) {
+        pimpl = other;
+        return *this;
+    }
+    Object& operator=(const std::shared_ptr<Imp>& other) {
+        pimpl = other;
+        return *this;
+    }
+    template <class IMP>
+    Object& operator=(std::shared_ptr<IMP>&& other) {
+        pimpl = other;
+        return *this;
+    }
+    Object& operator=(std::shared_ptr<Imp>&& other) {
+        pimpl = other;
+        return *this;
     }
 
-public:
-    Object() :
-        object(0)
-    {
-    }
-    Object(Object* other) :
-        object(other)
-    {
-        if (other)
-            other->retain_();
-    }
-    Object(const Object& other) :
-        object(other.object)
-    {
-        const_cast<Object*>(&other)->retain_();
-    }
-    virtual ~Object() {
-        release_();
-    }
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
-        if (object && object != this)
-            return object->message_(selector, id, argc, argv);
-        assert(!object);    // forwarding a message to self
+        if (pimpl)
+            return pimpl->message_(selector, id, argc, argv);
         return Any();
     }
     bool operator!() const {
-        return !object;
+        return !pimpl;
     }
-    operator void*( ) const {
-        return object;
+    explicit operator bool() const {
+        return pimpl.get();
     }
-    Object* self() const {
-        return object;
-    }
-    Object& operator=(const Object& other)
-    {
-        if (this != &other) {
-            const_cast<Object*>(&other)->retain_();
-            release_();
-            object = other.self();
-        }
-        return *this;
+    std::shared_ptr<Imp> self() const {
+        return pimpl;
     }
 
     bool operator==(const Object& other) const
@@ -130,37 +159,18 @@ X interface_cast(const Object& object)
     return X(object.self());
 }
 
-class ObjectImp : public Object
+template <typename X>
+X interface_cast(const Object* object)
 {
-    std::atomic_uint count;
+    return X(object->self());
+}
+
+class ObjectImp : public Imp
+{
     void* privateDate;
+
 public:
-    unsigned int count_() const {
-        return count;
-    }
-    virtual unsigned int retain_() {
-        return ++count;
-    }
-    virtual unsigned int release_() {
-        if (0 < count)
-            --count;
-        if (count == 0) {
-            delete this;
-            return 0;
-        }
-        return count;
-    }
-    ObjectImp() :
-        Object(this),
-        count(0),
-        privateDate(0) {
-    }
-    ObjectImp(const ObjectImp& other) :
-        Object(this),
-        count(0),
-        privateDate(0) {
-    }
-public:
+    ObjectImp() : privateDate(0) {}
     void* getPrivate() const {
         return privateDate;
     }
@@ -169,16 +179,6 @@ public:
     }
     virtual void* getStaticPrivate() const = 0;
 };
-
-inline void intrusive_ptr_add_ref(ObjectImp* imp)
-{
-    imp->retain_();
-}
-
-inline void intrusive_ptr_release(ObjectImp* imp)
-{
-    imp->release_();
-}
 
 template <typename T, typename B = ObjectImp>
 class ObjectMixin : public B
@@ -206,27 +206,25 @@ public:
     }
 };
 
-template <typename T>
-class Retained : public T
+template <typename IMP>
+class Retained : public std::shared_ptr<IMP>
 {
 public:
-    Retained()
+    Retained() :
+        std::shared_ptr<IMP>(std::make_shared<IMP>())
     {
-        static_assert(std::is_base_of<ObjectImp, T>::value, "not ObjectImp");
-        T::retain_();
+        static_assert(std::is_base_of<Imp, IMP>::value, "not Imp");
     }
     template<class... As>
     Retained(As&&... as) :
-        T(std::forward<As>(as)...)
+        std::shared_ptr<IMP>(std::make_shared<IMP>(std::forward<As>(as)...))
     {
-        static_assert(std::is_base_of<ObjectImp, T>::value, "not ObjectImp");
-        T::retain_();
+        static_assert(std::is_base_of<Imp, IMP>::value, "not Imp");
     }
 };
 
 template <typename T, typename B>
 void* ObjectMixin<T, B>::staticPrivate = 0;
-
 
 template<typename T>
 void Any::initialize(T const& value, typename std::enable_if<!std::is_base_of<Object, T>::value>::type*)
@@ -244,7 +242,7 @@ void Any::initialize(T const& value, typename std::enable_if<std::is_base_of<Obj
         type = Null;
     else {
         vtable = &TypeErasure<Object>::vtable;
-        new(&heap) Object(value.self());
+        new(&heap) Object(value);
         type = Dynamic;
     }
 }

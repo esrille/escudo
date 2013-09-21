@@ -49,7 +49,7 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 namespace {
 
-Block* getCurrentBox(CSSStyleDeclarationImp* style, bool asTablePart)
+Block* getCurrentBox(const CSSStyleDeclarationPtr& style, bool asTablePart)
 {
     Box* box = style->getBox();
     if (!box)
@@ -74,7 +74,6 @@ ViewCSSImp::ViewCSSImp(WindowPtr window) :
     mediaCheck(false),
     overflow(CSSOverflowValueImp::Auto),
     stackingContexts(0),
-    hovered(0),
     quotingDepth(0),
     scrollWidth(0.0f),
     scrollHeight(0.0f),
@@ -82,24 +81,23 @@ ViewCSSImp::ViewCSSImp(WindowPtr window) :
     last(0),
     delay(0)
 {
+    initialContainingBlock.retain_();
     setMediumFontSize(16);
-    DocumentImp* document = dynamic_cast<DocumentImp*>(getDocument().self());
-    if (document) {
-        document->addEventListener(u"DOMAttrModified", &mutationListener, false, EventTargetImp::UseDefault);
-        document->addEventListener(u"DOMCharacterDataModified", &mutationListener, false, EventTargetImp::UseDefault);
-        document->addEventListener(u"DOMNodeInserted", &mutationListener, false, EventTargetImp::UseDefault);
-        document->addEventListener(u"DOMNodeRemoved", &mutationListener, false, EventTargetImp::UseDefault);
+    if (DocumentPtr document = getDocument()) {
+        document->addEventListener(u"DOMAttrModified", mutationListener, false, EventTargetImp::UseDefault);
+        document->addEventListener(u"DOMCharacterDataModified", mutationListener, false, EventTargetImp::UseDefault);
+        document->addEventListener(u"DOMNodeInserted", mutationListener, false, EventTargetImp::UseDefault);
+        document->addEventListener(u"DOMNodeRemoved", mutationListener, false, EventTargetImp::UseDefault);
     }
 }
 
 ViewCSSImp::~ViewCSSImp()
 {
-    DocumentImp* document = dynamic_cast<DocumentImp*>(getDocument().self());
-    if (document) {
-        document->removeEventListener(u"DOMAttrModified", &mutationListener, false, EventTargetImp::UseDefault);
-        document->removeEventListener(u"DOMCharacterDataModified", &mutationListener, false, EventTargetImp::UseDefault);
-        document->removeEventListener(u"DOMNodeInserted", &mutationListener, false, EventTargetImp::UseDefault);
-        document->removeEventListener(u"DOMNodeRemoved", &mutationListener, false, EventTargetImp::UseDefault);
+    if (DocumentPtr document = getDocument()) {
+        document->removeEventListener(u"DOMAttrModified", mutationListener, false, EventTargetImp::UseDefault);
+        document->removeEventListener(u"DOMCharacterDataModified", mutationListener, false, EventTargetImp::UseDefault);
+        document->removeEventListener(u"DOMNodeInserted", mutationListener, false, EventTargetImp::UseDefault);
+        document->removeEventListener(u"DOMNodeRemoved", mutationListener, false, EventTargetImp::UseDefault);
     }
 }
 
@@ -126,7 +124,7 @@ bool ViewCSSImp::isHovered(Element node)
 
 void ViewCSSImp::removeComputedStyle(Element element)
 {
-    if (CSSStyleDeclarationImp* style = getStyle(element)) {
+    if (CSSStyleDeclarationPtr style = getStyle(element)) {
         style->revert(element);
         map.erase(element);
     }
@@ -142,7 +140,7 @@ void ViewCSSImp::handleMutation(EventListenerImp* listener, events::Event event)
         Node parentNode = interface_cast<Node>(mutation.getRelatedNode());
         if (Element::hasInstance(parentNode)) {
             Element element(interface_cast<Element>(parentNode));
-            if (CSSStyleDeclarationImp* style = getStyle(element))
+            if (CSSStyleDeclarationPtr style = getStyle(element))
                 style->updateInlines(element);
         }
         return;
@@ -155,7 +153,7 @@ void ViewCSSImp::handleMutation(EventListenerImp* listener, events::Event event)
             setFlags(Box::NEED_SELECTOR_MATCHING);
         else if (Element::hasInstance(parentNode)) {
             Element element(interface_cast<Element>(parentNode));
-            if (CSSStyleDeclarationImp* style = getStyle(element))
+            if (CSSStyleDeclarationPtr style = getStyle(element))
                 style->updateInlines(element);
         }
         return;
@@ -169,14 +167,14 @@ void ViewCSSImp::handleMutation(EventListenerImp* listener, events::Event event)
             setFlags(Box::NEED_SELECTOR_MATCHING);
         } else if (Element::hasInstance(parentNode)) {
             Element element(interface_cast<Element>(parentNode));
-            if (CSSStyleDeclarationImp* style = getStyle(element))
+            if (CSSStyleDeclarationPtr style = getStyle(element))
                 style->updateInlines(element);
         }
         return;
     } else if (mutation.getType() == u"DOMAttrModified") {
         Node target = interface_cast<Node>(event.getTarget());
         if (Element::hasInstance(target)) {
-            if (CSSStyleDeclarationImp* style = getStyle(interface_cast<Element>(target))) {
+            if (CSSStyleDeclarationPtr style = getStyle(interface_cast<Element>(target))) {
                 style->requestReconstruct(Box::NEED_STYLE_RECALCULATION);
                 style->clearFlags(CSSStyleDeclarationImp::Computed);
                 if (mutation.getAttrName() != u"style") {
@@ -192,9 +190,9 @@ void ViewCSSImp::handleMutation(EventListenerImp* listener, events::Event event)
     setFlags(Box::NEED_SELECTOR_REMATCHING);
 }
 
-void ViewCSSImp::collectRules(CSSRuleListImp::RuleSet& set, Element element, css::CSSRuleList list, unsigned importance, MediaListImp* mediaList)
+void ViewCSSImp::collectRules(CSSRuleListImp::RuleSet& set, Element element, css::CSSRuleList list, unsigned importance, MediaListPtr mediaList)
 {
-    CSSRuleListImp* ruleList = dynamic_cast<CSSRuleListImp*>(list.self());
+    auto ruleList = std::dynamic_pointer_cast<CSSRuleListImp>(list.self());
     if (!ruleList)
         return;
     ruleList->collectRules(set, this, element, importance, mediaList);
@@ -206,23 +204,23 @@ void ViewCSSImp::resolveXY(float left, float top)
         boxTree->resolveXY(this, left, top, 0);
 }
 
-MediaQueryListImp* ViewCSSImp::matchMedia(MediaListImp* mediaList)
+MediaQueryListPtr ViewCSSImp::matchMedia(const MediaListPtr& mediaList)
 {
     if (!mediaList)
         return nullptr;
-    auto found = mediaListMap.find(mediaList);
+    auto found = mediaListMap.find(mediaList.get());
     if (found != mediaListMap.end())
-        return dynamic_cast<MediaQueryListImp*>(found->second.self());
-    if (auto mql = new(std::nothrow) MediaQueryListImp(getWindow())) {
+        return found->second;
+    if (auto mql = std::make_shared<MediaQueryListImp>(getWindow())) {
         mql->setMediaList(mediaList);
         mql->evaluate();
-        mediaListMap.insert({ mediaList, mql });
+        mediaListMap.insert({ mediaList.get(), mql });
         return mql;
     }
-    return 0;
+    return nullptr;
 }
 
-void ViewCSSImp::addStyle(const Element& element, CSSStyleDeclarationImp* style)
+void ViewCSSImp::addStyle(const Element& element, const CSSStyleDeclarationPtr& style)
 {
     assert(element);
     assert(style);
@@ -231,38 +229,43 @@ void ViewCSSImp::addStyle(const Element& element, CSSStyleDeclarationImp* style)
 
 void ViewCSSImp::constructComputedStyles()
 {
-    constructComputedStyle(getDocument(), 0);
+    constructComputedStyle(getDocument(), nullptr);
     clearFlags(Box::NEED_SELECTOR_MATCHING | Box::NEED_SELECTOR_REMATCHING);  // TODO: Refine
 }
 
-void ViewCSSImp::updateStyleRules(Element element, CSSStyleDeclarationImp* style, CSSStyleDeclarationImp* parentStyle)
+void ViewCSSImp::updateStyleRules(Element element, const CSSStyleDeclarationPtr& style, CSSStyleDeclarationPtr parentStyle)
 {
-    CSSStyleDeclarationImp* elementDecl(0);
-    html::HTMLElement htmlElement(0);
+#ifndef NDEBUG
+    std::u16string tag(interface_cast<html::HTMLElement>(element).getTagName());
+    std::u16string id(interface_cast<html::HTMLElement>(element).getId());
+#endif
+
+    CSSStyleDeclarationPtr elementDecl;
+    html::HTMLElement htmlElement;
     if (html::HTMLElement::hasInstance(element)) {
         htmlElement = interface_cast<html::HTMLElement>(element);
-        elementDecl = dynamic_cast<CSSStyleDeclarationImp*>(htmlElement.getStyle().self());
+        elementDecl = std::dynamic_pointer_cast<CSSStyleDeclarationImp>(htmlElement.getStyle().self());
     }
 
-    if (CSSStyleSheetImp* sheet = getDOMImplementation()->getDefaultStyleSheet())
+    if (auto sheet = getDOMImplementation()->getDefaultStyleSheet())
         collectRules(style->ruleSet, element, sheet->getCssRules(), CSSRuleListImp::UserAgent);
-    if (CSSStyleSheetImp* sheet = getDOMImplementation()->getUserStyleSheet())
+    if (auto sheet = getDOMImplementation()->getUserStyleSheet())
         collectRules(style->ruleSet, element, sheet->getCssRules(), CSSRuleListImp::User);
     if (elementDecl) {
-        if (CSSStyleDeclarationImp* nonCSS = elementDecl->getPseudoElementStyle(CSSPseudoElementSelector::NonCSS)) {
+        if (CSSStyleDeclarationPtr nonCSS = elementDecl->getPseudoElementStyle(CSSPseudoElementSelector::NonCSS)) {
             // TODO: emplace() seems to be not ready yet with libstdc++.
-            CSSRuleListImp::PrioritizedRule rule(CSSRuleListImp::Presentational, nonCSS);
+            CSSRuleListImp::PrioritizedRule rule(CSSRuleListImp::Presentational, nonCSS.get());
             style->ruleSet.insert(rule);
         }
     }
-    if (CSSStyleSheetImp* sheet = getDOMImplementation()->getPresentationalHints())
+    if (auto sheet = getDOMImplementation()->getPresentationalHints())
         collectRules(style->ruleSet, element, sheet->getCssRules(), CSSRuleListImp::Presentational);
 
     unsigned importance = CSSRuleListImp::Author;
-    stylesheets::StyleSheetList styleSheetList(getDocument().getStyleSheets());
+    stylesheets::StyleSheetList styleSheetList(getDocument()->getStyleSheets());
     for (unsigned i = 0; i < styleSheetList.getLength(); ++i) {
-        CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>(styleSheetList.getElement(i).self());
-        MediaListImp* mediaList = dynamic_cast<MediaListImp*>(sheet->getMedia().self());
+        CSSStyleSheetPtr sheet = std::dynamic_pointer_cast<CSSStyleSheetImp>(styleSheetList.getElement(i).self());
+        MediaListPtr mediaList = std::dynamic_pointer_cast<MediaListImp>(sheet->getMedia().self());
         collectRules(style->ruleSet, element, sheet->getCssRules(), importance++, mediaList);
     }
 
@@ -276,9 +279,9 @@ void ViewCSSImp::updateStyleRules(Element element, CSSStyleDeclarationImp* style
     if (!hoverList.empty()) {
         style->affectedBits |= 1u << CSSPseudoClassSelector::Hover;
         for (auto i = hoverList.begin(); i != hoverList.end(); ++i) {
-            if (*i != element.self()) {
+            if (*i != element) {
                 Element e(*i);
-                if (CSSStyleDeclarationImp* s = getStyle(e))
+                if (CSSStyleDeclarationPtr s = getStyle(e))
                     s->affectedBits |= 1u << CSSPseudoClassSelector::Hover;
             }
         }
@@ -291,35 +294,35 @@ void ViewCSSImp::updateStyleRules(Element element, CSSStyleDeclarationImp* style
 }
 
 // Return true if its shadow tree is changed
-bool ViewCSSImp::expandBinding(Element element, CSSStyleDeclarationImp* style)
+bool ViewCSSImp::expandBinding(Element element, const CSSStyleDeclarationPtr& style)
 {
     if (style->binding.getValue() == CSSBindingValueImp::None) {
         // TODO: detach the shadow tree from element (if any)
         return false;
     }
 
-    html::HTMLTemplateElement shadowTree(0);
-    HTMLElementImp* imp = dynamic_cast<HTMLElementImp*>(element.self());
+    html::HTMLTemplateElement shadowTree;
+    auto imp = std::dynamic_pointer_cast<HTMLElementImp>(element.self());
     if (!imp)
         return false;
     if (!imp->generateShadowContent(style))
         return false;
     if (shadowTree = imp->getShadowTree()) {
-        if (auto imp = dynamic_cast<HTMLTemplateElementImp*>(shadowTree.self()))
+        if (auto imp = std::dynamic_pointer_cast<HTMLTemplateElementImp>(shadowTree.self()))
             imp->setHost(element);
         return true;
     }
     return false;
 }
 
-void ViewCSSImp::constructComputedStyle(Node node, CSSStyleDeclarationImp* parentStyle)
+void ViewCSSImp::constructComputedStyle(Node node, CSSStyleDeclarationPtr parentStyle)
 {
-    CSSStyleDeclarationImp* style = 0;
-    Element element((node.getNodeType() == Node::ELEMENT_NODE) ? interface_cast<Element>(node) : 0);
+    CSSStyleDeclarationPtr style = 0;
+    Element element((node.getNodeType() == Node::ELEMENT_NODE) ? interface_cast<Element>(node) : nullptr);
     if (element) {
         auto found = map.find(element);
         if (found != map.end()) {
-            style = found->second.get();
+            style = found->second;
             assert(style);
             if (style->getFlags() & CSSStyleDeclarationImp::NeedSelectorMatching) {
                 style->clearFlags(CSSStyleDeclarationImp::NeedSelectorMatching);
@@ -332,13 +335,13 @@ void ViewCSSImp::constructComputedStyle(Node node, CSSStyleDeclarationImp* paren
             if (!style->getStackingContext())
                 style->computeStackingContext(this, parentStyle, false);
         } else {
-            style = window->getComputedStyle(element).get();
+            style = window->getComputedStyle(element);
             if (!style)
                 return;  // TODO: error
             addStyle(element, style);
             updateStyleRules(element, style, parentStyle);
         }
-        if (HTMLElementImp* imp = dynamic_cast<HTMLElementImp*>(element.self())) {
+        if (auto imp = std::dynamic_pointer_cast<HTMLElementImp>(element.self())) {
             if (html::HTMLTemplateElement shadow = imp->getShadowTree())
                 node = shadow;
         }
@@ -354,7 +357,7 @@ void ViewCSSImp::calculateComputedStyles()
         setMediaCheck(true);
     }
     CSSAutoNumberingValueImp::CounterContext counterContext(this);
-    for (Node child = getDocument().getFirstChild(); child; child = child.getNextSibling()) {
+    for (Node child = getDocument()->getFirstChild(); child; child = child.getNextSibling()) {
         if (child.getNodeType() == Node::ELEMENT_NODE)
             calculateComputedStyle(interface_cast<Element>(child), 0, &counterContext, 0);
     }
@@ -362,7 +365,7 @@ void ViewCSSImp::calculateComputedStyles()
     setMediaCheck(false);
 }
 
-void ViewCSSImp::calculateComputedStyle(Element element, CSSStyleDeclarationImp* parentStyle, CSSAutoNumberingValueImp::CounterContext* counterContext, unsigned flags)
+void ViewCSSImp::calculateComputedStyle(Element element, const CSSStyleDeclarationPtr& parentStyle, CSSAutoNumberingValueImp::CounterContext* counterContext, unsigned flags)
 {
     assert(counterContext);
 
@@ -371,10 +374,10 @@ void ViewCSSImp::calculateComputedStyle(Element element, CSSStyleDeclarationImp*
     std::u16string id(interface_cast<html::HTMLElement>(element).getId());
 #endif
 
-    CSSStyleDeclarationImp* style = getStyle(element);
+    CSSStyleDeclarationPtr style = getStyle(element);
     if (!style)
         return;
-    if (flags && (!parentStyle || parentStyle->bodyStyle != style))
+    if (flags && (!parentStyle || parentStyle->bodyStyle.lock() != style))
         style->clearFlags(flags);
 
     // If the fundamental values such as 'display' are changed, the box(es) associated with the
@@ -384,7 +387,7 @@ void ViewCSSImp::calculateComputedStyle(Element element, CSSStyleDeclarationImp*
         style->compute(this, parentStyle, element);
         unsigned comp = board.compare(style);
         if (comp & Box::NEED_TABLE_REFLOW) {
-            for (CSSStyleDeclarationImp* s = style; s; s = s->getParentStyle()) {
+            for (CSSStyleDeclarationPtr s = style; s; s = s->getParentStyle()) {
                 Box* box = getCurrentBox(s, true);
                 if (dynamic_cast<TableWrapperBox*>(box)) {
                     box->setFlags(Box::NEED_EXPANSION);
@@ -419,7 +422,7 @@ void ViewCSSImp::calculateComputedStyle(Element element, CSSStyleDeclarationImp*
         style->computeStackingContext(this, parentStyle, false);
 
     Element shadow = element;
-    if (HTMLElementImp* imp = dynamic_cast<HTMLElementImp*>(element.self())) {
+    if (auto imp = std::dynamic_pointer_cast<HTMLElementImp>(element.self())) {
         if (imp->getShadowTree())
             shadow = imp->getShadowTree();
     }
@@ -428,7 +431,7 @@ void ViewCSSImp::calculateComputedStyle(Element element, CSSStyleDeclarationImp*
         style->updateCounters(this, counterContext);
 
     CSSAutoNumberingValueImp::CounterContext cc(this);
-    ElementImp* imp(dynamic_cast<ElementImp*>(shadow.self()));
+    ElementPtr imp(std::dynamic_pointer_cast<ElementImp>(shadow.self()));
     assert(imp);
 
     style->marker = updatePseudoElement(style, CSSPseudoElementSelector::Marker, shadow, style->marker, &cc);
@@ -463,16 +466,16 @@ void ViewCSSImp::calculateComputedStyle(Element element, CSSStyleDeclarationImp*
     }
 }
 
-Element ViewCSSImp::updatePseudoElement(CSSStyleDeclarationImp* style, int id, Element element, Element pseudoElement, CSSAutoNumberingValueImp::CounterContext* counterContext)
+Element ViewCSSImp::updatePseudoElement(const CSSStyleDeclarationPtr& style, int id, Element element, Element pseudoElement, CSSAutoNumberingValueImp::CounterContext* counterContext)
 {
     if (style->display.isNone())
-        return 0;
-    CSSStyleDeclarationImp* pseudoStyle = style->getPseudoElementStyle(id);
+        return nullptr;
+    CSSStyleDeclarationPtr pseudoStyle = style->getPseudoElementStyle(id);
     if (!pseudoStyle)
-        return 0;
+        return nullptr;
     pseudoStyle->compute(this, style, element);
     if (pseudoStyle->display.isNone() || pseudoStyle->content.isNone())
-        return 0;
+        return nullptr;
 
     pseudoStyle->updateCounters(this, counterContext);
 
@@ -495,7 +498,7 @@ Element ViewCSSImp::updatePseudoElement(CSSStyleDeclarationImp* style, int id, E
 
 // In this step, neither inline-level boxes nor line boxes are generated.
 // Those will be generated later by layOut().
-Block* ViewCSSImp::constructBlock(Node node, Block* parentBox, CSSStyleDeclarationImp* style, Block* prevBox, bool asTablePart)
+Block* ViewCSSImp::constructBlock(Node node, Block* parentBox, const CSSStyleDeclarationPtr& style, Block* prevBox, bool asTablePart)
 {
     Block* newBox = 0;
     switch (node.getNodeType()) {
@@ -517,7 +520,7 @@ Block* ViewCSSImp::constructBlock(Node node, Block* parentBox, CSSStyleDeclarati
     return newBox;
 }
 
-Block* ViewCSSImp::constructBlock(Text text, Block* parentBox, CSSStyleDeclarationImp* style, Block* prevBox)
+Block* ViewCSSImp::constructBlock(Text text, Block* parentBox, const CSSStyleDeclarationPtr& style, Block* prevBox)
 {
     if (!parentBox || !style)
         return 0;
@@ -569,7 +572,7 @@ Block* ViewCSSImp::constructBlock(Text text, Block* parentBox, CSSStyleDeclarati
     return 0;
 }
 
-Block* ViewCSSImp::createBlock(Element element, Block* parentBox, CSSStyleDeclarationImp* style, bool newContext, bool asTablePart)
+Block* ViewCSSImp::createBlock(Element element, Block* parentBox, const CSSStyleDeclarationPtr& style, bool newContext, bool asTablePart)
 {
     assert(style);
     Block* block;
@@ -600,7 +603,7 @@ Block* ViewCSSImp::createBlock(Element element, Block* parentBox, CSSStyleDeclar
     if (newContext)
         block->establishFormattingContext();  // TODO: check error
 
-    StackingContext* stackingContext = style->getStackingContext();
+    StackingContextPtr stackingContext = style->getStackingContext();
     assert(stackingContext);
     if (parentBox) {
         stackingContext->addBox(block, parentBox);
@@ -611,7 +614,7 @@ Block* ViewCSSImp::createBlock(Element element, Block* parentBox, CSSStyleDeclar
     return block;
 }
 
-Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, CSSStyleDeclarationImp* parentStyle, CSSStyleDeclarationImp* style, Block* prevBox, bool asTablePart)
+Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, const CSSStyleDeclarationPtr& parentStyle, CSSStyleDeclarationPtr style, Block* prevBox, bool asTablePart)
 {
 #ifndef NDEBUG
     std::u16string tag(interface_cast<html::HTMLElement>(element).getTagName());
@@ -626,7 +629,7 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, CSSStyleDec
         return 0;
 
     Element shadow = element;
-    if (HTMLElementImp* imp = dynamic_cast<HTMLElementImp*>(element.self())) {
+    if (auto imp = std::dynamic_pointer_cast<HTMLElementImp>(element.self())) {
         if (imp->getShadowTree())
             shadow = imp->getShadowTree();
     }
@@ -818,7 +821,7 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, CSSStyleDec
 // Construct the render tree
 Block* ViewCSSImp::constructBlocks()
 {
-    boxTree = constructBlock(getDocument(), 0, 0, 0);
+    boxTree = constructBlock(getDocument(), 0, 0, 0, false);
     clearCounters();
     return boxTree.get();
 }
@@ -874,20 +877,20 @@ CounterImpPtr ViewCSSImp::getCounter(const std::u16string identifier)
         if (counter->getIdentifier() == identifier)
             return counter;
     }
-    CounterImpPtr counter = new(std::nothrow) CounterImp(identifier);
+    CounterImpPtr counter = std::make_shared<CounterImp>(identifier);
     if (counter)
         counterList.push_back(counter);
     return counter;
 }
 
-CSSStyleDeclarationImp* ViewCSSImp::getStyle(Element elt, Nullable<std::u16string> pseudoElt)
+CSSStyleDeclarationPtr ViewCSSImp::getStyle(Element elt, Nullable<std::u16string> pseudoElt)
 {
     auto i = map.find(elt);
     if (i == map.end()) {
-        if (auto parent = dynamic_cast<ElementImp*>(elt.getParentElement().self())) {
+        if (auto parent = std::dynamic_pointer_cast<ElementImp>(elt.getParentElement().self())) {
             auto i = map.find(parent);
             if (i != map.end()) {
-                CSSStyleDeclarationImp* style = i->second.get();
+                CSSStyleDeclarationPtr style = i->second;
                 assert(style);
                 if (style->marker == elt)
                     return style->getPseudoElementStyle(CSSPseudoElementSelector::Marker);
@@ -895,26 +898,25 @@ CSSStyleDeclarationImp* ViewCSSImp::getStyle(Element elt, Nullable<std::u16strin
                     return style->getPseudoElementStyle(CSSPseudoElementSelector::Before);
                 if (style->after == elt)
                     return style->getPseudoElementStyle(CSSPseudoElementSelector::After);
-                return 0;
-            } else if (auto grandParent = dynamic_cast<ElementImp*>(parent->getParentElement().self())) {
+                return nullptr;
+            } else if (auto grandParent = std::dynamic_pointer_cast<ElementImp>(parent->getParentElement().self())) {
                 auto i = map.find(grandParent);
                 if (i != map.end()) {
-                    CSSStyleDeclarationImp* style = i->second.get();
+                    CSSStyleDeclarationPtr style = i->second;
                     assert(style);
                     if (style->before.self() == parent)
                         return style->getPseudoElementStyle(CSSPseudoElementSelector::Before)->getPseudoElementStyle(CSSPseudoElementSelector::Marker);
                     if (style->after.self() == parent)
                         return style->getPseudoElementStyle(CSSPseudoElementSelector::After)->getPseudoElementStyle(CSSPseudoElementSelector::Marker);
-                    return 0;
+                    return nullptr;
                 }
             }
         }
-        return 0;
+        return nullptr;
     }
-    CSSStyleDeclarationImp* style = i->second.get();
-    if (!pseudoElt.hasValue() || pseudoElt.value().length() == 0)
-        return style;
-    return style->getPseudoElementStyle(pseudoElt.value());
+    if (!pseudoElt.hasValue() || pseudoElt.value().empty())
+        return i->second;
+    return i->second->getPseudoElementStyle(pseudoElt.value());
 }
 
 // ViewCSS
@@ -928,7 +930,7 @@ unsigned ViewCSSImp::getBackgroundColor()
     if (boxTree)
         return boxTree->backgroundColor;
     // cf. http://test.csswg.org/suites/css2.1/20110323/html4/root-box-003.htm
-    if (CSSStyleDeclarationImp* style = getStyle(getDocument().getDocumentElement()))
+    if (CSSStyleDeclarationPtr style = getStyle(getDocument()->getDocumentElement()))
         return style->backgroundColor.getARGB();
     return 0;
 }

@@ -19,10 +19,8 @@
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 StyleSheetImp::StyleSheetImp() :
-    owner(0),
-    parent(0),
     disabled(false),
-    mediaList(new(std::nothrow) MediaListImp)
+    mediaList(std::make_shared<MediaListImp>())
 {
 }
 

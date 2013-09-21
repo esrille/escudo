@@ -24,6 +24,7 @@
 #include "CSSStyleRuleImp.h"
 #include "CSSStyleDeclarationImp.h"
 #include "DocumentImp.h"
+#include "WindowProxy.h"
 
 #include "Box.h"
 #include "StackingContext.h"
@@ -44,7 +45,7 @@ const int Point = 33;
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
-FontTexture* ViewCSSImp::selectFont(CSSStyleDeclarationImp* style)
+FontTexture* ViewCSSImp::selectFont(const CSSStyleDeclarationPtr& style)
 {
     FontManager* manager = backend.getFontManager();
     unsigned s = style->fontStyle.getStyle();
@@ -61,7 +62,7 @@ FontTexture* ViewCSSImp::selectFont(CSSStyleDeclarationImp* style)
     return 0;
 }
 
-FontTexture* ViewCSSImp::selectAltFont(CSSStyleDeclarationImp* style, FontTexture* current, char32_t u)
+FontTexture* ViewCSSImp::selectAltFont(const CSSStyleDeclarationPtr& style, FontTexture* current, char32_t u)
 {
     assert(current);
     FontManager* manager = backend.getFontManager();
@@ -209,15 +210,15 @@ Element ViewCSSImp::setHovered(Element target)
     assert(boxTree);
     if (hovered == target)
         return hovered;
-    CSSStyleDeclarationImp* next = getStyle(target);
-    CSSStyleDeclarationImp* curr = getStyle(hovered);
+    CSSStyleDeclarationPtr next = getStyle(target);
+    CSSStyleDeclarationPtr curr = getStyle(hovered);
 
     Element prev = hovered;
     hovered = target; // TODO: Fix synchronization issues with the background thread.
 
     if (next) {
         glutSetCursor(cursorMap[next->cursor.getValue()]);
-        CSSStyleDeclarationImp* affected;
+        CSSStyleDeclarationPtr affected;
         if (curr && (affected = curr->getAffectedByHover())) {
             affected->requestReconstruct(Box::NEED_STYLE_RECALCULATION);
             affected->clearFlags(CSSStyleDeclarationImp::Computed);

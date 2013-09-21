@@ -31,8 +31,18 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 class HTMLBRElementImp : public ObjectMixin<HTMLBRElementImp, HTMLElementImp>
 {
 public:
+    HTMLBRElementImp(DocumentImp* ownerDocument) :
+        ObjectMixin(ownerDocument, u"br") 
+    {
+    }
+
     // Node
-    virtual Node cloneNode(bool deep = true);
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLBRElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
 
     // HTMLBRElement
     // HTMLBRElement-7
@@ -46,13 +56,6 @@ public:
     static const char* const getMetaData()
     {
         return html::HTMLBRElement::getMetaData();
-    }
-
-    HTMLBRElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"br") {
-    }
-    HTMLBRElementImp(HTMLBRElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
     }
 };
 

@@ -43,9 +43,6 @@ public:
     HTMLBindingElementImp(DocumentImp* ownerDocument) :
         ObjectMixin(ownerDocument, u"binding") {
     }
-    HTMLBindingElementImp(HTMLBindingElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
-    }
 
     html::HTMLTemplateElement cloneTemplate();
     Object getImplementation() {
@@ -54,7 +51,10 @@ public:
 
     // Node
     virtual Node cloneNode(bool deep = true) {
-        return new(std::nothrow) HTMLBindingElementImp(this, deep);
+        auto node = std::make_shared<HTMLBindingElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
     }
 
     // HTMLBindingElement

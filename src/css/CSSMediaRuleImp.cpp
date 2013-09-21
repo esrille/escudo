@@ -18,39 +18,38 @@
 
 #include <org/w3c/dom/css/CSSRuleList.h>
 
+#include "CSSStyleSheetImp.h"
+
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 using namespace css;
 
 CSSMediaRuleImp::CSSMediaRuleImp() :
-    mediaList(new(std::nothrow) MediaListImp)
+    mediaList(std::make_shared<MediaListImp>())
 {
 }
 
 CSSMediaRuleImp::~CSSMediaRuleImp()
 {
-    unsigned length = ruleList.getLength();
+    unsigned length = ruleList->getLength();
     for (unsigned i = 0; i < length; ++i) {
-        CSSRule rule = ruleList.item(i);
-        if (auto imp = dynamic_cast<CSSRuleImp*>(rule.self()))
-            imp->setParentRule(0);
+        CSSRule rule = ruleList->item(i);
+        if (auto imp = std::dynamic_pointer_cast<CSSRuleImp>(rule.self()))
+            imp->setParentRule(nullptr);
     }
 }
 
 void CSSMediaRuleImp::append(css::CSSRule rule)
 {
-    if (auto imp = dynamic_cast<CSSRuleImp*>(rule.self())) {
-        imp->setParentRule(this);
-        ruleList.append(rule);
+    if (auto imp = std::dynamic_pointer_cast<CSSRuleImp>(rule.self())) {
+        imp->setParentRule(std::static_pointer_cast<CSSMediaRuleImp>(self()));
+        ruleList->append(rule);
     }
 }
 
-void CSSMediaRuleImp::setMediaList(MediaListImp&& other)
+void CSSMediaRuleImp::setMediaList(MediaListPtr other)
 {
-    if (!mediaList)
-        return;
-    if (auto imp = dynamic_cast<MediaListImp*>(mediaList.self()))
-        *imp = std::move(other);
+    mediaList = other;
 }
 
 // CSSRule
@@ -61,7 +60,7 @@ unsigned short CSSMediaRuleImp::getType()
 
 std::u16string CSSMediaRuleImp::getCssText()
 {
-    return u"@media " + mediaList.getMediaText() + u" { " + ruleList.getCssText() += u'}';
+    return u"@media " + mediaList.getMediaText() + u" { " + ruleList->getCssText() += u'}';
 }
 
 // CSSMediaRule
@@ -77,7 +76,7 @@ void CSSMediaRuleImp::setMedia(const std::u16string& media)
 
 css::CSSRuleList CSSMediaRuleImp::getCssRules()
 {
-    return &ruleList;
+    return ruleList;
 }
 
 unsigned int CSSMediaRuleImp::insertRule(const std::u16string& rule, unsigned int index)

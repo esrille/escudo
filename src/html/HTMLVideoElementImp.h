@@ -38,13 +38,19 @@ class HTMLVideoElementImp : public ObjectMixin<HTMLVideoElementImp, HTMLMediaEle
 {
 public:
     HTMLVideoElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"video") {
-    }
-    HTMLVideoElementImp(HTMLVideoElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
+        ObjectMixin(ownerDocument, u"video")
+    {
     }
 
     virtual void handleMutation(events::MutationEvent mutation);
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLVideoElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
 
     // HTMLVideoElement
     unsigned int getWidth();

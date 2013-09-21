@@ -53,7 +53,6 @@ using namespace org::w3c::dom::css;
     org::w3c::dom::bootstrap::CSSSimpleSelector* simpleSelector;
     org::w3c::dom::bootstrap::CSSSelector* selector;
     org::w3c::dom::bootstrap::CSSSelectorsGroup* selectorsGroup;
-    org::w3c::dom::bootstrap::CSSRuleImp* cssRule;
 }
 
 /* %expect 19 */
@@ -143,11 +142,6 @@ using namespace org::w3c::dom::css;
 %type <term> function
 %type <term> functional_pseudo
 %type <term> expression_term
-%type <cssRule> import
-%type <cssRule> ruleset
-%type <cssRule> media
-%type <cssRule> page
-%type <cssRule> font_face
 %type <selectorsGroup> dom_selectors_group
 %type <selectorsGroup> selectors_group
 %type <selector> selector
@@ -194,29 +188,28 @@ stylesheet
 import
   : IMPORT_SYM optional_space uri_term optional_space media_query_list ';' optional_space {
         if (!parser->isImportable())
-            $$ = 0;
+            parser->setRule(nullptr);
         else {
-            CSSImportRuleImp* rule = new(std::nothrow) CSSImportRuleImp($3);
-            if (rule) {
-                rule->setMediaList(std::move(parser->getMediaList()));
-                parser->getMediaList().clear();
-            }
-            $$ = rule;
+            CSSImportRulePtr rule = std::make_shared<CSSImportRuleImp>($3);
+            if (rule)
+                rule->setMediaList(parser->getMediaList());
+            parser->setRule(rule);
         }
+        parser->setMediaList(nullptr);
     }
   | IMPORT_SYM optional_space uri_term optional_space             ';' optional_space {
         if (!parser->isImportable())
-            $$ = 0;
+            parser->setRule(nullptr);
         else {
-            CSSImportRuleImp* rule = new(std::nothrow) CSSImportRuleImp($3);
-            $$ = rule;
+            CSSImportRulePtr rule = std::make_shared<CSSImportRuleImp>($3);
+            parser->setRule(rule);
         }
     }
   | IMPORT_SYM error_block optional_sgml {
-        $$ = 0;
+        parser->setRule(nullptr);
     }
   | IMPORT_SYM error_non_block ';' optional_sgml {
-        $$ = 0;
+        parser->setRule(nullptr);
     }
   ;
 namespace
@@ -228,43 +221,40 @@ namespace_prefix
   ;
 media
   : MEDIA_SYM optional_space {
-        parser->setMediaRule(new(std::nothrow) CSSMediaRuleImp);
+        parser->setMediaRule(std::make_shared<CSSMediaRuleImp>());
     }
     media_query_list
    '{' optional_space optional_rulesets error_non_block '}' optional_space {
-        CSSMediaRuleImp* mediaRule = parser->getMediaRule();
-        if (mediaRule) {
-            mediaRule->setMediaList(std::move(parser->getMediaList()));
-            parser->getMediaList().clear();
-            parser->setMediaRule(0);
+        if (auto mediaRule = parser->getMediaRule()) {
+            mediaRule->setMediaList(parser->getMediaList());
+            parser->setMediaList(nullptr);
         }
-        $$ = mediaRule;
     }
   | MEDIA_SYM error_block optional_sgml {
-        $$ = 0;
+        parser->setMediaList(nullptr);
     }
   | MEDIA_SYM error_non_block ';' optional_sgml {
-        $$ = 0;
+        parser->setMediaList(nullptr);
     }
   ;
 page
   : PAGE_SYM optional_space IDENT pseudo_page optional_space '{' optional_space declaration_list '}' optional_space {
-        $$ = 0;
+        parser->setRule(nullptr);
     }
   | PAGE_SYM optional_space       pseudo_page optional_space '{' optional_space declaration_list '}' optional_space {
-        $$ = 0;
+        parser->setRule(nullptr);
     }
   | PAGE_SYM optional_space IDENT             optional_space '{' optional_space declaration_list '}' optional_space {
-        $$ = 0;
+        parser->setRule(nullptr);
     }
   | PAGE_SYM optional_space                                  '{' optional_space declaration_list '}' optional_space {
-        $$ = 0;
+        parser->setRule(nullptr);
     }
   | PAGE_SYM error_block optional_sgml {
-        $$ = 0;
+        parser->setRule(nullptr);
     }
   | PAGE_SYM error_non_block ';' optional_sgml {
-        $$ = 0;
+        parser->setRule(nullptr);
     }
   ;
 pseudo_page
@@ -272,13 +262,13 @@ pseudo_page
   ;
 font_face
   : FONT_FACE_SYM optional_space '{' optional_space declaration_list '}' optional_space {
-        $$ = 0;
+        parser->setRule(nullptr);
     }
   | FONT_FACE_SYM error_block optional_sgml {
-        $$ = 0;
+        parser->setRule(nullptr);
     }
   | FONT_FACE_SYM error_non_block ';' optional_sgml {
-        $$ = 0;
+        parser->setRule(nullptr);
     }
   ;
 operator
@@ -324,15 +314,18 @@ ruleset
                 delete $1;
                 $1 = 0;
             } else
-                parser->setStyleDeclaration(new(std::nothrow) CSSStyleDeclarationImp);
+                parser->setStyleDeclaration(std::make_shared<CSSStyleDeclarationImp>());
         }
     }
     '{' optional_space declaration_list '}' optional_space {
         if ($1) {
-            $$ = new(std::nothrow) CSSStyleRuleImp($1, parser->getStyleDeclaration());
-            parser->setStyleDeclaration(0);
+            if (auto styleRule = std::make_shared<CSSStyleRuleImp>($1)) {
+                styleRule->setStyle(parser->getStyleDeclaration());
+                parser->setRule(styleRule);
+            }
         } else
-            $$ = 0;
+            parser->setRule(nullptr);
+        parser->setStyleDeclaration(0);
     }
   ;
 selectors_group
@@ -444,19 +437,19 @@ pseudo
   ;
 declaration
   : property ':' optional_space expr prio {
-        if (CSSStyleDeclarationImp* decl = parser->getStyleDeclaration())
+        if (auto decl = parser->getStyleDeclaration())
             $$ = decl->appendProperty($1, $4, $5);
         else
             $$ = CSSStyleDeclarationImp::Unknown;
     }
   | property ':' optional_space expr {
-        if (CSSStyleDeclarationImp* decl = parser->getStyleDeclaration())
+        if (auto decl = parser->getStyleDeclaration())
             decl->appendProperty($1, $4);
         else
             $$ = CSSStyleDeclarationImp::Unknown;
     }
   | /* empty */ {
-        if (CSSStyleDeclarationImp* decl = parser->getStyleDeclaration())
+        if (auto decl = parser->getStyleDeclaration())
             $$ = decl->cancelAppend();
         else
             $$ = CSSStyleDeclarationImp::Unknown;
@@ -635,38 +628,45 @@ negation_arg
 statement_list
   : /* empty */
   | statement_list import optional_sgml {
-        if (CSSStyleSheetImp* styleSheet = parser->getStyleSheet()) {
-            styleSheet->append($2, parser->getDocument());
+        if (auto styleSheet = parser->getStyleSheet()) {
+            if (auto rule = parser->getRule()) {
+                styleSheet->append(rule, parser->getDocument());
+                parser->setRule(nullptr);
+            }
         }
     }
   | statement_list ruleset   optional_sgml {
-        if (CSSStyleSheetImp* styleSheet = parser->getStyleSheet()) {
-            if ($2) {
-                styleSheet->append($2, parser->getDocument());
+        if (auto styleSheet = parser->getStyleSheet()) {
+            if (auto rule = parser->getRule()) {
+                styleSheet->append(rule, parser->getDocument());
+                parser->setRule(nullptr);
                 parser->disableImport();
             }
         }
     }
   | statement_list media     optional_sgml {
-        if (CSSStyleSheetImp* styleSheet = parser->getStyleSheet()) {
-            if ($2) {
-                styleSheet->append($2, parser->getDocument());
+        if (auto styleSheet = parser->getStyleSheet()) {
+            if (auto mediaRule = parser->getMediaRule()) {
+                styleSheet->append(mediaRule, parser->getDocument());
+                parser->setMediaRule(nullptr);
                 parser->disableImport();
             }
         }
     }
   | statement_list page      optional_sgml {
-        if (CSSStyleSheetImp* styleSheet = parser->getStyleSheet()) {
-            if ($2) {
-                styleSheet->append($2, parser->getDocument());
+        if (auto styleSheet = parser->getStyleSheet()) {
+            if (auto rule = parser->getRule()) {
+                styleSheet->append(rule, parser->getDocument());
+                parser->setRule(nullptr);
                 parser->disableImport();
             }
         }
     }
   | statement_list font_face optional_sgml {
-        if (CSSStyleSheetImp* styleSheet = parser->getStyleSheet()) {
-            if ($2) {
-                styleSheet->append($2, parser->getDocument());
+        if (auto styleSheet = parser->getStyleSheet()) {
+            if (auto rule = parser->getRule()) {
+                styleSheet->append(rule, parser->getDocument());
+                parser->setRule(nullptr);
                 parser->disableImport();
             }
         }
@@ -698,9 +698,8 @@ uri_term
 optional_rulesets
   : /* empty */
   | optional_rulesets ruleset {
-        if (CSSMediaRuleImp* mediaRule = parser->getMediaRule()) {
-            mediaRule->append($2);
-        }
+        if (auto mediaRule = parser->getMediaRule())
+            mediaRule->append(parser->getRule());
     }
   | optional_rulesets error_block optional_sgml {
         CSSerror(parser, "syntax error, invalid ruleset");
@@ -719,7 +718,7 @@ media_list
   ;
 medium
   : IDENT optional_space {
-        parser->getMediaList().appendMedium($1);
+        parser->getMediaList()->appendMedium($1);
     }
   ;
 
@@ -735,21 +734,21 @@ media_query_list_body
   | media_query_list_body ',' optional_space error
   | invalid_construct_list {
         CSSerror(parser, "syntax error, invalid media query");
-        parser->getMediaList().clearFeatures();
-        parser->getMediaList().appendMedium(MediaListImp::Not | MediaListImp::All);
+        parser->getMediaList()->clearFeatures();
+        parser->getMediaList()->appendMedium(MediaListImp::Not | MediaListImp::All);
     }
   | error {
         CSSerror(parser, "syntax error, invalid media query");
-        parser->getMediaList().clearFeatures();
-        parser->getMediaList().appendMedium(MediaListImp::Not | MediaListImp::All);
+        parser->getMediaList()->clearFeatures();
+        parser->getMediaList()->appendMedium(MediaListImp::Not | MediaListImp::All);
     }
   ;
 media_query
   : optional_media_query_operator media_type optional_space optional_media_query_expression_list {
-        parser->getMediaList().appendMedium($1 | $2);
+        parser->getMediaList()->appendMedium($1 | $2);
     }
   | media_query_expression_list optional_space {
-        parser->getMediaList().appendMedium(MediaListImp::All);
+        parser->getMediaList()->appendMedium(MediaListImp::All);
     }
   ;
 media_type
@@ -759,10 +758,10 @@ media_type
   ;
 media_query_expression
   : '(' optional_space media_feature optional_space optional_media_query_value ')' optional_space {
-        parser->getMediaList().appendFeature($3, $5);
+        parser->getMediaList()->appendFeature($3, $5);
     }
   | '(' optional_space error_parenthesis ')' optional_space {
-        parser->getMediaList().appendFeature(MediaListImp::Unknown, 0);
+        parser->getMediaList()->appendFeature(MediaListImp::Unknown, 0);
     }
   ;
 media_feature
@@ -802,19 +801,19 @@ optional_media_query_value
 
 declaration_list
   : declaration {
-        if (CSSStyleDeclarationImp* decl = parser->getStyleDeclaration())
+        if (auto decl = parser->getStyleDeclaration())
             decl->commitAppend();
     }
   | declaration_list ';' optional_space declaration {
-        if (CSSStyleDeclarationImp* decl = parser->getStyleDeclaration())
+        if (auto decl = parser->getStyleDeclaration())
             decl->commitAppend();
     }
   | declaration error {
-        if (CSSStyleDeclarationImp* decl = parser->getStyleDeclaration())
+        if (auto decl = parser->getStyleDeclaration())
             decl->cancelAppend();
     }
   | declaration_list ';' optional_space declaration error {
-        if (CSSStyleDeclarationImp* decl = parser->getStyleDeclaration())
+        if (auto decl = parser->getStyleDeclaration())
             decl->cancelAppend();
     }
   | declaration_list ';' optional_space error invalid_construct_list error

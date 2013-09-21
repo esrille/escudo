@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,19 @@ namespace bootstrap
 class HTMLOutputElementImp : public ObjectMixin<HTMLOutputElementImp, HTMLElementImp>
 {
 public:
+    HTMLOutputElementImp(DocumentImp* ownerDocument) :
+        ObjectMixin(ownerDocument, u"output")
+    {
+    }
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLOutputElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
+
     // HTMLOutputElement
     DOMSettableTokenList getHtmlFor();
     void setHtmlFor(const std::u16string& htmlFor);
@@ -66,12 +79,6 @@ public:
     static const char* const getMetaData()
     {
         return html::HTMLOutputElement::getMetaData();
-    }
-    HTMLOutputElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"output") {
-    }
-    HTMLOutputElementImp(HTMLOutputElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
     }
 };
 

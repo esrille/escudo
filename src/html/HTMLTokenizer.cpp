@@ -2378,7 +2378,7 @@ bool Token::append(Attribute& attribute)
     if (attribute.getName().length() == 0)
         return true;
     if (attrNames.find(attribute.getName()) == attrNames.end()) {
-        Attr attr = new(std::nothrow) org::w3c::dom::bootstrap::AttrImp(Nullable<std::u16string>(), Nullable<std::u16string>(), attribute.getName(), attribute.getValue());
+        Attr attr(std::make_shared<org::w3c::dom::bootstrap::AttrImp>(Nullable<std::u16string>(), Nullable<std::u16string>(), attribute.getName(), attribute.getValue()));
         if (attr) {
             attrNames.insert(attribute.getName());
             attrList.push_back(attr);

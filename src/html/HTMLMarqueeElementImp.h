@@ -39,10 +39,17 @@ class HTMLMarqueeElementImp : public ObjectMixin<HTMLMarqueeElementImp, HTMLElem
 {
 public:
     HTMLMarqueeElementImp(DocumentImp* ownerDocument);
-    HTMLMarqueeElementImp(HTMLMarqueeElementImp* org, bool deep);
     ~HTMLMarqueeElementImp();
 
     virtual void handleMutation(events::MutationEvent mutation);
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLMarqueeElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
 
     // HTMLMarqueeElement
     std::u16string getBehavior();

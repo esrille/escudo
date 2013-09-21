@@ -45,7 +45,7 @@ class HTMLScriptElementImp : public ObjectMixin<HTMLScriptElementImp, HTMLElemen
 
 public:
     HTMLScriptElementImp(DocumentImp* ownerDocument, const std::u16string& localName = u"script");
-    HTMLScriptElementImp(HTMLScriptElementImp* org, bool deep);
+    HTMLScriptElementImp(const HTMLScriptElementImp& org);
     ~HTMLScriptElementImp();
 
     void markAsParserInserted() {
@@ -60,8 +60,13 @@ public:
     bool prepare();
     void notify();
 
-    // Node
-    virtual Node cloneNode(bool deep = true);
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLScriptElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
 
     // HTMLScriptElement
     virtual std::u16string getSrc();
@@ -91,6 +96,8 @@ public:
         return html::HTMLScriptElement::getMetaData();
     }
 };
+
+typedef std::shared_ptr<HTMLScriptElementImp> HTMLScriptElementPtr;
 
 }}}}  // org::w3c::dom::bootstrap
 

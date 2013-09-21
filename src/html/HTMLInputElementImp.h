@@ -76,7 +76,7 @@ class HTMLInputElementImp : public ObjectMixin<HTMLInputElementImp, HTMLElementI
     };
 
     int type;
-    HTMLFormElementImp* form;
+    std::weak_ptr<HTMLFormElementImp> form;
 
     Retained<EventListenerImp> clickListener;
     Retained<EventListenerImp> keydownListener;
@@ -89,7 +89,7 @@ class HTMLInputElementImp : public ObjectMixin<HTMLInputElementImp, HTMLElementI
 
 public:
     HTMLInputElementImp(DocumentImp* ownerDocument);
-    HTMLInputElementImp(HTMLInputElementImp* org, bool deep);
+    HTMLInputElementImp(const HTMLInputElementImp& org);
 
     virtual void handleMutation(events::MutationEvent mutation);
 
@@ -108,7 +108,15 @@ public:
     void updateStyle();
 
     // XBL 2.0 internal
-    virtual bool generateShadowContent(CSSStyleDeclarationImp* style);
+    virtual bool generateShadowContent(const CSSStyleDeclarationPtr& style);
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLInputElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
 
     // HTMLElement
     css::CSSStyleDeclaration getStyle();

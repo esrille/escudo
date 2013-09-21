@@ -45,14 +45,17 @@ public:
     HTMLBodyElementImp(DocumentImp* ownerDocument) :
         ObjectMixin(ownerDocument, u"body")
     {}
-    HTMLBodyElementImp(HTMLBodyElementImp* org, bool deep) :
-        ObjectMixin(org, deep)
-    {}
 
     virtual void handleMutation(events::MutationEvent mutation);
 
     // Node
-    virtual Node cloneNode(bool deep = true);
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLBodyElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
+
     // HTMLBodyElement
     virtual events::EventHandlerNonNull getOnafterprint();
     virtual void setOnafterprint(events::EventHandlerNonNull onafterprint);

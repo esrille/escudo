@@ -23,31 +23,31 @@ std::u16string MutationRecordImp::getType()
 Node MutationRecordImp::getTarget()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 NodeList MutationRecordImp::getAddedNodes()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 NodeList MutationRecordImp::getRemovedNodes()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 Node MutationRecordImp::getPreviousSibling()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 Node MutationRecordImp::getNextSibling()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 Nullable<std::u16string> MutationRecordImp::getAttributeName()

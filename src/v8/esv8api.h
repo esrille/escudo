@@ -46,28 +46,12 @@ private:
     static std::map<ObjectImp*, v8::Persistent<v8::Object>> wrapperMap;
 };
 
-class ProxyObject : public Object
+class ProxyObject : public Imp
 {
     v8::Persistent<v8::Object> jsobject;
-    unsigned int count;
-protected:
-    virtual unsigned int retain_() {
-        return ++count;
-    };
-    virtual unsigned int release_() {
-        if (0 < count)
-            --count;
-        if (count == 0) {
-            delete this;
-            return 0;
-        }
-        return count;
-    };
 public:
     ProxyObject(v8::Handle<v8::Object> obj) :
-        Object(this),
-        jsobject(v8::Persistent<v8::Object>::New(obj)),
-        count(1)
+        jsobject(v8::Persistent<v8::Object>::New(obj))
     {
     }
     ~ProxyObject()

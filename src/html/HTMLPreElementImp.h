@@ -41,12 +41,16 @@ public:
         ObjectMixin(ownerDocument, u"pre")
     {
     }
-    HTMLPreElementImp(HTMLPreElementImp* org, bool deep) :
-        ObjectMixin(org, deep)
-    {
-    }
 
     void handleMutation(events::MutationEvent mutation);
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLPreElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
 
     // HTMLPreElement
     // HTMLPreElement-28

@@ -17,7 +17,7 @@ namespace bootstrap
 html::DataTransfer DragEventImp::getDataTransfer()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 }

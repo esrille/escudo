@@ -24,6 +24,7 @@ constexpr auto Intern = &one_at_a_time::hash<char16_t>;
 
 #include "DocumentImp.h"
 #include "HTMLUtil.h"
+#include "WindowProxy.h"
 #include "css/Box.h"
 
 namespace org
@@ -41,8 +42,8 @@ HTMLObjectElementImp::HTMLObjectElementImp(DocumentImp* ownerDocument) :
 {
 }
 
-HTMLObjectElementImp::HTMLObjectElementImp(HTMLObjectElementImp* org, bool deep) :
-    ObjectMixin(org, deep),
+HTMLObjectElementImp::HTMLObjectElementImp(const HTMLObjectElementImp& org) :
+    ObjectMixin(org),
     dirty(false)
 {
 }
@@ -101,10 +102,10 @@ void HTMLObjectElementImp::requestRefresh()
         return;
     dirty = true;
 
-    DocumentImp* owner = getOwnerDocumentImp();
+    DocumentPtr owner = getOwnerDocumentImp();
     assert(owner);
-    if (WindowProxy* window = owner->getDefaultWindow()) {
-        Task task(this, boost::bind(&HTMLObjectElementImp::refresh, this));
+    if (WindowProxyPtr window = owner->getDefaultWindow()) {
+        Task task(self(), boost::bind(&HTMLObjectElementImp::refresh, this));
         window->putTask(task);
     }
 }
@@ -128,7 +129,7 @@ void HTMLObjectElementImp::refresh()
     std::u16string type = getAttribute(u"type");
     // TODO: Check type is a supported one.
 
-    DocumentImp* document = getOwnerDocumentImp();
+    DocumentPtr document = getOwnerDocumentImp();
     if (current)
         current->cancel();
     current = new(std::nothrow) HttpRequest(document->getDocumentURI());
@@ -180,7 +181,7 @@ void HTMLObjectElementImp::handleRefresh(HttpRequest* request)
                 ancestor->setFlags(Box::NEED_REFLOW);
         }
     }
-    DocumentImp* document = getOwnerDocumentImp();
+    DocumentPtr document = getOwnerDocumentImp();
     document->decrementLoadEventDelayCount();
 }
 
@@ -241,7 +242,7 @@ void HTMLObjectElementImp::setUseMap(const std::u16string& useMap)
 html::HTMLFormElement HTMLObjectElementImp::getForm()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 std::u16string HTMLObjectElementImp::getWidth()
@@ -269,13 +270,13 @@ void HTMLObjectElementImp::setHeight(const std::u16string& height)
 Document HTMLObjectElementImp::getContentDocument()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::Window HTMLObjectElementImp::getContentWindow()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 bool HTMLObjectElementImp::getWillValidate()
@@ -287,7 +288,7 @@ bool HTMLObjectElementImp::getWillValidate()
 html::ValidityState HTMLObjectElementImp::getValidity()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 std::u16string HTMLObjectElementImp::getValidationMessage()

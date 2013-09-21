@@ -46,11 +46,6 @@ class MouseEventImp : public ObjectMixin<MouseEventImp, UIEventImp>
     int offsetY;
 
 public:
-    MouseEventImp() :
-        relatedTarget(0)
-    {
-    }
-
     void setButtons(unsigned short value) {
         buttons = value;
     }

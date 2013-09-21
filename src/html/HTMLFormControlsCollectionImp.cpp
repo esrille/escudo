@@ -33,12 +33,11 @@ namespace bootstrap
 
 namespace {
 
-bool isListedElement(ElementImp* element)
+bool isListedElement(const ElementPtr& element)
 {
-    auto e = dynamic_cast<HTMLElementImp*>(element);
-    if (!e)
+    if (!element)
         return false;
-    std::u16string tag = e->getLocalName();
+    std::u16string tag = element->getLocalName();
     if (tag == u"button" ||
         tag == u"fieldset" ||
         tag == u"input" ||
@@ -54,10 +53,10 @@ bool isListedElement(ElementImp* element)
 
 }
 
-HTMLFormControlsCollectionImp::HTMLFormControlsCollectionImp(HTMLFormElementImp* form) :
+HTMLFormControlsCollectionImp::HTMLFormControlsCollectionImp(const HTMLFormElementPtr& form) :
     length(0)
 {
-    ElementImp* i = form;
+    ElementPtr i = form;
     while (i = i->getNextElement(form)) {
         if (isListedElement(i)) {
             std::u16string name;
@@ -77,13 +76,13 @@ HTMLFormControlsCollectionImp::HTMLFormControlsCollectionImp(HTMLFormElementImp*
             }
             if (html::RadioNodeList::hasInstance(found)) {
                 html::RadioNodeList r = interface_cast<html::RadioNodeList>(found);
-                if (RadioNodeListImp* list = dynamic_cast<RadioNodeListImp*>(r.self())) {
+                if (auto list = std::dynamic_pointer_cast<RadioNodeListImp>(r.self())) {
                     list->addItem(i);
                     ++length;
                 }
                 continue;
             }
-            RadioNodeListImp* list = new(std::nothrow) RadioNodeListImp;
+            auto list = std::make_shared<RadioNodeListImp>();
             if (list) {
                 list->addItem(interface_cast<Element>(found));
                 list->addItem(i);
@@ -108,7 +107,7 @@ unsigned int HTMLFormControlsCollectionImp::getLength()
 Element HTMLFormControlsCollectionImp::item(unsigned int index)
 {
     if (getLength() <= index)
-        return 0;
+        return nullptr;
     for (auto it = map.begin(); it != map.end(); ++it) {
         if (Element::hasInstance(it->second)) {
             if (index == 0)
@@ -122,14 +121,14 @@ Element HTMLFormControlsCollectionImp::item(unsigned int index)
             index -= length;
         }
     }
-    return 0;
+    return nullptr;
 }
 
 Object HTMLFormControlsCollectionImp::namedItem(const std::u16string& name)
 {
     auto it = map.find(name);
     if (it == map.end())
-        return 0;
+        return nullptr;
     else
         return it->second;
 }

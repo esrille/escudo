@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,18 @@ namespace bootstrap
 class HTMLProgressElementImp : public ObjectMixin<HTMLProgressElementImp, HTMLElementImp>
 {
 public:
+    HTMLProgressElementImp(DocumentImp* ownerDocument) :
+        ObjectMixin(ownerDocument, u"progress") {
+    }
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLProgressElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
+
     // HTMLProgressElement
     double getValue();
     void setValue(double value);
@@ -53,12 +65,6 @@ public:
     static const char* const getMetaData()
     {
         return html::HTMLProgressElement::getMetaData();
-    }
-    HTMLProgressElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"progress") {
-    }
-    HTMLProgressElementImp(HTMLProgressElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
     }
 };
 

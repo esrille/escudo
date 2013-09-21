@@ -39,7 +39,7 @@ void UIEventInitImp::setCancelable(bool cancelable)
 html::Window UIEventInitImp::getView()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void UIEventInitImp::setView(html::Window view)

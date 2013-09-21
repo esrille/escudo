@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ class DocumentTypeImp : public ObjectMixin<DocumentTypeImp, NodeImp>
 
 public:
     DocumentTypeImp(const std::u16string& qualifiedName, Nullable<std::u16string> publicId, Nullable<std::u16string> systemId) :
-        ObjectMixin(static_cast<DocumentImp*>(0)),  // TODO: use nullptr with gcc 4.6
+        ObjectMixin(nullptr),
         publicId(publicId.hasValue() ? publicId.value() : u""),
         systemId(systemId.hasValue() ? systemId.value() : u"") {
         nodeName = qualifiedName;

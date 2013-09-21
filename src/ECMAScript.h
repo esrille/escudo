@@ -51,12 +51,12 @@ public:
     void exit(ObjectImp* windowProxy);
 
     Any evaluate(const std::u16string& script);
-    Object* compileFunction(const std::u16string& body);
+    Object compileFunction(const std::u16string& body);
     Any callFunction(Object thisObject, Object functionObject, int argc, Any* argv);
 
     void dispatchEvent(org::w3c::dom::bootstrap::EventListenerImp* listener, org::w3c::dom::events::Event event);
 
-    Object* xblCreateImplementation(Object object, Object prototype, Object boundElement, Object shadowTree);
+    Object xblCreateImplementation(Object object, Object prototype, Object boundElement, Object shadowTree);
 
     static ObjectImp* getCurrent() {
         return current;

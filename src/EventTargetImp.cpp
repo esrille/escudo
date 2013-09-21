@@ -28,7 +28,7 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
-void EventTargetImp::invoke(EventImp* event)
+void EventTargetImp::invoke(const EventPtr& event)
 {
     auto found = map.find(event->getType());
     if (found == map.end())
@@ -59,7 +59,7 @@ void EventTargetImp::invoke(EventImp* event)
     }
 }
 
-EventListenerImp* EventTargetImp::getEventHandlerListener(const std::u16string& type)
+EventListenerPtr EventTargetImp::getEventHandlerListener(const std::u16string& type)
 {
     auto found = map.find(type);
     if (found == map.end())
@@ -67,16 +67,16 @@ EventListenerImp* EventTargetImp::getEventHandlerListener(const std::u16string& 
     std::list<Listener>& listeners = found->second;
     for (auto i = listeners.begin(); i != listeners.end(); ++i) {
         if (i->useEventHandler())
-            return dynamic_cast<EventListenerImp*>(i->listener.self());
+            return std::dynamic_pointer_cast<EventListenerImp>(i->listener.self());
     }
     return 0;
 }
 
 Object EventTargetImp::getEventHandler(const std::u16string& type)
 {
-    if (EventListenerImp* listener = getEventHandlerListener(type))
+    if (auto listener = getEventHandlerListener(type))
         return listener->getEventHandler();
-    return 0;
+    return nullptr;
 }
 
 // EventTarget
@@ -125,34 +125,35 @@ void EventTargetImp::removeEventListener(const std::u16string&  type, events::Ev
     }
 }
 
+// TODO: Refine using virtual!
 bool EventTargetImp::dispatchEvent(events::Event evt)
 {
-    EventImp* event = dynamic_cast<EventImp*>(evt.self());
+    auto event = std::dynamic_pointer_cast<EventImp>(evt.self());
     if (!event)
         return false;
 
     event->setDispatchFlag(true);
-    if (auto window = dynamic_cast<WindowImp*>(this))
+    if (auto window = std::dynamic_pointer_cast<WindowImp>(self()))
         event->setTarget(window->getWindowProxy());
     else
-        event->setTarget(this);
+        event->setTarget(self());
 
-    if (NodeImp* node = dynamic_cast<NodeImp*>(this)) {
-        DocumentImp* document = dynamic_cast<DocumentImp*>(node);
+    if (auto node = std::dynamic_pointer_cast<NodeImp>(self())) {
+        DocumentPtr document = std::dynamic_pointer_cast<DocumentImp>(node);
         if (!document)
             document = node->getOwnerDocumentImp();
         assert(document);
 
         document->enter();
 
-        std::list<EventTargetImp*> eventPath;
-        for (NodeImp* ancestor = node->parentNode; ancestor; ancestor = ancestor->parentNode) {
-            if (auto shadowTree = dynamic_cast<HTMLTemplateElementImp*>(ancestor)) {
-                if (NodeImp* host = dynamic_cast<NodeImp*>(shadowTree->getHost().self())) {
+        std::list<EventTargetPtr> eventPath;
+        for (NodePtr ancestor = node->getParent(); ancestor; ancestor = ancestor->getParent()) {
+            if (auto shadowTree = std::dynamic_pointer_cast<HTMLTemplateElementImp>(ancestor)) {
+                if (auto host = std::dynamic_pointer_cast<NodeImp>(shadowTree->getHost().self())) {
                     // TODO: Fix 'target' of the event as well.
                     // TODO: Check the mouseover and mouseout events.
                     ancestor = host;
-                    if (!dynamic_cast<UIEventImp*>(event)) {
+                    if (!std::dynamic_pointer_cast<UIEventImp>(event)) {
                         // To repaint the window, we still need to notify the bound document
                         // of the event.
                         // TODO: Support nesting of bound elements.
@@ -166,8 +167,8 @@ bool EventTargetImp::dispatchEvent(events::Event evt)
 
         // cf. http://www.whatwg.org/specs/web-apps/current-work/multipage/webappapis.html#events-and-the-window-object
         if (document && event->getType() != u"load") {
-            if (WindowProxy* view = document->getDefaultWindow())
-                eventPath.push_front(view->getWindowPtr().get());
+            if (WindowProxyPtr view = document->getDefaultWindow())
+                eventPath.push_front(view->getWindowPtr());
         }
 
         event->setEventPhase(events::Event::CAPTURING_PHASE);
@@ -213,17 +214,18 @@ bool EventTargetImp::dispatchEvent(events::Event evt)
 
         document->exit();
 
-    } else if (WindowImp* window = dynamic_cast<WindowImp*>(this)) {
-        auto proxy = dynamic_cast<WindowProxy*>(window->getDocument().getDefaultView().self());
-        window->enter(proxy);
-        event->setEventPhase(events::Event::AT_TARGET);
-        event->setCurrentTarget(this);
-        invoke(event);
-        window->exit(proxy);
+    } else if (auto window = std::dynamic_pointer_cast<WindowImp>(self())) {
+        if (auto proxy = std::dynamic_pointer_cast<WindowProxy>(window->getWindowProxy()->self())) {
+            window->enter(proxy.get());
+            event->setEventPhase(events::Event::AT_TARGET);
+            event->setCurrentTarget(self());
+            invoke(event);
+            window->exit(proxy.get());
+        }
     }
     event->setDispatchFlag(false);
     event->setEventPhase(events::Event::AT_TARGET);
-    event->setCurrentTarget(0);
+    event->setCurrentTarget(nullptr);
 
     return !event->getDefaultPrevented();
 }
@@ -233,8 +235,8 @@ EventTargetImp::EventTargetImp() :
 {
 }
 
-EventTargetImp::EventTargetImp(EventTargetImp* org) :
-    ObjectMixin()
+EventTargetImp::EventTargetImp(const EventTargetImp& other) :
+    ObjectMixin(other)
 {
     // TODO: Check what needs to be copied.
 }

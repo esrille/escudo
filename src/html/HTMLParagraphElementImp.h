@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,19 @@ namespace bootstrap
 class HTMLParagraphElementImp : public ObjectMixin<HTMLParagraphElementImp, HTMLElementImp>
 {
 public:
+    HTMLParagraphElementImp(DocumentImp* ownerDocument) :
+        ObjectMixin(ownerDocument, u"p")
+    {
+    }
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLParagraphElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
+
     // HTMLParagraphElement
     // HTMLParagraphElement-25
     std::u16string getAlign();
@@ -49,12 +62,6 @@ public:
     static const char* const getMetaData()
     {
         return html::HTMLParagraphElement::getMetaData();
-    }
-    HTMLParagraphElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"p") {
-    }
-    HTMLParagraphElementImp(HTMLParagraphElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
     }
 };
 

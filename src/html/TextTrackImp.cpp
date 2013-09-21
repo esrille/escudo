@@ -52,13 +52,13 @@ void TextTrackImp::setMode(const html::TextTrackMode& mode)
 html::TextTrackCueList TextTrackImp::getCues()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::TextTrackCueList TextTrackImp::getActiveCues()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void TextTrackImp::addCue(html::TextTrackCue cue)
@@ -74,7 +74,7 @@ void TextTrackImp::removeCue(html::TextTrackCue cue)
 events::EventHandlerNonNull TextTrackImp::getOncuechange()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void TextTrackImp::setOncuechange(events::EventHandlerNonNull oncuechange)

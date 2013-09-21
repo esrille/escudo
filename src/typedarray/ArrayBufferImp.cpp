@@ -23,13 +23,13 @@ unsigned int ArrayBufferImp::getByteLength()
 ArrayBuffer ArrayBufferImp::slice(int begin)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 ArrayBuffer ArrayBufferImp::slice(int begin, int end)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 }

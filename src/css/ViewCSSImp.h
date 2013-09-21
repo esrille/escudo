@@ -36,6 +36,8 @@
 
 #include "font/FontManager.h"
 
+#include "html/MediaQueryListImp.h"
+
 namespace org { namespace w3c { namespace dom {
 
 class Document;
@@ -50,7 +52,7 @@ class ViewCSSImp
 
     static const unsigned MaxFontSizes = 8;
 
-    Retained<ContainingBlock> initialContainingBlock;
+    ContainingBlock initialContainingBlock;
 
     WindowPtr window;
     unsigned dpi;
@@ -60,12 +62,12 @@ class ViewCSSImp
 
     Retained<EventListenerImp> mutationListener;
 
-    std::map<MediaListImp*, html::MediaQueryList> mediaListMap;
+    std::map<MediaListImp*, MediaQueryListPtr> mediaListMap;
     bool mediaCheck;
 
     // Selector matching
     std::map<Element, CSSStyleDeclarationPtr> map;
-    std::list<Object*> hoverList;
+    std::list<Element> hoverList;
     unsigned overflow;
 
     // Style recalculation
@@ -91,15 +93,15 @@ class ViewCSSImp
     void removeComputedStyle(Element element);
 
     void handleMutation(EventListenerImp* listener, events::Event event);
-    void collectRules(CSSRuleListImp::RuleSet& set, Element element, css::CSSRuleList list, unsigned importance, MediaListImp* mediaList = 0);
-    void updateStyleRules(Element element, CSSStyleDeclarationImp* style, CSSStyleDeclarationImp* parentStyle);
-    bool expandBinding(Element element, CSSStyleDeclarationImp* style);
+    void collectRules(CSSRuleListImp::RuleSet& set, Element element, css::CSSRuleList list, unsigned importance, MediaListPtr mediaList = nullptr);
+    void updateStyleRules(Element element, const CSSStyleDeclarationPtr& style, CSSStyleDeclarationPtr parentStyle);
+    bool expandBinding(Element element, const CSSStyleDeclarationPtr& style);
 
 public:
     ViewCSSImp(WindowPtr window);
     virtual ~ViewCSSImp();
 
-    Document getDocument() const {
+    DocumentPtr getDocument() const {
         return window->getDocument();
     }
     WindowPtr getWindow() const {
@@ -107,21 +109,21 @@ public:
     }
 
     // Media query
-    MediaQueryListImp* matchMedia(MediaListImp* mediaList);
+    MediaQueryListPtr matchMedia(const MediaListPtr& mediaList);
     void flushMediaQueryLists(std::list<html::MediaQueryList>& list) {
         for (auto i = mediaListMap.begin(); i != mediaListMap.end(); ++i)
             list.push_back(i->second);
     }
 
     // Selector matching
-    void addStyle(const Element& element, CSSStyleDeclarationImp* style);
+    void addStyle(const Element& element, const CSSStyleDeclarationPtr& style);
     void constructComputedStyles();
-    void constructComputedStyle(Node node, CSSStyleDeclarationImp* parentStyle);
+    void constructComputedStyle(Node node, CSSStyleDeclarationPtr parentStyle);
 
     // Style recalculation
     void calculateComputedStyles();
-    void calculateComputedStyle(Element element, CSSStyleDeclarationImp* parentStyle, CSSAutoNumberingValueImp::CounterContext* counterContext, unsigned flags);
-    Element updatePseudoElement(CSSStyleDeclarationImp* style, int id, Element element, Element pseudoElement, CSSAutoNumberingValueImp::CounterContext* counterContext);
+    void calculateComputedStyle(Element element, const CSSStyleDeclarationPtr& parentStyle, CSSAutoNumberingValueImp::CounterContext* counterContext, unsigned flags);
+    Element updatePseudoElement(const CSSStyleDeclarationPtr& style, int id, Element element, Element pseudoElement, CSSAutoNumberingValueImp::CounterContext* counterContext);
 
     // Reflow
     HttpRequest* preload(const std::u16string& base, const std::u16string& url) {
@@ -129,10 +131,10 @@ public:
             return window->preload(base, url);
         return 0;
     }
-    Block* createBlock(Element element, Block* parentBox, CSSStyleDeclarationImp* style, bool newContext, bool asTablePart = false);
-    Block* constructBlock(Node node, Block* parentBox, CSSStyleDeclarationImp* style, Block* prevBox, bool asTablePart = false);
-    Block* constructBlock(Text text, Block* parentBox, CSSStyleDeclarationImp* style, Block* prevBox);
-    Block* constructBlock(Element element, Block* parentBox, CSSStyleDeclarationImp* parentStyle, CSSStyleDeclarationImp* style, Block* prevBox, bool asTablePart = false);
+    Block* createBlock(Element element, Block* parentBox, const CSSStyleDeclarationPtr& style, bool newContext, bool asTablePart = false);
+    Block* constructBlock(Node node, Block* parentBox, const CSSStyleDeclarationPtr& style, Block* prevBox, bool asTablePart = false);
+    Block* constructBlock(Text text, Block* parentBox, const CSSStyleDeclarationPtr& style, Block* prevBox);
+    Block* constructBlock(Element element, Block* parentBox, const CSSStyleDeclarationPtr& parentStyle, CSSStyleDeclarationPtr style, Block* prevBox, bool asTablePart = false);
     Block* constructBlocks();
     Block* layOut();
     Block* dump();
@@ -289,7 +291,7 @@ public:
         return --quotingDepth;
     }
 
-    CSSStyleDeclarationImp* getStyle(Element elt, Nullable<std::u16string> pseudoElt = Nullable<std::u16string>());
+    CSSStyleDeclarationPtr getStyle(Element elt, Nullable<std::u16string> pseudoElt = Nullable<std::u16string>());
 
     Block* getTree() const {
         return boxTree.get();
@@ -346,8 +348,8 @@ public:
     virtual css::CSSStyleDeclaration getComputedStyle(Element elt, Nullable<std::u16string> pseudoElt);
 
     // TODO: Refine the following OpenGL specific part
-    FontTexture* selectFont(CSSStyleDeclarationImp* style);
-    FontTexture* selectAltFont(CSSStyleDeclarationImp* style, FontTexture* current, char32_t u);
+    FontTexture* selectFont(const CSSStyleDeclarationPtr& style);
+    FontTexture* selectAltFont(const CSSStyleDeclarationPtr& style, FontTexture* current, char32_t u);
 };
 
 }}}}  // org::w3c::dom::bootstrap

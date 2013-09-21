@@ -109,11 +109,11 @@ unsigned int HTMLTableElementImp::getRowCount()
     // TODO: Better to keep the result
     unsigned int count = 0;
     for (Element child = getFirstElementChild(); child; child = child.getNextElementSibling()) {
-        if (dynamic_cast<HTMLTableRowElementImp*>(child.self()))
+        if (std::dynamic_pointer_cast<HTMLTableRowElementImp>(child.self()))
             ++count;
-        else if (HTMLTableSectionElementImp* section = dynamic_cast<HTMLTableSectionElementImp*>(child.self())) {
+        else if (auto section = std::dynamic_pointer_cast<HTMLTableSectionElementImp>(child.self())) {
             for (Element child = section->getFirstElementChild(); child; child = child.getNextElementSibling()) {
-                if (dynamic_cast<HTMLTableRowElementImp*>(child.self()))
+                if (std::dynamic_pointer_cast<HTMLTableRowElementImp>(child.self()))
                     ++count;
             }
         }
@@ -127,10 +127,10 @@ html::HTMLTableRowElement HTMLTableElementImp::getRow(unsigned int index)
 
     // thead
     for (Element child = getFirstElementChild(); child; child = child.getNextElementSibling()) {
-        if (HTMLTableSectionElementImp* section = dynamic_cast<HTMLTableSectionElementImp*>(child.self())) {
+        if (auto section = std::dynamic_pointer_cast<HTMLTableSectionElementImp>(child.self())) {
             if (section->getLocalName() == u"thead") {
                 for (Element child = section->getFirstElementChild(); child; child = child.getNextElementSibling()) {
-                    if (HTMLTableRowElementImp* row = dynamic_cast<HTMLTableRowElementImp*>(child.self())) {
+                    if (auto row = std::dynamic_pointer_cast<HTMLTableRowElementImp>(child.self())) {
                         if (count == index)
                             return row;
                         ++count;
@@ -141,14 +141,14 @@ html::HTMLTableRowElement HTMLTableElementImp::getRow(unsigned int index)
     }
 
     for (Element child = getFirstElementChild(); child; child = child.getNextElementSibling()) {
-        if (HTMLTableRowElementImp* row = dynamic_cast<HTMLTableRowElementImp*>(child.self())) {
+        if (auto row = std::dynamic_pointer_cast<HTMLTableRowElementImp>(child.self())) {
             if (count == index)
                 return row;
             ++count;
-        } else if (HTMLTableSectionElementImp* section = dynamic_cast<HTMLTableSectionElementImp*>(child.self())) {
+        } else if (auto section = std::dynamic_pointer_cast<HTMLTableSectionElementImp>(child.self())) {
             if (section->getLocalName() == u"tbody") {
                 for (Element child = section->getFirstElementChild(); child; child = child.getNextElementSibling()) {
-                    if (HTMLTableRowElementImp* row = dynamic_cast<HTMLTableRowElementImp*>(child.self())) {
+                    if (auto row = std::dynamic_pointer_cast<HTMLTableRowElementImp>(child.self())) {
                         if (count == index)
                             return row;
                         ++count;
@@ -160,10 +160,10 @@ html::HTMLTableRowElement HTMLTableElementImp::getRow(unsigned int index)
 
     // tfoot
     for (Element child = getFirstElementChild(); child; child = child.getNextElementSibling()) {
-        if (HTMLTableSectionElementImp* section = dynamic_cast<HTMLTableSectionElementImp*>(child.self())) {
+        if (auto section = std::dynamic_pointer_cast<HTMLTableSectionElementImp>(child.self())) {
             if (section->getLocalName() == u"tfoot") {
                 for (Element child = section->getFirstElementChild(); child; child = child.getNextElementSibling()) {
-                    if (HTMLTableRowElementImp* row = dynamic_cast<HTMLTableRowElementImp*>(child.self())) {
+                    if (auto row = std::dynamic_pointer_cast<HTMLTableRowElementImp>(child.self())) {
                         if (count == index)
                             return row;
                         ++count;
@@ -173,7 +173,7 @@ html::HTMLTableRowElement HTMLTableElementImp::getRow(unsigned int index)
         }
     }
 
-    return 0;
+    return nullptr;
 }
 
 //
@@ -183,10 +183,10 @@ html::HTMLTableRowElement HTMLTableElementImp::getRow(unsigned int index)
 html::HTMLTableCaptionElement HTMLTableElementImp::getCaption()
 {
     for (Element child = getFirstElementChild(); child; child = child.getNextElementSibling()) {
-        if (HTMLTableCaptionElementImp* caption = dynamic_cast<HTMLTableCaptionElementImp*>(child.self()))
+        if (auto caption = std::dynamic_pointer_cast<HTMLTableCaptionElementImp>(child.self()))
             return caption;
     }
-    return 0;
+    return nullptr;
 }
 
 void HTMLTableElementImp::setCaption(html::HTMLTableCaptionElement caption)
@@ -197,7 +197,7 @@ void HTMLTableElementImp::setCaption(html::HTMLTableCaptionElement caption)
 html::HTMLElement HTMLTableElementImp::createCaption()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void HTMLTableElementImp::deleteCaption()
@@ -208,7 +208,7 @@ void HTMLTableElementImp::deleteCaption()
 html::HTMLTableSectionElement HTMLTableElementImp::getTHead()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void HTMLTableElementImp::setTHead(html::HTMLTableSectionElement tHead)
@@ -219,7 +219,7 @@ void HTMLTableElementImp::setTHead(html::HTMLTableSectionElement tHead)
 html::HTMLElement HTMLTableElementImp::createTHead()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void HTMLTableElementImp::deleteTHead()
@@ -230,7 +230,7 @@ void HTMLTableElementImp::deleteTHead()
 html::HTMLTableSectionElement HTMLTableElementImp::getTFoot()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void HTMLTableElementImp::setTFoot(html::HTMLTableSectionElement tFoot)
@@ -241,7 +241,7 @@ void HTMLTableElementImp::setTFoot(html::HTMLTableSectionElement tFoot)
 html::HTMLElement HTMLTableElementImp::createTFoot()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void HTMLTableElementImp::deleteTFoot()
@@ -252,30 +252,30 @@ void HTMLTableElementImp::deleteTFoot()
 html::HTMLCollection HTMLTableElementImp::getTBodies()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::HTMLElement HTMLTableElementImp::createTBody()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::HTMLCollection HTMLTableElementImp::getRows()
 {
-    return new(std::nothrow) Rows(this);
+    return std::make_shared<Rows>(this);
 }
 
 html::HTMLElement HTMLTableElementImp::insertRow()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::HTMLElement HTMLTableElementImp::insertRow(int index)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void HTMLTableElementImp::deleteRow(int index)

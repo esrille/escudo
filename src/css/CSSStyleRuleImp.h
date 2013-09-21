@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,10 @@
 #ifndef CSSSTYLERULE_IMP_H
 #define CSSSTYLERULE_IMP_H
 
-#include <Object.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <org/w3c/dom/css/CSSStyleRule.h>
 
 #include <org/w3c/dom/css/CSSRule.h>
@@ -34,10 +37,12 @@ class ViewCSSImp;
 class CSSStyleRuleImp : public ObjectMixin<CSSStyleRuleImp, CSSRuleImp>
 {
     CSSSelectorsGroup* selectorsGroup;
-    css::CSSStyleDeclaration styleDeclaration;
+    CSSStyleDeclarationPtr styleDeclaration;
 
 public:
-    CSSStyleRuleImp(CSSSelectorsGroup* selectorsGroup, css::CSSStyleDeclaration styleDeclaration);
+    CSSStyleRuleImp(CSSSelectorsGroup* selectorsGroup);
+
+    void setStyle(const CSSStyleDeclarationPtr& style);
 
     CSSSelectorsGroup* getSelectorsGroup() const {
         return selectorsGroup;
@@ -61,6 +66,8 @@ public:
         return css::CSSStyleRule::getMetaData();
     }
 };
+
+typedef std::shared_ptr<CSSStyleRuleImp> CSSStyleRulePtr;
 
 }}}}  // org::w3c::dom::bootstrap
 

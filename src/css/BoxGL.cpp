@@ -322,7 +322,7 @@ void Box::renderBorderEdge(ViewCSSImp* view, int edge, unsigned borderStyle, uns
 }
 
 void Box::renderBorder(ViewCSSImp* view, float left, float top,
-                       CSSStyleDeclarationImp* style, unsigned backgroundColor, BoxImage* backgroundImage,
+                       const CSSStyleDeclarationPtr& style, unsigned backgroundColor, BoxImage* backgroundImage,
                        float ll, float lr, float rl, float rr, float tt, float tb, float bt, float bb,
                        Box* leftEdge, Box* rightEdge)
 {
@@ -645,7 +645,7 @@ void Block::renderInline(ViewCSSImp* view, StackingContext* stackingContext)
         return;
     }
 
-    if (HTMLReplacedElementImp* replaced = dynamic_cast<HTMLReplacedElementImp*>(getNode().self())) {
+    if (auto replaced = std::dynamic_pointer_cast<HTMLReplacedElementImp>(getNode().self())) {
         if (BoxImage* image = replaced->getImage()) {
             if (!intrinsic && image->getState() == BoxImage::CompletelyAvailable)
                 setFlags(NEED_REFLOW);
@@ -795,7 +795,7 @@ void InlineBox::renderMultipleBackground(ViewCSSImp* view)
     }
 }
 
-void InlineBox::renderEmptyBox(ViewCSSImp* view, CSSStyleDeclarationImp* parentStyle)
+void InlineBox::renderEmptyBox(ViewCSSImp* view, const CSSStyleDeclarationPtr& parentStyle)
 {
     parentStyle->resolve(view, getContainingBlock(view));
     LineBox* lineBox = dynamic_cast<LineBox*>(getParentBox());
@@ -807,7 +807,7 @@ void InlineBox::renderEmptyBox(ViewCSSImp* view, CSSStyleDeclarationImp* parentS
         float point = view->getPointFromPx(parentStyle->fontSize.getPx());
         paddingHeight += font->getLineHeight(point);
         leading = std::max(lineBox->getStyle()->lineHeight.getPx(), parentStyle->lineHeight.getPx()) - font->getLineHeight(point);
-        top += parentStyle->verticalAlign.getOffset(view, parentStyle, lineBox, font, point, leading);
+        top += parentStyle->verticalAlign.getOffset(view, parentStyle.get(), lineBox, font, point, leading);
     }
     top -= parentStyle->marginTop.getPx() + parentStyle->paddingTop.getPx() + parentStyle->borderTopWidth.getPx();
 
@@ -902,8 +902,8 @@ void InlineBox::render(ViewCSSImp* view, StackingContext* stackingContext)
 
     if (!isAnonymous()) {
         if (style->getBox() == this && 0.0f < getTotalWidth()) {
-            std::list<CSSStyleDeclarationImp*> parentStyleList;
-            for (CSSStyleDeclarationImp* parentStyle = getStyle()->getParentStyle();
+            std::list<CSSStyleDeclarationPtr> parentStyleList;
+            for (CSSStyleDeclarationPtr parentStyle = getStyle()->getParentStyle();
                 parentStyle && parentStyle->display.isInline() && parentStyle->getBox() == this;
                 parentStyle = parentStyle->getParentStyle())
             {
@@ -986,7 +986,7 @@ void InlineBox::render(ViewCSSImp* view, StackingContext* stackingContext)
 
 void InlineBox::renderText(ViewCSSImp* view, const std::u16string& data, float point)
 {
-    CSSStyleDeclarationImp* activeStyle = getStyle();
+    const CSSStyleDeclarationPtr& activeStyle = getStyle();
     FontTexture* font = activeStyle->getFontTexture();
     float letterSpacing = 0.0f;
     if (!activeStyle->letterSpacing.isNormal())

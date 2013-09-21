@@ -38,6 +38,19 @@ namespace bootstrap
 class HTMLOptionElementImp : public ObjectMixin<HTMLOptionElementImp, HTMLElementImp>
 {
 public:
+    HTMLOptionElementImp(DocumentImp* ownerDocument) :
+        ObjectMixin(ownerDocument, u"option")
+    {
+    }
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLOptionElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
+
     // HTMLOptionElement
     bool getDisabled();
     void setDisabled(bool disabled);
@@ -61,12 +74,6 @@ public:
     static const char* const getMetaData()
     {
         return html::HTMLOptionElement::getMetaData();
-    }
-    HTMLOptionElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"option") {
-    }
-    HTMLOptionElementImp(HTMLOptionElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
     }
 };
 

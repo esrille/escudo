@@ -101,7 +101,7 @@ void HTMLTableCellElementImp::setRowSpan(unsigned int rowSpan)
 DOMSettableTokenList HTMLTableCellElementImp::getHeaders()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void HTMLTableCellElementImp::setHeaders(const std::u16string& headers)

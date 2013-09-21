@@ -101,7 +101,7 @@ int main(int argc, char* argv[])
     std::string navigatorPath = profile.getProfilePath() + "/escudo.html";
     if (!profile.hasFile(navigatorPath))
         navigatorPath = std::string(argv[1]) + "/escudo.html";
-    WindowProxy* imp = new WindowProxy(0, 0, WindowProxy::DeskTop);
+    auto imp = std::make_shared<WindowProxy>(WindowProxy::DeskTop);
     window = imp;
     imp->setFaviconOverridable(true);
     imp->enableZoom(false);
@@ -109,7 +109,7 @@ int main(int argc, char* argv[])
 
     glutMainLoop();
 
-    window = 0;
+    window = nullptr;
 
     ECMAScriptContext::shutDown();
 

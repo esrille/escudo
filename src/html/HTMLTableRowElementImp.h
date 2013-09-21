@@ -23,8 +23,6 @@
 
 #include <org/w3c/dom/html/HTMLTableRowElement.h>
 
-#include <boost/intrusive_ptr.hpp>
-
 #include <org/w3c/dom/html/HTMLTableCellElement.h>
 
 #include "HTMLCollectionImp.h"
@@ -43,7 +41,7 @@ class HTMLTableRowElementImp : public ObjectMixin<HTMLTableRowElementImp, HTMLEl
     // HTMLCollection for cells
     class Cells : public HTMLCollectionImp
     {
-        boost::intrusive_ptr<HTMLTableRowElementImp> row;
+        std::shared_ptr<HTMLTableRowElementImp> row;
     public:
         Cells(HTMLTableRowElementImp* row);
 
@@ -51,23 +49,29 @@ class HTMLTableRowElementImp : public ObjectMixin<HTMLTableRowElementImp, HTMLEl
         virtual unsigned int getLength();
         virtual Element item(unsigned int index);
         virtual Object namedItem(const std::u16string& name) {
-            return 0;
+            return nullptr;
         }
     };
 
 public:
     HTMLTableRowElementImp(DocumentImp* ownerDocument) :
         ObjectMixin(ownerDocument, u"tr")
-    {}
-    HTMLTableRowElementImp(HTMLTableRowElementImp* org, bool deep) :
-        ObjectMixin(org, deep)
-    {}
+    {
+    }
 
     virtual void handleMutation(events::MutationEvent mutation);
 
     // Utilities for Rows
     unsigned int getCellCount();
     html::HTMLTableCellElement getCell(unsigned int index);
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLTableRowElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
 
     // HTMLTableRowElement
     int getRowIndex();

@@ -42,17 +42,16 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 HTMLLinkElementImp::HTMLLinkElementImp(DocumentImp* ownerDocument) :
     ObjectMixin(ownerDocument, u"link"),
     dirty(false),
-    current(0),
-    styleSheet(0)
+    current(0)
 {
     tabIndex = -1;
 }
 
-HTMLLinkElementImp::HTMLLinkElementImp(HTMLLinkElementImp* org, bool deep) :
-    ObjectMixin(org, deep),
+HTMLLinkElementImp::HTMLLinkElementImp(const HTMLLinkElementImp& org) :
+    ObjectMixin(org),
     dirty(false),
     current(0),
-    styleSheet(org->styleSheet) // TODO: make a clone sheet, too?
+    styleSheet(org.styleSheet) // TODO: make a clone sheet, too?
 {
 }
 
@@ -64,7 +63,7 @@ HTMLLinkElementImp::~HTMLLinkElementImp()
 void HTMLLinkElementImp::resetStyleSheet()
 {
     if (styleSheet) {
-        styleSheet = 0;
+        styleSheet = nullptr;
         if (auto document = getOwnerDocumentImp())
             document->resetStyleSheets();
     }
@@ -76,9 +75,9 @@ void HTMLLinkElementImp::handleMutation(events::MutationEvent mutation)
     case Intern(u"media"):
         if (styleSheet) {
             styleSheet.setMedia((mutation.getAttrChange() != events::MutationEvent::REMOVAL) ? mutation.getNewValue() : u"");
-            if (DocumentImp* document = getOwnerDocumentImp()) {
+            if (DocumentPtr document = getOwnerDocumentImp()) {
                 // TODO: Optimize the following steps later
-                if (WindowProxy* view = document->getDefaultWindow())
+                if (WindowProxyPtr view = document->getDefaultWindow())
                     view->setViewFlags(Box::NEED_SELECTOR_REMATCHING);
             }
         }
@@ -107,10 +106,10 @@ void HTMLLinkElementImp::requestRefresh()
         return;
     dirty = true;
 
-    DocumentImp* owner = getOwnerDocumentImp();
+    DocumentPtr owner = getOwnerDocumentImp();
     assert(owner);
-    if (WindowProxy* window = owner->getDefaultWindow()) {
-        Task task(this, boost::bind(&HTMLLinkElementImp::refresh, this));
+    if (WindowProxyPtr window = owner->getDefaultWindow()) {
+        Task task(self(), boost::bind(&HTMLLinkElementImp::refresh, this));
         window->putTask(task);
     }
 }
@@ -123,7 +122,7 @@ void HTMLLinkElementImp::refresh()
 
     std::u16string href = getHref();
     if (!href.empty()) {
-        DocumentImp* document = getOwnerDocumentImp();
+        DocumentPtr document = getOwnerDocumentImp();
         std::u16string rel = getRel();
         toLower(rel);
         if (::contains(rel, u"stylesheet")) {
@@ -160,19 +159,19 @@ void HTMLLinkElementImp::linkStyleSheet(HttpRequest* request)
     if (current != request)
         delete request;
 
-    DocumentImp* document = getOwnerDocumentImp();
+    DocumentPtr document = getOwnerDocumentImp();
     if (current->getStatus() == 200) {
         boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(current->getContentDescriptor(), boost::iostreams::close_handle);
         CSSParser parser(current->getRequestMessage().getURL());
         CSSInputStream cssStream(stream, current->getResponseMessage().getContentCharset(), utfconv(document->getCharacterSet()));
         styleSheet = parser.parse(document, cssStream);
-        if (auto imp = dynamic_cast<CSSStyleSheetImp*>(styleSheet.self()))
-            imp->setOwnerNode(this);
+        if (auto imp = std::dynamic_pointer_cast<CSSStyleSheetImp>(styleSheet.self()))
+            imp->setOwnerNode(self());
         styleSheet.setMedia(getMedia());
         if (4 <= getLogLevel())
             dumpStyleSheet(std::cerr, styleSheet.self());
         document->resetStyleSheets();
-        if (WindowProxy* view = document->getDefaultWindow())
+        if (WindowProxyPtr view = document->getDefaultWindow())
             view->setViewFlags(Box::NEED_SELECTOR_REMATCHING);
     }
     document->decrementLoadEventDelayCount();
@@ -183,12 +182,12 @@ void HTMLLinkElementImp::linkIcon(HttpRequest* request)
     if (current != request)
         delete request;
 
-    DocumentImp* document = getOwnerDocumentImp();
+    DocumentPtr document = getOwnerDocumentImp();
     setFavicon(document);
     document->decrementLoadEventDelayCount();
 }
 
-bool HTMLLinkElementImp::setFavicon(DocumentImp* document)
+bool HTMLLinkElementImp::setFavicon(const DocumentPtr& document)
 {
     std::u16string rel = getRel();
     toLower(rel);
@@ -202,7 +201,7 @@ bool HTMLLinkElementImp::setFavicon(DocumentImp* document)
         if (type == u"image/vnd.microsoft.icon" || type.empty()) {
             IcoImage ico;
             if (ico.open(file)) {
-                if (WindowProxy* view = document->getDefaultWindow()) {
+                if (WindowProxyPtr view = document->getDefaultWindow()) {
                     view->setFavicon(&ico, file);
                     result = true;
                 }
@@ -211,7 +210,7 @@ bool HTMLLinkElementImp::setFavicon(DocumentImp* document)
             BoxImage image;
             image.open(file);
             if (image.getState() == BoxImage::CompletelyAvailable) {
-                if (WindowProxy* view = document->getDefaultWindow()) {
+                if (WindowProxyPtr view = document->getDefaultWindow()) {
                     view->setFavicon(&image);
                     result = true;
                 }
@@ -220,13 +219,6 @@ bool HTMLLinkElementImp::setFavicon(DocumentImp* document)
         fclose(file);
     }
     return result;
-}
-
-
-// Node
-Node HTMLLinkElementImp::cloneNode(bool deep)
-{
-    return new(std::nothrow) HTMLLinkElementImp(this, deep);
 }
 
 // HTMLLinkElement
@@ -265,7 +257,7 @@ void HTMLLinkElementImp::setRel(const std::u16string& rel)
 
 DOMTokenList HTMLLinkElementImp::getRelList()
 {
-    return new(std::nothrow) DOMTokenListImp(this, u"rel");
+    return std::make_shared<DOMTokenListImp>(this, u"rel");
 }
 
 std::u16string HTMLLinkElementImp::getMedia()
@@ -301,7 +293,7 @@ void HTMLLinkElementImp::setType(const std::u16string& type)
 DOMSettableTokenList HTMLLinkElementImp::getSizes()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void HTMLLinkElementImp::setSizes(const std::u16string& sizes)

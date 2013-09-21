@@ -17,19 +17,19 @@ namespace bootstrap
 css::CSSPrimitiveValue RGBColorImp::getRed()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 css::CSSPrimitiveValue RGBColorImp::getGreen()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 css::CSSPrimitiveValue RGBColorImp::getBlue()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 }

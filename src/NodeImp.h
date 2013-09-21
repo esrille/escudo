@@ -37,6 +37,10 @@
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 class DocumentImp;
+class NodeImp;
+
+typedef std::shared_ptr<NodeImp> NodePtr;
+typedef std::shared_ptr<DocumentImp> DocumentPtr;
 
 class NodeImp : public ObjectMixin<NodeImp, EventTargetImp>
 {
@@ -45,47 +49,60 @@ class NodeImp : public ObjectMixin<NodeImp, EventTargetImp>
     friend class EventTargetImp;
     friend class HTMLElementImp;  // for focus
 
-    DocumentImp* ownerDocument;
-    NodeImp* parentNode;
-    NodeImp* firstChild;
-    NodeImp* lastChild;
-    NodeImp* previousSibling;
-    NodeImp* nextSibling;
-    unsigned int childCount;
+    std::weak_ptr<DocumentImp> ownerDocument;
+    std::weak_ptr<NodeImp> parentNode;
+    NodePtr firstChild;
+    NodePtr lastChild;
+    NodePtr previousSibling;
+    NodePtr nextSibling;
+    unsigned int childCount = 0;
 
-    NodeImp* removeChild(NodeImp* item);
-    NodeImp* appendChild(NodeImp* item);
-    NodeImp* insertBefore(NodeImp* item, NodeImp* after);
+    NodePtr removeChild(NodePtr item);
+    NodePtr appendChild(NodePtr item);
+    NodePtr insertBefore(NodePtr item, NodePtr after);
 
 protected:
     std::u16string nodeName;
 
 public:
     NodeImp(DocumentImp* ownerDocument);
-    NodeImp(NodeImp* org, bool deep);
+    NodeImp(const NodeImp& org);
     ~NodeImp();
 
+    NodePtr getParent() const {
+        return parentNode.lock();
+    }
+    void setParent(NodePtr node) {
+        parentNode = node;
+    }
+
     // Returns true if this is an ancestor of the node
-    bool isAncestorOf(NodeImp* node) {
-        for (NodeImp* parent = node->parentNode; parent; parent = parent->parentNode) {
-            if (this == parent)
+    bool isAncestorOf(NodePtr node) {
+        for (NodePtr parent = node->getParent(); parent; parent = parent->getParent()) {
+            if (this == parent.get())
                 return true;
         }
         return false;
     }
 
-    DocumentImp* getOwnerDocumentImp() const {
-        return ownerDocument;
+    bool isDescendantOf(NodePtr node) {
+        for (NodePtr parent = getParent(); parent; parent = parent->getParent()) {
+            if (node == parent)
+                return true;
+        }
+        return false;
     }
-    void setOwnerDocument(DocumentImp* document);
+
+    DocumentPtr getOwnerDocumentImp() const {
+        return ownerDocument.lock();
+    }
+    void setOwnerDocument(const DocumentPtr& document);
 
     unsigned int getChildCount() const {
         return childCount;
     }
 
-    void setParentNode(NodeImp* node) {
-        parentNode = node;
-    }
+    void cloneChildren(NodeImp* org);
 
     // Node
     virtual unsigned short getNodeType();

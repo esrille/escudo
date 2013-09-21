@@ -59,6 +59,7 @@
 #include "HistoryImp.h"
 #include "LocationImp.h"
 #include "NavigatorImp.h"
+#include "html/HTMLIFrameElementImp.h"
 #include "html/HTMLInputStream.h"
 #include "html/HTMLParser.h"
 #include "html/ScreenImp.h"
@@ -178,7 +179,7 @@ private:
         HTMLTokenizer tokenizer;
         HTMLParser parser;
     public:
-        Parser(DocumentImp* document, int fd, const std::string& optionalEncoding);
+        Parser(const DocumentPtr& document, int fd, const std::string& optionalEncoding);
 
         Token getToken() {
             return tokenizer.getToken();
@@ -208,9 +209,9 @@ private:
 
     unsigned short flags;
     std::u16string name;
-    WindowProxy* parent;
-    std::deque<WindowProxy*> childWindows;
-    ElementImp* frameElement;
+    std::weak_ptr<WindowProxy> parent;
+    std::deque<WindowProxyPtr> childWindows;
+    std::weak_ptr<ElementImp> frameElement;
 
     std::deque<EventTask> eventQueue;
 
@@ -242,22 +243,32 @@ private:
     void keyup(const EventTask& task);
 
     void navigateToFragmentIdentifier(URL target);
-    WindowProxy* selectBrowsingContext(std::u16string target, bool& replace);
+    WindowProxyPtr selectBrowsingContext(std::u16string target, bool& replace);
     void navigate(std::u16string url, bool replace, WindowProxy* srcWindow);
 
     void updateView(ViewCSSImp* next);
 
 public:
-    WindowProxy(WindowProxy* parent = 0, ElementImp* frameElement = 0, unsigned short flags = 0);
+    WindowProxy(unsigned short flags = 0);
     ~WindowProxy();
 
     static css::CSSStyleSheet defaultStyleSheet;
+
+    void setBase(const std::u16string& base) {
+        request.setBase(base);
+    }
+
+    WindowProxyPtr createWindowProxy(const HTMLIFrameElementPtr& iframe, unsigned short flags);
+
+    WindowProxyPtr getParentProxy() const {
+        return parent.lock();
+    }
 
     bool isDeskTop() const {
         return (flags & DeskTop);
     }
     bool isTopLevel() const {
-        return (flags & TopLevel) || !parent;
+        return (flags & TopLevel) || parent.expired();
     }
 
     ViewCSSImp* getView() const {
@@ -266,7 +277,7 @@ public:
     void setSize(unsigned w, unsigned h);
     void setViewFlags(unsigned short flags);
 
-    bool isBindingDocumentWindow() const;
+    bool isBindingDocumentWindow();
 
     bool poll();
 
@@ -347,11 +358,11 @@ public:
     void setFavicon(BoxImage* image);
     void setFavicon();
 
-    ElementImp* getFrameElementImp() const {
-        return frameElement;
+    ElementPtr getFrameElementImp() const {
+        return frameElement.lock();
     }
-    ScreenImp* getScreenImp() {
-        return &screen;
+    ScreenPtr getScreenImp() {
+        return screen;
     }
 
     // This getPx() function is for supporting media queries in which relative
@@ -368,15 +379,15 @@ public:
         case css::CSSPrimitiveValue::CSS_PX:
             return value;
         case css::CSSPrimitiveValue::CSS_CM:
-            return value / 2.54f * screen.getDPI();
+            return value / 2.54f * screen->getDPI();
         case css::CSSPrimitiveValue::CSS_MM:
-            return value / 25.4f * screen.getDPI();
+            return value / 25.4f * screen->getDPI();
         case css::CSSPrimitiveValue::CSS_IN:
-            return value * screen.getDPI();
+            return value * screen->getDPI();
         case css::CSSPrimitiveValue::CSS_PT:
-            return value / 72 * screen.getDPI();
+            return value / 72 * screen->getDPI();
         case css::CSSPrimitiveValue::CSS_PC:
-            return value * 12 / 72 * screen.getDPI();
+            return value * 12 / 72 * screen->getDPI();
         case css::CSSPrimitiveValue::CSS_DPPX:
             return value;
         case css::CSSPrimitiveValue::CSS_DPI:
@@ -629,6 +640,8 @@ public:
         return html::Window::getMetaData();
     }
 };
+
+typedef std::shared_ptr<WindowProxy> WindowProxyPtr;
 
 }}}}  // org::w3c::dom::bootstrap
 

@@ -30,6 +30,8 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 class CSSParserExpr;
 class WindowProxy;
 
+typedef std::shared_ptr<WindowProxy> WindowProxyPtr;
+
 class MediaListImp : public ObjectMixin<MediaListImp>
 {
 public:
@@ -156,7 +158,7 @@ public:
     void clear() {
         mediaQueries.clear();
     }
-    bool matches(WindowProxy* window);
+    bool matches(const WindowProxyPtr& window);
 
     bool contains(const MediaQuery& mediaQuery) const;
 
@@ -186,6 +188,8 @@ public:
     static unsigned getMediaTypeID(const std::u16string& feature);
     static int getFeatureID(const std::u16string& feature);
 };
+
+typedef std::shared_ptr<MediaListImp> MediaListPtr;
 
 }}}}  // org::w3c::dom::bootstrap
 

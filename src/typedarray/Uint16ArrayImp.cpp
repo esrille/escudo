@@ -54,13 +54,13 @@ void Uint16ArrayImp::set(ObjectArray<unsigned short> array, unsigned int offset)
 Uint16Array Uint16ArrayImp::subarray(int start, int end)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 ArrayBuffer Uint16ArrayImp::getBuffer()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 unsigned int Uint16ArrayImp::getByteOffset()

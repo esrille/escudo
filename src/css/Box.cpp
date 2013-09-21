@@ -189,7 +189,7 @@ void Box::removeDescendants()
         style->removeBox(this);
 }
 
-void Box::setStyle(CSSStyleDeclarationImp* style)
+void Box::setStyle(const CSSStyleDeclarationPtr& style)
 {
     this->style = style;
     if (style) {
@@ -202,7 +202,7 @@ void Box::setStyle(CSSStyleDeclarationImp* style)
 void Box::unresolveStyle()
 {
     if (!isAnonymous()) {
-        if (CSSStyleDeclarationImp* style = getStyle())
+        if (auto style = getStyle())
             style->unresolve();
     }
     for (Box* i = firstChild; i; i = i->nextSibling)
@@ -211,7 +211,7 @@ void Box::unresolveStyle()
 
 float Box::getOutlineWidth() const
 {
-    if (CSSStyleDeclarationImp* style = getStyle())
+    if (auto style = getStyle())
         return style->outlineWidth.getPx();
     return 0.0f;
 }
@@ -260,12 +260,12 @@ Element Box::getContainingElement(Node node)
 {
     for (; node; node = node.getParentNode()) {
         if (node.getNodeType() == Node::ELEMENT_NODE) {
-            if (auto shadowTree = dynamic_cast<HTMLTemplateElementImp*>(node.self()))
+            if (auto shadowTree = std::dynamic_pointer_cast<HTMLTemplateElementImp>(node.self()))
                 node = shadowTree->getHost();
             return interface_cast<Element>(node);
         }
     }
-    return 0;
+    return nullptr;
 }
 
 void Box::updateScrollSize()
@@ -340,7 +340,7 @@ void Block::setContainingBlock(ViewCSSImp* view)
     if (!isFixed()) {
         assert(node);
         for (auto ancestor = node.getParentElement(); ancestor; ancestor = ancestor.getParentElement()) {
-            CSSStyleDeclarationImp* style = view->getStyle(ancestor);
+            auto style = view->getStyle(ancestor);
             if (!style)
                 continue;
             if (style->isPositioned()) {
@@ -462,7 +462,7 @@ unsigned short Box::gatherFlags() const
     return f;
 }
 
-Block::Block(Node node, CSSStyleDeclarationImp* style) :
+Block::Block(Node node, const CSSStyleDeclarationPtr& style) :
     Box(node),
     formattingContext(0),
     textAlign(CSSTextAlignValueImp::Default),
@@ -471,7 +471,6 @@ Block::Block(Node node, CSSStyleDeclarationImp* style) :
     inserted(false),
     edge(0.0f),
     remainingHeight(0.0f),
-    floatingFirstLetter(0),
     anonymousTable(0),
     defaultBaseline(0.0f),
     defaultLineHeight(0.0f),
@@ -479,6 +478,7 @@ Block::Block(Node node, CSSStyleDeclarationImp* style) :
     scrollWidth(0.0f),
     scrollHeight(0.0f)
 {
+    absoluteBlock.retain_();
     if (style)
         setStyle(style);
     flags |= NEED_EXPANSION | NEED_REFLOW | NEED_CHILD_REFLOW;
@@ -534,7 +534,7 @@ void Block::resolveBackground(ViewCSSImp* view)
         backgroundImage = 0;
         return;
     }
-    DocumentImp* document = dynamic_cast<DocumentImp*>(view->getDocument().self());
+    auto document = view->getDocument();
     if (backgroundRequest && backgroundRequest->getRequestMessage().getURL() != URL(document->getDocumentURI(), style->backgroundImage.getValue())) {
         delete backgroundRequest;   // TODO: check notifyBackground has been called
         backgroundRequest = 0;
@@ -557,7 +557,7 @@ void Block::notifyBackground(Document document)
 {
     if (backgroundRequest->getStatus() == 200)
         setFlags(NEED_REFLOW);
-    if (auto* imp = dynamic_cast<DocumentImp*>(document.self()))
+    if (auto imp = std::dynamic_pointer_cast<DocumentImp>(document.self()))
         imp->decrementLoadEventDelayCount();
     release_();
 }
@@ -745,7 +745,7 @@ void Block::layOutInlineBlock(ViewCSSImp* view, Node node, Block* inlineBlock, F
 {
     assert(inlineBlock->style);
 
-    InlineBox* inlineBox = new(std::nothrow) InlineBox(node, inlineBlock->style.get());
+    InlineBox* inlineBox = new(std::nothrow) InlineBox(node, inlineBlock->style);
     if (!inlineBox)
         return;  // TODO error
 
@@ -783,7 +783,7 @@ void Block::layOutInlineBlock(ViewCSSImp* view, Node node, Block* inlineBlock, F
 
     context->x += inlineBox->getTotalWidth();
     context->leftover -= inlineBox->getTotalWidth();
-    context->appendInlineBox(view, inlineBox, inlineBlock->style.get());
+    context->appendInlineBox(view, inlineBox, inlineBlock->style);
 
     updateMCW(inlineBox->getTotalWidth());
 }
@@ -860,11 +860,10 @@ bool Block::layOutInline(ViewCSSImp* view, FormattingContext* context, float ori
                 layOutInlineBlock(view, node, block, context);
             collapsed = false;
         } else {
-            CSSStyleDeclarationImp* style = 0;
             Element element = getContainingElement(node);
             if (!element)
                 continue;
-            style = view->getStyle(element);
+            auto style = view->getStyle(element);
             if (!style)
                 continue;
             if (style->display.isInline())
@@ -1356,7 +1355,7 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
 {
     const ContainingBlock* containingBlock = getContainingBlock(view);
 
-    Element element = 0;
+    Element element = nullptr;
     if (!isAnonymous())
         element = getContainingElement(node);
     else if (const Box* box = dynamic_cast<const Box*>(containingBlock)) {
@@ -1375,7 +1374,7 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
     std::u16string tag = interface_cast<html::HTMLElement>(element).getTagName();
 #endif
 
-    style = view->getStyle(element);
+    style = view->getStyle(element)->getCSSStyleDeclarationPtr();
     if (!style)
         return false;  // TODO error
 
@@ -1460,7 +1459,7 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
 
     CSSAutoLengthValueImp originalWidth = style->width;
     CSSAutoLengthValueImp originalHeight = style->height;
-    if (!layOutReplacedElement(view, element, style.get())) {
+    if (!layOutReplacedElement(view, element, style)) {
         if (!intrinsic && style->display.isInline() && isReplacedElement(element)) {
             // An object fallback has occurred for an inline, replaced element.
             // It is now treated as an inline element, and hence 'width' and 'height'
@@ -1848,7 +1847,7 @@ void Block::layOutAbsolute(ViewCSSImp* view)
 
     layOutInlineBlocks(view);
 
-    if (layOutReplacedElement(view, element, style.get())) {
+    if (layOutReplacedElement(view, element, style)) {
         maskH &= ~Width;
         maskV &= ~Height;
         // TODO: more conditions...

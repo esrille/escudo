@@ -37,7 +37,7 @@ css::CSSStyleDeclaration HTMLDivElementImp::getStyle()
     if (hasStyle())
         return HTMLElementImp::getStyle();
     css::CSSStyleDeclaration style = HTMLElementImp::getStyle();
-    if (CSSStyleDeclarationImp* imp = dynamic_cast<CSSStyleDeclarationImp*>(style.self())) {
+    if (auto imp = std::dynamic_pointer_cast<CSSStyleDeclarationImp>(style.self())) {
         if (getLocalName() == u"center")
             imp->setHTMLAlign(u"center");
     }
@@ -51,7 +51,7 @@ void HTMLDivElementImp::handleMutation(events::MutationEvent mutation)
 
     switch (Intern(mutation.getAttrName().c_str())) {
     case Intern(u"align"):
-        if (CSSStyleDeclarationImp* imp = dynamic_cast<CSSStyleDeclarationImp*>(style.self()))
+        if (auto imp = std::dynamic_pointer_cast<CSSStyleDeclarationImp>(style.self()))
             imp->setHTMLAlign(value);
         break;
     default:

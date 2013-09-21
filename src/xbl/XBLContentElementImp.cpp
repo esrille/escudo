@@ -17,7 +17,7 @@ namespace bootstrap
 NodeList XBLContentElementImp::getXblChildNodes()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void XBLContentElementImp::setInsertionPoint(Node child)

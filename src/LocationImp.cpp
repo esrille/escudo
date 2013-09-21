@@ -1,5 +1,5 @@
 /*
- * Copyright 2011 Esrille Inc.
+ * Copyright 2011, 2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -134,15 +134,9 @@ std::u16string LocationImp::resolveURL(const std::u16string& url)
     return resolved;
 }
 
-LocationImp::LocationImp(WindowProxy* window, const std::u16string& url) :
+LocationImp::LocationImp(const WindowProxyPtr& window, const std::u16string& url) :
     window(window),
     url(url)
-{
-}
-
-LocationImp::LocationImp(const LocationImp& other) :
-    window(other.window),
-    url(other.url)
 {
 }
 

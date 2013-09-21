@@ -17,7 +17,7 @@ namespace bootstrap
 html::Window DragEventInitImp::getView()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void DragEventInitImp::setView(html::Window view)
@@ -149,7 +149,7 @@ void DragEventInitImp::setButtons(unsigned short buttons)
 events::EventTarget DragEventInitImp::getRelatedTarget()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void DragEventInitImp::setRelatedTarget(events::EventTarget relatedTarget)
@@ -160,7 +160,7 @@ void DragEventInitImp::setRelatedTarget(events::EventTarget relatedTarget)
 html::DataTransfer DragEventInitImp::getDataTransfer()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void DragEventInitImp::setDataTransfer(html::DataTransfer dataTransfer)

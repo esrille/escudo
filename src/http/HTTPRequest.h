@@ -17,9 +17,10 @@
 #ifndef ES_HTTP_REQUEST_H
 #define ES_HTTP_REQUEST_H
 
-#include <fstream>
+#include <atomic>
 #include <cstdio>
 #include <deque>
+#include <fstream>
 #include <boost/function.hpp>
 
 #include "http/HTTPRequestMessage.h"
@@ -75,6 +76,10 @@ private:
 public:
     HttpRequest(const std::u16string& base = u"");
     ~HttpRequest();
+
+    void setBase(const std::u16string& base) {
+        this->base = base;
+    }
 
     bool constructResponseFromCache(bool sync = false);
     bool constructResponseFromData();

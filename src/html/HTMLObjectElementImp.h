@@ -49,7 +49,7 @@ class HTMLObjectElementImp : public ObjectMixin<HTMLObjectElementImp, HTMLReplac
 
 public:
     HTMLObjectElementImp(DocumentImp* ownerDocument);
-    HTMLObjectElementImp(HTMLObjectElementImp* org, bool deep);
+    HTMLObjectElementImp(const HTMLObjectElementImp& org);
 
     virtual void notify(NotificationType type);
     virtual void handleMutation(events::MutationEvent mutation);
@@ -60,6 +60,14 @@ public:
 
     // TODO: Refine this interface as this is only for CSS
     bool getIntrinsicSize(float& w, float& h);
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLObjectElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
 
     // HTMLObjectElement
     std::u16string getData();

@@ -28,7 +28,7 @@ void HTMLOptionElementImp::setDisabled(bool disabled)
 html::HTMLFormElement HTMLOptionElementImp::getForm()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 std::u16string HTMLOptionElementImp::getLabel()

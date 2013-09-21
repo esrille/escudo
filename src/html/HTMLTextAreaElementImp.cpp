@@ -72,7 +72,7 @@ void HTMLTextAreaElementImp::setDisabled(bool disabled)
 html::HTMLFormElement HTMLTextAreaElementImp::getForm()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 int HTMLTextAreaElementImp::getMaxLength()
@@ -193,7 +193,7 @@ bool HTMLTextAreaElementImp::getWillValidate()
 html::ValidityState HTMLTextAreaElementImp::getValidity()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 std::u16string HTMLTextAreaElementImp::getValidationMessage()
@@ -216,7 +216,7 @@ void HTMLTextAreaElementImp::setCustomValidity(const std::u16string& error)
 NodeList HTMLTextAreaElementImp::getLabels()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void HTMLTextAreaElementImp::select()

@@ -45,9 +45,8 @@ using namespace css;
 
 CSSImportRuleImp::CSSImportRuleImp(const std::u16string& href) :
     href(href),
-    mediaList(new(std::nothrow) MediaListImp),
-    request(0),
-    styleSheet(0)
+    mediaList(std::make_shared<MediaListImp>()),
+    request(0)
 {
 }
 
@@ -56,12 +55,9 @@ CSSImportRuleImp::~CSSImportRuleImp()
     delete request;
 }
 
-void CSSImportRuleImp::setMediaList(MediaListImp&& other)
+void CSSImportRuleImp::setMediaList(MediaListPtr other)
 {
-    if (!mediaList)
-        return;
-    if (auto imp = dynamic_cast<MediaListImp*>(mediaList.self()))
-        *imp = std::move(other);
+    mediaList = other;
 }
 
 
@@ -98,12 +94,16 @@ void CSSImportRuleImp::setMedia(const std::u16string& media)
 
 css::CSSStyleSheet CSSImportRuleImp::getStyleSheet()
 {
+    auto doc = document.lock();
+    if (!doc)
+        return nullptr;
+
     if (!styleSheet && !href.empty() && !request) {  // TODO: deal with ins. mem
-        request = new(std::nothrow) HttpRequest(document->getDocumentURI());
+        request = new(std::nothrow) HttpRequest(doc->getDocumentURI());
         if (request) {
             request->open(u"GET", href);
             request->setHandler(boost::bind(&CSSImportRuleImp::notify, this));
-            document->incrementLoadEventDelayCount();
+            doc->incrementLoadEventDelayCount();
             request->send();
         }
     }
@@ -112,20 +112,24 @@ css::CSSStyleSheet CSSImportRuleImp::getStyleSheet()
 
 void CSSImportRuleImp::notify()
 {
+    auto doc = document.lock();
+    if (!doc)
+        return;
+
     if (request->getStatus() == 200) {
         boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request->getContentDescriptor(), boost::iostreams::close_handle);
         CSSParser parser(request->getRequestMessage().getURL());
-        CSSInputStream cssStream(stream, request->getResponseMessage().getContentCharset(), utfconv(document->getCharacterSet()));
-        styleSheet = parser.parse(document, cssStream);
-        if (auto imp = dynamic_cast<CSSStyleSheetImp*>(styleSheet.self())) {
+        CSSInputStream cssStream(stream, request->getResponseMessage().getContentCharset(), utfconv(doc->getCharacterSet()));
+        styleSheet = parser.parse(doc, cssStream);
+        if (auto imp = std::dynamic_pointer_cast<CSSStyleSheetImp>(styleSheet.self())) {
             imp->setParentStyleSheet(getParentStyleSheet());
         }
         if (4 <= getLogLevel())
             dumpStyleSheet(std::cerr, styleSheet.self());
     }
-    document->decrementLoadEventDelayCount();
+    doc->decrementLoadEventDelayCount();
 
-    if (WindowProxy* view = document->getDefaultWindow())
+    if (WindowProxyPtr view = doc->getDefaultWindow())
         view->setViewFlags(Box::NEED_SELECTOR_REMATCHING);
 }
 

@@ -17,7 +17,7 @@ namespace bootstrap
 html::HTMLFormElement HTMLLabelElementImp::getForm()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 std::u16string HTMLLabelElementImp::getHtmlFor()
@@ -34,7 +34,7 @@ void HTMLLabelElementImp::setHtmlFor(const std::u16string& htmlFor)
 html::HTMLElement HTMLLabelElementImp::getControl()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 }

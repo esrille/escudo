@@ -201,7 +201,7 @@ MediaQuery::getMediaText()
 
 // MediaList
 
-bool MediaListImp::matches(WindowProxy* window)
+bool MediaListImp::matches(const WindowProxyPtr& window)
 {
     if (!window)
         return false;
@@ -506,7 +506,9 @@ void MediaListImp::setMediaText(const std::u16string& mediaText)
     clear();
     if (!mediaText.empty()) {
         CSSParser parser;
-        *this = std::move(parser.parseMediaList(mediaText));
+        parser.setMediaList(std::static_pointer_cast<MediaListImp>(self()));
+        parser.parseMediaList(mediaText);
+        parser.setMediaList(nullptr);
     }
 }
 
@@ -534,11 +536,14 @@ void MediaListImp::appendMedium(const std::u16string& medium)
     if (medium.empty())
         return;
     CSSParser parser;
-    MediaListImp& newList = parser.parseMediaList(medium);
-    for (auto i = newList.mediaQueries.begin(); i != newList.mediaQueries.end(); ++i) {
+    MediaListPtr newList = std::make_shared<MediaListImp>();
+    parser.setMediaList(newList);
+    parser.parseMediaList(medium);
+    for (auto i = newList->mediaQueries.begin(); i != newList->mediaQueries.end(); ++i) {
         if (!contains(*i))
             mediaQueries.push_back(std::move(*i));
     }
+    parser.setMediaList(nullptr);
 }
 
 void MediaListImp::deleteMedium(const std::u16string& medium)
@@ -546,12 +551,15 @@ void MediaListImp::deleteMedium(const std::u16string& medium)
     if (medium.empty())
         return;
     CSSParser parser;
-    MediaListImp& newList = parser.parseMediaList(medium);
-    for (auto i = newList.mediaQueries.begin(); i != newList.mediaQueries.end(); ++i) {
+    MediaListPtr newList = std::make_shared<MediaListImp>();
+    parser.setMediaList(newList);
+    parser.parseMediaList(medium);
+    for (auto i = newList->mediaQueries.begin(); i != newList->mediaQueries.end(); ++i) {
         auto found = std::find(mediaQueries.begin(), mediaQueries.end(), *i);
         if (found != mediaQueries.end())
             mediaQueries.erase(found);
     }
+    parser.setMediaList(nullptr);
 }
 
 }  // org::w3c::dom::bootstrap
@@ -565,10 +573,10 @@ class Constructor : public Object
 public:
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
-        bootstrap::MediaListImp* imp = 0;
+        bootstrap::MediaListPtr imp;
         switch (argc) {
         case 1:
-            imp = new(std::nothrow) bootstrap::MediaListImp;
+            imp = std::make_shared<bootstrap::MediaListImp>();
             if (imp)
                 imp->setMediaText(argv[0].toString());
             break;

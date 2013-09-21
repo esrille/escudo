@@ -111,9 +111,8 @@
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 DocumentImp::DocumentImp(const std::u16string& url) :
-    ObjectMixin(static_cast<DocumentImp*>(0) /*nullptr */),
+    ObjectMixin(nullptr),
     url(url),
-    doctype(0),
     mode(NoQuirksMode),
     readyState(u"loading"),
     compatMode(u"CSS1Compat"),
@@ -121,9 +120,7 @@ DocumentImp::DocumentImp(const std::u16string& url) :
     contentLoaded(false),
     insertionPoint(0),
     lastModified(0),
-    pendingParsingBlockingScript(0),
     defaultView(0),
-    activeElement(0),
     error(0)
 {
     nodeName = u"#document";
@@ -133,17 +130,36 @@ DocumentImp::~DocumentImp()
 {
 }
 
+void DocumentImp::enter()
+{
+    if (defaultView)
+        defaultView->enter();
+}
+
+void DocumentImp::exit()
+{
+    if (defaultView)
+        defaultView->exit();
+}
+
+ECMAScriptContext* DocumentImp::getContext() const
+{
+    if (defaultView)
+        return defaultView->getWindowPtr()->getContext();
+    return 0;
+}
+
 void DocumentImp::setEventHandler(const std::u16string& type, Object handler)
 {
     if (!defaultView)
         return;
 
-    EventListenerImp* listener = getEventHandlerListener(type);
+    EventListenerPtr listener = getEventHandlerListener(type);
     if (listener) {
         listener->setEventHandler(handler);
         return;
     }
-    listener = new(std::nothrow) EventListenerImp(boost::bind(&ECMAScriptContext::dispatchEvent, getContext(), _1, _2));
+    listener = std::make_shared<EventListenerImp>(boost::bind(&ECMAScriptContext::dispatchEvent, getContext(), _1, _2));
     if (listener) {
         listener->setEventHandler(handler);
         addEventListener(type, listener, false, EventTargetImp::UseEventHandler);
@@ -153,7 +169,7 @@ void DocumentImp::setEventHandler(const std::u16string& type, Object handler)
 bool DocumentImp::processScripts(std::list<html::HTMLScriptElement>& scripts)
 {
     while (!scripts.empty()) {
-        auto script = dynamic_cast<HTMLScriptElementImp*>(scripts.front().self());
+        auto script = std::dynamic_pointer_cast<HTMLScriptElementImp>(scripts.front().self());
         if (!script->isReadyToBeParserExecuted())
             return false;
         script->execute();
@@ -161,11 +177,6 @@ bool DocumentImp::processScripts(std::list<html::HTMLScriptElement>& scripts)
         decrementLoadEventDelayCount();
     }
     return true;
-}
-
-void DocumentImp::setDefaultView(WindowProxy* view)
-{
-    defaultView = view;
 }
 
 void DocumentImp::setCharacterSet(const std::u16string& charset)
@@ -184,13 +195,13 @@ void DocumentImp::setReadyState(const std::u16string& readyState)
     this->readyState = readyState;
     if (readyState == u"complete") {
         if (defaultView) {
-            events::Event event = new(std::nothrow) EventImp;
+            events::Event event = std::make_shared<EventImp>();
             event.initEvent(u"load", false, false);
             defaultView->dispatchEvent(event);
-            if (HTMLIFrameElementImp* frame = dynamic_cast<HTMLIFrameElementImp*>(defaultView->getFrameElementImp()))
+            if (auto frame = std::dynamic_pointer_cast<HTMLIFrameElementImp>(defaultView->getFrameElementImp()))
                 frame->notify(getError());
             if (defaultView->isBindingDocumentWindow()) {
-                if (WindowProxy* parent = dynamic_cast<WindowProxy*>(defaultView->getParent().self()))
+                if (auto parent = std::dynamic_pointer_cast<WindowProxy>(defaultView->getParent().self()))
                     parent->setViewFlags(Box::NEED_SELECTOR_MATCHING);
             }
         }
@@ -231,20 +242,21 @@ void DocumentImp::setDoctype(DocumentType type)
     doctype = type;
 }
 
-void DocumentImp::setFocus(ElementImp* element)
+void DocumentImp::setFocus(const ElementPtr& element)
 {
-    if (activeElement == element)
+    ElementPtr active = getFocus();
+    if (active == element)
         return;
-    if (activeElement) {
-        events::Event event = new(std::nothrow) EventImp;
+    if (active) {
+        events::Event event = std::make_shared<EventImp>();
         event.initEvent(u"blur", false, false);
-        activeElement->dispatchEvent(event);
+        active->dispatchEvent(event);
     }
     activeElement = element;
-    if (activeElement) {
-        events::Event event = new(std::nothrow) EventImp;
+    if (element) {
+        events::Event event = std::make_shared<EventImp>();
         event.initEvent(u"focus", false, false);
-        activeElement->dispatchEvent(event);
+        element->dispatchEvent(event);
     }
 }
 
@@ -304,35 +316,35 @@ Element DocumentImp::getDocumentElement()
     for (auto i = getFirstChild(); i; i = i.getNextSibling())
         if (i.getNodeType() == Node::ELEMENT_NODE)
             return interface_cast<Element>(i);
-    return 0;
+    return nullptr;
 }
 
 html::HTMLCollection DocumentImp::getElementsByTagName(const std::u16string& localName)
 {
-    return ElementImp::getElementsByTagName(dynamic_cast<ElementImp*>(getDocumentElement().self()), localName);
+    return ElementImp::getElementsByTagName(std::dynamic_pointer_cast<ElementImp>(getDocumentElement().self()), localName);
 }
 
 html::HTMLCollection DocumentImp::getElementsByTagNameNS(const Nullable<std::u16string>& _namespace, const std::u16string& localName)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::HTMLCollection DocumentImp::getElementsByClassName(const std::u16string& classNames)
 {
-    return ElementImp::getElementsByClassName(dynamic_cast<ElementImp*>(getDocumentElement().self()), classNames);
+    return ElementImp::getElementsByClassName(std::dynamic_pointer_cast<ElementImp>(getDocumentElement().self()), classNames);
 }
 
 Element DocumentImp::getElementById(const std::u16string& elementId)
 {
-    ElementImp* e = dynamic_cast<ElementImp*>(getDocumentElement().self());
+    auto e = std::dynamic_pointer_cast<ElementImp>(getDocumentElement().self());
     while (e) {
         Nullable<std::u16string> id = e->getAttribute(u"id");
         if (id.hasValue() && id.value() == elementId)
             return e;
         e = e->getNextElement();
     }
-    return 0;
+    return nullptr;
 }
 
 Element DocumentImp::createElement(const std::u16string& localName)
@@ -343,80 +355,80 @@ Element DocumentImp::createElement(const std::u16string& localName)
 
     // Checked in the order of descriptions in the HTML specification
     if (name == u"html")
-        return new(std::nothrow) HTMLHtmlElementImp(this);
+        return std::make_shared<HTMLHtmlElementImp>(this);
     if (name == u"head")
-        return new(std::nothrow) HTMLHeadElementImp(this);
+        return std::make_shared<HTMLHeadElementImp>(this);
     if (name == u"title")
-        return new(std::nothrow) HTMLTitleElementImp(this);
+        return std::make_shared<HTMLTitleElementImp>(this);
     if (name == u"base")
-        return new(std::nothrow) HTMLBaseElementImp(this);
+        return std::make_shared<HTMLBaseElementImp>(this);
     if (name == u"link")
-        return new(std::nothrow) HTMLLinkElementImp(this);
+        return std::make_shared<HTMLLinkElementImp>(this);
     if (name == u"meta")
-        return new(std::nothrow) HTMLMetaElementImp(this);
+        return std::make_shared<HTMLMetaElementImp>(this);
     if (name == u"style")
-        return new(std::nothrow) HTMLStyleElementImp(this);
+        return std::make_shared<HTMLStyleElementImp>(this);
     if (name == u"script")
-        return new(std::nothrow) HTMLScriptElementImp(this);
+        return std::make_shared<HTMLScriptElementImp>(this);
     if (name == u"noscript")
-        return new(std::nothrow) HTMLElementImp(this, name);
+        return std::make_shared<HTMLElementImp>(this, name);
     if (name == u"body")
-        return new(std::nothrow) HTMLBodyElementImp(this);
+        return std::make_shared<HTMLBodyElementImp>(this);
     if (name == u"section" ||
         name == u"nav" ||
         name == u"article" ||
         name == u"aside")
-        return new(std::nothrow) HTMLElementImp(this, name);
+        return std::make_shared<HTMLElementImp>(this, name);
     if (name == u"h1" ||
         name == u"h2" ||
         name == u"h3" ||
         name == u"h4" ||
         name == u"h5" ||
         name == u"h6")
-        return new(std::nothrow) HTMLHeadingElementImp(this, name);
+        return std::make_shared<HTMLHeadingElementImp>(this, name);
     if (name == u"hgroup" ||
         name == u"header" ||
         name == u"footer" ||
         name == u"address")
-        return new(std::nothrow) HTMLElementImp(this, name);
+        return std::make_shared<HTMLElementImp>(this, name);
     if (name == u"p")
-        return new(std::nothrow) HTMLParagraphElementImp(this);
+        return std::make_shared<HTMLParagraphElementImp>(this);
     if (name == u"hr")
-        return new(std::nothrow) HTMLHRElementImp(this);
+        return std::make_shared<HTMLHRElementImp>(this);
     if (name == u"pre")
-        return new(std::nothrow) HTMLPreElementImp(this);
+        return std::make_shared<HTMLPreElementImp>(this);
     if (name == u"blockquote")
-        return new(std::nothrow) HTMLQuoteElementImp(this, name);
+        return std::make_shared<HTMLQuoteElementImp>(this, name);
     if (name == u"ol")
-        return new(std::nothrow) HTMLOListElementImp(this);
+        return std::make_shared<HTMLOListElementImp>(this);
     if (name == u"ul")
-        return new(std::nothrow) HTMLUListElementImp(this);
+        return std::make_shared<HTMLUListElementImp>(this);
     if (name == u"li")
-        return new(std::nothrow) HTMLLIElementImp(this);
+        return std::make_shared<HTMLLIElementImp>(this);
     if (name == u"dl")
-        return new(std::nothrow) HTMLDListElementImp(this);
+        return std::make_shared<HTMLDListElementImp>(this);
     if (name == u"dt" ||
         name == u"dd" ||
         name == u"figure" ||
         name == u"figcaption")
-        return new(std::nothrow) HTMLElementImp(this, name);
+        return std::make_shared<HTMLElementImp>(this, name);
     if (name == u"div")
-        return new(std::nothrow) HTMLDivElementImp(this);
+        return std::make_shared<HTMLDivElementImp>(this);
     if (name == u"a")
-        return new(std::nothrow) HTMLAnchorElementImp(this);
+        return std::make_shared<HTMLAnchorElementImp>(this);
     if (name == u"em" ||
         name == u"strong" ||
         name == u"small" ||
         name == u"s" ||
         name == u"cite")
-        return new(std::nothrow) HTMLElementImp(this, name);
+        return std::make_shared<HTMLElementImp>(this, name);
     if (name == u"q")
-        return new(std::nothrow) HTMLQuoteElementImp(this, name);
+        return std::make_shared<HTMLQuoteElementImp>(this, name);
     if (name == u"dfn" ||
         name == u"abbr")
-        return new(std::nothrow) HTMLElementImp(this, name);
+        return std::make_shared<HTMLElementImp>(this, name);
     if (name == u"time")
-        return new(std::nothrow) HTMLTimeElementImp(this);
+        return std::make_shared<HTMLTimeElementImp>(this);
     if (name == u"code" ||
         name == u"var" ||
         name == u"samp" ||
@@ -432,115 +444,117 @@ Element DocumentImp::createElement(const std::u16string& localName)
         name == u"rp" ||
         name == u"bdi" ||
         name == u"bdo")
-        return new(std::nothrow) HTMLElementImp(this, name);
+        return std::make_shared<HTMLElementImp>(this, name);
     if (name == u"span")
-        return new(std::nothrow) HTMLSpanElementImp(this);
+        return std::make_shared<HTMLSpanElementImp>(this);
     if (name == u"br")
-        return new(std::nothrow) HTMLBRElementImp(this);
+        return std::make_shared<HTMLBRElementImp>(this);
     if (name == u"wbr")
-        return new(std::nothrow) HTMLElementImp(this, name);
+        return std::make_shared<HTMLElementImp>(this, name);
     if (name == u"ins" ||
         name == u"del")
-        return new(std::nothrow) HTMLModElementImp(this, name);
+        return std::make_shared<HTMLModElementImp>(this, name);
     if (name == u"img")
-        return new(std::nothrow) HTMLImageElementImp(this);
+        return std::make_shared<HTMLImageElementImp>(this);
     if (name == u"iframe") {
-        WindowProxy* context = getDefaultWindow();
+        auto context = getDefaultWindow();
         assert(context);
-        return new(std::nothrow) HTMLIFrameElementImp(this, context->isDeskTop() ? WindowProxy::TopLevel : 0);
+        auto iframe = std::make_shared<HTMLIFrameElementImp>(this);
+        iframe->open(u"about:blank", context->isDeskTop() ? WindowProxy::TopLevel : 0);
+        return iframe;
     }
     if (name == u"embed")
-        return new(std::nothrow) HTMLEmbedElementImp(this);
+        return std::make_shared<HTMLEmbedElementImp>(this);
     if (name == u"object")
-        return new(std::nothrow) HTMLObjectElementImp(this);
+        return std::make_shared<HTMLObjectElementImp>(this);
     if (name == u"param")
-        return new(std::nothrow) HTMLParamElementImp(this);
+        return std::make_shared<HTMLParamElementImp>(this);
     if (name == u"video")
-        return new(std::nothrow) HTMLVideoElementImp(this);
+        return std::make_shared<HTMLVideoElementImp>(this);
     if (name == u"audio")
-        return new(std::nothrow) HTMLAudioElementImp(this);
+        return std::make_shared<HTMLAudioElementImp>(this);
     if (name == u"source")
-        return new(std::nothrow) HTMLSourceElementImp(this);
+        return std::make_shared<HTMLSourceElementImp>(this);
     if (name == u"canvas")
-        return new(std::nothrow) HTMLCanvasElementImp(this);
+        return std::make_shared<HTMLCanvasElementImp>(this);
     if (name == u"map")
-        return new(std::nothrow) HTMLMapElementImp(this);
+        return std::make_shared<HTMLMapElementImp>(this);
     if (name == u"area")
-        return new(std::nothrow) HTMLAreaElementImp(this);
+        return std::make_shared<HTMLAreaElementImp>(this);
     if (name == u"table")
-        return new(std::nothrow) HTMLTableElementImp(this);
+        return std::make_shared<HTMLTableElementImp>(this);
     if (name == u"caption")
-        return new(std::nothrow) HTMLTableCaptionElementImp(this);
+        return std::make_shared<HTMLTableCaptionElementImp>(this);
     if (name == u"colgroup" ||
         name == u"col")
-        return new(std::nothrow) HTMLTableColElementImp(this, name);
+        return std::make_shared<HTMLTableColElementImp>(this, name);
     if (name == u"tbody" ||
         name == u"thead" ||
         name == u"tfoot")
-        return new(std::nothrow) HTMLTableSectionElementImp(this, name);
+        return std::make_shared<HTMLTableSectionElementImp>(this, name);
     if (name == u"tr")
-        return new(std::nothrow) HTMLTableRowElementImp(this);
+        return std::make_shared<HTMLTableRowElementImp>(this);
     if (name == u"td")
-        return new(std::nothrow) HTMLTableDataCellElementImp(this);
+        return std::make_shared<HTMLTableDataCellElementImp>(this);
     if (name == u"th")
-        return new(std::nothrow) HTMLTableHeaderCellElementImp(this);
+        return std::make_shared<HTMLTableHeaderCellElementImp>(this);
     if (name == u"form")
-        return new(std::nothrow) HTMLFormElementImp(this);
+        return std::make_shared<HTMLFormElementImp>(this);
     if (name == u"fieldset")
-        return new(std::nothrow) HTMLFieldSetElementImp(this);
+        return std::make_shared<HTMLFieldSetElementImp>(this);
     if (name == u"legend")
-        return new(std::nothrow) HTMLLegendElementImp(this);
+        return std::make_shared<HTMLLegendElementImp>(this);
     if (name == u"label")
-        return new(std::nothrow) HTMLLabelElementImp(this);
+        return std::make_shared<HTMLLabelElementImp>(this);
     if (name == u"input")
-        return new(std::nothrow) HTMLInputElementImp(this);
+        return std::make_shared<HTMLInputElementImp>(this);
     if (name == u"button")
-        return new(std::nothrow) HTMLButtonElementImp(this);
+        return std::make_shared<HTMLButtonElementImp>(this);
     if (name == u"select")
-        return new(std::nothrow) HTMLSelectElementImp(this);
+        return std::make_shared<HTMLSelectElementImp>(this);
     if (name == u"datalist")
-        return new(std::nothrow) HTMLDataListElementImp(this);
+        return std::make_shared<HTMLDataListElementImp>(this);
     if (name == u"optgroup")
-        return new(std::nothrow) HTMLOptGroupElementImp(this);
+        return std::make_shared<HTMLOptGroupElementImp>(this);
     if (name == u"option")
-        return new(std::nothrow) HTMLOptionElementImp(this);
+        return std::make_shared<HTMLOptionElementImp>(this);
     if (name == u"textarea")
-        return new(std::nothrow) HTMLTextAreaElementImp(this);
+        return std::make_shared<HTMLTextAreaElementImp>(this);
     if (name == u"keygen")
-        return new(std::nothrow) HTMLKeygenElementImp(this);
+        return std::make_shared<HTMLKeygenElementImp>(this);
     if (name == u"output")
-        return new(std::nothrow) HTMLOutputElementImp(this);
+        return std::make_shared<HTMLOutputElementImp>(this);
     if (name == u"progress")
-        return new(std::nothrow) HTMLProgressElementImp(this);
+        return std::make_shared<HTMLProgressElementImp>(this);
     if (name == u"meter")
-        return new(std::nothrow) HTMLMeterElementImp(this);
+        return std::make_shared<HTMLMeterElementImp>(this);
     if (name == u"details")
-        return new(std::nothrow) HTMLDetailsElementImp(this);
+        return std::make_shared<HTMLDetailsElementImp>(this);
     if (name == u"summary")
-        return new(std::nothrow) HTMLElementImp(this, name);
+        return std::make_shared<HTMLElementImp>(this, name);
     if (name == u"command")
-        return new(std::nothrow) HTMLCommandElementImp(this);
+        return std::make_shared<HTMLCommandElementImp>(this);
     if (name == u"menu")
-        return new(std::nothrow) HTMLMenuElementImp(this);
+        return std::make_shared<HTMLMenuElementImp>(this);
 
     if (name == u"binding")
-        return new(std::nothrow) HTMLBindingElementImp(this);
+        return std::make_shared<HTMLBindingElementImp>(this);
     if (name == u"template")
-        return new(std::nothrow) HTMLTemplateElementImp(this);
+        return std::make_shared<HTMLTemplateElementImp>(this);
     if (name == u"implementation")
-        return new(std::nothrow) HTMLScriptElementImp(this, name);
+        return std::make_shared<HTMLScriptElementImp>(this, name);
 
     // Deprecated elements
     if (name == u"applet")
-        return new(std::nothrow) HTMLAppletElementImp(this);
+        return std::make_shared<HTMLAppletElementImp>(this);
     if (name == u"center")   // shorthand for DIV align=center
-        return new(std::nothrow) HTMLDivElementImp(this, name);
+        return std::make_shared<HTMLDivElementImp>(this, name);
     if (name == u"font")
-        return new(std::nothrow) HTMLFontElementImp(this);
+        return std::make_shared<HTMLFontElementImp>(this);
     if (name == u"marquee")
-        return new(std::nothrow) HTMLMarqueeElementImp(this);
+        return std::make_shared<HTMLMarqueeElementImp>(this);
 
-    return new(std::nothrow) HTMLUnknownElementImp(this, name);
+    return std::make_shared<HTMLUnknownElementImp>(this, name);
 }
 
 Element DocumentImp::createElementNS(const Nullable<std::u16string>& namespaceURI, const std::u16string& qualifiedName)
@@ -564,40 +578,40 @@ Element DocumentImp::createElementNS(const Nullable<std::u16string>& namespaceUR
     if (namespaceURI == u"http://www.w3.org/1999/xhtml" && prefix.empty())  // TODO: Check prefix
         return createElement(localName);
 
-    return new(std::nothrow) ElementImp(this, localName, namespaceURI, prefix);
+    return std::make_shared<ElementImp>(this, localName, namespaceURI, prefix);
 }
 
 DocumentFragment DocumentImp::createDocumentFragment()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 Text DocumentImp::createTextNode(const std::u16string& data)
 {
-    return new(std::nothrow) TextImp(this, data);
+    return std::make_shared<TextImp>(this, data);
 }
 
 Comment DocumentImp::createComment(const std::u16string& data)
 {
-    return new(std::nothrow) CommentImp(this, data);
+    return std::make_shared<CommentImp>(this, data);
 }
 
 ProcessingInstruction DocumentImp::createProcessingInstruction(const std::u16string& target, const std::u16string& data)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 Node DocumentImp::importNode(Node node, bool deep)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 Node DocumentImp::adoptNode(Node node)
 {
-    auto n = dynamic_cast<NodeImp*>(node.self());
+    auto n = std::dynamic_pointer_cast<NodeImp>(node.self());
     if (!n)
         return node;    // TODO: throw NotSupportedError
     if (n->getNodeType() == Node::DOCUMENT_NODE)
@@ -605,7 +619,7 @@ Node DocumentImp::adoptNode(Node node)
     Node parent = n->getParentNode();
     if (parent)
         parent.removeChild(node);
-    n->setOwnerDocument(this);
+    n->setOwnerDocument(std::static_pointer_cast<DocumentImp>(self()));
     // TODO: Change base URL for elements
     return node;
 }
@@ -613,18 +627,18 @@ Node DocumentImp::adoptNode(Node node)
 events::Event DocumentImp::createEvent(const std::u16string& eventInterfaceName)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 css::CSSStyleDeclaration DocumentImp::getOverrideStyle(Element elt, const Nullable<std::u16string>& pseudoElt)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 stylesheets::StyleSheetList DocumentImp::getStyleSheets()
 {
-    return new(std::nothrow) ObjectArrayImp<DocumentImp, stylesheets::StyleSheet, &DocumentImp::styleSheets>(this);
+    return std::make_shared<ObjectArrayImp<DocumentImp, stylesheets::StyleSheet, &DocumentImp::styleSheets>>(std::static_pointer_cast<DocumentImp>(self()));
 }
 
 Nullable<std::u16string> DocumentImp::getSelectedStyleSheetSet()
@@ -653,7 +667,7 @@ Nullable<std::u16string> DocumentImp::getPreferredStyleSheetSet()
 DOMStringList DocumentImp::getStyleSheetSets()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void DocumentImp::enableStyleSheetsForSet(const Nullable<std::u16string>& name)
@@ -664,21 +678,21 @@ void DocumentImp::enableStyleSheetsForSet(const Nullable<std::u16string>& name)
 Element DocumentImp::elementFromPoint(float x, float y)
 {
     if (!defaultView)
-        return 0;
+        return nullptr;
     return defaultView->elementFromPoint(x, y);
 }
 
 CaretPosition DocumentImp::caretPositionFromPoint(float x, float y)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::Location DocumentImp::getLocation()
 {
     if (!defaultView)
-        return 0;
-    return new(std::nothrow) LocationImp(defaultView, url);
+        return nullptr;
+    return std::make_shared<LocationImp>(defaultView, url);
 }
 
 void DocumentImp::setLocation(const std::u16string& href)
@@ -737,12 +751,12 @@ Any DocumentImp::getElement(const std::u16string& name)
     Element e = getDocumentElement();
     if (!e)
         return 0;
-    HTMLCollectionImp* collection = new(std::nothrow) HTMLCollectionImp;
+    HTMLCollectionPtr collection = std::make_shared<HTMLCollectionImp>();
     if (!collection)
         return 0;
     std::u16string tag;
-    for (ElementImp* i = dynamic_cast<ElementImp*>(e.self()); i; i = i->getNextElement()) {
-        if (HTMLElementImp* e = dynamic_cast<HTMLElementImp*>(i)) {
+    for (auto i = std::dynamic_pointer_cast<ElementImp>(e.self()); i; i = i->getNextElement()) {
+        if (auto e = std::dynamic_pointer_cast<HTMLElementImp>(i)) {
             tag = e->getLocalName();
             // TODO: check applet, embed, and object, too.
             if (tag == u"form" || tag == u"iframe" || tag == u"img") {
@@ -754,11 +768,9 @@ Any DocumentImp::getElement(const std::u16string& name)
     }
     switch (collection->getLength()) {
     case 0:
-        delete collection;
         return Any();   // Return 'undefined' so that JSAPI bridge can call the default property stub.
     case 1:
         e = collection->item(0);
-        delete collection;
         if (tag == u"iframe")
             return interface_cast<html::HTMLIFrameElement>(e).getContentWindow();
         else
@@ -774,7 +786,7 @@ std::u16string DocumentImp::getTitle()
     if (!head)
         return u"";
     for (auto i = head.getFirstElementChild(); i; i = i.getNextElementSibling()) {
-        if (auto t = dynamic_cast<HTMLTitleElementImp*>(i.self())) {
+        if (auto t = std::dynamic_pointer_cast<HTMLTitleElementImp>(i.self())) {
             std::u16string title = t->getText();
             size_t spacePos;
             size_t spaceLen = 0;
@@ -807,7 +819,7 @@ void DocumentImp::setTitle(const std::u16string& title)
     if (!head)
         return;
     for (auto i = head.getFirstElementChild(); i; i = i.getNextElementSibling()) {
-        if (auto t = dynamic_cast<HTMLTitleElementImp*>(i.self())) {
+        if (auto t = std::dynamic_pointer_cast<HTMLTitleElementImp>(i.self())) {
             t->setText(title);
             return;
         }
@@ -834,10 +846,10 @@ html::HTMLElement DocumentImp::getBody()
     // TODO: refine.
     Element e = getDocumentElement();
     for (auto i = e.getFirstElementChild(); i; i = i.getNextElementSibling()) {
-        if (dynamic_cast<HTMLBodyElementImp*>(i.self()))
+        if (std::dynamic_pointer_cast<HTMLBodyElementImp>(i.self()))
             return interface_cast<html::HTMLElement>(i);
     }
-    return 0;
+    return nullptr;
 }
 
 void DocumentImp::setBody(html::HTMLElement body)
@@ -850,65 +862,65 @@ html::HTMLHeadElement DocumentImp::getHead()
     // TODO: refine.
     Element e = getDocumentElement();
     for (auto i = e.getFirstElementChild(); i; i = i.getNextElementSibling()) {
-        if (dynamic_cast<HTMLHeadElementImp*>(i.self()))
+        if (std::dynamic_pointer_cast<HTMLHeadElementImp>(i.self()))
             return interface_cast<html::HTMLHeadElement>(i);
     }
-    return 0;
+    return nullptr;
 }
 
 html::HTMLCollection DocumentImp::getImages()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::HTMLCollection DocumentImp::getEmbeds()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::HTMLCollection DocumentImp::getPlugins()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::HTMLCollection DocumentImp::getLinks()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::HTMLCollection DocumentImp::getForms()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::HTMLCollection DocumentImp::getScripts()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 NodeList DocumentImp::getElementsByName(const std::u16string& elementName)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 Document DocumentImp::open(const std::u16string& type, const std::u16string& replace)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::Window DocumentImp::open(const std::u16string& url, const std::u16string& name, const std::u16string& features, bool replace)
 {
     if (defaultView)
         return defaultView->open(url, name, features, replace);
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void DocumentImp::close()
@@ -949,8 +961,8 @@ html::Window DocumentImp::getDefaultView()
 
 Element DocumentImp::getActiveElement()
 {
-    if (activeElement)
-        return activeElement;
+    if (auto active = getFocus())
+        return active ;
     return getBody();
 }
 
@@ -1022,7 +1034,7 @@ std::u16string DocumentImp::queryCommandValue(const std::u16string& commandId)
 html::HTMLCollection DocumentImp::getCommands()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 events::EventHandlerNonNull DocumentImp::getOnabort()
@@ -1643,13 +1655,13 @@ void DocumentImp::setBgColor(const std::u16string& bgColor)
 html::HTMLCollection DocumentImp::getAnchors()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::HTMLCollection DocumentImp::getApplets()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void DocumentImp::clear()
@@ -1660,65 +1672,66 @@ void DocumentImp::clear()
 html::HTMLAllCollection DocumentImp::getAll()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 Element DocumentImp::querySelector(const std::u16string& selectors)
 {
-    if (ElementImp* e = dynamic_cast<ElementImp*>(getDocumentElement().self()))
+    if (auto e = std::dynamic_pointer_cast<ElementImp>(getDocumentElement().self()))
         return e->querySelector(selectors);
-    return 0;
+    return nullptr;
 }
 
 NodeList DocumentImp::querySelectorAll(const std::u16string& selectors)
 {
-    if (ElementImp* e = dynamic_cast<ElementImp*>(getDocumentElement().self()))
+    if (auto e = std::dynamic_pointer_cast<ElementImp>(getDocumentElement().self()))
         return e->querySelectorAll(selectors);
-    return new(std::nothrow) NodeListImp;
+    return std::make_shared<NodeListImp>();
 }
 
 ranges::Range DocumentImp::createRange()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 traversal::NodeIterator DocumentImp::createNodeIterator(Node root, unsigned int whatToShow, traversal::NodeFilter filter)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 traversal::TreeWalker DocumentImp::createTreeWalker(Node root, unsigned int whatToShow, traversal::NodeFilter filter)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::HTMLCollection DocumentImp::getBindingDocuments()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 Document DocumentImp::loadBindingDocument(const std::u16string& documentURI)
 {
     auto found = bindingDocuments.find(documentURI);
     if (found != bindingDocuments.end())
-        return found->second.getDocument();
+        return found->second->getDocument();
 
-    WindowProxy* window = new(std::nothrow) WindowProxy(defaultView);
+    WindowProxyPtr window = std::make_shared<WindowProxy>();
     if (!window)
-        return 0;
-    bindingDocuments.insert(std::pair<std::u16string, html::Window>(documentURI, window));
+        return nullptr;
+    window->setBase(defaultView->getLocation().getHref());
+    bindingDocuments.emplace(documentURI, window);
     window->open(documentURI, u"_self", u"", true);
     return window->getDocument();
 }
 
-bool DocumentImp::isBindingDocumentWindow(const WindowProxy* window) const
+bool DocumentImp::isBindingDocumentWindow(const WindowProxyPtr& window) const
 {
     for (auto i = bindingDocuments.begin(); i != bindingDocuments.end(); ++i) {
-        if (i->second.self() == window)
+        if (i->second == window)
             return true;
     }
     return false;
@@ -1731,13 +1744,13 @@ unsigned short DocumentImp::getNodeType()
     return Node::DOCUMENT_NODE;
 }
 
-Node DocumentImp::appendChild(Node newChild) throw(DOMException)
+Node DocumentImp::appendChild(Node newChild)
 {
-    if (DocumentTypeImp* newDoctype = dynamic_cast<DocumentTypeImp*>(newChild.self())) {
+    if (auto newDoctype = std::dynamic_pointer_cast<DocumentTypeImp>(newChild.self())) {
         if (getDoctype())
             throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
         if (!newChild.getOwnerDocument())
-            newDoctype->setOwnerDocument(this);
+            newDoctype->setOwnerDocument(std::static_pointer_cast<DocumentImp>(self()));
         NodeImp::appendChild(newChild);
         doctype = newDoctype;
         return newChild;
@@ -1755,10 +1768,10 @@ class Constructor : public Object
 public:
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
-        bootstrap::DocumentImp* doc = 0;
+        bootstrap::DocumentPtr doc;
         switch (argc) {
         case 0:
-            doc = new(std::nothrow) bootstrap::DocumentImp();
+            doc = std::make_shared<bootstrap::DocumentImp>();
             break;
         default:
             break;

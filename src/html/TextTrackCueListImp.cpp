@@ -23,13 +23,13 @@ unsigned int TextTrackCueListImp::getLength()
 html::TextTrackCue TextTrackCueListImp::getElement(unsigned int index)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::TextTrackCue TextTrackCueListImp::getCueById(const std::u16string& id)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 }

@@ -32,6 +32,7 @@
 #include "html/HTMLInputStream.h"
 #include "css/CSSSerialize.h"
 #include "DOMImplementationImp.h"
+#include "DocumentImp.h"
 
 #include "Test.util.h"
 
@@ -44,8 +45,8 @@ void test(std::ostream& result, const char* data)
     std::istringstream stream(data);
     HTMLInputStream htmlInputStream(stream, "utf-8");
     HTMLTokenizer tokenizer(&htmlInputStream);
-    Document document = bootstrap::getDOMImplementation()->createDocument(u"", u"", 0);
-    HTMLParser parser(document, &tokenizer);
+    Document document = bootstrap::getDOMImplementation()->createDocument(u"", u"", nullptr);
+    HTMLParser parser(std::static_pointer_cast<bootstrap::DocumentImp>(document.self()), &tokenizer);
     parser.mainLoop();
     dumpTree(result, document);
 }

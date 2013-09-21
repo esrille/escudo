@@ -33,6 +33,27 @@ namespace dom
 namespace bootstrap
 {
 
+HistoryImp::
+SessionHistoryEntry::SessionHistoryEntry(const URL& url, const WindowPtr& window) :
+    url(url),
+    window(window)
+{
+}
+
+HistoryImp::
+SessionHistoryEntry::SessionHistoryEntry(const WindowPtr& window) :
+    url(window->getDocument()->getURL()),
+    window(window)
+{
+}
+
+HistoryImp::
+SessionHistoryEntry::SessionHistoryEntry(const SessionHistoryEntry& other) :
+    url(other.url),
+    window(other.window)
+{
+}
+
 void HistoryImp::removeAfterCurrent()
 {
     if (!sessionHistory.empty()) {
@@ -55,8 +76,8 @@ void HistoryImp::update(const URL& url, const WindowPtr& window)
     sessionHistory.push_back(e);
     currentSession = getLength() - 1;
 
-    if (DocumentImp* imp = dynamic_cast<DocumentImp*>(window->getDocument().self()))
-        imp->setURL(static_cast<std::u16string>(url));
+    if (auto document = window->getDocument())
+        document->setURL(static_cast<std::u16string>(url));
 }
 
 void HistoryImp::update(const WindowPtr& window)
@@ -84,7 +105,8 @@ void HistoryImp::go()
     if (sessionHistory.empty())
         return;
     SessionHistoryEntry& e = sessionHistory[currentSession];
-    e.window->getDocument().getLocation().reload();
+    if (auto document = e.window->getDocument())
+        document->getLocation().reload();
 }
 
 void HistoryImp::go(int delta)

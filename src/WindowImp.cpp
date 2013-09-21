@@ -31,7 +31,6 @@
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 WindowImp::WindowImp() :
-    document(0),
     global(0),
     scrollX(0),
     scrollY(0),
@@ -39,8 +38,8 @@ WindowImp::WindowImp() :
     mouseMoveListener(boost::bind(&WindowImp::handleMouseMove, this, _1, _2)),
     mediaCheck(false)
 {
-    addEventListener(u"click", &clickListener, false, EventTargetImp::UseDefault);
-    addEventListener(u"mousemove", &mouseMoveListener, false, EventTargetImp::UseDefault);
+    addEventListener(u"click", clickListener, false, EventTargetImp::UseDefault);
+    addEventListener(u"mousemove", mouseMoveListener, false, EventTargetImp::UseDefault);
 }
 
 WindowImp::~WindowImp()
@@ -56,14 +55,14 @@ WindowImp::~WindowImp()
     }
 }
 
-WindowProxy* WindowImp::getWindowProxy() const
+WindowProxyPtr WindowImp::getWindowProxy() const
 {
-    if (auto imp = dynamic_cast<DocumentImp*>(document.self()))
-        return imp->getDefaultWindow();
-    return 0;
+    if (document)
+        return document->getDefaultWindow();
+    return nullptr;
 }
 
-void WindowImp::setDocument(const Document& document)
+void WindowImp::setDocument(const DocumentPtr& document)
 {
     this->document = document;
     if (global)
@@ -86,16 +85,15 @@ void WindowImp::exit(WindowProxy* proxy)
 
 void WindowImp::setEventHandler(const std::u16string& type, Object handler)
 {
-    EventListenerImp* listener = getEventHandlerListener(type);
+    EventListenerPtr listener = getEventHandlerListener(type);
     if (listener) {
         listener->setEventHandler(handler);
         return;
     }
-    listener = new(std::nothrow) EventListenerImp(boost::bind(&ECMAScriptContext::dispatchEvent, getContext(), _1, _2));
-    if (listener) {
-        listener->setEventHandler(handler);
-        addEventListener(type, listener, false, EventTargetImp::UseEventHandler);
-    }
+    listener = std::make_shared<EventListenerImp>(boost::bind(&ECMAScriptContext::dispatchEvent, getContext(), _1, _2));
+    // TODO: catch exception?
+    listener->setEventHandler(handler);
+    addEventListener(type, listener, false, EventTargetImp::UseEventHandler);
 }
 
 HttpRequest* WindowImp::preload(const std::u16string& base, const std::u16string& urlString)
@@ -115,8 +113,8 @@ HttpRequest* WindowImp::preload(const std::u16string& base, const std::u16string
         cache.push_back(request);
         request->open(u"GET", urlString);
         request->setHandler(boost::bind(&WindowImp::notify, this));
-        if (DocumentImp* imp = dynamic_cast<DocumentImp*>(document.self()))
-            imp->incrementLoadEventDelayCount();
+        if (document)
+            document->incrementLoadEventDelayCount();
         request->send();
     }
     return request;
@@ -124,21 +122,18 @@ HttpRequest* WindowImp::preload(const std::u16string& base, const std::u16string
 
 void WindowImp::notify()
 {
-    if (DocumentImp* imp = dynamic_cast<DocumentImp*>(document.self()))
-        imp->decrementLoadEventDelayCount();
+    if (document)
+        document->decrementLoadEventDelayCount();
 }
 
 void WindowImp::handleClick(EventListenerImp* listener, events::Event event)
 {
     if (event.getDefaultPrevented())
         return;
-    html::Window defaultView = document.getDefaultView();
+    auto defaultView = document->getDefaultWindow();
     if (!defaultView)
         return;
-    WindowProxy* imp = dynamic_cast<WindowProxy*>(defaultView.self());
-    if (!imp)
-        return;
-    ViewCSSImp* view = imp->getView();
+    ViewCSSImp* view = defaultView->getView();
     if (!view)
         return;
 
@@ -150,19 +145,19 @@ void WindowImp::handleClick(EventListenerImp* listener, events::Event event)
         moveY = mouse.getScreenY();
         break;
     case 1:
-        imp->setZoom(1.0f);
+        defaultView->setZoom(1.0f);
         break;
     case 3:
-        imp->setZoom(imp->getZoom() - 0.1f);
+        defaultView->setZoom(defaultView->getZoom() - 0.1f);
         break;
     case 4:
-        imp->setZoom(imp->getZoom() + 0.1f);
+        defaultView->setZoom(defaultView->getZoom() + 0.1f);
         break;
     case 7:
-        defaultView.getHistory().back();
+        defaultView->getHistory().back();
         break;
     case 8:
-        defaultView.getHistory().forward();
+        defaultView->getHistory().forward();
         break;
     default:
         break;
@@ -173,22 +168,20 @@ void WindowImp::handleMouseMove(EventListenerImp* listener, events::Event event)
 {
     if (event.getDefaultPrevented())
         return;
-    html::Window defaultView = document.getDefaultView();
+    auto defaultView = document->getDefaultWindow();
     if (!defaultView)
         return;
-    WindowProxy* imp = dynamic_cast<WindowProxy*>(defaultView.self());
-    if (!imp)
-        return;
-    ViewCSSImp* view = imp->getView();
+    ViewCSSImp* view = defaultView->getView();
     if (!view)
         return;
+
     bool canScroll = view->canScroll();
 
     events::MouseEvent mouse = interface_cast<events::MouseEvent>(event);
     unsigned short buttons = mouse.getButtons();
 
     if ((buttons & 1) && canScroll)
-        defaultView.scrollBy(moveX - mouse.getScreenX(), moveY - mouse.getScreenY());
+        defaultView->scrollBy(moveX - mouse.getScreenX(), moveY - mouse.getScreenY());
 
     moveX = mouse.getScreenX();
     moveY = mouse.getScreenY();
@@ -198,15 +191,15 @@ CSSStyleDeclarationPtr WindowImp::getComputedStyle(Element element)
 {
     auto found = map.find(element);
     if (found != map.end()) {
-        CSSStyleDeclarationImp* style = found->second.get();
+        auto style = found->second;
         assert(style);
         style->reset();
         style->setFlags(CSSStyleDeclarationImp::ComputedStyle);
         return style;
     }
-    CSSStyleDeclarationPtr style = new(std::nothrow) CSSStyleDeclarationImp;
+    CSSStyleDeclarationPtr style = std::make_shared<CSSStyleDeclarationImp>() ;
     if (style) {
-        style->setOwner(document.self());
+        style->setOwner(document);
         style->setFlags(CSSStyleDeclarationImp::ComputedStyle);
         map.insert({ element, style });
     }
@@ -220,7 +213,7 @@ void WindowImp::putComputedStyle(Element element)
 
 html::MediaQueryList WindowImp::matchMedia(const std::u16string& media_query_list)
 {
-    MediaQueryListImp* mediaQueryList = new(std::nothrow) MediaQueryListImp(this, media_query_list);
+    html::MediaQueryList mediaQueryList(std::make_shared<MediaQueryListImp>(std::static_pointer_cast<WindowImp>(self()), media_query_list));
     if (mediaQueryList)
         mediaQueryLists.push_back(mediaQueryList);
     return mediaQueryList;
@@ -228,12 +221,15 @@ html::MediaQueryList WindowImp::matchMedia(const std::u16string& media_query_lis
 
 bool WindowImp::evaluateMedia()
 {
-    for (auto i = mediaQueryLists.begin(); i != mediaQueryLists.end(); ++i)
-        (*i)->evaluate();
+    for (auto i = mediaQueryLists.begin(); i != mediaQueryLists.end(); ++i) {
+        auto mql = std::dynamic_pointer_cast<MediaQueryListImp>(i->self());
+        assert(mql);
+        mql->evaluate();
+    }
 
     bool result = false;
     for (auto i = viewMediaQueryLists.begin(); i != viewMediaQueryLists.end(); ++i) {
-        auto mql = dynamic_cast<MediaQueryListImp*>((*i).self());
+        auto mql = std::dynamic_pointer_cast<MediaQueryListImp>(i->self());
         assert(mql);
         result |= mql->evaluate();
     }
@@ -242,7 +238,7 @@ bool WindowImp::evaluateMedia()
     return result;
 }
 
-void WindowImp::removeMedia(MediaQueryListImp* mediaQueryList)
+void WindowImp::removeMedia(html::MediaQueryList mediaQueryList)
 {
     mediaQueryLists.remove(mediaQueryList);
 }

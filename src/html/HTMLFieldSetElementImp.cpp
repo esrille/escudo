@@ -28,7 +28,7 @@ void HTMLFieldSetElementImp::setDisabled(bool disabled)
 html::HTMLFormElement HTMLFieldSetElementImp::getForm()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 std::u16string HTMLFieldSetElementImp::getName()
@@ -51,7 +51,7 @@ std::u16string HTMLFieldSetElementImp::getType()
 html::HTMLFormControlsCollection HTMLFieldSetElementImp::getElements()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 bool HTMLFieldSetElementImp::getWillValidate()
@@ -63,7 +63,7 @@ bool HTMLFieldSetElementImp::getWillValidate()
 html::ValidityState HTMLFieldSetElementImp::getValidity()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 std::u16string HTMLFieldSetElementImp::getValidationMessage()

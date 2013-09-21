@@ -41,10 +41,16 @@ class HTMLTextAreaElementImp : public ObjectMixin<HTMLTextAreaElementImp, HTMLEl
 {
 public:
     HTMLTextAreaElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"textarea") {
+        ObjectMixin(ownerDocument, u"textarea")
+    {
     }
-    HTMLTextAreaElementImp(HTMLTextAreaElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLTextAreaElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
     }
 
     // HTMLTextAreaElement

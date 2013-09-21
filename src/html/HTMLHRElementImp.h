@@ -37,6 +37,19 @@ namespace bootstrap
 class HTMLHRElementImp : public ObjectMixin<HTMLHRElementImp, HTMLElementImp>
 {
 public:
+    HTMLHRElementImp(DocumentImp* ownerDocument) :
+        ObjectMixin(ownerDocument, u"hr")
+    {
+    }
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLHRElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
+
     virtual void handleMutation(events::MutationEvent mutation);
 
     // HTMLHRElement
@@ -59,12 +72,6 @@ public:
     static const char* const getMetaData()
     {
         return html::HTMLHRElement::getMetaData();
-    }
-    HTMLHRElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"hr") {
-    }
-    HTMLHRElementImp(HTMLHRElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
     }
 };
 

@@ -106,7 +106,7 @@ void HTMLAreaElementImp::setRel(const std::u16string& rel)
 
 DOMTokenList HTMLAreaElementImp::getRelList()
 {
-    return new(std::nothrow) DOMTokenListImp(this, u"rel");
+    return std::make_shared<DOMTokenListImp>(this, u"rel");
 }
 
 std::u16string HTMLAreaElementImp::getMedia()

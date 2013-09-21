@@ -17,7 +17,7 @@ namespace bootstrap
 events::EventHandlerNonNull XMLHttpRequestEventTargetImp::getOnloadstart()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void XMLHttpRequestEventTargetImp::setOnloadstart(events::EventHandlerNonNull onloadstart)
@@ -28,7 +28,7 @@ void XMLHttpRequestEventTargetImp::setOnloadstart(events::EventHandlerNonNull on
 events::EventHandlerNonNull XMLHttpRequestEventTargetImp::getOnprogress()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void XMLHttpRequestEventTargetImp::setOnprogress(events::EventHandlerNonNull onprogress)
@@ -39,7 +39,7 @@ void XMLHttpRequestEventTargetImp::setOnprogress(events::EventHandlerNonNull onp
 events::EventHandlerNonNull XMLHttpRequestEventTargetImp::getOnabort()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void XMLHttpRequestEventTargetImp::setOnabort(events::EventHandlerNonNull onabort)
@@ -50,7 +50,7 @@ void XMLHttpRequestEventTargetImp::setOnabort(events::EventHandlerNonNull onabor
 events::EventHandlerNonNull XMLHttpRequestEventTargetImp::getOnerror()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void XMLHttpRequestEventTargetImp::setOnerror(events::EventHandlerNonNull onerror)
@@ -61,7 +61,7 @@ void XMLHttpRequestEventTargetImp::setOnerror(events::EventHandlerNonNull onerro
 events::EventHandlerNonNull XMLHttpRequestEventTargetImp::getOnload()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void XMLHttpRequestEventTargetImp::setOnload(events::EventHandlerNonNull onload)
@@ -72,7 +72,7 @@ void XMLHttpRequestEventTargetImp::setOnload(events::EventHandlerNonNull onload)
 events::EventHandlerNonNull XMLHttpRequestEventTargetImp::getOntimeout()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void XMLHttpRequestEventTargetImp::setOntimeout(events::EventHandlerNonNull ontimeout)
@@ -83,7 +83,7 @@ void XMLHttpRequestEventTargetImp::setOntimeout(events::EventHandlerNonNull onti
 events::EventHandlerNonNull XMLHttpRequestEventTargetImp::getOnloadend()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void XMLHttpRequestEventTargetImp::setOnloadend(events::EventHandlerNonNull onloadend)

@@ -38,7 +38,7 @@ public:
     ~CSSMediaRuleImp();
 
     void append(css::CSSRule rule);
-    void setMediaList(MediaListImp&& other);
+    void setMediaList(MediaListPtr other);
 
     // CSSRule
     virtual unsigned short getType();
@@ -60,6 +60,8 @@ public:
         return css::CSSMediaRule::getMetaData();
     }
 };
+
+typedef std::shared_ptr<CSSMediaRuleImp> CSSMediaRulePtr;
 
 }}}}  // org::w3c::dom::bootstrap
 

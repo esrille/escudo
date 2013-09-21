@@ -45,9 +45,17 @@ class HTMLOListElementImp : public ObjectMixin<HTMLOListElementImp, HTMLElementI
 
 public:
     HTMLOListElementImp(DocumentImp* ownerDocument);
-    HTMLOListElementImp(HTMLOListElementImp* org, bool deep);
+    HTMLOListElementImp(const HTMLOListElementImp& org);
 
     virtual void handleMutation(events::MutationEvent mutation);
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLOListElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
 
     // HTMLOListElement
     bool getReversed();

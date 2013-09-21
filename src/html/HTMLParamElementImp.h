@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,19 @@ namespace bootstrap
 class HTMLParamElementImp : public ObjectMixin<HTMLParamElementImp, HTMLElementImp>
 {
 public:
+    HTMLParamElementImp(DocumentImp* ownerDocument) :
+        ObjectMixin(ownerDocument, u"param")
+    {
+    }
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLParamElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
+
     // HTMLParamElement
     std::u16string getName();
     void setName(const std::u16string& name);
@@ -55,12 +68,6 @@ public:
     static const char* const getMetaData()
     {
         return html::HTMLParamElement::getMetaData();
-    }
-    HTMLParamElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"param") {
-    }
-    HTMLParamElementImp(HTMLParamElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
     }
 };
 

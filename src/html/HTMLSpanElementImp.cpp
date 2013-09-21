@@ -1,5 +1,5 @@
 /*
- * Copyright 2010, 2011 Esrille Inc.
+ * Copyright 2010-2013 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,5 @@
 #include "HTMLSpanElementImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
-
-// Node
-Node HTMLSpanElementImp::cloneNode(bool deep)
-{
-    return new(std::nothrow) HTMLSpanElementImp(this, deep);
-}
 
 }}}}  // org::w3c::dom::bootstrap

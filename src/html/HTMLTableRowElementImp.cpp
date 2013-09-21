@@ -84,7 +84,7 @@ unsigned int HTMLTableRowElementImp::getCellCount()
     // TODO: Better to keep the result
     unsigned int count = 0;
     for (Element child = getFirstElementChild(); child; child = child.getNextElementSibling()) {
-        if (dynamic_cast<HTMLTableCellElementImp*>(child.self()))
+        if (std::dynamic_pointer_cast<HTMLTableCellElementImp>(child.self()))
             ++count;
     }
     return count;
@@ -94,13 +94,13 @@ html::HTMLTableCellElement HTMLTableRowElementImp::getCell(unsigned int index)
 {
     unsigned int count = 0;
     for (Element child = getFirstElementChild(); child; child = child.getNextElementSibling()) {
-        if (HTMLTableCellElementImp* cell = dynamic_cast<HTMLTableCellElementImp*>(child.self())) {
+        if (auto cell = std::dynamic_pointer_cast<HTMLTableCellElementImp>(child.self())) {
             if (count == index)
                 return cell;
             ++count;
         }
     }
-    return 0;
+    return nullptr;
 }
 
 int HTMLTableRowElementImp::getRowIndex()
@@ -117,18 +117,18 @@ int HTMLTableRowElementImp::getSectionRowIndex()
 
 html::HTMLCollection HTMLTableRowElementImp::getCells()
 {
-    return new(std::nothrow) Cells(this);
+    return std::make_shared<Cells>(this);
 }
 
 html::HTMLElement HTMLTableRowElementImp::insertCell(int index)
 {
     if (index < -1)
-        return 0;   // TODO: throw an IndexSizeError exception
+        return nullptr;   // TODO: throw an IndexSizeError exception
     int count = 0;
     for (Element child = getFirstElementChild(); child; child = child.getNextElementSibling()) {
-        if (HTMLTableCellElementImp* cell = dynamic_cast<HTMLTableCellElementImp*>(child.self())) {
+        if (auto cell = std::dynamic_pointer_cast<HTMLTableCellElementImp>(child.self())) {
             if (count == index) {
-                html::HTMLTableDataCellElement td = new(std::nothrow) HTMLTableDataCellElementImp(getOwnerDocumentImp());
+                html::HTMLTableDataCellElement td = std::make_shared<HTMLTableDataCellElementImp>(getOwnerDocumentImp().get());
                 if (td)
                     insertBefore(td, cell);
                 return td;
@@ -137,8 +137,8 @@ html::HTMLElement HTMLTableRowElementImp::insertCell(int index)
         }
     }
     if (count < index)
-        return 0;   // TODO: throw an IndexSizeError exception
-    html::HTMLTableDataCellElement td = new(std::nothrow) HTMLTableDataCellElementImp(getOwnerDocumentImp());
+        return nullptr;   // TODO: throw an IndexSizeError exception
+    html::HTMLTableDataCellElement td = std::make_shared<HTMLTableDataCellElementImp>(getOwnerDocumentImp().get());
     if (td)
         appendChild(td);
     return td;
@@ -150,7 +150,7 @@ void HTMLTableRowElementImp::deleteCell(int index)
         return;     // TODO: throw an IndexSizeError exception
     int count = 0;
     for (Element child = getFirstElementChild(); child; child = child.getNextElementSibling()) {
-        if (dynamic_cast<HTMLTableCellElementImp*>(child.self())) {
+        if (std::dynamic_pointer_cast<HTMLTableCellElementImp>(child.self())) {
             if (count == index) {
                 removeChild(child);
                 return;

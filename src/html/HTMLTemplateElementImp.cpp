@@ -17,7 +17,7 @@ namespace bootstrap
 Element HTMLTemplateElementImp::getElementById(const std::u16string& elementId)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 }

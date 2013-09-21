@@ -50,7 +50,7 @@ void MessageEventInitImp::setLastEventId(const std::u16string& lastEventId)
 html::Window MessageEventInitImp::getSource()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void MessageEventInitImp::setSource(html::Window source)
@@ -61,7 +61,7 @@ void MessageEventInitImp::setSource(html::Window source)
 ObjectArray<html::MessagePort> MessageEventInitImp::getPorts()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return ObjectArray<html::MessagePort>();
 }
 
 void MessageEventInitImp::setPorts(ObjectArray<html::MessagePort> ports)

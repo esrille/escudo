@@ -42,9 +42,11 @@ namespace bootstrap
 class DocumentImp;
 class HttpRequest;
 
+typedef std::shared_ptr<DocumentImp> DocumentPtr;
+
 class CSSImportRuleImp : public ObjectMixin<CSSImportRuleImp, CSSRuleImp>
 {
-    DocumentImp* document;
+    std::weak_ptr<DocumentImp> document;
 
     std::u16string href;
     stylesheets::MediaList mediaList;
@@ -58,11 +60,11 @@ public:
     CSSImportRuleImp(const std::u16string& href);
     ~CSSImportRuleImp();
 
-    void setDocument(DocumentImp* document) {
+    void setDocument(const DocumentPtr& document) {
         this->document = document;
     }
 
-    void setMediaList(MediaListImp&& other);
+    void setMediaList(MediaListPtr other);
 
     // CSSRule
     virtual unsigned short getType();
@@ -83,6 +85,8 @@ public:
         return css::CSSImportRule::getMetaData();
     }
 };
+
+typedef std::shared_ptr<CSSImportRuleImp> CSSImportRulePtr;
 
 }
 }

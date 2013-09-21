@@ -45,8 +45,13 @@ public:
         return image;
     }
 
-    // Node
-    virtual Node cloneNode(bool deep = true);
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLImageElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
 
     // HTMLImageElement
     std::u16string getAlt();
@@ -89,6 +94,8 @@ public:
         return html::HTMLImageElement::getMetaData();
     }
 };
+
+typedef std::shared_ptr<HTMLImageElementImp> HTMLImageElementPtr;
 
 }}}}  // org::w3c::dom::bootstrap
 

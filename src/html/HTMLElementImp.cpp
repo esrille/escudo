@@ -44,47 +44,39 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 HTMLElementImp::HTMLElementImp(DocumentImp* ownerDocument, const std::u16string& localName) :
     ObjectMixin(ownerDocument, localName, u"http://www.w3.org/1999/xhtml"),
-    style(0),
     scrollTop(0),
     scrollLeft(0),
     clickListener(boost::bind(&HTMLElementImp::handleClick, this, _1, _2)),
     mouseMoveListener(boost::bind(&HTMLElementImp::handleMouseMove, this, _1, _2)),
     mutationListener(boost::bind(&HTMLElementImp::handleMutation, this, _1, _2)),
-    bindingImplementation(0),
-    shadowTree(0),
-    shadowTarget(0),
-    shadowImplementation(0),
     tabIndex(-1)
 {
-    addEventListener(u"click", &clickListener, false, EventTargetImp::UseDefault);
-    addEventListener(u"mousemove", &mouseMoveListener, false, EventTargetImp::UseDefault);
-    addEventListener(u"DOMAttrModified", &mutationListener, false, EventTargetImp::UseDefault);
+    addEventListener(u"click", clickListener, false, EventTargetImp::UseDefault);
+    addEventListener(u"mousemove", mouseMoveListener, false, EventTargetImp::UseDefault);
+    addEventListener(u"DOMAttrModified", mutationListener, false, EventTargetImp::UseDefault);
 }
 
-HTMLElementImp::HTMLElementImp(HTMLElementImp* org, bool deep) :
-    ObjectMixin(org, deep),
-    style(0),
+HTMLElementImp::HTMLElementImp(const HTMLElementImp& org) :
+    ObjectMixin(org),
     scrollTop(0),
     scrollLeft(0),
     clickListener(boost::bind(&HTMLElementImp::handleClick, this, _1, _2)),
     mouseMoveListener(boost::bind(&HTMLElementImp::handleMouseMove, this, _1, _2)),
     mutationListener(boost::bind(&HTMLElementImp::handleMutation, this, _1, _2)),
-    bindingImplementation(0), // TODO: clone
-    shadowTree(0),            // TODO: clone
-    shadowTarget(0),          // TODO: clone
-    shadowImplementation(0),  // TODO: clone
-    tabIndex(org->tabIndex)
+    tabIndex(org.tabIndex)
 {
-    if (auto orgStyle = dynamic_cast<CSSStyleDeclarationImp*>(org->style.self())) {
-        CSSStyleDeclarationImp* imp = new(std::nothrow) CSSStyleDeclarationImp(orgStyle);
+#if 0   // TODO: Do we really need the following code?
+    if (auto orgStyle = std::dynamic_pointer_cast<CSSStyleDeclarationImp>(org->style.self())) {
+        auto imp = std::make_shared<CSSStyleDeclarationImp>(orgStyle);
         if (imp) {
-            imp->setOwner(this);
+            imp->setOwner(self());  // XXX self() cannot be used inside the constructor
             style = imp;
         }
     }
-    addEventListener(u"click", &clickListener, false, EventTargetImp::UseDefault);
-    addEventListener(u"mousemove", &mouseMoveListener, false, EventTargetImp::UseDefault);
-    addEventListener(u"DOMAttrModified", &mutationListener, false, EventTargetImp::UseDefault);
+#endif
+    addEventListener(u"click", clickListener, false, EventTargetImp::UseDefault);
+    addEventListener(u"mousemove", mouseMoveListener, false, EventTargetImp::UseDefault);
+    addEventListener(u"DOMAttrModified", mutationListener, false, EventTargetImp::UseDefault);
 }
 
 HTMLElementImp::~HTMLElementImp()
@@ -145,7 +137,7 @@ void HTMLElementImp::handleMutation(events::MutationEvent mutation)
     }
     switch (Intern(mutation.getAttrName().c_str())) {
     case Intern(u"style"):
-        if (CSSStyleDeclarationImp* imp = dynamic_cast<CSSStyleDeclarationImp*>(getStyle().self())) {
+        if (auto imp = std::dynamic_pointer_cast<CSSStyleDeclarationImp>(getStyle().self())) {
             if (!imp->isMutated()) {
                 imp->clearProperties();
                 if (!value.empty()) {
@@ -162,169 +154,169 @@ void HTMLElementImp::handleMutation(events::MutationEvent mutation)
         break;
     // Event handlers
     case Intern(u"onabort"):
-        setOnabort(compile ? context->compileFunction(value) : 0);
+        setOnabort(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onblur"):
-        setOnblur(compile ? context->compileFunction(value) : 0);
+        setOnblur(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"oncancel"):
-        setOncancel(compile ? context->compileFunction(value) : 0);
+        setOncancel(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"oncanplay"):
-        setOncanplay(compile ? context->compileFunction(value) : 0);
+        setOncanplay(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"oncanplaythrough"):
-        setOncanplaythrough(compile ? context->compileFunction(value) : 0);
+        setOncanplaythrough(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onchange"):
-        setOnchange(compile ? context->compileFunction(value) : 0);
+        setOnchange(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onclick"):
-        setOnclick(compile ? context->compileFunction(value) : 0);
+        setOnclick(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onclose"):
-        setOnclose(compile ? context->compileFunction(value) : 0);
+        setOnclose(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"oncontextmenu"):
-        setOncontextmenu(compile ? context->compileFunction(value) : 0);
+        setOncontextmenu(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"oncuechange"):
-        setOncuechange(compile ? context->compileFunction(value) : 0);
+        setOncuechange(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"ondblclick"):
-        setOndblclick(compile ? context->compileFunction(value) : 0);
+        setOndblclick(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"ondrag"):
-        setOndrag(compile ? context->compileFunction(value) : 0);
+        setOndrag(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"ondragend"):
-        setOndragend(compile ? context->compileFunction(value) : 0);
+        setOndragend(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"ondragenter"):
-        setOndragenter(compile ? context->compileFunction(value) : 0);
+        setOndragenter(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"ondragleave"):
-        setOndragleave(compile ? context->compileFunction(value) : 0);
+        setOndragleave(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"ondragover"):
-        setOndragover(compile ? context->compileFunction(value) : 0);
+        setOndragover(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"ondragstart"):
-        setOndragstart(compile ? context->compileFunction(value) : 0);
+        setOndragstart(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"ondrop"):
-        setOndrop(compile ? context->compileFunction(value) : 0);
+        setOndrop(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"ondurationchange"):
-        setOndurationchange(compile ? context->compileFunction(value) : 0);
+        setOndurationchange(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onemptied"):
-        setOnemptied(compile ? context->compileFunction(value) : 0);
+        setOnemptied(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onended"):
-        setOnended(compile ? context->compileFunction(value) : 0);
+        setOnended(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onerror"):
-        setOnerror(compile ? context->compileFunction(value) : 0);
+        setOnerror(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onfocus"):
-        setOnfocus(compile ? context->compileFunction(value) : 0);
+        setOnfocus(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"oninput"):
-        setOninput(compile ? context->compileFunction(value) : 0);
+        setOninput(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"oninvalid"):
-        setOninvalid(compile ? context->compileFunction(value) : 0);
+        setOninvalid(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onkeydown"):
-        setOnkeydown(compile ? context->compileFunction(value) : 0);
+        setOnkeydown(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onkeypress"):
-        setOnkeypress(compile ? context->compileFunction(value) : 0);
+        setOnkeypress(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onkeyup"):
-        setOnkeyup(compile ? context->compileFunction(value) : 0);
+        setOnkeyup(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onload"):
-        setOnload(compile ? context->compileFunction(value) : 0);
+        setOnload(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onloadeddata"):
-        setOnloadeddata(compile ? context->compileFunction(value) : 0);
+        setOnloadeddata(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onloadedmetadata"):
-        setOnloadedmetadata(compile ? context->compileFunction(value) : 0);
+        setOnloadedmetadata(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onloadstart"):
-        setOnloadstart(compile ? context->compileFunction(value) : 0);
+        setOnloadstart(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onmousedown"):
-        setOnmousedown(compile ? context->compileFunction(value) : 0);
+        setOnmousedown(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onmousemove"):
-        setOnmousemove(compile ? context->compileFunction(value) : 0);
+        setOnmousemove(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onmouseout"):
-        setOnmouseout(compile ? context->compileFunction(value) : 0);
+        setOnmouseout(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onmouseover"):
-        setOnmouseover(compile ? context->compileFunction(value) : 0);
+        setOnmouseover(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onmouseup"):
-        setOnmouseup(compile ? context->compileFunction(value) : 0);
+        setOnmouseup(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onmousewheel"):
-        setOnmousewheel(compile ? context->compileFunction(value) : 0);
+        setOnmousewheel(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onpause"):
-        setOnpause(compile ? context->compileFunction(value) : 0);
+        setOnpause(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onplay"):
-        setOnplay(compile ? context->compileFunction(value) : 0);
+        setOnplay(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onplaying"):
-        setOnplaying(compile ? context->compileFunction(value) : 0);
+        setOnplaying(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onprogress"):
-        setOnprogress(compile ? context->compileFunction(value) : 0);
+        setOnprogress(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onratechange"):
-        setOnratechange(compile ? context->compileFunction(value) : 0);
+        setOnratechange(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onreset"):
-        setOnreset(compile ? context->compileFunction(value) : 0);
+        setOnreset(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onscroll"):
-        setOnscroll(compile ? context->compileFunction(value) : 0);
+        setOnscroll(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onseeked"):
-        setOnseeked(compile ? context->compileFunction(value) : 0);
+        setOnseeked(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onseeking"):
-        setOnseeking(compile ? context->compileFunction(value) : 0);
+        setOnseeking(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onselect"):
-        setOnselect(compile ? context->compileFunction(value) : 0);
+        setOnselect(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onshow"):
-        setOnshow(compile ? context->compileFunction(value) : 0);
+        setOnshow(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onstalled"):
-        setOnstalled(compile ? context->compileFunction(value) : 0);
+        setOnstalled(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onsubmit"):
-        setOnsubmit(compile ? context->compileFunction(value) : 0);
+        setOnsubmit(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onsuspend"):
-        setOnsuspend(compile ? context->compileFunction(value) : 0);
+        setOnsuspend(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"ontimeupdate"):
-        setOntimeupdate(compile ? context->compileFunction(value) : 0);
+        setOntimeupdate(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onvolumechange"):
-        setOnvolumechange(compile ? context->compileFunction(value) : 0);
+        setOnvolumechange(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"onwaiting"):
-        setOnwaiting(compile ? context->compileFunction(value) : 0);
+        setOnwaiting(compile ? context->compileFunction(value).self() : nullptr);
         break;
     case Intern(u"title"):
     case Intern(u"lang"):
@@ -338,14 +330,14 @@ void HTMLElementImp::handleMutation(events::MutationEvent mutation)
 
 Box* HTMLElementImp::getBox()
 {
-    DocumentImp* owner = getOwnerDocumentImp();
+    DocumentPtr owner = getOwnerDocumentImp();
     if (!owner)
         return 0;
-    WindowProxy* window = owner->getDefaultWindow();
+    WindowProxyPtr window = owner->getDefaultWindow();
     if (!window || !window->getView())
         return 0;
     // TODO: Fix MVC violation
-    CSSStyleDeclarationImp* style = window->getView()->getStyle(this);
+    CSSStyleDeclarationPtr style = window->getView()->getStyle(self());
     if (!style)
         return 0;
     return style->getBox();
@@ -353,14 +345,14 @@ Box* HTMLElementImp::getBox()
 
 void HTMLElementImp::setEventHandler(const std::u16string& type, Object handler)
 {
-    EventListenerImp* listener = getEventHandlerListener(type);
+    EventListenerPtr listener = getEventHandlerListener(type);
     if (listener) {
         listener->setEventHandler(handler);
         return;
     }
     if (!handler)
         return;
-    listener = new(std::nothrow) EventListenerImp(boost::bind(&ECMAScriptContext::dispatchEvent, getOwnerDocumentImp()->getContext(), _1, _2));
+    listener = std::make_shared<EventListenerImp>(boost::bind(&ECMAScriptContext::dispatchEvent, getOwnerDocumentImp()->getContext(), _1, _2));
     if (listener) {
         listener->setEventHandler(handler);
         addEventListener(type, listener, false, EventTargetImp::UseEventHandler);
@@ -369,24 +361,24 @@ void HTMLElementImp::setEventHandler(const std::u16string& type, Object handler)
 
 // XBL 2.0 internal
 
-void HTMLElementImp::setShadowTree(HTMLTemplateElementImp* e)
+void HTMLElementImp::setShadowTree(const HTMLTemplateElementPtr& e)
 {
     shadowTree = e;
 }
 
-bool HTMLElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
+bool HTMLElementImp::generateShadowContent(const CSSStyleDeclarationPtr& style)
 {
     if (style->binding.getValue() != CSSBindingValueImp::Uri ||
         style->display.getValue() == CSSDisplayValueImp::None)
         return false;
     if (getShadowTree())  // already attached?
         return false;
-    DocumentImp* document = getOwnerDocumentImp();
+    DocumentPtr document = getOwnerDocumentImp();
     assert(document);
     URL base(document->getDocumentURI());
     URL url(base, style->binding.getURL());
     if (!base.isSameExceptFragments(url)) {
-        document = dynamic_cast<DocumentImp*>(document->loadBindingDocument(url).self());
+        document = std::dynamic_pointer_cast<DocumentImp>(document->loadBindingDocument(url).self());
         if (!document || document->getReadyState() != u"complete")
             return false;
     }
@@ -397,15 +389,15 @@ bool HTMLElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
     Element element = document->getElementById(hash);
     if (!element)
         return false;
-    auto binding = dynamic_cast<HTMLBindingElementImp*>(element.self());
+    auto binding = std::dynamic_pointer_cast<HTMLBindingElementImp>(element.self());
     if (!binding)
         return false;
     bindingImplementation = binding->getImplementation();
     if (!bindingImplementation)
         return false;
     if (html::HTMLTemplateElement shadowTree = binding->cloneTemplate()) {
-        setShadowTree(shadowTree);
-        shadowTarget = new(std::nothrow) EventTargetImp;
+        setShadowTree(std::static_pointer_cast<HTMLTemplateElementImp>(shadowTree.self()));
+        shadowTarget = std::make_shared<EventTargetImp>();
         // TODO: if (not called from the background thread) {
 #if 0
             ECMAScriptContext* context = document->getContext();
@@ -421,12 +413,12 @@ bool HTMLElementImp::generateShadowContent(CSSStyleDeclarationImp* style)
 void HTMLElementImp::xblEnteredDocument(Node node)
 {
     while (node) {
-        if (auto element = dynamic_cast<HTMLElementImp*>(node.self())) {
+        if (auto element = std::dynamic_pointer_cast<HTMLElementImp>(node.self())) {
             if (element->shadowTarget && !element->shadowImplementation) {
-                DocumentImp* document = dynamic_cast<HTMLTemplateElementImp*>(element->shadowTree.self())->getOwnerDocumentImp();
+                DocumentPtr document = element->getShadowTree()->getOwnerDocumentImp();
                 assert(document);
                 document->enter();
-                element->shadowImplementation = document->getContext()->xblCreateImplementation(element->shadowTarget, element->bindingImplementation, element, element->shadowTree);
+                element->shadowImplementation = document->getContext()->xblCreateImplementation(element->shadowTarget, element->bindingImplementation, element, element->shadowTree).self();
                 element->shadowImplementation.xblEnteredDocument();
                 document->exit();
             }
@@ -437,21 +429,21 @@ void HTMLElementImp::xblEnteredDocument(Node node)
     }
 }
 
-void HTMLElementImp::invokeShadowTarget(EventImp* event)
+void HTMLElementImp::invokeShadowTarget(const EventPtr& event)
 {
-    auto shadowDocument = dynamic_cast<HTMLTemplateElementImp*>(shadowTree.self())->getOwnerDocumentImp();
+    auto shadowDocument = getShadowTree()->getOwnerDocumentImp();
     shadowDocument->enter();
-    dynamic_cast<EventTargetImp*>(shadowTarget.self())->invoke(event);
+    std::dynamic_pointer_cast<EventTargetImp>(shadowTarget.self())->invoke(event);
     shadowDocument->exit();
 }
 
-void HTMLElementImp::invoke(EventImp* event)
+void HTMLElementImp::invoke(const EventPtr& event)
 {
     if (!shadowTarget) {
         EventTargetImp::invoke(event);
         return;
     }
-    event->setCurrentTarget(this);
+    event->setCurrentTarget(self());
     switch (event->getEventPhase()) {
     case events::Event::CAPTURING_PHASE:
         EventTargetImp::invoke(event);
@@ -468,24 +460,18 @@ void HTMLElementImp::invoke(EventImp* event)
     }
 }
 
-// Node
-Node HTMLElementImp::cloneNode(bool deep)
-{
-    return new(std::nothrow) HTMLElementImp(this, deep);
-}
-
 // Element
 
 views::ClientRectList HTMLElementImp::getClientRects()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 views::ClientRect HTMLElementImp::getBoundingClientRect()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 // cf. http://www.w3.org/TR/cssom-view/#scroll-an-element-into-view
@@ -633,7 +619,7 @@ void HTMLElementImp::setDir(const std::u16string& dir)
 DOMStringMap HTMLElementImp::getDataset()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 bool HTMLElementImp::getHidden()
@@ -663,14 +649,16 @@ void HTMLElementImp::setTabIndex(int index)
 
 void HTMLElementImp::focus()
 {
+    auto ownerDocument = getOwnerDocumentImp();
     if (!ownerDocument || !ownerDocument->getDefaultView() || getTabIndex() < 0)
         return;
-    ownerDocument->setFocus(this);
+    ownerDocument->setFocus(std::static_pointer_cast<HTMLElementImp>(self()));
 }
 
 void HTMLElementImp::blur()
 {
-    if (!ownerDocument || ownerDocument->getFocus() != this)
+    auto ownerDocument = getOwnerDocumentImp();
+    if (!ownerDocument || ownerDocument->getFocus().get() != this)
         return;
     ownerDocument->setFocus(0);
 }
@@ -706,7 +694,7 @@ void HTMLElementImp::setDraggable(bool draggable)
 DOMSettableTokenList HTMLElementImp::getDropzone()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void HTMLElementImp::setDropzone(const std::u16string& dropzone)
@@ -734,7 +722,7 @@ bool HTMLElementImp::getIsContentEditable()
 html::HTMLMenuElement HTMLElementImp::getContextMenu()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void HTMLElementImp::setContextMenu(html::HTMLMenuElement contextMenu)
@@ -786,8 +774,8 @@ Nullable<bool> HTMLElementImp::getCommandChecked()
 css::CSSStyleDeclaration HTMLElementImp::getStyle()
 {
     if (!style) {
-        if (CSSStyleDeclarationImp* imp = new(std::nothrow) CSSStyleDeclarationImp) {
-            imp->setOwner(this);
+        if (auto imp = std::make_shared<CSSStyleDeclarationImp>()) {
+            imp->setOwner(self());
             style = imp;
         }
     }
@@ -1347,7 +1335,7 @@ void HTMLElementImp::setOnwaiting(events::EventHandlerNonNull onwaiting)
 Element HTMLElementImp::getOffsetParent()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 int HTMLElementImp::getOffsetTop()
@@ -1433,7 +1421,7 @@ std::u16string HTMLElementImp::getAttributeAsURL(const std::u16string& name)
     std::u16string value(getAttribute(name));
     if (value.empty())
         return value;
-    if (DocumentImp* document = getOwnerDocumentImp()) {
+    if (DocumentPtr document = getOwnerDocumentImp()) {
         URL base(document->getDocumentURI());
         URL url(base, value);
         value = url;

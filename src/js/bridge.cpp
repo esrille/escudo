@@ -86,13 +86,14 @@ inline uint32_t uc_one_at_a_time(const char16_t* key, size_t len)
     return hash;
 }
 
-Object* convert(JSContext* cx, JSObject* obj)
+Object convert(JSContext* cx, JSObject* obj)
 {
     JSClass* cls = JS_GET_CLASS(cx, obj);
     if (cls && NativeClass::isNativeClass(cls))
-        return static_cast<ObjectImp*>(JS_GetPrivate(cx, obj));
+        return static_cast<Object*>(JS_GetPrivate(cx, obj));
     // obj is a JavaScript object. Create a proxy for obj.
-    return new(std::nothrow) ProxyObject(cx, obj);
+    Object proxy(std::make_shared<ProxyObject>(cx, obj));
+    return proxy;
 }
 
 Any convert(JSContext* cx, jsval& v)
@@ -100,7 +101,7 @@ Any convert(JSContext* cx, jsval& v)
     if (JSVAL_IS_VOID(v))
         return Any();
     if (JSVAL_IS_NULL(v))
-        return Any(static_cast<Object*>(0));
+        return Any(nullptr);
     if (JSVAL_IS_INT(v))
         return JSVAL_TO_INT(v);
     if (JSVAL_IS_DOUBLE(v))
@@ -122,9 +123,9 @@ JSObject* convert(JSContext* cx, Object* obj)
 {
     JSObject* jsobj = 0;
     if (obj) {
-        if (ProxyObject* p = dynamic_cast<ProxyObject*>(obj->self()))
+        if (auto p = std::dynamic_pointer_cast<ProxyObject>(obj->self()))
             jsobj = p->getJSObject();
-        else if (ObjectImp* imp = dynamic_cast<ObjectImp*>(obj->self()))
+        else if (auto imp = dynamic_cast<ObjectImp*>(obj->self().get()))
             jsobj = static_cast<NativeClass*>(imp->getStaticPrivate())->createJSObject(cx, imp);
     }
     return jsobj;
@@ -161,10 +162,18 @@ jsval convert(JSContext* cx, Any& v)
     return JSVAL_VOID;
 }
 
+ObjectImp* getNative(JSContext* cx, JSObject* obj)
+{
+    Object* clone = static_cast<Object*>(JS_GetPrivate(cx, obj));
+    if (!clone)
+        return nullptr;
+    return static_cast<ObjectImp*>(clone->self().get());
+}
+
 JSBool caller(JSContext* cx, uintN argc, jsval* vp)
 {
     JSObject* obj = JSVAL_TO_OBJECT(JS_CALLEE(cx, vp));
-    if (ObjectImp* native = static_cast<ObjectImp*>(JS_GetPrivate(cx, obj))) {
+    if (ObjectImp* native = getNative(cx, obj)) {
         TemporaryBuffer<Any> arguments(alloca(sizeof(Any) * argc), argc);
         for (unsigned i = 0; i < argc; ++i)
             arguments[i] = convert(cx, JS_ARGV(cx, vp)[i]);
@@ -179,7 +188,7 @@ template <int N>
 JSBool operation(JSContext* cx, uintN argc, jsval* vp)
 {
     if (JSObject* obj = JS_THIS_OBJECT(cx, vp)) {
-        if (ObjectImp* native = static_cast<ObjectImp*>(JS_GetPrivate(cx, obj))) {
+        if (ObjectImp* native = getNative(cx, obj)) {
             TemporaryBuffer<Any> arguments(alloca(sizeof(Any) * argc), argc);
             for (unsigned i = 0; i < argc; ++i)
                 arguments[i] = convert(cx, JS_ARGV(cx, vp)[i]);
@@ -211,7 +220,7 @@ std::u16string toString(JSContext* cx, jsid id)
 
 JSBool specialOp(JSContext* cx, JSObject* obj, jsid id, jsval* vp, int argc)
 {
-    ObjectImp* native = static_cast<ObjectImp*>(JS_GetPrivate(cx, obj));
+    ObjectImp* native = getNative(cx, obj);
     if (!native)
         return JS_PropertyStub(cx, obj, id, vp);
     Any argument;
@@ -238,7 +247,7 @@ JSBool specialOp(JSContext* cx, JSObject* obj, jsid id, jsval* vp, int argc)
 
 JSBool specialResolver(JSContext* cx, JSObject* obj, jsid id)
 {
-    ObjectImp* native = static_cast<ObjectImp*>(JS_GetPrivate(cx, obj));
+    ObjectImp* native = getNative(cx, obj);
     if (!native)
         return JS_TRUE;
     Any argument;
@@ -273,7 +282,7 @@ JSBool specialDeleter(JSContext* cx, JSObject* obj, jsid id, jsval* vp)
 
 JSBool specialSetter(JSContext* cx, JSObject* obj, jsid id, JSBool strict, jsval* vp)
 {
-    ObjectImp* native = static_cast<ObjectImp*>(JS_GetPrivate(cx, obj));
+    ObjectImp* native = getNative(cx, obj);
     if (!native)
         return JS_StrictPropertyStub(cx, obj, id, strict, vp);
     Any arguments[2];
@@ -294,10 +303,14 @@ JSBool specialSetter(JSContext* cx, JSObject* obj, jsid id, JSBool strict, jsval
 
 void finalize(JSContext* cx, JSObject* obj)
 {
-    ObjectImp* imp = static_cast<ObjectImp*>(JS_GetPrivate(cx, obj));
-    if (imp && imp->getPrivate()) {
-        imp->setPrivate(0);
-        imp->release_();
+    Object* clone = static_cast<Object*>(JS_GetPrivate(cx, obj));
+    if (!clone)
+        return;
+    if (ObjectImp* imp = static_cast<ObjectImp*>(clone->self().get())) {
+        if (imp->getPrivate()) {
+            imp->setPrivate(nullptr);
+            delete clone;
+        }
     }
 }
 
@@ -351,7 +364,7 @@ JSBool NativeClass::constructor(JSContext* cx, uintN argc, jsval* vp)
         for (unsigned i = 0; i < argc; ++i)
             arguments[i] = convert(cx, JS_ARGV(cx, vp)[i]);
         Any result = getConstructor().message_(0, "", argc, arguments).toObject();
-        if (ObjectImp* imp = dynamic_cast<ObjectImp*>(result.toObject()->self())) {
+        if (auto imp = dynamic_cast<ObjectImp*>(result.toObject()->self().get())) {
             JSObject* obj = static_cast<NativeClass*>(imp->getStaticPrivate())->createJSObject(cx, imp);
             if (obj) {
                 JS_SET_RVAL(cx, vp, OBJECT_TO_JSVAL(obj));
@@ -366,7 +379,7 @@ template <int R>
 JSBool NativeClass::getter(JSContext* cx, JSObject* obj, jsid id, jsval* vp)
 {
     if (JSID_IS_INT(id)) {
-        if (ObjectImp* native = static_cast<ObjectImp*>(JS_GetPrivate(cx, obj))) {
+        if (ObjectImp* native = getNative(cx, obj)) {
             NativeClass* nc = static_cast<NativeClass*>(native->getStaticPrivate());
             while (nc->protoRank != R)
                 nc = nc->proto;
@@ -383,7 +396,7 @@ template <int R>
 JSBool NativeClass::setter(JSContext* cx, JSObject* obj, jsid id, JSBool strict, jsval* vp)
 {
     if (JSID_IS_INT(id)) {
-        if (ObjectImp* native = static_cast<ObjectImp*>(JS_GetPrivate(cx, obj))) {
+        if (ObjectImp* native = getNative(cx, obj)) {
             NativeClass* nc = static_cast<NativeClass*>(native->getStaticPrivate());
             while (nc->protoRank != R)
                 nc = nc->proto;
@@ -397,18 +410,25 @@ JSBool NativeClass::setter(JSContext* cx, JSObject* obj, jsid id, JSBool strict,
     return JS_FALSE;
 }
 
-JSObject* NativeClass::createJSObject(JSContext* cx, ObjectImp* self)
+JSObject* NativeClass::createJSObject(JSContext* cx, ObjectImp* imp)
 {
-    assert(self);
-    JSObject* obj = static_cast<JSObject*>(self->getPrivate());
+    assert(imp);
+    JSObject* obj = static_cast<JSObject*>(imp->getPrivate());
+    if (obj)
+        return obj;
+
+    Object* clone = new(std::nothrow) Object(imp->self());
+    if (!clone)
+        return nullptr;
+
+    obj = JS_NewObject(cx, &jsclass, 0, 0);
     if (!obj) {
-        obj = JS_NewObject(cx, &jsclass, 0, 0);
-        if (obj) {
-            self->retain_();
-            self->setPrivate(obj);
-            JS_SetPrivate(cx, obj, self);
-        }
+        delete clone;
+        return nullptr;
     }
+
+    imp->setPrivate(obj);
+    JS_SetPrivate(cx, obj, clone);
     return obj;
 }
 
@@ -735,50 +755,50 @@ JSObject* NativeClass::registerClass(JSContext* cx, JSObject* global)
 
 Any ProxyObject::message_(uint32_t selector, const char* id, int argc, Any* argv)
 {
-    bool callback = (CALLBACK_ <= argc);
+    bool callback = (Object::CALLBACK_ <= argc);
     if (callback)
-        argc -= CALLBACK_;
+        argc -= Object::CALLBACK_;
     jsval result;
     JSBool found;
     std::u16string name;
     switch (argc) {
-    case GETTER_:
+    case Object::GETTER_:
         if (JS_GetProperty(jscontext, jsobject, id, &result))
             return convert(jscontext, result);
         break;
-    case SETTER_:
+    case Object::SETTER_:
         result = convert(jscontext, argv[0]);
         if (JS_SetProperty(jscontext, jsobject, id, &result))
             return convert(jscontext, result);
         break;
-    case HAS_PROPERTY_:
-    case HAS_OPERATION_:  // TODO: refine HAS_OPERATION_ path
+    case Object::HAS_PROPERTY_:
+    case Object::HAS_OPERATION_:  // TODO: refine HAS_OPERATION_ path
         if (JS_HasProperty(jscontext, jsobject, id, &found))
             return (found == JS_TRUE);
         break;
-    case SPECIAL_GETTER_:
+    case Object::SPECIAL_GETTER_:
         name = argv[0].toString();
         if (JS_GetUCProperty(jscontext, jsobject, reinterpret_cast<const jschar*>(name.c_str()), name.length(), &result))
             return convert(jscontext, result);
         break;
-    case SPECIAL_SETTER_:
-    case SPECIAL_CREATOR_:
-    case SPECIAL_SETTER_CREATOR_:
+    case Object::SPECIAL_SETTER_:
+    case Object::SPECIAL_CREATOR_:
+    case Object::SPECIAL_SETTER_CREATOR_:
         name = argv[0].toString();
         result = convert(jscontext, argv[1]);
         if (JS_GetUCProperty(jscontext, jsobject, reinterpret_cast<const jschar*>(name.c_str()), name.length(), &result))
             return convert(jscontext, result);
         break;
-    case SPECIAL_DELETER_:
+    case Object::SPECIAL_DELETER_:
         name = argv[0].toString();
         if (JS_DeleteUCProperty2(jscontext, jsobject, reinterpret_cast<const jschar*>(name.c_str()), name.length(), &result))
             return result == JS_TRUE;
         break;
-    case STRINGIFY_:
+    case Object::STRINGIFY_:
         if (JS_CallFunctionName(jscontext, jsobject, "toString", 0, 0, &result) == JS_TRUE)
             return convert(jscontext, result);
         break;
-    case IS_KIND_OF_:
+    case Object::IS_KIND_OF_:
         return true;    // TODO: check more conditions
         break;
     default: {
@@ -815,12 +835,12 @@ Any ECMAScriptContext::Impl::evaluate(const std::u16string& script)
     return convert(getContext(), rval);
 }
 
-Object* ECMAScriptContext::Impl::compileFunction(const std::u16string& body)
+Object ECMAScriptContext::Impl::compileFunction(const std::u16string& body)
 {
     static const char* argname = "event";
     JSFunction* fun = JS_CompileUCFunction(getContext(), 0, 0, 1, &argname, reinterpret_cast<const jschar*>(body.c_str()), body.length(), 0, 0);
     if (!fun)
-        return 0;
+        return nullptr;
     return convert(getContext(), JS_GetFunctionObject(fun));
 }
 
@@ -829,13 +849,13 @@ Any ECMAScriptContext::Impl::callFunction(Object thisObject, Object functionObje
     assert(0 <= argc);
     if (!thisObject || !functionObject)
         return Any();
-    JSObject* funcObj = convert(getContext(), functionObject.self());
+    JSObject* funcObj = convert(getContext(), &functionObject);
     jsval oval = OBJECT_TO_JSVAL(funcObj);
     jsval fval;
     if (!JS_ConvertValue(getContext(), oval, JSTYPE_FUNCTION, &fval))
         return Any();
 
-    JSObject* thisObj = convert(getContext(), thisObject.self());
+    JSObject* thisObj = convert(getContext(), &thisObject);
 
     jsval arguments[0 < argc ? argc : 1];
     for (int i = 0; i < argc; ++i)
@@ -847,12 +867,12 @@ Any ECMAScriptContext::Impl::callFunction(Object thisObject, Object functionObje
     return convert(getContext(), result);
 }
 
-Object* ECMAScriptContext::Impl::xblCreateImplementation(Object object, Object prototype, Object boundElement, Object shadowTree)
+Object ECMAScriptContext::Impl::xblCreateImplementation(Object object, Object prototype, Object boundElement, Object shadowTree)
 {
-    JSObject* imp = convert(getContext(), object.self());
+    JSObject* imp = convert(getContext(), &object);
 
     if (prototype) {
-        JSObject* p = convert(getContext(), prototype.self());
+        JSObject* p = convert(getContext(), &prototype);
         JS_SetPrototype(getContext(), p, JS_GetPrototype(getContext(), imp));
         JS_SetPrototype(getContext(), imp, p);
     }
@@ -860,10 +880,11 @@ Object* ECMAScriptContext::Impl::xblCreateImplementation(Object object, Object p
     // TODO: Create an external object.
 
     jsval val;
-    val = OBJECT_TO_JSVAL(convert(getContext(), boundElement.self()));
+    val = OBJECT_TO_JSVAL(convert(getContext(), &boundElement));
     JS_SetProperty(getContext(), imp, "boundElement", &val);
-    val = OBJECT_TO_JSVAL(convert(getContext(), shadowTree.self()));
+    val = OBJECT_TO_JSVAL(convert(getContext(), &shadowTree));
     JS_SetProperty(getContext(), imp, "shadowTree", &val);
 
-    return new(std::nothrow) ProxyObject(getContext(), imp);
+    Object proxy(std::make_shared<ProxyObject>(getContext(), imp));
+    return proxy;
 }

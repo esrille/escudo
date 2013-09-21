@@ -109,13 +109,13 @@ void Box::applyReplacedMinMax(float w, float h)
     }
 }
 
-bool Block::layOutReplacedElement(ViewCSSImp* view, Element element, CSSStyleDeclarationImp* style)
+bool Block::layOutReplacedElement(ViewCSSImp* view, Element element, const CSSStyleDeclarationPtr& style)
 {
     float intrinsicWidth = -1.0f;
     float intrinsicHeight = -1.0f;
     std::u16string tag = element.getLocalName();
     if (tag == u"img" || tag == u"object") {
-        HTMLReplacedElementImp* replaced = dynamic_cast<HTMLReplacedElementImp*>(element.self());
+        auto replaced = std::dynamic_pointer_cast<HTMLReplacedElementImp>(element.self());
         if (!replaced)
             return false;
         if (!replaced->getIntrinsicSize(intrinsicWidth, intrinsicHeight)) {
@@ -130,7 +130,7 @@ bool Block::layOutReplacedElement(ViewCSSImp* view, Element element, CSSStyleDec
     if (tag == u"iframe") {
         html::HTMLIFrameElement iframe = interface_cast<html::HTMLIFrameElement>(element);
         html::Window contentWindow = iframe.getContentWindow();
-        if (WindowProxy* imp = dynamic_cast<WindowProxy*>(contentWindow.self())) {
+        if (auto imp = std::dynamic_pointer_cast<WindowProxy>(contentWindow.self())) {
             imp->setSize(width, height);
             childWindow = imp;
         }

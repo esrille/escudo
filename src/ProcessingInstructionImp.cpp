@@ -27,8 +27,8 @@ namespace bootstrap
 
 bool ProcessingInstructionImp::isEqualNode(Node arg)
 {
-    ProcessingInstructionImp* processingInstruction = dynamic_cast<ProcessingInstructionImp*>(arg.self());
-    if (this == processingInstruction)
+    auto processingInstruction = std::dynamic_pointer_cast<ProcessingInstructionImp>(arg.self());
+    if (processingInstruction.get() == this)
         return true;
     if (!processingInstruction)
         return false;
@@ -48,7 +48,7 @@ std::u16string ProcessingInstructionImp::getTarget()
 stylesheets::StyleSheet ProcessingInstructionImp::getSheet()
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 }

@@ -47,46 +47,46 @@ bool CSSRuleListImp::PrioritizedRule::isActive(Element& element, ViewCSSImp* vie
     return selector->match(element, view, true);
 }
 
-void CSSRuleListImp::appendMisc(CSSSelector* selector, CSSStyleDeclarationImp* declaration, MediaListImp* mediaList)
+void CSSRuleListImp::appendMisc(CSSSelector* selector, const CSSStyleDeclarationPtr& declaration, const MediaListPtr& mediaList)
 {
-    misc.push_back(Rule{ selector, declaration, ++order, mediaList });
+    misc.push_back(Rule{ selector, declaration.get(), ++order, mediaList.get() });
 }
 
-void CSSRuleListImp::appendID(CSSSelector* selector, CSSStyleDeclarationImp* declaration, const std::u16string& key, MediaListImp* mediaList)
+void CSSRuleListImp::appendID(CSSSelector* selector, const CSSStyleDeclarationPtr& declaration, const std::u16string& key, const MediaListPtr& mediaList)
 {
-    mapID.insert(std::pair<std::u16string, Rule>(key, Rule{ selector, declaration, ++order, mediaList }));
+    mapID.insert(std::pair<std::u16string, Rule>(key, Rule{ selector, declaration.get(), ++order, mediaList.get() }));
 }
 
-void CSSRuleListImp::appendClass(CSSSelector* selector, CSSStyleDeclarationImp* declaration, const std::u16string& key, MediaListImp* mediaList)
+void CSSRuleListImp::appendClass(CSSSelector* selector, const CSSStyleDeclarationPtr& declaration, const std::u16string& key, const MediaListPtr& mediaList)
 {
-    mapClass.insert(std::pair<std::u16string, Rule>(key, Rule{ selector, declaration, ++order, mediaList }));
+    mapClass.insert(std::pair<std::u16string, Rule>(key, Rule{ selector, declaration.get(), ++order, mediaList.get() }));
 }
 
-void CSSRuleListImp::appendType(CSSSelector* selector, CSSStyleDeclarationImp* declaration, const std::u16string& key, MediaListImp* mediaList)
+void CSSRuleListImp::appendType(CSSSelector* selector, const CSSStyleDeclarationPtr& declaration, const std::u16string& key, const MediaListPtr& mediaList)
 {
-    mapType.insert(std::pair<std::u16string, Rule>(key, Rule{ selector, declaration, ++order, mediaList }));
+    mapType.insert(std::pair<std::u16string, Rule>(key, Rule{ selector, declaration.get(), ++order, mediaList.get() }));
 }
 
-void CSSRuleListImp::append(css::CSSRule rule, DocumentImp* document, MediaListImp* mediaList)
+void CSSRuleListImp::append(css::CSSRule rule, const DocumentPtr& document, const MediaListPtr& mediaList)
 {
     if (!rule)
         return;
-    if (CSSStyleRuleImp* styleRule = dynamic_cast<CSSStyleRuleImp*>(rule.self())) {
+    if (auto styleRule = std::dynamic_pointer_cast<CSSStyleRuleImp>(rule.self())) {
         if (CSSSelectorsGroup* selectorsGroup = styleRule->getSelectorsGroup()) {
             for (auto j = selectorsGroup->begin(); j != selectorsGroup->end(); ++j) {
                 CSSSelector* selector = *j;
-                CSSStyleDeclarationImp* declaration = dynamic_cast<CSSStyleDeclarationImp*>(styleRule->getStyle().self());
+                auto declaration = std::dynamic_pointer_cast<CSSStyleDeclarationImp>(styleRule->getStyle().self());
                 selector->registerToRuleList(this, declaration, mediaList);
             }
         }
-    } else if (CSSMediaRuleImp* mediaRule = dynamic_cast<CSSMediaRuleImp*>(rule.self())) {
-        auto ruleList = dynamic_cast<CSSRuleListImp*>(mediaRule->getCssRules().self());
+    } else if (auto mediaRule = std::dynamic_pointer_cast<CSSMediaRuleImp>(rule.self())) {
+        auto ruleList = std::dynamic_pointer_cast<CSSRuleListImp>(mediaRule->getCssRules().self());
         if (ruleList) {
-            MediaListImp* mediaList = dynamic_cast<MediaListImp*>(mediaRule->getMedia().self());
+            auto mediaList = std::dynamic_pointer_cast<MediaListImp>(mediaRule->getMedia().self());
             for (auto i = ruleList->ruleList.begin(); i != ruleList->ruleList.end(); ++i)
                 append(*i, document, mediaList);
         }
-    } else if (CSSImportRuleImp* importRule = dynamic_cast<CSSImportRuleImp*>(rule.self())) {
+    } else if (auto importRule = std::dynamic_pointer_cast<CSSImportRuleImp>(rule.self())) {
         if (document) {
             importRule->setDocument(document);
             importRule->getStyleSheet();  // to get the CSS file
@@ -97,7 +97,7 @@ void CSSRuleListImp::append(css::CSSRule rule, DocumentImp* document, MediaListI
         ruleList.push_back(rule);
 }
 
-void CSSRuleListImp::collectRules(RuleSet& set, ViewCSSImp* view, Element& element, std::multimap<std::u16string, Rule>& map, const std::u16string& key, MediaListImp* mediaList)
+void CSSRuleListImp::collectRules(RuleSet& set, ViewCSSImp* view, Element& element, std::multimap<std::u16string, Rule>& map, const std::u16string& key, MediaListPtr mediaList)
 {
     for (auto i = map.find(key); i != map.end() && i->first == key; ++i) {
         CSSSelector* selector = i->second.selector;
@@ -105,21 +105,21 @@ void CSSRuleListImp::collectRules(RuleSet& set, ViewCSSImp* view, Element& eleme
             continue;
         // TODO: emplace() seems to be not ready yet with libstdc++.
         if (i->second.mediaList)
-            mediaList = i->second.mediaList;
+            mediaList = std::static_pointer_cast<MediaListImp>(i->second.mediaList->self());
         // TODO: else ...
-        PrioritizedRule rule(importance, i->second, view->matchMedia(mediaList));
+        PrioritizedRule rule(importance, i->second, view->matchMedia(mediaList).get());
         set.insert(rule);
     }
 }
 
-void CSSRuleListImp::collectRulesByID(RuleSet& set, ViewCSSImp* view, Element& element, MediaListImp* mediaList)
+void CSSRuleListImp::collectRulesByID(RuleSet& set, ViewCSSImp* view, Element& element, const MediaListPtr& mediaList)
 {
     Nullable<std::u16string> attr = element.getAttribute(u"id");
     if (attr.hasValue())
         collectRules(set, view, element, mapID, attr.value(), mediaList);
 }
 
-void CSSRuleListImp::collectRulesByClass(RuleSet& set, ViewCSSImp* view, Element& element, MediaListImp* mediaList)
+void CSSRuleListImp::collectRulesByClass(RuleSet& set, ViewCSSImp* view, Element& element, const MediaListPtr& mediaList)
 {
     Nullable<std::u16string> attr = element.getAttribute(u"class");
     if (attr.hasValue()) {
@@ -137,12 +137,12 @@ void CSSRuleListImp::collectRulesByClass(RuleSet& set, ViewCSSImp* view, Element
     }
 }
 
-void CSSRuleListImp::collectRulesByType(RuleSet& set, ViewCSSImp* view, Element& element, MediaListImp* mediaList)
+void CSSRuleListImp::collectRulesByType(RuleSet& set, ViewCSSImp* view, Element& element, const MediaListPtr& mediaList)
 {
     collectRules(set, view, element, mapType, element.getLocalName(), mediaList);
 }
 
-void CSSRuleListImp::collectRulesByMisc(RuleSet& set, ViewCSSImp* view, Element& element, MediaListImp* mediaList)
+void CSSRuleListImp::collectRulesByMisc(RuleSet& set, ViewCSSImp* view, Element& element, MediaListPtr mediaList)
 {
     for (auto i = misc.begin(); i != misc.end(); ++i) {
         CSSSelector* selector = i->selector;
@@ -150,14 +150,14 @@ void CSSRuleListImp::collectRulesByMisc(RuleSet& set, ViewCSSImp* view, Element&
             continue;
         // TODO: emplace() seems to be not ready yet with libstdc++.
         if (i->mediaList)
-            mediaList = i->mediaList;
+            mediaList = std::static_pointer_cast<MediaListImp>(i->mediaList->self());
         // TODO: else ...
-        PrioritizedRule rule(importance, *i, view->matchMedia(mediaList));
+        PrioritizedRule rule(importance, *i, view->matchMedia(mediaList).get());
         set.insert(rule);
     }
 }
 
-void CSSRuleListImp::collectRules(RuleSet& set, ViewCSSImp* view, Element& element, unsigned importance, MediaListImp* mediaList)
+void CSSRuleListImp::collectRules(RuleSet& set, ViewCSSImp* view, Element& element, unsigned importance, MediaListPtr mediaList)
 {
     this->importance = importance;
 
@@ -165,11 +165,11 @@ void CSSRuleListImp::collectRules(RuleSet& set, ViewCSSImp* view, Element& eleme
     // declarations in the style sheet itself.
     // cf. http://www.w3.org/TR/CSS2/cascade.html#cascading-order
     for (auto i = importList.begin(); i != importList.end(); ++i) {
-        if (auto media = dynamic_cast<MediaListImp*>((*i)->getMedia().self()))
+        if (auto media = std::dynamic_pointer_cast<MediaListImp>((*i)->getMedia().self()))
             mediaList = media;
         // TODO: else ...
-        if (CSSStyleSheetImp* sheet = dynamic_cast<CSSStyleSheetImp*>((*i)->getStyleSheet().self())) {
-            if (CSSRuleListImp* ruleList = dynamic_cast<CSSRuleListImp*>(sheet->getCssRules().self()))
+        if (auto sheet = std::dynamic_pointer_cast<CSSStyleSheetImp>((*i)->getStyleSheet().self())) {
+            if (auto ruleList = std::dynamic_pointer_cast<CSSRuleListImp>(sheet->getCssRules().self()))
                 ruleList->collectRules(set, view, element, importance, mediaList);
         }
     }

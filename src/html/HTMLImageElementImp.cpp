@@ -33,11 +33,6 @@ HTMLImageElementImp::HTMLImageElementImp(DocumentImp* ownerDocument) :
 {
 }
 
-HTMLImageElementImp::HTMLImageElementImp(HTMLImageElementImp* org, bool deep) :
-    ObjectMixin(org, deep)
-{
-}
-
 void HTMLImageElementImp::handleMutation(events::MutationEvent mutation)
 {
     std::u16string value = mutation.getNewValue();
@@ -45,7 +40,7 @@ void HTMLImageElementImp::handleMutation(events::MutationEvent mutation)
 
     switch (Intern(mutation.getAttrName().c_str())) {
     case Intern(u"src"):
-        if (DocumentImp* document = getOwnerDocumentImp()) {
+        if (DocumentPtr document = getOwnerDocumentImp()) {
             if (current)
                 current->cancel();
             current = new(std::nothrow) HttpRequest(document->getDocumentURI());
@@ -125,14 +120,8 @@ void HTMLImageElementImp::notify(HttpRequest* request)
                 ancestor->setFlags(Box::NEED_REFLOW);
         }
     }
-    DocumentImp* document = getOwnerDocumentImp();
-    document->decrementLoadEventDelayCount();
-}
-
-// Node
-Node HTMLImageElementImp::cloneNode(bool deep)
-{
-    return new(std::nothrow) HTMLImageElementImp(this, deep);
+    if (DocumentPtr document = getOwnerDocumentImp())
+        document->decrementLoadEventDelayCount();
 }
 
 // HTMLImageElement
@@ -308,18 +297,18 @@ class Constructor : public Object
 public:
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv) {
-        bootstrap::HTMLImageElementImp* img = 0;
+        bootstrap::HTMLImageElementPtr img;
         switch (argc) {
         case 0:
-            img = new(std::nothrow) bootstrap::HTMLImageElementImp(0);
+            img = std::make_shared<bootstrap::HTMLImageElementImp>(nullptr);
             break;
         case 1:
-            img = new(std::nothrow) bootstrap::HTMLImageElementImp(0);
+            img = std::make_shared<bootstrap::HTMLImageElementImp>(nullptr);
             if (img)
                 img->setWidth(argv[0]);
             break;
         case 2:
-            img = new(std::nothrow) bootstrap::HTMLImageElementImp(0);
+            img = std::make_shared<bootstrap::HTMLImageElementImp>(nullptr);
             if (img) {
                 img->setWidth(argv[0]);
                 img->setHeight(argv[1]);

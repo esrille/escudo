@@ -37,24 +37,23 @@ HTMLStyleElementImp::HTMLStyleElementImp(DocumentImp* ownerDocument) :
     ObjectMixin(ownerDocument, u"style"),
     mutationListener(boost::bind(&HTMLStyleElementImp::handleMutation, this, _1, _2)),
     type(u"text/css"),
-    scoped(false),
-    styleSheet(0)
+    scoped(false)
 {
-    addEventListener(u"DOMNodeInserted", &mutationListener, false, EventTargetImp::UseDefault);
-    addEventListener(u"DOMNodeRemoved", &mutationListener, false, EventTargetImp::UseDefault);
-    addEventListener(u"DOMCharacterDataModified", &mutationListener, false, EventTargetImp::UseDefault);
+    addEventListener(u"DOMNodeInserted", mutationListener, false, EventTargetImp::UseDefault);
+    addEventListener(u"DOMNodeRemoved", mutationListener, false, EventTargetImp::UseDefault);
+    addEventListener(u"DOMCharacterDataModified", mutationListener, false, EventTargetImp::UseDefault);
 }
 
-HTMLStyleElementImp::HTMLStyleElementImp(HTMLStyleElementImp* org, bool deep) :
-    ObjectMixin(org, deep),
+HTMLStyleElementImp::HTMLStyleElementImp(const HTMLStyleElementImp& org) :
+    ObjectMixin(org),
     mutationListener(boost::bind(&HTMLStyleElementImp::handleMutation, this, _1, _2)),
-    type(org->type),
-    scoped(org->scoped),
-    styleSheet(org->styleSheet) // TODO: make a clone sheet, too?
+    type(org.type),
+    scoped(org.scoped),
+    styleSheet(org.styleSheet) // TODO: make a clone sheet, too?
 {
-    addEventListener(u"DOMNodeInserted", &mutationListener, false, EventTargetImp::UseDefault);
-    addEventListener(u"DOMNodeRemoved", &mutationListener, false, EventTargetImp::UseDefault);
-    addEventListener(u"DOMCharacterDataModified", &mutationListener, false, EventTargetImp::UseDefault);
+    addEventListener(u"DOMNodeInserted", mutationListener, false, EventTargetImp::UseDefault);
+    addEventListener(u"DOMNodeRemoved", mutationListener, false, EventTargetImp::UseDefault);
+    addEventListener(u"DOMCharacterDataModified", mutationListener, false, EventTargetImp::UseDefault);
 }
 
 void HTMLStyleElementImp::handleMutation(EventListenerImp* listener, events::Event event)
@@ -63,29 +62,29 @@ void HTMLStyleElementImp::handleMutation(EventListenerImp* listener, events::Eve
 
     events::MutationEvent mutation(interface_cast<events::MutationEvent>(event));
 
-    DocumentImp* document = getOwnerDocumentImp();
+    DocumentPtr document = getOwnerDocumentImp();
     if (!document)
         return;
 
-    if (mutation.getType() == u"DOMNodeRemoved" && event.getTarget().self() == this)
-        styleSheet = 0;
+    if (mutation.getType() == u"DOMNodeRemoved" && event.getTarget().self().get() == this)
+        styleSheet = nullptr;
     else {
         std::u16string content;
         for (Node node = getFirstChild(); node; node = node.getNextSibling()) {
-            if (TextImp* text = dynamic_cast<TextImp*>(node.self()))  // TODO better to avoid imp call?
+            if (auto text = std::dynamic_pointer_cast<TextImp>(node.self()))  // TODO better to avoid imp call?
                 content += text->getData();
         }
         CSSParser parser(getBaseURI());
         styleSheet = parser.parse(document, content);
-        if (auto imp = dynamic_cast<CSSStyleSheetImp*>(styleSheet.self())) {
-            imp->setOwnerNode(this);
+        if (auto imp = std::dynamic_pointer_cast<CSSStyleSheetImp>(styleSheet.self())) {
+            imp->setOwnerNode(self());
             imp->setHref(u"");
             imp->setMedia(getMedia());
             if (4 <= getLogLevel())
                 dumpStyleSheet(std::cerr, imp);
         }
     }
-    if (WindowProxy* view = document->getDefaultWindow())
+    if (WindowProxyPtr view = document->getDefaultWindow())
         view->setViewFlags(Box::NEED_SELECTOR_REMATCHING);
     document->resetStyleSheets();
 }
@@ -98,9 +97,9 @@ void HTMLStyleElementImp::handleMutation(events::MutationEvent mutation)
     case Intern(u"media"):
         if (styleSheet) {
             styleSheet.setMedia((mutation.getAttrChange() != events::MutationEvent::REMOVAL) ? value : u"");
-            if (DocumentImp* document = getOwnerDocumentImp()) {
+            if (DocumentPtr document = getOwnerDocumentImp()) {
                 // TODO: Optimize the following steps later
-                if (WindowProxy* view = document->getDefaultWindow())
+                if (WindowProxyPtr view = document->getDefaultWindow())
                     view->setViewFlags(Box::NEED_SELECTOR_REMATCHING);
             }
         }
@@ -109,12 +108,6 @@ void HTMLStyleElementImp::handleMutation(events::MutationEvent mutation)
         HTMLElementImp::handleMutation(mutation);
         break;
     }
-}
-
-// Node
-Node HTMLStyleElementImp::cloneNode(bool deep)
-{
-    return new(std::nothrow) HTMLStyleElementImp(this, deep);
 }
 
 // HTMLStyleElement

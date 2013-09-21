@@ -56,13 +56,13 @@ bool isSubmittableElements(const std::u16string& tag)
     return false;
 }
 
-bool hasDatalistAncestor(ElementImp* field)
+bool hasDatalistAncestor(ElementPtr field)
 {
     // TODO: implement me!
     return false;
 }
 
-bool isDisabled(ElementImp* field)
+bool isDisabled(ElementPtr field)
 {
     // TODO: implement me!
     return false;
@@ -102,26 +102,26 @@ void urlEncode(std::u16string& result, const std::u16string& value)
 }  // namespace
 
 void HTMLFormElementImp::
-enumFormDataSet(ElementImp* submitter,
+enumFormDataSet(const ElementPtr& submitter,
                 boost::function<void (const std::u16string&, const std::u16string&, const std::u16string&)> callback)
 {
     std::u16string name;
     std::u16string value;
     std::u16string type;
 
-    ElementImp* field = this;
-    while (field = field->getNextElement(this)) {
+    ElementPtr field = std::static_pointer_cast<HTMLFormElementImp>(self());
+    while (field = field->getNextElement(std::static_pointer_cast<HTMLFormElementImp>(self()))) {
         if (hasDatalistAncestor(field))
             continue;
         if (isDisabled(field))
             continue;
-        if (HTMLButtonElementImp* button = dynamic_cast<HTMLButtonElementImp*>(field)) {
+        if (auto button = std::dynamic_pointer_cast<HTMLButtonElementImp>(field)) {
             type = button->getType();
             if (field != submitter)
                 continue;
             name = button->getName();
             value = button->getValue();
-        } else if (HTMLInputElementImp* input = dynamic_cast<HTMLInputElementImp*>(field)) {
+        } else if (auto input = std::dynamic_pointer_cast<HTMLInputElementImp>(field)) {
             if (input->isButton() && field != submitter)
                 continue;
             type = input->getType();
@@ -139,23 +139,23 @@ enumFormDataSet(ElementImp* submitter,
             }
             name = input->getName();
             value = input->getValue();
-        } else if (HTMLKeygenElementImp* keygen = dynamic_cast<HTMLKeygenElementImp*>(field)) {
+        } else if (auto keygen = std::dynamic_pointer_cast<HTMLKeygenElementImp>(field)) {
             type = keygen->getType();
             name = keygen->getName();
             // TODO: The 'value' attribute seems to be missing in the HTMLKeygenElement interface in the spec.
-        } else if (HTMLObjectElementImp* object = dynamic_cast<HTMLObjectElementImp*>(field)) {
+        } else if (auto object = std::dynamic_pointer_cast<HTMLObjectElementImp>(field)) {
             type = object->getType();
             // TODO: check plugin
             continue;
             // TODO: 8.
             name = object->getName();
             // TODO: The 'value' attribute seems to be missing in the HTMLObjectElement interface in the spec.
-        } else if (HTMLSelectElementImp* select = dynamic_cast<HTMLSelectElementImp*>(field)) {
+        } else if (auto select = std::dynamic_pointer_cast<HTMLSelectElementImp>(field)) {
             type = select->getType();
             name = select->getName();
             // TODO: 5.
             value = select->getValue();
-        } else if (HTMLTextAreaElementImp* textarea = dynamic_cast<HTMLTextAreaElementImp*>(field)) {
+        } else if (auto textarea = std::dynamic_pointer_cast<HTMLTextAreaElementImp>(field)) {
             type = textarea->getType();
             name = textarea->getName();
             value = textarea->getValue();
@@ -175,7 +175,7 @@ void HTMLFormElementImp::appendEncodedFormData(std::u16string* result, const std
     urlEncode(*result, value);
 }
 
-std::u16string HTMLFormElementImp::getEncodedFormData(ElementImp* submitter)
+std::u16string HTMLFormElementImp::getEncodedFormData(const ElementPtr& submitter)
 {
     std::u16string result;
     enumFormDataSet(submitter, boost::bind(&HTMLFormElementImp::appendEncodedFormData, this, &result, _1, _2, _3));
@@ -280,7 +280,7 @@ void HTMLFormElementImp::setTarget(const std::u16string& target)
 html::HTMLFormControlsCollection HTMLFormElementImp::getElements()
 {
     if (!elements)
-        elements = new(std::nothrow) HTMLFormControlsCollectionImp(this);
+        elements = std::make_shared<HTMLFormControlsCollectionImp>(std::static_pointer_cast<HTMLFormElementImp>(self()));
     return elements;
 }
 
@@ -315,20 +315,20 @@ Any HTMLFormElementImp::getElement(const std::u16string& name)
     return 0;
 }
 
-void HTMLFormElementImp::submit(ElementImp* submitter)
+void HTMLFormElementImp::submit(const ElementPtr& submitter)
 {
     // TODO: implement me!
-    DocumentImp* document = getOwnerDocumentImp();
+    DocumentPtr document = getOwnerDocumentImp();
     if (!document)
         return;
     // TODO: 3. check document's browsing context.
     // TODO: 4. check submission more than once.
     // TODO: 5.
     // 6.
-    events::Event event = new(std::nothrow) EventImp;
-    event.initEvent(u"submit", true, true);
+    auto event = std::make_shared<EventImp>();
+    event->initEvent(u"submit", true, true);
     this->dispatchEvent(event);
-    if (event.getDefaultPrevented())
+    if (event->getDefaultPrevented())
         return;
     // TODO: 7.
     // 8.

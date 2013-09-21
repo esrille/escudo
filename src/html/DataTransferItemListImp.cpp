@@ -23,7 +23,7 @@ unsigned int DataTransferItemListImp::getLength()
 html::DataTransferItem DataTransferItemListImp::getElement(unsigned int index)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 void DataTransferItemListImp::deleteElement(unsigned int index)
@@ -39,13 +39,13 @@ void DataTransferItemListImp::clear()
 html::DataTransferItem DataTransferItemListImp::add(const std::u16string& data, const std::u16string& type)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 html::DataTransferItem DataTransferItemListImp::add(file::File data)
 {
     // TODO: implement me!
-    return static_cast<Object*>(0);
+    return nullptr;
 }
 
 }

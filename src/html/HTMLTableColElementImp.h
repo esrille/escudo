@@ -40,11 +40,16 @@ public:
     HTMLTableColElementImp(DocumentImp* ownerDocument, const std::u16string& localName = u"col") :
         ObjectMixin(ownerDocument, localName) {
     }
-    HTMLTableColElementImp(HTMLTableColElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
-    }
 
     virtual void handleMutation(events::MutationEvent mutation);
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLTableColElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
 
     // HTMLTableColElement
     unsigned int getSpan();

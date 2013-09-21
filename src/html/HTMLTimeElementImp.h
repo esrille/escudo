@@ -37,6 +37,19 @@ namespace bootstrap
 class HTMLTimeElementImp : public ObjectMixin<HTMLTimeElementImp, HTMLElementImp>
 {
 public:
+    HTMLTimeElementImp(DocumentImp* ownerDocument) :
+        ObjectMixin(ownerDocument, u"time")
+    {
+    }
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLTimeElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
+
     // HTMLTimeElement
     std::u16string getDatetime();
     void setDatetime(const std::u16string& datetime);
@@ -48,12 +61,6 @@ public:
     static const char* const getMetaData()
     {
         return html::HTMLTimeElement::getMetaData();
-    }
-    HTMLTimeElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"time") {
-    }
-    HTMLTimeElementImp(HTMLTimeElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
     }
 };
 

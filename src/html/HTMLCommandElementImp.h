@@ -37,8 +37,18 @@ namespace bootstrap
 class HTMLCommandElementImp : public ObjectMixin<HTMLCommandElementImp, HTMLElementImp>
 {
 public:
-    // Node
-    virtual Node cloneNode(bool deep = true);
+    HTMLCommandElementImp(DocumentImp* ownerDocument) :
+        ObjectMixin(ownerDocument, u"command")
+    {
+    }
+
+    // Node - override
+    virtual Node cloneNode(bool deep = true) {
+        auto node = std::make_shared<HTMLCommandElementImp>(*this);
+        if (deep)
+            node->cloneChildren(this);
+        return node;
+    }
 
     // HTMLCommandElement
     std::u16string getType();
@@ -62,13 +72,6 @@ public:
     static const char* const getMetaData()
     {
         return html::HTMLCommandElement::getMetaData();
-    }
-
-    HTMLCommandElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"command") {
-    }
-    HTMLCommandElementImp(HTMLCommandElementImp* org, bool deep) :
-        ObjectMixin(org, deep) {
     }
 };
 
