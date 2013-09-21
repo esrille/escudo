@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script
-AC_INIT([escudo], [0.3.4])
+AC_INIT([escudo], [0.4.0])
 AC_CONFIG_AUX_DIR(.)
 AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([foreign no-define])
@@ -63,14 +63,14 @@ esac
 AC_SUBST([STD_CXX11_CPPFLAGS])
 AC_SUBST([STD_CXX11_LIBS])
 
-# Check for esidl 0.3.3 or later
+# Check for esidl 0.4.0 or later
 AC_CHECK_PROG(HAVE_ESIDL, esidl, [`esidl --version`], [no], [])
 if test "$HAVE_ESIDL" = "no"; then
 	AC_MSG_ERROR([Cannot find esidl; esidl Web IDL compiler is needed.])
 fi
 ESIDL_VERSION=`esidl --version | cut -f 3 -d ' '`
-AX_COMPARE_VERSION([$ESIDL_VERSION], [lt], [0.3.3],
-	AC_MSG_ERROR([Cannot find esidl version 0.3.3 or later. A newer version is needed.]))
+AX_COMPARE_VERSION([$ESIDL_VERSION], [lt], [0.4.0],
+	AC_MSG_ERROR([Cannot find esidl version 0.4.0 or later. A newer version is needed.]))
 
 # check systems not following FHS (http://www.pathname.com/fhs)
 AM_CONDITIONAL([HAVE_LIBEXEC], [test -d /usr/libexec])
