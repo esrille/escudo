@@ -1723,7 +1723,7 @@ Document DocumentImp::loadBindingDocument(const std::u16string& documentURI)
     if (!window)
         return nullptr;
     window->setBase(defaultView->getLocation().getHref());
-    bindingDocuments.emplace(documentURI, window);
+    bindingDocuments.insert(std::pair<std::u16string, WindowProxyPtr>(documentURI, window));
     window->open(documentURI, u"_self", u"", true);
     return window->getDocument();
 }
