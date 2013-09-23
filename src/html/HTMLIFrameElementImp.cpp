@@ -68,7 +68,7 @@ void HTMLIFrameElementImp::open(const std::u16string& url, unsigned flags)
         loadInProgess = true;
         owner->incrementLoadEventDelayCount();
     }
-    if (auto proxy = owner->getDefaultWindow()->createWindowProxy(std::static_pointer_cast<HTMLIFrameElementImp>(self()), flags)) {
+    if (auto proxy = owner->getDefaultWindow()->createChildProxy(flags, std::static_pointer_cast<HTMLIFrameElementImp>(self()))) {
         window = proxy;
         proxy->open(url, u"_self");  // TODO: Check how location is created
     }  // TODO: else ...

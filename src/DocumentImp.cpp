@@ -201,7 +201,7 @@ void DocumentImp::setReadyState(const std::u16string& readyState)
             if (auto frame = std::dynamic_pointer_cast<HTMLIFrameElementImp>(defaultView->getFrameElementImp()))
                 frame->notify(getError());
             if (defaultView->isBindingDocumentWindow()) {
-                if (auto parent = std::dynamic_pointer_cast<WindowProxy>(defaultView->getParent().self()))
+                if (auto parent = defaultView->getParentProxy())
                     parent->setViewFlags(Box::NEED_SELECTOR_MATCHING);
             }
         }
@@ -1719,7 +1719,7 @@ Document DocumentImp::loadBindingDocument(const std::u16string& documentURI)
     if (found != bindingDocuments.end())
         return found->second->getDocument();
 
-    WindowProxyPtr window = std::make_shared<WindowProxy>();
+    WindowProxyPtr window = defaultView->createChildProxy();
     if (!window)
         return nullptr;
     window->setBase(defaultView->getLocation().getHref());

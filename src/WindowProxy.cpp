@@ -86,15 +86,15 @@ WindowProxy::~WindowProxy()
     thread.join();
 }
 
-WindowProxyPtr WindowProxy::createWindowProxy(const HTMLIFrameElementPtr& iframe, unsigned short flags)
+WindowProxyPtr WindowProxy::createChildProxy(unsigned short flags, const HTMLIFrameElementPtr& iframe)
 {
     auto child = std::make_shared<WindowProxy>(flags);
     if (child) {
         childWindows.push_back(child);
         child->parent = std::static_pointer_cast<WindowProxy>(self());
-        child->frameElement = iframe;
         child->setBase(getLocation().getHref());
         child->windowDepth = windowDepth + 1;
+        child->frameElement = iframe;
     }
     return child;
 }

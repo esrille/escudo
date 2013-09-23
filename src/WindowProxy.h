@@ -250,7 +250,7 @@ private:
     void updateView(ViewCSSImp* next);
 
 public:
-    WindowProxy(unsigned short flags = 0);
+    WindowProxy(unsigned short flags);
     ~WindowProxy();
 
     static css::CSSStyleSheet defaultStyleSheet;
@@ -259,7 +259,7 @@ public:
         request.setBase(base);
     }
 
-    WindowProxyPtr createWindowProxy(const HTMLIFrameElementPtr& iframe, unsigned short flags);
+    WindowProxyPtr createChildProxy(unsigned short flags = 0, const HTMLIFrameElementPtr& iframe = nullptr);
 
     WindowProxyPtr getParentProxy() const {
         return parent.lock();
