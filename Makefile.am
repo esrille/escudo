@@ -1356,6 +1356,7 @@ dist-hook:
 	-rm -f $(distdir)/CSSGrammar.cc $(distdir)/CSSGrammar.hh
 
 EXTRA_DIST = \
+	install-prerequisites \
 	m4/ax_compare_version.m4 \
 	m4/bison.m4 \
 	escudo.spec.in \

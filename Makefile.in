@@ -1855,6 +1855,7 @@ dist_aboutdata_DATA = \
 	data/escudo/about/escudo_128.png
 
 EXTRA_DIST = \
+	install-prerequisites \
 	m4/ax_compare_version.m4 \
 	m4/bison.m4 \
 	escudo.spec.in \
