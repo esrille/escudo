@@ -1,0 +1,8 @@
+#!/bin/sh -xe
+if which yum
+then
+	sudo yum install `grep BuildRequires escudo.spec.in | sed 's/BuildRequires://' | tr [:space:] ' '`
+elif which apt-get
+then
+	sudo apt-get install `awk '/^Build-Depends:/,/[a-z]$/ { print }' debian/control | sed 's/Build-Depends://' | sed 's/(.*)//' | tr [:space:], ' '`
+fi
