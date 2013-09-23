@@ -110,15 +110,6 @@ void WindowProxy::setSize(unsigned w, unsigned h)
     }
 }
 
-void WindowProxy::setViewFlags(unsigned short flags)
-{
-    if (view) {
-        view->setFlags(flags | viewFlags);
-        viewFlags = 0;
-    } else
-        viewFlags |= flags;
-}
-
 void WindowProxy::enter()
 {
     assert(window);
@@ -163,8 +154,7 @@ void WindowProxy::updateView(ViewCSSImp* next)
         delete view;
     }
     view = next;
-    if (viewFlags)
-        setViewFlags(flags | viewFlags);
+    setViewFlags(flags);
     view->setZoom(zoom);
     detail = 0;
     redisplay = true;
@@ -368,9 +358,8 @@ bool WindowProxy::poll()
                 if (document->getReadyState() == u"complete") {
                 }
                 if (view) {
-                    if (unsigned flags = view->gatherFlags()) {
-                        assert(!(flags & (Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION)) || view->getTree()->getFlags());
-                        assert(!(flags & (Box::NEED_REFLOW | Box::NEED_CHILD_REFLOW)) || view->getTree()->getFlags());
+                    if (unsigned short flags = viewFlags | view->gatherFlags()) {
+                        viewFlags &= ~flags;
                         if (flags & Box::NEED_SELECTOR_REMATCHING) {
                             recordTime("%*strigger selector rematching", windowDepth * 2, "");
                             backgroundTask.restart(BackgroundTask::Cascade);

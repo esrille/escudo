@@ -41,6 +41,7 @@
 #include <org/w3c/dom/html/Transferable.h>
 #include <org/w3c/dom/Document.h>
 
+#include <atomic>
 #include <condition_variable>
 #include <cstdio>
 #include <deque>
@@ -205,7 +206,7 @@ private:
 
     WindowPtr window;
     ViewCSSImp* view;
-    unsigned short viewFlags;
+    std::atomic_ushort viewFlags;
 
     unsigned short flags;
     std::u16string name;
@@ -275,7 +276,9 @@ public:
         return view;
     }
     void setSize(unsigned w, unsigned h);
-    void setViewFlags(unsigned short flags);
+    void setViewFlags(unsigned short flags) {
+        viewFlags |= flags;
+    }
 
     bool isBindingDocumentWindow();
 
