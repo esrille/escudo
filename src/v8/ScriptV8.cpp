@@ -580,7 +580,7 @@ v8::Persistent<v8::ObjectTemplate> ECMAScriptContext::Impl::getGlobalTemplate() 
     static v8::Persistent<v8::ObjectTemplate> globalTemplate;
     if (initilized)
         return globalTemplate;
-#ifdef V8_HAVE_ISOLATE
+#ifdef HAVE_V8_ISOLATE
     globalTemplate = v8::Persistent<v8::ObjectTemplate>::New(v8::Isolate::GetCurrent(), v8::ObjectTemplate::New());
 #else
     globalTemplate = v8::Persistent<v8::ObjectTemplate>::New(v8::ObjectTemplate::New());
@@ -619,7 +619,7 @@ ECMAScriptContext::Impl::~Impl()
 {
     if (v8::Context::InContext() && v8::Context::GetCurrent() == context)
         context->Exit();
-#ifdef V8_HAVE_ISOLATE
+#ifdef HAVE_V8_ISOLATE
     context.Dispose(v8::Isolate::GetCurrent());
 #else
     context.Dispose();
@@ -647,7 +647,7 @@ void ECMAScriptContext::Impl::exit(ObjectImp* windowProxy)
 
 void ECMAScriptContext::Impl::shutDown()
 {
-#ifdef V8_HAVE_ISOLATE
+#ifdef HAVE_V8_ISOLATE
     getGlobalTemplate().Dispose(v8::Isolate::GetCurrent());
 #else
     getGlobalTemplate().Dispose();
