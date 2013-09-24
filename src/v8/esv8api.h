@@ -17,11 +17,14 @@
 #ifndef ESV8API_H_INCLUDED
 #define ESV8API_H_INCLUDED
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <v8.h>
 
 #include <map>
 
-#include "Object.h"
 #include "Reflect.h"
 
 class ObjectImp;
@@ -39,7 +42,7 @@ public:
 
     static v8::Handle<v8::Value> staticOperation(const v8::Arguments& args);
     static v8::Handle<v8::Value> constructor(const v8::Arguments& args);
-#ifdef V8_HAVE_ISOLATE
+#ifdef HAVE_V8_ISOLATE
     static void finalize(v8::Isolate*, v8::Persistent<v8::Value> object, void* parameter);
 #else
     static void finalize(v8::Persistent<v8::Value> object, void* parameter);
@@ -55,7 +58,7 @@ class ProxyObject : public Imp
     v8::Persistent<v8::Object> jsobject;
 public:
     ProxyObject(v8::Handle<v8::Object> obj) :
-#ifdef V8_HAVE_ISOLATE
+#ifdef HAVE_V8_ISOLATE
         jsobject(v8::Persistent<v8::Object>::New(v8::Isolate::GetCurrent(), obj))
 #else
         jsobject(v8::Persistent<v8::Object>::New(obj))
@@ -64,7 +67,7 @@ public:
     }
     ~ProxyObject()
     {
-#ifdef V8_HAVE_ISOLATE
+#ifdef HAVE_V8_ISOLATE
         jsobject.Dispose(v8::Isolate::GetCurrent());
 #else
         jsobject.Dispose();

@@ -364,7 +364,7 @@ v8::Handle<v8::Value> NativeClass::staticOperation(const v8::Arguments& args)
     return v8::Null();
 }
 
-#ifdef V8_HAVE_ISOLATE
+#ifdef HAVE_V8_ISOLATE
 void NativeClass::finalize(v8::Isolate* isolate, v8::Persistent<v8::Value> object, void* parameter)
 #else
 void NativeClass::finalize(v8::Persistent<v8::Value> object, void* parameter)
@@ -381,7 +381,7 @@ void NativeClass::finalize(v8::Persistent<v8::Value> object, void* parameter)
             delete clone;
         }
     }
-#ifdef V8_HAVE_ISOLATE
+#ifdef HAVE_V8_ISOLATE
     object.Dispose(isolate);
 #else
     object.Dispose();
@@ -410,7 +410,7 @@ v8::Handle<v8::Value> NativeClass::constructor(const v8::Arguments& args)
             if (!clone)
                 return v8::Handle<v8::Object>();
 
-#ifdef V8_HAVE_ISOLATE
+#ifdef HAVE_V8_ISOLATE
             v8::Persistent<v8::Object> obj = v8::Persistent<v8::Object>::New(v8::Isolate::GetCurrent(), args.This());
             obj.MakeWeak(v8::Isolate::GetCurrent(), imp, finalize);
 #else
@@ -486,7 +486,7 @@ v8::Handle<v8::Object> NativeClass::createJSObject(ObjectImp* imp)
 
     v8::Handle<v8::Function> ctor = classTemplate->GetFunction();
     v8::Handle<v8::Value> external = v8::External::New(clone);
-#ifdef V8_HAVE_ISOLATE
+#ifdef HAVE_V8_ISOLATE
     v8::Persistent<v8::Object> obj = v8::Persistent<v8::Object>::New(v8::Isolate::GetCurrent(), ctor->NewInstance(1, &external));
     obj.MakeWeak(v8::Isolate::GetCurrent(), imp, finalize);
 #else
@@ -501,7 +501,7 @@ v8::Handle<v8::Object> NativeClass::createJSObject(ObjectImp* imp)
 
 NativeClass::~NativeClass()
 {
-#ifdef V8_HAVE_ISOLATE
+#ifdef HAVE_V8_ISOLATE
     classTemplate.Dispose(v8::Isolate::GetCurrent());
 #else
     classTemplate.Dispose();
@@ -523,7 +523,7 @@ NativeClass::NativeClass(v8::Handle<v8::ObjectTemplate> global, const char* meta
         return;
     }
 
-#ifdef V8_HAVE_ISOLATE
+#ifdef HAVE_V8_ISOLATE
     classTemplate = v8::Persistent<v8::FunctionTemplate>::New(v8::Isolate::GetCurrent(), v8::FunctionTemplate::New(meta.hasConstructor() ? constructor : 0, v8::External::New(reinterpret_cast<void*>(getConstructor))));
 #else
     classTemplate = v8::Persistent<v8::FunctionTemplate>::New(v8::FunctionTemplate::New(meta.hasConstructor() ? constructor : 0, v8::External::New(reinterpret_cast<void*>(getConstructor))));
