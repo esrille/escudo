@@ -618,9 +618,9 @@ X11_CPPFLAGS
 X11_LDFLAGS
 HAVE_LIBEXEC_FALSE
 HAVE_LIBEXEC_TRUE
-HAVE_ESIDL
 STD_CXX11_LIBS
 STD_CXX11_CPPFLAGS
+HAVE_ESIDL
 host_os
 host_vendor
 host_cpu
@@ -4261,23 +4261,6 @@ ac_config_files="$ac_config_files escudo.spec debian/changelog Makefile data/Mak
 
 
 
-# generate char16_t stubs
-
-
-# check C++11
-case "$host" in
-  *-*-darwin*)
-    STD_CXX11_CPPFLAGS="-std=c++11 -stdlib=libc++"
-    STD_CXX11_LIBS="-lc++"
-    ;;
-  *)
-    STD_CXX11_CPPFLAGS="-std=gnu++0x"
-    STD_CXX11_LIBS=""
-    ;;
-esac
-
-
-
 # Check for esidl 0.4.0 or later
 # Extract the first word of "esidl", so it can be a program name with args.
 set dummy esidl; ac_word=$2
@@ -4355,6 +4338,23 @@ x$ax_compare_version_B" | sed 's/^ *//' | sort -r | sed "s/x${ax_compare_version
     if test "$ax_compare_version" = "true" ; then
     as_fn_error $? "Cannot find esidl version 0.4.0 or later. A newer version is needed." "$LINENO" 5
       fi
+
+
+# generate char16_t stubs
+
+
+# check C++11
+case "$host" in
+  *-*-darwin*)
+    STD_CXX11_CPPFLAGS="-std=c++11 -stdlib=libc++"
+    STD_CXX11_LIBS="-lc++"
+    ;;
+  *)
+    STD_CXX11_CPPFLAGS="-std=gnu++0x"
+    STD_CXX11_LIBS=""
+    ;;
+esac
+
 
 
 # check systems not following FHS (http://www.pathname.com/fhs)
@@ -4888,6 +4888,24 @@ if test "$ac_res" != no; then :
 
 fi
 
+
+# check for V8
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <v8.h>
+int
+main ()
+{
+v8::Isolate::GetCurrent()
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
 
 # check for liberation fonts
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for /usr/share/fonts/liberation/LiberationSerif-Regular.ttf" >&5

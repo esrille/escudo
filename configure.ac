@@ -31,6 +31,15 @@ AH_BOTTOM([#if 4 < __GNUC__ || __GNUC__ == 4 && 6 <= __GNUC_MINOR__
 #define HAVE_NULLPTR 1
 #endif])
 
+# Check for esidl 0.4.0 or later
+AC_CHECK_PROG(HAVE_ESIDL, esidl, [`esidl --version`], [no], [])
+if test "$HAVE_ESIDL" = "no"; then
+	AC_MSG_ERROR([Cannot find esidl; esidl Web IDL compiler is needed.])
+fi
+ESIDL_VERSION=`esidl --version | cut -f 3 -d ' '`
+AX_COMPARE_VERSION([$ESIDL_VERSION], [lt], [0.4.0],
+	AC_MSG_ERROR([Cannot find esidl version 0.4.0 or later. A newer version is needed.]))
+
 # generate char16_t stubs
 AH_BOTTOM([#ifdef __APPLE__
 #ifndef ESCUDO_CHAR16_T_STUBS
@@ -62,15 +71,6 @@ case "$host" in
 esac
 AC_SUBST([STD_CXX11_CPPFLAGS])
 AC_SUBST([STD_CXX11_LIBS])
-
-# Check for esidl 0.4.0 or later
-AC_CHECK_PROG(HAVE_ESIDL, esidl, [`esidl --version`], [no], [])
-if test "$HAVE_ESIDL" = "no"; then
-	AC_MSG_ERROR([Cannot find esidl; esidl Web IDL compiler is needed.])
-fi
-ESIDL_VERSION=`esidl --version | cut -f 3 -d ' '`
-AX_COMPARE_VERSION([$ESIDL_VERSION], [lt], [0.4.0],
-	AC_MSG_ERROR([Cannot find esidl version 0.4.0 or later. A newer version is needed.]))
 
 # check systems not following FHS (http://www.pathname.com/fhs)
 AM_CONDITIONAL([HAVE_LIBEXEC], [test -d /usr/libexec])
@@ -146,6 +146,14 @@ AC_SUBST([FREETYPE_LIBS])
 
 # check for SpiderMonkey 1.8.5
 AC_SEARCH_LIBS(JS_NewCompartmentAndGlobalObject, js mozjs185)
+
+# check for V8
+AC_LINK_IFELSE(
+    [AC_LANG_PROGRAM(
+        [#include <v8.h>],
+        [v8::Isolate::GetCurrent()])],
+    [AH_BOTTOM([#define HAVE_V8_ISOLATE 1])],
+    [])
 
 # check for liberation fonts
 AC_CHECK_FILE(/usr/share/fonts/liberation/LiberationSerif-Regular.ttf,[AC_SUBST(LIBERATON_TTF,/usr/share/fonts/liberation)])

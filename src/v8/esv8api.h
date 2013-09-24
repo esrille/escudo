@@ -39,7 +39,11 @@ public:
 
     static v8::Handle<v8::Value> staticOperation(const v8::Arguments& args);
     static v8::Handle<v8::Value> constructor(const v8::Arguments& args);
+#ifdef V8_HAVE_ISOLATE
+    static void finalize(v8::Isolate*, v8::Persistent<v8::Value> object, void* parameter);
+#else
     static void finalize(v8::Persistent<v8::Value> object, void* parameter);
+#endif
 
 private:
     static std::map<std::string, v8::Persistent<v8::FunctionTemplate>> interfaceMap;
@@ -51,12 +55,20 @@ class ProxyObject : public Imp
     v8::Persistent<v8::Object> jsobject;
 public:
     ProxyObject(v8::Handle<v8::Object> obj) :
+#ifdef V8_HAVE_ISOLATE
+        jsobject(v8::Persistent<v8::Object>::New(v8::Isolate::GetCurrent(), obj))
+#else
         jsobject(v8::Persistent<v8::Object>::New(obj))
+#endif
     {
     }
     ~ProxyObject()
     {
+#ifdef V8_HAVE_ISOLATE
+        jsobject.Dispose(v8::Isolate::GetCurrent());
+#else
         jsobject.Dispose();
+#endif
         jsobject.Clear();
     }
     v8::Persistent<v8::Object>& getJSObject() {
