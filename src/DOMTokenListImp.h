@@ -48,7 +48,7 @@ class DOMTokenListImp : public ObjectMixin<DOMTokenListImp>
     void update();
 
 public:
-    DOMTokenListImp(ElementImp* element, const std::u16string& localName);
+    DOMTokenListImp(const ElementPtr& element, const std::u16string& localName);
 
     // DOMTokenList
     unsigned int getLength();

@@ -257,7 +257,7 @@ void HTMLLinkElementImp::setRel(const std::u16string& rel)
 
 DOMTokenList HTMLLinkElementImp::getRelList()
 {
-    return std::make_shared<DOMTokenListImp>(this, u"rel");
+    return std::make_shared<DOMTokenListImp>(std::static_pointer_cast<HTMLLinkElementImp>(self()), u"rel");
 }
 
 std::u16string HTMLLinkElementImp::getMedia()

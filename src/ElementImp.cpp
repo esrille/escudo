@@ -175,7 +175,7 @@ void ElementImp::setClassName(const std::u16string& className)
 
 DOMTokenList ElementImp::getClassList()
 {
-    return std::make_shared<DOMTokenListImp>(this, u"class");
+    return std::make_shared<DOMTokenListImp>(std::static_pointer_cast<ElementImp>(self()), u"class");
 }
 
 dom::ObjectArray<Attr> ElementImp:: getAttributes()

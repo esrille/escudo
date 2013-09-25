@@ -122,7 +122,7 @@ void HTMLAnchorElementImp::setRel(const std::u16string& rel)
 
 DOMTokenList HTMLAnchorElementImp::getRelList()
 {
-    return std::make_shared<DOMTokenListImp>(this, u"rel");
+    return std::make_shared<DOMTokenListImp>(std::static_pointer_cast<HTMLAnchorElementImp>(self()), u"rel");
 }
 
 std::u16string HTMLAnchorElementImp::getMedia()
