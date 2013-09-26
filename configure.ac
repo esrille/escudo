@@ -10,7 +10,7 @@ AC_PROG_CC
 AM_PROG_AS
 AC_PROG_RANLIB
 AC_CANONICAL_HOST
-AC_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([
 escudo.spec
 debian/changelog
@@ -153,7 +153,7 @@ AC_LINK_IFELSE(
     [AC_LANG_PROGRAM(
         [#include <v8.h>],
         [v8::Isolate::GetCurrent()])],
-    [AH_BOTTOM([#define HAVE_V8_ISOLATE 1])],
+    [AC_DEFINE([HAVE_V8_ISOLATE],[1],[Define to 1 if you have v8::Isolate.])],
     [])
 
 # check for liberation fonts

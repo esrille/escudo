@@ -4909,6 +4909,8 @@ v8::Isolate::GetCurrent()
 _ACEOF
 if ac_fn_cxx_try_link "$LINENO"; then :
 
+$as_echo "#define HAVE_V8_ISOLATE 1" >>confdefs.h
+
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
