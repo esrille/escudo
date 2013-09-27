@@ -127,10 +127,11 @@ void CSSImportRuleImp::notify()
         if (4 <= getLogLevel())
             dumpStyleSheet(std::cerr, styleSheet.self());
     }
-    doc->decrementLoadEventDelayCount();
 
     if (WindowProxyPtr view = doc->getDefaultWindow())
         view->setViewFlags(Box::NEED_SELECTOR_REMATCHING);
+
+    doc->decrementLoadEventDelayCount();
 }
 
 }

@@ -207,13 +207,17 @@ bool WindowProxy::poll()
     if (request.getReadyState() == HttpRequest::DONE && document && backgroundTask.getState() == BackgroundTask::Done) {
         ViewCSSImp* next = backgroundTask.getView();
         updateView(next);
-        if (view && (view->gatherFlags() & Box::NEED_REPAINT)) {
-            redisplay = true;
-            if (flags & Loading) {
-                flags &= ~Loading;
-                document->decrementLoadEventDelayCount();
+        if (view) {
+            unsigned short gathered = viewFlags | view->gatherFlags();
+            if (gathered & Box::NEED_REPAINT) {
+                gathered &= ~Box::NEED_REPAINT;
+                redisplay = true;
+                if (!gathered && (flags & Loading)) {
+                    flags &= ~Loading;
+                    document->decrementLoadEventDelayCount();
+                }
+                render(0);
             }
-            render(0);
         }
     }
 
@@ -358,21 +362,21 @@ bool WindowProxy::poll()
                 if (document->getReadyState() == u"complete") {
                 }
                 if (view) {
-                    if (unsigned short flags = viewFlags | view->gatherFlags()) {
-                        viewFlags &= ~flags;
-                        if (flags & Box::NEED_SELECTOR_REMATCHING) {
+                    if (unsigned short gathered = viewFlags | view->gatherFlags()) {
+                        viewFlags &= ~gathered;
+                        if (gathered & Box::NEED_SELECTOR_REMATCHING) {
                             recordTime("%*strigger selector rematching", windowDepth * 2, "");
                             backgroundTask.restart(BackgroundTask::Cascade);
                             view = 0;
-                        } else if (flags & Box::NEED_SELECTOR_MATCHING) {
+                        } else if (gathered & Box::NEED_SELECTOR_MATCHING) {
                             recordTime("%*strigger restyling", windowDepth * 2, "");
                             backgroundTask.wakeUp(BackgroundTask::Cascade);
                             view = 0;
-                        } else if (flags & (Box::NEED_STYLE_RECALCULATION | Box::NEED_EXPANSION | Box::NEED_CHILD_REFLOW | Box::NEED_REFLOW)) {
+                        } else if (gathered & (Box::NEED_STYLE_RECALCULATION | Box::NEED_EXPANSION | Box::NEED_CHILD_REFLOW | Box::NEED_REFLOW)) {
                             recordTime("%*strigger reflow", windowDepth * 2, "");
                             backgroundTask.wakeUp(BackgroundTask::Layout);
                             view = 0;
-                        } else if (flags & Box::NEED_REPAINT) {
+                        } else if (gathered & Box::NEED_REPAINT) {
                             redisplay = true;
                             if (flags & Loading) {
                                 flags &= ~Loading;
