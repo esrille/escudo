@@ -45,14 +45,8 @@ using namespace css;
 
 CSSImportRuleImp::CSSImportRuleImp(const std::u16string& href) :
     href(href),
-    mediaList(std::make_shared<MediaListImp>()),
-    request(0)
+    mediaList(std::make_shared<MediaListImp>())
 {
-}
-
-CSSImportRuleImp::~CSSImportRuleImp()
-{
-    delete request;
 }
 
 void CSSImportRuleImp::setMediaList(MediaListPtr other)
@@ -99,7 +93,7 @@ css::CSSStyleSheet CSSImportRuleImp::getStyleSheet()
         return nullptr;
 
     if (!styleSheet && !href.empty() && !request) {  // TODO: deal with ins. mem
-        request = new(std::nothrow) HttpRequest(doc->getDocumentURI());
+        request.reset(new(std::nothrow) HttpRequest(doc->getDocumentURI()));
         if (request) {
             request->open(u"GET", href);
             request->setHandler(boost::bind(&CSSImportRuleImp::notify, this));
