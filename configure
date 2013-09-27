@@ -4230,7 +4230,7 @@ fi
 if test "$ESIDL" = "no"; then
   as_fn_error $? "Cannot find esidl; esidl Web IDL compiler is needed." "$LINENO" 5
 fi
-ESIDL_VERSION=`esidl --version | cut -f 3 -d ' '`
+ESIDL_VERSION=`esidl --version | head -n 1 | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+'`
 
 
 
