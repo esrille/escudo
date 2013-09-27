@@ -232,12 +232,12 @@ void NodeImp::setTextContent(const Nullable<std::u16string>& textContent)
 
 Node NodeImp::insertBefore(Node newChild, Node refChild)
 {
+    auto ref = std::dynamic_pointer_cast<NodeImp>(refChild.self());
+    if (!ref)
+        return appendChild(newChild);
     auto child = std::dynamic_pointer_cast<NodeImp>(newChild.self());
     if (!child)
         return child;
-    auto ref = std::dynamic_pointer_cast<NodeImp>(refChild.self());
-    if (!ref)
-        return appendChild(child);
     if (child != ref) {
         DocumentPtr ownerOfChild = child->getOwnerDocumentImp();
         if (ownerOfChild != getOwnerDocumentImp() && ownerOfChild.get() != this)
