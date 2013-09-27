@@ -9,16 +9,7 @@ AC_PROG_CXX
 AC_PROG_CC
 AM_PROG_AS
 AC_PROG_RANLIB
-
-# Check for esidl 0.4.0 or later
-AC_CHECK_PROG(HAVE_ESIDL, esidl, [`esidl --version`], [no], [])
-if test "$HAVE_ESIDL" = "no"; then
-	AC_MSG_ERROR([Cannot find esidl; esidl Web IDL compiler is needed.])
-fi
-ESIDL_VERSION=`esidl --version | cut -f 3 -d ' '`
-AX_COMPARE_VERSION([$ESIDL_VERSION], [lt], [0.4.0],
-	AC_MSG_ERROR([Cannot find esidl version 0.4.0 or later. A newer version is needed.]))
-
+AC_PROG_ESIDL([0.4.0])
 AC_CANONICAL_HOST
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([

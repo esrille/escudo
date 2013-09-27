@@ -81,7 +81,8 @@ subdir = data
 DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/Makefile.am
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ax_compare_version.m4 \
-	$(top_srcdir)/m4/bison.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/bison.m4 $(top_srcdir)/m4/esidl.m4 \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
@@ -194,11 +195,11 @@ DEPDIR = @DEPDIR@
 ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
+ESIDL = @ESIDL@
 EXEEXT = @EXEEXT@
 FREETYPE_CPPFLAGS = @FREETYPE_CPPFLAGS@
 FREETYPE_LIBS = @FREETYPE_LIBS@
 HAVE_AEGEAN = @HAVE_AEGEAN@
-HAVE_ESIDL = @HAVE_ESIDL@
 HAVE_IPA_GOTHIC = @HAVE_IPA_GOTHIC@
 HAVE_IPA_MINCHO = @HAVE_IPA_MINCHO@
 HAVE_IPA_PGOTHIC = @HAVE_IPA_PGOTHIC@

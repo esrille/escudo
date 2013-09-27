@@ -628,7 +628,7 @@ build_os
 build_vendor
 build_cpu
 build
-HAVE_ESIDL
+ESIDL
 RANLIB
 am__fastdepCCAS_FALSE
 am__fastdepCCAS_TRUE
@@ -4189,16 +4189,15 @@ else
 fi
 
 
-# Check for esidl 0.4.0 or later
 # Extract the first word of "esidl", so it can be a program name with args.
 set dummy esidl; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
 $as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_HAVE_ESIDL+:} false; then :
+if ${ac_cv_prog_ESIDL+:} false; then :
   $as_echo_n "(cached) " >&6
 else
-  if test -n "$HAVE_ESIDL"; then
-  ac_cv_prog_HAVE_ESIDL="$HAVE_ESIDL" # Let the user override the test.
+  if test -n "$ESIDL"; then
+  ac_cv_prog_ESIDL="$ESIDL" # Let the user override the test.
 else
 as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
 for as_dir in $PATH
@@ -4207,7 +4206,7 @@ do
   test -z "$as_dir" && as_dir=.
     for ac_exec_ext in '' $ac_executable_extensions; do
   if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_HAVE_ESIDL="`esidl --version`"
+    ac_cv_prog_ESIDL="esidl"
     $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
     break 2
   fi
@@ -4215,21 +4214,21 @@ done
   done
 IFS=$as_save_IFS
 
-  test -z "$ac_cv_prog_HAVE_ESIDL" && ac_cv_prog_HAVE_ESIDL="no"
+  test -z "$ac_cv_prog_ESIDL" && ac_cv_prog_ESIDL="no"
 fi
 fi
-HAVE_ESIDL=$ac_cv_prog_HAVE_ESIDL
-if test -n "$HAVE_ESIDL"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $HAVE_ESIDL" >&5
-$as_echo "$HAVE_ESIDL" >&6; }
+ESIDL=$ac_cv_prog_ESIDL
+if test -n "$ESIDL"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ESIDL" >&5
+$as_echo "$ESIDL" >&6; }
 else
   { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 fi
 
 
-if test "$HAVE_ESIDL" = "no"; then
-	as_fn_error $? "Cannot find esidl; esidl Web IDL compiler is needed." "$LINENO" 5
+if test "$ESIDL" = "no"; then
+  as_fn_error $? "Cannot find esidl; esidl Web IDL compiler is needed." "$LINENO" 5
 fi
 ESIDL_VERSION=`esidl --version | cut -f 3 -d ' '`
 
@@ -4266,6 +4265,8 @@ x$ax_compare_version_B" | sed 's/^ *//' | sort -r | sed "s/x${ax_compare_version
     if test "$ax_compare_version" = "true" ; then
     as_fn_error $? "Cannot find esidl version 0.4.0 or later. A newer version is needed." "$LINENO" 5
       fi
+
+ESIDL=$ESIDL
 
 
 # Make sure we can run config.sub.
