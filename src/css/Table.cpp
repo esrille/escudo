@@ -581,7 +581,7 @@ void TableWrapperBox::processRowGroupChild(Node node, const CSSStyleDeclarationP
         break;
     }
     while (yStart < yHeight) {
-        rowGroups[yStart] = sectionStyle->getCSSStyleDeclarationPtr();
+        rowGroups[yStart] = sectionStyle;
         ++yStart;
     }
 }
@@ -602,7 +602,7 @@ void TableWrapperBox::processRow(Element row)
 
     if (yHeight == yCurrent)
         appendRow();
-    rows[yCurrent] = rowStyle->getCSSStyleDeclarationPtr();
+    rows[yCurrent] = rowStyle;
     inRow = true;
     xCurrent = 0;
     growDownwardGrowingCells();
@@ -711,7 +711,7 @@ CellBox* TableWrapperBox::processCell(Element current, Block* parentBox, const C
         appendRow();
         xCurrent = 0;
     }
-    rows[yCurrent] = rowStyle->getCSSStyleDeclarationPtr();
+    rows[yCurrent] = rowStyle;
     while (xCurrent < xWidth && grid[yCurrent][xCurrent])
         ++xCurrent;
     if (xCurrent == xWidth)
@@ -776,7 +776,7 @@ void TableWrapperBox::processColGroup(Element colgroup)
         }
         while (0 < span--) {
             appendColumn();
-            columnGroups[xWidth - 1] = view->getStyle(colgroup)->getCSSStyleDeclarationPtr();
+            columnGroups[xWidth - 1] = view->getStyle(colgroup);
         }
         // TODO 3.
     }
@@ -791,8 +791,8 @@ void TableWrapperBox::processCol(Element col, const CSSStyleDeclarationPtr& colS
     }
     while (0 < span--) {
         appendColumn();
-        columns[xWidth - 1] = colStyle->getCSSStyleDeclarationPtr();
-        columnGroups[xWidth - 1] = view->getStyle(colgroup)->getCSSStyleDeclarationPtr();
+        columns[xWidth - 1] = colStyle;
+        columnGroups[xWidth - 1] = view->getStyle(colgroup);
     }
     // TODO 5.
 }
@@ -940,9 +940,9 @@ void TableWrapperBox::resolveHorizontalBorderConflict(unsigned x, unsigned y, Bo
         else
             mask = 0;
         if (bottom)
-            b->resolveBorderConflict(bottom->getStyle()->getCSSStyleDeclarationPtr(), 0x4);
+            b->resolveBorderConflict(bottom->getStyle(), 0x4);
         if (top)
-            b->resolveBorderConflict(top->getStyle()->getCSSStyleDeclarationPtr(), 0x1);
+            b->resolveBorderConflict(top->getStyle(), 0x1);
         if (0 < y)
             b->resolveBorderConflict(rows[y - 1], 0x4);
         if (y < yHeight)
@@ -978,9 +978,9 @@ void TableWrapperBox::resolveVerticalBorderConflict(unsigned x, unsigned y, Bord
         else
             mask = 0;
         if (right)
-            b->resolveBorderConflict(right->getStyle()->getCSSStyleDeclarationPtr(), 0x2);
+            b->resolveBorderConflict(right->getStyle(), 0x2);
         if (left)
-            b->resolveBorderConflict(left->getStyle()->getCSSStyleDeclarationPtr(), 0x8);
+            b->resolveBorderConflict(left->getStyle(), 0x8);
         if (mask) {
             b->resolveBorderConflict(rows[y], 0xa & mask);
             b->resolveBorderConflict(rowGroups[y], 0xa & mask);
@@ -1660,7 +1660,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
     FormattingContext* parentContext = context;
 
     const ContainingBlock* containingBlock = getContainingBlock(view);
-    style = view->getStyle(table)->getCSSStyleDeclarationPtr();
+    style = view->getStyle(table);
     if (!style)
         return false;  // TODO error
 
@@ -1763,7 +1763,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
 void TableWrapperBox::layOutAbsolute(ViewCSSImp* view)
 {
     assert(isAbsolutelyPositioned());
-    style = view->getStyle(table)->getCSSStyleDeclarationPtr();
+    style = view->getStyle(table);
     if (!style)
         return;
 
