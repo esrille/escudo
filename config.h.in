@@ -24,6 +24,9 @@
 /* Define to 1 if you have the `rt' library (-lrt). */
 #undef HAVE_LIBRT
 
+/* Define to 1 if you have nullptr. */
+#undef HAVE_NULLPTR
+
 /* Define to 1 if you have v8::Isolate. */
 #undef HAVE_V8_ISOLATE
 
@@ -46,10 +49,6 @@
 #undef PACKAGE_VERSION
 
 #include <Object.h>
-
-#if 4 < __GNUC__ || __GNUC__ == 4 && 6 <= __GNUC_MINOR__
-#define HAVE_NULLPTR 1
-#endif
 
 #ifdef __APPLE__
 #ifndef ESCUDO_CHAR16_T_STUBS

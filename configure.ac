@@ -9,6 +9,16 @@ AC_PROG_CXX
 AC_PROG_CC
 AM_PROG_AS
 AC_PROG_RANLIB
+
+# Check for esidl 0.4.0 or later
+AC_CHECK_PROG(HAVE_ESIDL, esidl, [`esidl --version`], [no], [])
+if test "$HAVE_ESIDL" = "no"; then
+	AC_MSG_ERROR([Cannot find esidl; esidl Web IDL compiler is needed.])
+fi
+ESIDL_VERSION=`esidl --version | cut -f 3 -d ' '`
+AX_COMPARE_VERSION([$ESIDL_VERSION], [lt], [0.4.0],
+	AC_MSG_ERROR([Cannot find esidl version 0.4.0 or later. A newer version is needed.]))
+
 AC_CANONICAL_HOST
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([
@@ -27,19 +37,32 @@ data/256x256/Makefile
 data/escudo/about/index.html
 ])
 
-AH_BOTTOM([#include <Object.h>])
-AH_BOTTOM([#if 4 < __GNUC__ || __GNUC__ == 4 && 6 <= __GNUC_MINOR__
-#define HAVE_NULLPTR 1
-#endif])
+# check for C++11
+case "$host" in
+  *-*-darwin*)
+    STD_CXX11_CPPFLAGS="-std=c++11 -stdlib=libc++"
+    STD_CXX11_LIBS="-lc++"
+    ;;
+  *)
+    STD_CXX11_CPPFLAGS="-std=c++11"
+    STD_CXX11_LIBS=""
+    ;;
+esac
+AC_SUBST([STD_CXX11_CPPFLAGS])
+AC_SUBST([STD_CXX11_LIBS])
 
-# Check for esidl 0.4.0 or later
-AC_CHECK_PROG(HAVE_ESIDL, esidl, [`esidl --version`], [no], [])
-if test "$HAVE_ESIDL" = "no"; then
-	AC_MSG_ERROR([Cannot find esidl; esidl Web IDL compiler is needed.])
-fi
-ESIDL_VERSION=`esidl --version | cut -f 3 -d ' '`
-AX_COMPARE_VERSION([$ESIDL_VERSION], [lt], [0.4.0],
-	AC_MSG_ERROR([Cannot find esidl version 0.4.0 or later. A newer version is needed.]))
+# check for nullptr
+SAVED_CXXFLAGS="$CXXFLAGS"
+CXXFLAGS="$CXXFLAGS $STD_CXX11_CPPFLAGS"
+AC_LINK_IFELSE(
+    [AC_LANG_PROGRAM(
+        [],
+        [nullptr])],
+    [AC_DEFINE([HAVE_NULLPTR],[1],[Define to 1 if you have nullptr.])],
+    [])
+CXXFLAGS="$SAVED_CXXFLAGS"
+
+AH_BOTTOM([#include <Object.h>])
 
 # generate char16_t stubs
 AH_BOTTOM([#ifdef __APPLE__
@@ -58,20 +81,6 @@ class num_put<char16_t> : public num_put<wchar_t> { };
 }
 #endif
 #endif])
-
-# check C++11
-case "$host" in
-  *-*-darwin*)
-    STD_CXX11_CPPFLAGS="-std=c++11 -stdlib=libc++"
-    STD_CXX11_LIBS="-lc++"
-    ;;
-  *)
-    STD_CXX11_CPPFLAGS="-std=gnu++0x"
-    STD_CXX11_LIBS=""
-    ;;
-esac
-AC_SUBST([STD_CXX11_CPPFLAGS])
-AC_SUBST([STD_CXX11_LIBS])
 
 # check systems not following FHS (http://www.pathname.com/fhs)
 AM_CONDITIONAL([HAVE_LIBEXEC], [test -d /usr/libexec])
