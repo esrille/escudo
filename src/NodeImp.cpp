@@ -303,8 +303,8 @@ Node NodeImp::appendChild(Node newChild, bool clone)
     if (child.get() == this || isDescendantOf(child))
         throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
     // TODO: case child is a DocumentFragment
-    if (child->getParent())
-        child->getParent()->removeChild(child);
+    if (auto oldParent = child->getParent())
+        oldParent->removeChild(child);
     appendChild(child);
     if (!clone) {
         auto event = std::make_shared<MutationEventImp>();
