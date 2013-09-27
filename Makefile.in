@@ -11247,10 +11247,10 @@ vpath %.idl = $(srcdir)/idl
 $(generated_headers) : org/w3c/dom/Node.h
 
 org/w3c/dom/Node.h : $(idl_files)
-	$(ESIDL) -messenger -string std::u16string -object Object -fno-multipleinheritance $^
+	$(ESIDL) -messenger -string std::u16string -object Object $^
 
 org/w3c/dom/Node.cpp : $(idl_files)
-	$(ESIDL) -messenger-src -string std::u16string -object Object -fno-multipleinheritance $^
+	$(ESIDL) -messenger-src -string std::u16string -object Object $^
 
 $(generated_sources) : org/w3c/dom/Node.cpp
 

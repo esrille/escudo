@@ -544,7 +544,7 @@ nobase_nodist_noinst_HEADERS = $(generated_headers)
 $(generated_headers) : org/w3c/dom/Node.h
 
 org/w3c/dom/Node.h : $(idl_files)
-	$(ESIDL) -messenger -string std::u16string -object Object -fno-multipleinheritance $^
+	$(ESIDL) -messenger -string std::u16string -object Object $^
 
 noinst_LIBRARIES = libeshtml5.a libesfontmanager.a libesjsapi.a libesv8api.a
 
@@ -618,7 +618,7 @@ libesv8api_a_SOURCES = \
 	src/v8/ScriptV8.h
 
 org/w3c/dom/Node.cpp : $(idl_files)
-	$(ESIDL) -messenger-src -string std::u16string -object Object -fno-multipleinheritance $^
+	$(ESIDL) -messenger-src -string std::u16string -object Object $^
 
 $(generated_sources) : org/w3c/dom/Node.cpp
 
