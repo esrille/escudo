@@ -170,7 +170,8 @@ class ObjectImp : public Imp
     void* privateDate;
 
 public:
-    ObjectImp() : privateDate(0) {}
+    ObjectImp() : privateDate(nullptr) {}
+    ObjectImp(const ObjectImp& org) : privateDate(nullptr) {}
     void* getPrivate() const {
         return privateDate;
     }
