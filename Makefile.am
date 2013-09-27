@@ -1357,8 +1357,6 @@ dist-hook:
 
 EXTRA_DIST = \
 	install-prerequisites \
-	m4/ax_compare_version.m4 \
-	m4/bison.m4 \
 	escudo.spec.in \
 	escudo.spec \
 	debian/changelog \
