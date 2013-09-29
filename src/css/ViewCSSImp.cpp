@@ -317,7 +317,7 @@ bool ViewCSSImp::expandBinding(Element element, const CSSStyleDeclarationPtr& st
 
 void ViewCSSImp::constructComputedStyle(Node node, CSSStyleDeclarationPtr parentStyle)
 {
-    CSSStyleDeclarationPtr style = 0;
+    CSSStyleDeclarationPtr style;
     Element element((node.getNodeType() == Node::ELEMENT_NODE) ? interface_cast<Element>(node) : nullptr);
     if (element) {
         auto found = map.find(element);
