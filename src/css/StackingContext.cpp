@@ -386,6 +386,7 @@ void StackingContext::addBase(Box* box)
 void StackingContext::addBox(Box* box, Box* parentBox)
 {
     assert(parentBox);
+    box->stackingContext = this;
     if (parentBox->stackingContext != this)
         addBase(box);
 }
