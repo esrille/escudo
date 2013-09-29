@@ -169,7 +169,8 @@ void CellBox::renderNonInline(ViewCSSImp* view, StackingContext* stackingContext
 }
 
 TableWrapperBox::TableWrapperBox(ViewCSSImp* view, Element element, const CSSStyleDeclarationPtr& style) :
-    Block(element, (style->display == CSSDisplayValueImp::Table || style->display == CSSDisplayValueImp::InlineTable) ? style : 0),
+    Block((style->display == CSSDisplayValueImp::Table || style->display == CSSDisplayValueImp::InlineTable) ? element : nullptr,
+          (style->display == CSSDisplayValueImp::Table || style->display == CSSDisplayValueImp::InlineTable) ? style : nullptr),
     view(view),
     table(element),
     xWidth(0),
