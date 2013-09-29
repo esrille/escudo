@@ -328,6 +328,8 @@ unsigned CSSStyleDeclarationBoard::compare(const CSSStyleDeclarationPtr& style)
         flags |= Box::NEED_REFLOW;
     if (style->borderLeftWidth != borderLeftWidth)
         flags |= Box::NEED_REFLOW;
+    if ((flags & Box::NEED_REFLOW) && style->display.isTableParts())  // cf. html4/border-collapse-dynamic-cell-003.htm
+        flags |= Box::NEED_TABLE_REFLOW;
 
     if (style->isAbsolutelyPositioned()) {
         if (style->top != top)
