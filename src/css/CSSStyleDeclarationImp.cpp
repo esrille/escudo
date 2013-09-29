@@ -2296,18 +2296,18 @@ Block* CSSStyleDeclarationImp::revert(Element element)
     clearBox();
 
     if (holder->isAnonymous()) {
-        block = dynamic_cast<Block*>(holder->getParentBox());
-        if (block) {
-            block->clearInlines();
-            holder = block;
-        } else {
-            // holder can be an anonymous table part:
+        block = holder;
+        holder = dynamic_cast<Block*>(block->getParentBox());
+        if (holder)
+            holder->clearInlines();
+        else {
+            // block can be an anonymous table part:
             // cf. html4/table-anonymous-objects-108.htm
             // TODO: Review the following code again.
-            if (auto parent = holder->getParentBox()) {
-                parent->removeChild(holder);
-                holder->removeDescendants();
-                holder->release_();
+            if (auto parent = block->getParentBox()) {
+                parent->removeChild(block);
+                block->removeDescendants();
+                block->release_();
             }
             holder = 0;
         }
