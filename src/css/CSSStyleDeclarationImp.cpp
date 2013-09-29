@@ -2284,9 +2284,9 @@ Block* CSSStyleDeclarationImp::revert(Element element)
         table = dynamic_cast<TableWrapperBox*>(holder->getParentBox());
     if (table) {
         table->revertTablePart(block->getNode());
-        return table;
-    }
-    if (holder->removeBlock(block->getNode()))
+        holder = table;
+        // holder can be an anonymous table; cf. html4/table-anonymous-objects-170.htm
+    } else if (holder->removeBlock(block->getNode()))
         holder->clearInlines();
     else {
         assert(block->getParentBox() == holder);
