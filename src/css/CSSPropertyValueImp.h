@@ -217,6 +217,13 @@ public:
         if (!isnan(resolved))
             resolved = std::min(max, std::max(min, resolved));
     }
+    bool compare(const CSSNumericValue& value) const {
+        if (unit != value.unit)
+            return false;
+        if (unit == CSSParserTerm::CSS_TERM_INDEX)
+            return (index == value.index);
+        return resolved == value.resolved;
+    }
 };
 
 class CSSPropertyValueImp
@@ -302,10 +309,10 @@ public:
     virtual std::u16string getCssText(CSSStyleDeclarationImp* self) const {
         return value.getCssText(0, css::CSSPrimitiveValue::CSS_NUMBER);
     }
-    bool operator==(const CSSNumericValueImp& n) {
+    bool operator==(const CSSNumericValueImp& n) const {
         return value == n.value;
     }
-    bool operator!=(const CSSNumericValueImp& n) {
+    bool operator!=(const CSSNumericValueImp& n) const {
         return value != n.value;
     }
     void specify(const CSSNumericValueImp& specified) {
@@ -316,6 +323,9 @@ public:
     }
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* self);
     void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* self, float fullSize);
+    bool compare(const CSSNumericValueImp& n) const {
+        return value.compare(n.value);
+    }
     void clip(float min, float max);
     float getValue() const {
         return value.getValue();
@@ -345,10 +355,10 @@ public:
     virtual std::u16string getCssText(CSSStyleDeclarationImp* self) const {
         return value.getCssText(0, css::CSSPrimitiveValue::CSS_PX);
     }
-    bool operator==(const CSSNonNegativeLengthImp& n) {
+    bool operator==(const CSSNonNegativeLengthImp& n) const {
         return value == n.value;
     }
-    bool operator!=(const CSSNonNegativeLengthImp& n) {
+    bool operator!=(const CSSNonNegativeLengthImp& n) const {
         return value != n.value;
     }
     void specify(const CSSNonNegativeLengthImp& specified) {
@@ -356,6 +366,9 @@ public:
     }
     void inherit(const CSSNonNegativeLengthImp& parent) {
         value.inheritLength(parent.value);
+    }
+    bool compare(const CSSNonNegativeLengthImp& n) const {
+        return value.compare(n.value);
     }
     CSSNonNegativeLengthImp(float number = 0.0f, unsigned short unit = css::CSSPrimitiveValue::CSS_PX) :
         CSSNumericValueImp(number, unit) {
@@ -376,10 +389,10 @@ public:
     virtual std::u16string getCssText(CSSStyleDeclarationImp* self) const {
         return value.getResolvedCssText();
     }
-    bool operator==(const CSSPaddingWidthValueImp& n) {
+    bool operator==(const CSSPaddingWidthValueImp& n) const {
         return value == n.value;
     }
-    bool operator!=(const CSSPaddingWidthValueImp& n) {
+    bool operator!=(const CSSPaddingWidthValueImp& n) const {
         return value != n.value;
     }
     void specify(const CSSPaddingWidthValueImp& specified) {
@@ -387,6 +400,9 @@ public:
     }
     void inherit(const CSSPaddingWidthValueImp& parent) {
         value.inheritLength(parent.value);
+    }
+    bool compare(const CSSPaddingWidthValueImp& n) const {
+        return value.compare(n.value);
     }
     CSSPaddingWidthValueImp(float number = 0.0f, unsigned short unit = css::CSSPrimitiveValue::CSS_PX) :
         CSSNonNegativeLengthImp(number, unit) {
@@ -426,10 +442,10 @@ public:
     virtual std::u16string getCssText(CSSStyleDeclarationImp* self) const {
         return length.getResolvedCssText(Options);
     }
-    bool operator==(const CSSAutoLengthValueImp& value) {
+    bool operator==(const CSSAutoLengthValueImp& value) const {
         return length == value.length;
     }
-    bool operator!=(const CSSAutoLengthValueImp& value) {
+    bool operator!=(const CSSAutoLengthValueImp& value) const {
         return length != value.length;
     }
     void specify(const CSSAutoLengthValueImp& specified) {
@@ -442,6 +458,9 @@ public:
     void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* self, float fullSize);
     float getPx() const {
         return length.getPx();
+    }
+    bool compare(const CSSAutoLengthValueImp& value) const {
+        return length.compare(value.length);
     }
     CSSAutoLengthValueImp() :
         length(0) {
@@ -490,10 +509,10 @@ public:
             return u"none";
         return length.getCssText();
     }
-    bool operator==(const CSSNoneLengthValueImp& value) {
+    bool operator==(const CSSNoneLengthValueImp& value) const {
         return length == value.length;
     }
-    bool operator!=(const CSSNoneLengthValueImp& value) {
+    bool operator!=(const CSSNoneLengthValueImp& value) const {
         return length != value.length;
     }
     void specify(const CSSNoneLengthValueImp& specified) {
@@ -506,6 +525,9 @@ public:
     void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* self, float fullSize);
     float getPx() const {
         return length.getPx();
+    }
+    bool compare(const CSSNoneLengthValueImp& value) const {
+        return length.compare(value.length);
     }
     CSSNoneLengthValueImp() :
         length(0) {
@@ -541,10 +563,10 @@ public:
     virtual std::u16string getCssText(CSSStyleDeclarationImp* self) const {
         return length.getCssText(Options);
     }
-    bool operator==(const CSSNormalLengthValueImp& value) {
+    bool operator==(const CSSNormalLengthValueImp& value) const {
         return length == value.length;
     }
-    bool operator!=(const CSSNormalLengthValueImp& value) {
+    bool operator!=(const CSSNormalLengthValueImp& value) const {
         return length != value.length;
     }
     void specify(const CSSNormalLengthValueImp& specified) {
@@ -556,6 +578,9 @@ public:
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* self);
     float getPx() const {
         return length.getPx();
+    }
+    bool compare(const CSSNormalLengthValueImp& value) const {
+        return length.compare(value.length);
     }
     CSSNormalLengthValueImp() :
         length(Normal)
@@ -650,8 +675,8 @@ public:
     }
     virtual bool setValue(CSSStyleDeclarationImp* self, CSSValueParser* parser);
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl = 0) const;
-    bool operator==(const CSSAutoNumberingValueImp& other);
-    bool operator!=(const CSSAutoNumberingValueImp& other) {
+    bool operator==(const CSSAutoNumberingValueImp& other) const;
+    bool operator!=(const CSSAutoNumberingValueImp& other) const {
         return !(*this == other);
     }
     void specify(const CSSAutoNumberingValueImp& specified) {
@@ -1073,6 +1098,9 @@ public:
     float getPx() const {
         return width.getPx();
     }
+    bool compare(const CSSBorderWidthValueImp& value) const {
+        return width.compare(value.width);
+    }
     CSSBorderWidthValueImp() :
         width(Medium)
     {}
@@ -1369,8 +1397,8 @@ public:
     }
 
     virtual std::u16string getCssText(CSSStyleDeclarationImp* decl = 0) const;
-    bool operator==(const CSSContentValueImp& content);
-    bool operator!=(const CSSContentValueImp& content) {
+    bool operator==(const CSSContentValueImp& content) const;
+    bool operator!=(const CSSContentValueImp& content) const {
         return !(*this == content);
     }
     void specify(const CSSContentValueImp& specified);
@@ -1453,10 +1481,10 @@ public:
     virtual std::u16string getCssText(CSSStyleDeclarationImp* self) const {
         return Options[value];
     }
-    bool operator==(const CSSDirectionValueImp& direction) {
+    bool operator==(const CSSDirectionValueImp& direction) const {
         return value == direction.value;
     }
-    bool operator!=(const CSSDirectionValueImp& direction) {
+    bool operator!=(const CSSDirectionValueImp& direction) const {
         return value != direction.value;
     }
     void specify(const CSSDirectionValueImp& specified) {
@@ -1517,6 +1545,10 @@ public:
         original = value = specified.original;
     }
     void compute(CSSStyleDeclarationImp* self, Element element);
+    bool compare(const CSSDisplayValueImp& display) const {
+        return value == display.value;
+    }
+
     CSSDisplayValueImp(unsigned initial = Inline) :
         original(initial),
         value(initial)
@@ -1728,10 +1760,10 @@ public:
     virtual std::u16string getCssText(CSSStyleDeclarationImp* self) const {
         return Options[value];
     }
-    bool operator==(const CSSFloatValueImp& n) {
+    bool operator==(const CSSFloatValueImp& n) const {
         return value == n.value;
     }
-    bool operator!=(const CSSFloatValueImp& n) {
+    bool operator!=(const CSSFloatValueImp& n) const {
         return value != n.value;
     }
     void specify(const CSSFloatValueImp& specified) {
@@ -1769,7 +1801,7 @@ public:
     std::deque<CSSParserTerm*>::iterator setValue(std::deque<CSSParserTerm*>& stack, std::deque<CSSParserTerm*>::iterator i);
     virtual bool setValue(CSSStyleDeclarationImp* self, CSSValueParser* parser);
     virtual std::u16string getCssText(CSSStyleDeclarationImp* self) const ;
-    bool operator==(const CSSFontFamilyValueImp& value) {
+    bool operator==(const CSSFontFamilyValueImp& value) const {
         if (generic != value.generic)
             return false;
         if (familyNames.size() != value.familyNames.size())
@@ -1781,7 +1813,7 @@ public:
         }
         return true;
     }
-    bool operator!=(const CSSFontFamilyValueImp& value) {
+    bool operator!=(const CSSFontFamilyValueImp& value) const {
         return !(*this == value);
     }
     void specify(const CSSFontFamilyValueImp& specified) {
@@ -1829,10 +1861,10 @@ public:
     virtual std::u16string getCssText(CSSStyleDeclarationImp* self) const {
         return size.getResolvedCssText(Options);
     }
-    bool operator==(const CSSFontSizeValueImp& fontSize) {
+    bool operator==(const CSSFontSizeValueImp& fontSize) const {
         return size == fontSize.size;
     }
-    bool operator!=(const CSSFontSizeValueImp& fontSize) {
+    bool operator!=(const CSSFontSizeValueImp& fontSize) const {
         return size != fontSize.size;
     }
     void specify(const CSSFontSizeValueImp& specified) {
@@ -1844,6 +1876,9 @@ public:
     void compute(ViewCSSImp* view, const CSSStyleDeclarationPtr& parentStyle);
     float getPx() const {
         return size.getPx();
+    }
+    bool compare(const CSSFontSizeValueImp& fontSize) const {
+        return size.compare(fontSize.size);
     }
     CSSFontSizeValueImp() :
         size(Medium) {
@@ -1870,10 +1905,10 @@ public:
     virtual std::u16string getCssText(CSSStyleDeclarationImp* self) const {
         return Options[value];
     }
-    bool operator==(const CSSFontStyleValueImp& fontStyle) {
+    bool operator==(const CSSFontStyleValueImp& fontStyle) const {
         return value == fontStyle.value;
     }
-    bool operator!=(const CSSFontStyleValueImp& fontStyle) {
+    bool operator!=(const CSSFontStyleValueImp& fontStyle) const {
         return value != fontStyle.value;
     }
     void specify(const CSSFontStyleValueImp& specified) {
@@ -1909,10 +1944,10 @@ public:
     virtual std::u16string getCssText(CSSStyleDeclarationImp* self) const {
         return Options[value];
     }
-    bool operator==(const CSSFontVariantValueImp& fontVariant) {
+    bool operator==(const CSSFontVariantValueImp& fontVariant) const {
         return value == fontVariant.value;
     }
-    bool operator!=(const CSSFontVariantValueImp& fontVariant) {
+    bool operator!=(const CSSFontVariantValueImp& fontVariant) const {
         return value != fontVariant.value;
     }
     void specify(const CSSFontVariantValueImp& specified) {
@@ -1954,10 +1989,10 @@ public:
     virtual std::u16string getCssText(CSSStyleDeclarationImp* self) const {
         return value.getResolvedCssText(Options, css::CSSPrimitiveValue::CSS_NUMBER);
     }
-    bool operator==(const CSSFontWeightValueImp& fontWeight) {
+    bool operator==(const CSSFontWeightValueImp& fontWeight) const {
         return value == fontWeight.value;
     }
-    bool operator!=(const CSSFontWeightValueImp& fontWeight) {
+    bool operator!=(const CSSFontWeightValueImp& fontWeight) const {
         return value != fontWeight.value;
     }
     void specify(const CSSFontWeightValueImp& specified) {
@@ -1973,6 +2008,9 @@ public:
         if (value.unit == css::CSSPrimitiveValue::CSS_NUMBER && value.number == 400.0f)
             return true;
         return false;
+    }
+    bool compare(const CSSFontWeightValueImp& fontWeight) const {
+        return value.compare(fontWeight.value);
     }
     CSSFontWeightValueImp() :
         value(Normal)
@@ -2028,10 +2066,10 @@ public:
     virtual std::u16string getCssText(CSSStyleDeclarationImp* self) const {
         return value.getResolvedCssText(Options);
     }
-    bool operator==(const CSSLineHeightValueImp& lineHeight) {
+    bool operator==(const CSSLineHeightValueImp& lineHeight) const {
         return value == lineHeight.value;
     }
-    bool operator!=(const CSSLineHeightValueImp& lineHeight) {
+    bool operator!=(const CSSLineHeightValueImp& lineHeight) const {
         return value != lineHeight.value;
     }
     void specify(const CSSLineHeightValueImp& specified) {
@@ -2042,6 +2080,9 @@ public:
     void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* self);
     float getPx() const {
         return value.getPx();
+    }
+    bool compare(const CSSLineHeightValueImp& lineHeight) const {
+        return value.compare(lineHeight.value);
     }
     CSSLineHeightValueImp() :
         value(Normal)
@@ -2190,10 +2231,10 @@ public:
     bool canScroll() const {
         return canScroll(value);
     }
-    bool operator==(const CSSOverflowValueImp& overflow) {
+    bool operator==(const CSSOverflowValueImp& overflow) const {
         return original == overflow.original;
     }
-    bool operator!=(const CSSOverflowValueImp& overflow) {
+    bool operator!=(const CSSOverflowValueImp& overflow) const {
         return original != overflow.original;
     }
     void specify(const CSSOverflowValueImp& specified) {
@@ -2675,6 +2716,9 @@ public:
             return Baseline;
         }
     }
+    bool compare(const CSSVerticalAlignValueImp& align) const {
+        return value.compare(align.value);
+    }
     CSSVerticalAlignValueImp() :
         value(Baseline) {
     }
@@ -2822,10 +2866,10 @@ public:
             return u"auto";
         return CSSSerializeInteger(index);
     }
-    bool operator==(const CSSZIndexValueImp& value) {
+    bool operator==(const CSSZIndexValueImp& value) const {
         return auto_ == value.auto_ && index == value.index;
     }
-    bool operator!=(const CSSZIndexValueImp& value) {
+    bool operator!=(const CSSZIndexValueImp& value) const {
         return auto_ != value.auto_ || index != value.index;
     }
     void specify(const CSSZIndexValueImp& specified) {

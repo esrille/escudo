@@ -473,7 +473,7 @@ void CSSWordSpacingValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp* s
     length.compute(view, self);
 }
 
-bool CSSAutoNumberingValueImp::operator==(const CSSAutoNumberingValueImp& other)
+bool CSSAutoNumberingValueImp::operator==(const CSSAutoNumberingValueImp& other) const
 {
     if (defaultNumber != other.defaultNumber)
         return false;
@@ -1223,7 +1223,7 @@ void CSSContentValueImp::specify(const CSSContentValueImp& specified)
     }
 }
 
-bool CSSContentValueImp::operator==(const CSSContentValueImp& content)
+bool CSSContentValueImp::operator==(const CSSContentValueImp& content) const
 {
     if (wasNormal() && content.wasNormal())
         return true;

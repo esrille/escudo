@@ -301,7 +301,7 @@ unsigned CSSStyleDeclarationBoard::compare(const CSSStyleDeclarationPtr& style)
             style->marker = nullptr;
     }
 
-    if (style->display != display) {
+    if (!style->display.compare(display)) {
         flags |= Box::NEED_EXPANSION;
         if (CSSDisplayValueImp::isProperTableChild(style->display.getValue()) || CSSDisplayValueImp::isProperTableChild(display.getValue()))
             flags |= Box::NEED_TABLE_REFLOW;
@@ -320,66 +320,66 @@ unsigned CSSStyleDeclarationBoard::compare(const CSSStyleDeclarationPtr& style)
     // Note: in the following comparisons, the order of left and right sides do matter, which is not good design, though.
     //
     // Firstly, check properties that require style resolutions.
-    if (style->borderTopWidth != borderTopWidth)
+    if (!style->borderTopWidth.compare(borderTopWidth))
         flags |= Box::NEED_REFLOW;
-    if (style->borderRightWidth != borderRightWidth)
+    if (!style->borderRightWidth.compare(borderRightWidth))
         flags |= Box::NEED_REFLOW;
-    if (style->borderBottomWidth != borderBottomWidth)
+    if (!style->borderBottomWidth.compare(borderBottomWidth))
         flags |= Box::NEED_REFLOW;
-    if (style->borderLeftWidth != borderLeftWidth)
+    if (!style->borderLeftWidth.compare(borderLeftWidth))
         flags |= Box::NEED_REFLOW;
     if ((flags & Box::NEED_REFLOW) && style->display.isTableParts())  // cf. html4/border-collapse-dynamic-cell-003.htm
         flags |= Box::NEED_TABLE_REFLOW;
 
     if (style->isAbsolutelyPositioned()) {
-        if (style->top != top)
+        if (!style->top.compare(top))
             flags |= Box::NEED_REPOSITION;
-        if (style->right != right)
+        if (!style->right.compare(right))
             flags |= Box::NEED_REPOSITION;
-        if (style->bottom != bottom)
+        if (!style->bottom.compare(bottom))
             flags |= Box::NEED_REPOSITION;
-        if (style->left != left)
+        if (!style->left.compare(left))
             flags |= Box::NEED_REPOSITION;
     }
 
-    if (style->width != width)
+    if (!style->width.compare(width))
         flags |= Box::NEED_REFLOW;
-    if (style->height != height)
-        flags |= Box::NEED_REFLOW;
-
-    if (style->marginTop != marginTop)
-        flags |= Box::NEED_REFLOW;
-    if (style->marginRight != marginRight)
-        flags |= Box::NEED_REFLOW;
-    if (style->marginBottom != marginBottom)
-        flags |= Box::NEED_REFLOW;
-    if (style->marginLeft != marginLeft)
+    if (!style->height.compare(height))
         flags |= Box::NEED_REFLOW;
 
-    if (style->maxHeight != maxHeight)
+    if (!style->marginTop.compare(marginTop))
         flags |= Box::NEED_REFLOW;
-    if (style->maxWidth != maxWidth)
+    if (!style->marginRight.compare(marginRight))
         flags |= Box::NEED_REFLOW;
-
-    if (style->minHeight != minHeight)
+    if (!style->marginBottom.compare(marginBottom))
         flags |= Box::NEED_REFLOW;
-    if (style->minWidth != minWidth)
-        flags |= Box::NEED_REFLOW;
-
-    if (style->paddingTop != paddingTop)
-        flags |= Box::NEED_REFLOW;
-    if (style->paddingRight != paddingRight)
-        flags |= Box::NEED_REFLOW;
-    if (style->paddingBottom != paddingBottom)
-        flags |= Box::NEED_REFLOW;
-    if (style->paddingLeft != paddingLeft)
+    if (!style->marginLeft.compare(marginLeft))
         flags |= Box::NEED_REFLOW;
 
-    if (style->lineHeight != lineHeight)
+    if (!style->maxHeight.compare(maxHeight))
         flags |= Box::NEED_REFLOW;
-    if (style->textIndent != textIndent)
+    if (!style->maxWidth.compare(maxWidth))
         flags |= Box::NEED_REFLOW;
-    if (style->verticalAlign != verticalAlign)
+
+    if (!style->minHeight.compare(minHeight))
+        flags |= Box::NEED_REFLOW;
+    if (!style->minWidth.compare(minWidth))
+        flags |= Box::NEED_REFLOW;
+
+    if (!style->paddingTop.compare(paddingTop))
+        flags |= Box::NEED_REFLOW;
+    if (!style->paddingRight.compare(paddingRight))
+        flags |= Box::NEED_REFLOW;
+    if (!style->paddingBottom.compare(paddingBottom))
+        flags |= Box::NEED_REFLOW;
+    if (!style->paddingLeft.compare(paddingLeft))
+        flags |= Box::NEED_REFLOW;
+
+    if (!style->lineHeight.compare(lineHeight))
+        flags |= Box::NEED_REFLOW;
+    if (!style->textIndent.compare(textIndent))
+        flags |= Box::NEED_REFLOW;
+    if (!style->verticalAlign.compare(verticalAlign))
         flags |= Box::NEED_REFLOW;
     if (style->htmlAlign != htmlAlign)
         flags |= Box::NEED_REFLOW;
@@ -399,15 +399,15 @@ unsigned CSSStyleDeclarationBoard::compare(const CSSStyleDeclarationPtr& style)
         flags |= Box::NEED_REFLOW;
     if (style->fontFamily != fontFamily)
         flags |= Box::NEED_REFLOW;
-    if (style->fontSize != fontSize)
+    if (!style->fontSize.compare(fontSize))
         flags |= Box::NEED_REFLOW;
     if (style->fontStyle != fontStyle)
         flags |= Box::NEED_REFLOW;
     if (style->fontVariant != fontVariant)
         flags |= Box::NEED_REFLOW;
-    if (style->fontWeight != fontWeight)
+    if (!style->fontWeight.compare(fontWeight))
         flags |= Box::NEED_REFLOW;
-    if (style->letterSpacing != letterSpacing)
+    if (!style->letterSpacing.compare(letterSpacing))
         flags |= Box::NEED_REFLOW;
     if (style->quotes != quotes)
         flags |= Box::NEED_REFLOW;
@@ -421,7 +421,7 @@ unsigned CSSStyleDeclarationBoard::compare(const CSSStyleDeclarationPtr& style)
         flags |= Box::NEED_REFLOW;
     if (style->whiteSpace != whiteSpace)
         flags |= Box::NEED_REFLOW;
-    if (style->wordSpacing != wordSpacing)
+    if (!style->wordSpacing.compare(wordSpacing))
         flags |= Box::NEED_REFLOW;
 
     // Table related properties
