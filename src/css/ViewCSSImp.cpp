@@ -673,7 +673,8 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, const CSSSt
                 if (prevBox == parentBox)
                     prevBox = 0;
                 else
-                    assert(!prevBox || prevBox->parentBox == parentBox);
+                    assert(!prevBox || prevBox->parentBox == parentBox ||
+                           currentBox->parentBox == parentBox); // TODO: cf. html4/table-anonymous-objects-207.htm
             }
         }
     } else if (style->isBlockLevel()) {

@@ -746,7 +746,8 @@ void Block::resolveHeight()
 
 void Block::layOutInlineBlock(ViewCSSImp* view, Node node, Block* inlineBlock, FormattingContext* context)
 {
-    assert(inlineBlock->style);
+    CSSStyleDeclarationPtr parentStyle = inlineBlock->parentBox->getStyle();
+    assert(parentStyle);
 
     InlineBox* inlineBox = new(std::nothrow) InlineBox(node, inlineBlock->style);
     if (!inlineBox)
@@ -765,7 +766,7 @@ void Block::layOutInlineBlock(ViewCSSImp* view, Node node, Block* inlineBlock, F
     if (inlineBox->height == 0.0f)
         inlineBox->width = 0.0f;
     inlineBox->baseline = inlineBox->height;
-    if (!inlineBlock->style->overflow.isClipped()) {
+    if (!inlineBlock->style || !inlineBlock->style->overflow.isClipped()) {
         if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(inlineBlock))
             inlineBox->baseline = table->getBaseline();
         else
@@ -786,7 +787,7 @@ void Block::layOutInlineBlock(ViewCSSImp* view, Node node, Block* inlineBlock, F
 
     context->x += inlineBox->getTotalWidth();
     context->leftover -= inlineBox->getTotalWidth();
-    context->appendInlineBox(view, inlineBox, inlineBlock->style);
+    context->appendInlineBox(view, inlineBox, inlineBlock->style ? inlineBlock->style : parentStyle);
 
     updateMCW(inlineBox->getTotalWidth());
 }
