@@ -732,7 +732,9 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, const CSSSt
                     Box* next;
                     for (Box* child = currentBox->getFirstChild(); child; child = next) {
                         next = child->getNextSibling();
-                        if (child->isAnonymous()) {
+                        if (child->isAnonymous() ||
+                            child->getNode().getParentNode() != element)  // cf. html4/block-in-inline-remove-000.htm
+                        {
                             currentBox->removeChild(child);
                             child->release_();
                         }
