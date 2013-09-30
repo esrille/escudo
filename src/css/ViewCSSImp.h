@@ -118,7 +118,7 @@ public:
     // Selector matching
     void addStyle(const Element& element, const CSSStyleDeclarationPtr& style);
     void constructComputedStyles();
-    void constructComputedStyle(Node node, CSSStyleDeclarationPtr parentStyle);
+    unsigned constructComputedStyle(Node node, CSSStyleDeclarationPtr parentStyle, unsigned propagateFlags = 0);
 
     // Style recalculation
     void calculateComputedStyles();

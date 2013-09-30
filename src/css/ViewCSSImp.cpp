@@ -315,7 +315,7 @@ bool ViewCSSImp::expandBinding(Element element, const CSSStyleDeclarationPtr& st
     return false;
 }
 
-void ViewCSSImp::constructComputedStyle(Node node, CSSStyleDeclarationPtr parentStyle)
+unsigned ViewCSSImp::constructComputedStyle(Node node, CSSStyleDeclarationPtr parentStyle, unsigned propagetFlags)
 {
     CSSStyleDeclarationPtr style;
     Element element((node.getNodeType() == Node::ELEMENT_NODE) ? interface_cast<Element>(node) : nullptr);
@@ -324,7 +324,8 @@ void ViewCSSImp::constructComputedStyle(Node node, CSSStyleDeclarationPtr parent
         if (found != map.end()) {
             style = found->second;
             assert(style);
-            if (style->getFlags() & CSSStyleDeclarationImp::NeedSelectorMatching) {
+            if ((style->getFlags() | propagetFlags) & CSSStyleDeclarationImp::NeedSelectorMatching) {
+                propagetFlags = CSSStyleDeclarationImp::NeedSelectorMatching;
                 style->clearFlags(CSSStyleDeclarationImp::NeedSelectorMatching);
                 CSSStyleDeclarationBoard board(style);
                 style->resetComputedStyle();
@@ -337,7 +338,7 @@ void ViewCSSImp::constructComputedStyle(Node node, CSSStyleDeclarationPtr parent
         } else {
             style = window->getComputedStyle(element);
             if (!style)
-                return;  // TODO: error
+                return propagetFlags;  // TODO: error
             addStyle(element, style);
             updateStyleRules(element, style, parentStyle);
         }
@@ -346,8 +347,10 @@ void ViewCSSImp::constructComputedStyle(Node node, CSSStyleDeclarationPtr parent
                 node = shadow;
         }
     }
+    unsigned siblingFlags = propagetFlags;
     for (Node child = node.getFirstChild(); child; child = child.getNextSibling())
-        constructComputedStyle(child, style);
+        siblingFlags = constructComputedStyle(child, style, siblingFlags);
+    return propagetFlags;
 }
 
 void ViewCSSImp::calculateComputedStyles()
