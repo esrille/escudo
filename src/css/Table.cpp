@@ -1576,7 +1576,7 @@ Reflow:
                 continue;
             }
             if (!cellBox->isSpanned(x, y)) {
-                cellBox->offsetH += xOffset;
+                cellBox->offsetH = xOffset; // Note using offsetH for adjusting column spans since cells are not positioned.
                 if (CSSStyleDeclarationPtr style = cellBox->getStyle())
                     style->setContainingBlockSize(tableBox->width, tableBox->height);
             }
