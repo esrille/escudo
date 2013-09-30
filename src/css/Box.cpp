@@ -502,7 +502,10 @@ bool Block::isFloat() const
 
 bool Block::hasAnonymousBox(Box* prev) const
 {
-    return prev && prev->isAnonymous();
+    // Note an anonymous table is not considered as an anonymous block box for
+    // inserting the following inline element here;
+    // cf. html4/before-content-display-008.htm
+    return prev && prev->isAnonymous() && !dynamic_cast<TableWrapperBox*>(prev);
 }
 
 Block* Block::getAnonymousBox(Box* prev)
