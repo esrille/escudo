@@ -1806,16 +1806,17 @@ void WindowProxy::updateView()
     if (auto parent = getParentProxy())
         parent->updateView();
     while (view) {
-        unsigned flags = view->gatherFlags();
-        if (!flags || flags == Box::NEED_REPAINT)
+        unsigned gathered = viewFlags | view->gatherFlags();
+        if (!gathered || gathered == Box::NEED_REPAINT)
             return;
-        if (flags & Box::NEED_SELECTOR_REMATCHING) {
+        viewFlags &= ~gathered;
+        if (gathered & Box::NEED_SELECTOR_REMATCHING) {
             backgroundTask.restart(BackgroundTask::Cascade);
             view = 0;
-        } else if (flags & Box::NEED_SELECTOR_MATCHING) {
+        } else if (gathered & Box::NEED_SELECTOR_MATCHING) {
             backgroundTask.wakeUp(BackgroundTask::Cascade);
             view = 0;
-        } else if (flags & (Box::NEED_STYLE_RECALCULATION | Box::NEED_EXPANSION | Box::NEED_CHILD_REFLOW | Box::NEED_REFLOW)) {
+        } else if (gathered & (Box::NEED_STYLE_RECALCULATION | Box::NEED_EXPANSION | Box::NEED_CHILD_REFLOW | Box::NEED_REFLOW)) {
             backgroundTask.wakeUp(BackgroundTask::Layout);
             view = 0;
         }
