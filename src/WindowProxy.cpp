@@ -727,7 +727,12 @@ html::Window WindowProxy::getWindow()
 
 Any WindowProxy::getSelf()
 {
-    return self();
+    // TODO:
+    // This is tricky. If the line below were,
+    //   return self();
+    // as in 0.3 series, the returned Any value holds a raw std::shared_ptr<WindowProxy>,
+    // which is not an Object since 0.4.0. We should address this issue in a better way.
+    return getWindow();
 }
 
 void WindowProxy::setSelf(Any self)
