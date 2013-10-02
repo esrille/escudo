@@ -416,7 +416,7 @@ am__objects_1 = ArrayBuffer.$(OBJEXT) ArrayBufferView.$(OBJEXT) \
 am__objects_2 =
 am__objects_3 = CSSPropertyNames.$(OBJEXT) CSSTokenizer.$(OBJEXT) \
 	CSSColor.$(OBJEXT) MediaFeatureNames.$(OBJEXT) \
-	MediaTypeNames.$(OBJEXT) CSSGrammar.$(OBJEXT)
+	MediaTypeNames.$(OBJEXT)
 nodist_libeshtml5_a_OBJECTS = $(am__objects_1) $(am__objects_2) \
 	$(am__objects_3)
 libeshtml5_a_OBJECTS = $(am_libeshtml5_a_OBJECTS) \
@@ -1368,7 +1368,7 @@ generated_scanners = \
 	src/css/CSSColor.cpp \
 	src/MediaFeatureNames.cpp \
 	src/MediaTypeNames.cpp \
-	CSSGrammar.cc CSSGrammar.hh
+	CSSGrammar.hh
 
 BUILT_SOURCES = $(generated_headers) $(generated_scanners) $(generated_sources)
 nobase_nodist_noinst_HEADERS = $(generated_headers)

@@ -535,7 +535,7 @@ generated_scanners = \
 	src/css/CSSColor.cpp \
 	src/MediaFeatureNames.cpp \
 	src/MediaTypeNames.cpp \
-	CSSGrammar.cc CSSGrammar.hh
+	CSSGrammar.hh
 
 BUILT_SOURCES = $(generated_headers) $(generated_scanners) $(generated_sources)
 
