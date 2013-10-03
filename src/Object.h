@@ -758,6 +758,4 @@ inline void Any::move(Object&& value)
     type = Shared;
 }
 
-#include <sequence.h>
-
 #endif  // ES_OBJECT_H

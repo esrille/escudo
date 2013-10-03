@@ -49,6 +49,7 @@
 #undef PACKAGE_VERSION
 
 #include <Object.h>
+#include <Sequence.h>
 
 #ifdef __APPLE__
 #ifndef ESCUDO_CHAR16_T_STUBS

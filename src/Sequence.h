@@ -23,7 +23,6 @@
 #include <org/w3c/dom/ObjectArray.h>
 
 // The sequence type for Web IDL
-// TODO: This implementation is not multi-thread safe.
 template <typename T>
 class SequenceImp : public Imp
 {
@@ -50,17 +49,16 @@ class SequenceImp : public Imp
     SequenceImp& operator=(const SequenceImp& value) = delete;
 
 public:
-    SequenceImp() : length{0}, sequence{nullptr} {}
-
+    SequenceImp() :
+        length{0},
+        sequence{nullptr} {}
     SequenceImp(const T* sequence, unsigned int length) {
         init(length);
         copy(sequence, length);
     }
-
     explicit SequenceImp(unsigned int size) {
         init(size);
     }
-
     SequenceImp(std::initializer_list<T> list) {
         init(list.size());
         if (sequence) {

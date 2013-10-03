@@ -53,7 +53,8 @@ AC_LINK_IFELSE(
     [])
 CXXFLAGS="$SAVED_CXXFLAGS"
 
-AH_BOTTOM([#include <Object.h>])
+AH_BOTTOM([#include <Object.h>
+#include <Sequence.h>])
 
 # generate char16_t stubs
 AH_BOTTOM([#ifdef __APPLE__

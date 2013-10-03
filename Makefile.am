@@ -631,7 +631,7 @@ libeshtml5_a_SOURCES = \
 	src/ObjectArrayImp.h \
 	src/Reflect.h \
 	src/Any.cpp \
-	src/sequence.h \
+	src/Sequence.h \
 	src/ECMAScript.cpp \
 	src/ECMAScript.h \
 	src/utf.h \
