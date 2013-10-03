@@ -18,10 +18,9 @@
 #define ES_OBJECT_H
 
 #include <cstring>
+#include <initializer_list>
 #include <memory>
 #include <type_traits>
-
-#include <Variadic.h>
 
 class Any;
 class Imp;
@@ -663,6 +662,36 @@ public:
         std::shared_ptr<IMP>(std::make_shared<IMP>(std::forward<As>(as)...))
     {
         static_assert(std::is_base_of<Imp, IMP>::value, "not Imp");
+    }
+};
+
+template <typename T>
+class Variadic
+{
+    std::initializer_list<T> list;
+    const Any* variadic;
+    size_t length;
+
+public:
+    Variadic() :
+        variadic(0),
+        length(0) {}
+    Variadic(const Any* variadic, size_t length) :
+        variadic(length ? variadic : 0),
+        length(length) {}
+    Variadic(std::initializer_list<T> list) :
+        list(list),
+        variadic(0),
+        length(list.size()) {}
+
+    T operator[](unsigned int index) const {
+        if (!variadic)
+            return *(list.begin() + index);
+        return variadic[index];
+    }
+
+    size_t size() const {
+        return length;
     }
 };
 
