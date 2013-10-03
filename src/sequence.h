@@ -20,213 +20,80 @@
 
 #include <initializer_list>
 #include <new>
-
-#include <Any.h>
+#include <org/w3c/dom/ObjectArray.h>
 
 // The sequence type for Web IDL
 // TODO: This implementation is not multi-thread safe.
 template <typename T>
-class Sequence
+class SequenceImp : public Imp
 {
-    class Rep
-    {
-        friend class Sequence;
-        // reference count
-        unsigned count;
-        // stub
-        unsigned int length;
-        T* sequence;
+    unsigned int length;
+    T* sequence;
 
-        void init(unsigned int size)
-        {
-            length = size;
-            sequence = (0 < length) ? new T[length] : 0;
-            count = 1;
-        }
-
-        void copy(const T* array, unsigned int size)
-        {
-            for (unsigned int i = 0; i < length; ++i)
-            {
-                sequence[i] = array[i];
-            }
-        }
-
-        // Prevent copying
-        Rep(const Rep& value);
-        Rep& operator=(const Rep& value);
-
-    public:
-        Rep()
-        {
+    void init(unsigned int size) {
+        if (0 < size) {
+            sequence = new(std::nothrow) T[size];
+            length = sequence ? size : 0;
+        } else {
+            sequence = nullptr;
             length = 0;
-            sequence = 0;
-            count = 1;
         }
+    }
 
-        Rep(const T* sequence, unsigned int length)
-        {
-            init(length);
-            copy(sequence, length);
-        }
+    void copy(const T* array, unsigned int size) {
+        for (unsigned int i = 0; i < length; ++i)
+            sequence[i] = array[i];
+    }
 
-        Rep(const char** array, unsigned int length)
-        {
-            init(length);
-            for (unsigned int i = 0; i < length; ++i)
-            {
-                sequence[i] = array[i];
-            }
-        }
-
-        explicit Rep(unsigned int size)
-        {
-            init(size);
-        }
-
-        ~Rep()
-        {
-            if (sequence)
-            {
-                delete[] sequence;
-            }
-        }
-
-        T& getElement(unsigned int index)
-        {
-            return sequence[index];
-        }
-
-        void setElement(unsigned int index, const T value)
-        {
-            sequence[index] = value;
-        }
-
-        unsigned int getLength()
-        {
-            return length;
-        }
-
-        void setLength(unsigned int length)
-        {
-            // TODO: Raise an exception
-        }
-    };
-
-    Rep* rep;
+    // Prevent copying
+    SequenceImp(const SequenceImp&) = delete;
+    SequenceImp& operator=(const SequenceImp& value) = delete;
 
 public:
-    Sequence()
-    {
-        rep = new Rep();
+    SequenceImp() : length{0}, sequence{nullptr} {}
+
+    SequenceImp(const T* sequence, unsigned int length) {
+        init(length);
+        copy(sequence, length);
     }
 
-    Sequence(const T* array, unsigned int size)
-    {
-        rep = new Rep(array, size);
+    explicit SequenceImp(unsigned int size) {
+        init(size);
     }
 
-    // For std::string
-    Sequence(const char** array, unsigned int size)
-    {
-        rep = new Rep(array, size);
-    }
-
-    explicit Sequence(unsigned int size)
-    {
-        rep = new Rep(size);
-    }
-
-    Sequence(std::initializer_list<T> list)
-    {
-        rep = new Rep(list.size());
-        unsigned int index = 0;
-        for (const T* p = list.begin(); p != list.end(); ++p, ++index)
-        {
-            rep->setElement(index, *p);
+    SequenceImp(std::initializer_list<T> list) {
+        init(list.size());
+        if (sequence) {
+            unsigned int index = 0;
+            for (const T* p = list.begin(); p != list.end(); ++p, ++index)
+                sequence[index] = *p;
         }
     }
 
-    // Copy-constructor
-    Sequence(const Sequence& value)
-    {
-        ++value.rep->count;
-        rep = value.rep;
+    ~SequenceImp() {
+        if (sequence)
+            delete[] sequence;
     }
 
-    ~Sequence()
-    {
-        if (--rep->count == 0)
-        {
-            delete rep;
-        }
+    T getElement(unsigned int index) const {
+        // TODO: Check range
+        return sequence[index];
     }
 
-    Sequence& operator=(const Sequence& value)
-    {
-        ++value.rep->count;
-        if (--rep->count == 0)
-        {
-            delete rep;
-        }
-        rep = value.rep;
-        return *this;
+    void setElement(unsigned int index, const T value) {
+        // TODO: Check range
+        sequence[index] = value;
     }
 
-    T getElement(unsigned int index) const
-    {
-        return rep->getElement(index);
+    unsigned int getLength() const {
+        return length;
     }
 
-    T& getElement(unsigned int index)
-    {
-        return rep->getElement(index);
-    }
-
-    void setElement(unsigned int index, const T value)
-    {
-        rep->setElement(index, value);
-    }
-
-    T operator[](int index) const
-    {
-        return rep->getElement(index);
-    }
-
-    T& operator[](int index)
-    {
-        return rep->getElement(index);
-    }
-
-    T at(unsigned int index) const
-    {
-        if (getLength() <= index)
-        {
-            // TODO: raise an exception;
-        }
-        return rep->getElement(index);
-    }
-
-    T& at(unsigned int index)
-    {
-        if (getLength() <= index)
-        {
-            // TODO: raise an exception;
-        }
-        return rep->getElement(index);
-    }
-
-    unsigned int getLength() const
-    {
-        return rep->getLength();
-    }
-
-    Sequence(const Any& any)
-    {
-        const Sequence& value = any.as<Sequence<T> >();
-        ++value.rep->count;
-        rep = value.rep;
+    void setLength(unsigned int length) {
+        // TODO: Raise an exception
     }
 };
+
+template<typename E> using Sequence = org::w3c::dom::ObjectArray<E>;
 
 #endif  // ES_SEQUENCE_H

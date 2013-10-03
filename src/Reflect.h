@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2012 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  * Copyright 2008-2010 Google Inc.
  * Copyright 2006, 2007 Nintendo Co., Ltd.
  *
@@ -23,8 +23,6 @@
 #include <cstring>
 #include <cstdlib>
 #include <string>
-
-#include <Any.h>
 
 /**
  * This class provides access to the string-encoded interface meta-data.
@@ -330,21 +328,21 @@ public:
             case kBoolean:
                 return static_cast<bool>(std::strtol(k + 1, 0, 10));
             case kByte:
-                return static_cast<int8_t>(std::strtol(k + 1, 0, 10));
+                return static_cast<signed char>(std::strtol(k + 1, 0, 10));
             case kUnsignedByte:
-                return static_cast<uint8_t>(std::strtoul(k + 1, 0, 10));
+                return static_cast<unsigned char>(std::strtoul(k + 1, 0, 10));
             case kShort:
-                return static_cast<int16_t>(std::strtol(k + 1, 0, 10));
+                return static_cast<signed short>(std::strtol(k + 1, 0, 10));
             case kUnsignedShort:
-                return static_cast<uint16_t>(std::strtoul(k + 1, 0, 10));
+                return static_cast<unsigned short>(std::strtoul(k + 1, 0, 10));
             case kLong:
-                return static_cast<int32_t>(std::strtol(k + 1, 0, 10));
+                return static_cast<signed int>(std::strtol(k + 1, 0, 10));
             case kUnsignedLong:
-                return static_cast<uint32_t>(std::strtoul(k + 1, 0, 10));
+                return static_cast<unsigned int>(std::strtoul(k + 1, 0, 10));
             case kLongLong:
-                return static_cast<int64_t>(std::strtoll(k + 1, 0, 10));
+                return static_cast<signed long long>(std::strtoll(k + 1, 0, 10));
             case kUnsignedLongLong:
-                return static_cast<uint64_t>(std::strtoull(k + 1, 0, 10));
+                return static_cast<unsigned long long>(std::strtoull(k + 1, 0, 10));
             case kFloat:
                 return std::strtof(k + 1, 0);
             case kDouble:

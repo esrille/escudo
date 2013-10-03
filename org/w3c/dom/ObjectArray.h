@@ -1,5 +1,5 @@
 /*
- * Copyright 2011, 2013 Esrille Inc.
+ * Copyright 2011-2013 Esrille Inc.
  * Copyright 2010 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -109,9 +109,9 @@ public:
     {
         return object.message_(0, getPrefixedName(), IS_KIND_OF_, 0).toBoolean();
     }
-    static bool hasInstance(Object* object)
+    static bool hasInstance(const std::shared_ptr<Imp>& pimpl)
     {
-        return object && object->message_(0, getPrefixedName(), IS_KIND_OF_, 0).toBoolean();
+        return pimpl && pimpl->message_(0, getPrefixedName(), IS_KIND_OF_, 0).toBoolean();
     }
 };
 

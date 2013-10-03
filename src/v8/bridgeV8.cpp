@@ -139,13 +139,13 @@ Any convert(v8::Handle<v8::String> property)
     return std::u16string(*value ? reinterpret_cast<const char16_t*>(*value) : u"");
 }
 
-v8::Handle<v8::Object> convertObject(Object* obj)
+v8::Handle<v8::Object> convertObject(const std::shared_ptr<Imp>& pimpl)
 {
-    if (obj) {
-        if (auto proxy = dynamic_cast<ProxyObject*>(obj->self().get()))
+    if (pimpl) {
+        if (auto proxy = std::dynamic_pointer_cast<ProxyObject>(pimpl))
             return proxy->getJSObject();
-        if (auto imp = dynamic_cast<ObjectImp*>(obj->self().get()))
-            return static_cast<NativeClass*>(imp->getStaticPrivate())->createJSObject(imp);
+        if (auto imp = std::dynamic_pointer_cast<ObjectImp>(pimpl))
+            return static_cast<NativeClass*>(imp->getStaticPrivate())->createJSObject(imp.get());
     }
     return v8::Handle<v8::Object>();
 }
@@ -694,8 +694,8 @@ Any ECMAScriptContext::callFunction(Object thisObject, Object functionObject, in
     assert(0 <= argc);
     if (!thisObject || !functionObject)
         return Any();
-    v8::Handle<v8::Object> self = convertObject(&thisObject);
-    v8::Handle<v8::Function> func = v8::Handle<v8::Function>::Cast(convertObject(&functionObject));
+    v8::Handle<v8::Object> self = convertObject(thisObject.self());
+    v8::Handle<v8::Function> func = v8::Handle<v8::Function>::Cast(convertObject(functionObject.self()));
     return call(self, func, argc, argv);
 }
 
@@ -721,15 +721,15 @@ Object ECMAScriptContext::Impl::compileFunction(const std::u16string& body)
 
 Object ECMAScriptContext::Impl::xblCreateImplementation(Object object, Object prototype, Object boundElement, Object shadowTree)
 {
-    v8::Handle<v8::Object> imp = convertObject(&object);
+    v8::Handle<v8::Object> imp = convertObject(object.self());
     if (prototype) {
-        v8::Handle<v8::Object> p = convertObject(&prototype);
+        v8::Handle<v8::Object> p = convertObject(prototype.self());
         p->SetPrototype(imp->GetPrototype());
         imp->SetPrototype(p);
     }
     // TODO: Create an external object.
-    imp->Set(v8::String::New("boundElement"), convertObject(&boundElement));
-    imp->Set(v8::String::New("shadowTree"), convertObject(&shadowTree));
+    imp->Set(v8::String::New("boundElement"), convertObject(boundElement.self()));
+    imp->Set(v8::String::New("shadowTree"), convertObject(shadowTree.self()));
     Object proxy(std::make_shared<ProxyObject>(imp));
     return proxy;
 }

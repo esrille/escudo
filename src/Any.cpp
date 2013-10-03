@@ -112,14 +112,14 @@ std::u16string toString(double value)
     return text;
 }
 
-std::u16string toString(Object* object)
+std::u16string toString(const std::shared_ptr<Imp>& pimpl)
 {
-    if (!object)
+    if (!pimpl)
         return u"null";
-    Any result = object->message_(0, 0, Object::STRINGIFY_, 0);
+    Any result{ pimpl->message_(0, 0, Object::STRINGIFY_, 0) };
     if (result.isString())
         return result.toString();
-    return u"";
+    return std::u16string();
 }
 
 double toNumber(const std::u16string& value)
@@ -225,33 +225,27 @@ double toNumber(const std::u16string& value)
 
 }  // namespace
 
-bool Any::isString() const
-{
-    return (type == Dynamic) && vtable->getType() == typeid(std::u16string);
-}
-
 std::u16string Any::toString() const
 {
     switch (type) {
     case Bool:
-        return heap.i32 ? u"true" : u"false";
+        return i32 ? u"true" : u"false";
     case Int32:
-        return ::toString("%d", heap.i32);
+        return ::toString("%d", i32);
     case Uint32:
-        return ::toString("%u", heap.u32);
+        return ::toString("%u", u32);
     case Int64:
-        return ::toString("%lld", heap.i64);
+        return ::toString("%lld", i64);
     case Uint64:
-        return ::toString("%llu", heap.u64);
+        return ::toString("%llu", u64);
     case Float32:
-        return ::toString(heap.f32);
+        return ::toString(f32);
     case Float64:
-        return ::toString(heap.f64);
-    case Dynamic:
-        if (vtable->getType() == typeid(std::u16string))
-            return *reinterpret_cast<const std::u16string*>(&heap);
-        if (vtable->getType() == typeid(Object))
-            return ::toString(const_cast<Object*>(reinterpret_cast<const Object*>(&heap)));
+        return ::toString(f64);
+    case String:
+        return string;
+    case Shared:
+        return ::toString(pimpl);
         break;
     default:
         break;
@@ -269,20 +263,19 @@ double Any::toNumber() const
         return NAN;
     case Bool:
     case Int32:
-        return heap.i32;
+        return i32;
     case Uint32:
-        return heap.u32;
+        return u32;
     case Int64:
-        return heap.i64;
+        return i64;
     case Uint64:
-        return heap.u64;
+        return u64;
     case Float32:
-        return heap.f32;
+        return f32;
     case Float64:
-        return heap.f64;
-    case Dynamic:
-        if (vtable->getType() == typeid(std::u16string))
-            return ::toNumber(*reinterpret_cast<const std::u16string*>(&heap));
+        return f64;
+    case String:
+        return ::toNumber(string);
         break;
     default:
         break;
@@ -298,43 +291,42 @@ unsigned int Any::toArrayIndex() const
     case Bool:
         break;
     case Int32:
-        if (0 <= heap.i32)
-            return heap.i32;
+        if (0 <= i32)
+            return i32;
         break;
     case Uint32:
-        return heap.u32;
+        return u32;
     case Int64:
-        if (0 <= heap.i64 && heap.i64 < UINT_MAX)
-            return heap.i64;
+        if (0 <= i64 && i64 < UINT_MAX)
+            return i64;
     case Uint64:
-        if (heap.u64 < UINT_MAX)
-            return heap.u64;
+        if (u64 < UINT_MAX)
+            return u64;
         break;
     case Float32:
-        if (0.0f <= heap.f32) {
-            float f = floorf(heap.f32);
-            if (f == heap.f32 && f < UINT_MAX)
-                return static_cast<unsigned int>(heap.f32);
+        if (0.0f <= f32) {
+            float f = floorf(f32);
+            if (f == f32 && f < UINT_MAX)
+                return static_cast<unsigned int>(f32);
         }
         break;
     case Float64:
-        if (0.0 <= heap.f64) {
-            double f = floor(heap.f64);
-            if (f == heap.f64 && f < UINT_MAX)
-                return static_cast<unsigned int>(heap.f64);
+        if (0.0 <= f64) {
+            double f = floor(f64);
+            if (f == f64 && f < UINT_MAX)
+                return static_cast<unsigned int>(f64);
         }
         break;
         break;
-    case Dynamic:
-        if (vtable->getType() == typeid(std::u16string)) {
-            double v = ::toNumber(*reinterpret_cast<const std::u16string*>(&heap));
-            if (0.0 <= v) {
-                double f = floor(v);
-                if (f == v && f < UINT_MAX && ::toString(f) == *reinterpret_cast<const std::u16string*>(&heap))
-                    return static_cast<unsigned int>(f);
-            }
+    case String: {
+        double v = ::toNumber(string);
+        if (0.0 <= v) {
+            double f = floor(v);
+            if (f == v && f < UINT_MAX && ::toString(f) == string)
+                return static_cast<unsigned int>(f);
         }
         break;
+    }
     default:
         break;
     }
@@ -350,36 +342,22 @@ bool Any::toBoolean() const
     switch (type) {
     case Bool:
     case Int32:
-        return heap.i32;
+        return i32;
     case Uint32:
-        return heap.u32;
+        return u32;
     case Int64:
-        return heap.i64;
+        return i64;
     case Uint64:
-        return heap.u64;
+        return u64;
     case Float32:
-        return heap.f32 && !isnan(heap.f32);
+        return f32 && !isnan(f32);
     case Float64:
-        return heap.f64 && !isnan(heap.f64);
-    case Dynamic:
-        if (vtable->getType() == typeid(std::u16string))
-            return (*reinterpret_cast<const std::u16string*>(&heap)).length();
-        return true;
+        return f64 && !isnan(f64);
+    case String:
+        return string.length();
         break;
     default:
         break;
     }
     return false;
-}
-
-bool Any::isObject() const
-{
-    return (type == Dynamic) && vtable->getType() == typeid(Object);
-}
-
-Object* Any::toObject() const
-{
-    if (isObject())
-        return const_cast<Object*>(reinterpret_cast<const Object*>(&heap));
-    return 0;
 }

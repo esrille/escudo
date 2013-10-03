@@ -119,14 +119,14 @@ Any convert(JSContext* cx, jsval& v)
     return Any();
 }
 
-JSObject* convert(JSContext* cx, Object* obj)
+JSObject* convert(JSContext* cx, const std::shared_ptr<Imp>& pimpl)
 {
     JSObject* jsobj = 0;
-    if (obj) {
-        if (auto p = std::dynamic_pointer_cast<ProxyObject>(obj->self()))
+    if (pimpl) {
+        if (auto p = std::dynamic_pointer_cast<ProxyObject>(pimpl))
             jsobj = p->getJSObject();
-        else if (auto imp = dynamic_cast<ObjectImp*>(obj->self().get()))
-            jsobj = static_cast<NativeClass*>(imp->getStaticPrivate())->createJSObject(cx, imp);
+        else if (auto p = std::dynamic_pointer_cast<ObjectImp>(pimpl))
+            jsobj = static_cast<NativeClass*>(p->getStaticPrivate())->createJSObject(cx, p.get());
     }
     return jsobj;
 }
@@ -849,13 +849,13 @@ Any ECMAScriptContext::Impl::callFunction(Object thisObject, Object functionObje
     assert(0 <= argc);
     if (!thisObject || !functionObject)
         return Any();
-    JSObject* funcObj = convert(getContext(), &functionObject);
+    JSObject* funcObj = convert(getContext(), functionObject.self());
     jsval oval = OBJECT_TO_JSVAL(funcObj);
     jsval fval;
     if (!JS_ConvertValue(getContext(), oval, JSTYPE_FUNCTION, &fval))
         return Any();
 
-    JSObject* thisObj = convert(getContext(), &thisObject);
+    JSObject* thisObj = convert(getContext(), thisObject.self());
 
     jsval arguments[0 < argc ? argc : 1];
     for (int i = 0; i < argc; ++i)
@@ -869,10 +869,10 @@ Any ECMAScriptContext::Impl::callFunction(Object thisObject, Object functionObje
 
 Object ECMAScriptContext::Impl::xblCreateImplementation(Object object, Object prototype, Object boundElement, Object shadowTree)
 {
-    JSObject* imp = convert(getContext(), &object);
+    JSObject* imp = convert(getContext(), object.self());
 
     if (prototype) {
-        JSObject* p = convert(getContext(), &prototype);
+        JSObject* p = convert(getContext(), prototype.self());
         JS_SetPrototype(getContext(), p, JS_GetPrototype(getContext(), imp));
         JS_SetPrototype(getContext(), imp, p);
     }
@@ -880,9 +880,9 @@ Object ECMAScriptContext::Impl::xblCreateImplementation(Object object, Object pr
     // TODO: Create an external object.
 
     jsval val;
-    val = OBJECT_TO_JSVAL(convert(getContext(), &boundElement));
+    val = OBJECT_TO_JSVAL(convert(getContext(), boundElement.self()));
     JS_SetProperty(getContext(), imp, "boundElement", &val);
-    val = OBJECT_TO_JSVAL(convert(getContext(), &shadowTree));
+    val = OBJECT_TO_JSVAL(convert(getContext(), shadowTree.self()));
     JS_SetProperty(getContext(), imp, "shadowTree", &val);
 
     Object proxy(std::make_shared<ProxyObject>(getContext(), imp));
