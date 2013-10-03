@@ -180,10 +180,6 @@ class Any
         i32 = value;
         type = Int32;
     }
-    void initialize(size_t value) {
-        u64 = value;
-        type = Uint64;
-    }
     void initialize(unsigned long long value) {
         u64 = value;
         type = Uint64;
@@ -279,10 +275,6 @@ class Any
     void move(signed int value) {
         i32 = value;
         type = Int32;
-    }
-    void move(size_t value) {
-        u64 = value;
-        type = Uint64;
     }
     void move(unsigned long long value) {
         u64 = value;
@@ -395,6 +387,9 @@ public:
     Any(T&& x) {
         move(std::move(x));
     }
+    Any(size_t x) {
+        initialize(static_cast<unsigned long long>(x));
+    }
 
     ~Any() {
         destruct();
@@ -410,6 +405,11 @@ public:
     Any& operator=(T&& x) {
         destruct();
         move(std::move(x));
+        return *this;
+    }
+    Any& operator=(size_t x) {
+        destruct();
+        initialize(static_cast<unsigned long long>(x));
         return *this;
     }
 
