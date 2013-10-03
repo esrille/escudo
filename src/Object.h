@@ -182,40 +182,6 @@ class Any
         }
         std::swap(type, value.type);
     }
-    void move(const Any& value) {
-        switch (value.type) {
-        case Bool:
-            i32 = value.i32;
-            break;
-        case Int32:
-            i32 = value.i32;
-            break;
-        case Uint32:
-            u32 = value.u32;
-            break;
-        case Int64:
-            i64 = value.i64;
-            break;
-        case Uint64:
-            u64 = value.u64;
-            break;
-        case Float32:
-            f32 = value.f32;
-            break;
-        case Float64:
-            f64 = value.f64;
-            break;
-        case String:
-            new(&string) std::u16string(value.string);
-            break;
-        case Shared:
-            new(&pimpl) std::shared_ptr<Imp>(value.pimpl);
-            break;
-        default:
-            break;
-        }
-        type = value.type;
-    }
     void move(bool value) {
         i32 = value;
         type = Bool;
@@ -373,7 +339,7 @@ public:
     template<typename T>
     Any& operator=(T&& x) {
         destruct();
-        move(x);
+        move(std::move(x));
         return *this;
     }
 
