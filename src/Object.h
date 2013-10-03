@@ -98,31 +98,6 @@ public:
     }
 };
 
-template<>
-template<>
-inline Nullable<std::u16string>::Nullable(const char16_t* str)
-{
-    if (!str)
-        hasValue_ = false;
-    else {
-        hasValue_ = true;
-        value_ = str;
-    }
-}
-
-// Note maybe it is a bit arguable whether we should have this
-// conversion operator. The primary use case of this is to call
-// ElementImp::getAttribute from Element's subclasses with a
-// specific qualified name.
-template<>
-inline Nullable<std::u16string>::operator std::u16string() const
-{
-    if (hasValue_)
-        return value_;
-    else
-        return u"";
-}
-
 class Any
 {
     unsigned type;
@@ -671,6 +646,9 @@ public:
     }
 };
 
+template <typename T, typename B>
+void* ObjectMixin<T, B>::staticPrivate = 0;
+
 template <typename IMP>
 class Retained : public std::shared_ptr<IMP>
 {
@@ -688,20 +666,9 @@ public:
     }
 };
 
-template <typename T, typename B>
-void* ObjectMixin<T, B>::staticPrivate = 0;
-
-inline void Any::initialize(const Object& value)
-{
-    new(&pimpl) std::shared_ptr<Imp>(value.self());
-    type = Shared;
-}
-
-inline void Any::move(Object&& value)
-{
-    new(&pimpl) std::shared_ptr<Imp>(std::move(value.self()));
-    type = Shared;
-}
+//
+// Nullable
+//
 
 template <typename T>
 Nullable<T>::Nullable(const Any& any)
@@ -717,6 +684,47 @@ Nullable<T>::Nullable(Any&& any)
     hasValue_ = !any.isNull();
     if (hasValue_)
         value_ = std::move(any.as<T>());
+}
+
+template<>
+template<>
+inline Nullable<std::u16string>::Nullable(const char16_t* str)
+{
+    if (!str)
+        hasValue_ = false;
+    else {
+        hasValue_ = true;
+        value_ = str;
+    }
+}
+
+// Note maybe it is a bit arguable whether we should have this
+// conversion operator. The primary use case of this is to call
+// ElementImp::getAttribute from Element's subclasses with a
+// specific qualified name.
+template<>
+inline Nullable<std::u16string>::operator std::u16string() const
+{
+    if (hasValue_)
+        return value_;
+    else
+        return u"";
+}
+
+//
+// Any
+//
+
+inline void Any::initialize(const Object& value)
+{
+    new(&pimpl) std::shared_ptr<Imp>(value.self());
+    type = Shared;
+}
+
+inline void Any::move(Object&& value)
+{
+    new(&pimpl) std::shared_ptr<Imp>(std::move(value.self()));
+    type = Shared;
 }
 
 #include <sequence.h>
