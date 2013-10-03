@@ -360,9 +360,11 @@ void ViewCSSImp::calculateComputedStyles()
         setMediaCheck(true);
     }
     CSSAutoNumberingValueImp::CounterContext counterContext(this);
-    for (Node child = getDocument()->getFirstChild(); child; child = child.getNextSibling()) {
-        if (child.getNodeType() == Node::ELEMENT_NODE)
-            calculateComputedStyle(interface_cast<Element>(child), 0, &counterContext, 0);
+    if (DocumentPtr document = getDocument()) {
+        for (Node child = document->getFirstChild(); child; child = child.getNextSibling()) {
+            if (child.getNodeType() == Node::ELEMENT_NODE)
+                calculateComputedStyle(interface_cast<Element>(child), 0, &counterContext, 0);
+        }
     }
     clearFlags(Box::NEED_STYLE_RECALCULATION);  // TODO: Refine
     setMediaCheck(false);
@@ -938,8 +940,10 @@ unsigned ViewCSSImp::getBackgroundColor()
     if (boxTree)
         return boxTree->backgroundColor;
     // cf. http://test.csswg.org/suites/css2.1/20110323/html4/root-box-003.htm
-    if (CSSStyleDeclarationPtr style = getStyle(getDocument()->getDocumentElement()))
-        return style->backgroundColor.getARGB();
+    if (DocumentPtr document = getDocument()) {
+        if (CSSStyleDeclarationPtr style = getStyle(document->getDocumentElement()))
+            return style->backgroundColor.getARGB();
+    }
     return 0;
 }
 
