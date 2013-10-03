@@ -891,6 +891,8 @@ CounterImpPtr ViewCSSImp::getCounter(const std::u16string identifier)
 
 CSSStyleDeclarationPtr ViewCSSImp::getStyle(Element elt, Nullable<std::u16string> pseudoElt)
 {
+    if (!elt)
+        return nullptr;
     auto i = map.find(elt);
     if (i == map.end()) {
         if (auto parent = std::dynamic_pointer_cast<ElementImp>(elt.getParentElement().self())) {
