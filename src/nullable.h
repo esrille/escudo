@@ -35,56 +35,65 @@ class Nullable
     Nullable(const Nullable<U>&) = delete;
 
 public:
-    bool hasValue() const
-    {
-        return hasValue_;
-    }
-
-    T value() const
-    {
-        if (!hasValue_)
-        {
-            // TODO: Raise an exception
-        }
-        return value_;
-    }
-
-    operator std::u16string() const;
-
     Nullable() :
-        hasValue_(false)
-    {
-    }
-
-    Nullable(const T& value) :
-        value_(value),
-        hasValue_(true)
-    {
-    }
-
+        hasValue_(false) {}
     Nullable(const Nullable<T>& nullable) :
-        value_(nullable.value_),
-        hasValue_(nullable.hasValue_)
-    {
+        value_(nullable.value_), hasValue_(nullable.hasValue_) {}
+    Nullable(Nullable<T>&& nullable) :
+        value_(std::move(nullable.value_)), hasValue_(nullable.hasValue_) {}
+    Nullable(const T& value) :
+        value_(value), hasValue_(true) {}
+    Nullable(T&& value) :
+        value_(std::move(value)), hasValue_(true) {}
+    Nullable(const Any& any);
+    Nullable(Any&& any);
+    template<typename U>
+    Nullable(U* str);
+
+    Nullable& operator=(const Nullable<T>& other) {
+        value_ = other.value_;
+        hasValue_ = other.hasValue_;
+        return *this;
+    }
+    Nullable& operator=(Nullable<T>&& other) {
+        value_ = std::move(other.value_);
+        hasValue_ = other.hasValue_;
+        return *this;
+    }
+    Nullable& operator=(const T& other) {
+        value_ = other;
+        hasValue_ = true;
+        return *this;
+    }
+    Nullable& operator=(T&& other) {
+        value_ = std::move(other);
+        hasValue_ = true;
+        return *this;
     }
 
-    bool operator==(const Nullable<T>& other) const
-    {
+    bool operator==(const Nullable<T>& other) const {
         if (!hasValue_)
             return !other.hasValue_;
         if (!other.hasValue_)
             return false;
         return value_ == other.value_;
     }
-    bool operator!=(const Nullable<T>& other) const
-    {
+    bool operator!=(const Nullable<T>& other) const {
         return !(*this == other);
     }
 
-    template<typename U>
-    Nullable(U* str);
+    operator std::u16string() const;
 
-    Nullable(const Any& any);
+    bool hasValue() const {
+        return hasValue_;
+    }
+
+    T value() const {
+        if (!hasValue_) {
+            // TODO: Raise an exception
+        }
+        return value_;
+    }
 };
 
 template<>

@@ -615,6 +615,14 @@ Nullable<T>::Nullable(const Any& any)
         value_ = any.as<T>();
 }
 
+template <typename T>
+Nullable<T>::Nullable(Any&& any)
+{
+    hasValue_ = !any.isNull();
+    if (hasValue_)
+        value_ = std::move(any.as<T>());
+}
+
 #include <sequence.h>
 
 #endif  // ES_OBJECT_H
