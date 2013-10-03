@@ -32,7 +32,7 @@ class Nullable
     bool hasValue_;
 
     template <typename U>
-    Nullable(const Nullable<U>&);
+    Nullable(const Nullable<U>&) = delete;
 
 public:
     bool hasValue() const
@@ -86,18 +86,6 @@ public:
 
     Nullable(const Any& any);
 };
-
-template<>
-template<>
-inline Nullable<std::string>::Nullable(const char* str)
-{
-    if (!str)
-        hasValue_ = false;
-    else {
-        hasValue_ = true;
-        value_ = str;
-    }
-}
 
 template<>
 template<>
