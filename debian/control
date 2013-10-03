@@ -2,7 +2,7 @@ Source: escudo
 Section: web
 Priority: extra
 Maintainer: Esrille Inc. (0.2) <info@esrille.org>
-Build-Depends: debhelper (>= 8.0.0), autotools-dev, 
+Build-Depends: debhelper (>= 8.0.0), autotools-dev, automake,
 	bison, flex, re2c, esidl,
 	libicu-dev, libglew-dev, libfreetype6-dev, freeglut3-dev, libxmu-dev,
 	libgif-dev, libpng-dev, libjpeg-dev, libssl-dev,
