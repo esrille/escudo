@@ -18,8 +18,10 @@
 #define ES_OBJECT_H
 
 #include <cstring>
+#include <cstdint>
 #include <initializer_list>
 #include <memory>
+#include <string>
 #include <type_traits>
 
 class Any;
