@@ -150,12 +150,16 @@ AC_SUBST([FREETYPE_LIBS])
 AC_SEARCH_LIBS(JS_NewCompartmentAndGlobalObject, js mozjs185)
 
 # check for V8
+SAVED_CXXFLAGS="$CXXFLAGS"
+CXXFLAGS="$CXXFLAGS $STD_CXX11_CPPFLAGS -lv8"
 AC_LINK_IFELSE(
     [AC_LANG_PROGRAM(
         [#include <v8.h>],
-        [v8::Isolate::GetCurrent()])],
+        [v8::Persistent<v8::Value> object;
+         object.Dispose(v8::Isolate::GetCurrent())])],
     [AC_DEFINE([HAVE_V8_ISOLATE],[1],[Define to 1 if you have v8::Isolate.])],
     [])
+CXXFLAGS="$SAVED_CXXFLAGS"
 
 # check for liberation fonts
 AC_CHECK_FILE(/usr/share/fonts/liberation/LiberationSerif-Regular.ttf,[AC_SUBST(LIBERATON_TTF,/usr/share/fonts/liberation)])
