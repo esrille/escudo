@@ -113,202 +113,6 @@ class Any
         std::shared_ptr<Imp> pimpl;
     };
 
-    template <typename T>
-    void initialize(const Nullable<T> nullable) {
-        if (!nullable.hasValue())
-            type = Null;
-        else
-            initialize(nullable.value());
-    }
-    void initialize(const Any& value) {
-        type = value.type;
-        switch (type) {
-        case Bool:
-            i32 = value.i32;
-            break;
-        case Int32:
-            i32 = value.i32;
-            break;
-        case Uint32:
-            u32 = value.u32;
-            break;
-        case Int64:
-            i64 = value.i64;
-            break;
-        case Uint64:
-            u64 = value.u64;
-            break;
-        case Float32:
-            f32 = value.f32;
-            break;
-        case Float64:
-            f64 = value.f64;
-            break;
-        case String:
-            new(&string) std::u16string(value.string);
-            break;
-        case Shared:
-            new(&pimpl) std::shared_ptr<Imp>(value.pimpl);
-            break;
-        default:
-            break;
-        }
-    }
-    void initialize(bool value) {
-        i32 = value;
-        type = Bool;
-    }
-    void initialize(unsigned char value) {
-        u32 = value;
-        type = Uint32;
-    }
-    void initialize(signed char value) {
-        i32 = value;
-        type = Int32;
-    }
-    void initialize(unsigned short value) {
-        u32 = value;
-        type = Uint32;
-    }
-    void initialize(signed short value) {
-        i32 = value;
-        type = Int32;
-    }
-    void initialize(unsigned int value) {
-        u32 = value;
-        type = Uint32;
-    }
-    void initialize(signed int value) {
-        i32 = value;
-        type = Int32;
-    }
-    void initialize(unsigned long long value) {
-        u64 = value;
-        type = Uint64;
-    }
-    void initialize(signed long long value) {
-        i64 = value;
-        type = Int64;
-    }
-    void initialize(float value) {
-        f32= value;
-        type = Float32;
-    }
-    void initialize(double value) {
-        f64 = value;
-        type = Float64;
-    }
-    void initialize(const std::u16string& value) {
-        new(&string) std::u16string(value);
-        type = String;
-    }
-    void initialize(const Object& value);
-    void initialize(const std::shared_ptr<Imp>& value) {
-        new(&pimpl) std::shared_ptr<Imp>(value);
-        type = Shared;
-    }
-
-    template <typename T>
-    void move(Nullable<T>&& nullable) {
-        if (!nullable.hasValue())
-            type = Null;
-        else
-            move(nullable.value());
-    }
-    void move(Any&& value) {
-        type = Undefined;
-        switch (value.type) {
-        case Bool:
-            i32 = value.i32;
-            break;
-        case Int32:
-            i32 = value.i32;
-            break;
-        case Uint32:
-            u32 = value.u32;
-            break;
-        case Int64:
-            i64 = value.i64;
-            break;
-        case Uint64:
-            u64 = value.u64;
-            break;
-        case Float32:
-            f32 = value.f32;
-            break;
-        case Float64:
-            f64 = value.f64;
-            break;
-        case String:
-            new(&string) std::u16string(std::move(value.string));
-            break;
-        case Shared:
-            new(&pimpl) std::shared_ptr<Imp>(std::move(value.pimpl));
-            break;
-        default:
-            break;
-        }
-        std::swap(type, value.type);
-    }
-    void move(bool value) {
-        i32 = value;
-        type = Bool;
-    }
-    void move(unsigned char value) {
-        u32 = value;
-        type = Uint32;
-    }
-    void move(signed char value) {
-        i32 = value;
-        type = Int32;
-    }
-    void move(unsigned short value) {
-        u32 = value;
-        type = Uint32;
-    }
-    void move(signed short value) {
-        i32 = value;
-        type = Int32;
-    }
-    void move(unsigned int value) {
-        u32 = value;
-        type = Uint32;
-    }
-    void move(signed int value) {
-        i32 = value;
-        type = Int32;
-    }
-    void move(unsigned long long value) {
-        u64 = value;
-        type = Uint64;
-    }
-    void move(signed long long value) {
-        i64 = value;
-        type = Int64;
-    }
-    void move(float value) {
-        f32= value;
-        type = Float32;
-    }
-    void move(double value) {
-        f64 = value;
-        type = Float64;
-    }
-    void move(std::u16string&& value) {
-        new(&string) std::u16string(std::move(value));
-        type = String;
-    }
-    void move(Object&& value);
-    void move(std::shared_ptr<Imp>&& pimpl) {
-        new(&pimpl) std::shared_ptr<Imp>(std::move(pimpl));
-        type = Shared;
-    }
-    template <class IMP>
-    void move(std::shared_ptr<IMP>&& pimpl) {
-        new(&pimpl) std::shared_ptr<Imp>(std::move(std::static_pointer_cast<Imp>(pimpl)));
-        type = Shared;
-    }
-
     template<typename T>
     T cast(typename std::enable_if<std::is_same<bool, T>::value>::type* = 0) const {
         return toBoolean();
@@ -374,44 +178,367 @@ public:
         Shared,   // Object
     };
 
-    Any() : type(Undefined) {}
-    Any(const Any& x) {
-        initialize(x);
+    Any() :
+        type(Undefined) {}
+    Any(const Any& value) :
+        type{value.type} {
+        switch (type) {
+        case Bool:
+            i32 = value.i32;
+            break;
+        case Int32:
+            i32 = value.i32;
+            break;
+        case Uint32:
+            u32 = value.u32;
+            break;
+        case Int64:
+            i64 = value.i64;
+            break;
+        case Uint64:
+            u64 = value.u64;
+            break;
+        case Float32:
+            f32 = value.f32;
+            break;
+        case Float64:
+            f64 = value.f64;
+            break;
+        case String:
+            new(&string) std::u16string(value.string);
+            break;
+        case Shared:
+            new(&pimpl) std::shared_ptr<Imp>(value.pimpl);
+            break;
+        default:
+            break;
+        }
+    }
+    Any(Any&& value) :
+        type{value.type} {
+        switch (type) {
+        case Bool:
+            i32 = value.i32;
+            break;
+        case Int32:
+            i32 = value.i32;
+            break;
+        case Uint32:
+            u32 = value.u32;
+            break;
+        case Int64:
+            i64 = value.i64;
+            break;
+        case Uint64:
+            u64 = value.u64;
+            break;
+        case Float32:
+            f32 = value.f32;
+            break;
+        case Float64:
+            f64 = value.f64;
+            break;
+        case String:
+            new(&string) std::u16string(std::move(value.string));
+            break;
+        case Shared:
+            new(&pimpl) std::shared_ptr<Imp>(std::move(value.pimpl));
+            break;
+        default:
+            break;
+        }
+    }
+    Any(std::nullptr_t) :
+        type(Null) {}
+    Any(bool value) :
+        type{Bool},
+        i32{value} {}
+    Any(unsigned char value) :
+        type{Uint32},
+        u32{value} {}
+    Any(signed char value) :
+        type{Int32},
+        i32{value} {}
+    Any(unsigned short value) :
+        type{Uint32},
+        u32{value} {}
+    Any(signed short value) :
+        type{Int32},
+        i32{value} {}
+    Any(unsigned int value) :
+        type{Uint32},
+        u32{value} {}
+    Any(signed int value) :
+        type{Int32},
+        i32{value} {}
+    Any(unsigned long value) :
+        type{Uint64},
+        u64{value} {}
+    Any(signed long value) :
+        type{Int64},
+        i64{value} {}
+    Any(unsigned long long value) :
+        type{Uint64},
+        u64{value} {}
+    Any(signed long long value) :
+        type{Int64},
+        i64{value} {}
+    Any(float value) :
+        type{Float32},
+        f32{value} {}
+    Any(double value) :
+        type{Float64},
+        f64{value} {}
+    Any(const std::u16string& value) :
+        type{String} {
+        new(&string) std::u16string(value);
+    }
+    Any(std::u16string&& value) :
+        type{String} {
+        new(&string) std::u16string(std::move(value));
+    }
+    Any(const char16_t* value) :
+        type{String} {
+        new(&string) std::u16string(value);
+    }
+    Any(const Object& value);
+    Any(Object&& value);
+    Any(const std::shared_ptr<Imp>& value) :
+        type{Shared} {
+        new(&pimpl) std::shared_ptr<Imp>(value);
+    }
+    Any(std::shared_ptr<Imp>&& value) :
+        type{Shared} {
+        new(&pimpl) std::shared_ptr<Imp>(std::move(value));
+    }
+    template <class IMP>
+    Any(const std::shared_ptr<IMP>& value) :
+        type{Shared} {
+        new(&pimpl) std::shared_ptr<Imp>(std::static_pointer_cast<Imp>(value));
+    }
+    template <class IMP>
+    Any(std::shared_ptr<IMP>&& value) :
+        type{Shared} {
+        new(&pimpl) std::shared_ptr<Imp>(std::move(std::static_pointer_cast<Imp>(value)));
     }
     template <typename T>
-    Any(const T& x) {
-        initialize(x);
-    }
-    Any(Any&& x) {
-        move(std::move(x));
+    Any(const Nullable<T>& nullable) :
+        type{Null} {
+        if (nullable.hasValue())
+            operator=(nullable.value());
     }
     template <typename T>
-    Any(T&& x) {
-        move(std::move(x));
-    }
-    Any(size_t x) {
-        initialize(static_cast<unsigned long long>(x));
+    Any(Nullable<T>&& nullable) :
+        type{Null} {
+        if (nullable.hasValue())
+            operator=(std::move(nullable.value()));
     }
 
     ~Any() {
         destruct();
     }
 
-    template<typename T>
-    Any& operator=(const T& x) {
+    Any& operator=(const Any& value) {
         destruct();
-        initialize(x);
+        type = value.type;
+        switch (type) {
+        case Bool:
+            i32 = value.i32;
+            break;
+        case Int32:
+            i32 = value.i32;
+            break;
+        case Uint32:
+            u32 = value.u32;
+            break;
+        case Int64:
+            i64 = value.i64;
+            break;
+        case Uint64:
+            u64 = value.u64;
+            break;
+        case Float32:
+            f32 = value.f32;
+            break;
+        case Float64:
+            f64 = value.f64;
+            break;
+        case String:
+            new(&string) std::u16string(value.string);
+            break;
+        case Shared:
+            new(&pimpl) std::shared_ptr<Imp>(value.pimpl);
+            break;
+        default:
+            break;
+        }
         return *this;
     }
-    template<typename T>
-    Any& operator=(T&& x) {
+    Any& operator=(Any&& value) {
         destruct();
-        move(std::move(x));
+        type = value.type;
+        switch (type) {
+        case Bool:
+            i32 = value.i32;
+            break;
+        case Int32:
+            i32 = value.i32;
+            break;
+        case Uint32:
+            u32 = value.u32;
+            break;
+        case Int64:
+            i64 = value.i64;
+            break;
+        case Uint64:
+            u64 = value.u64;
+            break;
+        case Float32:
+            f32 = value.f32;
+            break;
+        case Float64:
+            f64 = value.f64;
+            break;
+        case String:
+            new(&string) std::u16string(std::move(value.string));
+            break;
+        case Shared:
+            new(&pimpl) std::shared_ptr<Imp>(std::move(value.pimpl));
+            break;
+        default:
+            break;
+        }
         return *this;
     }
-    Any& operator=(size_t x) {
+    Any& operator=(std::nullptr_t) {
         destruct();
-        initialize(static_cast<unsigned long long>(x));
+        type = Null;
+        return *this;
+    }
+    Any& operator=(bool value) {
+        destruct();
+        type = Bool;
+        i32 = value;
+        return *this;
+    }
+    Any& operator=(unsigned char value) {
+        destruct();
+        type = Uint32;
+        u32 = value;
+        return *this;
+    }
+    Any& operator=(signed char value) {
+        destruct();
+        type = Int32;
+        i32 = value;
+        return *this;
+    }
+    Any& operator=(unsigned short value) {
+        destruct();
+        type = Uint32;
+        u32 = value;
+        return *this;
+    }
+    Any& operator=(signed short value) {
+        destruct();
+        type = Int32;
+        i32 = value;
+        return *this;
+    }
+    Any& operator=(unsigned int value) {
+        destruct();
+        type = Uint32;
+        u32 = value;
+        return *this;
+    }
+    Any& operator=(signed int value) {
+        destruct();
+        type = Int32;
+        i32 = value;
+        return *this;
+    }
+    Any& operator=(unsigned long value) {
+        destruct();
+        type = Uint64;
+        u64 = value;
+        return *this;
+    }
+    Any& operator=(signed long value) {
+        destruct();
+        type = Int64;
+        i64 = value;
+        return *this;
+    }
+    Any& operator=(unsigned long long value) {
+        destruct();
+        type = Uint64;
+        u64 = value;
+        return *this;
+    }
+    Any& operator=(signed long long value) {
+        destruct();
+        type = Int64;
+        i64 = value;
+        return *this;
+    }
+    Any& operator=(float value) {
+        destruct();
+        type = Float32;
+        f32 = value;
+        return *this;
+    }
+    Any& operator=(double value) {
+        destruct();
+        type = Float64;
+        f64 = value;
+        return *this;
+    }
+    Any& operator=(const std::u16string& value) {
+        if (type == String)
+            string = value;
+        else {
+            destruct();
+            type = String;
+            new(&string) std::u16string(value);
+        }
+        return *this;
+    }
+    Any& operator=(std::u16string&& value) {
+        if (type == String)
+            string = value;
+        else {
+            destruct();
+            type = String;
+            new(&string) std::u16string(std::move(value));
+        }
+        return *this;
+    }
+    Any& operator=(const char16_t* value) {
+        if (type == String)
+            string = value;
+        else {
+            destruct();
+            type = String;
+            new(&string) std::u16string(value);
+        }
+        return *this;
+    }
+    Any& operator=(const Object& value);
+    Any& operator=(Object&& value);
+    template <typename T>
+    Any& operator=(const Nullable<T>& nullable) {
+        if (nullable.hasValue())
+            return operator=(nullable.value());
+        destruct();
+        type = Null;
+        return *this;
+    }
+    template <typename T>
+    Any& operator=(Nullable<T>&& nullable) {
+        if (nullable.hasValue())
+            return operator=(std::move(nullable.value()));
+        destruct();
+        type = Null;
         return *this;
     }
 
@@ -419,7 +546,6 @@ public:
     T as() const {
         return cast<T>();
     }
-
     template<typename T>
     operator T() const {
         return cast<T>();
@@ -746,16 +872,48 @@ inline Nullable<std::u16string>::operator std::u16string() const
 // Any
 //
 
-inline void Any::initialize(const Object& value)
+inline Any::Any(const Object& value) :
+    type{Shared}
 {
     new(&pimpl) std::shared_ptr<Imp>(value.self());
-    type = Shared;
 }
 
-inline void Any::move(Object&& value)
+inline Any::Any(Object&& value) :
+    type{Shared}
 {
     new(&pimpl) std::shared_ptr<Imp>(std::move(value.self()));
-    type = Shared;
+}
+
+inline Any& Any::operator=(const Object& value)
+{
+    if (type == Shared && value)
+        pimpl = value.self();
+    else {
+        destruct();
+        if (!value)
+            type = Null;
+        else {
+            type = Shared;
+            new(&pimpl) std::shared_ptr<Imp>(value.self());
+        }
+    }
+    return *this;
+}
+
+inline Any& Any::operator=(Object&& value)
+{
+    if (type == Shared && value)
+        pimpl = std::move(value.self());
+    else {
+        destruct();
+        if (!value)
+            type = Null;
+        else {
+            type = Shared;
+            new(&pimpl) std::shared_ptr<Imp>(std::move(value.self()));
+        }
+    }
+    return *this;
 }
 
 #endif  // ES_OBJECT_H

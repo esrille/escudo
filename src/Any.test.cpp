@@ -36,9 +36,6 @@ public:
     ~X() {
         std::cout << msg << '\n';
     }
-    void hello() {
-        std::cout << msg << '\n';
-    }
 };
 
 std::weak_ptr<Imp> w;
@@ -66,31 +63,23 @@ int main()
     Any x;
     std::cout << "undefined: " << x.isUndefined() << '\n';
     result += check(x.isUndefined());
+    x = nullptr;
+    std::cout << "null: " << x.isNull() << '\n';
+    result += check(x.isNull());
 
     Any e(nullptr);
     std::cout << "null: " << e.isNull() << '\n';
     result += check(e.isNull());
-    std::cout << "null: " << e.isNull() << '\n';
 
     Object o;
     x = o;
-    std::cout << "object: " << x.isObject() << '\n';
+    std::cout << "!object: " << !x.isObject() << '\n';
     std::cout << "null: " << x.isNull() << '\n';
     result += check(!x.isObject());
     result += check(x.isNull());
 
     Any g(0);
-    std::cout << "g: " << g.getType() << '\n';
-#ifdef HAVE_NULLPTR
-    Any h(nullptr);
-    std::cout << "h: " << h.getType() << '\n';
-#endif
-    Any i(static_cast<char*>(0));
-    std::cout << "i: " << i.getType() << '\n';
-    Any j(static_cast<const char*>(0));
-    std::cout << "j: " << j.getType() << '\n';
-    Any k(j);
-    std::cout << "k: " << k.getType() << '\n';
+    std::cout << "g: " << (g.getType() == Any::Int32) << '\n';
 
     x = 3.14;
     std::cout << static_cast<int>(x) << '\n';
