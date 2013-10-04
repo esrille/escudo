@@ -661,10 +661,8 @@ Any ProxyObject::message_(uint32_t selector, const char* id, int argc, Any* argv
         break;
     case Object::STRINGIFY_: {
         auto functionObject = v8::Local<v8::Function>::Cast(jsobject->Get(v8::String::New("toString")));
-        if (!functionObject.IsEmpty()) {
-            Any result = call(jsobject, functionObject, 0, 0);
-            return convert(result);
-        }
+        if (!functionObject.IsEmpty())
+            return call(jsobject, functionObject, 0, 0);
         }
         break;
     case Object::IS_KIND_OF_:
@@ -679,10 +677,8 @@ Any ProxyObject::message_(uint32_t selector, const char* id, int argc, Any* argv
             return convert(jsobject->CallAsFunction(jsobject, argc, arguments));
         }
         auto functionObject = v8::Local<v8::Function>::Cast(jsobject->Get(v8::String::New(id)));
-        if (!functionObject.IsEmpty()) {
-            Any result = call(jsobject, functionObject, argc, argv);
-            return convert(result);
-        }
+        if (!functionObject.IsEmpty())
+            return call(jsobject, functionObject, argc, argv);
         }
         break;
     }
