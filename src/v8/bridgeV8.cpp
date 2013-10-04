@@ -412,10 +412,10 @@ v8::Handle<v8::Value> NativeClass::constructor(const v8::Arguments& args)
 
 #ifdef HAVE_V8_ISOLATE
             v8::Persistent<v8::Object> obj = v8::Persistent<v8::Object>::New(v8::Isolate::GetCurrent(), args.This());
-            obj.MakeWeak(v8::Isolate::GetCurrent(), imp, finalize);
+            obj.MakeWeak(v8::Isolate::GetCurrent(), clone, finalize);
 #else
             v8::Persistent<v8::Object> obj = v8::Persistent<v8::Object>::New(args.This());
-            obj.MakeWeak(imp, finalize);
+            obj.MakeWeak(clone, finalize);
 #endif
             wrapperMap[imp] = obj;
             imp->setPrivate(static_cast<void*>(*args.This()));
@@ -488,10 +488,10 @@ v8::Handle<v8::Object> NativeClass::createJSObject(ObjectImp* imp)
     v8::Handle<v8::Value> external = v8::External::New(clone);
 #ifdef HAVE_V8_ISOLATE
     v8::Persistent<v8::Object> obj = v8::Persistent<v8::Object>::New(v8::Isolate::GetCurrent(), ctor->NewInstance(1, &external));
-    obj.MakeWeak(v8::Isolate::GetCurrent(), imp, finalize);
+    obj.MakeWeak(v8::Isolate::GetCurrent(), clone, finalize);
 #else
     v8::Persistent<v8::Object> obj = v8::Persistent<v8::Object>::New(ctor->NewInstance(1, &external));
-    obj.MakeWeak(imp, finalize);
+    obj.MakeWeak(clone, finalize);
 #endif
     obj->SetInternalField(0, external); // TODO: has been set already?
     wrapperMap[imp] = obj;
