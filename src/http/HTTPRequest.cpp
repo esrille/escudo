@@ -208,7 +208,7 @@ bool HttpRequest::constructResponseFromCache(bool sync)
     if (sync)
         notify();
     else
-        HttpConnectionManager::getInstance().complete(this, errorFlag);
+        HttpConnectionManager::getInstance().complete(self(), errorFlag);
 
     readyState = DONE;
 
@@ -329,21 +329,25 @@ bool HttpRequest::send()
     if (request.getURL().testProtocol(u"data"))
         return constructResponseFromData();
 
-    cache = HttpCacheManager::getInstance().send(this);
+    cache = HttpCacheManager::getInstance().send(self());
     if (!cache || cache->isBusy())
         return false;
     return constructResponseFromCache(true);
 }
 
-void HttpRequest::abort()
+void HttpRequest::abort(bool dtor)
 {
     if (readyState == UNSENT)
         return;
 
     // TODO: implement more details.
     clearHandler();
-    HttpConnectionManager& manager = HttpConnectionManager::getInstance();
-    manager.abort(this);
+    if (dtor)
+        notify(true);
+    else {
+        HttpConnectionManager& manager = HttpConnectionManager::getInstance();
+        manager.abort(self());
+    }
     readyState = UNSENT;
     errorFlag = false;
     request.clear();
@@ -407,7 +411,7 @@ HttpRequest::~HttpRequest()
 {
     if (!(flags & DONT_REMOVE))
         removeFile();
-    abort();
+    abort(true);
     delete boxImage;
 }
 

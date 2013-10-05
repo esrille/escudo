@@ -2093,7 +2093,7 @@ public:
 class CSSListStyleImageValueImp : public CSSPropertyValueImp
 {
     std::u16string uri;
-    HttpRequest* request;
+    HttpRequestPtr request;
     unsigned requestID;
     unsigned status;
 
@@ -2139,7 +2139,6 @@ public:
         return status == 200;   // TODO: check content as well
     }
     CSSListStyleImageValueImp() :
-        request(0),
         requestID(static_cast<unsigned>(-1)),
         status(0)
     {}

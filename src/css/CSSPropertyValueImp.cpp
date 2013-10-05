@@ -1741,7 +1741,7 @@ void CSSListStyleImageValueImp::compute(ViewCSSImp* view, CSSStyleDeclarationImp
     if (isNone() || self->getPseudoElementSelectorType() != CSSPseudoElementSelector::Marker || !self->content.wasNormal())
         return;
     if (view->getDocument()) {
-        HttpRequest* prev = request;
+        HttpRequestPtr prev = request;
         request = view->preload(view->getDocument()->getDocumentURI(), getValue());
         if (request) {
             if (prev && prev != request)

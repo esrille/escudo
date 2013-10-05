@@ -40,13 +40,12 @@ class HTMLScriptElementImp : public ObjectMixin<HTMLScriptElementImp, HTMLElemen
     bool wasParserInserted;
     bool forceAsync;
     bool readyToBeParserExecuted;
-    HttpRequest* request;
+    HttpRequestPtr request;
     unsigned type;
 
 public:
     HTMLScriptElementImp(DocumentImp* ownerDocument, const std::u16string& localName = u"script");
     HTMLScriptElementImp(const HTMLScriptElementImp& org);
-    ~HTMLScriptElementImp();
 
     void markAsParserInserted() {
         parserInserted = true;

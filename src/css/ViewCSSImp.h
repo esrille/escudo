@@ -126,7 +126,7 @@ public:
     Element updatePseudoElement(const CSSStyleDeclarationPtr& style, int id, Element element, Element pseudoElement, CSSAutoNumberingValueImp::CounterContext* counterContext);
 
     // Reflow
-    HttpRequest* preload(const std::u16string& base, const std::u16string& url) {
+    HttpRequestPtr preload(const std::u16string& base, const std::u16string& url) {
         if (window)
             return window->preload(base, url);
         return 0;

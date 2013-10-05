@@ -132,7 +132,7 @@ void HTMLObjectElementImp::refresh()
     DocumentPtr document = getOwnerDocumentImp();
     if (current)
         current->cancel();
-    current = new(std::nothrow) HttpRequest(document->getDocumentURI());
+    current = std::make_shared<HttpRequest>(document->getDocumentURI());
     if (current) {
         current->open(u"GET", data);
         current->setHandler(boost::bind(&HTMLObjectElementImp::handleRefresh, this, current));
@@ -142,10 +142,10 @@ void HTMLObjectElementImp::refresh()
         active = false;
 }
 
-void HTMLObjectElementImp::handleRefresh(HttpRequest* request)
+void HTMLObjectElementImp::handleRefresh(const HttpRequestPtr& request)
 {
     if (current != request)
-        delete request;
+        return;
 
     if (current->getStatus() != 200)
         active = false;

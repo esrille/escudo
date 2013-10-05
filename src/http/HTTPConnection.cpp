@@ -77,15 +77,15 @@ void HttpConnection::done(HttpConnectionManager* manager, bool error)
 {
     line.clear();
     if (current) {
-        HttpRequest* request = current;
-        current = 0;
+        HttpRequestPtr request = current;
+        current.reset();
         manager->complete(request, error);
     }
     if (!error) {
         retryCount = 0;
         if (!requests.empty()) {
             // Note at this point, the socket might have been closed.
-            HttpRequest* request = requests.front();
+            HttpRequestPtr request = requests.front();
             requests.pop_front();
             send(request);
         }
@@ -95,7 +95,7 @@ void HttpConnection::done(HttpConnectionManager* manager, bool error)
             requests.pop_front();
             manager->complete(current, error);
         }
-        current = 0;
+        current.reset();
     }
 }
 
@@ -118,8 +118,8 @@ void HttpConnection::retry()
     close();
     retryCount = count + 1;
     if (retryCount < MaxRetryCount) {
-        HttpRequest* request = current;
-        current = 0;
+        HttpRequestPtr request = current;
+        current.reset();
         send(request);
     } else
         HttpConnectionManager::getInstance().done(this, true);
@@ -511,7 +511,7 @@ void HttpConnection::readTrailer(const boost::system::error_code& err)
     close();
 }
 
-void HttpConnection::send(HttpRequest* request)
+void HttpConnection::send(const HttpRequestPtr& request)
 {
     if (current) {
         assert(current != request);
@@ -533,7 +533,7 @@ void HttpConnection::send(HttpRequest* request)
                                                              boost::asio::placeholders::iterator));
 }
 
-void HttpConnection::abort(HttpRequest* request)
+void HttpConnection::abort(const HttpRequestPtr& request)
 {
     if (current != request) {
         requests.remove(request);
@@ -561,7 +561,7 @@ HttpConnection* HttpConnectionManager::getConnection(const std::string& protocol
     return c;
 }
 
-void HttpConnectionManager::send(HttpRequest* request)
+void HttpConnectionManager::send(const HttpRequestPtr& request)
 {
     std::lock_guard<std::recursive_mutex> lock(mutex);
 
@@ -575,7 +575,7 @@ void HttpConnectionManager::send(HttpRequest* request)
     conn->send(request);
 }
 
-void HttpConnectionManager::abort(HttpRequest* request)
+void HttpConnectionManager::abort(const HttpRequestPtr& request)
 {
     std::lock_guard<std::recursive_mutex> lock(mutex);
 
@@ -602,18 +602,18 @@ void HttpConnectionManager::done(HttpConnection* conn, bool error)
     conn->done(this, error);
 }
 
-void HttpConnectionManager::complete(HttpRequest* request, bool error)
+void HttpConnectionManager::complete(const HttpRequestPtr& request, bool error)
 {
     if (request->complete(error))
         completed.push_back(request);
 }
 
-HttpRequest* HttpConnectionManager::getCompleted()
+HttpRequestPtr HttpConnectionManager::getCompleted()
 {
     std::lock_guard<std::recursive_mutex> lock(mutex);
 
     if (!completed.empty()) {
-        HttpRequest* request = completed.front();
+        HttpRequestPtr request = completed.front();
         completed.pop_front();
         return request;
     }
@@ -622,7 +622,7 @@ HttpRequest* HttpConnectionManager::getCompleted()
 
 void HttpConnectionManager::poll()
 {
-    while (HttpRequest* request = getCompleted())
+    while (HttpRequestPtr request = getCompleted())
         request->notify();
 }
 

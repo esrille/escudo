@@ -55,11 +55,6 @@ HTMLScriptElementImp::HTMLScriptElementImp(const HTMLScriptElementImp& org) :
 {
 }
 
-HTMLScriptElementImp::~HTMLScriptElementImp()
-{
-    delete request;
-}
-
 // cf. http://www.whatwg.org/specs/web-apps/current-work/multipage/scripting-1.html#prepare-a-script
 bool HTMLScriptElementImp::prepare()
 {
@@ -93,7 +88,7 @@ bool HTMLScriptElementImp::prepare()
             // TODO: fire the error event
             return false;
         }
-        request = new(std::nothrow) HttpRequest(document->getDocumentURI());
+        request = std::make_shared<HttpRequest>(document->getDocumentURI());
         if (request) {
             request->open(u"GET", src);
             request->setHandler(boost::bind(&HTMLScriptElementImp::notify, this));

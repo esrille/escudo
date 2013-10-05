@@ -37,7 +37,7 @@ public:
     HTMLImageElementImp(HTMLImageElementImp* org, bool deep);
 
     virtual void handleMutation(events::MutationEvent mutation);
-    void notify(HttpRequest* request);
+    void notify(const HttpRequestPtr& request);
 
     // TODO: Refine this interface as this is only for CSS
     bool getIntrinsicSize(float& w, float& h);

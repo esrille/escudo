@@ -34,13 +34,13 @@ class HttpConnectionManager
 {
     std::recursive_mutex mutex;
     std::list<HttpConnection*> connections;
-    std::list<HttpRequest*> completed;
+    std::list<HttpRequestPtr> completed;
 
     boost::asio::io_service ioService;
     boost::asio::ip::tcp::resolver resolver;
     boost::asio::io_service::work work;
 
-    HttpRequest* getCompleted();
+    HttpRequestPtr getCompleted();
 
 public:
     HttpConnectionManager() :
@@ -50,10 +50,10 @@ public:
     }
 
     HttpConnection* getConnection(const std::string& protocol, const std::string& hostname, const std::string& port);
-    void send(HttpRequest* request);
-    void abort(HttpRequest* request);
+    void send(const HttpRequestPtr& request);
+    void abort(const HttpRequestPtr& request);
     void done(HttpConnection* conn, bool error);
-    void complete(HttpRequest* request, bool error);
+    void complete(const HttpRequestPtr& request, bool error);
     void poll();
 
     template <typename ResolveHandler>
@@ -124,8 +124,8 @@ class HttpConnection
     unsigned long long chunkLength;
     int chunkCRLF;
 
-    std::list<HttpRequest*> requests;
-    HttpRequest* current;
+    std::list<HttpRequestPtr> requests;
+    HttpRequestPtr current;
 
     void sendRequest();
 
@@ -144,8 +144,8 @@ class HttpConnection
     void close();
     void retry();
 
-    void send(HttpRequest* request);
-    void abort(HttpRequest* request);
+    void send(const HttpRequestPtr& request);
+    void abort(const HttpRequestPtr& request);
     void done(HttpConnectionManager* manager, bool error);
 
     template<typename CompletionCondition, typename ReadHandler>

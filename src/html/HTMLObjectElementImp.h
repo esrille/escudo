@@ -56,7 +56,7 @@ public:
 
     void requestRefresh();
     void refresh();
-    void handleRefresh(HttpRequest* request);
+    void handleRefresh(const HttpRequestPtr& request);
 
     // TODO: Refine this interface as this is only for CSS
     bool getIntrinsicSize(float& w, float& h);

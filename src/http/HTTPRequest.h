@@ -20,6 +20,7 @@
 #include <atomic>
 #include <cstdio>
 #include <deque>
+#include <memory>
 #include <fstream>
 #include <boost/function.hpp>
 
@@ -32,8 +33,11 @@ namespace bootstrap {
 
 class BoxImage;
 class HttpCache;
+class HttpRequest;
 
-class HttpRequest
+typedef std::shared_ptr<HttpRequest> HttpRequestPtr;
+
+class HttpRequest : public std::enable_shared_from_this<HttpRequest>
 {
     friend class HttpCacheManager;
     friend class HttpConnectionManager;
@@ -76,6 +80,10 @@ private:
 public:
     HttpRequest(const std::u16string& base = u"");
     ~HttpRequest();
+
+    HttpRequestPtr self() {
+        return shared_from_this();
+    }
 
     void setBase(const std::u16string& base) {
         this->base = base;
@@ -123,7 +131,7 @@ public:
     unsigned int getTimeout();
     void setTimeout(unsigned int timeout);
     bool send();
-    void abort();
+    void abort(bool dtor = false);
 
     // cancel() does not abort the currently running request, but when notified
     // the caller can test if the request has been canceled. If the request

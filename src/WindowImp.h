@@ -47,7 +47,7 @@ class WindowImp : public EventTargetImp
     DocumentPtr document;
     TaskQueue taskQueue;
     ECMAScriptContext* global;
-    std::list<HttpRequest*> cache;
+    std::list<HttpRequestPtr> cache;
     int scrollX;
     int scrollY;
     int moveX;
@@ -102,7 +102,7 @@ public:
 
     void setEventHandler(const std::u16string& type, Object handler);
 
-    HttpRequest* preload(const std::u16string& base, const std::u16string& url);
+    HttpRequestPtr preload(const std::u16string& base, const std::u16string& url);
 
     CSSStyleDeclarationPtr getComputedStyle(Element elt);
     void putComputedStyle(Element elt);

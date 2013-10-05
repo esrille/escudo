@@ -157,7 +157,7 @@ protected:
 
     // background
     unsigned backgroundColor;
-    HttpRequest* backgroundRequest;
+    HttpRequestPtr backgroundRequest;
     BoxImage* backgroundImage;
     float backgroundLeft;
     float backgroundTop;

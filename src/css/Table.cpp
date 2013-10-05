@@ -1231,7 +1231,7 @@ void TableWrapperBox::layOutTableBox(ViewCSSImp* view, FormattingContext* contex
         rowImages[y] = 0;
         CSSStyleDeclarationPtr rowStyle = rows[y];
         if (rowStyle && !rowStyle->backgroundImage.isNone()) {
-            HttpRequest* request = view->preload(view->getDocument()->getDocumentURI(), rowStyle->backgroundImage.getValue());
+            HttpRequestPtr request = view->preload(view->getDocument()->getDocumentURI(), rowStyle->backgroundImage.getValue());
             if (request)
                 rowImages[y] = request->getBoxImage(rowStyle->backgroundRepeat.getValue());
         }
@@ -1242,7 +1242,7 @@ void TableWrapperBox::layOutTableBox(ViewCSSImp* view, FormattingContext* contex
         CSSStyleDeclarationPtr rowGroupStyle = rowGroups[y];
         if (rowGroupStyle) {
             if (!rowGroupStyle->backgroundImage.isNone()) {
-                HttpRequest* request = view->preload(view->getDocument()->getDocumentURI(), rowGroupStyle->backgroundImage.getValue());
+                HttpRequestPtr request = view->preload(view->getDocument()->getDocumentURI(), rowGroupStyle->backgroundImage.getValue());
                 if (request)
                     rowGroupImages[y] = request->getBoxImage(rowGroupStyle->backgroundRepeat.getValue());
             }
@@ -1257,7 +1257,7 @@ void TableWrapperBox::layOutTableBox(ViewCSSImp* view, FormattingContext* contex
         columnImages[x] = 0;
         CSSStyleDeclarationPtr columnStyle = columns[x];
         if (columnStyle && !columnStyle->backgroundImage.isNone()) {
-            HttpRequest* request = view->preload(view->getDocument()->getDocumentURI(), columnStyle->backgroundImage.getValue());
+            HttpRequestPtr request = view->preload(view->getDocument()->getDocumentURI(), columnStyle->backgroundImage.getValue());
             if (request)
                 columnImages[x] = request->getBoxImage(columnStyle->backgroundRepeat.getValue());
         }
@@ -1268,7 +1268,7 @@ void TableWrapperBox::layOutTableBox(ViewCSSImp* view, FormattingContext* contex
         CSSStyleDeclarationPtr columnGroupStyle = columnGroups[x];
         if (columnGroupStyle) {
             if (!columnGroupStyle->backgroundImage.isNone()) {
-                HttpRequest* request = view->preload(view->getDocument()->getDocumentURI(), columnGroupStyle->backgroundImage.getValue());
+                HttpRequestPtr request = view->preload(view->getDocument()->getDocumentURI(), columnGroupStyle->backgroundImage.getValue());
                 if (request)
                     columnGroupImages[x] = request->getBoxImage(columnGroupStyle->backgroundRepeat.getValue());
             }

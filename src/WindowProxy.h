@@ -197,7 +197,7 @@ private:
         }
     };
 
-    HttpRequest request;
+    HttpRequestPtr request;
     Retained<NavigatorImp> navigator;
     Retained<HistoryImp> history;
     Retained<ScreenImp> screen;
@@ -256,7 +256,7 @@ public:
     static css::CSSStyleSheet defaultStyleSheet;
 
     void setBase(const std::u16string& base) {
-        request.setBase(base);
+        request->setBase(base);
     }
 
     WindowProxyPtr createChildProxy(unsigned short flags = 0, const HTMLIFrameElementPtr& iframe = nullptr);

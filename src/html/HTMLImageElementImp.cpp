@@ -43,7 +43,7 @@ void HTMLImageElementImp::handleMutation(events::MutationEvent mutation)
         if (DocumentPtr document = getOwnerDocumentImp()) {
             if (current)
                 current->cancel();
-            current = new(std::nothrow) HttpRequest(document->getDocumentURI());
+            current = std::make_shared<HttpRequest>(document->getDocumentURI());
             if (current) {
                 current->open(u"GET", getSrc());
                 current->setHandler(boost::bind(&HTMLImageElementImp::notify, this, current));
@@ -83,10 +83,10 @@ void HTMLImageElementImp::handleMutation(events::MutationEvent mutation)
     }
 }
 
-void HTMLImageElementImp::notify(HttpRequest* request)
+void HTMLImageElementImp::notify(const HttpRequestPtr& request)
 {
     if (current != request)
-        delete request;
+        return;
 
     if (current->getStatus() != 200)
         active = false;

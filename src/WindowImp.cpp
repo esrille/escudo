@@ -48,11 +48,8 @@ WindowImp::~WindowImp()
         delete global;
         global = 0;
     }
-    while (!cache.empty()) {
-        HttpRequest* request = cache.front();
-        delete request;
+    while (!cache.empty())
         cache.pop_front();
-    }
 }
 
 WindowProxyPtr WindowImp::getWindowProxy() const
@@ -96,19 +93,19 @@ void WindowImp::setEventHandler(const std::u16string& type, Object handler)
     addEventListener(type, listener, false, EventTargetImp::UseEventHandler);
 }
 
-HttpRequest* WindowImp::preload(const std::u16string& base, const std::u16string& urlString)
+HttpRequestPtr WindowImp::preload(const std::u16string& base, const std::u16string& urlString)
 {
     URL url(base, urlString);
     if (url.isEmpty())
         return 0;
 
     for (auto i = cache.begin(); i != cache.end(); ++i) {
-        HttpRequest* request = *i;
+        HttpRequestPtr request = *i;
         if (request->getRequestMessage().getURL() == url)
             return request;
     }
 
-    HttpRequest* request = new(std::nothrow) HttpRequest(base);
+    HttpRequestPtr request = std::make_shared<HttpRequest>(base);
     if (request) {
         cache.push_back(request);
         request->open(u"GET", urlString);

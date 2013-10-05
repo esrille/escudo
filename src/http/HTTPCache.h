@@ -41,15 +41,15 @@ class HttpCache
     bool mustRevalidate;
     int hitCount;
 
-    std::list<HttpRequest*> requests;
-    HttpRequest* current;
+    std::list<HttpRequestPtr> requests;
+    HttpRequestPtr current;
 
-    HttpCache* send(HttpRequest* request);
+    HttpCache* send(const HttpRequestPtr& request);
 
 public:
 
     bool isBusy() const {
-        return current;
+        return static_cast<bool>(current);
     }
 
     const std::string& getFilePath() const {
@@ -60,7 +60,7 @@ public:
 
     // via PUT, DELETE, POST, and unknown
     void invalidate();
-    bool abort(HttpRequest* request);
+    bool abort(const HttpRequestPtr& request);
 
     const HttpResponseMessage& getResponseMessage() const {
         return response;
@@ -91,7 +91,7 @@ public:
     ~HttpCacheManager();
 
     HttpCache* getCache(const URL& url);
-    HttpCache* send(HttpRequest* request);
+    HttpCache* send(const HttpRequestPtr& request);
     void remove(HttpCache* cache);
 
     void dump();

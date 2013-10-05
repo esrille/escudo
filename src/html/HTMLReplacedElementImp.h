@@ -40,7 +40,7 @@ namespace bootstrap
 class HTMLReplacedElementImp : public HTMLElementImp
 {
 protected:
-    HttpRequest* current;
+    HttpRequestPtr current;
     bool active;
     BoxImage* image;
     unsigned imageStart;
@@ -48,7 +48,6 @@ protected:
 public:
     HTMLReplacedElementImp(DocumentImp* ownerDocument, const std::u16string& localName) :
         HTMLElementImp(ownerDocument, localName),
-        current(0),
         active(true),
         image(0),
         imageStart(getTick())
@@ -56,7 +55,6 @@ public:
     }
     HTMLReplacedElementImp(const HTMLReplacedElementImp& org) :
         HTMLElementImp(org),
-        current(0),     // TODO
         active(org.active),
         image(0),       // TODO
         imageStart(org.imageStart)
@@ -64,7 +62,6 @@ public:
     }
     ~HTMLReplacedElementImp()
     {
-        delete current;
         delete image;
     }
 

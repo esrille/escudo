@@ -78,7 +78,6 @@ Box::Box(Node node) :
     y(0.0f),
     clipBox(0),
     backgroundColor(0x00000000),
-    backgroundRequest(0),
     backgroundImage(0),
     backgroundLeft(0.0f),
     backgroundTop(0.0f),
@@ -91,8 +90,6 @@ Box::Box(Node node) :
 
 Box::~Box()
 {
-    delete backgroundRequest;
-
     if (stackingContext)
         stackingContext->removeBox(this);
 
@@ -538,12 +535,10 @@ void Block::resolveBackground(ViewCSSImp* view)
         return;
     }
     auto document = view->getDocument();
-    if (backgroundRequest && backgroundRequest->getRequestMessage().getURL() != URL(document->getDocumentURI(), style->backgroundImage.getValue())) {
-        delete backgroundRequest;   // TODO: check notifyBackground has been called
-        backgroundRequest = 0;
-    }
+    if (backgroundRequest && backgroundRequest->getRequestMessage().getURL() != URL(document->getDocumentURI(), style->backgroundImage.getValue()))
+        backgroundRequest.reset();   // TODO: check notifyBackground has been called
     if (!backgroundRequest) {
-        backgroundRequest = new(std::nothrow) HttpRequest(document->getDocumentURI());
+        backgroundRequest = std::make_shared<HttpRequest>(document->getDocumentURI());
         if (backgroundRequest) {
             backgroundRequest->open(u"GET", style->backgroundImage.getValue());
             backgroundRequest->setHandler(boost::bind(&Block::notifyBackground, this, view->getDocument()));

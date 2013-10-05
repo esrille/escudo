@@ -55,9 +55,9 @@ void HttpCache::notify(HttpRequest* request, bool error)
     while (!requests.empty()) {
         // TODO: Do this only when cacheable
         assert(!isBusy());
-        request = requests.front();
+        HttpRequestPtr pending = requests.front();
         requests.pop_front();
-        request->constructResponseFromCache(false);
+        pending->constructResponseFromCache(false);
     }
 
     if (!error)
@@ -79,7 +79,7 @@ void HttpCache::invalidate()
     requestTime = 0;
 }
 
-HttpCache* HttpCache::send(HttpRequest* request)
+HttpCache* HttpCache::send(const HttpRequestPtr& request)
 {
     if (current) {
         requests.push_back(request);
@@ -113,7 +113,7 @@ HttpCache* HttpCache::send(HttpRequest* request)
     return this;
 }
 
-bool HttpCache::abort(HttpRequest* request)
+bool HttpCache::abort(const HttpRequestPtr& request)
 {
     if (current != request) {
         requests.remove(request);
@@ -138,7 +138,7 @@ HttpCache* HttpCacheManager::getCache(const URL& url)
     return cache;
 }
 
-HttpCache* HttpCacheManager::send(HttpRequest* request)
+HttpCache* HttpCacheManager::send(const HttpRequestPtr& request)
 {
     for (;;) {
         // TODO: check protocol is http.

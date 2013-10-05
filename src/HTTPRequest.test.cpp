@@ -35,23 +35,23 @@ int test(std::u16string urlString)
     if (url.isEmpty())
         return 1;
 
-    HttpRequest request;
-    request.open(u"get", url);
+    HttpRequestPtr request(std::make_shared<HttpRequest>());
+    request->open(u"get", url);
 
-    std::cerr << request.getRequestMessage().toString();
+    std::cerr << request->getRequestMessage().toString();
 
-    request.send();
+    request->send();
 
-    while (request.getReadyState() != HttpRequest::DONE) {
+    while (request->getReadyState() != HttpRequest::DONE) {
         HttpConnectionManager::getIOService().run_one();
         HttpConnectionManager::getInstance().poll();
     }
-    if (request.getError())
+    if (request->getError())
         return 1;
 
-    std::cerr << request.getResponseMessage().toString() << "----\n";
-    std::cerr << request.getResponseMessage().getContentCharset() << "----\n";
-    boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request.getContentDescriptor(), boost::iostreams::close_handle);
+    std::cerr << request->getResponseMessage().toString() << "----\n";
+    std::cerr << request->getResponseMessage().getContentCharset() << "----\n";
+    boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request->getContentDescriptor(), boost::iostreams::close_handle);
     while (stream) {
         char c = stream.get();
         if (stream.good())

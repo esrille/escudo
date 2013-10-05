@@ -52,6 +52,7 @@ WindowProxy::Parser::Parser(const DocumentPtr& document, int fd, const std::stri
 }
 
 WindowProxy::WindowProxy(unsigned short flags) :
+    request(std::make_shared<HttpRequest>()),
     history(this),
     backgroundTask(this),
     thread(std::ref(backgroundTask)),
@@ -204,7 +205,7 @@ bool WindowProxy::poll()
     auto document = window->getDocument();
 
     // Update the canvas before processing events.
-    if (request.getReadyState() == HttpRequest::DONE && document && backgroundTask.getState() == BackgroundTask::Done) {
+    if (request->getReadyState() == HttpRequest::DONE && document && backgroundTask.getState() == BackgroundTask::Done) {
         ViewCSSImp* next = backgroundTask.getView();
         updateView(next);
         if (view) {
@@ -256,7 +257,7 @@ bool WindowProxy::poll()
         }
     }
 
-    switch (request.getReadyState()) {
+    switch (request->getReadyState()) {
     case HttpRequest::UNSENT:
         break;
     case HttpRequest::OPENED:
@@ -271,15 +272,15 @@ bool WindowProxy::poll()
             if ((document = std::dynamic_pointer_cast<DocumentImp>(newDocument.self()))) {
                 // TODO: Fire a simple unload event.
                 document->setDefaultView(std::static_pointer_cast<WindowProxy>(self()));
-                document->setURL(request.getRequestMessage().getURL());
-                document->setLastModified(request.getLastModified());
+                document->setURL(request->getRequestMessage().getURL());
+                document->setLastModified(request->getLastModified());
                 window->setDocument(document);
-                if (!request.getError())
+                if (!request->getError())
                     history->update(window);
                 else
-                    document->setError(request.getError());
+                    document->setError(request->getError());
                 document->enter();
-                parser.reset(new(std::nothrow) Parser(document, request.getContentDescriptor(), request.getResponseMessage().getContentCharset()));
+                parser.reset(new(std::nothrow) Parser(document, request->getContentDescriptor(), request->getResponseMessage().getContentCharset()));
                 document->exit();
                 if (!parser)
                     break;  // TODO: error handling
@@ -1036,10 +1037,10 @@ void WindowProxy::navigate(std::u16string url, bool replace, WindowProxy* srcWin
     }
 
     window = std::make_shared<WindowImp>();
-    request.abort();
+    request->abort();
     history->setReplace(replace);
-    request.open(u"get", url.empty() ? u"about:blank" : url);
-    request.send();
+    request->open(u"get", url.empty() ? u"about:blank" : url);
+    request->send();
 }
 
 html::Window WindowProxy::open(const std::u16string& url, const std::u16string& target, const std::u16string& features, bool replace)

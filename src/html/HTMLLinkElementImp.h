@@ -34,7 +34,7 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 class HTMLLinkElementImp : public ObjectMixin<HTMLLinkElementImp, HTMLElementImp>
 {
     bool dirty;
-    HttpRequest* current;
+    HttpRequestPtr current;
     stylesheets::StyleSheet styleSheet;
 
     void resetStyleSheet();
@@ -42,7 +42,6 @@ class HTMLLinkElementImp : public ObjectMixin<HTMLLinkElementImp, HTMLElementImp
 public:
     HTMLLinkElementImp(DocumentImp* ownerDocument);
     HTMLLinkElementImp(const HTMLLinkElementImp& org);
-    ~HTMLLinkElementImp();
 
     virtual void notify(NotificationType type);
     virtual void handleMutation(events::MutationEvent mutation);
@@ -50,8 +49,8 @@ public:
     void requestRefresh();
     void refresh();
 
-    void linkStyleSheet(HttpRequest* request);
-    void linkIcon(HttpRequest* request);
+    void linkStyleSheet(const HttpRequestPtr& request);
+    void linkIcon(const HttpRequestPtr& request);
     bool setFavicon(const DocumentPtr& document);
 
     // Node - override

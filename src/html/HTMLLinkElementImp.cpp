@@ -55,11 +55,6 @@ HTMLLinkElementImp::HTMLLinkElementImp(const HTMLLinkElementImp& org) :
 {
 }
 
-HTMLLinkElementImp::~HTMLLinkElementImp()
-{
-    delete current;
-}
-
 void HTMLLinkElementImp::resetStyleSheet()
 {
     if (styleSheet) {
@@ -130,7 +125,7 @@ void HTMLLinkElementImp::refresh()
             if (!::contains(rel, u"alternate")) {
                 if (current)
                     current->cancel();
-                current = new(std::nothrow) HttpRequest(document->getDocumentURI());
+                current = std::make_shared<HttpRequest>(document->getDocumentURI());
                 if (current) {
                     current->open(u"GET", href);
                     current->setHandler(boost::bind(&HTMLLinkElementImp::linkStyleSheet, this, current));
@@ -142,7 +137,7 @@ void HTMLLinkElementImp::refresh()
         } else if (::contains(rel, u"icon")) {
             if (current)
                 current->cancel();
-            current = new(std::nothrow) HttpRequest(document->getDocumentURI());
+            current = std::make_shared<HttpRequest>(document->getDocumentURI());
             if (current) {
                 current->open(u"GET", href);
                 current->setHandler(boost::bind(&HTMLLinkElementImp::linkIcon, this, current));
@@ -154,10 +149,10 @@ void HTMLLinkElementImp::refresh()
     resetStyleSheet();
 }
 
-void HTMLLinkElementImp::linkStyleSheet(HttpRequest* request)
+void HTMLLinkElementImp::linkStyleSheet(const HttpRequestPtr& request)
 {
     if (current != request)
-        delete request;
+        return;
 
     DocumentPtr document = getOwnerDocumentImp();
     if (current->getStatus() == 200) {
@@ -177,10 +172,10 @@ void HTMLLinkElementImp::linkStyleSheet(HttpRequest* request)
     document->decrementLoadEventDelayCount();
 }
 
-void HTMLLinkElementImp::linkIcon(HttpRequest* request)
+void HTMLLinkElementImp::linkIcon(const HttpRequestPtr& request)
 {
     if (current != request)
-        delete request;
+        return;
 
     DocumentPtr document = getOwnerDocumentImp();
     setFavicon(document);
