@@ -97,7 +97,7 @@ css::CSSStyleSheet CSSImportRuleImp::getStyleSheet()
         if (request) {
             request->open(u"GET", href);
             request->setHandler(boost::bind(&CSSImportRuleImp::notify, this));
-            doc->incrementLoadEventDelayCount();
+            doc->incrementLoadEventDelayCount(request->getURL());
             request->send();
         }
     }
@@ -112,7 +112,7 @@ void CSSImportRuleImp::notify()
 
     if (request->getStatus() == 200) {
         boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(request->getContentDescriptor(), boost::iostreams::close_handle);
-        CSSParser parser(request->getRequestMessage().getURL());
+        CSSParser parser(request->getURL());
         CSSInputStream cssStream(stream, request->getResponseMessage().getContentCharset(), utfconv(doc->getCharacterSet()));
         styleSheet = parser.parse(doc, cssStream);
         if (auto imp = std::dynamic_pointer_cast<CSSStyleSheetImp>(styleSheet.self())) {
@@ -125,7 +125,7 @@ void CSSImportRuleImp::notify()
     if (WindowProxyPtr view = doc->getDefaultWindow())
         view->setViewFlags(Box::NEED_SELECTOR_REMATCHING);
 
-    doc->decrementLoadEventDelayCount();
+    doc->decrementLoadEventDelayCount(request->getURL());
 }
 
 }

@@ -215,7 +215,7 @@ bool WindowProxy::poll()
                 redisplay = true;
                 if (!gathered && (flags & Loading)) {
                     flags &= ~Loading;
-                    document->decrementLoadEventDelayCount();
+                    document->decrementLoadEventDelayCount(u"ViewCSS");
                 }
                 render(0);
             }
@@ -315,7 +315,7 @@ bool WindowProxy::poll()
             setViewFlags(Box::NEED_SELECTOR_REMATCHING);
             if (!(flags & Loading) && !isBindingDocumentWindow()) { // Note a binding document does not create its view.
                 flags |= Loading;
-                document->incrementLoadEventDelayCount();
+                document->incrementLoadEventDelayCount(u"ViewCSS");
             }
 
             parser.reset();
@@ -381,7 +381,7 @@ bool WindowProxy::poll()
                             redisplay = true;
                             if (flags & Loading) {
                                 flags &= ~Loading;
-                                document->decrementLoadEventDelayCount();
+                                document->decrementLoadEventDelayCount(u"ViewCSS");
                             }
                         }
                     }

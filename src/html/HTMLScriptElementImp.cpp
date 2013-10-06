@@ -92,7 +92,7 @@ bool HTMLScriptElementImp::prepare()
         if (request) {
             request->open(u"GET", src);
             request->setHandler(boost::bind(&HTMLScriptElementImp::notify, this));
-            document->incrementLoadEventDelayCount();
+            document->incrementLoadEventDelayCount(request->getURL());
             if (hasDefer && parserInserted && !hasAsync) {
                 type = Defer;
                 document->addDeferScript(self());
@@ -121,12 +121,12 @@ void HTMLScriptElementImp::notify()
         readyToBeParserExecuted = true;
         switch (type) {
         case Blocking:
-            document->decrementLoadEventDelayCount();
+            document->decrementLoadEventDelayCount(getSrc());
             break;
         case Async:
             execute();
             document->removeAsyncScript(self());
-            document->decrementLoadEventDelayCount();
+            document->decrementLoadEventDelayCount(getSrc());
             break;
         case Ordered:
             document->processOrderedScripts();
@@ -153,7 +153,7 @@ void HTMLScriptElementImp::notify()
         default:
             break;
         }
-        document->decrementLoadEventDelayCount();
+        document->decrementLoadEventDelayCount(getSrc());
     }
 }
 

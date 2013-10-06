@@ -109,18 +109,18 @@ HttpRequestPtr WindowImp::preload(const std::u16string& base, const std::u16stri
     if (request) {
         cache.push_back(request);
         request->open(u"GET", urlString);
-        request->setHandler(boost::bind(&WindowImp::notify, this));
+        request->setHandler(boost::bind(&WindowImp::notify, this, request));
         if (document)
-            document->incrementLoadEventDelayCount();
+            document->incrementLoadEventDelayCount(urlString);
         request->send();
     }
     return request;
 }
 
-void WindowImp::notify()
+void WindowImp::notify(const HttpRequestPtr& request)
 {
     if (document)
-        document->decrementLoadEventDelayCount();
+        document->decrementLoadEventDelayCount(request->getURL());
 }
 
 void WindowImp::handleClick(EventListenerImp* listener, events::Event event)

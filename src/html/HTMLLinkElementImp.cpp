@@ -129,7 +129,7 @@ void HTMLLinkElementImp::refresh()
                 if (current) {
                     current->open(u"GET", href);
                     current->setHandler(boost::bind(&HTMLLinkElementImp::linkStyleSheet, this, current));
-                    document->incrementLoadEventDelayCount();
+                    document->incrementLoadEventDelayCount(current->getURL());
                     current->send();
                     return; // Do not reset styleSheet.
                 }
@@ -141,7 +141,7 @@ void HTMLLinkElementImp::refresh()
             if (current) {
                 current->open(u"GET", href);
                 current->setHandler(boost::bind(&HTMLLinkElementImp::linkIcon, this, current));
-                document->incrementLoadEventDelayCount();
+                document->incrementLoadEventDelayCount(current->getURL());
                 current->send();
             }
         }
@@ -169,7 +169,7 @@ void HTMLLinkElementImp::linkStyleSheet(const HttpRequestPtr& request)
         if (WindowProxyPtr view = document->getDefaultWindow())
             view->setViewFlags(Box::NEED_SELECTOR_REMATCHING);
     }
-    document->decrementLoadEventDelayCount();
+    document->decrementLoadEventDelayCount(request->getURL());
 }
 
 void HTMLLinkElementImp::linkIcon(const HttpRequestPtr& request)
@@ -179,7 +179,7 @@ void HTMLLinkElementImp::linkIcon(const HttpRequestPtr& request)
 
     DocumentPtr document = getOwnerDocumentImp();
     setFavicon(document);
-    document->decrementLoadEventDelayCount();
+    document->decrementLoadEventDelayCount(request->getURL());
 }
 
 bool HTMLLinkElementImp::setFavicon(const DocumentPtr& document)

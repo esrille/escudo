@@ -136,7 +136,7 @@ void HTMLObjectElementImp::refresh()
     if (current) {
         current->open(u"GET", data);
         current->setHandler(boost::bind(&HTMLObjectElementImp::handleRefresh, this, current));
-        document->incrementLoadEventDelayCount();
+        document->incrementLoadEventDelayCount(current->getURL());
         current->send();
     } else
         active = false;
@@ -182,7 +182,7 @@ void HTMLObjectElementImp::handleRefresh(const HttpRequestPtr& request)
         }
     }
     DocumentPtr document = getOwnerDocumentImp();
-    document->decrementLoadEventDelayCount();
+    document->decrementLoadEventDelayCount(request->getURL());
 }
 
 std::u16string HTMLObjectElementImp::getData()

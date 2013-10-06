@@ -47,7 +47,7 @@ void HTMLImageElementImp::handleMutation(events::MutationEvent mutation)
             if (current) {
                 current->open(u"GET", getSrc());
                 current->setHandler(boost::bind(&HTMLImageElementImp::notify, this, current));
-                document->incrementLoadEventDelayCount();
+                document->incrementLoadEventDelayCount(current->getURL());
                 current->send();
             } else
                 active = false;
@@ -121,7 +121,7 @@ void HTMLImageElementImp::notify(const HttpRequestPtr& request)
         }
     }
     if (DocumentPtr document = getOwnerDocumentImp())
-        document->decrementLoadEventDelayCount();
+        document->decrementLoadEventDelayCount(request->getURL());
 }
 
 // HTMLImageElement

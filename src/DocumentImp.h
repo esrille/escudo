@@ -76,6 +76,7 @@ class DocumentImp : public ObjectMixin<DocumentImp, NodeImp>
     std::u16string compatMode;
     std::deque<stylesheets::StyleSheet> styleSheets;
     unsigned loadEventDelayCount;
+    std::list<std::u16string> loadingList;
     bool contentLoaded;
     HTMLTokenizer* insertionPoint;
 
@@ -225,10 +226,8 @@ public:
     }
     void setFocus(const ElementPtr& element);
 
-    unsigned incrementLoadEventDelayCount() {
-        return ++loadEventDelayCount;
-    }
-    unsigned decrementLoadEventDelayCount();
+    unsigned incrementLoadEventDelayCount(const std::u16string& href = u"");
+    unsigned decrementLoadEventDelayCount(const std::u16string& href = u"");
 
     bool isBindingDocumentWindow(const WindowProxyPtr& window) const;
 

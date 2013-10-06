@@ -66,7 +66,7 @@ void HTMLIFrameElementImp::open(const std::u16string& url, unsigned flags)
         return;
     if (owner->getReadyState() != u"complete") {
         loadInProgess = true;
-        owner->incrementLoadEventDelayCount();
+        owner->incrementLoadEventDelayCount(url);
     }
     if (auto proxy = owner->getDefaultWindow()->createChildProxy(flags, std::static_pointer_cast<HTMLIFrameElementImp>(self()))) {
         window = proxy;
@@ -86,7 +86,7 @@ void HTMLIFrameElementImp::notify(bool error)
     if (!loadInProgess)
         return;
     if (auto owner = getOwnerDocumentImp()) {
-        owner->decrementLoadEventDelayCount();
+        owner->decrementLoadEventDelayCount(getSrc());
         loadInProgess = false;
     }
 }

@@ -67,7 +67,7 @@ class WindowImp : public EventTargetImp
 
     void handleClick(EventListenerImp* listener, events::Event event);
     void handleMouseMove(EventListenerImp* listener, events::Event event);
-    void notify();
+    void notify(const HttpRequestPtr& request);
 
 public:
     WindowImp();

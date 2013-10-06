@@ -174,7 +174,7 @@ bool DocumentImp::processScripts(std::list<html::HTMLScriptElement>& scripts)
             return false;
         script->execute();
         scripts.pop_front();
-        decrementLoadEventDelayCount();
+        decrementLoadEventDelayCount(script->getSrc());
     }
     return true;
 }
@@ -260,12 +260,40 @@ void DocumentImp::setFocus(const ElementPtr& element)
     }
 }
 
-unsigned DocumentImp::decrementLoadEventDelayCount() {
-    assert(0 < loadEventDelayCount);
-    if (--loadEventDelayCount == 0) {
-        setReadyState(u"complete");
+unsigned DocumentImp::incrementLoadEventDelayCount(const std::u16string& href) {
+    unsigned count = ++loadEventDelayCount;
+    if (1 <= getLogLevel()) {
+        recordTime("incrementLoadEventDelayCount(%u): %s", count, utfconv(href).c_str());
+        loadingList.push_back(href);
     }
-    return loadEventDelayCount;
+    return count;
+}
+
+unsigned DocumentImp::decrementLoadEventDelayCount(const std::u16string& href) {
+    assert(0 < loadEventDelayCount);
+    unsigned count = --loadEventDelayCount;
+    if (count == 0)
+        setReadyState(u"complete");
+
+    if (1 <= getLogLevel()) {
+        recordTime("decrementLoadEventDelayCount(%u): %s", count, utfconv(href).c_str());
+        if (count == 0)
+            loadingList.clear();
+        else {
+            for (auto i = loadingList.begin(); i != loadingList.end(); ++i) {
+                if (*i == href) {
+                    loadingList.erase(i);
+                    break;
+                }
+            }
+            if (count < 3) {
+                for (auto i = loadingList.begin(); i != loadingList.end(); ++i)
+                    std::cout << "  * " << *i << '\n';
+            }
+        }
+    }
+
+    return count;
 }
 
 // Document

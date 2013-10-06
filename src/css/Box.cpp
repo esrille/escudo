@@ -544,7 +544,7 @@ void Block::resolveBackground(ViewCSSImp* view)
         if (backgroundRequest) {
             backgroundRequest->open(u"GET", style->backgroundImage.getValue());
             backgroundRequest->setHandler(boost::bind(&Block::notifyBackground, this, view->getDocument()));
-            document->incrementLoadEventDelayCount();
+            document->incrementLoadEventDelayCount(backgroundRequest->getURL());
             retain_();
             backgroundRequest->send();
         }
@@ -558,7 +558,7 @@ void Block::notifyBackground(Document document)
     if (backgroundRequest->getStatus() == 200)
         setFlags(NEED_REFLOW);
     if (auto imp = std::dynamic_pointer_cast<DocumentImp>(document.self()))
-        imp->decrementLoadEventDelayCount();
+        imp->decrementLoadEventDelayCount(backgroundRequest->getURL());
     release_();
 }
 
