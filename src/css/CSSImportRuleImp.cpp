@@ -93,7 +93,7 @@ css::CSSStyleSheet CSSImportRuleImp::getStyleSheet()
         return nullptr;
 
     if (!styleSheet && !href.empty() && !request) {  // TODO: deal with ins. mem
-        request.reset(new(std::nothrow) HttpRequest(doc->getDocumentURI()));
+        request = std::make_shared<HttpRequest>(doc->getDocumentURI());
         if (request) {
             request->open(u"GET", href);
             request->setHandler(boost::bind(&CSSImportRuleImp::notify, this));

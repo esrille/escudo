@@ -51,7 +51,7 @@ class CSSImportRuleImp : public ObjectMixin<CSSImportRuleImp, CSSRuleImp>
     std::u16string href;
     stylesheets::MediaList mediaList;
 
-    std::unique_ptr<HttpRequest> request;
+    std::shared_ptr<HttpRequest> request;
     css::CSSStyleSheet styleSheet;
 
     void notify();
