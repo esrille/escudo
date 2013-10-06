@@ -1354,7 +1354,7 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
 {
     const ContainingBlock* containingBlock = getContainingBlock(view);
 
-    Element element = nullptr;
+    Element element;
     if (!isAnonymous())
         element = getContainingElement(node);
     else if (const Box* box = dynamic_cast<const Box*>(containingBlock)) {
