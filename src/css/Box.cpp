@@ -436,6 +436,8 @@ void Box::setFlags(unsigned short f)
     for (Box* box = parentBox; box; box = box->parentBox) {
         if ((box->flags & f) == f)
             break;
+        if (box->stackingContext != stackingContext)
+            f &= ~NEED_CHILD_REFLOW;
         if (Block* block = dynamic_cast<Block*>(box)) {
             box->flags |= f;
             if (block->isAnonymous())
