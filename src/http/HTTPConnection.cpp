@@ -340,7 +340,7 @@ void HttpConnection::readHead(const boost::system::error_code& err)
     // TODO: handle every status code
     switch (responseMessage.getStatus()) {
     case 304:   // Not Modified
-        return;
+        break;
     default:
         octetCount = 0;
         if (responseMessage.isChunked()) {
