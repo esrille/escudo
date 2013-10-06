@@ -343,7 +343,7 @@ void HttpRequest::abort(bool dtor)
     // TODO: implement more details.
     clearHandler();
     if (dtor)
-        notify(true);
+        notify();
     else {
         HttpConnectionManager& manager = HttpConnectionManager::getInstance();
         manager.abort(self());
