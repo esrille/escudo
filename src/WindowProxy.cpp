@@ -272,7 +272,7 @@ bool WindowProxy::poll()
             if ((document = std::dynamic_pointer_cast<DocumentImp>(newDocument.self()))) {
                 // TODO: Fire a simple unload event.
                 document->setDefaultView(std::static_pointer_cast<WindowProxy>(self()));
-                document->setURL(request->getRequestMessage().getURL());
+                document->setURL(request->getURL());
                 document->setLastModified(request->getLastModified());
                 window->setDocument(document);
                 if (!request->getError())

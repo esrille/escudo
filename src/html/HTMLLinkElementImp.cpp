@@ -157,7 +157,7 @@ void HTMLLinkElementImp::linkStyleSheet(const HttpRequestPtr& request)
     DocumentPtr document = getOwnerDocumentImp();
     if (current->getStatus() == 200) {
         boost::iostreams::stream<boost::iostreams::file_descriptor_source> stream(current->getContentDescriptor(), boost::iostreams::close_handle);
-        CSSParser parser(current->getRequestMessage().getURL());
+        CSSParser parser(current->getURL());
         CSSInputStream cssStream(stream, current->getResponseMessage().getContentCharset(), utfconv(document->getCharacterSet()));
         styleSheet = parser.parse(document, cssStream);
         if (auto imp = std::dynamic_pointer_cast<CSSStyleSheetImp>(styleSheet.self()))

@@ -101,7 +101,7 @@ HttpRequestPtr WindowImp::preload(const std::u16string& base, const std::u16stri
 
     for (auto i = cache.begin(); i != cache.end(); ++i) {
         HttpRequestPtr request = *i;
-        if (request->getRequestMessage().getURL() == url)
+        if (request->getURL() == url)
             return request;
     }
 

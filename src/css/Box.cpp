@@ -537,7 +537,7 @@ void Block::resolveBackground(ViewCSSImp* view)
         return;
     }
     auto document = view->getDocument();
-    if (backgroundRequest && backgroundRequest->getRequestMessage().getURL() != URL(document->getDocumentURI(), style->backgroundImage.getValue()))
+    if (backgroundRequest && backgroundRequest->getURL() != URL(document->getDocumentURI(), style->backgroundImage.getValue()))
         backgroundRequest.reset();   // TODO: check notifyBackground has been called
     if (!backgroundRequest) {
         backgroundRequest = std::make_shared<HttpRequest>(document->getDocumentURI());

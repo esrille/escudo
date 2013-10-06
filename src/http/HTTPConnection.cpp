@@ -112,7 +112,7 @@ void HttpConnection::close()
 void HttpConnection::retry()
 {
     if (3 <= getLogLevel())
-        std::cerr << __func__ << ' ' << current->getRequestMessage().getURL() << ": " << retryCount + 1 << '\n';
+        std::cerr << __func__ << ' ' << current->getURL() << ": " << retryCount + 1 << '\n';
 
     int count = retryCount;
     close();
@@ -565,7 +565,7 @@ void HttpConnectionManager::send(const HttpRequestPtr& request)
 {
     std::lock_guard<std::recursive_mutex> lock(mutex);
 
-    URI uri(request->getRequestMessage().getURL());
+    URI uri(request->getURL());
     std::string protocol = uri.getProtocol();
     std::string hostname = uri.getHostname();
     std::string port = uri.getPort();
@@ -581,7 +581,7 @@ void HttpConnectionManager::abort(const HttpRequestPtr& request)
 
     if (request->getReadyState() != HttpRequest::COMPLETE) {
         if (!request->cache || !request->cache->abort(request)) {
-            URI uri(request->getRequestMessage().getURL());
+            URI uri(request->getURL());
             std::string protocol = uri.getProtocol();
             std::string hostname = uri.getHostname();
             std::string port = uri.getPort();

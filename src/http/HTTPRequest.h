@@ -89,6 +89,10 @@ public:
         this->base = base;
     }
 
+    const URL& getURL() const {
+        return request.getURL();
+    }
+
     bool constructResponseFromCache(bool sync = false);
     bool constructResponseFromData();
 
