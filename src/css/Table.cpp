@@ -37,6 +37,7 @@ CellBox::CellBox(Element element, const CSSStyleDeclarationPtr& style):
     row(0),
     colSpan(1),
     rowSpan(1),
+    verticalAlign(CSSVerticalAlignValueImp::Baseline),  // see TableWrapperBox::processCell
     intrinsicHeight(0.0f),
     columnWidth(NAN)
 {
@@ -734,7 +735,7 @@ CellBox* TableWrapperBox::processCell(Element current, Block* parentBox, const C
     if (current)
         cellBox = static_cast<CellBox*>(constructTablePart(current));
     else {
-        cellBox = new(std::nothrow) CellBox;  // TODO: use parentStyle?
+        cellBox = new(std::nothrow) CellBox;  // TODO: use parentStyle? -- For verticalAlign, yes.
         if (cellBox) {
             cellBox->stackingContext = stackingContext;
             cellBox->establishFormattingContext();
