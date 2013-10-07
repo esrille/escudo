@@ -1347,7 +1347,7 @@ dist_aboutdata_DATA =  \
 	data/escudo/about/escudo_128.png
 
 clean-local:
-	rm -rf $(generated_sources) $(generated_headers) $(generated_scanners) *.output
+	rm -rf $(generated_sources) $(generated_headers) $(generated_scanners) CSSGrammar.cc *.output
 
 dist-hook:
 	-rm -f $(distdir)/CSSGrammar.cc $(distdir)/CSSGrammar.hh
@@ -1368,7 +1368,6 @@ EXTRA_DIST = \
 	testlog/css2.1/20110323/implement-report-Escudo-Fedora.data \
 	LICENSE \
 	NOTICE \
-	config.h \
 	idl/COPYRIGHT.html \
 	idl/2dcontext.idl \
 	idl/arrays.idl \
