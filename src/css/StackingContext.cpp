@@ -176,12 +176,15 @@ void StackingContext::detach()
     while (hasChildren())
         getFirstChild()->detach();
     if (parent) {
-        StackingContext* next;
-        for (StackingContext* i = parent->getFirstChild(); i; i = next) {
-            next = i->getNextSibling();
-            if (i->positioned == this)
-                i->detach();
-        }
+        StackingContext* i;
+        do {
+            for (i = parent->getFirstChild(); i; i = i->getNextSibling()) {
+                if (i->positioned == this) {
+                    i->detach();
+                    break;
+                }
+            }
+        } while (i);
         parent->removeChild(this);
         parent = 0;
     }
