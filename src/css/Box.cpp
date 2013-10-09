@@ -1378,7 +1378,7 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
     std::u16string tag = interface_cast<html::HTMLElement>(element).getTagName();
 #endif
 
-    style = view->getStyle(element)->getCSSStyleDeclarationPtr();
+    style = view->getStyle(element);
     if (!style)
         return false;  // TODO error
 
