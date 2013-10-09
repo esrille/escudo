@@ -67,6 +67,9 @@ class StackingContext
     float clipWidth;
     float clipHeight;
 
+    // for debugging
+    unsigned uid;
+
     StackingContext* removeChild(StackingContext* item);
     StackingContext* insertBefore(StackingContext* item, StackingContext* after);
     StackingContext* appendChild(StackingContext* item);

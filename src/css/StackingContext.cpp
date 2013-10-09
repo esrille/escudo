@@ -28,6 +28,12 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
+namespace {
+
+std::atomic_uint aid;
+
+}
+
 StackingContext* StackingContext::removeChild(StackingContext* item)
 {
     StackingContext* next = item->nextSibling;
@@ -96,7 +102,8 @@ StackingContext::StackingContext(bool auto_, int zIndex, const CSSStyleDeclarati
     lastFloat(0),
     currentFloat(0),
     relativeX(0.0f),
-    relativeY(0.0f)
+    relativeY(0.0f),
+    uid(++aid)
 {
 }
 
@@ -487,6 +494,11 @@ void StackingContext::dump(std::string indent)
         std::cout << "auto";
     else
         std::cout << zIndex;
+
+    std::cout << ": " << uid << '(' << (void*) this << ')';
+    if (positioned)
+        std::cout << ' ' << positioned->uid << '(' << (void*) positioned << ')';
+
     std::cout << '\n';
     indent += "  ";
     for (auto child = getFirstChild(); child; child = child->getNextSibling())
