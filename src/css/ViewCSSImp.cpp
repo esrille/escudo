@@ -652,6 +652,12 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, const CSSSt
         }
     } else if (!parentBox || inlineBlock) {
         currentBox = getCurrentBox(style, false);
+
+        // Do not process an anonymous table incrementally; cf. html4/table-anonymous-objects-207.htm
+        auto table = dynamic_cast<TableWrapperBox*>(currentBox);
+        if (table && !table->isAnonymousTableObject() && anonInlineTable && parentBox && parentBox->removeBlock(element))
+            currentBox = 0;
+
         if (!currentBox)
             currentBox = createBlock(element, parentBox, style, isFlowRoot, false);
         if (!currentBox)
