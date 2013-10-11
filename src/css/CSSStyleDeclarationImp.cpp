@@ -2178,7 +2178,7 @@ bool CSSStyleDeclarationImp::isFlowRoot() const
 
 void CSSStyleDeclarationImp::clearBox()
 {
-    box = lastBox = 0;
+    box = lastBox = nullptr;
 }
 
 void CSSStyleDeclarationImp::addBox(Box* b)
