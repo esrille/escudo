@@ -1,4 +1,4 @@
-# Escudo 0.4.0 (2013-10-08 f94d8a596d) Fedora Linux 19
+# Escudo 0.4.0 (2013-10-12 65132648b1) Fedora Linux 19
 # Escudo/0.4.0
 # http://test.csswg.org/suites/css2.1/20110323/
 # See http://wiki.csswg.org/test/implementation-report for instructions
@@ -1094,7 +1094,7 @@ html4/before-after-002.htm	pass
 html4/before-after-011.htm	fail
 html4/before-after-display-types-001.htm	fail
 html4/before-after-dynamic-attr-001.htm	pass
-html4/before-after-dynamic-restyle-001.htm	fail
+html4/before-after-dynamic-restyle-001.htm	pass
 html4/before-after-floated-001.htm	fail
 html4/before-after-images-001.htm	pass
 html4/before-after-positioned-001.htm	fail
@@ -3501,7 +3501,7 @@ html4/c61-ex-len-000.htm	pass
 html4/c61-rel-len-000.htm	pass
 html4/c62-percent-000.htm	pass
 html4/c63-color-000.htm	pass
-html4/c64-uri-000.htm	fail
+html4/c64-uri-000.htm	pass
 html4/c71-fwd-parsing-000.htm	pass
 html4/c71-fwd-parsing-001.htm	pass
 html4/c71-fwd-parsing-002.htm	pass
@@ -5218,7 +5218,7 @@ html4/floats-152.htm	pass
 html4/floats-153.htm	pass
 html4/floats-154.htm	pass
 html4/floats-bfc-001.htm	pass
-html4/floats-bfc-002.htm	fail
+html4/floats-bfc-002.htm	pass
 html4/floats-placement-vertical-001a.htm	fail (rtl)
 html4/floats-placement-vertical-001b.htm	fail (rtl)
 html4/floats-placement-vertical-001c.htm	fail (rtl)
@@ -8220,8 +8220,8 @@ html4/table-anonymous-objects-087.htm	pass
 html4/table-anonymous-objects-088.htm	pass
 html4/table-anonymous-objects-089.htm	pass (when no-wrap)
 html4/table-anonymous-objects-090.htm	pass (when no-wrap)
-html4/table-anonymous-objects-091.htm	pass (when no wrap)
-html4/table-anonymous-objects-092.htm	pass (when no wrap)
+html4/table-anonymous-objects-091.htm	pass (when no-wrap)
+html4/table-anonymous-objects-092.htm	pass (when no-wrap)
 html4/table-anonymous-objects-093.htm	pass
 html4/table-anonymous-objects-094.htm	pass
 html4/table-anonymous-objects-095.htm	pass
