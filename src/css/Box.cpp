@@ -52,6 +52,7 @@ Box::Box(Node node) :
     lastChild(0),
     previousSibling(0),
     nextSibling(0),
+    containingBox(0),
     childCount(0),
     clearance(NAN),
     marginTop(0.0f),
@@ -114,7 +115,8 @@ Box* Box::removeChild(Box* item)
         firstChild = next;
     else
         prev->nextSibling = next;
-    item->parentBox = item->previousSibling = item->nextSibling = 0;
+    item->previousSibling = item->nextSibling = nullptr;
+    item->setParentBox(nullptr);
     --childCount;
 
     if (auto block = dynamic_cast<Block*>(item))
@@ -137,7 +139,7 @@ Box* Box::insertBefore(Box* item, Box* after)
         firstChild = item;
     else
         item->previousSibling->nextSibling = item;
-    item->parentBox = this;
+    item->setParentBox(this);
     item->retain_();
     ++childCount;
     return item;
@@ -154,7 +156,7 @@ Box* Box::appendChild(Box* item)
     item->previousSibling = prev;
     item->nextSibling = 0;
     lastChild = item;
-    item->parentBox = this;
+    item->setParentBox(this);
     item->retain_();
     ++childCount;
     return item;
@@ -184,6 +186,15 @@ void Box::removeDescendants()
         block->clearInlines();
     if (style)
         style->removeBox(this);
+}
+
+void Box::setContainingBox(Box* box)
+{
+    if (parentBox == nullptr) {
+        containingBox = box;
+        return;
+    }
+    assert(parentBox == box);
 }
 
 void Box::setStyle(const CSSStyleDeclarationPtr& style)
@@ -246,6 +257,8 @@ const ContainingBlock* Box::getContainingBlock(ViewCSSImp* view) const
     const Box* box = this;
     do {
         const Box* parent = box->getParentBox();
+        if (!parent)
+            parent = box->getContainingBox();
         if (!parent)
             return view->getInitialContainingBlock();
         box = parent;
@@ -746,9 +759,6 @@ void Block::resolveHeight()
 
 void Block::layOutInlineBlock(ViewCSSImp* view, Node node, Block* inlineBlock, FormattingContext* context)
 {
-    CSSStyleDeclarationPtr parentStyle = inlineBlock->parentBox->getStyle();
-    assert(parentStyle);
-
     InlineBox* inlineBox = new(std::nothrow) InlineBox(node, inlineBlock->style);
     if (!inlineBox)
         return;  // TODO error
@@ -759,7 +769,7 @@ void Block::layOutInlineBlock(ViewCSSImp* view, Node node, Block* inlineBlock, F
     }
 
     context->prevChar = 0;
-    inlineBox->parentBox = context->lineBox;  // for getContainingBlock
+    inlineBox->setContainingBox(context->lineBox);  // for getContainingBlock
     inlineBox->appendChild(inlineBlock);
     inlineBox->width = inlineBlock->getTotalWidth();
     inlineBox->height = inlineBlock->getTotalHeight();
@@ -787,7 +797,7 @@ void Block::layOutInlineBlock(ViewCSSImp* view, Node node, Block* inlineBlock, F
 
     context->x += inlineBox->getTotalWidth();
     context->leftover -= inlineBox->getTotalWidth();
-    context->appendInlineBox(view, inlineBox, inlineBlock->style ? inlineBlock->style : parentStyle);
+    context->appendInlineBox(view, inlineBox, inlineBlock->style ? inlineBlock->style : getStyle());
 
     updateMCW(inlineBox->getTotalWidth());
 }
@@ -856,7 +866,7 @@ bool Block::layOutInline(ViewCSSImp* view, FormattingContext* context, float ori
 #endif
         Block* block = findBlock(node);
         if (block && block != this) {  // Check an empty absolutely positioned box; cf. bottom-applies-to-010.
-            block->parentBox = this;
+            block->setContainingBox(this);
             context->useMargin(this);
             if (block->isFloat()) {
                 if (block->style->clear.getValue())

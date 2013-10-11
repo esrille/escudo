@@ -60,7 +60,6 @@ Block* getCurrentBox(const CSSStyleDeclarationPtr& style, bool asTablePart)
     // return the surrounding anonymous table wrapper box
     while (box && !dynamic_cast<TableWrapperBox*>(box))
         box = box->getParentBox();
-    assert(box);
     return dynamic_cast<TableWrapperBox*>(box);
 }
 
@@ -665,7 +664,7 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, const CSSSt
                 // Set currentBox->parentBox to parentBox for now so that the correct
                 // containing block can be retrieved before currentBox will be
                 // inserted in a lineBox of parentBox later
-                currentBox->parentBox = parentBox;
+                currentBox->setContainingBox(parentBox);
                 if (!parentBox->hasChildBoxes())
                     parentBox->insertInline(element);
                 else if (prevBox = parentBox->getAnonymousBox(prevBox))
@@ -685,7 +684,9 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, const CSSSt
             currentBox = createBlock(element, parentBox, style, isFlowRoot);
             if (!currentBox)
                 return 0;
-            if (parentBox) {
+        }
+        if (parentBox) {
+            if (!currentBox->getParentBox()) {
                 if (parentBox->hasInline()) {
                     prevBox = parentBox->getAnonymousBox(prevBox);
                     if (!prevBox)
@@ -696,7 +697,8 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, const CSSSt
                     parentBox->insertBefore(currentBox, parentBox->getFirstChild());
                 else
                     parentBox->insertBefore(currentBox, prevBox->getNextSibling());
-            }
+            } else
+                assert(currentBox->getParentBox() == parentBox);
         }
     }
 

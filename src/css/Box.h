@@ -125,6 +125,7 @@ protected:
     Box* lastChild;
     Box* previousSibling;
     Box* nextSibling;
+    Box* containingBox;
     unsigned int childCount;
 
     float clearance;
@@ -207,6 +208,15 @@ public:
 
     void removeChildren();
     void removeDescendants();
+
+    Box* getContainingBox() const {
+        return containingBox;
+    }
+    void setContainingBox(Box* box);
+    void setParentBox(Box* box) {
+        parentBox = box;
+        containingBox = nullptr;
+    }
 
     Box* getParentBox() const {
         return parentBox;
