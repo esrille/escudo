@@ -850,6 +850,10 @@ bool Block::layOutInline(ViewCSSImp* view, FormattingContext* context, float ori
     bool collapsed = true;
     for (auto i = inlines.begin(); i != inlines.end(); ++i) {
         Node node = *i;
+#ifndef NDEBUG
+    std::u16string tag(interface_cast<html::HTMLElement>(node).getTagName());
+    std::u16string id(interface_cast<html::HTMLElement>(node).getId());
+#endif
         Block* block = findBlock(node);
         if (block && block != this) {  // Check an empty absolutely positioned box; cf. bottom-applies-to-010.
             block->parentBox = this;
@@ -1375,7 +1379,8 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
         return false;  // TODO error
 
 #ifndef NDEBUG
-    std::u16string tag = interface_cast<html::HTMLElement>(element).getTagName();
+    std::u16string tag(interface_cast<html::HTMLElement>(element).getTagName());
+    std::u16string id(interface_cast<html::HTMLElement>(element).getId());
 #endif
 
     style = view->getStyle(element);
@@ -1966,7 +1971,7 @@ void Block::dump(std::string indent)
     else
         std::cout << " [" << interface_cast<Element>(node).getLocalName() << ']';
     if (3 <= getLogLevel())
-        std::cout << " [" << std::hex << flags << ']' << std::dec;
+        std::cout << " [" << std::hex << flags << std::dec << '(' << count_() << ")]";
     std::cout << " (" << x + relativeX << ", " << y + relativeY << ") " <<
         "w:" << width << " h:" << height << ' ' <<
         "(" << relativeX << ", " << relativeY <<") ";

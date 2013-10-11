@@ -85,6 +85,9 @@ public:
         }
         return count;
     }
+    unsigned count_() {
+        return count;
+    }
 };
 
 class Box : public ContainingBlock
