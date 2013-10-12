@@ -220,6 +220,11 @@ int getLogLevel()
     return logLevel;
 }
 
+void setLogLevel(int level)
+{
+    logLevel = level;
+}
+
 std::string getFileURL(const std::string& path)
 {
     char url[PATH_MAX + 7];

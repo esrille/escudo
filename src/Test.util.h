@@ -55,6 +55,7 @@ inline bool isReplacedElement(org::w3c::dom::Element& element)
 
 void initLogLevel(int* argc, char* argv[], int defaultLevel = 3);
 int getLogLevel();
+void setLogLevel(int level);
 
 std::string getFileURL(const std::string& path);
 

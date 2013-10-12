@@ -110,6 +110,19 @@ void WindowProxy::BackgroundTask::operator()()
                 recordTime("%*sreflow begin", window->windowDepth * 2, "");
                 view->layOut();
                 recordTime("%*sreflow end", window->windowDepth * 2, "");
+
+                // Even though every view flag should have been cleared now,
+                // check them here and clear all of them after dumping the tree.
+                if (view->gatherFlags() & ~Box::NEED_REPAINT) {
+                    std::cerr << "warning: reflow flags are not fully cleared:\n";
+                    int level = getLogLevel();
+                    if (level < 3)
+                        setLogLevel(3);
+                    view->dump();
+                    setLogLevel(level);
+                    view->clearFlags();
+                }
+
                 view->setFlags(Box::NEED_REPAINT);
             }
 
