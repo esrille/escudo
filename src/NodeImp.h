@@ -72,12 +72,12 @@ public:
     NodePtr getParent() const {
         return parentNode.lock();
     }
-    void setParent(NodePtr node) {
+    void setParent(const NodePtr& node) {
         parentNode = node;
     }
 
     // Returns true if this is an ancestor of the node
-    bool isAncestorOf(NodePtr node) {
+    bool isAncestorOf(const NodePtr& node) {
         for (NodePtr parent = node->getParent(); parent; parent = parent->getParent()) {
             if (this == parent.get())
                 return true;
@@ -85,7 +85,7 @@ public:
         return false;
     }
 
-    bool isDescendantOf(NodePtr node) {
+    bool isDescendantOf(const NodePtr& node) {
         for (NodePtr parent = getParent(); parent; parent = parent->getParent()) {
             if (node == parent)
                 return true;
