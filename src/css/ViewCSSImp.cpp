@@ -691,6 +691,11 @@ BlockPtr ViewCSSImp::constructBlock(Element element, const BlockPtr& parentBox, 
                 return 0;
         }
         if (parentBox) {
+            BoxPtr p = currentBox->getParentBox();
+            if (p && p != parentBox) {
+                // TODO: Something seems to be wrong here. Investigate the conditions later.
+                p->removeChild(currentBox);
+            }
             if (!currentBox->getParentBox()) {
                 if (parentBox->hasInline()) {
                     prevBox = parentBox->getAnonymousBox(prevBox);
@@ -703,7 +708,7 @@ BlockPtr ViewCSSImp::constructBlock(Element element, const BlockPtr& parentBox, 
                 else
                     parentBox->insertBefore(currentBox, prevBox->getNextSibling());
             } else
-                assert(currentBox->getParentBox() == parentBox);    // TODO it looks this is not always true
+                assert(currentBox->getParentBox() == parentBox);
         }
     }
 
