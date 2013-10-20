@@ -244,13 +244,13 @@ unsigned char* readAsGif(FILE* file, unsigned& width, unsigned& height, unsigned
         else {
             unsigned char* index = image->RasterBits;
             for (unsigned row = 0; row < height; row += 8)
-                index = expandColors(p0 + width * row, index, width, transparentIndex, gif->SColorMap->Colors);
+                index = expandColors(p0 + width * row * 4, index, width, transparentIndex, gif->SColorMap->Colors);
             for (unsigned row = 4; row < height; row += 8)
-                index = expandColors(p0 + width * row, index, width, transparentIndex, gif->SColorMap->Colors);
+                index = expandColors(p0 + width * row * 4, index, width, transparentIndex, gif->SColorMap->Colors);
             for (unsigned row = 2; row < height; row += 4)
-                index = expandColors(p0 + width * row, index, width, transparentIndex, gif->SColorMap->Colors);
+                index = expandColors(p0 + width * row * 4, index, width, transparentIndex, gif->SColorMap->Colors);
             for (unsigned row = 1; row < height; row += 2)
-                index = expandColors(p0 + width * row, index, width, transparentIndex, gif->SColorMap->Colors);
+                index = expandColors(p0 + width * row * 4, index, width, transparentIndex, gif->SColorMap->Colors);
         }
     }
     DGifCloseFile(gif);
