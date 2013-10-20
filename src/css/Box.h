@@ -17,7 +17,10 @@
 #ifndef ES_CSSBOX_H
 #define ES_CSSBOX_H
 
-#include <Object.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <org/w3c/dom/Text.h>
 
 #include <algorithm>
@@ -40,24 +43,31 @@ class Element;
 
 namespace bootstrap {
 
+class ContainingBlock;
 class Box;
+class Block;
+class LineBox;
+class InlineBox;
+class TableWrapperBox;
+
 class BoxImage;
 class FormattingContext;
-class LineBox;
-class Block;
-class TableWrapperBox;
 class ViewCSSImp;
 class WindowProxy;
 
+typedef std::shared_ptr<ContainingBlock> ContainingBlockPtr;
+typedef std::shared_ptr<Box> BoxPtr;
+typedef std::shared_ptr<Block> BlockPtr;
+typedef std::shared_ptr<LineBox> LineBoxPtr;
+typedef std::shared_ptr<InlineBox> InlineBoxPtr;
+typedef std::shared_ptr<TableWrapperBox> TableWrapperBoxPtr;
+
 typedef std::shared_ptr<WindowProxy> WindowProxyPtr;
 
-class ContainingBlock
+class ContainingBlock : public std::enable_shared_from_this<ContainingBlock>
 {
-    std::atomic_uint count;
-
 public:
     ContainingBlock() :
-        count(0),
         width(0.0f),
         height(0.0f)
     {
@@ -73,20 +83,9 @@ public:
     float getHeight() const {
         return height;
     }
-    unsigned retain_() {
-        return ++count;
-    }
-    unsigned release_() {
-        if (0 < count)
-            --count;
-        if (count == 0) {
-            delete this;
-            return 0;
-        }
-        return count;
-    }
-    unsigned count_() {
-        return count;
+
+    long count_() const {
+        return shared_from_this().use_count() - 1;
     }
 };
 
@@ -120,12 +119,12 @@ public:
 
 protected:
     Node node;
-    Box* parentBox;
-    Box* firstChild;
-    Box* lastChild;
-    Box* previousSibling;
-    Box* nextSibling;
-    Box* containingBox;
+    std::weak_ptr<Box> parentBox;
+    BoxPtr firstChild;
+    BoxPtr lastChild;
+    BoxPtr previousSibling;
+    BoxPtr nextSibling;
+    std::weak_ptr<Box> containingBox;
     unsigned int childCount;
 
     float clearance;
@@ -149,15 +148,14 @@ protected:
     unsigned visibility;
 
     StackingContextPtr stackingContext;
-    Box* nextBase;
-    Box* nextFloat;
+    BoxPtr nextFloat;
 
     bool intrinsic;  // do not change width and height
 
     float x;  // in screen coord
     float y;  // in screen coord
 
-    Block* clipBox;
+    std::weak_ptr<Block> clipBox;
 
     // background
     unsigned backgroundColor;
@@ -180,6 +178,12 @@ public:
     Box(Node node);
     virtual ~Box();
 
+    bool isSane() const;
+
+    BoxPtr self() const {
+        return std::const_pointer_cast<Box>(std::static_pointer_cast<const Box>(shared_from_this()));
+    }
+
     virtual unsigned getBoxType() const = 0;
 
     virtual bool isAnonymous() const {
@@ -194,47 +198,51 @@ public:
     }
 
     Node getTargetNode() const {
-        const Box* box = this;
+        BoxPtr box = self();
         do {
             if (box->node)
                 return box->node;
-        } while ((box = box->parentBox));
+        } while ((box = box->getParentBox()));
         return nullptr;
     }
 
-    Box* removeChild(Box* item);
-    Box* insertBefore(Box* item, Box* after);
-    Box* appendChild(Box* item);
+    BoxPtr removeChild(const BoxPtr& ibtem);
+    BoxPtr insertBefore(const BoxPtr& item, const BoxPtr& after);
+    BoxPtr appendChild(const BoxPtr& item);
 
     void removeChildren();
     void removeDescendants();
 
-    Box* getContainingBox() const {
-        return containingBox;
+    BoxPtr getContainingBox() const {
+        return containingBox.lock();
     }
-    void setContainingBox(Box* box);
-    void setParentBox(Box* box) {
+    void setContainingBox(const BoxPtr& box);
+    void setParentBox(const BoxPtr& box) {
         parentBox = box;
-        containingBox = nullptr;
+        containingBox.reset();
     }
 
-    Box* getParentBox() const {
-        return parentBox;
+    BoxPtr getParentBox() const {
+        return parentBox.lock();
     }
     bool hasChildBoxes() const {
+        return childCount;
+    }
+    BoxPtr getFirstChild() const {
         return firstChild;
     }
-    Box* getFirstChild() const {
-        return firstChild;
-    }
-    Box* getLastChild() const {
+    BoxPtr getLastChild() const {
         return lastChild;
     }
-    Box* getPreviousSibling() const {
+    BoxPtr getPreviousSibling() const {
         return previousSibling;
     }
-    Box* getNextSibling() const {
+    BoxPtr getNextSibling() const {
         return nextSibling;
+    }
+
+    BlockPtr getClipBox() const {
+        return clipBox.lock();
     }
 
     float getX() const {
@@ -372,7 +380,7 @@ public:
     const Box* towardViewPort(float& x, float& y) const {
         x += offsetH + getBlankLeft();
         y += offsetV + getBlankTop();
-        if (const Box* box = getParentBox())
+        if (BoxPtr box = getParentBox())
             return box->towardViewPort(this, x, y);
         return 0;
     }
@@ -408,9 +416,9 @@ public:
         position = value;
     }
 
-    virtual const ContainingBlock* getContainingBlock(ViewCSSImp* view) const;
+    virtual ContainingBlockPtr getContainingBlock(ViewCSSImp* view) const;
 
-    bool isFlowOf(const Block* floatRoot) const;
+    bool isFlowOf(const BlockPtr& flowRoot) const;
 
     bool isInFlow() const {
         // cf. 9.3 Positioning schemes
@@ -430,7 +438,7 @@ public:
     void resolveReplacedWidth(float intrinsicWidth, float intrinsicHeight);
     void applyReplacedMinMax(float w, float h);
 
-    virtual void resolveXY(ViewCSSImp* view, float left, float top, Block* clip) = 0;
+    virtual void resolveXY(ViewCSSImp* view, float left, float top, const BlockPtr&clip) = 0;
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context) {
         return true;
     }
@@ -447,7 +455,7 @@ public:
     void renderBorder(ViewCSSImp* view, float left, float top,
                       const CSSStyleDeclarationPtr& style, unsigned backgroundColor, BoxImage* backgroundImage,
                       float ll, float lr, float rl, float rr, float tt, float tb, float bt, float bb,
-                      Box* leftEdge, Box* rightEdge);
+                      const BoxPtr& leftEdge, const BoxPtr& rightEdge);
     void renderBorder(ViewCSSImp* view, float left, float top);
     void renderOutline(ViewCSSImp* view, float left, float top, float right, float bottom, float outlineWidth, unsigned outline, unsigned color);
     void renderOutline(ViewCSSImp* view, float left, float top);
@@ -480,7 +488,7 @@ public:
         return v < b;
     }
 
-    Box* boxFromPoint(int x, int y, StackingContext* context = 0) {
+    BoxPtr boxFromPoint(int x, int y, StackingContext* context = 0) {
         if (context && stackingContext && stackingContext != context)
             return 0;
         if (!isAnonymous() && Element::hasInstance(node)) {
@@ -488,13 +496,13 @@ public:
             x += element.getScrollLeft();
             y += element.getScrollTop();
         }
-        for (Box* box = getFirstChild(); box; box = box->getNextSibling()) {
-            if (Box* target = box->boxFromPoint(x, y, context)) {
+        for (BoxPtr box = getFirstChild(); box; box = box->getNextSibling()) {
+            if (BoxPtr target = box->boxFromPoint(x, y, context)) {
                 if (!isClipped() || isInside(x, y))
                     return target;
             }
         }
-        return isInside(x, y) ? this : 0;
+        return isInside(x, y) ? self() : nullptr;
     }
 
     void updateScrollSize();
@@ -527,11 +535,6 @@ public:
     static Element getContainingElement(Node node);
 };
 
-typedef boost::intrusive_ptr<Box> BoxPtr;
-
-class Block;
-typedef boost::intrusive_ptr<Block> BlockPtr;
-
 // paragraph
 // ‘display’ of ‘block’, ‘list-item’, ‘table’, ‘table-*’ (i.e., all table boxes) or <template>.
 class Block : public Box
@@ -539,7 +542,7 @@ class Block : public Box
     friend class ViewCSSImp;
     friend class FormattingContext;
     friend class TableWrapperBox;
-    friend Box* Box::removeChild(Box* item);
+    friend BoxPtr Box::removeChild(const BoxPtr& item);
 
     FormattingContext* formattingContext;
     unsigned textAlign;
@@ -555,14 +558,14 @@ class Block : public Box
     float remainingHeight;
 
     // for an absolutely positioned box
-    ContainingBlock absoluteBlock;
+    ContainingBlockPtr absoluteBlock;
 
     // A list of nodes to be formatted in line boxes; note if a block-level box contains
     // block-level boxes, 'inlines' must be empty.
     std::list<Node> inlines;
     Element floatingFirstLetter;
     std::map<Node, BlockPtr> blockMap;  // inline blocks, floating boxes, absolutely positioned boxes, etc. held by line boxes
-    TableWrapperBox* anonymousTable;  // for ViewCSSImp::constructBlocks
+    TableWrapperBoxPtr anonymousTable;  // for ViewCSSImp::constructBlocks
 
     // The default baseline and line-height for the line boxes.
     float defaultBaseline;
@@ -587,9 +590,9 @@ class Block : public Box
                       FontGlyph*& glyph, std::u16string& transformed);
     bool layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
                     std::u16string data, Element element, const CSSStyleDeclarationPtr& style);
-    void layOutInlineBlock(ViewCSSImp* view, Node node, Block* inlineBlock, FormattingContext* context);
-    void layOutFloat(ViewCSSImp* view, Node node, Block* floatBox, FormattingContext* context);
-    void layOutAbsolute(ViewCSSImp* view, Node node, Block* absBox, FormattingContext* context);  // 1st pass
+    void layOutInlineBlock(ViewCSSImp* view, Node node, const BlockPtr& inlineBlock, FormattingContext* context);
+    void layOutFloat(ViewCSSImp* view, Node node, const BlockPtr&floatBox, FormattingContext* context);
+    void layOutAbsolute(ViewCSSImp* view, Node node, const BlockPtr&absBox, FormattingContext* context);  // 1st pass
     bool layOutInline(ViewCSSImp* view, FormattingContext* context, float originalMargin = 0.0f);
     void layOutInlineBlocks(ViewCSSImp* view);
     void layOutChildren(ViewCSSImp* view, FormattingContext* context);
@@ -598,7 +601,7 @@ class Block : public Box
 
     void applyMinMaxHeight(FormattingContext* context);
 
-    float getBaseline(const Box* box) const;
+    float getBaseline(const BoxPtr& box) const;
 
     void notifyBackground(Document document);
 
@@ -623,6 +626,10 @@ public:
     Block(Node node = nullptr, const CSSStyleDeclarationPtr& style = nullptr);
     virtual ~Block();
 
+    BlockPtr self() const {
+        return std::const_pointer_cast<Block>(std::static_pointer_cast<const Block>(shared_from_this()));
+    }
+
     virtual unsigned getBoxType() const {
         return BLOCK_LEVEL_BOX;
     }
@@ -640,13 +647,13 @@ public:
     virtual float shrinkTo();
     virtual void fit(float w, FormattingContext* context);
 
-    virtual const Box* towardViewPort(const Box* child, float& x, float& y) const {
-        if (const Box* box = child->getPreviousSibling()) {
+    virtual const BoxPtr towardViewPort(const BoxPtr& child, float& x, float& y) const {
+        if (const BoxPtr box = child->getPreviousSibling()) {
             x -= box->getBlankLeft() + box->offsetH;
             y += box->height + box->getBlankBottom() - box->offsetV;
             return box;
         }
-        return this;
+        return self();
     }
 
     float getBaseline() const;
@@ -664,31 +671,31 @@ public:
     void insertInline(Node node) {
         inlines.push_back(node);
     }
-    void spliceInline(Block* box) {
+    void spliceInline(const BlockPtr& box) {
         inlines.splice(inlines.begin(), box->inlines);
     }
 
-    void addBlock(const Node& node, Block* block) {
+    void addBlock(const Node& node, const BlockPtr& block) {
         blockMap[node] = block;
     }
-    Block* findBlock(const Node& node) {
-        Block* box = this;
+    BlockPtr findBlock(const Node& node) {
+        BlockPtr box = self();
         do {
             auto i = box->blockMap.find(node);
             if (i != box->blockMap.end())
-                return i->second.get();
-        } while (box->isAnonymous() && (box = dynamic_cast<Block*>(box->getParentBox())));
+                return i->second;
+        } while (box->isAnonymous() && (box = std::dynamic_pointer_cast<Block>(box->getParentBox())));
         return 0;
     }
     bool removeBlock(const Node& node) {
-        Block* box = this;
+        BlockPtr box = self();
         do {
             auto i = box->blockMap.find(node);
             if (i != box->blockMap.end()) {
                 box->blockMap.erase(i);
                 return true;
             }
-        } while (box->isAnonymous() && (box = dynamic_cast<Block*>(box->getParentBox())));
+        } while (box->isAnonymous() && (box = std::dynamic_pointer_cast<Block>(box->getParentBox())));
         return false;
     }
     void clearBlocks() {
@@ -701,31 +708,31 @@ public:
     }
     bool canScroll() const {
         // Note the root box is scrolled by the viewport.
-        return parentBox && !isAnonymous() && style && style->overflow.canScroll();
+        return getParentBox() && !isAnonymous() && style && style->overflow.canScroll();
     }
 
     bool isCollapsedThrough() const;
     float getInternalClearances() const;
 
-    virtual const ContainingBlock* getContainingBlock(ViewCSSImp* view) const;
+    virtual ContainingBlockPtr getContainingBlock(ViewCSSImp* view) const;
     void setContainingBlock(ViewCSSImp* view);
 
-    unsigned resolveAbsoluteWidth(const ContainingBlock* containingBlock, float& left, float& right, float r = NAN);
-    unsigned applyAbsoluteMinMaxWidth(const ContainingBlock* containingBlock, float& left, float& right, unsigned autoMask);
-    unsigned resolveAbsoluteHeight(const ContainingBlock* containingBlock, float& top, float& bottom, float r = NAN);
-    unsigned applyAbsoluteMinMaxHeight(const ContainingBlock* containingBlock, float& top, float& bottom, unsigned autoMask);
+    unsigned resolveAbsoluteWidth(const ContainingBlockPtr& containingBlock, float& left, float& right, float r = NAN);
+    unsigned applyAbsoluteMinMaxWidth(const ContainingBlockPtr& containingBlock, float& left, float& right, unsigned autoMask);
+    unsigned resolveAbsoluteHeight(const ContainingBlockPtr& containingBlock, float& top, float& bottom, float r = NAN);
+    unsigned applyAbsoluteMinMaxHeight(const ContainingBlockPtr& containingBlock, float& top, float& bottom, unsigned autoMask);
 
-    bool hasAnonymousBox(Box* prev) const;
+    bool hasAnonymousBox(const BoxPtr& prev) const;
     // Gets the anonymous child box. Creates one if there's none even
     // if there's no children; if so, the existing texts are moved to the
     // new anonymous box.
-    Block* getAnonymousBox(Box* prev);
+    BlockPtr getAnonymousBox(const BoxPtr& prev);
 
     bool isCollapsableInside() const;
     bool isCollapsableOutside() const;
 
     void resolveBackground(ViewCSSImp* view);
-    void resolveBackgroundPosition(ViewCSSImp* view, const ContainingBlock* containingBlock);
+    void resolveBackgroundPosition(ViewCSSImp* view, const ContainingBlockPtr& containingBlock);
     void resolveHeight();
     virtual float resolveWidth(float w, FormattingContext* context, float r = NAN);
     float setWidth(float w, float maxWidth, float minWidth);
@@ -735,7 +742,7 @@ public:
         return mcw;
     }
 
-    virtual void resolveXY(ViewCSSImp* view, float left, float top, Block* clip);
+    virtual void resolveXY(ViewCSSImp* view, float left, float top, const BlockPtr&clip);
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context);
     virtual void render(ViewCSSImp* view, StackingContext* stackingContext);
     virtual void dump(std::string indent = "");
@@ -781,24 +788,28 @@ class LineBox : public Box
 
     float leftGap;    // the gap between the first inline box and the last left floating box
     float rightGap;   // the gap between the last inline box and the 1st right floating box
-    Block* rightBox;  // the 1st right floating box
+    std::weak_ptr<Block> rightBox;  // the 1st right floating box
 
 public:
     LineBox(const CSSStyleDeclarationPtr& style);
+
+    LineBoxPtr self() const {
+        return std::const_pointer_cast<LineBox>(std::static_pointer_cast<const LineBox>(shared_from_this()));
+    }
 
     virtual unsigned getBoxType() const {
         return LINE_BOX;
     }
 
-    virtual const Box* towardViewPort(const Box* child, float& x, float& y) const {
-        for (const Box* box = child->getPreviousSibling(); box; box = box->getPreviousSibling()) {
+    virtual const BoxPtr towardViewPort(const BoxPtr& child, float& x, float& y) const {
+        for (BoxPtr box = child->getPreviousSibling(); box; box = box->getPreviousSibling()) {
             if (box->isAbsolutelyPositioned())
                 continue;
             x += box->width + box->getBlankRight() - box->offsetH;
             y -= box->getBlankTop() + box->offsetV;
             return box;
         }
-        return this;
+        return self();
     }
 
     float getBaseline() const {
@@ -822,15 +833,17 @@ public:
         return height != 0.0f;  // TODO: Check whether this is correct.
     }
 
-    virtual void resolveXY(ViewCSSImp* view, float left, float top, Block* clip);
+    BlockPtr getRightBox() const {
+        return rightBox.lock();
+    }
+
+    virtual void resolveXY(ViewCSSImp* view, float left, float top, const BlockPtr&clip);
     virtual bool layOut(ViewCSSImp* view, FormattingContext* context);
     virtual void render(ViewCSSImp* view, StackingContext* stackingContext);
     virtual void dump(std::string indent);
     virtual float shrinkTo();
     virtual void fit(float w, FormattingContext* context);
 };
-
-typedef boost::intrusive_ptr<LineBox> LineBoxPtr;
 
 // words inside a line
 class InlineBox : public Box
@@ -855,6 +868,10 @@ class InlineBox : public Box
 
 public:
     InlineBox(Node node, const CSSStyleDeclarationPtr& style);
+
+    InlineBoxPtr self() const {
+        return std::const_pointer_cast<InlineBox>(std::static_pointer_cast<const InlineBox>(shared_from_this()));
+    }
 
     virtual unsigned getBoxType() const {
         return INLINE_LEVEL_BOX;
@@ -893,7 +910,7 @@ public:
     std::u16string getWrapText() const {
         return data.substr(wrap);
     }
-    InlineBox* split();
+    InlineBoxPtr split();
 
     // has non-zero margins, padding, or borders?
     bool hasHeight() const {
@@ -924,24 +941,12 @@ public:
     const std::u16string& getData() const {
         return data;
     }
-    virtual void resolveXY(ViewCSSImp* view, float left, float top, Block* clip);
+    virtual void resolveXY(ViewCSSImp* view, float left, float top, const BlockPtr&clip);
     virtual void render(ViewCSSImp* view, StackingContext* stackingContext);
     void renderOutline(ViewCSSImp* view);
 
     virtual void dump(std::string indent);
 };
-
-typedef boost::intrusive_ptr<InlineBox> InlineBoxPtr;
-
-inline void intrusive_ptr_add_ref(Box* imp)
-{
-    imp->retain_();
-}
-
-inline void intrusive_ptr_release(Box* imp)
-{
-    imp->release_();
-}
 
 }}}}  // org::w3c::dom::bootstrap
 

@@ -91,7 +91,7 @@ bool FormattingContext::hasChanged(const SavedFormattingContext::MarginContext& 
     return previousMargin != context.previousMargin;
 }
 
-void FormattingContext::saveContext(Block* block)
+void FormattingContext::saveContext(const BlockPtr& block)
 {
     block->savedFormattingContext.blankLeft = blankLeft;
     block->savedFormattingContext.blankRight = blankRight;
@@ -114,20 +114,20 @@ void FormattingContext::saveContext(Block* block)
     block->savedFormattingContext.saved = true;
 }
 
-void FormattingContext::restoreContext(Block* block)
+void FormattingContext::restoreContext(const BlockPtr& block)
 {
     assert(block->savedFormattingContext.saved);
     blankLeft = block->savedFormattingContext.blankLeft;
     blankRight = block->savedFormattingContext.blankRight;
     left.clear();
     for (auto i = block->savedFormattingContext.left.begin(); i != block->savedFormattingContext.left.end(); ++i) {
-        Block* floatingBox = i->floatingBox;
+        BlockPtr floatingBox = i->floatingBox;
         floatingBox->remainingHeight = i->remainingHeight;
         left.push_back(floatingBox);
     }
     right.clear();
     for (auto i = block->savedFormattingContext.right.begin(); i != block->savedFormattingContext.right.end(); ++i) {
-        Block* floatingBox = i->floatingBox;
+        BlockPtr floatingBox = i->floatingBox;
         floatingBox->remainingHeight = i->remainingHeight;
         right.push_back(floatingBox);
     }
@@ -156,7 +156,7 @@ void FormattingContext::restoreContext(Block* block)
         updateRemainingHeight(block->paddingBottom + block->borderBottom);
 }
 
-bool FormattingContext::hasChanged(const Block* block)
+bool FormattingContext::hasChanged(const BlockPtr& block)
 {
     if (!block->savedFormattingContext.saved)
         return true;
@@ -168,13 +168,13 @@ bool FormattingContext::hasChanged(const Block* block)
         return true;
     auto j = left.begin();
     for (auto i = block->savedFormattingContext.left.begin(); i != block->savedFormattingContext.left.end(); ++i, ++j) {
-        Block* floatingBox = *j;
+        BlockPtr floatingBox = *j;
         if (floatingBox != i->floatingBox || floatingBox->remainingHeight != i->remainingHeight)
             return true;
     }
     auto k = right.begin();
     for (auto i = block->savedFormattingContext.right.begin(); i != block->savedFormattingContext.right.end(); ++i, ++k) {
-        Block* floatingBox = *k;
+        BlockPtr floatingBox = *k;
         if (floatingBox != i->floatingBox || floatingBox->remainingHeight != i->remainingHeight)
             return true;
     }
@@ -195,7 +195,7 @@ bool FormattingContext::hasChanged(const Block* block)
     return false;
 }
 
-float FormattingContext::getLeftoverForFloat(Box* block, unsigned floatValue) const
+float FormattingContext::getLeftoverForFloat(const BoxPtr& block, unsigned floatValue) const
 {
     // cf. floats-rule3-outside-left-001 and floats-rule3-outside-right-001.
     switch (floatValue) {
@@ -203,8 +203,9 @@ float FormattingContext::getLeftoverForFloat(Box* block, unsigned floatValue) co
         if (!right.empty() && right.front()->edge < blankRight) {
             float max = leftover + blankRight - right.front()->edge;
             float w;
-            for (w = leftover; w < max && block && block->borderRight == 0.0f; block = block->parentBox)
-                w = std::min(w + block->paddingRight + block->marginRight, max);
+            BoxPtr box;
+            for (w = leftover, box = block; w < max && box && box->borderRight == 0.0f; box = box->getParentBox())
+                w = std::min(w + box->paddingRight + box->marginRight, max);
             return w;
         }
         break;
@@ -212,8 +213,9 @@ float FormattingContext::getLeftoverForFloat(Box* block, unsigned floatValue) co
         if (!left.empty() && left.front()->edge < blankLeft) {
             float max = leftover + blankLeft - left.front()->edge;
             float w;
-            for (w = leftover; w < max && block && block->borderLeft == 0.0f; block = block->parentBox)
-                w = std::min(w + block->paddingLeft + block->marginLeft, max);
+            BoxPtr box;
+            for (w = leftover, box = block; w < max && box && box->borderLeft == 0.0f; box = box->getParentBox())
+                w = std::min(w + box->paddingLeft + box->marginLeft, max);
             return w;
         }
         break;
@@ -247,12 +249,12 @@ float FormattingContext::getRightRemainingHeight() const {
     return right.front()->remainingHeight;
 }
 
-LineBox* FormattingContext::addLineBox(ViewCSSImp* view, Block* parentBox) {
+LineBoxPtr FormattingContext::addLineBox(ViewCSSImp* view, const BlockPtr& parentBox) {
     assert(!lineBox);
     assert(parentBox);
     baseline = lineHeight = 0.0f;
     isFirstLine = false;
-    lineBox = new(std::nothrow) LineBox(parentBox->getStyle());
+    lineBox = std::make_shared<LineBox>(parentBox->getStyle());
     if (lineBox) {
         parentBox->appendChild(lineBox);
 
@@ -288,7 +290,7 @@ LineBox* FormattingContext::addLineBox(ViewCSSImp* view, Block* parentBox) {
 void FormattingContext::tryAddFloat(ViewCSSImp* view)
 {
     while (!floatingBoxes.empty()) {
-        Block* floatingBox = floatingBoxes.front();
+        BlockPtr floatingBox = floatingBoxes.front();
         unsigned clear = floatingBox->style->clear.getValue();
         if ((clear & CSSClearValueImp::Left) && !left.empty() ||
             (clear & CSSClearValueImp::Right) && !right.empty()) {
@@ -309,22 +311,19 @@ void FormattingContext::tryAddFloat(ViewCSSImp* view)
 
 namespace {
 
-bool isCollapsedThroughToParent(Block* block, Block* from)
+bool isCollapsedThroughToParent(const BlockPtr& block, const BlockPtr& from)
 {
-    Block* to = block;
+    BlockPtr to(block);
     while (to->isCollapsedThrough()) {
-        Block* next = dynamic_cast<Block*>(to->getNextSibling());
+        auto next = std::dynamic_pointer_cast<Block>(to->getNextSibling());
         if (!next)
             break;
         if (next == from) {
-            for (to = block;
-                 next = dynamic_cast<Block*>(to->getPreviousSibling());
-                 to = next)
-            {
+            for (to = block; next = std::dynamic_pointer_cast<Block>(to->getPreviousSibling()); to = next) {
                 if (!next->isCollapsedThrough())
                     return false;
             }
-            if (Block* parent = dynamic_cast<Block*>(to->getParentBox())) {
+            if (auto parent = std::dynamic_pointer_cast<Block>(to->getParentBox())) {
                 if (parent->isCollapsableInside() && parent->getBorderTop() == 0 && parent->getPaddingTop() == 0)
                     return true;
             }
@@ -337,12 +336,12 @@ bool isCollapsedThroughToParent(Block* block, Block* from)
 
 }
 
-float FormattingContext::adjustRemainingHeight(float h, Block* from)
+float FormattingContext::adjustRemainingHeight(float h, const BlockPtr& from)
 {
     float consumed = 0.0f;
     for (auto i = left.begin(); i != left.end();) {
         if (from) {
-            Block* b = dynamic_cast<Block*>((*i)->parentBox->parentBox);
+            auto b = std::dynamic_pointer_cast<Block>((*i)->getParentBox()->getParentBox());
             if (isCollapsedThroughToParent(b, from)) {
                 ++i;
                 continue;
@@ -356,7 +355,7 @@ float FormattingContext::adjustRemainingHeight(float h, Block* from)
     }
     for (auto i = right.begin(); i != right.end();) {
         if (from) {
-            Block* b = dynamic_cast<Block*>((*i)->parentBox->parentBox);
+            auto b = std::dynamic_pointer_cast<Block>((*i)->getParentBox()->getParentBox());
             if (isCollapsedThroughToParent(b, from)) {
                 ++i;
                 continue;
@@ -371,7 +370,7 @@ float FormattingContext::adjustRemainingHeight(float h, Block* from)
     return consumed;
 }
 
-void FormattingContext::useMargin(Block* block)
+void FormattingContext::useMargin(const BlockPtr&block)
 {
     if (block->marginUsed)
         return;
@@ -471,26 +470,26 @@ bool FormattingContext::shiftDownLineBox(ViewCSSImp* view)
 bool FormattingContext::hasNewFloats() const
 {
     if (!left.empty()) {
-        Block* box = left.back();
+        BlockPtr box = left.back();
         if (!box->inserted)
             return true;
     }
     if (!right.empty()) {
-        Block* box = right.front();
+        BlockPtr box = right.front();
         if (!box->inserted)
             return true;
     }
     return false;
 }
 
-void FormattingContext::appendInlineBox(ViewCSSImp* view, InlineBox* inlineBox, const CSSStyleDeclarationPtr& activeStyle)
+void FormattingContext::appendInlineBox(ViewCSSImp* view, const InlineBoxPtr& inlineBox, const CSSStyleDeclarationPtr& activeStyle)
 {
     assert(lineBox);
     baseline = lineBox->baseline;
     lineHeight = lineBox->height;
 
     if (lineBox->baseline == 0.0f && lineBox->height == 0.0f) {
-        Block* parentBox = dynamic_cast<Block*>(lineBox->getParentBox());
+        auto parentBox = std::dynamic_pointer_cast<Block>(lineBox->getParentBox());
         assert(parentBox);
         if (parentBox->defaultBaseline == 0.0f && parentBox->defaultLineHeight == 0.0f) {
             CSSStyleDeclarationPtr parentStyle = parentBox->getStyle();
@@ -538,7 +537,7 @@ void FormattingContext::appendInlineBox(ViewCSSImp* view, InlineBox* inlineBox, 
 void FormattingContext::dontWrap()
 {
     assert(lineBox);
-    if (InlineBox* box = dynamic_cast<InlineBox*>(lineBox->getLastChild())) {
+    if (auto box = std::dynamic_pointer_cast<InlineBox>(lineBox->getLastChild())) {
         box->wrap = box->data.length();
         box->wrapWidth = box->width;
     }
@@ -546,7 +545,7 @@ void FormattingContext::dontWrap()
 
 // Complete the current lineBox by adding float boxes if any.
 // Then update remainingHeight.
-void FormattingContext::nextLine(ViewCSSImp* view, Block* parentBox, bool linefeed)
+void FormattingContext::nextLine(ViewCSSImp* view, const BlockPtr& parentBox, bool linefeed)
 {
     assert(lineBox);
     assert(lineBox == parentBox->lastChild);
@@ -554,7 +553,7 @@ void FormattingContext::nextLine(ViewCSSImp* view, Block* parentBox, bool linefe
     if (linefeed)
         dontWrap();
 
-    if (InlineBox* inlineBox = dynamic_cast<InlineBox*>(lineBox->getLastChild())) {
+    if (auto inlineBox = std::dynamic_pointer_cast<InlineBox>(lineBox->getLastChild())) {
         float w = inlineBox->atEndOfLine();
         if (w < 0.0f) {
             if (inlineBox->width <= 0.0f) {
@@ -568,7 +567,7 @@ void FormattingContext::nextLine(ViewCSSImp* view, Block* parentBox, bool linefe
     }
 
     for (auto i = left.rbegin(); i != left.rend(); ++i) {
-        Block* floatingBox = *i;
+        BlockPtr floatingBox = *i;
         if (!floatingBox->inserted) {
             floatingBox->inserted = true;
             lineBox->insertBefore(floatingBox, lineBox->getFirstChild());
@@ -576,11 +575,11 @@ void FormattingContext::nextLine(ViewCSSImp* view, Block* parentBox, bool linefe
         }
     }
     for (auto i = right.begin(); i != right.end(); ++i) {
-        Block* floatingBox = *i;
+        BlockPtr floatingBox = *i;
         if (!floatingBox->inserted) {
             floatingBox->inserted = true;
             // We would need a gap before the 1st right floating box to be added.
-            if (!lineBox->rightBox)
+            if (!lineBox->getRightBox())
                 lineBox->rightBox = floatingBox;
             lineBox->appendChild(floatingBox);
             parentBox->updateMCW(floatingBox->mcw);
@@ -608,7 +607,7 @@ void FormattingContext::nextLine(ViewCSSImp* view, Block* parentBox, bool linefe
     breakable = false;
 }
 
-void FormattingContext::addFloat(Block* floatingBox, float totalWidth)
+void FormattingContext::addFloat(const BlockPtr& floatingBox, float totalWidth)
 {
     if (floatingBox->style->float_.getValue() == CSSFloatValueImp::Left) {
         if (left.empty())
@@ -704,7 +703,7 @@ bool FormattingContext::isFirstCharacter(const std::u16string& text)
     char32_t ch = nextChar(text, pos);
     if (!ch)
         return false;
-    InlineBox* box = dynamic_cast<InlineBox*>(lineBox->getLastChild());
+    auto box = std::dynamic_pointer_cast<InlineBox>(lineBox->getLastChild());
     while (box && box->hasWrapBox()) {
         std::u16string wrapText = box->getWrapText();
         size_t wrapLength = wrapText.length();
@@ -722,15 +721,15 @@ bool FormattingContext::isFirstCharacter(const std::u16string& text)
             return u_ispunct(last);
         }
         result = false;
-        box = dynamic_cast<InlineBox*>(box->getPreviousSibling());
+        box = std::dynamic_pointer_cast<InlineBox>(box->getPreviousSibling());
     }
     return result;
 }
 
-InlineBox* FormattingContext::getWrapBox(const std::u16string& text)
+InlineBoxPtr FormattingContext::getWrapBox(const std::u16string& text)
 {
-    InlineBox* wrapBox = 0;
-    InlineBox* box = dynamic_cast<InlineBox*>(lineBox->getLastChild());
+    InlineBoxPtr wrapBox;
+    auto box = std::dynamic_pointer_cast<InlineBox>(lineBox->getLastChild());
     size_t pos = 0;
     char32_t ch = nextChar(text, pos);
     while (box && box->hasWrapBox()) {
@@ -745,7 +744,7 @@ InlineBox* FormattingContext::getWrapBox(const std::u16string& text)
         wrapBox = box;
         if (0 < box->getWrap())
             break;
-        box = dynamic_cast<InlineBox*>(box->getPreviousSibling());
+        box = std::dynamic_pointer_cast<InlineBox>(box->getPreviousSibling());
         pos = 0;
         if (char32_t n = nextChar(wrapBox->getData(), pos))
             ch = n;
@@ -753,13 +752,13 @@ InlineBox* FormattingContext::getWrapBox(const std::u16string& text)
     if (!wrapBox)
         return 0;
     if (0 < wrapBox->getWrap()) {
-        box = dynamic_cast<InlineBox*>(wrapBox->getNextSibling());
+        box = std::dynamic_pointer_cast<InlineBox>(wrapBox->getNextSibling());
         wrapBox = wrapBox->split();
         wrapBox->nextSibling = box;
     } else
         box = wrapBox;
     while (box) {
-        InlineBox* next = dynamic_cast<InlineBox*>(box->getNextSibling());
+        auto next = std::dynamic_pointer_cast<InlineBox>(box->getNextSibling());
         box->getParentBox()->removeChild(box);
         box->nextSibling = next;
         box = next;

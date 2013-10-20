@@ -1931,7 +1931,7 @@ bool CSSStyleDeclarationImp::updateCounters(ViewCSSImp* view, CSSAutoNumberingVa
 
 // calculate resolved values that requite containing block information for calucuration
 // cf. CSSOM 7. Resolved Values
-unsigned CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock* containingBlock)
+unsigned CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlockPtr& containingBlock)
 {
     unsigned result = 0;
 
@@ -1980,7 +1980,7 @@ unsigned CSSStyleDeclarationImp::resolve(ViewCSSImp* view, const ContainingBlock
 
     bool nonExplicitWidth = false;
     bool nonExplicitHeight = false;
-    if (const Box* containingBox = dynamic_cast<const Box*>(containingBlock)) {
+    if (auto containingBox = std::dynamic_pointer_cast<Box>(containingBlock)) {
         CSSStyleDeclarationPtr containingStyle = containingBox->getStyle();
         if (containingStyle && !isAbsolutelyPositioned()) {
             // While it is not defined in CSS 2.1, we treat an unknown percentage width as
@@ -2176,45 +2176,65 @@ bool CSSStyleDeclarationImp::isFlowRoot() const
            /* TODO || and more conditions... */
 }
 
-void CSSStyleDeclarationImp::clearBox()
+void CSSStyleDeclarationImp::addBox(const BoxPtr& b)
 {
-    box = lastBox = nullptr;
-}
-
-void CSSStyleDeclarationImp::addBox(Box* b)
-{
-    if (dynamic_cast<Block*>(b))
-        box = lastBox = b;
-    else if (InlineBox* inlineBox = dynamic_cast<InlineBox*>(b)) {
+    if (std::dynamic_pointer_cast<Block>(b)) {
+        boxList.clear();
+        boxList.push_back(b);
+    } else if (auto inlineBox = std::dynamic_pointer_cast<InlineBox>(b)) {
         if (isBlockLevel())
             return;
         if (isInlineBlock() && inlineBox->getFont())
             return;
-        if (!box)
-            box = lastBox = b;
-        else
-            lastBox = b;
+        boxList.push_back(b);
         if (auto parentStyle = getParentStyle())
             parentStyle->addBox(b);
     }
 }
 
-void CSSStyleDeclarationImp::removeBox(Box* b)
+void CSSStyleDeclarationImp::removeBox(const BoxPtr& b)
 {
-    CSSStyleDeclarationPtr style = getCSSStyleDeclarationPtr();
-    do {
-        if (style->box == b && style->lastBox == b)
-            style->box = style->lastBox = 0;
-        else if (style->box == b)
-            style->box = style->lastBox;
-        else if (style->lastBox == b)
-            style->lastBox = style->box;
-        else
+    for (auto i = boxList.begin(); i != boxList.end(); i->expired() ? (i = boxList.erase(i)) : ++i) {
+        if (i->lock() == b) {
+            i = boxList.erase(i);
+            if (auto parent = getParentStyle())
+                parent->removeBox(b);
             break;
-    } while (style = style->getParentStyle());
+        }
+    }
 }
 
-Block* CSSStyleDeclarationImp::updateInlines(Element element)
+BoxPtr CSSStyleDeclarationImp::getBox() const
+{
+    for (auto i = boxList.begin(); i != boxList.end(); i->expired() ? (i = boxList.erase(i)) : ++i) {
+        if (auto box = i->lock())
+            return box;
+    }
+    return nullptr;
+}
+
+BoxPtr CSSStyleDeclarationImp::getLastBox() const
+{
+    for (auto i = boxList.rbegin(); i != boxList.rend(); ++i) {
+        if (auto box = i->lock())
+            return box;
+    }
+    return nullptr;
+}
+
+bool CSSStyleDeclarationImp::hasMultipleBoxes() const
+{
+    unsigned count{0};
+    for (auto i = boxList.begin(); i != boxList.end(); i->expired() ? (i = boxList.erase(i)) : ++i) {
+        if (auto box = i->lock()) {
+            if (1 < ++count)
+                return true;
+        }
+    }
+    return nullptr;
+}
+
+BlockPtr CSSStyleDeclarationImp::updateInlines(Element element)
 {
     CSSStyleDeclarationPtr style = getCSSStyleDeclarationPtr();
     do {
@@ -2227,7 +2247,7 @@ Block* CSSStyleDeclarationImp::updateInlines(Element element)
             break;
         case CSSDisplayValueImp::Table:
         case CSSDisplayValueImp::InlineTable:
-            if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(style->getBox())) {
+            if (auto table = std::dynamic_pointer_cast<TableWrapperBox>(style->getBox())) {
                 table->revertTablePart(element);
                 return table;
             }
@@ -2237,7 +2257,7 @@ Block* CSSStyleDeclarationImp::updateInlines(Element element)
         case CSSDisplayValueImp::InlineBlock:
         case CSSDisplayValueImp::TableCell:
         case CSSDisplayValueImp::TableCaption:
-            if (Block* block = dynamic_cast<Block*>(style->getBox())) {
+            if (auto block = std::dynamic_pointer_cast<Block>(style->getBox())) {
                 block->clearInlines();
                 return block;
             }
@@ -2256,7 +2276,7 @@ Block* CSSStyleDeclarationImp::updateInlines(Element element)
     return 0;
 }
 
-Block* CSSStyleDeclarationImp::revert(Element element)
+BlockPtr CSSStyleDeclarationImp::revert(Element element)
 {
     auto parentStyle = getParentStyle();
     if (parentStyle && stackingContext && parentStyle->stackingContext != stackingContext) {
@@ -2264,24 +2284,24 @@ Block* CSSStyleDeclarationImp::revert(Element element)
         stackingContext = 0;
     }
 
-    Block* block = dynamic_cast<Block*>(getBox());
+    auto block = std::dynamic_pointer_cast<Block>(getBox());
     if (!block)
         return updateInlines(element);
 
     if (stackingContext)
         stackingContext->removeBox(block);
 
-    Block* holder = 0;
-    for (Box* parent = block->getParentBox(); parent; parent = parent->getParentBox()) {
-        if (holder = dynamic_cast<Block*>(parent))
+    BlockPtr holder;
+    for (BoxPtr parent = block->getParentBox(); parent; parent = parent->getParentBox()) {
+        if (holder = std::dynamic_pointer_cast<Block>(parent))
             break;
     }
     if (!holder)
         return 0;
 
-    TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(holder);
+    auto table = std::dynamic_pointer_cast<TableWrapperBox>(holder);
     if (!table)
-        table = dynamic_cast<TableWrapperBox*>(holder->getParentBox());
+        table = std::dynamic_pointer_cast<TableWrapperBox>(holder->getParentBox());
     if (table) {
         table->revertTablePart(block->getNode());
         holder = table;
@@ -2292,14 +2312,13 @@ Block* CSSStyleDeclarationImp::revert(Element element)
         assert(block->getParentBox() == holder);
         holder->removeChild(block);
         block->removeDescendants();
-        block->release_();
         holder->setFlags(Box::NEED_REFLOW);
     }
     clearBox();
 
     if (holder->isAnonymous()) {
         block = holder;
-        holder = dynamic_cast<Block*>(block->getParentBox());
+        holder = std::dynamic_pointer_cast<Block>(block->getParentBox());
         if (holder)
             holder->clearInlines();
         else {
@@ -2309,7 +2328,6 @@ Block* CSSStyleDeclarationImp::revert(Element element)
             if (auto parent = block->getParentBox()) {
                 parent->removeChild(block);
                 block->removeDescendants();
-                block->release_();
             }
             holder = 0;
         }
@@ -2321,7 +2339,7 @@ Block* CSSStyleDeclarationImp::revert(Element element)
 void CSSStyleDeclarationImp::requestReconstruct(unsigned short flags)
 {
     for (CSSStyleDeclarationPtr style = getCSSStyleDeclarationPtr(); style; style = style->getParentStyle()) {
-        if (Block* block = dynamic_cast<Block*>(style->getBox())) {
+        if (auto block = std::dynamic_pointer_cast<Block>(style->getBox())) {
             block->setFlags(flags);
             return;
         }
@@ -3951,8 +3969,6 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp(int pseudoElementSelectorType) :
     pseudoElementSelectorType(pseudoElementSelectorType),
     containingBlockWidth(0.0f),
     containingBlockHeight(0.0f),
-    box(0),
-    lastBox(0),
     backgroundColor(CSSColorValueImp::Transparent),
     borderTop(0),
     borderRight(1),
@@ -3986,8 +4002,6 @@ CSSStyleDeclarationImp::CSSStyleDeclarationImp(const CSSStyleDeclarationPtr& org
     pseudoElementSelectorType(org->pseudoElementSelectorType),
     containingBlockWidth(0.0f),
     containingBlockHeight(0.0f),
-    box(0),
-    lastBox(0),
     backgroundColor(CSSColorValueImp::Transparent),
     borderTop(0),
     borderRight(1),

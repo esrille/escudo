@@ -79,6 +79,8 @@ void TableWrapperBox::renderLayers(ViewCSSImp* view)
     float bottom;
 
     // column groups
+    BlockPtr tableBox(getTableBox());
+    assert(tableBox);
     w = tableBox->getX() + tableBox->getMarginLeft();
     for (unsigned x = 0; x < xWidth;) {
         CSSStyleDeclarationPtr columnGroupStyle = columnGroups[x];
@@ -94,12 +96,12 @@ void TableWrapperBox::renderLayers(ViewCSSImp* view)
                 wN += widths[x + elements];
                 ++elements;
             }
-            if (CellBox* cellBox = grid[0][x].get()) {
+            if (CellBoxPtr cellBox = grid[0][x]) {
                 h0 = cellBox->y + cellBox->getMarginTop();
                 if (!cellBox->isLeftSpanned(x)) // TODO: else look up for a single column spanning cell.
                     w0 = cellBox->x + cellBox->getMarginLeft();
             }
-            if (CellBox* cellBox = grid[yHeight - 1][x + elements - 1].get()) {
+            if (CellBoxPtr cellBox = grid[yHeight - 1][x + elements - 1]) {
                 hN = cellBox->y + cellBox->getTotalHeight() - cellBox->getMarginBottom();
                 if (!cellBox->isRightSpanned(x + elements)) // TODO: else look up for a single column spanning cell.
                     wN = cellBox->x + cellBox->getTotalWidth() - cellBox->getMarginRight();
@@ -107,7 +109,7 @@ void TableWrapperBox::renderLayers(ViewCSSImp* view)
             unsigned x0 = x;
             for (unsigned end = x + elements; x < end; w += widths[x], ++x) {
                 for (unsigned y = 0; y < yHeight; h += heights[y], ++y) {
-                    CellBox* cellBox = grid[y][x].get();
+                    CellBoxPtr cellBox = grid[y][x];
                     if (!cellBox || cellBox->isEmptyCell() || cellBox->isSpanned(x, y))
                         continue;
                     left = cellBox->x;
@@ -148,18 +150,18 @@ void TableWrapperBox::renderLayers(ViewCSSImp* view)
             float h0 = h;
             float wN = w0 + widths[x];
             float hN = h0 + tableBox->height;
-            if (CellBox* cellBox = grid[0][x].get()) {
+            if (CellBoxPtr cellBox = grid[0][x]) {
                 h0 = cellBox->y + cellBox->getMarginTop();
                 if (!cellBox->isLeftSpanned(x)) // TODO: else look up for a single column spanning cell.
                     w0 = cellBox->x + cellBox->getMarginLeft();
             }
-            if (CellBox* cellBox = grid[yHeight - 1][x].get()) {
+            if (CellBoxPtr cellBox = grid[yHeight - 1][x]) {
                 hN = cellBox->y + cellBox->getTotalHeight() - cellBox->getMarginBottom();
                 if (!cellBox->isRightSpanned(x + 1)) // TODO: else look up for a single column spanning cell.
                     wN = cellBox->x + cellBox->getTotalWidth() - cellBox->getMarginRight();
             }
             for (unsigned y = 0; y < yHeight; h += heights[y], ++y) {
-                CellBox* cellBox = grid[y][x].get();
+                CellBoxPtr cellBox = grid[y][x];
                 if (!cellBox || cellBox->isEmptyCell() || cellBox->isSpanned(x, y))
                     continue;
                 left = cellBox->x;
@@ -200,12 +202,12 @@ void TableWrapperBox::renderLayers(ViewCSSImp* view)
                 hN += heights[y + elements];
                 ++elements;
             }
-            if (CellBox* cellBox = grid[y][0].get()) {
+            if (CellBoxPtr cellBox = grid[y][0]) {
                 w0 = cellBox->x + cellBox->getMarginLeft();
                 if (!cellBox->isTopSpanned(y)) // TODO: else look up for a single row spanning cell.
                     h0 = cellBox->y + cellBox->getMarginTop();
             }
-            if (CellBox* cellBox = grid[y + elements - 1][xWidth - 1].get()) {
+            if (CellBoxPtr cellBox = grid[y + elements - 1][xWidth - 1]) {
                 wN = cellBox->x + cellBox->getTotalWidth() - cellBox->getMarginRight();
                 if (!cellBox->isBottomSpanned(y + elements)) // TODO: else look up for a single row spanning cell.
                     hN = cellBox->y + cellBox->getTotalHeight() - cellBox->getMarginBottom();
@@ -213,7 +215,7 @@ void TableWrapperBox::renderLayers(ViewCSSImp* view)
             unsigned y0 = y;
             for (unsigned end = y + elements; y < end; h += heights[y], ++y) {
                 for (unsigned x = 0; x < xWidth; w += widths[x], ++x) {
-                    CellBox* cellBox = grid[y][x].get();
+                    CellBoxPtr cellBox = grid[y][x];
                     if (!cellBox || cellBox->isEmptyCell() || cellBox->isSpanned(x, y))
                         continue;
                     left = cellBox->x;
@@ -254,18 +256,18 @@ void TableWrapperBox::renderLayers(ViewCSSImp* view)
             float h0 = h;
             float wN = w0 + tableBox->width;
             float hN = h0 + heights[y];
-            if (CellBox* cellBox = grid[y][0].get()) {
+            if (CellBoxPtr cellBox = grid[y][0]) {
                 w0 = cellBox->x + cellBox->getMarginLeft();
                 if (!cellBox->isTopSpanned(y)) // TODO: else look up for a single row spanning cell.
                     h0 = cellBox->y + cellBox->getMarginTop();
             }
-            if (CellBox* cellBox = grid[y][xWidth - 1].get()) {
+            if (CellBoxPtr cellBox = grid[y][xWidth - 1]) {
                 wN = cellBox->x + cellBox->getTotalWidth() - cellBox->getMarginRight();
                 if (!cellBox->isBottomSpanned(y + 1)) // TODO: else look up for a single row spanning cell.
                     hN = cellBox->y + cellBox->getTotalHeight() - cellBox->getMarginBottom();
             }
             for (unsigned x = 0; x < xWidth; w += widths[x], ++x) {
-                CellBox* cellBox = grid[y][x].get();
+                CellBoxPtr cellBox = grid[y][x];
                 if (!cellBox || cellBox->isEmptyCell() || cellBox->isSpanned(x, y))
                     continue;
                 left = cellBox->x;
@@ -300,6 +302,8 @@ void TableWrapperBox::renderTableBorders(ViewCSSImp* view)
         return;
 
     glDisable(GL_TEXTURE_2D);
+    BlockPtr tableBox(getTableBox());
+    assert(tableBox);
     float h = tableBox->getY() + tableBox->getMarginTop() + tableBox->getBorderTop() ;
     for (unsigned y = 0; y < yHeight + 1; h += heights[y], ++y) {
         float w = tableBox->getX() + tableBox->getMarginLeft() + tableBox->getBorderLeft();
@@ -365,6 +369,8 @@ void TableWrapperBox::renderTableOutlines(ViewCSSImp* view)
     // of table-column or table-column-group.
 
     // row groups
+    BlockPtr tableBox(getTableBox());
+    assert(tableBox);
     float h = tableBox->getY() + tableBox->getMarginTop();
     for (unsigned y = 0; y < yHeight;) {
         CSSStyleDeclarationPtr rowGroupStyle = rowGroups[y];
@@ -394,7 +400,7 @@ void TableWrapperBox::renderTableOutlines(ViewCSSImp* view)
     // cells
     for (unsigned y = 0; y < yHeight; ++y) {
         for (unsigned x = 0; x < xWidth; ++x) {
-            CellBox* cellBox = grid[y][x].get();
+            CellBoxPtr cellBox = grid[y][x];
             if (!cellBox || cellBox->isEmptyCell() || cellBox->isSpanned(x, y))
                 continue;
             cellBox->renderOutline(view, cellBox->x, cellBox->y);

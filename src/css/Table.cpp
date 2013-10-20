@@ -50,7 +50,7 @@ void CellBox::fit(float w, FormattingContext* context)
     if (getBlockWidth() == w)
         return;
     width = w - getBlankLeft() - getBlankRight();
-    for (Box* child = getFirstChild(); child; child = child->getNextSibling())
+    for (BoxPtr child = getFirstChild(); child; child = child->getNextSibling())
         child->fit(width, context);
 }
 
@@ -64,7 +64,7 @@ void CellBox::separateBorders(const CSSStyleDeclarationPtr& style, unsigned xWid
     marginLeft = (col == 0) ? hs : (hs / 2.0f);
 }
 
-void CellBox::collapseBorder(TableWrapperBox* wrapper)
+void CellBox::collapseBorder(const TableWrapperBoxPtr& wrapper)
 {
     borderTop = borderRight = borderBottom = borderLeft = 0.0f;
     marginTop = wrapper->getRowBorderValue(col, row)->getWidth() / 2.0f;
@@ -73,22 +73,22 @@ void CellBox::collapseBorder(TableWrapperBox* wrapper)
     marginLeft = wrapper->getColumnBorderValue(col, row)->getWidth() / 2.0f;
 }
 
-float CellBox::getBaseline(const Box* box) const
+float CellBox::getBaseline(const BoxPtr& box) const
 {
     float baseline = box->getBlankTop();
-    for (Box* i = box->getFirstChild(); i; i = i->getNextSibling()) {
-        if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(i))
+    for (BoxPtr i = box->getFirstChild(); i; i = i->getNextSibling()) {
+        if (auto table = std::dynamic_pointer_cast<TableWrapperBox>(i))
             return baseline + table->getBaseline();
-        else if (Block* block = dynamic_cast<Block*>(i)) {
+        else if (auto block = std::dynamic_pointer_cast<Block>(i)) {
             float x = getBaseline(block);
             if (!isnan(x))
                 return baseline + x;
-        } else if (LineBox* lineBox = dynamic_cast<LineBox*>(i)) {
+        } else if (auto lineBox = std::dynamic_pointer_cast<LineBox>(i)) {
             if (lineBox->hasInlineBox())
                 return baseline + lineBox->getBaseline();
         }
         baseline += i->getTotalHeight();
-        if (box->height != 0.0f || !dynamic_cast<LineBox*>(box->getFirstChild()))
+        if (box->height != 0.0f || !std::dynamic_pointer_cast<LineBox>(box->getFirstChild()))
             baseline += i->getClearance();
     }
     return NAN;
@@ -96,13 +96,13 @@ float CellBox::getBaseline(const Box* box) const
 
 float CellBox::getBaseline() const
 {
-    float x = getBaseline(this);
+    float x = getBaseline(self());
     return !isnan(x) ? x : (getBlankTop() + height);
 }
 
 float CellBox::adjustWidth()
 {
-    TableWrapperBox* wrapper = dynamic_cast<TableWrapperBox*>(getParentBox()->getParentBox()->getParentBox());
+    auto wrapper(std::dynamic_pointer_cast<TableWrapperBox>(getParentBox()->getParentBox()->getParentBox()));
     assert(wrapper);
     if (wrapper->getStyle()->borderCollapse.getValue() == CSSBorderCollapseValueImp::Collapse)
         collapseBorder(wrapper);
@@ -114,7 +114,7 @@ float CellBox::adjustWidth()
         return columnWidth;
 
     width = columnWidth - getBlankLeft() - getBlankRight();
-    for (Box* i = getFirstChild(); i; i = i->getNextSibling())
+    for (BoxPtr i = getFirstChild(); i; i = i->getNextSibling())
         i->unresolveStyle();
     return width;
 }
@@ -127,7 +127,7 @@ float CellBox::shrinkTo()
     float min = 0.0f;
     if (!isAnonymous() && style && !style->width.isAuto())
         min = style->width.getPx();
-    for (Box* child = getFirstChild(); child; child = child->getNextSibling())
+    for (BoxPtr child = getFirstChild(); child; child = child->getNextSibling())
         min = std::max(min, child->shrinkTo());
     return min + getBlankLeft() + getBlankRight();
 }
@@ -176,13 +176,10 @@ TableWrapperBox::TableWrapperBox(ViewCSSImp* view, Element element, const CSSSty
     table(element),
     xWidth(0),
     yHeight(0),
-    tableBox(0),
     isAnonymousTable(style->display != CSSDisplayValueImp::Table && style->display != CSSDisplayValueImp::InlineTable),
     inRow(false),
     xCurrent(0),
     yCurrent(0),
-    anonymousCell(0),
-    anonymousTable(0),
     yTheadBegin(0),
     yTheadEnd(0),
     yTfootBegin(0),
@@ -226,30 +223,30 @@ void TableWrapperBox::constructBlocks()
 
     // Top caption boxes
     for (auto i = topCaptions.begin(); i != topCaptions.end(); ++i)
-        appendChild(i->get());
+        appendChild(*i);
 
     // Table box
-    tableBox = new(std::nothrow) Block(getNode(), getStyle());
-    if (tableBox) {
+    tableBox = std::make_shared<Block>(getNode(), getStyle());
+    if (auto box = getTableBox()) {
         for (unsigned y = 0; y < yHeight; ++y) {
-            LineBox* lineBox = new(std::nothrow) LineBox(0);
+            LineBoxPtr lineBox = std::make_shared<LineBox>(nullptr);
             if (!lineBox)
                 continue;
-            tableBox->appendChild(lineBox);
+            box->appendChild(lineBox);
             for (unsigned x = 0; x < xWidth; ++x) {
-                CellBox* cellBox = grid[y][x].get();
+                CellBoxPtr cellBox = grid[y][x];
                 if (!cellBox || cellBox->isSpanned(x, y))
                     continue;
                 cellBox->resetWidth();
                 lineBox->appendChild(cellBox);
             }
         }
-        appendChild(tableBox);
+        appendChild(box);
     }
 
     // Bottom caption boxes
     for (auto i = bottomCaptions.begin(); i != bottomCaptions.end(); ++i)
-        appendChild(i->get());
+        appendChild(*i);
 
     isAnonymousTable = false;
 
@@ -261,6 +258,7 @@ void TableWrapperBox::clearGrid()
 {
     // TODO: Except for blockMap, initialize data members for the upcoming block reconstruction.
     removeChildren();
+    tableBox.reset();
 
     topCaptions.clear();
     bottomCaptions.clear();
@@ -274,7 +272,6 @@ void TableWrapperBox::clearGrid()
     xWidth = 0;
     yHeight = 0;
 
-    tableBox = 0;
     borderRows.clear();
     borderColumns.clear();
 
@@ -304,10 +301,10 @@ void TableWrapperBox::clearGrid()
     yTfootEnd = 0;
 }
 
-Block* TableWrapperBox::constructTablePart(Node node)
+BlockPtr TableWrapperBox::constructTablePart(Node node)
 {
     assert(view);
-    Block* part = view->constructBlock(node, 0, 0, 0, true);
+    BlockPtr part = view->constructBlock(node, nullptr, nullptr, nullptr, true);
     if (part) {
         part->stackingContext = stackingContext;
         if (style)  // Do not support the incremental reflow with an anonymous table
@@ -350,15 +347,15 @@ void TableWrapperBox::revertTablePart(Node node)
 void TableWrapperBox::reconstructBlocks()
 {
     assert(view);
-    for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
+    for (BoxPtr child = getFirstChild(); child; child = child->getNextSibling()) {
         if (child->getFlags() & (Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION)) {
-            if (child != tableBox) {
+            if (child != getTableBox()) {
                 assert(child->getNode());
                 constructTablePart(child->getNode());
             } else {
                 for (unsigned y = 0; y < yHeight; ++y) {
                     for (unsigned x = 0; x < xWidth; ++x) {
-                        CellBox* cellBox = grid[y][x].get();
+                        CellBoxPtr cellBox = grid[y][x];
                         if (!cellBox || cellBox->isSpanned(x, y))
                             continue;
                         if (cellBox->flags & (Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION)) {
@@ -425,7 +422,7 @@ bool TableWrapperBox::processTableChild(Node node, const CSSStyleDeclarationPtr&
     case CSSDisplayValueImp::TableCaption:
         // 'table-caption' doesn't seem to end the current row:
         // cf. table-caption-003.
-        if (Block* caption = constructTablePart(child)) {
+        if (BlockPtr caption = constructTablePart(child)) {
             if (childStyle->captionSide.getValue() == CSSCaptionSideValueImp::Top)
                 topCaptions.push_back(caption);
             else
@@ -576,7 +573,7 @@ void TableWrapperBox::processRowGroupChild(Node node, const CSSStyleDeclarationP
         if (!anonymousCell)
             anonymousCell = processCell(nullptr, 0, childStyle, nullptr);
         if (anonymousCell) {
-            anonymousTable = dynamic_cast<TableWrapperBox*>(view->constructBlock(node, anonymousCell, childStyle, 0));
+            anonymousTable = std::dynamic_pointer_cast<TableWrapperBox>(view->constructBlock(node, anonymousCell, childStyle, 0));
             if (display == CSSDisplayValueImp::Table || display == CSSDisplayValueImp::InlineTable)
                 anonymousTable = 0;
         }
@@ -681,7 +678,7 @@ void TableWrapperBox::processRowChild(Node node, const CSSStyleDeclarationPtr& r
         if (!anonymousCell)
             anonymousCell = processCell(nullptr, 0, childStyle, rowStyle);
         if (anonymousCell) {
-            anonymousTable = dynamic_cast<TableWrapperBox*>(view->constructBlock(node, anonymousCell, childStyle, 0));
+            anonymousTable = std::dynamic_pointer_cast<TableWrapperBox>(view->constructBlock(node, anonymousCell, childStyle, 0));
             if (display == CSSDisplayValueImp::Table || display == CSSDisplayValueImp::InlineTable)
                 anonymousTable = 0;
         }
@@ -707,7 +704,7 @@ void TableWrapperBox::endRow()
     }
 }
 
-CellBox* TableWrapperBox::processCell(Element current, Block* parentBox, const CSSStyleDeclarationPtr& currentStyle, const CSSStyleDeclarationPtr& rowStyle)
+CellBoxPtr TableWrapperBox::processCell(Element current, const BlockPtr& parentBox, const CSSStyleDeclarationPtr& currentStyle, const CSSStyleDeclarationPtr& rowStyle)
 {
     if (yHeight == yCurrent) {
         appendRow();
@@ -731,11 +728,11 @@ CellBox* TableWrapperBox::processCell(Element current, Block* parentBox, const C
         appendColumn();
     while (yHeight < yCurrent + rowspan)
         appendRow();
-    CellBox* cellBox = 0;
+    CellBoxPtr cellBox;
     if (current)
-        cellBox = static_cast<CellBox*>(constructTablePart(current));
+        cellBox = std::static_pointer_cast<CellBox>(constructTablePart(current));
     else {
-        cellBox = new(std::nothrow) CellBox;  // TODO: use parentStyle? -- For verticalAlign, yes.
+        cellBox = std::make_shared<CellBox>();  // TODO: use parentStyle? -- For verticalAlign, yes.
         if (cellBox) {
             cellBox->stackingContext = stackingContext;
             cellBox->establishFormattingContext();
@@ -812,7 +809,7 @@ void TableWrapperBox::processHeader()
     std::rotate(rowGroups.begin(), rowGroups.begin() + yTheadBegin, rowGroups.begin() + yTheadEnd);
     for (unsigned y = 0; y < headerCount; ++y) {
         for (unsigned x = 0; x < xWidth; ++x) {
-            CellBox* cellBox = grid[y][x].get();
+            CellBoxPtr cellBox = grid[y][x];
             if (!cellBox || cellBox->isSpanned(x, y + yTheadBegin))
                 continue;
             cellBox->row -= yTheadBegin;
@@ -820,7 +817,7 @@ void TableWrapperBox::processHeader()
     }
     for (unsigned y = headerCount; y < yTheadEnd; ++y) {
         for (unsigned x = 0; x < xWidth; ++x) {
-            CellBox* cellBox = grid[y][x].get();
+            CellBoxPtr cellBox = grid[y][x];
             if (!cellBox || cellBox->isSpanned(x, y - headerCount))
                 continue;
             cellBox->row += headerCount;
@@ -844,7 +841,7 @@ void TableWrapperBox::processFooter()
     unsigned offset = yHeight - yTfootEnd;
     for (unsigned y = yTfootBegin; y < yTfootEnd; ++y) {
         for (unsigned x = 0; x < xWidth; ++x) {
-            CellBox* cellBox = grid[y][x].get();
+            CellBoxPtr cellBox = grid[y][x];
             if (!cellBox || cellBox->isSpanned(x, y))
                 continue;
             cellBox->row += offset;
@@ -852,7 +849,7 @@ void TableWrapperBox::processFooter()
     }
     for (unsigned y = yTfootEnd; y < yHeight; ++y) {
         for (unsigned x = 0; x < xWidth; ++x) {
-            CellBox* cellBox = grid[y][x].get();
+            CellBoxPtr cellBox = grid[y][x];
             if (!cellBox || cellBox->isSpanned(x, y))
                 continue;
             cellBox->row -= headerCount;
@@ -931,7 +928,7 @@ BorderValue::resolveBorderConflict(CSSStyleDeclarationPtr style, unsigned trbl)
         resolveBorderConflict(style->borderLeftColor, style->borderLeftStyle, style->borderLeftWidth);
 }
 
-void TableWrapperBox::resolveHorizontalBorderConflict(unsigned x, unsigned y, BorderValue* b, CellBox* top, CellBox* bottom)
+void TableWrapperBox::resolveHorizontalBorderConflict(unsigned x, unsigned y, BorderValue* b, const CellBoxPtr& top, const CellBoxPtr& bottom)
 {
     if (top != bottom) {
         unsigned mask;
@@ -969,7 +966,7 @@ void TableWrapperBox::resolveHorizontalBorderConflict(unsigned x, unsigned y, Bo
     }
 }
 
-void TableWrapperBox::resolveVerticalBorderConflict(unsigned x, unsigned y, BorderValue* b, CellBox* left, CellBox* right)
+void TableWrapperBox::resolveVerticalBorderConflict(unsigned x, unsigned y, BorderValue* b, const CellBoxPtr& left, const CellBoxPtr& right)
 {
     if (left != right) {
         unsigned mask;
@@ -1015,7 +1012,7 @@ bool TableWrapperBox::resolveBorderConflict()
     borderColumns.clear();
     if (style->borderCollapse.getValue() != CSSBorderCollapseValueImp::Collapse)
         return false;
-    if (!tableBox)
+    if (!getTableBox())
         return false;
     borderRows.resize((yHeight + 1) * xWidth);
     borderColumns.resize(yHeight * (xWidth + 1));
@@ -1023,14 +1020,14 @@ bool TableWrapperBox::resolveBorderConflict()
         for (unsigned x = 0; x < xWidth + 1; ++x) {
             if (x < xWidth) {
                 BorderValue* br = getRowBorderValue(x, y);
-                CellBox* top = (y < yHeight) ? grid[y][x].get() : 0;
-                CellBox* bottom = (0 < y) ? grid[y - 1][x].get() : 0;
+                CellBoxPtr top = (y < yHeight) ? grid[y][x] : 0;
+                CellBoxPtr bottom = (0 < y) ? grid[y - 1][x] : 0;
                 resolveHorizontalBorderConflict(x, y, br, top, bottom);
             }
             if (y < yHeight) {
                 BorderValue* bc = getColumnBorderValue(x, y);
-                CellBox* left = (x < xWidth) ? grid[y][x].get() : 0;
-                CellBox* right = (0 < x) ? grid[y][x - 1].get() : 0;
+                CellBoxPtr left = (x < xWidth) ? grid[y][x] : 0;
+                CellBoxPtr right = (0 < x) ? grid[y][x - 1] : 0;
                 resolveVerticalBorderConflict(x, y, bc, left, right);
             }
         }
@@ -1052,6 +1049,8 @@ void TableWrapperBox::computeTableBorders()
         l = getColumnBorderValue(0, 0)->getWidth() / 2.0f;
         r = getColumnBorderValue(xWidth, 0)->getWidth() / 2.0f;
     }
+    BlockPtr tableBox(getTableBox());
+    assert(tableBox);
     tableBox->expandBorders(t, r, b, l);
     // Note in 17.6.2, the spec says 'any excess spills into the margin
     // area of the table'. However, it can actually overflow that table's
@@ -1067,13 +1066,15 @@ void TableWrapperBox::computeTableBorders()
     // }
 }
 
-void TableWrapperBox::layOutFixed(ViewCSSImp* view, const ContainingBlock* containingBlock, bool collapsingModel)
+void TableWrapperBox::layOutFixed(ViewCSSImp* view, const ContainingBlockPtr& containingBlock, bool collapsingModel)
 {
     if (xWidth == 0 || yHeight == 0)
         return;
     float hs = 0.0f;
     if (!collapsingModel) {
         hs = style->borderSpacing.getHorizontalSpacing();
+        BlockPtr tableBox(getTableBox());
+        assert(tableBox);
         tableBox->width -= tableBox->getBorderWidth() - tableBox->width;  // TODO: HTML, XHTML only
         if (tableBox->width < 0.0f)
             tableBox->width = 0.0f;
@@ -1095,7 +1096,7 @@ void TableWrapperBox::layOutFixed(ViewCSSImp* view, const ContainingBlock* conta
                 continue;
             }
         }
-        CellBox* cellBox = grid[0][x].get();
+        CellBoxPtr cellBox = grid[0][x];
         if (!cellBox || cellBox->isSpanned(x, 0))
             continue;
         CSSStyleDeclarationPtr cellStyle = cellBox->getStyle();
@@ -1136,7 +1137,7 @@ void TableWrapperBox::layOutFixed(ViewCSSImp* view, const ContainingBlock* conta
     widths[xWidth - 1] += hs / 2.0f;
 }
 
-void TableWrapperBox::layOutAuto(ViewCSSImp* view, const ContainingBlock* containingBlock)
+void TableWrapperBox::layOutAuto(ViewCSSImp* view, const ContainingBlockPtr& containingBlock)
 {
     if (xWidth == 0 || yHeight == 0)
         return;
@@ -1157,7 +1158,7 @@ void TableWrapperBox::layOutAuto(ViewCSSImp* view, const ContainingBlock* contai
     }
 }
 
-void TableWrapperBox::layOutAutoColgroup(ViewCSSImp* view, const ContainingBlock* containingBlock)
+void TableWrapperBox::layOutAutoColgroup(ViewCSSImp* view, const ContainingBlockPtr& containingBlock)
 {
     if (xWidth == 0 || yHeight == 0)
         return;
@@ -1189,8 +1190,9 @@ void TableWrapperBox::layOutAutoColgroup(ViewCSSImp* view, const ContainingBlock
     }
 }
 
-void TableWrapperBox::layOutTableBox(ViewCSSImp* view, FormattingContext* context, const ContainingBlock* containingBlock, bool collapsingModel, bool fixedLayout)
+void TableWrapperBox::layOutTableBox(ViewCSSImp* view, FormattingContext* context, const ContainingBlockPtr& containingBlock, bool collapsingModel, bool fixedLayout)
 {
+    BlockPtr tableBox(getTableBox());
     if (!tableBox)
         return;
 
@@ -1296,7 +1298,7 @@ Reflow:
             heights[y] = rows[y]->height.getPx();
         bool noBaseline = true;
         for (unsigned x = 0; x < xWidth; ++x) {
-            CellBox* cellBox = grid[y][x].get();
+            CellBoxPtr cellBox = grid[y][x];
             if (!cellBox || cellBox->isSpanned(x, y))
                 continue;
             if (fixedLayout) {
@@ -1340,7 +1342,7 @@ Reflow:
         }
         // Process baseline
         for (unsigned x = 0; x < xWidth; ++x) {
-            CellBox* cellBox = grid[y][x].get();
+            CellBoxPtr cellBox = grid[y][x];
             if (!cellBox || cellBox->isSpanned(x, y) || cellBox->getRowSpan() != 1)
                 continue;
             if (cellBox->getVerticalAlign() == CSSVerticalAlignValueImp::Baseline)
@@ -1366,7 +1368,7 @@ Reflow:
         tableBox->width = tableWidth;
     for (unsigned x = 0; x < xWidth; ++x) {
         for (unsigned y = 0; y < yHeight; ++y) {
-            CellBox* cellBox = grid[y][x].get();
+            CellBoxPtr cellBox = grid[y][x];
             if (!cellBox || cellBox->isSpanned(x, y))
                 continue;
             if (!fixedLayout) {
@@ -1497,7 +1499,7 @@ Reflow:
             // At this point, column widths have been determined.
             for (unsigned x = 0; x < xWidth; ++x) {
                 for (unsigned y = 0; y < yHeight; ++y) {
-                    CellBox* cellBox = grid[y][x].get();
+                    CellBoxPtr cellBox = grid[y][x];
                     if (!cellBox || cellBox->isSpanned(x, y))
                         continue;
                     unsigned span = cellBox->getColSpan();
@@ -1527,7 +1529,7 @@ Reflow:
 
     for (unsigned x = 0; x < xWidth; ++x) {
         for (unsigned y = 0; y < yHeight; ++y) {
-            CellBox* cellBox = grid[y][x].get();
+            CellBoxPtr cellBox = grid[y][x];
             if (!cellBox || cellBox->isSpanned(x, y))
                 continue;
             if (!fixedLayout) {
@@ -1562,7 +1564,7 @@ Reflow:
         }
     }
 
-    Box* lineBox = tableBox->getFirstChild();
+    BoxPtr lineBox = tableBox->getFirstChild();
     for (unsigned y = 0; y < yHeight; ++y)  {
         assert(lineBox);
         lineBox->width = tableBox->width;
@@ -1571,7 +1573,7 @@ Reflow:
 
         float xOffset = 0.0f;
         for (unsigned x = 0; x < xWidth; ++x) {
-            CellBox* cellBox = grid[y][x].get();
+            CellBoxPtr cellBox = grid[y][x];
             if (!cellBox || cellBox->isSpanned(x, y) && cellBox->row != y) {
                 xOffset += widths[x];
                 continue;
@@ -1589,7 +1591,7 @@ Reflow:
     width = tableBox->getBlockWidth();
     tableBox->resolveBackgroundPosition(view, containingBlock);
 
-    for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
+    for (BoxPtr child = getFirstChild(); child; child = child->getNextSibling()) {
         if (child != tableBox) {
             child->layOut(view, context);
             width = std::max(width, child->getBlockWidth());
@@ -1605,7 +1607,7 @@ Reflow:
     }
 
     h = 0.0f;
-    for (Box* child = getFirstChild(); child; child = child->getNextSibling())
+    for (BoxPtr child = getFirstChild(); child; child = child->getNextSibling())
         h += child->getTotalHeight() + child->getClearance();
     height = std::max(height, h);
 
@@ -1615,10 +1617,10 @@ Reflow:
 void TableWrapperBox::layOutTableParts()
 {
     for (auto i = blockMap.begin(); i != blockMap.end(); ++i) {
-        Block* block = i->second.get();
+        BlockPtr block = i->second;
         if (!block->needLayout())
             continue;
-        if (CellBox* cellBox = dynamic_cast<CellBox*>(block)) {
+        if (auto cellBox = std::dynamic_pointer_cast<CellBox>(block)) {
             float savedMCW = cellBox->getMCW();
             float savedWidth = cellBox->getTotalWidth();
             float savedIntrinsicHeight = cellBox->intrinsicHeight;
@@ -1642,6 +1644,8 @@ void TableWrapperBox::layOutTableParts()
                 flags |= NEED_REFLOW;
         }
     }
+    auto tableBox(getTableBox());
+    assert(tableBox);
     tableBox->flags &= ~NEED_CHILD_REFLOW;
 }
 
@@ -1649,7 +1653,7 @@ void TableWrapperBox::resetCellBoxWidths()
 {
     for (unsigned y = 0; y < yHeight; ++y) {
         for (unsigned x = 0; x < xWidth; ++x) {
-            CellBox* cellBox = grid[y][x].get();
+            CellBoxPtr cellBox = grid[y][x];
             if (!cellBox || cellBox->isSpanned(x, y))
                 continue;
             cellBox->resetWidth();
@@ -1661,7 +1665,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
 {
     FormattingContext* parentContext = context;
 
-    const ContainingBlock* containingBlock = getContainingBlock(view);
+    ContainingBlockPtr containingBlock = getContainingBlock(view);
     style = view->getStyle(table);
     if (!style)
         return false;  // TODO error
@@ -1713,7 +1717,7 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
             if (parentContext && context != parentContext)
                 context = parentContext;
             if (context) {
-                context->restoreContext(this);
+                context->restoreContext(self());
                 return true;
             }
         }
@@ -1753,8 +1757,8 @@ bool TableWrapperBox::layOut(ViewCSSImp* view, FormattingContext* context)
         // TODO: if there's not enough width...
     }
 
-    if (context->hasChanged(this)) {
-        context->saveContext(this);
+    if (context->hasChanged(self())) {
+        context->saveContext(self());
         if (nextSibling)
             nextSibling->setFlags(NEED_REFLOW);
     }
@@ -1773,7 +1777,7 @@ void TableWrapperBox::layOutAbsolute(ViewCSSImp* view)
     float savedHeight = height;
 
     setContainingBlock(view);
-    const ContainingBlock* containingBlock = getContainingBlock(view);
+    ContainingBlockPtr containingBlock = getContainingBlock(view);
     flags |= style->resolve(view, containingBlock);
     visibility = style->visibility.getValue();
 
@@ -1795,8 +1799,8 @@ void TableWrapperBox::layOutAbsolute(ViewCSSImp* view)
     if (CSSDisplayValueImp::isBlockLevel(style->display.getOriginalValue())) {
         // This box is originally a block-level box inside an inline context.
         // Set the static position to the beginning of the next line.
-        if (const Box* lineBox = getParentBox()) {  // A root element can be absolutely positioned.
-            for (const Box* box = getPreviousSibling(); box; box = box->getPreviousSibling()) {
+        if (BoxPtr lineBox = getParentBox()) {  // A root element can be absolutely positioned.
+            for (BoxPtr box = getPreviousSibling(); box; box = box->getPreviousSibling()) {
                 if (!box->isAbsolutelyPositioned()) {
                     if (maskV == (Top | Height | Bottom) || maskV == (Top | Bottom))
                         offsetV += lineBox->height + lineBox->getBlankBottom();
@@ -1872,8 +1876,10 @@ float TableWrapperBox::shrinkTo()
 // cf. 10.8.1 - The baseline of an 'inline-table' is the baseline of the first row of the table.
 float TableWrapperBox::getBaseline() const
 {
+    auto tableBox(getTableBox());
+    assert(tableBox);
     float baseline = getBlankTop();
-    for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
+    for (BoxPtr child = getFirstChild(); child; child = child->getNextSibling()) {
         if (child == tableBox) {
             if (0 < yHeight) {
                 baseline += tableBox->getBlankTop() + baselines[0];
@@ -1902,14 +1908,14 @@ void TableWrapperBox::dump(std::string indent)
         std::cout << "c:" << clearance << ' ';
     std::cout << "m:" << marginTop << ':' << marginRight << ':' << marginBottom << ':' << marginLeft << '\n';
     indent += "  ";
-    for (Box* child = getFirstChild(); child; child = child->getNextSibling())
+    for (BoxPtr child = getFirstChild(); child; child = child->getNextSibling())
         child->dump(indent);
 }
 
 bool Block::isTableBox() const
 {
-    if (TableWrapperBox* wrapper = dynamic_cast<TableWrapperBox*>(getParentBox())) {
-        if (wrapper->isTableBox(this))
+    if (auto wrapper = std::dynamic_pointer_cast<TableWrapperBox>(getParentBox())) {
+        if (wrapper->isTableBox(self()))
             return true;
     }
     return false;

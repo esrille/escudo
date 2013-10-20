@@ -45,6 +45,8 @@ class ViewCSSImp;
 class CSSFontSizeValueImp;
 
 typedef std::shared_ptr<CSSStyleDeclarationImp> CSSStyleDeclarationPtr;
+typedef std::shared_ptr<LineBox> LineBoxPtr;
+typedef std::shared_ptr<InlineBox> InlineBoxPtr;
 
 struct CSSNumericValue
 {
@@ -2698,8 +2700,8 @@ public:
     }
     void compute(ViewCSSImp* view, CSSStyleDeclarationImp* self);
     void resolve(ViewCSSImp* view, CSSStyleDeclarationImp* self);
-    float getOffset(ViewCSSImp* view, CSSStyleDeclarationImp* self, LineBox* line, FontTexture* font, float point, float leading) const;
-    float getOffset(ViewCSSImp* view, CSSStyleDeclarationImp* self, LineBox* line, InlineBox* text) const;
+    float getOffset(ViewCSSImp* view, CSSStyleDeclarationImp* self, const LineBoxPtr& line, FontTexture* font, float point, float leading) const;
+    float getOffset(ViewCSSImp* view, CSSStyleDeclarationImp* self, const LineBoxPtr& line, const InlineBoxPtr& text) const;
     unsigned getIndex() const {
         return value.getIndex();
     }

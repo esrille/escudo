@@ -49,23 +49,24 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 namespace {
 
-Block* getCurrentBox(const CSSStyleDeclarationPtr& style, bool asTablePart)
+BlockPtr getCurrentBox(const CSSStyleDeclarationPtr& style, bool asTablePart)
 {
-    Box* box = style->getBox();
+    BoxPtr box = style->getBox();
     if (!box)
-        return 0;
+        return nullptr;
     if (!style->display.isTableParts() || asTablePart)
-        return dynamic_cast<Block*>(box);
+        return std::dynamic_pointer_cast<Block>(box);
 
     // return the surrounding anonymous table wrapper box
-    while (box && !dynamic_cast<TableWrapperBox*>(box))
+    while (box && !std::dynamic_pointer_cast<TableWrapperBox>(box))
         box = box->getParentBox();
-    return dynamic_cast<TableWrapperBox*>(box);
+    return std::dynamic_pointer_cast<TableWrapperBox>(box);
 }
 
 }
 
 ViewCSSImp::ViewCSSImp(WindowPtr window) :
+    initialContainingBlock(std::make_shared<ContainingBlock>()),
     window(window),
     dpi(96),
     zoom(1.0f),
@@ -76,11 +77,9 @@ ViewCSSImp::ViewCSSImp(WindowPtr window) :
     quotingDepth(0),
     scrollWidth(0.0f),
     scrollHeight(0.0f),
-    hoveredBox(0),
     last(0),
     delay(0)
 {
-    initialContainingBlock.retain_();
     setMediumFontSize(16);
     if (DocumentPtr document = getDocument()) {
         document->addEventListener(u"DOMAttrModified", mutationListener, false, EventTargetImp::UseDefault);
@@ -100,15 +99,15 @@ ViewCSSImp::~ViewCSSImp()
     }
 }
 
-Box* ViewCSSImp::boxFromPoint(int x, int y)
+BoxPtr ViewCSSImp::boxFromPoint(int x, int y)
 {
     if (stackingContexts) {
         x += window->getScrollX();
         y += window->getScrollY();
-        if (Box* target = stackingContexts->boxFromPoint(x, y))
+        if (BoxPtr target = stackingContexts->boxFromPoint(x, y))
             return target;
     }
-    return boxTree.get();
+    return boxTree;
 }
 
 bool ViewCSSImp::isHovered(Element node)
@@ -263,8 +262,8 @@ void ViewCSSImp::updateStyleRules(Element element, const CSSStyleDeclarationPtr&
     unsigned importance = CSSRuleListImp::Author;
     stylesheets::StyleSheetList styleSheetList(getDocument()->getStyleSheets());
     for (unsigned i = 0; i < styleSheetList.getLength(); ++i) {
-        CSSStyleSheetPtr sheet = std::dynamic_pointer_cast<CSSStyleSheetImp>(styleSheetList.getElement(i).self());
-        MediaListPtr mediaList = std::dynamic_pointer_cast<MediaListImp>(sheet->getMedia().self());
+        auto sheet = std::dynamic_pointer_cast<CSSStyleSheetImp>(styleSheetList.getElement(i).self());
+        auto mediaList = std::dynamic_pointer_cast<MediaListImp>(sheet->getMedia().self());
         collectRules(style->ruleSet, element, sheet->getCssRules(), importance++, mediaList);
     }
 
@@ -392,14 +391,14 @@ void ViewCSSImp::calculateComputedStyle(Element element, const CSSStyleDeclarati
         unsigned comp = board.compare(style);
         if (comp & Box::NEED_TABLE_REFLOW) {
             for (CSSStyleDeclarationPtr s = style; s; s = s->getParentStyle()) {
-                Box* box = getCurrentBox(s, true);
-                if (dynamic_cast<TableWrapperBox*>(box)) {
+                BoxPtr box = getCurrentBox(s, true);
+                if (std::dynamic_pointer_cast<TableWrapperBox>(box)) {
                     box->setFlags(Box::NEED_EXPANSION);
                     break;
                 }
             }
         } else if (comp & Box::NEED_EXPANSION) {
-            Block* block = style->revert(element);
+            BlockPtr block = style->revert(element);
             if (block) {
                 if (style->display.isInlineLevel() && !(block->getFlags() & Box::NEED_EXPANSION))
                     block->clearInlines();
@@ -407,16 +406,16 @@ void ViewCSSImp::calculateComputedStyle(Element element, const CSSStyleDeclarati
                     block->setFlags(Box::NEED_EXPANSION);
             }
         } else if (comp & Box::NEED_REFLOW) {
-            if (Block* block = getCurrentBox(style, true)) {
+            if (BlockPtr block = getCurrentBox(style, true)) {
                 block->defaultBaseline = block->defaultLineHeight = 0.0f;
                 block->setFlags(Box::NEED_REFLOW);
             } else
                 style->updateInlines(element);
         } else if (comp & Box::NEED_REPOSITION) {
-            if (Block* block = getCurrentBox(style, true))
+            if (BlockPtr block = getCurrentBox(style, true))
                 block->setFlags(Box::NEED_REPOSITION);
             // else 'position' is relative
-        } else if (Block* block = getCurrentBox(style, true))
+        } else if (BlockPtr block = getCurrentBox(style, true))
             block->resolveBackground(this);
         if (!parentStyle)
             overflow = style->overflow.getValue();
@@ -435,7 +434,7 @@ void ViewCSSImp::calculateComputedStyle(Element element, const CSSStyleDeclarati
         style->updateCounters(this, counterContext);
 
     CSSAutoNumberingValueImp::CounterContext cc(this);
-    ElementPtr imp(std::dynamic_pointer_cast<ElementImp>(shadow.self()));
+    auto imp(std::dynamic_pointer_cast<ElementImp>(shadow.self()));
     assert(imp);
 
     style->marker = updatePseudoElement(style, CSSPseudoElementSelector::Marker, shadow, style->marker, &cc);
@@ -502,19 +501,19 @@ Element ViewCSSImp::updatePseudoElement(const CSSStyleDeclarationPtr& style, int
 
 // In this step, neither inline-level boxes nor line boxes are generated.
 // Those will be generated later by layOut().
-Block* ViewCSSImp::constructBlock(Node node, Block* parentBox, const CSSStyleDeclarationPtr& style, Block* prevBox, bool asTablePart)
+BlockPtr ViewCSSImp::constructBlock(Node node, const BlockPtr& parentBox, const CSSStyleDeclarationPtr& style, const BlockPtr& prevBox, bool asTablePart)
 {
-    Block* newBox = 0;
+    BlockPtr newBox;
     switch (node.getNodeType()) {
     case Node::TEXT_NODE:
         newBox = constructBlock(interface_cast<Text>(node), parentBox, style, prevBox);
         break;
     case Node::ELEMENT_NODE:
-        newBox = constructBlock(interface_cast<Element>(node), parentBox, style, 0, prevBox, asTablePart);
+        newBox = constructBlock(interface_cast<Element>(node), parentBox, style, nullptr, prevBox, asTablePart);
         break;
     case Node::DOCUMENT_NODE:
         for (Node child = node.getFirstChild(); child; child = child.getNextSibling()) {
-            if (Block* box = constructBlock(child, parentBox, style, newBox))
+            if (BlockPtr box = constructBlock(child, parentBox, style, newBox))
                 newBox = box;
         }
         break;
@@ -524,10 +523,10 @@ Block* ViewCSSImp::constructBlock(Node node, Block* parentBox, const CSSStyleDec
     return newBox;
 }
 
-Block* ViewCSSImp::constructBlock(Text text, Block* parentBox, const CSSStyleDeclarationPtr& style, Block* prevBox)
+BlockPtr ViewCSSImp::constructBlock(Text text, const BlockPtr& parentBox, const CSSStyleDeclarationPtr& style, const BlockPtr& prevBox)
 {
     if (!parentBox || !style)
-        return 0;
+        return nullptr;
 
     bool discardable = true;
     if (style->display.isInline()) {
@@ -542,12 +541,12 @@ Block* ViewCSSImp::constructBlock(Text text, Block* parentBox, const CSSStyleDec
         if (discardable && !parentBox->hasInline() && style->whiteSpace.isCollapsingSpace()) {
             std::u16string data = text.getData();
             if (data.length() <= style->processLineHeadWhiteSpace(data, 0))
-                return 0;
+                return nullptr;
         }
         parentBox->insertInline(text);
-        return 0;
+        return nullptr;
     }
-    if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(prevBox)) {
+    if (auto table = std::dynamic_pointer_cast<TableWrapperBox>(prevBox)) {
         if (table && table->isAnonymousTableObject()) {
             if (table->processTableChild(text, style))
                 return 0;
@@ -566,29 +565,29 @@ Block* ViewCSSImp::constructBlock(Text text, Block* parentBox, const CSSStyleDec
         if (style->whiteSpace.isCollapsingSpace()) {
             std::u16string data = text.getData();
             if (data.length() <= style->processLineHeadWhiteSpace(data, 0))
-                return 0;
+                return nullptr;
         }
     }
-    if (Block* anonymousBox = parentBox->getAnonymousBox(prevBox)) {
+    if (BlockPtr anonymousBox = parentBox->getAnonymousBox(prevBox)) {
         anonymousBox->insertInline(text);
         return anonymousBox;
     }
-    return 0;
+    return nullptr;
 }
 
-Block* ViewCSSImp::createBlock(Element element, Block* parentBox, const CSSStyleDeclarationPtr& style, bool newContext, bool asTablePart)
+BlockPtr ViewCSSImp::createBlock(Element element, const BlockPtr& parentBox, const CSSStyleDeclarationPtr& style, bool newContext, bool asTablePart)
 {
     assert(style);
-    Block* block;
+    BlockPtr block;
     if (style->display == CSSDisplayValueImp::Table || style->display == CSSDisplayValueImp::InlineTable) {
-        block = new(std::nothrow) TableWrapperBox(this, element, style);
+        block = std::make_shared<TableWrapperBox>(this, element, style);
         newContext = true;
     } else if (style->display.isTableParts()) {
         if (asTablePart) {
             if (style->display == CSSDisplayValueImp::TableCell)
-                block = new(std::nothrow) CellBox(element, style);
+                block = std::make_shared<CellBox>(element, style);
             else
-                block = new(std::nothrow) Block(element, style);
+                block = std::make_shared<Block>(element, style);
         } else {
             assert(parentBox);  // cf. http://www.w3.org/TR/CSS21/visuren.html#dis-pos-flo
             if (parentBox->anonymousTable) {
@@ -596,12 +595,12 @@ Block* ViewCSSImp::createBlock(Element element, Block* parentBox, const CSSStyle
                 parentBox->anonymousTable->processTableChild(element, style);
                 return 0;
             }
-            parentBox->anonymousTable = new(std::nothrow) TableWrapperBox(this, element, style);
+            parentBox->anonymousTable = std::make_shared<TableWrapperBox>(this, element, style);
             block = parentBox->anonymousTable;
         }
         newContext = true;
     } else
-        block = new(std::nothrow) Block(element, style);
+        block = std::make_shared<Block>(element, style);
     if (!block)
         return 0;
     if (newContext)
@@ -618,7 +617,7 @@ Block* ViewCSSImp::createBlock(Element element, Block* parentBox, const CSSStyle
     return block;
 }
 
-Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, const CSSStyleDeclarationPtr& parentStyle, CSSStyleDeclarationPtr style, Block* prevBox, bool asTablePart)
+BlockPtr ViewCSSImp::constructBlock(Element element, const BlockPtr& parentBox, const CSSStyleDeclarationPtr& parentStyle, CSSStyleDeclarationPtr style, BlockPtr prevBox, bool asTablePart)
 {
 #ifndef NDEBUG
     std::u16string tag(interface_cast<html::HTMLElement>(element).getTagName());
@@ -638,7 +637,7 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, const CSSSt
             shadow = imp->getShadowTree();
     }
 
-    Block* currentBox = parentBox;
+    BlockPtr currentBox = parentBox;
     bool anonInlineTable = !asTablePart && style->display.isTableParts() && parentStyle && parentStyle->display.isInlineLevel();
     bool inlineReplace = isReplacedElement(element) && !style->isBlockLevel();
     bool isFlowRoot = (!parentBox || anonInlineTable || inlineReplace) ? true : style->isFlowRoot();
@@ -654,7 +653,7 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, const CSSSt
         currentBox = getCurrentBox(style, false);
 
         // Do not process an anonymous table incrementally; cf. html4/table-anonymous-objects-207.htm
-        auto table = dynamic_cast<TableWrapperBox*>(currentBox);
+        auto table = std::dynamic_pointer_cast<TableWrapperBox>(currentBox);
         if (table && !table->isAnonymousTableObject() && anonInlineTable && parentBox && parentBox->removeBlock(element))
             currentBox = 0;
 
@@ -665,7 +664,7 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, const CSSSt
         // Do not insert currentBox into parentBox. currentBox will be
         // inserted in a lineBox of parentBox later
         if (parentBox) {
-            if (!currentBox->parentBox) {
+            if (!currentBox->getParentBox()) {
                 parentBox->addBlock(element, currentBox);
                 // Set currentBox->parentBox to parentBox for now so that the correct
                 // containing block can be retrieved before currentBox will be
@@ -676,12 +675,12 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, const CSSSt
                 else if (prevBox = parentBox->getAnonymousBox(prevBox))
                     prevBox->insertInline(element);
             } else {
-                prevBox = dynamic_cast<Block*>(currentBox->parentBox->parentBox);
+                prevBox = std::dynamic_pointer_cast<Block>(currentBox->getParentBox()->getParentBox());
                 if (prevBox == parentBox)
                     prevBox = 0;
                 else
-                    assert(!prevBox || prevBox->parentBox == parentBox ||
-                           currentBox->parentBox == parentBox); // TODO: cf. html4/table-anonymous-objects-207.htm
+                    assert(!prevBox || prevBox->getParentBox() == parentBox ||
+                           currentBox->getParentBox() == parentBox); // TODO: cf. html4/table-anonymous-objects-207.htm
             }
         }
     } else if (style->isBlockLevel()) {
@@ -704,11 +703,11 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, const CSSSt
                 else
                     parentBox->insertBefore(currentBox, prevBox->getNextSibling());
             } else
-                assert(currentBox->getParentBox() == parentBox);
+                assert(currentBox->getParentBox() == parentBox);    // TODO it looks this is not always true
         }
     }
 
-    if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(currentBox)) {
+    if (auto table = std::dynamic_pointer_cast<TableWrapperBox>(currentBox)) {
         switch (table->getFlags() & (Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION)) {
         case Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION:
         case Box::NEED_EXPANSION:
@@ -730,7 +729,7 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, const CSSSt
         }
     } else {
         if (currentBox && currentBox != parentBox) {
-            Block* prev = 0;
+            BlockPtr prev;
             switch (currentBox->flags & (Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION)) {
             case Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION:
             case Box::NEED_EXPANSION:
@@ -739,22 +738,16 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, const CSSSt
                     currentBox->inlines.clear();
                     currentBox->removeChildren();
                 } else {
-                    Box* next;
-                    for (Box* child = currentBox->getFirstChild(); child; child = next) {
+                    BoxPtr next;
+                    for (BoxPtr child = currentBox->getFirstChild(); child; child = next) {
                         next = child->getNextSibling();
-                        if (child->isAnonymous() ||
-                            child->getNode().getParentNode() != element)  // cf. html4/block-in-inline-remove-000.htm
-                        {
+                        if (child->isAnonymous() || child->getNode().getParentNode() != element)  // cf. html4/block-in-inline-remove-000.htm
                             currentBox->removeChild(child);
-                            child->release_();
-                        }
                     }
                 }
                 break;
             case Box::NEED_CHILD_EXPANSION:
-                for (auto box = dynamic_cast<Block*>(currentBox->getFirstChild());
-                     box;
-                     prev = box, box = dynamic_cast<Block*>(box->getNextSibling()))
+                for (auto box = std::dynamic_pointer_cast<Block>(currentBox->getFirstChild()); box; prev = box, box = std::dynamic_pointer_cast<Block>(box->getNextSibling()))
                 {
                     if (box->flags & (Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION)) {
                         if (box->getNode())
@@ -772,37 +765,37 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, const CSSSt
             }
         }
 
-        Block* prev = (currentBox != parentBox) ? 0 : prevBox;
+        BlockPtr prev = (currentBox != parentBox) ? nullptr : prevBox;
 
         if ((style->emptyInline & 1) || style->emptyInline == 4) {
             if (!currentBox->hasChildBoxes())
                 currentBox->insertInline(element);
-            else if (Block* anonymousBox = currentBox->getAnonymousBox(prev))
+            else if (BlockPtr anonymousBox = currentBox->getAnonymousBox(prev))
                 anonymousBox->insertInline(element);
         }
 
         if (style->marker) {
-            if (Block* box = constructBlock(style->marker, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::Marker), prev))
+            if (BlockPtr box = constructBlock(style->marker, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::Marker), prev))
                 prev = box;
             // Deal with an empty list item; cf. list-alignment-001, acid2.
             // TODO: Find out where the exact behavior is defined in the specifications.
             if (style->height.isAuto() && !shadow.hasChildNodes() && !style->before && !style->after) {
                 if (!currentBox->hasChildBoxes())
                     currentBox->insertInline(element);
-                else if (Block* anonymousBox = currentBox->getAnonymousBox(prev))
+                else if (BlockPtr anonymousBox = currentBox->getAnonymousBox(prev))
                     anonymousBox->insertInline(element);
             }
         }
         if (style->before) {
-            if (Block* box = constructBlock(style->before, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::Before), prev))
+            if (BlockPtr box = constructBlock(style->before, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::Before), prev))
                 prev = box;
         }
         for (Node child = shadow.getFirstChild(); child; child = child.getNextSibling()) {
-            if (Block* box = constructBlock(child, currentBox, style, prev))
+            if (BlockPtr box = constructBlock(child, currentBox, style, prev))
                 prev = box;
         }
         if (style->after) {
-            if (Block* box = constructBlock(style->after, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::After), prev))
+            if (BlockPtr box = constructBlock(style->after, currentBox, style, style->getPseudoElementStyle(CSSPseudoElementSelector::After), prev))
                 prev = box;
         }
 
@@ -814,7 +807,7 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, const CSSSt
         if (style->emptyInline & 2) {
             if (!currentBox->hasChildBoxes())
                 currentBox->insertInline(element);
-            else if (Block* anonymousBox = currentBox->getAnonymousBox(prev))
+            else if (BlockPtr anonymousBox = currentBox->getAnonymousBox(prev))
                 anonymousBox->insertInline(element);
         }
 
@@ -835,14 +828,14 @@ Block* ViewCSSImp::constructBlock(Element element, Block* parentBox, const CSSSt
 }
 
 // Construct the render tree
-Block* ViewCSSImp::constructBlocks()
+BlockPtr ViewCSSImp::constructBlocks()
 {
     boxTree = constructBlock(getDocument(), 0, 0, 0, false);
     clearCounters();
-    return boxTree.get();
+    return boxTree;
 }
 
-Block* ViewCSSImp::layOut()
+BlockPtr ViewCSSImp::layOut()
 {
     quotingDepth = 0;
     scrollWidth = 0.0f;
@@ -859,7 +852,7 @@ Block* ViewCSSImp::layOut()
 
     if (stackingContexts) {
         if (!stackingContexts->getBase())
-            stackingContexts->addBase(boxTree.get());
+            stackingContexts->addBase(boxTree);
         stackingContexts->layOutAbsolute(this);
     }
 
@@ -871,18 +864,18 @@ Block* ViewCSSImp::layOut()
         }
     }
 
-    return boxTree.get();
+    return boxTree;
 }
 
-Block* ViewCSSImp::dump()
+BlockPtr ViewCSSImp::dump()
 {
     std::cout << "## render tree\n";
     // When the root element has display:none, no box is created at all.
     if (boxTree) {
         boxTree->dump();
-        return boxTree.get();
+        return boxTree;
     }
-    return 0;
+    return nullptr;
 }
 
 CounterImpPtr ViewCSSImp::getCounter(const std::u16string identifier)

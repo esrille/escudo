@@ -95,12 +95,6 @@ StackingContext::StackingContext(bool auto_, int zIndex, const CSSStyleDeclarati
     nextSibling(0),
     childCount(0),
     positioned(0),
-    firstBase(0),
-    lastBase(0),
-    clipBox(0),
-    firstFloat(0),
-    lastFloat(0),
-    currentFloat(0),
     relativeX(0.0f),
     relativeY(0.0f),
     uid(++aid)
@@ -204,8 +198,10 @@ void StackingContext::detach()
 
 void StackingContext::resetScrollSize()
 {
-    for (Box* base = firstBase; base; base = base->nextBase)
-        base->resetScrollSize();
+    for (auto i = baseList.begin(); i != baseList.end(); i->expired() ? (i = baseList.erase(i)) : ++i) {
+        if (auto base = i->lock())
+            base->resetScrollSize();
+    }
     for (StackingContext* childContext = getFirstChild(); childContext; childContext = childContext->getNextSibling())
         childContext->resetScrollSize();
 }
@@ -217,7 +213,7 @@ void StackingContext::resolveScrollSize(ViewCSSImp* view)
         assert(s->getStyle());
         CSSStyleDeclarationPtr style = s->getStyle();
         if (!style->isResolved()) {
-            if (Box* b = style->getBox()) {
+            if (BoxPtr b = style->getBox()) {
                 if (auto c = b->getContainingBlock(view)) {
                     auto imp = style.get();
                     imp->left.resolve(view, imp, c->width);
@@ -233,8 +229,10 @@ void StackingContext::resolveScrollSize(ViewCSSImp* view)
         relativeX += parent->relativeX;
         relativeY += parent->relativeY;
     }
-    for (Box* base = firstBase; base; base = base->nextBase)
-        base->updateScrollSize();
+    for (auto i = baseList.begin(); i != baseList.end(); i->expired() ? (i = baseList.erase(i)) : ++i) {
+        if (auto base = i->lock())
+            base->updateScrollSize();
+    }
     for (StackingContext* childContext = getFirstChild(); childContext; childContext = childContext->getNextSibling())
         childContext->resolveScrollSize(view);
 }
@@ -243,7 +241,7 @@ void StackingContext::updateClipBox(StackingContext* s)
 {
     float scrollLeft = 0.0f;
     float scrollTop = 0.0f;
-    for (Block* clip = s->clipBox; clip && (!s->positioned || clip != s->positioned->clipBox); clip = clip->clipBox) {
+    for (BlockPtr clip = s->getClipBox(); clip && (!s->positioned || clip != s->positioned->getClipBox()); clip = clip->getClipBox()) {
         if (clip->stackingContext == s || !clip->getParentBox())
             continue;
         assert(clip->stackingContext);
@@ -288,13 +286,16 @@ void StackingContext::render(ViewCSSImp* view)
     if (style->opacity.getValue() < 1.0f)
         view->beginTranslucent();
 
-    if (firstBase) {
-        currentFloat = firstFloat = lastFloat = 0;
+    if (getFirstBase()) {
+        firstFloat = lastFloat = currentFloat = nullptr;
         GLfloat mtx[16];
         glGetFloatv(GL_MODELVIEW_MATRIX, mtx);
-        for (Box* base = firstBase; base; base = base->nextBase) {
+        for (auto i = baseList.begin(); i != baseList.end(); i->expired() ? (i = baseList.erase(i)) : ++i) {
+            BoxPtr base = i->lock();
+            if (!base)
+                continue;
             glPushMatrix();
-            Block* block = dynamic_cast<Block*>(base);
+            auto block = std::dynamic_pointer_cast<Block>(base);
             unsigned overflow = CSSOverflowValueImp::Visible;
             if (block)
                 overflow = block->renderBegin(view);
@@ -342,12 +343,12 @@ void StackingContext::render(ViewCSSImp* view)
         view->unclip(clipLeft, clipTop, clipWidth, clipHeight);
 }
 
-void StackingContext::renderFloats(ViewCSSImp* view, Box* last, Box* current)
+void StackingContext::renderFloats(ViewCSSImp* view, const BoxPtr& last, const BoxPtr& current)
 {
     if (current && current == currentFloat)
         return;
 
-    Box* saved = currentFloat;
+    BoxPtr saved = currentFloat;
     if (!current || !last)
         currentFloat = firstFloat;
     else if (last->nextFloat)
@@ -368,32 +369,39 @@ void StackingContext::renderFloats(ViewCSSImp* view, Box* last, Box* current)
     currentFloat = saved;
 }
 
-void StackingContext::addBase(Box* box)
+BoxPtr StackingContext::getFirstBase() const
 {
-    Box* prev = 0;
-    for (Box* i = firstBase; i; prev = i, i = i->nextBase) {
-        assert(box != i);
-        if (i->parentBox == box) {  // This happens with positioned inline-level boxes
-            if (prev)
-                prev->nextBase = box;
-            else
-                firstBase = box;
-            box->nextBase = i->nextBase;
-            if (lastBase == i)
-                lastBase = box;
-            return;
-        }
+    for (auto i = baseList.begin(); i != baseList.end(); i->expired() ? (i = baseList.erase(i)) : ++i) {
+        if (auto box = i->lock())
+            return box;
     }
-    if (!firstBase)
-        firstBase = lastBase = box;
-    else {
-        lastBase->nextBase = box;
-        lastBase = box;
-    }
-    box->nextBase = 0;
+    return nullptr;
 }
 
-void StackingContext::addBox(Box* box, Box* parentBox)
+BoxPtr StackingContext::getLastBase() const
+{
+    for (auto i = baseList.rbegin(); i != baseList.rend(); ++i) {
+        if (auto box = i->lock())
+            return box;
+    }
+    return nullptr;
+}
+
+void StackingContext::addBase(const BoxPtr& box)
+{
+    for (auto i = baseList.begin(); i != baseList.end(); i->expired() ? (i = baseList.erase(i)) : ++i) {
+        if (auto base = i->lock()) {
+            if (base->getParentBox() == box) {  // This happens with positioned inline-level boxes
+                baseList.insert(i, box);
+                baseList.erase(i);
+                return;
+            }
+        }
+    }
+    baseList.push_back(box);
+}
+
+void StackingContext::addBox(const BoxPtr& box, const BoxPtr& parentBox)
 {
     assert(parentBox);
     box->stackingContext = this;
@@ -401,10 +409,10 @@ void StackingContext::addBox(Box* box, Box* parentBox)
         addBase(box);
 }
 
-void StackingContext::addFloat(Box* box)
+void StackingContext::addFloat(const BoxPtr& box)
 {
 #ifndef NDEBUG
-    for (Box* i = firstFloat; i; i = i->nextFloat) {
+    for (BoxPtr i = firstFloat; i; i = i->nextFloat) {
         assert(box != i);
     }
 #endif
@@ -422,30 +430,29 @@ void StackingContext::addFloat(Box* box)
     box->nextFloat = 0;
 }
 
-void StackingContext::removeBox(Box* box)
+void StackingContext::removeBox(const BoxPtr& box)
 {
-    Box* p = 0;
-    for (Box* i = firstBase; i ; p = i, i = i->nextBase) {
-        if (i == box) {
-            if (!p)
-                firstBase = i->nextBase;
-            else
-                p->nextBase = i->nextBase;
-            if (lastBase == box)
-                lastBase = p;
-            break;
+    for (auto i = baseList.begin(); i != baseList.end(); i->expired() ? (i = baseList.erase(i)) : ++i) {
+        if (auto b = i->lock()) {
+            if (b == box) {
+                baseList.erase(i);
+                return;
+            }
         }
     }
 }
 
 void StackingContext::layOutAbsolute(ViewCSSImp* view)
 {
-    for (Box* base = firstBase; base; base = base->nextBase) {
-        Block* block = dynamic_cast<Block*>(base);
+    for (auto i = baseList.begin(); i != baseList.end(); i->expired() ? (i = baseList.erase(i)) : ++i) {
+        auto base = i->lock();
+        if (!base)
+            continue;
+        auto block = std::dynamic_pointer_cast<Block>(base);
         if (!block || !block->isAbsolutelyPositioned())
             continue;
         block->layOutAbsolute(view);
-        block->resolveXY(view, block->x, block->y, block->clipBox ? block->clipBox : ((view->getTree() == block) ? 0 : view->getTree()));
+        block->resolveXY(view, block->x, block->y, block->getClipBox() ? block->getClipBox() : ((view->getTree() == block) ? 0 : view->getTree()));
     }
     needStaticPosition = false;
 
@@ -465,26 +472,29 @@ void StackingContext::layOutAbsolute(ViewCSSImp* view)
     } while (repeat);
 }
 
-Box* StackingContext::boxFromPoint(int x, int y)
+BoxPtr StackingContext::boxFromPoint(int x, int y)
 {
     StackingContext* childContext;
     for (childContext = getLastChild(); childContext && 0 <= childContext->zIndex; childContext = childContext->getPreviousSibling()) {
-        if (Box* target = childContext->boxFromPoint(x, y))
+        if (BoxPtr target = childContext->boxFromPoint(x, y))
             return target;
     }
-    if (firstBase) {
+    if (getFirstBase()) {
         int s = x - relativeX;
         int t = y - relativeY;
-        for (Box* base = firstBase; base; base = base->nextBase) {
-            if (Box* target = base->boxFromPoint(s, t, this))
+        for (auto i = baseList.begin(); i != baseList.end(); i->expired() ? (i = baseList.erase(i)) : ++i) {
+            auto base = i->lock();
+            if (!base)
+                continue;
+            if (BoxPtr target = base->boxFromPoint(s, t, this))
                 return target;
         }
     }
     for (; childContext; childContext = childContext->getPreviousSibling()) {
-        if (Box* target = childContext->boxFromPoint(x, y))
+        if (BoxPtr target = childContext->boxFromPoint(x, y))
             return target;
     }
-    return 0;
+    return nullptr;
 }
 
 void StackingContext::dump(std::string indent)

@@ -52,7 +52,7 @@ class ViewCSSImp
 
     static const unsigned MaxFontSizes = 8;
 
-    ContainingBlock initialContainingBlock;
+    ContainingBlockPtr initialContainingBlock;
 
     WindowPtr window;
     unsigned dpi;
@@ -83,7 +83,6 @@ class ViewCSSImp
 
     // Repaint
     unsigned clipCount;
-    Box* hoveredBox;
     unsigned short flags{0};
 
     // Animation
@@ -131,13 +130,13 @@ public:
             return window->preload(base, url);
         return 0;
     }
-    Block* createBlock(Element element, Block* parentBox, const CSSStyleDeclarationPtr& style, bool newContext, bool asTablePart = false);
-    Block* constructBlock(Node node, Block* parentBox, const CSSStyleDeclarationPtr& style, Block* prevBox, bool asTablePart = false);
-    Block* constructBlock(Text text, Block* parentBox, const CSSStyleDeclarationPtr& style, Block* prevBox);
-    Block* constructBlock(Element element, Block* parentBox, const CSSStyleDeclarationPtr& parentStyle, CSSStyleDeclarationPtr style, Block* prevBox, bool asTablePart = false);
-    Block* constructBlocks();
-    Block* layOut();
-    Block* dump();
+    BlockPtr createBlock(Element element, const BlockPtr& parentBox, const CSSStyleDeclarationPtr& style, bool newContext, bool asTablePart = false);
+    BlockPtr constructBlock(Node node, const BlockPtr& parentBox, const CSSStyleDeclarationPtr& style, const BlockPtr& prevBox, bool asTablePart = false);
+    BlockPtr constructBlock(Text text, const BlockPtr& parentBox, const CSSStyleDeclarationPtr& style, const BlockPtr& prevBox);
+    BlockPtr constructBlock(Element element, const BlockPtr& parentBox, const CSSStyleDeclarationPtr& parentStyle, CSSStyleDeclarationPtr style, BlockPtr prevBox, bool asTablePart = false);
+    BlockPtr constructBlocks();
+    BlockPtr layOut();
+    BlockPtr dump();
     void resolveXY(float left, float top);
 
     // Repaint
@@ -151,18 +150,18 @@ public:
 
     // For the containing block of the root element's top-level boxes, we need to explicitly specify the size of the box.
     void setSize(float w, float h) {
-        initialContainingBlock.width = w;
-        initialContainingBlock.height = h;
+        initialContainingBlock->width = w;
+        initialContainingBlock->height = h;
     }
     float getWidth() const {
-        return initialContainingBlock.width;
+        return initialContainingBlock->width;
     }
     float getHeight() const {
-        return initialContainingBlock.height;
+        return initialContainingBlock->height;
     }
 
-    const ContainingBlock* getInitialContainingBlock() const {
-        return &initialContainingBlock;
+    ContainingBlockPtr getInitialContainingBlock() const {
+        return initialContainingBlock;
     }
 
     StackingContext* getStackingContexts() const {
@@ -240,7 +239,7 @@ public:
         return point * dpi / 72;
     }
 
-    Box* boxFromPoint(int x, int y);
+    BoxPtr boxFromPoint(int x, int y);
 
     float getScrollWidth() const {
         return scrollWidth;
@@ -293,8 +292,8 @@ public:
 
     CSSStyleDeclarationPtr getStyle(Element elt, Nullable<std::u16string> pseudoElt = Nullable<std::u16string>());
 
-    Block* getTree() const {
-        return boxTree.get();
+    BlockPtr getTree() const {
+        return boxTree;
     }
     void setFlags(unsigned short flags) {
         if (boxTree)

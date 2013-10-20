@@ -17,7 +17,10 @@
 #ifndef ES_FORMATTING_CONTEXT_H
 #define ES_FORMATTING_CONTEXT_H
 
-#include <Object.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <org/w3c/dom/Text.h>
 
 #include <algorithm>
@@ -37,23 +40,29 @@ class Element;
 
 namespace bootstrap {
 
-class Box;
 class ContainingBlock;
-class LineBox;
+class Box;
 class Block;
+class LineBox;
+class InlineBox;
 class StackingContext;
 class ViewCSSImp;
 class WindowProxy;
+
+typedef std::shared_ptr<Box> BoxPtr;
+typedef std::shared_ptr<Block> BlockPtr;
+typedef std::shared_ptr<LineBox> LineBoxPtr;
+typedef std::shared_ptr<InlineBox> InlineBoxPtr;
 
 // SavedFormattingContext stores the initial FormattingContext state for
 // laying out a block-level box.
 struct SavedFormattingContext
 {
     struct FloatingBoxContext {
-        Block* floatingBox;
+        BlockPtr floatingBox;
         float remainingHeight;
 
-        FloatingBoxContext(Block* floatingBox, float remainingHeight) :
+        FloatingBoxContext(const BlockPtr& floatingBox, float remainingHeight) :
             floatingBox(floatingBox),
             remainingHeight(remainingHeight)
         {}
@@ -106,7 +115,7 @@ class FormattingContext
 
     bool breakable;
     bool isFirstLine;
-    LineBox* lineBox;
+    LineBoxPtr lineBox;
     float x;
     float leftover;
     char16_t prevChar;
@@ -114,9 +123,9 @@ class FormattingContext
     // Context for floating boxes
     float blankLeft;
     float blankRight;
-    std::list<Block*> left;           // active floating boxes on the left side
-    std::list<Block*> right;          // active floating boxes on the right side
-    std::list<Block*> floatingBoxes;  // floating boxes to be added
+    std::list<BlockPtr> left;           // active floating boxes on the left side
+    std::list<BlockPtr> right;          // active floating boxes on the right side
+    std::list<BlockPtr> floatingBoxes;  // floating boxes to be added
 
     // Context for margin collapse
     float clearance;  // The clearance introduced by the previous collapsed through boxes.
@@ -145,12 +154,12 @@ public:
     void updateBlanks(Box* box);
     void restoreBlanks(Box* box);
 
-    void saveContext(Block* block);
-    void restoreContext(Block* block);
-    bool hasChanged(const Block* block);
+    void saveContext(const BlockPtr&block);
+    void restoreContext(const BlockPtr&block);
+    bool hasChanged(const BlockPtr&block);
 
-    LineBox* addLineBox(ViewCSSImp* view, Block* parentBox);
-    void addFloat(Block* floatBox, float totalWidth);
+    LineBoxPtr addLineBox(ViewCSSImp* view, const BlockPtr& parentBox);
+    void addFloat(const BlockPtr&floatBox, float totalWidth);
 
     float hasLeft() const {
         return !left.empty();
@@ -158,7 +167,7 @@ public:
     float hasRight() const {
         return !right.empty();
     }
-    float getLeftoverForFloat(Box* block, unsigned floatValue) const;
+    float getLeftoverForFloat(const BoxPtr& block, unsigned floatValue) const;
     float getLeftEdge() const;
     float getRightEdge() const;
     float getLeftRemainingHeight() const;
@@ -166,14 +175,14 @@ public:
     float shiftDown(float* e = 0);
     bool shiftDownLineBox(ViewCSSImp* view);
     bool hasNewFloats() const;
-    void appendInlineBox(ViewCSSImp* view, InlineBox* inlineBox, const CSSStyleDeclarationPtr& activeStyle);
+    void appendInlineBox(ViewCSSImp* view, const InlineBoxPtr& inlineBox, const CSSStyleDeclarationPtr& activeStyle);
     void dontWrap();
-    void nextLine(ViewCSSImp* view, Block* parentBox, bool linefeed);
+    void nextLine(ViewCSSImp* view, const BlockPtr&parentBox, bool linefeed);
     void tryAddFloat(ViewCSSImp* view);
-    float adjustRemainingHeight(float height, Block* from = 0);
+    float adjustRemainingHeight(float height, const BlockPtr& from = nullptr);
 
     // Use the positive margin stored in context to consume the remaining height of floating boxes.
-    void useMargin(Block* block);
+    void useMargin(const BlockPtr&block);
 
     float updateRemainingHeight(float height);
     float clear(unsigned value);
@@ -217,7 +226,7 @@ public:
         return textIterator.next() ? *textIterator : textIterator.size();
     }
     bool isFirstCharacter(const std::u16string& text);
-    InlineBox* getWrapBox(const std::u16string& text);
+    InlineBoxPtr getWrapBox(const std::u16string& text);
 };
 
 }}}}  // org::w3c::dom::bootstrap

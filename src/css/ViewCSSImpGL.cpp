@@ -131,8 +131,8 @@ void ViewCSSImp::render(unsigned parentClipCount)
         updateScrollWidth(boxTree->getScrollWidth());
         updateScrollHeight(boxTree->getScrollHeight());
         if (canScroll()) {
-            Box::renderVerticalScrollBar(initialContainingBlock.width, initialContainingBlock.height, window->getScrollY(), scrollHeight);
-            Box::renderHorizontalScrollBar(initialContainingBlock.width, initialContainingBlock.height, window->getScrollX(), scrollWidth);
+            Box::renderVerticalScrollBar(initialContainingBlock->width, initialContainingBlock->height, window->getScrollY(), scrollHeight);
+            Box::renderHorizontalScrollBar(initialContainingBlock->width, initialContainingBlock->height, window->getScrollX(), scrollWidth);
         }
     }
 
@@ -147,9 +147,9 @@ void ViewCSSImp::renderCanvas(unsigned color)
 
     glColor4ub(color >> 16, color >> 8, color, color >> 24);
     float l = window->getScrollX();
-    float r = l + initialContainingBlock.width;
+    float r = l + initialContainingBlock->width;
     float t = window->getScrollY();
-    float b = t + initialContainingBlock.height;
+    float b = t + initialContainingBlock->height;
     glBegin(GL_QUADS);
     glVertex2f(l, t);
     glVertex2f(r, t);

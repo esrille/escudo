@@ -108,13 +108,13 @@ void HTMLImageElementImp::notify(const HttpRequestPtr& request)
             }
         }
     }
-    if (Box* box = getBox()) {
+    if (BoxPtr box = getBox()) {
         box->setFlags(Box::NEED_REFLOW);
-        Box* ancestor = box->getParentBox();
-        if (ancestor && !dynamic_cast<Block*>(ancestor)) {
+        BoxPtr ancestor = box->getParentBox();
+        if (ancestor && !std::dynamic_pointer_cast<Block>(ancestor)) {
             // Update inline image
             ancestor = ancestor->getParentBox();
-            while (ancestor && !dynamic_cast<Block*>(ancestor))
+            while (ancestor && !std::dynamic_pointer_cast<Block>(ancestor))
                 ancestor = ancestor->getParentBox();
             if (ancestor)
                 ancestor->setFlags(Box::NEED_REFLOW);

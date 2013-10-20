@@ -324,7 +324,7 @@ void Box::renderBorderEdge(ViewCSSImp* view, int edge, unsigned borderStyle, uns
 void Box::renderBorder(ViewCSSImp* view, float left, float top,
                        const CSSStyleDeclarationPtr& style, unsigned backgroundColor, BoxImage* backgroundImage,
                        float ll, float lr, float rl, float rr, float tt, float tb, float bt, float bb,
-                       Box* leftEdge, Box* rightEdge)
+                       const BoxPtr& leftEdge, const BoxPtr& rightEdge)
 {
     glDisable(GL_TEXTURE_2D);
 
@@ -360,7 +360,7 @@ void Box::renderBorder(ViewCSSImp* view, float left, float top,
                 backgroundStart = backgroundImage->render(view, -borderLeft, -borderTop, rr - ll, bb - tt, backgroundLeft - fixedX, backgroundTop - fixedY, backgroundStart);
             }
         } else {
-            const ContainingBlock* containingBlock = getContainingBlock(view);
+            ContainingBlockPtr containingBlock = getContainingBlock(view);
             glTranslatef(lr, tb, 0.0f);
             float l = -lr + view->getWindow()->getScrollX();
             float t = -tb + view->getWindow()->getScrollY();
@@ -412,7 +412,7 @@ void Box::renderBorder(ViewCSSImp* view, float left, float top)
     float tb = tt + borderTop;
     float bt = tb + getPaddingHeight();
     float bb = bt + borderBottom;
-    renderBorder(view, left, top, getStyle(), backgroundColor, backgroundImage, ll, lr, rl, rr, tt, tb, bt, bb, this, this);
+    renderBorder(view, left, top, getStyle(), backgroundColor, backgroundImage, ll, lr, rl, rr, tt, tb, bt, bb, self(), self());
 }
 
 void Box::renderOutline(ViewCSSImp* view, float left, float top, float right, float bottom, float outlineWidth, unsigned outline, unsigned color)
@@ -566,7 +566,7 @@ unsigned Block::renderBegin(ViewCSSImp* view, bool noBorder)
             }
         }
         if (!noBorder && isVisible() && isTableBox())
-            dynamic_cast<TableWrapperBox*>(getParentBox())->renderTableBorders(view);
+            std::dynamic_pointer_cast<TableWrapperBox>(getParentBox())->renderTableBorders(view);
     }
     return overflow;
 }
@@ -610,29 +610,29 @@ void Block::renderNonInline(ViewCSSImp* view, StackingContext* stackingContext)
     if (childWindow)
         return;
 
-    Box* last = 0;
+    BoxPtr last = 0;
     if (isClipped())
         last = stackingContext->getLastFloat();
 
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
         if (child->style && child->style->getStackingContext() != stackingContext)
             continue;
-        if (Block* block = dynamic_cast<Block*>(child)) {
+        if (auto block = std::dynamic_pointer_cast<Block>(child)) {
             unsigned overflow = block->renderBegin(view);
             block->renderNonInline(view, stackingContext);
             block->renderEnd(view, overflow, false);
-        } else if (LineBox* lineBox = dynamic_cast<LineBox*>(child)) {
+        } else if (auto lineBox = std::dynamic_pointer_cast<LineBox>(child)) {
             for (auto box = lineBox->getFirstChild(); box; box = box->getNextSibling()) {
                 if (!box->isAnonymous() && box->style->isFloat() && !box->isPositioned())
                     stackingContext->addFloat(box);
-                else if (CellBox* cellBox = dynamic_cast<CellBox*>(box))
+                else if (auto cellBox = std::dynamic_pointer_cast<CellBox>(box))
                     cellBox->renderNonInline(view, stackingContext);
             }
         }
     }
 
     if (isClipped() && last != stackingContext->getLastFloat())
-        stackingContext->renderFloats(view, last, this);
+        stackingContext->renderFloats(view, last, self());
 }
 
 void Block::renderInline(ViewCSSImp* view, StackingContext* stackingContext)
@@ -664,7 +664,7 @@ void Block::renderInline(ViewCSSImp* view, StackingContext* stackingContext)
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
         if (child->style && child->style->getStackingContext() != stackingContext)
             continue;
-        if (Block* block = dynamic_cast<Block*>(child)) {
+        if (auto block = std::dynamic_pointer_cast<Block>(child)) {
             unsigned overflow = block->renderBegin(view, true);
             block->renderInline(view, stackingContext);
             block->renderEnd(view, overflow);
@@ -677,7 +677,7 @@ void Block::renderInline(ViewCSSImp* view, StackingContext* stackingContext)
         for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
             if (child->style && child->style->getStackingContext() != stackingContext)
                 continue;
-            if (Block* block = dynamic_cast<Block*>(child)) {
+            if (auto block = std::dynamic_pointer_cast<Block>(child)) {
                 if (!block->isAnonymous() && 0.0f < block->getOutlineWidth()) {
                     unsigned overflow = block->renderBegin(view, true);
                     block->renderOutline(view, block->x, block->y + block->getTopBorderEdge());
@@ -688,20 +688,20 @@ void Block::renderInline(ViewCSSImp* view, StackingContext* stackingContext)
     }
 
     if (isTableBox())
-        dynamic_cast<TableWrapperBox*>(getParentBox())->renderTableOutlines(view);
+        std::dynamic_pointer_cast<TableWrapperBox>(getParentBox())->renderTableOutlines(view);
 }
 
 void Block::render(ViewCSSImp* view, StackingContext* stackingContext)
 {
     unsigned overflow = renderBegin(view);
 
-    Box* last = 0;
+    BoxPtr last;
     if (overflow != CSSOverflowValueImp::Visible)
         last = stackingContext->getLastFloat();
     renderNonInline(view, stackingContext);
     renderInline(view, stackingContext);  // TODO: Check which should be drawn first; floats or inline-blocks?
     if (overflow != CSSOverflowValueImp::Visible && last != stackingContext->getLastFloat())
-        stackingContext->renderFloats(view, last, this);
+        stackingContext->renderFloats(view, last, self());
 
     if (!isAnonymous() && 0.0f < getOutlineWidth())
         renderOutline(view, x, y + getTopBorderEdge());
@@ -719,13 +719,13 @@ void LineBox::render(ViewCSSImp* view, StackingContext* stackingContext)
 
 void InlineBox::renderMultipleBackground(ViewCSSImp* view)
 {
-    Box* box;
-    InlineBox* head;
-    InlineBox* tail = this;
-    InlineBox* lastBox = dynamic_cast<InlineBox*>(style->getLastBox());
+    BoxPtr box;
+    InlineBoxPtr head;
+    InlineBoxPtr tail = self();
+    InlineBoxPtr lastBox = std::dynamic_pointer_cast<InlineBox>(style->getLastBox());
     assert(lastBox);
-    for (box = this; box && box != lastBox; box = box->getNextSibling()) {
-        if (InlineBox* i = dynamic_cast<InlineBox*>(box))
+    for (box = self(); box && box != lastBox; box = box->getNextSibling()) {
+        if (InlineBoxPtr i = std::dynamic_pointer_cast<InlineBox>(box))
             tail = i;
     }
 
@@ -741,23 +741,23 @@ void InlineBox::renderMultipleBackground(ViewCSSImp* view)
     if (box) {
         rr = (lastBox->x + lastBox->getTotalWidth() - lastBox->marginRight) - x;
         rl = rr - lastBox->borderRight;
-        renderBorder(view, x, y - getBlankTop(), getStyle(), backgroundColor, backgroundImage, ll, lr, rl, rr, tt, tb, bt, bb, this, lastBox);
+        renderBorder(view, x, y - getBlankTop(), getStyle(), backgroundColor, backgroundImage, ll, lr, rl, rr, tt, tb, bt, bb, self(), lastBox);
     } else {
         rr = rl = (tail->getX() + tail->getTotalWidth()) - x;
-        renderBorder(view, x, y - getBlankTop(), getStyle(), backgroundColor, backgroundImage, ll, lr, rl, rr, tt, tb, bt, bb, this, 0);
-        LineBox* lineBox = dynamic_cast<LineBox*>(getParentBox());
+        renderBorder(view, x, y - getBlankTop(), getStyle(), backgroundColor, backgroundImage, ll, lr, rl, rr, tt, tb, bt, bb, self(), nullptr);
+        auto lineBox = std::dynamic_pointer_cast<LineBox>(getParentBox());
         assert(lineBox);
         float baseline = lineBox->getY() + lineBox->getBaseline();
         for (;;) {
-            LineBox* nextLine = dynamic_cast<LineBox*>(lineBox->getNextSibling());
+            auto nextLine = std::dynamic_pointer_cast<LineBox>(lineBox->getNextSibling());
             if (!nextLine) {
                 // This is a line box in an anonymous block. The last box should be in
                 // one of the following anonymous block(s).
-                Block* block = dynamic_cast<Block*>(lineBox->getParentBox());
+                auto block = std::dynamic_pointer_cast<Block>(lineBox->getParentBox());
                 assert(block);
-                while (block = dynamic_cast<Block*>(block->getNextSibling())) {
+                while (block = std::dynamic_pointer_cast<Block>(block->getNextSibling())) {
                     if (block->isAnonymous()) {
-                        nextLine = dynamic_cast<LineBox*>(block->getFirstChild());
+                        nextLine = std::dynamic_pointer_cast<LineBox>(block->getFirstChild());
                         if (nextLine)
                             break;
                     }
@@ -769,7 +769,7 @@ void InlineBox::renderMultipleBackground(ViewCSSImp* view)
             assert(lineBox);
             head = tail = 0;
             for (box = lineBox->getFirstChild(); box; box = box->getNextSibling()) {
-                if (InlineBox* i = dynamic_cast<InlineBox*>(box)) {
+                if (auto i = std::dynamic_pointer_cast<InlineBox>(box)) {
                     if (!head)
                         head = i;
                     tail = i;
@@ -798,7 +798,7 @@ void InlineBox::renderMultipleBackground(ViewCSSImp* view)
 void InlineBox::renderEmptyBox(ViewCSSImp* view, const CSSStyleDeclarationPtr& parentStyle)
 {
     parentStyle->resolve(view, getContainingBlock(view));
-    LineBox* lineBox = dynamic_cast<LineBox*>(getParentBox());
+    auto lineBox = std::dynamic_pointer_cast<LineBox>(getParentBox());
     assert(lineBox);
     float paddingHeight = parentStyle->paddingTop.getPx() + parentStyle->paddingBottom.getPx();
     float top = lineBox->getY();
@@ -811,13 +811,13 @@ void InlineBox::renderEmptyBox(ViewCSSImp* view, const CSSStyleDeclarationPtr& p
     }
     top -= parentStyle->marginTop.getPx() + parentStyle->paddingTop.getPx() + parentStyle->borderTopWidth.getPx();
 
-    Box* box;
-    InlineBox* head;
-    InlineBox* tail = this;
-    InlineBox* lastBox = dynamic_cast<InlineBox*>(parentStyle->getLastBox());
+    BoxPtr box;
+    InlineBoxPtr head;
+    InlineBoxPtr tail = self();
+    InlineBoxPtr lastBox = std::dynamic_pointer_cast<InlineBox>(parentStyle->getLastBox());
     assert(lastBox);
-    for (box = this; box && box != lastBox; box = box->getNextSibling()) {
-        if (InlineBox* i = dynamic_cast<InlineBox*>(box))
+    for (box = self(); box && box != lastBox; box = box->getNextSibling()) {
+        if (auto i = std::dynamic_pointer_cast<InlineBox>(box))
             tail = i;
     }
 
@@ -835,23 +835,23 @@ void InlineBox::renderEmptyBox(ViewCSSImp* view, const CSSStyleDeclarationPtr& p
         rl = rr - lastBox->borderRight;
         renderBorder(view, x, top,
                      parentStyle, parentStyle->backgroundColor.getARGB(), 0,
-                     ll, lr, rl, rr, tt, tb, bt, bb, this, lastBox);
+                     ll, lr, rl, rr, tt, tb, bt, bb, self(), lastBox);
     } else {
         rr = rl = (tail->getX() + tail->getTotalWidth()) - x;
         renderBorder(view, x, top,
                      parentStyle, parentStyle->backgroundColor.getARGB(), 0,
-                     ll, lr, rl, rr, tt, tb, bt, bb, this, 0);
+                     ll, lr, rl, rr, tt, tb, bt, bb, self(), nullptr);
         float baseline = lineBox->getY() + lineBox->getBaseline();
         for (;;) {
-            LineBox* nextLine = dynamic_cast<LineBox*>(lineBox->getNextSibling());
+            auto nextLine = std::dynamic_pointer_cast<LineBox>(lineBox->getNextSibling());
             if (!nextLine) {
                 // This is a line box in an anonymous block. The last box should be in
                 // one of the following anonymous block(s).
-                Block* block = dynamic_cast<Block*>(lineBox->getParentBox());
+                auto block = std::dynamic_pointer_cast<Block>(lineBox->getParentBox());
                 assert(block);
-                while (block = dynamic_cast<Block*>(block->getNextSibling())) {
+                while (block = std::dynamic_pointer_cast<Block>(block->getNextSibling())) {
                     if (block->isAnonymous()) {
-                        nextLine = dynamic_cast<LineBox*>(block->getFirstChild());
+                        nextLine = std::dynamic_pointer_cast<LineBox>(block->getFirstChild());
                         if (nextLine)
                             break;
                     }
@@ -863,7 +863,7 @@ void InlineBox::renderEmptyBox(ViewCSSImp* view, const CSSStyleDeclarationPtr& p
             assert(lineBox);
             head = tail = 0;
             for (box = lineBox->getFirstChild(); box; box = box->getNextSibling()) {
-                if (InlineBox* i = dynamic_cast<InlineBox*>(box)) {
+                if (auto i = std::dynamic_pointer_cast<InlineBox>(box)) {
                     if (!head)
                         head = i;
                     tail = i;
@@ -901,10 +901,10 @@ void InlineBox::render(ViewCSSImp* view, StackingContext* stackingContext)
     glPushMatrix();
 
     if (!isAnonymous()) {
-        if (style->getBox() == this && 0.0f < getTotalWidth()) {
+        if (style->getBox() == self() && 0.0f < getTotalWidth()) {
             std::list<CSSStyleDeclarationPtr> parentStyleList;
             for (CSSStyleDeclarationPtr parentStyle = getStyle()->getParentStyle();
-                parentStyle && parentStyle->display.isInline() && parentStyle->getBox() == this;
+                parentStyle && parentStyle->display.isInline() && parentStyle->getBox() == self();
                 parentStyle = parentStyle->getParentStyle())
             {
                 if (parentStyle->visibility.isVisible())
@@ -920,7 +920,7 @@ void InlineBox::render(ViewCSSImp* view, StackingContext* stackingContext)
             renderBorder(view, x, y);
         else if (!style->hasMultipleBoxes())
             renderBorder(view, x, y - getBlankTop());
-        else if (style->getBox() == this)
+        else if (style->getBox() == self())
             renderMultipleBackground(view);
     }
     if (childWindow) {
@@ -934,7 +934,7 @@ void InlineBox::render(ViewCSSImp* view, StackingContext* stackingContext)
     } else if (font && isVisible()) {
         glPushMatrix();
             glTranslatef(x + getBlankLeft(), y + font->getAscender(point), 0.0f);
-            LineBox* lineBox = dynamic_cast<LineBox*>(getParentBox());
+            auto lineBox = std::dynamic_pointer_cast<LineBox>(getParentBox());
             assert(lineBox);
             unsigned lineDecoration = getStyle()->textDecorationContext.decoration;
             if (lineDecoration & (CSSTextDecorationValueImp::Underline | CSSTextDecorationValueImp::Overline)) {
@@ -1051,17 +1051,17 @@ void InlineBox::renderOutline(ViewCSSImp* view)
         Box::renderOutline(view, x, y - getBlankTop());
         return;
     }
-    if (style->getBox() != this)
+    if (style->getBox() != self())
         return;
 
     // TODO: Render the outline across several lines.
-    Box* box;
-    InlineBox* head;
-    InlineBox* tail = this;
-    InlineBox* lastBox = dynamic_cast<InlineBox*>(style->getLastBox());
+    BoxPtr box;
+    InlineBoxPtr head;
+    InlineBoxPtr tail = self();
+    InlineBoxPtr lastBox = std::dynamic_pointer_cast<InlineBox>(style->getLastBox());
     assert(lastBox);
-    for (box = this; box && box != lastBox; box = box->getNextSibling()) {
-        if (InlineBox* i = dynamic_cast<InlineBox*>(box))
+    for (box = self(); box && box != lastBox; box = box->getNextSibling()) {
+        if (auto i = std::dynamic_pointer_cast<InlineBox>(box))
             tail = i;
     }
 
@@ -1075,19 +1075,19 @@ void InlineBox::renderOutline(ViewCSSImp* view)
         float bottom = top + getPaddingHeight() - outlineWidth;
         Box::renderOutline(view, left, top, right, bottom,
                            outlineWidth, style->outlineStyle.getValue(), style->outlineColor.getARGB());
-        LineBox* lineBox = dynamic_cast<LineBox*>(getParentBox());
+        auto lineBox = std::dynamic_pointer_cast<LineBox>(getParentBox());
         assert(lineBox);
         float baseline = lineBox->getY() + lineBox->getBaseline();
         for (;;) {
-            LineBox* nextLine = dynamic_cast<LineBox*>(lineBox->getNextSibling());
+            auto nextLine = std::dynamic_pointer_cast<LineBox>(lineBox->getNextSibling());
             if (!nextLine) {
                 // This is a line box in an anonymous block. The last box should be in
                 // one of the following anonymous block(s).
-                Block* block = dynamic_cast<Block*>(lineBox->getParentBox());
+                auto block = std::dynamic_pointer_cast<Block>(lineBox->getParentBox());
                 assert(block);
-                while (block = dynamic_cast<Block*>(block->getNextSibling())) {
+                while (block = std::dynamic_pointer_cast<Block>(block->getNextSibling())) {
                     if (block->isAnonymous()) {
-                        nextLine = dynamic_cast<LineBox*>(block->getFirstChild());
+                        nextLine = std::dynamic_pointer_cast<LineBox>(block->getFirstChild());
                         if (nextLine)
                             break;
                     }
@@ -1099,7 +1099,7 @@ void InlineBox::renderOutline(ViewCSSImp* view)
             assert(lineBox);
             head = tail = 0;
             for (box = lineBox->getFirstChild(); box; box = box->getNextSibling()) {
-                if (InlineBox* i = dynamic_cast<InlineBox*>(box)) {
+                if (auto i = std::dynamic_pointer_cast<InlineBox>(box)) {
                     if (!head)
                         head = i;
                     tail = i;

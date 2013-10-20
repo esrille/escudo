@@ -47,12 +47,6 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 Box::Box(Node node) :
     node(node),
-    parentBox(0),
-    firstChild(0),
-    lastChild(0),
-    previousSibling(0),
-    nextSibling(0),
-    containingBox(0),
     childCount(0),
     clearance(NAN),
     marginTop(0.0f),
@@ -72,41 +66,39 @@ Box::Box(Node node) :
     offsetV(0.0f),
     visibility(CSSVisibilityValueImp::Visible),
     stackingContext(0),
-    nextBase(0),
-    nextFloat(0),
     intrinsic(false),
     x(0.0f),
     y(0.0f),
-    clipBox(0),
     backgroundColor(0x00000000),
     backgroundImage(0),
     backgroundLeft(0.0f),
     backgroundTop(0.0f),
     backgroundStart(getTick()),
-    style(0),
-    flags(0),
-    childWindow(0)
+    flags(0)
 {
 }
 
 Box::~Box()
 {
-    if (stackingContext)
-        stackingContext->removeBox(this);
-
-    while (0 < childCount) {
-        Box* child = removeChild(firstChild);
-        child->release_();
-    }
-
-    if (style)
-        style->removeBox(this);
+    assert(isSane());
+    removeChildren();
 }
 
-Box* Box::removeChild(Box* item)
+bool Box::isSane() const
 {
-    Box* next = item->nextSibling;
-    Box* prev = item->previousSibling;
+    unsigned count = 0;
+    for (auto child = getFirstChild(); child; child = child->getNextSibling())
+        ++count;
+    if (count != childCount)
+        return false;
+    return true;
+}
+
+BoxPtr Box::removeChild(const BoxPtr& item)
+{
+    assert(item);
+    BoxPtr next = item->nextSibling;
+    BoxPtr prev = item->previousSibling;
     if (!next)
         lastChild = prev;
     else
@@ -119,17 +111,14 @@ Box* Box::removeChild(Box* item)
     item->setParentBox(nullptr);
     --childCount;
 
-    if (auto block = dynamic_cast<Block*>(item))
+    if (auto block = std::dynamic_pointer_cast<Block>(item))
         block->inserted = false;
-    else if (item->style)
-        item->style->removeBox(item);
-
     return item;
 }
 
-Box* Box::insertBefore(Box* item, Box* after)
+BoxPtr Box::insertBefore(const BoxPtr& item, const BoxPtr& after)
 {
-    assert(item != parentBox);
+    assert(item != getParentBox());
     if (!after)
         return appendChild(item);
     item->previousSibling = after->previousSibling;
@@ -139,16 +128,15 @@ Box* Box::insertBefore(Box* item, Box* after)
         firstChild = item;
     else
         item->previousSibling->nextSibling = item;
-    item->setParentBox(this);
-    item->retain_();
+    item->setParentBox(self());
     ++childCount;
     return item;
 }
 
-Box* Box::appendChild(Box* item)
+BoxPtr Box::appendChild(const BoxPtr& item)
 {
-    assert(item != parentBox);
-    Box* prev = lastChild;
+    assert(item != getParentBox());
+    BoxPtr prev = lastChild;
     if (!prev)
         firstChild = item;
     else
@@ -156,45 +144,39 @@ Box* Box::appendChild(Box* item)
     item->previousSibling = prev;
     item->nextSibling = 0;
     lastChild = item;
-    item->setParentBox(this);
-    item->retain_();
+    item->setParentBox(self());
     ++childCount;
     return item;
 }
 
 void Box::removeChildren()
 {
-    while (hasChildBoxes()) {
-        Box* child = getFirstChild();
+    while (BoxPtr child = getFirstChild())
         removeChild(child);
-        child->release_();
-    }
 }
 
 void Box::removeDescendants()
 {
-    auto block = dynamic_cast<Block*>(this);
+    auto block = std::dynamic_pointer_cast<Block>(self());
     if (block)
         block->clearBlocks();
-    while (hasChildBoxes()) {
-        Box* child = getFirstChild();
+    while (BoxPtr child = getFirstChild()) {
         removeChild(child);
         child->removeDescendants();
-        child->release_();
     }
     if (block)
         block->clearInlines();
     if (style)
-        style->removeBox(this);
+        style->removeBox(self());
 }
 
-void Box::setContainingBox(Box* box)
+void Box::setContainingBox(const BoxPtr& box)
 {
-    if (parentBox == nullptr) {
+    if (parentBox.expired()) {
         containingBox = box;
         return;
     }
-    assert(parentBox == box);
+    assert(box == getParentBox());
 }
 
 void Box::setStyle(const CSSStyleDeclarationPtr& style)
@@ -213,7 +195,7 @@ void Box::unresolveStyle()
         if (auto style = getStyle())
             style->unresolve();
     }
-    for (Box* i = firstChild; i; i = i->nextSibling)
+    for (BoxPtr i = getFirstChild(); i; i = i->getNextSibling())
         i->unresolveStyle();
 }
 
@@ -229,7 +211,7 @@ float Box::getEffectiveTotalWidth() const
     // cf. http://test.csswg.org/suites/css2.1/20110323/html4/clear-float-002.htm
     float c = getClearance();
     float h = getTotalHeight();
-    if (LineBox* lineBox = dynamic_cast<LineBox*>(parentBox))
+    if (auto lineBox = std::dynamic_pointer_cast<LineBox>(getParentBox()))
         c += lineBox->getClearance();
     if (0.0f < c)
         h += c;
@@ -252,11 +234,11 @@ void Box::updateBorderWidth()
     borderLeft = style->borderLeftWidth.getPx();
 }
 
-const ContainingBlock* Box::getContainingBlock(ViewCSSImp* view) const
+ContainingBlockPtr Box::getContainingBlock(ViewCSSImp* view) const
 {
-    const Box* box = this;
+    BoxPtr box = self();
     do {
-        const Box* parent = box->getParentBox();
+        auto parent = box->getParentBox();
         if (!parent)
             parent = box->getContainingBox();
         if (!parent)
@@ -281,7 +263,7 @@ Element Box::getContainingElement(Node node)
 void Box::updateScrollSize()
 {
     assert(stackingContext);
-    if (clipBox) {
+    if (auto clipBox = getClipBox()) {
         float s = x + stackingContext->getRelativeX();
         float t = y + stackingContext->getRelativeY();
         // TODO: rtl
@@ -302,7 +284,7 @@ void Box::updateScrollSize()
 void Box::resetScrollSize()
 {
     assert(stackingContext);
-    if (clipBox) {
+    if (auto clipBox = getClipBox()) {
         clipBox->resetScrollWidth();
         clipBox->resetScrollHeight();
     }
@@ -334,10 +316,10 @@ void Block::resetScrollHeight()
     scrollHeight = 0;
 }
 
-const ContainingBlock* Block::getContainingBlock(ViewCSSImp* view) const
+ContainingBlockPtr Block::getContainingBlock(ViewCSSImp* view) const
 {
     if (isAbsolutelyPositioned())
-        return &absoluteBlock;
+        return absoluteBlock;
     return Box::getContainingBlock(view);
 }
 
@@ -355,23 +337,23 @@ void Block::setContainingBlock(ViewCSSImp* view)
                 continue;
             if (style->isPositioned()) {
                 // Now we need to find the corresponding box for this ancestor.
-                Box* box = style->getBox();
+                BoxPtr box = style->getBox();
                 if (!box)   // cf. html4/tables-001
                     continue;
                 offsetH = box->x + box->marginLeft + box->borderLeft - x;
                 offsetV = box->y + box->marginTop + box->borderTop - y;
-                clipBox = box->clipBox;
-                if (Block* block = dynamic_cast<Block*>(box)) {
+                clipBox = box->getClipBox();
+                if (auto block = std::dynamic_pointer_cast<Block>(box)) {
                     offsetV += block->topBorderEdge;
-                    absoluteBlock.width = box->getPaddingWidth();
-                    absoluteBlock.height = box->getPaddingHeight();
+                    absoluteBlock->width = box->getPaddingWidth();
+                    absoluteBlock->height = box->getPaddingHeight();
                     if (style->overflow.isClipped())
                         clipBox = block;
                 } else {
                     assert(box->getBoxType() == INLINE_LEVEL_BOX);
-                    if (Box* inlineBlock = box->getFirstChild()) {
-                        absoluteBlock.width = inlineBlock->getPaddingWidth();
-                        absoluteBlock.height = inlineBlock->getPaddingHeight();
+                    if (BoxPtr inlineBlock = box->getFirstChild()) {
+                        absoluteBlock->width = inlineBlock->getPaddingWidth();
+                        absoluteBlock->height = inlineBlock->getPaddingHeight();
                     } else {
                         float t = box->y - box->paddingTop;
                         float l = box->x - box->paddingLeft;
@@ -379,8 +361,8 @@ void Block::setContainingBlock(ViewCSSImp* view)
                         assert(box);
                         float b = box->y + box->height + box->paddingBottom;
                         float r = box->x + box->width + box->paddingRight;
-                        absoluteBlock.width = r - l;
-                        absoluteBlock.height = b - t;
+                        absoluteBlock->width = r - l;
+                        absoluteBlock->height = b - t;
                     }
                 }
                 return;
@@ -389,9 +371,9 @@ void Block::setContainingBlock(ViewCSSImp* view)
     }
     offsetH = -x;
     offsetV = -y;
-    clipBox = 0;
-    absoluteBlock.width = view->getInitialContainingBlock()->width;
-    absoluteBlock.height = view->getInitialContainingBlock()->height;
+    clipBox.reset();
+    absoluteBlock->width = view->getInitialContainingBlock()->width;
+    absoluteBlock->height = view->getInitialContainingBlock()->height;
 }
 
 FormattingContext* Block::updateFormattingContext(FormattingContext* context)
@@ -421,10 +403,10 @@ FormattingContext* Block::establishFormattingContext()
     return formattingContext;
 }
 
-bool Box::isFlowOf(const Block* flowRoot) const
+bool Box::isFlowOf(const BlockPtr& flowRoot) const
 {
     assert(flowRoot->isFlowRoot());
-    for (const Box* box = this; box; box = box->getParentBox()) {
+    for (BoxPtr box = self(); box; box = box->getParentBox()) {
         if (box == flowRoot)
             return true;
     }
@@ -446,10 +428,10 @@ void Box::setFlags(unsigned short f)
         f |= NEED_CHILD_REFLOW;
     if (!f)
         return;
-    for (Box* box = parentBox; box; box = box->parentBox) {
+    for (BoxPtr box = getParentBox(); box; box = box->getParentBox()) {
         if ((box->flags & f) == f)
             break;
-        if (Block* block = dynamic_cast<Block*>(box)) {
+        if (auto block = std::dynamic_pointer_cast<Block>(box)) {
             box->flags |= f;
             if (block->isAnonymous()) {
                 box->flags &= ~NEED_CHILD_EXPANSION;
@@ -465,7 +447,7 @@ void Box::setFlags(unsigned short f)
 void Box::clearFlags(unsigned short f)
 {
     flags &= ~f;
-    for (Box* i = firstChild; i; i = i->nextSibling)
+    for (BoxPtr i = getFirstChild(); i; i = i->getNextSibling())
         i->clearFlags(f);
 }
 
@@ -486,6 +468,7 @@ Block::Block(Node node, const CSSStyleDeclarationPtr& style) :
     inserted(false),
     edge(0.0f),
     remainingHeight(0.0f),
+    absoluteBlock(std::make_shared<ContainingBlock>()),
     anonymousTable(0),
     defaultBaseline(0.0f),
     defaultLineHeight(0.0f),
@@ -493,7 +476,6 @@ Block::Block(Node node, const CSSStyleDeclarationPtr& style) :
     scrollWidth(0.0f),
     scrollHeight(0.0f)
 {
-    absoluteBlock.retain_();
     if (style)
         setStyle(style);
     flags |= NEED_EXPANSION | NEED_REFLOW | NEED_CHILD_REFLOW;
@@ -515,26 +497,26 @@ bool Block::isFloat() const
     return !isAnonymous() && style && style->isFloat();
 }
 
-bool Block::hasAnonymousBox(Box* prev) const
+bool Block::hasAnonymousBox(const BoxPtr& prev) const
 {
     // Note an anonymous table is not considered as an anonymous block box for
     // inserting the following inline element here;
     // cf. html4/before-content-display-008.htm
-    return prev && prev->isAnonymous() && !dynamic_cast<TableWrapperBox*>(prev);
+    return prev && prev->isAnonymous() && !std::dynamic_pointer_cast<TableWrapperBox>(prev);
 }
 
-Block* Block::getAnonymousBox(Box* prev)
+BlockPtr Block::getAnonymousBox(const BoxPtr& prev)
 {
-    Block* anonymousBox;
+    BlockPtr anonymousBox;
     if (hasAnonymousBox(prev)) {
-        anonymousBox = dynamic_cast<Block*>(prev);
+        anonymousBox = std::dynamic_pointer_cast<Block>(prev);
         if (anonymousBox)
             return anonymousBox;
     }
-    anonymousBox = new(std::nothrow) Block;
+    anonymousBox = std::make_shared<Block>();
     if (anonymousBox) {
         anonymousBox->flags &= ~NEED_EXPANSION;
-        anonymousBox->spliceInline(this);
+        anonymousBox->spliceInline(self());
         if (!prev)
             insertBefore(anonymousBox, firstChild);
         else
@@ -559,9 +541,8 @@ void Block::resolveBackground(ViewCSSImp* view)
         backgroundRequest = std::make_shared<HttpRequest>(document->getDocumentURI());
         if (backgroundRequest) {
             backgroundRequest->open(u"GET", style->backgroundImage.getValue());
-            backgroundRequest->setHandler(boost::bind(&Block::notifyBackground, this, view->getDocument()));
+            backgroundRequest->setHandler(boost::bind(&Block::notifyBackground, self(), view->getDocument()));
             document->incrementLoadEventDelayCount(backgroundRequest->getURL());
-            retain_();
             backgroundRequest->send();
         }
     }
@@ -575,10 +556,9 @@ void Block::notifyBackground(Document document)
         setFlags(NEED_REFLOW);
     if (auto imp = std::dynamic_pointer_cast<DocumentImp>(document.self()))
         imp->decrementLoadEventDelayCount(backgroundRequest->getURL());
-    release_();
 }
 
-void Block::resolveBackgroundPosition(ViewCSSImp* view, const ContainingBlock* containingBlock)
+void Block::resolveBackgroundPosition(ViewCSSImp* view, const ContainingBlockPtr& containingBlock)
 {
     assert(style);
     if (!backgroundImage || backgroundImage->getState() != BoxImage::CompletelyAvailable)
@@ -757,14 +737,14 @@ void Block::resolveHeight()
         height = 0.0f;
 }
 
-void Block::layOutInlineBlock(ViewCSSImp* view, Node node, Block* inlineBlock, FormattingContext* context)
+void Block::layOutInlineBlock(ViewCSSImp* view, Node node, const BlockPtr& inlineBlock, FormattingContext* context)
 {
-    InlineBox* inlineBox = new(std::nothrow) InlineBox(node, inlineBlock->style);
+    InlineBoxPtr inlineBox = std::make_shared<InlineBox>(node, inlineBlock->style);
     if (!inlineBox)
         return;  // TODO error
 
     if (!context->lineBox) {
-        if (!context->addLineBox(view, this))
+        if (!context->addLineBox(view, self()))
             return;  // TODO error
     }
 
@@ -777,7 +757,7 @@ void Block::layOutInlineBlock(ViewCSSImp* view, Node node, Block* inlineBlock, F
         inlineBox->width = 0.0f;
     inlineBox->baseline = inlineBox->height;
     if (!inlineBlock->style || !inlineBlock->style->overflow.isClipped()) {
-        if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(inlineBlock))
+        if (auto table = std::dynamic_pointer_cast<TableWrapperBox>(inlineBlock))
             inlineBox->baseline = table->getBaseline();
         else
             inlineBox->baseline = inlineBlock->getBaseline();
@@ -786,8 +766,8 @@ void Block::layOutInlineBlock(ViewCSSImp* view, Node node, Block* inlineBlock, F
            (context->breakable || (style && style->whiteSpace.isBreakingLines())))
     {
         if (context->lineBox->hasChildBoxes() || context->hasNewFloats()) {
-            context->nextLine(view, this, false);
-            if (!context->addLineBox(view, this))
+            context->nextLine(view, self(), false);
+            if (!context->addLineBox(view, self()))
                 return;  // TODO error
             continue;
         }
@@ -802,7 +782,7 @@ void Block::layOutInlineBlock(ViewCSSImp* view, Node node, Block* inlineBlock, F
     updateMCW(inlineBox->getTotalWidth());
 }
 
-void Block::layOutFloat(ViewCSSImp* view, Node node, Block* floatingBox, FormattingContext* context)
+void Block::layOutFloat(ViewCSSImp* view, Node node, const BlockPtr& floatingBox, FormattingContext* context)
 {
     assert(floatingBox->style);
     floatingBox->remainingHeight = floatingBox->getTotalHeight();
@@ -818,11 +798,11 @@ void Block::layOutFloat(ViewCSSImp* view, Node node, Block* floatingBox, Formatt
         return;
     }
     if (!context->lineBox) {
-        if (!context->addLineBox(view, this))
+        if (!context->addLineBox(view, self()))
             return;   // TODO error
     }
     float w = floatingBox->getEffectiveTotalWidth();
-    float l = context->getLeftoverForFloat(this, floatingBox->style->float_.getValue());
+    float l = context->getLeftoverForFloat(self(), floatingBox->style->float_.getValue());
     // If both w and l are zero, move this floating box to the next line;
     // cf. http://test.csswg.org/suites/css2.1/20110323/html4/stack-floats-003.htm
     if ((l < w || l == 0.0f && w == 0.0f) &&
@@ -834,12 +814,12 @@ void Block::layOutFloat(ViewCSSImp* view, Node node, Block* floatingBox, Formatt
     context->addFloat(floatingBox, w);
 }
 
-void Block::layOutAbsolute(ViewCSSImp* view, Node node, Block* absBox, FormattingContext* context)
+void Block::layOutAbsolute(ViewCSSImp* view, Node node, const BlockPtr& absBox, FormattingContext* context)
 {
     // Just insert this absolute box into a line box now.
     // Absolute boxes will be processed later in ViewCSSImp::layOut().
     if (!context->lineBox) {
-        if (!context->addLineBox(view, this))
+        if (!context->addLineBox(view, self()))
             return;  // TODO error
     }
     context->lineBox->appendChild(absBox);
@@ -864,10 +844,10 @@ bool Block::layOutInline(ViewCSSImp* view, FormattingContext* context, float ori
     std::u16string tag(interface_cast<html::HTMLElement>(node).getTagName());
     std::u16string id(interface_cast<html::HTMLElement>(node).getId());
 #endif
-        Block* block = findBlock(node);
-        if (block && block != this) {  // Check an empty absolutely positioned box; cf. bottom-applies-to-010.
-            block->setContainingBox(this);
-            context->useMargin(this);
+        BlockPtr block = findBlock(node);
+        if (block && block != self()) {  // Check an empty absolutely positioned box; cf. bottom-applies-to-010.
+            block->setContainingBox(self());
+            context->useMargin(self());
             if (block->isFloat()) {
                 if (block->style->clear.getValue())
                     keepConsumed = true;
@@ -885,7 +865,7 @@ bool Block::layOutInline(ViewCSSImp* view, FormattingContext* context, float ori
             if (!style)
                 continue;
             if (style->display.isInline())
-                style->resolve(view, this);
+                style->resolve(view, self());
             if (node.getNodeType() == Node::TEXT_NODE) {
                 Text text = interface_cast<Text>(node);
                 if (layOutText(view, node, context, text.getData(), element, style))
@@ -898,11 +878,11 @@ bool Block::layOutInline(ViewCSSImp* view, FormattingContext* context, float ori
         }
     }
     if (context->lineBox)
-        context->nextLine(view, this, false);
+        context->nextLine(view, self(), false);
 
     // Layout remaining floating boxes in context
     while (!context->floatingBoxes.empty()) {
-        Block* floatingBox = context->floatingBoxes.front();
+        BlockPtr floatingBox = context->floatingBoxes.front();
         float clearance = 0.0f;
         if (unsigned clear = floatingBox->style->clear.getValue()) {
             keepConsumed = true;
@@ -913,7 +893,7 @@ bool Block::layOutInline(ViewCSSImp* view, FormattingContext* context, float ori
         }
         if (clearance <= 0.0f) {
             context->leftover = width - context->getLeftEdge() - context->getRightEdge();
-            while (context->getLeftoverForFloat(this, floatingBox->style->float_.getValue()) < floatingBox->getEffectiveTotalWidth()) {
+            while (context->getLeftoverForFloat(self(), floatingBox->style->float_.getValue()) < floatingBox->getEffectiveTotalWidth()) {
                 float h = context->shiftDown();
                 if (h <= 0.0f)
                     break;
@@ -922,8 +902,8 @@ bool Block::layOutInline(ViewCSSImp* view, FormattingContext* context, float ori
                 context->adjustRemainingHeight(clearance);
             }
         }
-        LineBox* nextLine = context->addLineBox(view, this);
-        context->nextLine(view, this, false);
+        LineBoxPtr nextLine = context->addLineBox(view, self());
+        context->nextLine(view, self(), false);
         if (nextLine && clearance != 0.0f)
             nextLine->clearance = clearance;
     }
@@ -952,7 +932,7 @@ float Block::shrinkTo()
         --autoCount;
         min = style->width.getPx();
     } else {
-        for (Box* child = getFirstChild(); child; child = child->getNextSibling())
+        for (BoxPtr child = getFirstChild(); child; child = child->getNextSibling())
             min = std::max(min, child->shrinkTo());
     }
     min += borderLeft + paddingLeft + paddingRight + borderRight;
@@ -978,27 +958,27 @@ void Block::fit(float w, FormattingContext* context)
     resolveWidth(w, context);
     if (!isAnonymous() && !style->width.isAuto())
         return;
-    for (Box* child = getFirstChild(); child; child = child->getNextSibling())
+    for (BoxPtr child = getFirstChild(); child; child = child->getNextSibling())
         child->fit(width, context);
 }
 
-float Block::getBaseline(const Box* box) const
+float Block::getBaseline(const BoxPtr& box) const
 {
     float baseline = NAN;
     float h = box->getBlankTop();
-    for (Box* i = box->getFirstChild(); i; i = i->getNextSibling()) {
-        if (TableWrapperBox* table = dynamic_cast<TableWrapperBox*>(i))
+    for (BoxPtr i = box->getFirstChild(); i; i = i->getNextSibling()) {
+        if (auto table = std::dynamic_pointer_cast<TableWrapperBox>(i))
             baseline = h + table->getBaseline() + table->offsetV;
-        else if (Block* block = dynamic_cast<Block*>(i)) {
+        else if (auto block = std::dynamic_pointer_cast<Block>(i)) {
             float x = getBaseline(block);
             if (!isnan(x))
                 baseline = h + x + block->offsetV;
-        } else if (LineBox* lineBox = dynamic_cast<LineBox*>(i)) {
+        } else if (auto lineBox = std::dynamic_pointer_cast<LineBox>(i)) {
             if (lineBox->hasInlineBox())
                 baseline = h + lineBox->getBaseline();
         }
         h += i->getTotalHeight();
-        if (box->height != 0.0f || !dynamic_cast<LineBox*>(box->getFirstChild()))
+        if (box->height != 0.0f || !std::dynamic_pointer_cast<LineBox>(box->getFirstChild()))
             h += i->getClearance();
     }
     return baseline;
@@ -1007,7 +987,7 @@ float Block::getBaseline(const Box* box) const
 // TODO: We should calculate the baseline once and just return it.
 float Block::getBaseline() const
 {
-    float x = getBaseline(this);
+    float x = getBaseline(self());
     return isnan(x) ? getTotalHeight() : x;
 }
 
@@ -1032,13 +1012,13 @@ bool Block::isCollapsedThrough() const
     if (height != 0.0f || isFlowRoot() ||
         borderTop != 0.0f || paddingTop != 0.0f || paddingBottom != 0.0f || borderBottom != 0.0f)
         return false;
-    for (LineBox* lineBox = dynamic_cast<LineBox*>(getFirstChild());
+    for (auto lineBox = std::dynamic_pointer_cast<LineBox>(getFirstChild());
          lineBox;
-         lineBox = dynamic_cast<LineBox*>(lineBox->getNextSibling())) {
+         lineBox = std::dynamic_pointer_cast<LineBox>(lineBox->getNextSibling())) {
         if (lineBox->getTotalHeight() != 0.0f)
             return false;
         for (auto i = lineBox->getFirstChild(); i; i = i->getNextSibling()) {
-            if (dynamic_cast<InlineBox*>(i))
+            if (std::dynamic_pointer_cast<InlineBox>(i))
                 return false;
         }
     }
@@ -1051,9 +1031,9 @@ float Block::getInternalClearances() const
         borderTop != 0.0f || paddingTop != 0.0f || paddingBottom != 0.0f || borderBottom != 0.0f)
         return 0.0f;
     float c = 0.0f;
-    for (LineBox* lineBox = dynamic_cast<LineBox*>(getFirstChild());
+    for (auto lineBox = std::dynamic_pointer_cast<LineBox>(getFirstChild());
          lineBox;
-         lineBox = dynamic_cast<LineBox*>(lineBox->getNextSibling()))
+         lineBox = std::dynamic_pointer_cast<LineBox>(lineBox->getNextSibling()))
     {
         if (lineBox->getTotalHeight() != 0.0f)
             return 0.0f;
@@ -1072,7 +1052,7 @@ float Block::collapseMarginTop(FormattingContext* context)
         if (isFloat() || isAbsolutelyPositioned() || !getParentBox())
             return NAN;
         assert(context);
-        Block* prev = dynamic_cast<Block*>(getPreviousSibling());
+        auto prev = std::dynamic_pointer_cast<Block>(getPreviousSibling());
         if (prev && prev->isCollapsableOutside())
             context->collapseMargins(prev->marginBottom);
         context->fixMargin();
@@ -1092,14 +1072,14 @@ float Block::collapseMarginTop(FormattingContext* context)
 
     float original = marginTop;
     float before = NAN;
-    if (Block* parent = dynamic_cast<Block*>(getParentBox())) {
-        if (parent->getFirstChild() == this) {
+    if (auto parent = std::dynamic_pointer_cast<Block>(getParentBox())) {
+        if (parent->getFirstChild() == self()) {
             if (parent->isCollapsableInside() && parent->borderTop == 0 && parent->paddingTop == 0 && !hasClearance()) {
                 before = parent->marginTop;
                 parent->marginTop = 0.0f;
             }
         } else {
-            Block* prev = dynamic_cast<Block*>(getPreviousSibling());
+            auto prev = std::dynamic_pointer_cast<Block>(getPreviousSibling());
             if (prev && prev->isCollapsableOutside()) {
                 before = context->collapseMargins(prev->marginBottom);
                 prev->marginBottom = 0.0f;
@@ -1113,7 +1093,7 @@ float Block::collapseMarginTop(FormattingContext* context)
     if (!isAnonymous()) {
         unsigned clear = style->clear.getValue();
         clearance = context->clear(clear);
-        Block* prev = dynamic_cast<Block*>(getPreviousSibling());
+        auto prev = std::dynamic_pointer_cast<Block>(getPreviousSibling());
         if (clear && prev)
             clearance += prev->getInternalClearances();
         if (clearance == 0.0f)
@@ -1159,7 +1139,7 @@ void Block::collapseMarginBottom(FormattingContext* context)
 {
     float used = 0.0f;
 
-    Block* last = dynamic_cast<Block*>(getLastChild());
+    auto last = std::dynamic_pointer_cast<Block>(getLastChild());
     if (last && last->isCollapsableOutside()) {
         float lm = context->collapseMargins(last->marginBottom);
         if (last->isCollapsedThrough()) {
@@ -1187,7 +1167,7 @@ void Block::collapseMarginBottom(FormattingContext* context)
         }
     }
 
-    Block* first = dynamic_cast<Block*>(getFirstChild());
+    auto first = std::dynamic_pointer_cast<Block>(getFirstChild());
     if (first && first->isCollapsableOutside() && !first->hasClearance() && isCollapsableInside() && borderTop == 0 && paddingTop == 0) {
         if (hasClearance()) {
             // The following algorithm is deduced from the following tests:
@@ -1209,7 +1189,7 @@ void Block::collapseMarginBottom(FormattingContext* context)
             while (first && first->isCollapsedThrough()) {
                 // The top border edge must not be cleared if the next adjacent sibling has a clearance;
                 // cf. clear-001.
-                Block* next = dynamic_cast<Block*>(first->getNextSibling());
+                auto next = std::dynamic_pointer_cast<Block>(first->getNextSibling());
                 if (!next || (!next->hasClearance() && next->consumed <= 0.0f))
                     first->topBorderEdge = 0.0f;
                 else
@@ -1230,10 +1210,10 @@ bool Block::undoCollapseMarginTop(FormattingContext* context, float before)
 {
     if (isnan(before))
         return false;
-    if (Block* prev = dynamic_cast<Block*>(getPreviousSibling()))
+    if (auto prev = std::dynamic_pointer_cast<Block>(getPreviousSibling()))
         prev->marginBottom = context->undoCollapseMargins();
     else {
-        Box* parent = getParentBox();
+        BoxPtr parent = getParentBox();
         assert(parent);
         parent->marginTop = context->undoCollapseMargins();
     }
@@ -1258,14 +1238,14 @@ void Block::moveUpCollapsedThroughMargins(FormattingContext* context)
 {
     assert(isCollapsableOutside());
     float m;
-    Block* from = this;
-    Block* curr = this;
-    Block* prev = dynamic_cast<Block*>(curr->getPreviousSibling());
+    BlockPtr from = self();
+    BlockPtr curr = self();
+    auto prev = std::dynamic_pointer_cast<Block>(curr->getPreviousSibling());
     if (hasClearance()) {
         if (!prev)
             return;
         from = curr = prev;
-        prev = dynamic_cast<Block*>(curr->getPreviousSibling());
+        prev = std::dynamic_pointer_cast<Block>(curr->getPreviousSibling());
         if (from->hasClearance() || !from->isCollapsedThrough())
             return;
         m = curr->marginTop;
@@ -1276,9 +1256,9 @@ void Block::moveUpCollapsedThroughMargins(FormattingContext* context)
         curr->marginTop = consumed;
         m = curr->marginBottom - consumed;
         curr->topBorderEdge = 0.0f;
-        for (Block* last = dynamic_cast<Block*>(curr->getLastChild());
+        for (auto last = std::dynamic_pointer_cast<Block>(curr->getLastChild());
              last && last->isCollapsedThrough();
-             last = dynamic_cast<Block*>(last->getPreviousSibling())) {
+             last = std::dynamic_pointer_cast<Block>(last->getPreviousSibling())) {
             last->topBorderEdge = 0.0f;
             if (last->hasClearance())
                 break;
@@ -1288,7 +1268,7 @@ void Block::moveUpCollapsedThroughMargins(FormattingContext* context)
     while (prev && prev->isCollapsedThrough() && !prev->hasClearance()) {
         prev->topBorderEdge -= m;
         curr = prev;
-        prev = dynamic_cast<Block*>(curr->getPreviousSibling());
+        prev = std::dynamic_pointer_cast<Block>(curr->getPreviousSibling());
     }
     if (curr != from) {
         assert(curr->marginTop == 0.0f);
@@ -1307,13 +1287,12 @@ void Block::moveUpCollapsedThroughMargins(FormattingContext* context)
 
 void Block::layOutChildren(ViewCSSImp* view, FormattingContext* context)
 {
-    Box* next;
-    for (Box* child = getFirstChild(); child; child = next) {
+    BoxPtr next;
+    for (BoxPtr child = getFirstChild(); child; child = next) {
         next = child->getNextSibling();
-        if (!child->layOut(view, context)) {
+        if (!child->layOut(view, context))
             removeChild(child);
-            child->release_();
-        } else
+        else
             updateMCW(child->getMCW());
     }
 }
@@ -1339,13 +1318,13 @@ void Block::applyMinMaxHeight(FormattingContext* context)
 void Block::layOutInlineBlocks(ViewCSSImp* view)
 {
     for (auto i = blockMap.begin(); i != blockMap.end(); ++i) {
-        Block* block = i->second.get();
+        BlockPtr block = i->second;
         if (!block->isAbsolutelyPositioned()) {
             float savedWidth = block->getTotalWidth();
             float savedHeight = block->getTotalHeight();
             // TODO: Check block's baseline as well.
             block->layOut(view, 0);
-            if (block->isAnonymous() || (dynamic_cast<TableWrapperBox*>(block) &&
+            if (block->isAnonymous() || (std::dynamic_pointer_cast<TableWrapperBox>(block) &&
                                          (block->style->display != CSSDisplayValueImp::Table &&
                                           block->style->display != CSSDisplayValueImp::InlineTable)))
             {
@@ -1360,8 +1339,8 @@ void Block::layOutInlineBlocks(ViewCSSImp* view)
             if (savedWidth != block->getTotalWidth() || savedHeight != block->getTotalHeight()) {
                 flags |= NEED_REFLOW;
                 // Set NEED_REFLOW to anonymous boxes between 'block' and 'this'.
-                for (Box* ancestor = block->parentBox; ancestor && ancestor != this; ancestor = ancestor->parentBox) {
-                    if (dynamic_cast<Block*>(ancestor))
+                for (BoxPtr ancestor = block->getParentBox(); ancestor && ancestor != self(); ancestor = ancestor->getParentBox()) {
+                    if (std::dynamic_pointer_cast<Block>(ancestor))
                         ancestor->flags |= NEED_REFLOW;
                 }
             }
@@ -1371,12 +1350,12 @@ void Block::layOutInlineBlocks(ViewCSSImp* view)
 
 bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
 {
-    const ContainingBlock* containingBlock = getContainingBlock(view);
+    ContainingBlockPtr containingBlock = getContainingBlock(view);
 
     Element element;
     if (!isAnonymous())
         element = getContainingElement(node);
-    else if (const Box* box = dynamic_cast<const Box*>(containingBlock)) {
+    else if (auto box = std::dynamic_pointer_cast<Box>(containingBlock)) {
         do {
             if (box->node) {
                 element = getContainingElement(box->node);
@@ -1404,7 +1383,7 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
 
     mcw = 0.0f;
     if (!isAnonymous()) {
-        style->addBox(this);
+        style->addBox(self());
         flags |= style->resolve(view, containingBlock);
         resolveBackground(view);
         updatePadding();
@@ -1425,7 +1404,7 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
     }
 
     float cw(NAN);
-    CellBox* cell = dynamic_cast<CellBox*>(this);
+    auto cell = std::dynamic_pointer_cast<CellBox>(self());
     if (cell)
         cw = cell->adjustWidth();
 
@@ -1449,7 +1428,7 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
 #endif
             height = savedHeight;
             mcw = savedMcw;
-            context->restoreContext(this);
+            context->restoreContext(self());
             return true;
         }
     }
@@ -1471,7 +1450,7 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
         height = savedHeight;
         mcw = savedMcw;
         if (context) {
-            context->restoreContext(this);
+            context->restoreContext(self());
             return true;
         }
     }
@@ -1497,7 +1476,7 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
     }
 
     if (flags & NEED_REFLOW) {
-        if (getFirstChild() && dynamic_cast<Block*>(getFirstChild())) {
+        if (getFirstChild() && std::dynamic_pointer_cast<Block>(getFirstChild())) {
             // Note to avoid NEED_CHILD_REFLOW flags are set back again
             // to the ancestor boxes, do not use setFlags() here:
             getFirstChild()->flags |= NEED_REFLOW;
@@ -1533,7 +1512,7 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
     if ((style->height.isAuto() && !intrinsic) || isAnonymous() || cell) {
         float totalClearance = 0.0f;
         height = 0.0f;
-        for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
+        for (BoxPtr child = getFirstChild(); child; child = child->getNextSibling()) {
             height += child->getTotalHeight();
             totalClearance += child->getClearance();
         }
@@ -1541,7 +1520,7 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
         // clearances are used just to layout floating boxes, and thus
         // totalClearance should not be added to height.
         // TODO: test more conditions.
-        if (height != 0.0f || !dynamic_cast<LineBox*>(getFirstChild()))
+        if (height != 0.0f || !std::dynamic_pointer_cast<LineBox>(getFirstChild()))
             height += totalClearance;
     }
     if (!isAnonymous()) {
@@ -1551,7 +1530,7 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
         context->updateRemainingHeight(height);
 
     // Now that 'height' is fixed, calculate 'left', 'right', 'top', and 'bottom'.
-    for (Box* child = getFirstChild(); child; child = child->getNextSibling())
+    for (BoxPtr child = getFirstChild(); child; child = child->getNextSibling())
         child->fit(width, parentContext);
 
     resolveBackgroundPosition(view, containingBlock);
@@ -1586,8 +1565,8 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
     }
 
 
-    if (context->hasChanged(this)) {
-        context->saveContext(this);
+    if (context->hasChanged(self())) {
+        context->saveContext(self());
         if (nextSibling)
             nextSibling->flags |= NEED_REFLOW;
     }
@@ -1602,7 +1581,7 @@ bool Block::layOut(ViewCSSImp* view, FormattingContext* context)
     return true;
 }
 
-unsigned Block::resolveAbsoluteWidth(const ContainingBlock* containingBlock, float& left, float& right, float r)
+unsigned Block::resolveAbsoluteWidth(const ContainingBlockPtr& containingBlock, float& left, float& right, float r)
 {
     //
     // Calculate width
@@ -1676,7 +1655,7 @@ unsigned Block::resolveAbsoluteWidth(const ContainingBlock* containingBlock, flo
     return autoMask;
 }
 
-unsigned Block::applyAbsoluteMinMaxWidth(const ContainingBlock* containingBlock, float& left, float& right, unsigned autoMask)
+unsigned Block::applyAbsoluteMinMaxWidth(const ContainingBlockPtr& containingBlock, float& left, float& right, unsigned autoMask)
 {
     if (!style->maxWidth.isNone()) {
         float maxWidth = style->maxWidth.getPx();
@@ -1689,7 +1668,7 @@ unsigned Block::applyAbsoluteMinMaxWidth(const ContainingBlock* containingBlock,
     return autoMask;
 }
 
-unsigned Block::resolveAbsoluteHeight(const ContainingBlock* containingBlock, float& top, float& bottom, float r)
+unsigned Block::resolveAbsoluteHeight(const ContainingBlockPtr& containingBlock, float& top, float& bottom, float r)
 {
     //
     // Calculate height
@@ -1763,7 +1742,7 @@ unsigned Block::resolveAbsoluteHeight(const ContainingBlock* containingBlock, fl
     return autoMask;
 }
 
-unsigned Block::applyAbsoluteMinMaxHeight(const ContainingBlock* containingBlock, float& top, float& bottom, unsigned autoMask)
+unsigned Block::applyAbsoluteMinMaxHeight(const ContainingBlockPtr& containingBlock, float& top, float& bottom, unsigned autoMask)
 {
     if (!style->maxHeight.isNone()) {
         float maxHeight = style->maxHeight.getPx();
@@ -1785,7 +1764,7 @@ void Block::layOutAbsolute(ViewCSSImp* view)
         return;  // TODO error
     if (!style)
         return;  // TODO error
-    style->addBox(this);
+    style->addBox(self());
 
 #ifndef NDEBUG
     std::u16string tag(interface_cast<html::HTMLElement>(element).getTagName());
@@ -1796,7 +1775,7 @@ void Block::layOutAbsolute(ViewCSSImp* view)
     float savedHeight = height;
 
     setContainingBlock(view);
-    const ContainingBlock* containingBlock = &absoluteBlock;
+    ContainingBlockPtr containingBlock{absoluteBlock};
     flags |= style->resolve(view, containingBlock);
     visibility = style->visibility.getValue();
     textAlign = style->textAlign.getValue();
@@ -1817,8 +1796,8 @@ void Block::layOutAbsolute(ViewCSSImp* view)
     if (CSSDisplayValueImp::isBlockLevel(style->display.getOriginalValue())) {
         // This box is originally a block-level box inside an inline context.
         // Set the static position to the beginning of the next line.
-        if (const Box* lineBox = getParentBox()) {  // A root element can be absolutely positioned.
-            for (const Box* box = getPreviousSibling(); box; box = box->getPreviousSibling()) {
+        if (BoxPtr lineBox = getParentBox()) {  // A root element can be absolutely positioned.
+            for (BoxPtr box = getPreviousSibling(); box; box = box->getPreviousSibling()) {
                 if (!box->isAbsolutelyPositioned()) {
                     if (maskV == (Top | Height | Bottom) || maskV == (Top | Bottom))
                         offsetV += lineBox->height + lineBox->getBlankBottom();
@@ -1888,7 +1867,7 @@ void Block::layOutAbsolute(ViewCSSImp* view)
         float before = height;
         float totalClearance = 0.0f;
         height = 0;
-        for (Box* child = getFirstChild(); child; child = child->getNextSibling()) {
+        for (BoxPtr child = getFirstChild(); child; child = child->getNextSibling()) {
             height += child->getTotalHeight();
             totalClearance += child->getClearance();
         }
@@ -1903,7 +1882,7 @@ void Block::layOutAbsolute(ViewCSSImp* view)
     maskV = applyAbsoluteMinMaxHeight(containingBlock, top, bottom, maskV);
 
     // Now that 'height' is fixed, calculate 'left', 'right', 'top', and 'bottom'.
-    for (Box* child = getFirstChild(); child; child = child->getNextSibling())
+    for (BoxPtr child = getFirstChild(); child; child = child->getNextSibling())
         child->fit(width, 0);
 
     resolveBackgroundPosition(view, containingBlock);
@@ -1919,7 +1898,7 @@ void Block::layOutAbsoluteEnd(float left, float top)
     offsetV += top;
 
     if (style->getPseudoElementSelectorType() == CSSPseudoElementSelector::Marker) {
-        Box* list = getParentBox()->getParentBox();
+        BoxPtr list = getParentBox()->getParentBox();
         if (list->isAnonymous())
             list = list->getParentBox();
         if (list->getParentBox() && list->getParentBox()->style->counterReset.hasCounter()) {
@@ -1940,7 +1919,7 @@ void Block::layOutAbsoluteEnd(float left, float top)
     flags &= ~(NEED_REFLOW | NEED_CHILD_REFLOW | NEED_REPOSITION);
 }
 
-void Block::resolveXY(ViewCSSImp* view, float left, float top, Block* clip)
+void Block::resolveXY(ViewCSSImp* view, float left, float top, const BlockPtr& clip)
 {
     if (!isAnonymous() && style && style->float_.getValue() == CSSFloatValueImp::Right) {
         // cf. http://www.webstandards.org/action/acid2/guide/#row-10-11
@@ -1956,16 +1935,14 @@ void Block::resolveXY(ViewCSSImp* view, float left, float top, Block* clip)
     left += getBlankLeft();
     top += getBlankTop() + topBorderEdge;
 
-    if (isClipped())
-        clip = this;
     if (isPositioned()) {
         assert(getStyle());
-        getStyle()->getStackingContext()->setClipBox(clipBox);
+        getStyle()->getStackingContext()->setClipBox(clip);
     }
 
     if (!childWindow) {
         for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
-            child->resolveXY(view, left, top, clip);
+            child->resolveXY(view, left, top, isClipped() ? self() : clip);
             top += child->getTotalHeight() + child->getClearance();
         }
     }
@@ -1985,7 +1962,7 @@ void Block::dump(std::string indent)
     std::cout << " (" << x + relativeX << ", " << y + relativeY << ") " <<
         "w:" << width << " h:" << height << ' ' <<
         "(" << relativeX << ", " << relativeY <<") ";
-    if ((width < scrollWidth || height < scrollHeight) && (parentBox || scrollWidth != 816 || scrollHeight != 1056)) // TODO: Use some constants
+    if ((width < scrollWidth || height < scrollHeight) && (getParentBox() || scrollWidth != 816 || scrollHeight != 1056)) // TODO: Use some constants
         std::cout << "sw:" << scrollWidth << " sh:" << scrollHeight << ' ';
     if (hasClearance())
         std::cout << "c:" << clearance << ' ';
@@ -1996,7 +1973,7 @@ void Block::dump(std::string indent)
         "b:" << borderTop << ':' <<  borderRight << ':' << borderBottom<< ':' << borderLeft << ' ' <<
         std::hex << CSSSerializeRGB(backgroundColor) << std::dec << '\n';
     indent += "  ";
-    for (Box* child = getFirstChild(); child; child = child->getNextSibling())
+    for (BoxPtr child = getFirstChild(); child; child = child->getNextSibling())
         child->dump(indent);
 }
 

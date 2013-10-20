@@ -80,7 +80,7 @@ void Block::nextLine(ViewCSSImp* view, FormattingContext* context, CSSStyleDecla
         else
             activeStyle = setActiveStyle(view, style, font, point);
     } else {
-        context->nextLine(view, this, linefeed);
+        context->nextLine(view, self(), linefeed);
         if (firstLineStyle) {
             firstLineStyle = nullptr;
             activeStyle = setActiveStyle(view, style, font, point);
@@ -92,8 +92,8 @@ void Block::getPsuedoStyles(ViewCSSImp* view, FormattingContext* context, const 
                             CSSStyleDeclarationPtr& firstLetterStyle, CSSStyleDeclarationPtr& firstLineStyle)
 {
     bool isFirstLetter = true;
-    for (Box* i = context->lineBox->getFirstChild(); i; i = i->getNextSibling()) {
-        if (dynamic_cast<InlineBox*>(i)) {
+    for (BoxPtr i = context->lineBox->getFirstChild(); i; i = i->getNextSibling()) {
+        if (std::dynamic_pointer_cast<InlineBox>(i)) {
             isFirstLetter = false;
             break;
         }
@@ -104,7 +104,7 @@ void Block::getPsuedoStyles(ViewCSSImp* view, FormattingContext* context, const 
     // Note the :first-line, first-letter pseudo-elements can only be attached to a block container element.
     std::list<CSSStyleDeclarationPtr> firstLineStyles;
     std::list<CSSStyleDeclarationPtr> firstLetterStyles;
-    Box* box = this;
+    BoxPtr box = self();
     for (;;) {
         if (CSSStyleDeclarationPtr s = box->getStyle()) {
             if (CSSStyleDeclarationPtr p = s->getPseudoElementStyle(CSSPseudoElementSelector::FirstLine))
@@ -116,7 +116,7 @@ void Block::getPsuedoStyles(ViewCSSImp* view, FormattingContext* context, const 
                     isFirstLetter = false;
             }
         }
-        Box* parent = box->getParentBox();
+        BoxPtr parent = box->getParentBox();
         if (!parent || parent->getFirstChild() != box)
             break;
         box = parent;
@@ -133,7 +133,7 @@ void Block::getPsuedoStyles(ViewCSSImp* view, FormattingContext* context, const 
                 firstLineStyle->specifyWithoutInherited(style);
             }
             firstLineStyle->compute(view, getStyle(), nullptr);
-            firstLineStyle->resolve(view, this);
+            firstLineStyle->resolve(view, self());
         }
     }
     if (!firstLetterStyles.empty()) {
@@ -144,7 +144,7 @@ void Block::getPsuedoStyles(ViewCSSImp* view, FormattingContext* context, const 
             if (style->display.isInline() && style->getPseudoElementSelectorType() == CSSPseudoElementSelector::NonPseudo)
                 firstLetterStyle->specify(style);
             firstLetterStyle->compute(view, firstLineStyle ? firstLineStyle : style, nullptr);
-            firstLetterStyle->resolve(view, this);
+            firstLetterStyle->resolve(view, self());
         }
     }
 }
@@ -161,7 +161,7 @@ size_t Block::layOutFloatingFirstLetter(ViewCSSImp* view, FormattingContext* con
     size_t length = getfirstLetterLength(data, 0);  // TODO: position?
     Text text = document->createTextNode(data.substr(0, length));
     floatingFirstLetter.appendChild(text);
-    Block* floatingBox = view->createBlock(floatingFirstLetter, this, firstLetterStyle, true);
+    BlockPtr floatingBox = view->createBlock(floatingFirstLetter, self(), firstLetterStyle, true);
     floatingBox->insertInline(text);
     floatingBox->flags &= ~(Box::NEED_EXPANSION | Box::NEED_CHILD_EXPANSION);
     addBlock(floatingFirstLetter, floatingBox);
@@ -256,7 +256,7 @@ bool Block::layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
             return !isAnonymous();
     }
 
-    bool psuedoChecked = isAnonymous() && getParentBox()->getFirstChild() != this;
+    bool psuedoChecked = isAnonymous() && getParentBox()->getFirstChild() != self();
     CSSStyleDeclarationPtr firstLineStyle;
     CSSStyleDeclarationPtr firstLetterStyle;
     CSSStyleDeclarationPtr activeStyle;
@@ -265,8 +265,8 @@ bool Block::layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
     activeStyle = setActiveStyle(view, style, font, point);
 
     size_t position = 0;  // within data
-    InlineBox* inlineBox = 0;
-    InlineBox* wrapBox = 0;    // characters moved to the next line
+    InlineBoxPtr inlineBox;
+    InlineBoxPtr wrapBox;    // characters moved to the next line
     for (;;) {
         if (context->atLineHead && !wrapBox) {
             size_t next = style->processLineHeadWhiteSpace(data, position);
@@ -275,10 +275,10 @@ bool Block::layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
             position = next;
         }
 
-        context->useMargin(this);
+        context->useMargin(self());
 
         if (!context->lineBox) {
-            if (!context->addLineBox(view, this))
+            if (!context->addLineBox(view, self()))
                 return false;  // TODO error
         }
         if (!psuedoChecked && getFirstChild() == context->lineBox) {
@@ -296,11 +296,11 @@ bool Block::layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
             } else if (firstLineStyle)
                 activeStyle = setActiveStyle(view, firstLineStyle, font, point);
         }
-        LineBox* lineBox = context->lineBox;
+        LineBoxPtr lineBox = context->lineBox;
 
         float nbl = 0.0f;
         if (wrapBox) {
-            for (InlineBox* box = wrapBox; box; box = dynamic_cast<InlineBox*>(box->getNextSibling()))
+            for (InlineBoxPtr box = wrapBox; box; box = std::dynamic_pointer_cast<InlineBox>(box->getNextSibling()))
                 nbl += box->getTotalWidth();
             context->x += nbl;
             context->leftover -= nbl;
@@ -311,7 +311,7 @@ bool Block::layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
         }
 
         if (!inlineBox) {
-            inlineBox = new(std::nothrow) InlineBox(text, activeStyle);
+            inlineBox = std::make_shared<InlineBox>(text, activeStyle);
             if (!inlineBox)
                 return false;  // TODO error
             inlineBox->resolveWidth();
@@ -402,7 +402,7 @@ bool Block::layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
                             if (firstLineStyle) {
                                 // If the current line is the first line, the style applied to the wrap-box has to be changed.
                                 bool isFirstCharacter = true;
-                                for (InlineBox* box = wrapBox; box; box = dynamic_cast<InlineBox*>(box->getNextSibling())) {
+                                for (InlineBoxPtr box = wrapBox; box; box = std::dynamic_pointer_cast<InlineBox>(box->getNextSibling())) {
                                     Node node = box->getNode();
                                     CSSStyleDeclarationPtr wrapStyle = view->getStyle(interface_cast<Element>(node));
                                     if (!wrapStyle)
@@ -427,7 +427,7 @@ bool Block::layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
                     if (context->shiftDownLineBox(view)) {
                         if (wrapBox) {
                             nbl = 0.0f;
-                            for (InlineBox* box = wrapBox; box; box = dynamic_cast<InlineBox*>(box->getNextSibling()))
+                            for (InlineBoxPtr box = wrapBox; box; box = std::dynamic_pointer_cast<InlineBox>(box->getNextSibling()))
                                 nbl += box->getTotalWidth();
                             context->x += nbl;
                             context->leftover -= nbl;
@@ -472,7 +472,7 @@ bool Block::layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
         }
 
         while (wrapBox) {
-            InlineBox* next = dynamic_cast<InlineBox*>(wrapBox->getNextSibling());
+            auto next = std::dynamic_pointer_cast<InlineBox>(wrapBox->getNextSibling());
             context->appendInlineBox(view, wrapBox, wrapBox->getStyle()); // TODO: leading, etc.
             wrapBox = next;
         }
@@ -491,7 +491,7 @@ bool Block::layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
         style->addBox(inlineBox);  // activeStyle? maybe not...
         if (data.length() <= position) {  // layout done?
             if (linefeed)
-                context->nextLine(view, this, linefeed);
+                context->nextLine(view, self(), linefeed);
             break;
         }
         inlineBox = 0;
@@ -509,8 +509,7 @@ LineBox::LineBox(const CSSStyleDeclarationPtr& style) :
     lineThroughPosition(0.0f),
     lineThroughThickness(1.0f),
     leftGap(0.0f),
-    rightGap(0.0f),
-    rightBox(0)
+    rightGap(0.0f)
 {
     setStyle(style);
     // Keep 'height' 0.0f here since float and positioned elements are
@@ -519,13 +518,13 @@ LineBox::LineBox(const CSSStyleDeclarationPtr& style) :
 
 bool LineBox::layOut(ViewCSSImp* view, FormattingContext* context)
 {
-    for (Box* box = getFirstChild(); box; box = box->getNextSibling()) {
+    for (BoxPtr box = getFirstChild(); box; box = box->getNextSibling()) {
         if (box->isAbsolutelyPositioned())
             continue;
-        if (InlineBox* inlineBox = dynamic_cast<InlineBox*>(box)) {
+        if (auto inlineBox = std::dynamic_pointer_cast<InlineBox>(box)) {
             const CSSStyleDeclarationPtr& style = box->getStyle();
             if (style && style->display.isInlineLevel())
-                inlineBox->offsetV = style->verticalAlign.getOffset(view, style.get(), this, inlineBox);
+                inlineBox->offsetV = style->verticalAlign.getOffset(view, style.get(), self(), inlineBox);
             else {
                 float leading = inlineBox->getLeading() / 2.0f;
                 inlineBox->offsetV = getBaseline() - (leading + inlineBox->getBaseline());
@@ -575,10 +574,10 @@ float LineBox::shrinkTo()
 
 void LineBox::fit(float w, FormattingContext* context)
 {
-    assert(parentBox);
-    assert(dynamic_cast<Block*>(parentBox));
+    assert(getParentBox());
+    assert(std::dynamic_pointer_cast<Block>(getParentBox()));
     float leftover = std::max(0.0f, w - shrinkTo());
-    switch (dynamic_cast<Block*>(parentBox)->getTextAlign()) {
+    switch (std::dynamic_pointer_cast<Block>(getParentBox())->getTextAlign()) {
     case CSSTextAlignValueImp::Left:
     case CSSTextAlignValueImp::Default: // TODO: rtl
         leftGap = 0.0f;
@@ -596,7 +595,7 @@ void LineBox::fit(float w, FormattingContext* context)
     }
 }
 
-void LineBox::resolveXY(ViewCSSImp* view, float left, float top, Block* clip)
+void LineBox::resolveXY(ViewCSSImp* view, float left, float top, const BlockPtr& clip)
 {
     left += offsetH;
     top += offsetV + getClearance();
@@ -608,15 +607,15 @@ void LineBox::resolveXY(ViewCSSImp* view, float left, float top, Block* clip)
     float next = 0.0f;
     bool usedLeftGap = false;
     for (auto child = getFirstChild(); child; child = child->getNextSibling()) {
-        Block* floatingBox = 0;
+        BlockPtr floatingBox;
         next = left;
         if (!child->isAbsolutelyPositioned()) {
             if (!child->isFloat())
                 next += child->getTotalWidth();
             else {
-                floatingBox = dynamic_cast<Block*>(child);
+                floatingBox = std::dynamic_pointer_cast<Block>(child);
                 assert(floatingBox);
-                if (floatingBox == rightBox)
+                if (floatingBox == getRightBox())
                     break;
                 next = left + floatingBox->getEffectiveTotalWidth();
             }
@@ -629,13 +628,13 @@ void LineBox::resolveXY(ViewCSSImp* view, float left, float top, Block* clip)
         child->resolveXY(view, left, top, clip);
         left = next;
     }
-    if (rightBox) {
+    if (getRightBox()) {
         float right = x + getParentBox()->width - getBlankRight();
         for (auto child = getLastChild(); child; child = child->getPreviousSibling()) {
-            Block* floatingBox = dynamic_cast<Block*>(child);
+            BlockPtr floatingBox = std::dynamic_pointer_cast<Block>(child);
             right -= floatingBox->getEffectiveTotalWidth();
             child->resolveXY(view, right, top, clip);
-            if (floatingBox == rightBox)
+            if (floatingBox == getRightBox())
                 break;
         }
     }
@@ -654,7 +653,7 @@ void LineBox::dump(std::string indent)
         std::cout << "c:" << clearance << ' ';
     std::cout << "m:" << marginTop << ':' << marginRight << ':' << marginBottom << ':' << marginLeft << '\n';
     indent += "  ";
-    for (Box* child = getFirstChild(); child; child = child->getNextSibling())
+    for (BoxPtr child = getFirstChild(); child; child = child->getNextSibling())
         child->dump(indent);
 }
 
@@ -710,12 +709,12 @@ void InlineBox::setData(FontTexture* font, float point, const std::u16string& da
         this->wrap = this->data.length();
 }
 
-InlineBox* InlineBox::split()
+InlineBoxPtr InlineBox::split()
 {
     assert(wrap < data.length());
-    InlineBox* wrapBox = new(std::nothrow) InlineBox(node, getStyle());
+    InlineBoxPtr wrapBox = std::make_shared<InlineBox>(node, getStyle());
     if (!wrapBox)
-        return 0;
+        return nullptr;
     wrapBox->marginTop = marginTop;
     wrapBox->marginRight = marginRight;
     wrapBox->marginBottom = marginBottom;
@@ -793,7 +792,7 @@ void InlineBox::resolveWidth()
     }
 }
 
-void InlineBox::resolveXY(ViewCSSImp* view, float left, float top, Block* clip)
+void InlineBox::resolveXY(ViewCSSImp* view, float left, float top, const BlockPtr& clip)
 {
     left += offsetH;
     top += offsetV + leading / 2.0f;
@@ -805,7 +804,7 @@ void InlineBox::resolveXY(ViewCSSImp* view, float left, float top, Block* clip)
 
     if (isPositioned()) {
         assert(getStyle());
-        getStyle()->getStackingContext()->setClipBox(clipBox);
+        getStyle()->getStackingContext()->setClipBox(clip);
     }
 }
 
@@ -826,7 +825,7 @@ void InlineBox::dump(std::string indent)
         std::cout << std::hex << CSSSerializeRGB(getStyle()->color.getARGB()) << std::dec;
     std::cout << '\n';
     indent += "  ";
-    for (Box* child = getFirstChild(); child; child = child->getNextSibling())
+    for (BoxPtr child = getFirstChild(); child; child = child->getNextSibling())
         child->dump(indent);
 }
 

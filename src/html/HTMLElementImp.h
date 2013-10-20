@@ -45,6 +45,7 @@ class Box;
 class CSSStyleDeclarationImp;
 class HTMLTemplateElementImp;
 
+typedef std::shared_ptr<Box> BoxPtr;
 typedef std::shared_ptr<CSSStyleDeclarationImp> CSSStyleDeclarationPtr;
 typedef std::shared_ptr<HTMLTemplateElementImp> HTMLTemplateElementPtr;
 
@@ -83,7 +84,7 @@ public:
 
     virtual void handleMutation(events::MutationEvent mutation);
 
-    Box* getBox();
+    BoxPtr getBox();
     bool hasStyle() const {
         return static_cast<bool>(style);
     }

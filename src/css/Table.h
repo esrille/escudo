@@ -24,7 +24,11 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
+class CellBox;
 class TableWrapperBox;
+
+typedef std::shared_ptr<CellBox> CellBoxPtr;
+typedef std::shared_ptr<TableWrapperBox> TableWrapperBoxPtr;
 
 class CellBox : public Block
 {
@@ -39,7 +43,7 @@ class CellBox : public Block
     float intrinsicHeight;
     float columnWidth;
 
-    float getBaseline(const Box* box) const;
+    float getBaseline(const BoxPtr& box) const;
 
 public:
     CellBox(Element element = nullptr, const CSSStyleDeclarationPtr& style = nullptr);
@@ -80,7 +84,7 @@ public:
     }
 
     void separateBorders(const CSSStyleDeclarationPtr& style, unsigned xWidth, unsigned yHeight);
-    void collapseBorder(TableWrapperBox* wrapper);
+    void collapseBorder(const TableWrapperBoxPtr& wrapper);
 
     unsigned getVerticalAlign() const {
         return verticalAlign;
@@ -104,7 +108,7 @@ public:
     void renderNonInline(ViewCSSImp* view, StackingContext* stackingContext);
 };
 
-typedef boost::intrusive_ptr<CellBox> CellBoxPtr;
+typedef std::shared_ptr<CellBox> CellBoxPtr;
 
 class TableWrapperBox : public Block
 {
@@ -159,7 +163,7 @@ class TableWrapperBox : public Block
     unsigned xWidth;
     unsigned yHeight;
 
-    Block* tableBox;
+    BlockPtr tableBox;
     std::vector<BorderValue> borderRows;
     std::vector<BorderValue> borderColumns;
 
@@ -180,8 +184,8 @@ class TableWrapperBox : public Block
     bool inRow;
     unsigned xCurrent;
     unsigned yCurrent;
-    CellBox* anonymousCell;
-    TableWrapperBox* anonymousTable;
+    CellBoxPtr anonymousCell;
+    TableWrapperBoxPtr anonymousTable;
     Element pendingTheadElement;
     unsigned yTheadBegin;
     unsigned yTheadEnd;
@@ -189,7 +193,7 @@ class TableWrapperBox : public Block
     unsigned yTfootBegin;
     unsigned yTfootEnd;
 
-    Block* constructTablePart(Node node);
+    BlockPtr constructTablePart(Node node);
 
     unsigned appendRow();
     unsigned appendColumn();
@@ -206,18 +210,18 @@ class TableWrapperBox : public Block
     void processFooter();
     void growDownwardGrowingCells();
 
-    void resolveHorizontalBorderConflict(unsigned x, unsigned y, BorderValue* b, CellBox* top, CellBox* bottom);
-    void resolveVerticalBorderConflict(unsigned x, unsigned y, BorderValue* b, CellBox* left, CellBox* right);
+    void resolveHorizontalBorderConflict(unsigned x, unsigned y, BorderValue* b, const CellBoxPtr& top, const CellBoxPtr& bottom);
+    void resolveVerticalBorderConflict(unsigned x, unsigned y, BorderValue* b, const CellBoxPtr& left, const CellBoxPtr& right);
     bool resolveBorderConflict();
     void computeTableBorders();
 
     void formCSSTable();
-    CellBox* processCell(Element current, Block* parentBox, const CSSStyleDeclarationPtr& style, const CSSStyleDeclarationPtr& rowStyle);
+    CellBoxPtr processCell(Element current, const BlockPtr& parentBox, const CSSStyleDeclarationPtr& style, const CSSStyleDeclarationPtr& rowStyle);
 
-    void layOutFixed(ViewCSSImp* view, const ContainingBlock* containingBlock, bool collapsingModel);
-    void layOutAuto(ViewCSSImp* view, const ContainingBlock* containingBlock);
-    void layOutAutoColgroup(ViewCSSImp* view, const ContainingBlock* containingBlock);
-    void layOutTableBox(ViewCSSImp* view, FormattingContext* context, const ContainingBlock* containingBlock, bool collapsingModel, bool fixedLayout);
+    void layOutFixed(ViewCSSImp* view, const ContainingBlockPtr& containingBlock, bool collapsingModel);
+    void layOutAuto(ViewCSSImp* view, const ContainingBlockPtr& containingBlock);
+    void layOutAutoColgroup(ViewCSSImp* view, const ContainingBlockPtr& containingBlock);
+    void layOutTableBox(ViewCSSImp* view, FormattingContext* context, const ContainingBlockPtr& containingBlock, bool collapsingModel, bool fixedLayout);
     void layOutTableParts();
     void resetCellBoxWidths();
 
@@ -242,8 +246,13 @@ public:
         return &borderColumns[(xWidth + 1) * y + x];
     }
 
-    bool isTableBox(const Block* box) const {
-        return tableBox && box == tableBox;
+    BlockPtr getTableBox() const {
+        return tableBox;
+    }
+    bool isTableBox(const BlockPtr& box) const {
+        if (BlockPtr table = getTableBox())
+            return table == box;
+        return false;
     }
 
     bool isAnonymousTableObject() const {
@@ -273,7 +282,7 @@ public:
     virtual void dump(std::string indent = "");
 };
 
-typedef boost::intrusive_ptr<TableWrapperBox> TableWrapperBoxPtr;
+typedef std::shared_ptr<TableWrapperBox> TableWrapperBoxPtr;
 
 }}}}  // org::w3c::dom::bootstrap
 

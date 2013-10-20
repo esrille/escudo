@@ -102,7 +102,7 @@ void HTMLElementImp::handleMouseMove(EventListenerImp* listener, events::Event e
     events::MouseEvent mouse = interface_cast<events::MouseEvent>(event);
     unsigned short buttons = mouse.getButtons();
     if (buttons & 1) {
-        Block* block = dynamic_cast<Block*>(getBox());
+        BlockPtr block = std::dynamic_pointer_cast<Block>(getBox());
         if (block && block->canScroll()) {
             setScrollTop(getScrollTop() + moveY - mouse.getScreenY());
             setScrollLeft(getScrollLeft() + moveX - mouse.getScreenX());
@@ -328,7 +328,7 @@ void HTMLElementImp::handleMutation(events::MutationEvent mutation)
     }
 }
 
-Box* HTMLElementImp::getBox()
+BoxPtr HTMLElementImp::getBox()
 {
     DocumentPtr owner = getOwnerDocumentImp();
     if (!owner)
@@ -478,7 +478,7 @@ views::ClientRect HTMLElementImp::getBoundingClientRect()
 void HTMLElementImp::scrollIntoView(bool top)
 {
     if (html::Window window = getOwnerDocument().getDefaultView()) {
-        if (Box* box = getBox()) {
+        if (BoxPtr box = getBox()) {
             int x = box->getX() + box->getMarginLeft();
             int y = box->getY() + box->getMarginTop();
             if (!top)
@@ -495,7 +495,7 @@ int HTMLElementImp::getScrollTop()
 
 void HTMLElementImp::setScrollTop(int y)
 {
-    Block* block = dynamic_cast<Block*>(getBox());
+    auto block = std::dynamic_pointer_cast<Block>(getBox());
     if (!block)
         return;
     float overflow = block->getScrollHeight() - block->height;
@@ -510,7 +510,7 @@ int HTMLElementImp::getScrollLeft()
 
 void HTMLElementImp::setScrollLeft(int x)
 {
-    Block* block = dynamic_cast<Block*>(getBox());
+    auto block = std::dynamic_pointer_cast<Block>(getBox());
     if (!block)
         return;
     float overflow = block->getScrollWidth() - block->width;
@@ -520,14 +520,14 @@ void HTMLElementImp::setScrollLeft(int x)
 
 int HTMLElementImp::getScrollWidth()
 {
-    if (Block* block = dynamic_cast<Block*>(getBox()))
+    if (auto block = std::dynamic_pointer_cast<Block>(getBox()))
         return block->getScrollWidth();
     return 0;
 }
 
 int HTMLElementImp::getScrollHeight()
 {
-    if (Block* block = dynamic_cast<Block*>(getBox()))
+    if (auto block = std::dynamic_pointer_cast<Block>(getBox()))
         return block->getScrollHeight();
     return 0;
 }

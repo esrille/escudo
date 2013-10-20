@@ -17,8 +17,12 @@
 #ifndef ES_CSSSTACKINGCONTEXT_H
 #define ES_CSSSTACKINGCONTEXT_H
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <atomic>
-#include <memory>
+#include <list>
 #include <string>
 #include <boost/intrusive_ptr.hpp>
 
@@ -29,10 +33,14 @@ class Block;
 class ViewCSSImp;
 class CSSStyleDeclarationImp;
 
+typedef std::shared_ptr<Box> BoxPtr;
+typedef std::shared_ptr<Block> BlockPtr;
 typedef std::shared_ptr<CSSStyleDeclarationImp> CSSStyleDeclarationPtr;
 
 class StackingContext
 {
+    friend class Box;
+
     std::atomic_uint count;
 
     std::weak_ptr<CSSStyleDeclarationImp> style;
@@ -50,14 +58,14 @@ class StackingContext
 
     // The top level boxes in this StackingContext. Note a single, positioned
     // inline element can generate multiple inline boxes.
-    Box* firstBase;
-    Box* lastBase;
-    Block* clipBox;
+    mutable std::list<std::weak_ptr<Box>> baseList;
+
+    std::weak_ptr<Block> clipBox;
 
     // render
-    Box* firstFloat;
-    Box* lastFloat;
-    Box* currentFloat;
+    BoxPtr firstFloat;
+    BoxPtr lastFloat;
+    BoxPtr currentFloat;
 
     float relativeX;
     float relativeY;
@@ -141,32 +149,37 @@ public:
         return style.lock();
     }
 
+    void addBase(const BoxPtr& box);
+    BoxPtr getFirstBase() const;
+    BoxPtr getLastBase() const;
     void clearBase() {
-        firstBase = lastBase = 0;
+        baseList.clear();
         firstFloat = lastFloat = 0;
         for (auto i = getFirstChild(); i; i = i->getNextSibling())
             i->clearBase();
     }
-    Box* getBase() const {
-        return firstBase;
+    BoxPtr getBase() const {
+        return getFirstBase();
     }
-    void addBase(Box* box);
-    void addBox(Box* box, Box* parentBox);
 
-    Box* getLastFloat() const {
+    void addBox(const BoxPtr& box, const BoxPtr& parentBox);
+    void removeBox(const BoxPtr& box);
+
+    BoxPtr getLastFloat() const {
         return lastFloat;
     }
-    void addFloat(Box* box);
+    void addFloat(const BoxPtr& box);
 
-    void removeBox(Box* box);
-
-    void setClipBox(Block* box) {
+    BlockPtr getClipBox() const {
+        return clipBox.lock();
+    }
+    void setClipBox(const BlockPtr& box) {
         clipBox = box;
     }
 
     void layOutAbsolute(ViewCSSImp* view);
 
-    void renderFloats(ViewCSSImp* view, Box* last, Box* current);
+    void renderFloats(ViewCSSImp* view, const BoxPtr& last, const BoxPtr& current);
 
     void resetScrollSize();
     void resolveScrollSize(ViewCSSImp* view);
@@ -181,7 +194,7 @@ public:
         return relativeY;
     }
 
-    Box* boxFromPoint(int x, int y);
+    BoxPtr boxFromPoint(int x, int y);
 
     void dump(std::string indent = "");
 };

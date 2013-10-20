@@ -40,11 +40,13 @@ class FontTexture;  // TODO: define namespace
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
+class ContainingBlock;
 class Box;
 class Block;
 class CSSStyleDeclarationImp;
 
 typedef std::shared_ptr<CSSStyleDeclarationImp> CSSStyleDeclarationPtr;
+typedef std::shared_ptr<ContainingBlock> ContainingBlockPtr;
 
 struct CSSStyleDeclarationBoard
 {
@@ -330,8 +332,8 @@ private:
 
     float containingBlockWidth;
     float containingBlockHeight;
-    Box* box;
-    Box* lastBox;   // for inline
+
+    mutable std::list<std::weak_ptr<Box>> boxList;
 
     void initialize(bool ctor = false);
 
@@ -532,7 +534,7 @@ public:
 
     void compute(ViewCSSImp* view, const CSSStyleDeclarationPtr& parentStyle, Element element);
     void computeStackingContext(ViewCSSImp* view, const CSSStyleDeclarationPtr& parentStyle, bool wasPositioned);
-    unsigned resolve(ViewCSSImp* view, const ContainingBlock* containingBlock);
+    unsigned resolve(ViewCSSImp* view, const ContainingBlockPtr& containingBlock);
     void unresolve() {
         clearFlags(Resolved);
     }
@@ -593,22 +595,17 @@ public:
         return bodyStyle.lock();
     }
 
-    void clearBox();
-    void addBox(Box* box);
-    void removeBox(Box* box);
+    void clearBox() {
+        boxList.clear();
+    }
+    void addBox(const BoxPtr& box);
+    void removeBox(const BoxPtr& box);
+    BoxPtr getBox() const;
+    BoxPtr getLastBox() const;
+    bool hasMultipleBoxes() const;
 
-    Box* getBox() const {
-        return box;
-    }
-    Box* getLastBox() const {
-        return lastBox;
-    }
-    bool hasMultipleBoxes() const {
-        return box && box != lastBox;
-    }
-
-    Block* updateInlines(Element element);
-    Block* revert(Element element);
+    BlockPtr updateInlines(Element element);
+    BlockPtr revert(Element element);
     void requestReconstruct(unsigned short flags);
 
     StackingContextPtr getStackingContext() const {

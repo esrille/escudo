@@ -497,7 +497,7 @@ void WindowProxy::mouse(const EventTask& task)
     else
         buttons |= (1u << shift);
 
-    Box* box = view->boxFromPoint(x, y);
+    BoxPtr box = view->boxFromPoint(x, y);
     if (!box)
         return;
     if (WindowProxyPtr childWindow = box->getChildWindow()) {
@@ -523,7 +523,7 @@ void WindowProxy::mouse(const EventTask& task)
 
     if (!up || detail == 0)
         return;
-    Box* clickBox = view->boxFromPoint(x, y);
+    BoxPtr clickBox = view->boxFromPoint(x, y);
     if (box != clickBox)
         return;
 
@@ -545,7 +545,7 @@ void WindowProxy::mouseMove(const EventTask& task)
 
     if (!view)
         return;
-    Box* box = view->boxFromPoint(x, y);
+    BoxPtr box = view->boxFromPoint(x, y);
     if (!box)
         return;
 
@@ -707,7 +707,7 @@ Element WindowProxy::elementFromPoint(float x, float y)
         return nullptr;
     if (x < 0.0f || width < x || y < 0.0f || height < y)
         return nullptr;
-    Box* box = view->boxFromPoint(x, y);
+    BoxPtr box = view->boxFromPoint(x, y);
     if (!box)
         return nullptr;
     for (Node node = box->getTargetNode(); node; node = node.getParentNode()) {

@@ -103,7 +103,7 @@ int main(int argc, char** argv)
     view->constructComputedStyles();
     view->calculateComputedStyles();
 
-    Box* boxTree = view->constructBlocks();
+    BoxPtr boxTree = view->constructBlocks();
     if (!boxTree)
         return EXIT_FAILURE;
 
