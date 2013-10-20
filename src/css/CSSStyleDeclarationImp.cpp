@@ -2278,6 +2278,16 @@ BlockPtr CSSStyleDeclarationImp::updateInlines(Element element)
 
 BlockPtr CSSStyleDeclarationImp::revert(Element element)
 {
+    if (marker) {
+        getPseudoElementStyle(CSSPseudoElementSelector::Marker)->revert(marker);
+    }
+    if (before) {
+        getPseudoElementStyle(CSSPseudoElementSelector::Before)->revert(before);
+    }
+    if (after) {
+        getPseudoElementStyle(CSSPseudoElementSelector::After)->revert(after);
+    }
+
     auto parentStyle = getParentStyle();
     if (parentStyle && stackingContext && parentStyle->stackingContext != stackingContext) {
         stackingContext->detach();
