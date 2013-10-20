@@ -1,3 +1,751 @@
+2013-10-20 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Switch over to shared_ptr based Box implementation
+
+	With this change, class instances that are derived from the ContainingBlock
+	class are managed by std::shared_ptr.
+
+	* (ContainingBlock) : Extend from enable_shared_from_this and drop support for intrusive_ptr
+	* (ContainingBlockPtr, BoxPtr, BlockPtr, LineBoxPtr, InlineBoxPtr, TableWrapperBoxPtr, CellBoxPtr) : Define as shared_ptr; all callers changed
+	* (Box::isSane) : New
+	* (Box::self, Block::self, LineBox::self, InlineBox::self) : New
+	* (Box::parentBox, Box::containingBox) : Switch to weak_ptr<Box>
+	* (LineBox::rightBox) : Switch to weak_ptr<Block>
+	* (CSSStyleDeclarationImp::boxList) : Keep boxes using list<weak_ptr<Box>> to simplify the memory management
+	* (CSSStyleDeclarationImp::addBox, CSSStyleDeclarationImp::removeBox, CSSStyleDeclarationImp::getBox, CSSStyleDeclarationImp::getLastBox, CSSStyleDeclarationImp::hasMultipleBoxes) : Refine
+	* (StackingContext::baseList) : Keep base boxes using list<weak_ptr<Box>> to simplify the memory management; all callers changed
+	* (TableWrapperBox::constructBlocks, TableWrapperBox::processCell) : Switch to make_shared from new
+	* (ViewCSSImp::createBlock) : Switch to make_shared from new
+
+2013-10-20 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (NodeImp::setParent, NodeImp::isAncestorOf, NodeImp::isDescendantOf) : Refine
+
+2013-10-12 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (WindowProxy::BackgroundTask::operator()) : Check remaining view flags at the end of each loop
+	* src/Test.util.cpp (setLogLevel) : New
+
+2013-10-12 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* testlog/css2.1/20110323/implement-report-Escudo-Fedora.data : Update
+
+2013-10-12 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSStyleDeclarationImp::clearBox) : Clean up
+
+2013-10-12 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (ViewCSSImp::constructBlock) : Do not process an anonymous table incrementally
+
+2013-10-12 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Box::containingBox) : New for finding the containing block without using parentBox
+	* (Box::getContainingBox, setContainingBox, setParentBox) : New
+	* (Box::getContainingBlock, Block::layOutInlineBlock, Block::layOutInline) : Refine
+	* (ViewCSSImp::constructBlock) : Refine
+
+2013-10-12 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Dump reference counts of render boxes at log level three
+
+	* (ContainingBlock::count_) : New
+	* (Block::layOut, LineBox::dump, InlineBox::dump, TableWrapperBox::dump) : Refine
+
+2013-10-10 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Block::layOut) : Refine
+
+2013-10-09 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (StackingContext::dump) : Refine
+
+2013-10-09 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (StackingContext::detach) : Fix a bug
+
+2013-10-08 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CellBox::CellBox) : Fix for TableWrapperBox::processCell(); cf. html4/table-anonymous-objects-090.htm
+
+2013-10-07 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* Makefile.am (clean-local) : Remove CSSGrammar.cc Makefile.am (EXTRA_DIST) : Remove config.h
+
+2013-10-07 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HttpRequest::abort) : Fix a bug
+
+2013-10-07 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HttpConnection::readHead) : Fix a bug
+
+2013-10-06 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Box::setFlags) : Work around for 2a6604c2; this turns out to be a bit tricky depending on whether we're processing a positioned box or a table box. We'll revisit this later.
+
+2013-10-06 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSSImportRuleImp::request, CSSImportRuleImp::getStyleSheet) : Fix and switch over to shared_ptr
+
+2013-10-06 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Track what are being loaded at log level one or greater
+
+	* (DocumentImp::incrementLoadEventDelayCount, DocumentImp::decrementLoadEventDelayCount) : Take an href as its argument and manage loadingList; all callers are changed
+
+2013-10-06 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (HttpRequest::getURL) : New; all callers changed
+
+2013-10-06 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Box::setFlags) : Fix a bug
+
+2013-10-06 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Block::layOut) : Clean up
+
+2013-10-05 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[HTTP] Make sure active HTTPRequest objects are not deleted.
+
+	* (HttpCache, HttpConnectionManager, HttpRequest) : Mange HTTPRequest objects using std::shared_ptr
+	* src (WindowImp::~WindowImp, WindowImp::preload) : Refine
+	* src (WindowProxy::WindowProxy, WindowProxy::poll, WindowProxy::navigate) : Refine
+	* src/css (Box::backgroundRequest) : Refine
+	* src/css (Block::resolveBackground) : Refine
+	* src/css (CSSListStyleImageValueImp) : Refine
+	* src/css (TableWrapperBox::layOutTableBox) : Refine
+	* src/css (ViewCSSImp::preload) : Refine
+	* src/html (HTMLImageElementImp::handleMutation, HTMLImageElementImp::notify) : Refine
+	* src/html (HTMLLinkElementImp::refresh, HTMLLinkElementImp::linkStyleSheet, HTMLLinkElementImp::linkIcon) : Refine
+	* src/html (HTMLObjectElementImp::refresh, HTMLObjectElementImp::handleRefresh) : Refine
+	* src/html (HTMLReplacedElementImp) : Refine
+	* src/html (HTMLScriptElementImp::prepare) : Refine
+	* src/HTTPRequest.test.cpp : Refine
+
+2013-10-05 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Any) : Refine to detect programming errors like in 238f0cfd74 at compile time
+
+2013-10-04 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/v8/bridgeV8.cpp (NativeClass::constructor, NativeClass::createJSObject) : Fix bugs
+
+2013-10-04 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/v8/bridgeV8.cpp (ProxyObject::message_) : Fix bugs
+
+2013-10-04 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* configure.ac : Fix check for V8
+
+2013-10-04 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* configure.ac : Make config.h include Sequence.h
+	* src/Object.h : Do not include Sequence.h directly
+	* src/Sequence.h : Rename from src/sequence.h
+	* Makefile.am (libeshtml5_a_SOURCES) : Add src/Sequence.h
+
+2013-10-04 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/Object.h : Refine for gcc 4.7
+
+2013-10-04 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Any) : Support i386's size_t
+
+2013-10-04 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* debian/control (Build-Depends) : Add automake
+
+2013-10-04 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Variadic) : Move from src/Variadic.h to src/Object.h
+	* Makefile.am (libeshtml5_a_SOURCES) : Remove
+	* src/Variadic.h : Delete
+
+2013-10-04 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/Object.h : Clean up
+
+2013-10-04 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Nullable) : Move from src/nullable.h to src/Object.h
+	* Makefile.am (libeshtml5_a_SOURCES) : Remove
+	* src/nullable.h : Delete
+
+2013-10-03 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Nullable) : Support move operations
+
+2013-10-03 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (ViewCSSImp::calculateComputedStyles, ViewCSSImp::getBackgroundColor) : Fix bugs
+
+2013-10-03 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Nullable<std::string>::Nullable(const char*)) : Remove
+
+2013-10-03 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Any::operator=(T&&)) : Fix a bug
+
+2013-10-03 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (ViewCSSImp::getStyle) : Refine
+
+2013-10-03 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	Switch over to shared_ptr based Any implementation
+
+	* src/Object.h : Add std::shared_ptr based Any implementation
+	* src/sequence.h (SequenceImp) : New based on Imp class
+	* src/sequence.h (Sequence) : Switch over to Object based implementation
+	* src/Any.h : Delete
+	* src/Any.cpp : Refine
+	* org/w3c/dom/ObjectArray.h : Refine
+	* src/Reflect.h : Refine
+	* src/js/bridge.cpp : Refine
+	* src/v8/bridgeV8.cpp : Refine
+	* Makefile.am (libeshtml5_a_SOURCES) : Remove Any.h
+
+2013-10-02 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (WindowProxy::updateView) : Fix a bug related to e73c74c936
+
+2013-10-02 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (WindowProxy::getSelf) : Work around for 0c895cbe1d
+
+2013-10-02 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* Makefile.am (generated_scanners) : We should never explicitly mention the intermediate C++ file generated from the bison source file
+
+2013-10-01 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (ViewCSSImp::constructBlock) : Fix a bug; cf. html4/block-in-inline-remove-000.htm
+
+2013-10-01 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Block::layOutInlineBlock) : Work around for 5a01ae4d69
+	* (ViewCSSImp::constructBlock) : Work around for 5a01ae4d69
+
+2013-10-01 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	(ViewCSSImp::constructComputedStyle) : Fix a bug
+
+	A dynamic attribute change of an element can affect to descendant and
+	adjacent sibling elements; cf. html4/dynamic-sibling-combinator-001.htm
+
+2013-10-01 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Block::hasAnonymousBox) : Work around for 5a01ae4d69
+
+2013-09-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (TableWrapperBox::layOutTableBox) : Fix a bug; cf. html4/border-collapse-dynamic-cell-005.htm
+
+2013-09-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSStyleDeclarationBoard::compare) : Fix to check against resolved values not computed values; cf. html4/border-collapse-dynamic-cell-003.htm
+	* (CSSNumericValue::compare, etc.) : Compare to the resolve value
+
+2013-09-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSStyleDeclarationImp::revert) : Fix a bug
+
+2013-09-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSStyleDeclarationBoard::compare) : Fix a bug; cf. html4/border-collapse-dynamic-cell-003.htm
+
+2013-09-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSStyleDeclarationImp::revert) : Clean up
+
+2013-09-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (TableWrapperBox::TableWrapperBox) : Check anonymous table strictly
+
+2013-09-30 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (StackingContext::addBox) : Fix a bug
+
+2013-09-29 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (ViewCSSImp::constructComputedStyle) : Clean up
+
+2013-09-28 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (NodeImp::insertBefore) : Fix bugs in 0c895cbe
+
+2013-09-28 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (NodeImp::appendChild) : Clean up
+
+2013-09-28 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (ObjectImp::(const ObjectImp&)): Fix bugs in 0c895cbe
+
+2013-09-28 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSImportRuleImp::request) : Switch to unique_ptr<HttpRequest>; all callers changed
+
+2013-09-28 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (WindowProxy::poll) : Fix bugs related to ccab596a15
+	* (CSSImportRuleImp::notify) : Decrement the load event delay count *after* setting view flags
+
+2013-09-27 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/css/Table.cpp : Fix bugs in 0c895cbe
+
+2013-09-27 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* Makefile.am : Remove redundant -fno-multipleinheritance option from esidl(0.4.0) invocation
+
+2013-09-27 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* m4/esidl.m4 (AC_PROG_ESIDL) : Support help2man style version string
+
+2013-09-27 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* Makefile.am (EXTRA_DIST) : Clean up
+
+2013-09-27 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* m4/esidl.m4 (AC_PROG_ESIDL): Check for esidl of the specified version and define ESIDL
+	* Makefile.am : Use $(ESIDL)
+	* configure.ac : Use AC_PROG_ESIDL([0.4.0])
+
+2013-09-27 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* configure.ac : Refine check for nullptr and C++11
+
+2013-09-26 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* configure.ac : Fix check for V8
+
+2013-09-26 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* configure.ac : Add AC_LANG([C++])
+
+2013-09-26 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (DOMTokenListImp::DOMTokenListImp) : Fix not to take ElementImp* as an argument; all callers changed
+
+2013-09-25 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/v8 : Support V8 version 3.19.2
+	* configure.ac : Define HAVE_V8_ISOLATE if V8 supports Isolate
+
+2013-09-24 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* Makefile.am (EXTRA_DIST) : Add install-prerequisites
+
+2013-09-24 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* install-prerequisites : New
+
+2013-09-24 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (DocumentImp::loadBindingDocument) : Fix a bug
+	* (WindowProxy::createChildProxy) : Rename from createWindowProxy
+	* (DocumentImp::setReadyState) : Refine
+	* (HTMLIFrameElementImp::open) : Refine
+
+2013-09-24 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	The main thread must not call ViewCSSImp::setFlags() while the background thread is running
+
+	* (WindowProxy::viewFlags) : Make it atomic
+	* (WindowProxy::setViewFlags) : Do not touch view
+	* (WindowProxy::updateView, WindowProxy::poll) : Refine
+
+2013-09-22 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (DocumentImp::loadBindingDocument) : Fix for supporting g++ 4.7, which does not support emplace
+
+2013-09-21 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	[Object] Switch over to shared_ptr based implementation
+
+	We're going to manage interface objects by using std::shared_ptr and replacing
+	the internal reference counting method. This change is the first big one for
+	doing this. We will check and fix circular references, etc., by smaller changes
+	later.
+
+	1) Base classes
+
+	With this change, implementation objects that are derived from the Imp class
+	are managed by std::shared_ptr.
+
+	* org/w3c/dom/ObjectArray.h
+	* src/Any.cpp
+	* src/Any.h
+	* src/Any.test.cpp
+	* src/Object.h
+	* src/ObjectArrayImp.h
+	* (Imp) : Every interface implementation class is now derived from this class
+	* (Object) : The new Object class is basically a wrapper for std::shared_ptr<Imp>
+	* (Any, ObjectArray, ObjectArrayImp) : Revised to support the new Object class
+
+	2) DOM, Window and Media
+
+	Refine details to support the new Object class.
+
+	* src/BackgroundTask.cpp
+	* src/MediaListImp.cpp
+	* src/MediaListImp.h
+	* src/NodeImp.cpp
+	* src/NodeImp.h
+	* src/WindowImp.cpp
+	* src/WindowImp.h
+	* src/WindowProxy.cpp
+	* src/WindowProxy.h
+	* src/html/HTMLIFrameElementImp.cpp
+	* src/html/HTMLIFrameElementImp.h
+	* src/html/MediaQueryListImp.cpp
+	* src/html/MediaQueryListImp.h
+
+	3) JS and V8
+
+	Refine details to support the new Object class. Now that we cannot directly
+	manipulate the reference count of each interface object, an extra object, an
+	shared_ptr, is created for each corresponding ECMAScript object for keeping
+	them alive.
+
+	* src/ECMAScript.h
+	* src/js/Script.cpp
+	* src/js/Script.h
+	* src/js/bridge.cpp
+	* src/js/esjsapi.h
+	* src/v8/ScriptV8.cpp
+	* src/v8/ScriptV8.h
+	* src/v8/bridgeV8.cpp
+	* src/v8/esv8api.h
+
+	4) CSS
+
+	Now CSSParser does not directly touch raw pointers of interface implementation
+	classes.
+
+	* src/css/CSSGrammar.yy
+	* src/css/CSSParser.cpp
+	* src/css/CSSParser.h
+
+	CSS property values are accessed via the CSSStyleDeclarationImp class using a
+	double dispatch like method, and thus we use the raw CSSStyleDeclarationImp
+	pointer rather than CSSStyleDeclarationPtr. This is intentional and the
+	corresponding parameters are named 'self'.
+
+	* src/css/CSSPropertyValueImp.cpp
+	* src/css/CSSPropertyValueImp.h
+
+	CSSStyleDeclarationImp::pseudoElements[0] does no longer contain a pointer to
+	itself as it will end up a circular reference. Otherwise, changes are trivial.
+
+	* src/css/CSSStyleDeclarationImp.cpp
+	* src/css/CSSStyleDeclarationImp.h
+
+	The box classes are still manged by using the internal reference counting,
+	but not using the former Object methods this time. We will modify these using
+	std::shared_ptr later, too.
+
+	* src/css/Box.cpp
+	* src/css/Box.h
+	* src/css/BoxGL.cpp
+
+	5) cloneNode operations and copy constructors
+
+	  Since self(), i.e., shared_from_this(), cannot be used inside the constructors,
+	  every cloneNode operation is revised. The changes are very straightforward.
+
+	* src/CharacterDataImp.h
+	* src/ElementImp.cpp
+	* src/ElementImp.h
+	* src/TextImp.cpp
+	* src/TextImp.h
+	* src/html/HTMLAnchorElementImp.cpp
+	* src/html/HTMLAnchorElementImp.h
+	* src/html/HTMLAppletElementImp.h
+	* src/html/HTMLAreaElementImp.cpp
+	* src/html/HTMLAreaElementImp.h
+	* src/html/HTMLAudioElementImp.h
+	* src/html/HTMLBRElementImp.cpp
+	* src/html/HTMLBRElementImp.h
+	* src/html/HTMLBaseElementImp.cpp
+	* src/html/HTMLBaseElementImp.h
+	* src/html/HTMLBindingElementImp.cpp
+	* src/html/HTMLBindingElementImp.h
+	* src/html/HTMLBodyElementImp.cpp
+	* src/html/HTMLBodyElementImp.h
+	* src/html/HTMLButtonElementImp.h
+	* src/html/HTMLCanvasElementImp.cpp
+	* src/html/HTMLCanvasElementImp.h
+	* src/html/HTMLCommandElementImp.cpp
+	* src/html/HTMLCommandElementImp.h
+	* src/html/HTMLDListElementImp.h
+	* src/html/HTMLDataListElementImp.cpp
+	* src/html/HTMLDataListElementImp.h
+	* src/html/HTMLDetailsElementImp.h
+	* src/html/HTMLDivElementImp.cpp
+	* src/html/HTMLDivElementImp.h
+	* src/html/HTMLElementImp.cpp
+	* src/html/HTMLElementImp.h
+	* src/html/HTMLEmbedElementImp.h
+	* src/html/HTMLFieldSetElementImp.cpp
+	* src/html/HTMLFieldSetElementImp.h
+	* src/html/HTMLFontElementImp.h
+	* src/html/HTMLFormElementImp.cpp
+	* src/html/HTMLFormElementImp.h
+	* src/html/HTMLFrameElementImp.cpp
+	* src/html/HTMLHRElementImp.h
+	* src/html/HTMLHeadElementImp.cpp
+	* src/html/HTMLHeadElementImp.h
+	* src/html/HTMLHeadingElementImp.h
+	* src/html/HTMLHtmlElementImp.cpp
+	* src/html/HTMLHtmlElementImp.h
+	* src/html/HTMLImageElementImp.cpp
+	* src/html/HTMLImageElementImp.h
+	* src/html/HTMLInputElementImp.cpp
+	* src/html/HTMLInputElementImp.h
+	* src/html/HTMLKeygenElementImp.cpp
+	* src/html/HTMLKeygenElementImp.h
+	* src/html/HTMLLIElementImp.h
+	* src/html/HTMLLabelElementImp.cpp
+	* src/html/HTMLLabelElementImp.h
+	* src/html/HTMLLegendElementImp.cpp
+	* src/html/HTMLLegendElementImp.h
+	* src/html/HTMLLinkElementImp.cpp
+	* src/html/HTMLLinkElementImp.h
+	* src/html/HTMLMapElementImp.cpp
+	* src/html/HTMLMapElementImp.h
+	* src/html/HTMLMarqueeElementImp.cpp
+	* src/html/HTMLMarqueeElementImp.h
+	* src/html/HTMLMediaElementImp.cpp
+	* src/html/HTMLMediaElementImp.h
+	* src/html/HTMLMenuElementImp.h
+	* src/html/HTMLMetaElementImp.cpp
+	* src/html/HTMLMetaElementImp.h
+	* src/html/HTMLMeterElementImp.cpp
+	* src/html/HTMLMeterElementImp.h
+	* src/html/HTMLModElementImp.h
+	* src/html/HTMLOListElementImp.cpp
+	* src/html/HTMLOListElementImp.h
+	* src/html/HTMLObjectElementImp.cpp
+	* src/html/HTMLObjectElementImp.h
+	* src/html/HTMLOptGroupElementImp.h
+	* src/html/HTMLOptionElementImp.cpp
+	* src/html/HTMLOptionElementImp.h
+	* src/html/HTMLOutputElementImp.cpp
+	* src/html/HTMLOutputElementImp.h
+	* src/html/HTMLParagraphElementImp.h
+	* src/html/HTMLParamElementImp.h
+	* src/html/HTMLPreElementImp.h
+	* src/html/HTMLProgressElementImp.cpp
+	* src/html/HTMLProgressElementImp.h
+	* src/html/HTMLQuoteElementImp.h
+	* src/html/HTMLReplacedElementImp.h
+	* src/html/HTMLScriptElementImp.cpp
+	* src/html/HTMLScriptElementImp.h
+	* src/html/HTMLSelectElementImp.cpp
+	* src/html/HTMLSelectElementImp.h
+	* src/html/HTMLSourceElementImp.h
+	* src/html/HTMLSpanElementImp.cpp
+	* src/html/HTMLSpanElementImp.h
+	* src/html/HTMLStyleElementImp.cpp
+	* src/html/HTMLStyleElementImp.h
+	* src/html/HTMLTableCaptionElementImp.h
+	* src/html/HTMLTableCellElementImp.cpp
+	* src/html/HTMLTableCellElementImp.h
+	* src/html/HTMLTableColElementImp.h
+	* src/html/HTMLTableDataCellElementImp.h
+	* src/html/HTMLTableElementImp.cpp
+	* src/html/HTMLTableElementImp.h
+	* src/html/HTMLTableHeaderCellElementImp.h
+	* src/html/HTMLTableRowElementImp.cpp
+	* src/html/HTMLTableRowElementImp.h
+	* src/html/HTMLTableSectionElementImp.cpp
+	* src/html/HTMLTableSectionElementImp.h
+	* src/html/HTMLTemplateElementImp.cpp
+	* src/html/HTMLTemplateElementImp.h
+	* src/html/HTMLTextAreaElementImp.cpp
+	* src/html/HTMLTextAreaElementImp.h
+	* src/html/HTMLTimeElementImp.h
+	* src/html/HTMLTitleElementImp.cpp
+	* src/html/HTMLTitleElementImp.h
+	* src/html/HTMLTrackElementImp.cpp
+	* src/html/HTMLUListElementImp.h
+	* src/html/HTMLUnknownElementImp.cpp
+	* src/html/HTMLUnknownElementImp.h
+	* src/html/HTMLVideoElementImp.h
+
+	6) Trivial changes
+
+	  Trivial changes such as:
+	    - Add typedefs for shread_ptr<T>
+	    - Prefer nullptr to 0 where appropriate
+	    - Use std::make_shared instead of new
+	    - Use std::dynamic_pointer_cast instead of dynamic_cast
+	  and so on.
+
+	* src/AttrImp.h
+	* src/Box.test.cpp
+	* src/CaretPositionImp.cpp
+	* src/CharacterDataImp.cpp
+	* src/ClientRectListImp.cpp
+	* src/CSSStyle.test.cpp
+	* src/DocumentFragmentImp.cpp
+	* src/DocumentImp.cpp
+	* src/DocumentImp.h
+	* src/DocumentTypeImp.cpp
+	* src/DocumentTypeImp.h
+	* src/DOMImplementationImp.cpp
+	* src/DOMImplementationImp.h
+	* src/DOMParserImp.cpp
+	* src/DOMTokenListImp.h
+	* src/DragEventImp.cpp
+	* src/DragEventInitImp.cpp
+	* src/Escudo.cpp
+	* src/EventImp.cpp
+	* src/EventImp.h
+	* src/EventListenerImp.h
+	* src/EventSourceImp.cpp
+	* src/EventTargetImp.cpp
+	* src/EventTargetImp.h
+	* src/FocusEventImp.cpp
+	* src/HistoryImp.cpp
+	* src/HistoryImp.h
+	* src/HTMLParser.test.cpp
+	* src/KeyboardEventInitImp.cpp
+	* src/LocationImp.cpp
+	* src/LocationImp.h
+	* src/MessageEventImp.cpp
+	* src/MessageEventInitImp.cpp
+	* src/MouseEventImp.h
+	* src/MouseEventInitImp.cpp
+	* src/MutationEventImp.h
+	* src/MutationRecordImp.cpp
+	* src/Navigator.test.cpp
+	* src/NodeIteratorImp.cpp
+	* src/NodeListImp.h
+	* src/ProcessingInstructionImp.cpp
+	* src/RangeImp.cpp
+	* src/Script.test.cpp
+	* src/StyleSheetImp.cpp
+	* src/Test.glut.cpp
+	* src/Test.util.cpp
+	* src/TrackEventImp.cpp
+	* src/TrackEventInitImp.cpp
+	* src/TreeWalkerImp.cpp
+	* src/UIEventImp.h
+	* src/UIEventInitImp.cpp
+	* src/WheelEventInitImp.cpp
+	* src/css/CSSCharsetRuleImp.cpp
+	* src/css/CSSFontFaceRuleImp.cpp
+	* src/css/CSSImportRuleImp.cpp
+	* src/css/CSSImportRuleImp.h
+	* src/css/CSSMediaRuleImp.cpp
+	* src/css/CSSMediaRuleImp.h
+	* src/css/CSSNamespaceRuleImp.cpp
+	* src/css/CSSPageRuleImp.cpp
+	* src/css/CSSPrimitiveValueImp.cpp
+	* src/css/CSSRuleImp.cpp
+	* src/css/CSSRuleImp.h
+	* src/css/CSSRuleListImp.cpp
+	* src/css/CSSRuleListImp.h
+	* src/css/CSSSelector.cpp
+	* src/css/CSSSelector.h
+	* src/css/CSSStyleRuleImp.cpp
+	* src/css/CSSStyleRuleImp.h
+	* src/css/CSSStyleSheetImp.cpp
+	* src/css/CSSStyleSheetImp.h
+	* src/css/CSSUnknownRuleImp.cpp
+	* src/css/CSSValueListImp.cpp
+	* src/css/CounterImp.h
+	* src/css/DocumentCSSImp.cpp
+	* src/css/FormattingContext.cpp
+	* src/css/FormattingContext.h
+	* src/css/LineBox.cpp
+	* src/css/RGBColorImp.cpp
+	* src/css/RectImp.cpp
+	* src/css/Replaced.cpp
+	* src/css/StackingContext.cpp
+	* src/css/StackingContext.h
+	* src/css/Table.cpp
+	* src/css/Table.h
+	* src/css/TableGL.cpp
+	* src/css/ViewCSSImp.cpp
+	* src/css/ViewCSSImp.h
+	* src/css/ViewCSSImpGL.cpp
+	* src/file/BlobImp.cpp
+	* src/file/FileListImp.cpp
+	* src/file/FileReaderImp.cpp
+	* src/file/FileReaderSyncImp.cpp
+	* src/html/ApplicationCacheImp.cpp
+	* src/html/AudioTrackListImp.cpp
+	* src/html/CanvasRenderingContext2DImp.cpp
+	* src/html/DataTransferImp.cpp
+	* src/html/DataTransferItemImp.cpp
+	* src/html/DataTransferItemListImp.cpp
+	* src/html/HitRegionOptionsImp.cpp
+	* src/html/HTMLAllCollectionImp.cpp
+	* src/html/HTMLCollectionImp.cpp
+	* src/html/HTMLCollectionImp.h
+	* src/html/HTMLFormControlImp.cpp
+	* src/html/HTMLFormControlImp.h
+	* src/html/HTMLFormControlsCollectionImp.cpp
+	* src/html/HTMLFormControlsCollectionImp.h
+	* src/html/HTMLOptionsCollectionImp.cpp
+	* src/html/HTMLParser.cpp
+	* src/html/HTMLParser.h
+	* src/html/HTMLPropertiesCollectionImp.cpp
+	* src/html/HTMLTokenizer.cpp
+	* src/html/HTMLTokenizer.h
+	* src/html/ImageDataImp.cpp
+	* src/html/MediaControllerImp.cpp
+	* src/html/MessageChannelImp.cpp
+	* src/html/MessagePortImp.cpp
+	* src/html/RadioNodeListImp.cpp
+	* src/html/ScreenImp.h
+	* src/html/TextTrackCueImp.cpp
+	* src/html/TextTrackCueListImp.cpp
+	* src/html/TextTrackImp.cpp
+	* src/html/TextTrackListImp.cpp
+	* src/html/VideoTrackListImp.cpp
+	* src/http/HTTPRequest.h
+	* src/svg/SVGMatrixImp.cpp
+	* src/typedarray/ArrayBufferImp.cpp
+	* src/typedarray/ArrayBufferViewImp.cpp
+	* src/typedarray/DataViewImp.cpp
+	* src/typedarray/Float32ArrayImp.cpp
+	* src/typedarray/Float64ArrayImp.cpp
+	* src/typedarray/Int16ArrayImp.cpp
+	* src/typedarray/Int32ArrayImp.cpp
+	* src/typedarray/Int8ArrayImp.cpp
+	* src/typedarray/Uint16ArrayImp.cpp
+	* src/typedarray/Uint32ArrayImp.cpp
+	* src/typedarray/Uint8ArrayImp.cpp
+	* src/typedarray/Uint8ClampedArrayImp.cpp
+	* src/xhr/XMLHttpRequestEventTargetImp.cpp
+	* src/xhr/XMLHttpRequestImp.cpp
+	* src/xbl/XBLContentElementImp.cpp
+	* src/xbl/XBLImplementationListImp.cpp
+
+2013-09-21 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* configure.ac (AC_INIT) : Set version to 0.4.0 configure.ac (ESIDL_VERSION) : Set to 0.4.0 as well
+
+2013-09-16 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* NEWS : Update
+
+2013-09-16 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* ChangeLog, README : Update
+
 2013-09-16 Shiki Okasaka <Shiki.Okasaka@gmail.com>
 
 	* (StyleSheetImp) : Fix not to retain mediaList
