@@ -642,6 +642,8 @@ public:
         return std::static_pointer_cast<CSSStyleDeclarationImp>(self());
     }
 
+    void dump(const std::string& indent);
+
     // CSSStyleDeclaration
     virtual std::u16string getCssText();
     virtual void setCssText(const std::u16string& cssText);

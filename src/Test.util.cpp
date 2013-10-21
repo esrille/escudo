@@ -115,9 +115,11 @@ void printComputedValues(Node node, ViewCSSImp* view, std::string indent)
         if (node.getNodeType() == Node::ELEMENT_NODE) {
             Element element = interface_cast<Element>(node);
             std::cout << indent << '<' << element.getLocalName() << '>';
-            if (css::CSSStyleDeclaration decl = view->getComputedStyle(element, Nullable<std::u16string>()))
-                std::cout << ' ' << decl.getCssText();
-            std::cout << '\n';
+            if (CSSStyleDeclarationPtr decl = view->getStyle(element, Nullable<std::u16string>())) {
+                std::cout << ' ' << decl->getCssText() << '\n';
+                if (3 <= getLogLevel())
+                    decl->dump(indent);
+            }
         }
         if (node.hasChildNodes())
             printComputedValues(node.getFirstChild(), view, indent + "  ");
