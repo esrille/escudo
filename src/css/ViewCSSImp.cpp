@@ -695,6 +695,7 @@ BlockPtr ViewCSSImp::constructBlock(Element element, const BlockPtr& parentBox, 
             if (p && p != parentBox) {
                 // TODO: Something seems to be wrong here. Investigate the conditions later.
                 p->removeChild(currentBox);
+                std::cerr << "warning: the parent box of a block box ('" << tag << "', '" << id << "') is changed on the fly in ViewCSSImp::constructBlock().\n";
             }
             if (!currentBox->getParentBox()) {
                 if (parentBox->hasInline()) {
