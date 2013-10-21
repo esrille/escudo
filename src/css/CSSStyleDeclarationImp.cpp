@@ -2374,7 +2374,8 @@ void CSSStyleDeclarationImp::clearFlags(unsigned f)
 
 CSSStyleDeclarationPtr CSSStyleDeclarationImp::getPseudoElementStyle(int id)
 {
-    assert(0 <= id && id < CSSPseudoElementSelector::MaxPseudoElements);
+    if (id < 0 ||  CSSPseudoElementSelector::MaxPseudoElements <= id)
+        return nullptr;
     if (id == CSSPseudoElementSelector::Marker) {
         // Check marker
         if (!display.isListItem())
