@@ -171,6 +171,10 @@ protected:
 
     WindowProxyPtr childWindow;
 
+    void setParentBox(const BoxPtr& box) {
+        parentBox = box;
+        containingBox.reset();
+    }
     void renderBorderEdge(ViewCSSImp* view, int edge, unsigned borderStyle, unsigned color,
                           float a, float b, float c, float d,
                           float e, float f, float g, float h);
@@ -217,10 +221,6 @@ public:
         return containingBox.lock();
     }
     void setContainingBox(const BoxPtr& box);
-    void setParentBox(const BoxPtr& box) {
-        parentBox = box;
-        containingBox.reset();
-    }
 
     BoxPtr getParentBox() const {
         return parentBox.lock();
