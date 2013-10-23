@@ -66,16 +66,16 @@ typedef std::shared_ptr<WindowProxy> WindowProxyPtr;
 
 class ContainingBlock : public std::enable_shared_from_this<ContainingBlock>
 {
+protected:
+    // for debugging
+    unsigned uid;
+
 public:
-    ContainingBlock() :
-        width(0.0f),
-        height(0.0f)
-    {
-    }
+    ContainingBlock();
     virtual ~ContainingBlock() {}
 
-    float width;
-    float height;
+    float width {0.0f};
+    float height {0.0f};
 
     float getWidth() const {
         return width;

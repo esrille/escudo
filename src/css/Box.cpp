@@ -45,6 +45,16 @@
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
+namespace
+{
+    std::atomic_uint aid;
+}
+
+ContainingBlock::ContainingBlock() :
+    uid(++aid)
+{
+}
+
 Box::Box(Node node) :
     node(node),
     childCount(0),
@@ -1958,7 +1968,7 @@ void Block::dump(std::string indent)
     else
         std::cout << " [" << interface_cast<Element>(node).getLocalName() << ']';
     if (3 <= getLogLevel())
-        std::cout << " [" << std::hex << flags << std::dec << '(' << count_() << ")]";
+        std::cout << " [" << std::hex << flags << std::dec << '(' << count_() << "):" << uid << "]";
     std::cout << " (" << x + relativeX << ", " << y + relativeY << ") " <<
         "w:" << width << " h:" << height << ' ' <<
         "(" << relativeX << ", " << relativeY <<") ";

@@ -1899,7 +1899,7 @@ void TableWrapperBox::dump(std::string indent)
     else
         std::cout << " [" << interface_cast<Element>(node).getLocalName() << ']';
     if (3 <= getLogLevel())
-        std::cout << " [" << std::hex << flags << std::dec << '(' << count_() << ")]";
+        std::cout << " [" << std::hex << flags << std::dec << '(' << count_() << "):" << uid << "]";
     std::cout << " (" << x << ", " << y << ") " <<
         "w:" << width << " h:" << height << ' ' <<
         "[" << xWidth << ", " << yHeight << "] " <<
