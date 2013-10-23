@@ -72,7 +72,7 @@ protected:
 
 public:
     ContainingBlock();
-    virtual ~ContainingBlock() {}
+    virtual ~ContainingBlock();
 
     float width {0.0f};
     float height {0.0f};

@@ -55,6 +55,12 @@ ContainingBlock::ContainingBlock() :
 {
 }
 
+ContainingBlock::~ContainingBlock()
+{
+    if (3 <= getLogLevel())
+        std::cerr << "~ContainingBlock: " << uid << '\n';
+}
+
 Box::Box(Node node) :
     node(node),
     childCount(0),
