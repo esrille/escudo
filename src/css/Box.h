@@ -210,7 +210,7 @@ public:
         return nullptr;
     }
 
-    BoxPtr removeChild(const BoxPtr& ibtem);
+    BoxPtr removeChild(const BoxPtr& item);
     BoxPtr insertBefore(const BoxPtr& item, const BoxPtr& after);
     BoxPtr appendChild(const BoxPtr& item);
 
