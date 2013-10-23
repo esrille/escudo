@@ -1,4 +1,4 @@
-New in 0.4.0 [2013-10-23]:
+New in 0.4.0 [2013-10-24]:
 
 * Switch over to std::shared_ptr based Object and CSS Box implementation
 
