@@ -1,3 +1,76 @@
+2013-10-23 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Block::resolveBackground) : Switch to std::bind for using with std::shared_ptr
+
+2013-10-23 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Box::insertBefore, Box::appendChild) : Add more assertions
+
+2013-10-23 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/css/Box.h : Clean up
+
+2013-10-23 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (ContainingBlock::~ContainingBlock) : Display log at log level three or greater
+
+2013-10-23 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/Test.util.cpp (printComputedValues) : Change log level to four to display collected CSS rules
+
+2013-10-23 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (ViewCSSImp::constructBlock) : Fix bugs
+
+2013-10-23 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Block::layOutInline) : Fix a bug
+
+2013-10-23 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Block::dump, LineBox::dump, InlineBox::dump, TableWrapperBox::dump) : Refine
+
+2013-10-23 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSStyleDeclarationImp::revert) : Fix a bug
+
+2013-10-23 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (ContainingBlock::uid) : New for debugging
+
+2013-10-23 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (Box::setParentBox) : Move to private
+
+2013-10-21 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/Test.util.cpp (printComputedValues) : Display collected CSS rules at log level 3 or greater
+	* (CSSStyleDeclarationImp::dump) : New
+
+2013-10-21 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSStyleDeclarationImp::getPseudoElementStyle) : Fix a bug
+
+2013-10-21 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (ViewCSSImp::constructBlock) : Display a warning message on an unexpected condition
+
+2013-10-21 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/css/BoxImage.cpp (readAsGif) : Fix a bug
+
+2013-10-21 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* testlog/css2.1/20110323/implement-report-Escudo-Fedora.data : Update
+
+2013-10-21 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (CSSStyleDeclarationImp::revert) : Refine
+
+2013-10-21 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* (ViewCSSImp::constructBlock) : Fix a bug and add a TODO item
+
 2013-10-20 Shiki Okasaka <Shiki.Okasaka@gmail.com>
 
 	Switch over to shared_ptr based Box implementation
