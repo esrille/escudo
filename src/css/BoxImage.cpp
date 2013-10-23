@@ -239,18 +239,19 @@ unsigned char* readAsGif(FILE* file, unsigned& width, unsigned& height, unsigned
             }
         }
         unsigned char* p0 = data + frame * width * height * 4;
-        if (!gif->Image.Interlace)
-            expandColors(p0, image->RasterBits, width * height, transparentIndex, gif->SColorMap->Colors);
+        ColorMapObject* colorMap = image->ImageDesc.ColorMap ? image->ImageDesc.ColorMap : gif->SColorMap;
+        if (!image->ImageDesc.Interlace)
+            expandColors(p0, image->RasterBits, width * height, transparentIndex, colorMap->Colors);
         else {
             unsigned char* index = image->RasterBits;
             for (unsigned row = 0; row < height; row += 8)
-                index = expandColors(p0 + width * row * 4, index, width, transparentIndex, gif->SColorMap->Colors);
+                index = expandColors(p0 + width * row * 4, index, width, transparentIndex, colorMap->Colors);
             for (unsigned row = 4; row < height; row += 8)
-                index = expandColors(p0 + width * row * 4, index, width, transparentIndex, gif->SColorMap->Colors);
+                index = expandColors(p0 + width * row * 4, index, width, transparentIndex, colorMap->Colors);
             for (unsigned row = 2; row < height; row += 4)
-                index = expandColors(p0 + width * row * 4, index, width, transparentIndex, gif->SColorMap->Colors);
+                index = expandColors(p0 + width * row * 4, index, width, transparentIndex, colorMap->Colors);
             for (unsigned row = 1; row < height; row += 2)
-                index = expandColors(p0 + width * row * 4, index, width, transparentIndex, gif->SColorMap->Colors);
+                index = expandColors(p0 + width * row * 4, index, width, transparentIndex, colorMap->Colors);
         }
     }
     DGifCloseFile(gif);
