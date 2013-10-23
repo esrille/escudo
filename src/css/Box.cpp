@@ -1964,11 +1964,12 @@ void Block::dump(std::string indent)
     float relativeX = stackingContext ? stackingContext->getRelativeX() : 0.0f;
     float relativeY = stackingContext ? stackingContext->getRelativeY() : 0.0f;
     if (isAnonymous())
-        std::cout << " [anonymous]";
+        std::cout << " [anonymous";
     else
-        std::cout << " [" << interface_cast<Element>(node).getLocalName() << ']';
+        std::cout << " [" << interface_cast<Element>(node).getLocalName();
     if (3 <= getLogLevel())
-        std::cout << " [" << std::hex << flags << std::dec << '(' << count_() << "):" << uid << "]";
+        std::cout << ':' << uid << '|' << std::hex << flags << std::dec << '(' << count_() << ')';
+    std::cout << ']';
     std::cout << " (" << x + relativeX << ", " << y + relativeY << ") " <<
         "w:" << width << " h:" << height << ' ' <<
         "(" << relativeX << ", " << relativeY <<") ";

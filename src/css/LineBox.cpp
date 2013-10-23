@@ -646,7 +646,7 @@ void LineBox::dump(std::string indent)
     float relativeY = getParentBox()->stackingContext->getRelativeY();
     std::cout << indent << "* line box";
     if (3 <= getLogLevel())
-        std::cout << " [" << std::hex << flags << std::dec << '(' << count_() << "):" << uid << "]";
+        std::cout << " [" << uid << '|' << std::hex << flags << std::dec << '(' << count_() << ")]";
     std::cout << " (" << x + relativeX << ", " << y + relativeY << ") " <<
         "w:" << width << " h:" << height << " (" << relativeX << ", " << relativeY <<") ";
     if (hasClearance())
@@ -814,7 +814,7 @@ void InlineBox::dump(std::string indent)
     float relativeY = stackingContext->getRelativeY();
     std::cout << indent << "* inline-level box";
     if (3 <= getLogLevel())
-        std::cout << " [" << std::hex << flags << std::dec << '(' << count_() << "):" << uid << "]";
+        std::cout << " [" << uid << '|' << std::hex << flags << std::dec << '(' << count_() << ")]";
     std::cout << " (" << x + relativeX << ", " << y + relativeY << ") " <<
         "w:" << width << " h:" << height << ' ' <<
         "m:" << marginTop << ':' << marginRight << ':' << marginBottom << ':' << marginLeft << ' ' <<
