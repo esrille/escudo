@@ -117,7 +117,7 @@ void printComputedValues(Node node, ViewCSSImp* view, std::string indent)
             std::cout << indent << '<' << element.getLocalName() << '>';
             if (CSSStyleDeclarationPtr decl = view->getStyle(element, Nullable<std::u16string>())) {
                 std::cout << ' ' << decl->getCssText() << '\n';
-                if (3 <= getLogLevel())
+                if (4 <= getLogLevel())
                     decl->dump(indent);
             }
         }
