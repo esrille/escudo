@@ -2331,13 +2331,15 @@ BlockPtr CSSStyleDeclarationImp::revert(Element element)
         table->revertTablePart(block->getNode());
         holder = table;
         // holder can be an anonymous table; cf. html4/table-anonymous-objects-170.htm
-    } else if (holder->removeBlock(block->getNode()))
-        holder->clearInlines();
-    else {
-        assert(block->getParentBox() == holder);
-        holder->removeChild(block);
+    } else {
         block->removeDescendants();
-        holder->setFlags(Box::NEED_REFLOW);
+        if (holder->removeBlock(block->getNode()))
+            holder->clearInlines();
+        else {
+            assert(block->getParentBox() == holder);
+            holder->removeChild(block);
+            holder->setFlags(Box::NEED_REFLOW);
+        }
     }
     clearBox();
 
