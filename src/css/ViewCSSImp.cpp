@@ -651,6 +651,13 @@ BlockPtr ViewCSSImp::constructBlock(Element element, const BlockPtr& parentBox, 
         }
     } else if (!parentBox || inlineBlock) {
         currentBox = getCurrentBox(style, false);
+        if (!currentBox && parentBox) {
+            BlockPtr p = parentBox;
+            if (p->isAnonymous())
+                p = std::dynamic_pointer_cast<Block>(parentBox->getParentBox());
+            if (p)
+                currentBox = p->findBlock(element);
+        }
 
         // Do not process an anonymous table incrementally; cf. html4/table-anonymous-objects-207.htm
         auto table = std::dynamic_pointer_cast<TableWrapperBox>(currentBox);
@@ -691,12 +698,6 @@ BlockPtr ViewCSSImp::constructBlock(Element element, const BlockPtr& parentBox, 
                 return 0;
         }
         if (parentBox) {
-            BoxPtr p = currentBox->getParentBox();
-            if (p && p != parentBox) {
-                // TODO: Something seems to be wrong here. Investigate the conditions later.
-                p->removeChild(currentBox);
-                std::cerr << "warning: the parent box of a block box ('" << tag << "', '" << id << "') is changed on the fly in ViewCSSImp::constructBlock().\n";
-            }
             if (!currentBox->getParentBox()) {
                 if (parentBox->hasInline()) {
                     prevBox = parentBox->getAnonymousBox(prevBox);
@@ -747,7 +748,11 @@ BlockPtr ViewCSSImp::constructBlock(Element element, const BlockPtr& parentBox, 
                     BoxPtr next;
                     for (BoxPtr child = currentBox->getFirstChild(); child; child = next) {
                         next = child->getNextSibling();
-                        if (child->isAnonymous() || child->getNode().getParentNode() != element)  // cf. html4/block-in-inline-remove-000.htm
+                        if (child->isAnonymous()) {
+                            currentBox->removeChild(child);
+                            if (!std::dynamic_pointer_cast<TableWrapperBox>(child))
+                                child->removeChildren();
+                        } else if (child->getNode().getParentNode() != element)  // cf. html4/block-in-inline-remove-000.htm
                             currentBox->removeChild(child);
                     }
                 }
