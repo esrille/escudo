@@ -1,10 +1,10 @@
 2013-10-24 Shiki Okasaka <Shiki.Okasaka@gmail.com>
 
-	* src/css/BoxImage.cpp (readAsGif) : Fix bugs
-
-2013-10-23 Shiki Okasaka <Shiki.Okasaka@gmail.com>
-
 	* testlog/css2.1/20110323/implement-report-Escudo-Fedora.data : Update
+
+2013-10-24 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
+	* src/css/BoxImage.cpp (readAsGif) : Fix bugs
 
 2013-10-23 Shiki Okasaka <Shiki.Okasaka@gmail.com>
 
