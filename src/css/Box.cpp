@@ -856,7 +856,9 @@ bool Block::layOutInline(ViewCSSImp* view, FormattingContext* context, float ori
 #endif
         BlockPtr block = findBlock(node);
         if (block && block != self()) {  // Check an empty absolutely positioned box; cf. bottom-applies-to-010.
-            block->setContainingBox(self());
+
+            if (!block->getParentBox())
+                block->setContainingBox(self());
             context->useMargin(self());
             if (block->isFloat()) {
                 if (block->style->clear.getValue())
