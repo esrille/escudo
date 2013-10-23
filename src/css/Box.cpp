@@ -560,7 +560,7 @@ void Block::resolveBackground(ViewCSSImp* view)
         backgroundRequest = std::make_shared<HttpRequest>(document->getDocumentURI());
         if (backgroundRequest) {
             backgroundRequest->open(u"GET", style->backgroundImage.getValue());
-            backgroundRequest->setHandler(boost::bind(&Block::notifyBackground, self(), view->getDocument()));
+            backgroundRequest->setHandler(std::bind(&Block::notifyBackground, self(), view->getDocument()));
             document->incrementLoadEventDelayCount(backgroundRequest->getURL());
             backgroundRequest->send();
         }
