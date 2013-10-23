@@ -135,8 +135,10 @@ BoxPtr Box::removeChild(const BoxPtr& item)
 BoxPtr Box::insertBefore(const BoxPtr& item, const BoxPtr& after)
 {
     assert(item != getParentBox());
+    assert(!item->getParentBox());
     if (!after)
         return appendChild(item);
+    assert(after->getParentBox().get() == this);
     item->previousSibling = after->previousSibling;
     item->nextSibling = after;
     after->previousSibling = item;
@@ -152,6 +154,7 @@ BoxPtr Box::insertBefore(const BoxPtr& item, const BoxPtr& after)
 BoxPtr Box::appendChild(const BoxPtr& item)
 {
     assert(item != getParentBox());
+    assert(!item->getParentBox());
     BoxPtr prev = lastChild;
     if (!prev)
         firstChild = item;
