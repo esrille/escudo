@@ -1,5 +1,9 @@
 2013-10-23 Shiki Okasaka <Shiki.Okasaka@gmail.com>
 
+	* testlog/css2.1/20110323/implement-report-Escudo-Fedora.data : Update
+
+2013-10-23 Shiki Okasaka <Shiki.Okasaka@gmail.com>
+
 	* (Block::resolveBackground) : Switch to std::bind for using with std::shared_ptr
 
 2013-10-23 Shiki Okasaka <Shiki.Okasaka@gmail.com>
@@ -61,10 +65,6 @@
 
 2013-10-21 Shiki Okasaka <Shiki.Okasaka@gmail.com>
 
-	* testlog/css2.1/20110323/implement-report-Escudo-Fedora.data : Update
-
-2013-10-21 Shiki Okasaka <Shiki.Okasaka@gmail.com>
-
 	* (CSSStyleDeclarationImp::revert) : Refine
 
 2013-10-21 Shiki Okasaka <Shiki.Okasaka@gmail.com>
@@ -98,10 +98,6 @@
 
 	* (WindowProxy::BackgroundTask::operator()) : Check remaining view flags at the end of each loop
 	* src/Test.util.cpp (setLogLevel) : New
-
-2013-10-12 Shiki Okasaka <Shiki.Okasaka@gmail.com>
-
-	* testlog/css2.1/20110323/implement-report-Escudo-Fedora.data : Update
 
 2013-10-12 Shiki Okasaka <Shiki.Okasaka@gmail.com>
 
