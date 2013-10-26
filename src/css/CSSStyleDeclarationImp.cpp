@@ -1727,8 +1727,8 @@ void CSSStyleDeclarationImp::dump(const std::string& indent)
                 i->getSelector()->serialize(text);
                 text += u' ';
             }
-            text += u'{' + decl->getCssText() + u"}\n";
-            std::cout << indent << "  " << text;
+            text += u'{' + decl->getCssText() + u'}';
+            std::cout << indent << "  " << text << "  /* " << std::hex << i->priority << std::dec << " */\n";
         }
     }
 }
