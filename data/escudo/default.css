@@ -104,7 +104,7 @@ binding, implementation, template, content, inherited { display: none; }
 /* Bindings */
 button { binding: button; }
 details { binding: details; }
-input {
+input[type=text i], input[type=search i], input[type=tel i], input[type=url i], input[type=email i] {
     binding: url(escudo.html#input-textfield);
     display: inline-block;
     white-space: pre;

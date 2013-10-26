@@ -104,7 +104,7 @@ binding, implementation, template, content, inherited { display: none; }
 /* Bindings */
 button { binding: button; }
 details { binding: details; }
-input { binding: input-textfield; }
+input[type=text i], input[type=search i], input[type=tel i], input[type=url i], input[type=email i] { binding: input-textfield; }
 input[type=password i] { binding: input-password; }
 input[type=datetime i] { binding: input-datetime; }
 input[type=date i] { binding: input-date; }
