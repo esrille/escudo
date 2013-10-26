@@ -1721,13 +1721,13 @@ void CSSStyleDeclarationImp::inheritProperties(const CSSStyleDeclarationPtr& par
 void CSSStyleDeclarationImp::dump(const std::string& indent)
 {
     for (auto i = ruleSet.begin(); i != ruleSet.end(); ++i) {
-        if (CSSStyleDeclarationPtr pseudo = createPseudoElementStyle(i->getPseudoElementID())) {
+        if (CSSStyleDeclarationImp* decl = i->getDeclaration()) {
             std::u16string text;
             if (i->getSelector()) {
                 i->getSelector()->serialize(text);
                 text += u' ';
             }
-            text += u'{' + pseudo->getCssText() + u"}\n";
+            text += u'{' + decl->getCssText() + u"}\n";
             std::cout << indent << "  " << text;
         }
     }
