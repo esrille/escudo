@@ -215,9 +215,8 @@ Element HTMLParser::OpenElementStack::getFosterParent(Element& table)
     return top();
 }
 
-Element HTMLParser::insertHtmlElement(const std::u16string& name)
+Element HTMLParser::insertHtmlElement(Element element)
 {
-    Element element = document->createElement(name);
     if (element) {
         if (!insertFromTable)
             currentNode().appendChild(element);
@@ -228,13 +227,27 @@ Element HTMLParser::insertHtmlElement(const std::u16string& name)
     return element;
 }
 
+Element HTMLParser::insertHtmlElement(const std::u16string& name)
+{
+    Element element = document->createElement(name);
+    if (element)
+        insertHtmlElement(element);
+    return element;
+}
+
 Element HTMLParser::insertHtmlElement(Token& token)
 {
-    Element element = insertHtmlElement(token.getName());
-    if (!element)
-        return nullptr;
-    if (auto imp = std::dynamic_pointer_cast<ElementImp>(element.self()))
-        imp->setAttributes(token.getAttributes());
+    Element element = createHtmlElement(token);
+    return insertHtmlElement(element);
+}
+
+Element HTMLParser::createHtmlElement(Token& token)
+{
+    Element element = document->createElement(token.getName());
+    if (element) {
+        if (auto imp = std::static_pointer_cast<ElementImp>(element.self()))
+            imp->setAttributes(token.getAttributes());
+    }
     return element;
 }
 
@@ -887,11 +900,12 @@ bool HTMLParser::InHead::processStartTag(HTMLParser* parser, Token& token)
         return true;
     }
     if (token.getName() == u"script") {
-        Element script = parser->insertHtmlElement(token);
+        Element script = parser->createHtmlElement(token);
         if (auto imp = std::dynamic_pointer_cast<HTMLScriptElementImp>(script.self())) {
             imp->markAsParserInserted();
             // TODO: fragment case
         }
+        parser->insertHtmlElement(script);
         parser->tokenizer->setState(&HTMLTokenizer::scriptDataState);
         parser->originalInsertionMode = parser->insertionMode;
         parser->setInsertionMode(&text);
@@ -2852,11 +2866,12 @@ bool HTMLParser::InBinding::processCharacter(HTMLParser* parser, Token& token)
 bool HTMLParser::InBinding::processStartTag(HTMLParser* parser, Token& token)
 {
     if (token.getName() == u"implementation") {
-        Element script = parser->insertHtmlElement(token);
+        Element script = parser->createHtmlElement(token);
         if (auto imp = std::dynamic_pointer_cast<HTMLScriptElementImp>(script.self())) {
             imp->markAsParserInserted();
             // TODO: fragment case
         }
+        parser->insertHtmlElement(script);
         parser->tokenizer->setState(&HTMLTokenizer::scriptDataState);
         parser->originalInsertionMode = parser->insertionMode;
         parser->setInsertionMode(&text);

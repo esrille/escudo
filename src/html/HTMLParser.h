@@ -39,7 +39,9 @@ using namespace org::w3c::dom;
 
 class HTMLParser
 {
+    Element insertHtmlElement(Element element);
     Element insertHtmlElement(Token& token);
+    Element createHtmlElement(Token& token);
     Element insertHtmlElement(const std::u16string& name);
     void insertCharacter(Node node, const std::u16string& data);
     void insertCharacter(const std::u16string& data);

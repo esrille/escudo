@@ -35,6 +35,7 @@ namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 HTMLScriptElementImp::HTMLScriptElementImp(DocumentImp* ownerDocument, const std::u16string& localName) :
     ObjectMixin(ownerDocument, localName),
+    mutationListener(boost::bind(&HTMLScriptElementImp::handleMutation, this, _1, _2)),
     alreadyStarted(false),
     parserInserted(false),
     wasParserInserted(false),
@@ -42,10 +43,12 @@ HTMLScriptElementImp::HTMLScriptElementImp(DocumentImp* ownerDocument, const std
     readyToBeParserExecuted(false),
     request(0)
 {
+    addEventListener(u"DOMNodeInserted", mutationListener, false, EventTargetImp::UseDefault);
 }
 
 HTMLScriptElementImp::HTMLScriptElementImp(const HTMLScriptElementImp& org) :
     ObjectMixin(org),
+    mutationListener(boost::bind(&HTMLScriptElementImp::handleMutation, this, _1, _2)),
     alreadyStarted(false),
     parserInserted(false),
     wasParserInserted(false),
@@ -53,6 +56,17 @@ HTMLScriptElementImp::HTMLScriptElementImp(const HTMLScriptElementImp& org) :
     readyToBeParserExecuted(false),
     request(0)
 {
+    addEventListener(u"DOMNodeInserted", mutationListener, false, EventTargetImp::UseDefault);
+}
+
+void HTMLScriptElementImp::handleMutation(EventListenerImp* listener, events::Event event)
+{
+    events::MutationEvent mutation(interface_cast<events::MutationEvent>(event));
+    if (this != mutation.getTarget().self().get())
+        return;
+
+    if (!parserInserted)
+         prepare();
 }
 
 // cf. http://www.whatwg.org/specs/web-apps/current-work/multipage/scripting-1.html#prepare-a-script

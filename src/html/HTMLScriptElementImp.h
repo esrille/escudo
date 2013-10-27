@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-#ifndef HTMLSCRIPTELEMENT_IMP_H
-#define HTMLSCRIPTELEMENT_IMP_H
+#ifndef ORG_W3C_DOM_BOOTSTRAP_HTMLSCRIPTELEMENTIMP_H_INCLUDED
+#define ORG_W3C_DOM_BOOTSTRAP_HTMLSCRIPTELEMENTIMP_H_INCLUDED
 
-#include <Object.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <org/w3c/dom/html/HTMLScriptElement.h>
 
 #include "HTMLElementImp.h"
@@ -35,6 +38,8 @@ class HTMLScriptElementImp : public ObjectMixin<HTMLScriptElementImp, HTMLElemen
         Ordered
     };
 
+    Retained<EventListenerImp> mutationListener;
+
     bool alreadyStarted;
     bool parserInserted;
     bool wasParserInserted;
@@ -42,6 +47,8 @@ class HTMLScriptElementImp : public ObjectMixin<HTMLScriptElementImp, HTMLElemen
     bool readyToBeParserExecuted;
     HttpRequestPtr request;
     unsigned type;
+
+    void handleMutation(EventListenerImp* listener, events::Event event);
 
 public:
     HTMLScriptElementImp(DocumentImp* ownerDocument, const std::u16string& localName = u"script");
@@ -100,4 +107,4 @@ typedef std::shared_ptr<HTMLScriptElementImp> HTMLScriptElementPtr;
 
 }}}}  // org::w3c::dom::bootstrap
 
-#endif  // HTMLSCRIPTELEMENT_IMP_H
+#endif  // ORG_W3C_DOM_BOOTSTRAP_HTMLSCRIPTELEMENTIMP_H_INCLUDED
