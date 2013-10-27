@@ -1,0 +1,239 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>IME Test</title>
+<script>
+
+var hepburnTable = {
+    'a':'あ', 'i':'い', 'u':'う', 'e':'え', 'o':'お',
+    'xa':'ぁ', 'xi':'ぃ', 'xu':'ぅ', 'xe':'ぇ', 'xo':'ぉ',
+    'la':'ぁ', 'li':'ぃ', 'lu':'ぅ', 'le':'ぇ', 'lo':'ぉ',
+    'ka':'か', 'ki':'き', 'ku':'く', 'ke':'け', 'ko':'こ',
+    'ga':'が', 'gi':'ぎ', 'gu':'ぐ', 'ge':'げ', 'go':'ご',
+    'sa':'さ', 'si':'し', 'su':'す', 'se':'せ', 'so':'そ',
+    'za':'ざ', 'zi':'じ', 'zu':'ず', 'ze':'ぜ', 'zo':'ぞ',
+    'ta':'た', 'ti':'ち', 'tu':'つ', 'tsu':'つ', 'te':'て', 'to':'と',
+    'da':'だ', 'di':'ぢ', 'du':'づ', 'de':'で', 'do':'ど',
+    'xtu':'っ', 'xtsu':'っ',
+    'vv':'っ', 'xx':'っ', 'kk':'っ', 'gg':'っ', 'ss':'っ',
+    'zz':'っ', 'jj':'っ', 'tt':'っ', 'dd':'っ', 'hh':'っ',
+    'ff':'っ', 'bb':'っ', 'pp':'っ', 'mm':'っ', 'yy':'っ',
+    'rr':'っ', 'ww':'っ', 'cc':'っ',
+    'na':'な', 'ni':'に', 'nu':'ぬ', 'ne':'ね', 'no':'の',
+    'ha':'は', 'hi':'ひ', 'hu':'ふ', 'fu':'ふ', 'he':'へ', 'ho':'ほ',
+    'ba':'ば', 'bi':'び', 'bu':'ぶ', 'be':'べ', 'bo':'ぼ',
+    'pa':'ぱ', 'pi':'ぴ', 'pu':'ぷ', 'pe':'ぺ', 'po':'ぽ',
+    'ma':'ま', 'mi':'み', 'mu':'む', 'me':'め', 'mo':'も',
+    'ya':'や', 'yu':'ゆ', 'yo':'よ',
+    'xya':'ゃ', 'xyu':'ゅ', 'xyo':'ょ',
+    'ra':'ら', 'ri':'り', 'ru':'る', 're':'れ', 'ro':'ろ',
+    'wa':'わ', 'wi':'うぃ', 'we':'うぇ', 'wo':'を',
+    'n\'':'ん', 'nn':'ん', 'n':'ん',
+    'xwa':'ゎ',
+    'kya':'きゃ', 'kyi':'きぃ', 'kyu':'きゅ', 'kye':'きぇ', 'kyo':'きょ',
+    'gya':'ぎゃ', 'gyi':'ぎぃ', 'gyu':'ぎゅ', 'gye':'ぎぇ', 'gyo':'ぎょ',
+    'sya':'しゃ', 'syi':'しぃ', 'syu':'しゅ', 'sye':'しぇ', 'syo':'しょ',
+    'sha':'しゃ', 'shi':'し', 'shu':'しゅ', 'she':'しぇ', 'sho':'しょ',
+    'ja':'じゃ', 'ji':'じ',  'ju':'じゅ', 'je':'じぇ', 'jo':'じょ',
+    'zya':'じゃ', 'zyi':'じぃ', 'zyu':'じゅ', 'zye':'じぇ', 'zyo':'じょ',
+    'tya':'ちゃ', 'tyi':'ちぃ', 'tyu':'ちゅ', 'tye':'ちぇ', 'tyo':'ちょ',
+    'cha':'ちゃ', 'chi':'ち', 'chu':'ちゅ', 'che':'ちぇ', 'cho':'ちょ',
+    'dya':'ぢゃ', 'dyi':'ぢぃ', 'dyu':'ぢゅ', 'dye':'ぢぇ', 'dyo':'ぢょ',
+    'tha':'てゃ', 'thi':'てぃ', 'thu':'てゅ', 'the':'てぇ', 'tho':'てょ',
+    'dha':'でゃ', 'dhi':'でぃ', 'dhu':'でゅ', 'dhe':'でぇ', 'dho':'でょ',
+    'nya':'にゃ', 'nyi':'にぃ', 'nyu':'にゅ', 'nye':'にぇ', 'nyo':'にょ',
+    'jya':'じゃ', 'jyi':'じ', 'jyu':'じゅ', 'jye':'じぇ', 'jyo':'じょ',
+    'hya':'ひゃ', 'hyi':'ひぃ', 'hyu':'ひゅ', 'hye':'ひぇ', 'hyo':'ひょ',
+    'bya':'びゃ', 'byi':'びぃ', 'byu':'びゅ', 'bye':'びぇ', 'byo':'びょ',
+    'pya':'ぴゃ', 'pyi':'ぴぃ', 'pyu':'ぴゅ', 'pye':'ぴぇ', 'pyo':'ぴょ',
+    'fa':'ふぁ', 'fi':'ふぃ', 'fu':'ふ', 'fe':'ふぇ', 'fo':'ふぉ',
+    'mya':'みゃ', 'myi':'みぃ', 'myu':'みゅ', 'mye':'みぇ', 'myo':'みょ',
+    'rya':'りゃ', 'ryi':'りぃ', 'ryu':'りゅ', 'rye':'りぇ', 'ryo':'りょ',
+    'va':'う゛ぁ', 'vi':'う゛ぃ', 'vu':'う゛', 've':'う゛ぇ', 'vo':'う゛ぉ',
+    '.':'。', ',':'、', '-':'ー', '~':'〜'
+};
+
+var ime = null;
+var raw = '';
+var textbox = null;
+var before = null;
+var after = null;
+var prebefore = null;
+var preafter = null;
+var candidate = 0;
+var candidates = [];
+
+function convertToKana(text)
+{
+    var result = '';
+    for (var i = 0; i < text.length;) {
+        var char = text.charAt(i);
+        var code = char.charCodeAt(0);
+        var len = 0;
+        if (44 <= code && code <= 46 || 97 <= code && code <= 122 || code == 126) {
+            for (len = 4; 0 < len; --len) {
+                var key = text.substring(i, i + len);
+                if (key in hepburnTable) {
+                    var kana = hepburnTable[key];
+                    result += kana;
+                    i += len;
+                    if (len == 2 && kana == 'っ')
+                        --i;
+                    break;
+                }
+            }
+        }
+        if (len == 0) {
+            result += char;
+            ++i;
+        }
+    }
+    return result;
+}
+
+function convert(text)
+{
+    var script = document.createElement('script');
+    script.setAttribute('src', 'http://www.google.com/transliterate?langpair=ja-Hira|ja&text=' + encodeURI(text) + '&jsonp=convertCallback');
+    document.getElementsByTagName('head')[0].appendChild(script);
+    return script;
+}
+
+function convertCallback(result) {
+    candidates = result;
+    candidate = 0;
+    prebefore.data = candidates[0][1][0];
+    var text = '';
+    for (var i = 1; i < candidates.length; i++)
+        text += candidates[i][1][0];
+    preafter.data = text;
+    if (ime)
+        document.getElementsByTagName('head')[0].removeChild(ime);
+}
+
+function commit()
+{
+    raw = '';
+    candidates.shift();
+    for (var i = 0; i < candidates.length; i++)
+        raw += candidates[i][0];
+    before.appendData(prebefore.data);
+    if (0 < candidates.length)
+        prebefore.data = candidates[0][1][0];
+    else {
+        ime = null;
+        prebefore.deleteData(0, prebefore.length);
+    }
+    var text = '';
+    for (var i = 1; i < candidates.length; i++)
+        text += candidates[i][1][0];
+    preafter.data = text;
+    candidate = 0;
+    return candidates.length == 0;
+}
+
+function nextCandidate()
+{
+    ++candidate;
+    if (candidates[0][1].length <= candidate)
+        candidate = 0;
+    prebefore.data = candidates[0][1][candidate];
+}
+
+function init()
+{
+    textbox = document.getElementById('textbox');
+    before = document.createTextNode('');
+    after = document.createTextNode('');
+    prebefore = document.createTextNode('');
+    preafter = document.createTextNode('');
+
+    document.getElementById('before').appendChild(before);
+    document.getElementById('after').appendChild(after);
+    document.getElementById('prebefore').appendChild(prebefore);
+    document.getElementById('preafter').appendChild(preafter);
+
+    textbox.addEventListener('keypress', function(event) {
+        var c = event.charCode;
+        if (c == 32) {  // Space
+            if (!ime)
+                ime = convert(prebefore.data);
+            else
+                nextCandidate();
+        } else if (c != 13) {
+            while (ime)
+                commit();
+            raw += String.fromCharCode(c);
+            prebefore.data = convertToKana(raw);
+        }
+    }, false);
+    textbox.addEventListener('keydown', function(event) {
+        switch (event.keyCode) {
+        case 8:   // Backspace
+            if (0 < raw.length) {
+                raw = raw.slice(0, -1);
+                prebefore.data = convertToKana(raw);
+                preafter.deleteData(0, preafter.length);
+                ime = null;
+            }
+            else if (0 < before.length)
+                before.deleteData(before.length - 1, 1);
+            break;
+        case 13:  // Enter
+            if (0 < raw.length)
+                commit();
+            break;
+        case 35:  // End
+            before.appendData(after.data);
+            after.deleteData(0, after.length);
+            break;
+        case 36:  // Home
+            after.insertData(0, before.data);
+            before.deleteData(0, before.length);
+            break;
+        case 37:  // <-
+            if (0 < before.length) {
+                var c = before.substringData(before.length - 1, 1);
+                before.deleteData(before.length - 1, 1);
+                after.insertData(0, c);
+            }
+            break;
+        case 39:  // ->
+            if (0 < after.length) {
+                var c = after.substringData(0, 1);
+                after.deleteData(0, 1);
+                before.appendData(c);
+            }
+            break;
+        case 46:  // Del
+            if (0 < after.length)
+                after.deleteData(0, 1);
+            break;
+        default:
+            return;
+        }
+    }, false);
+    textbox.focus();
+}
+
+</script>
+<style>
+#textbox {
+    border: 1px gray solid;
+    margin-right: -1px;
+    white-space: pre;
+}
+#prebefore {
+    border-right: black solid 1px;
+    background-color: #9FF;
+}
+#preafter {
+    background-color: #FF0;
+}
+</style>
+</head>
+<body onload='init()'>
+<div id='textbox' tabindex='1'><span id='before'></span><span id='prebefore'></span><span id='preafter'></span><span id='after'></span></div>
+</body>
+</html>
