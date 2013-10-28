@@ -5,7 +5,7 @@
 <title>IME Test</title>
 <script>
 
-var hepburnTable = {
+var Romaji = {
     'a':'あ', 'i':'い', 'u':'う', 'e':'え', 'o':'お',
     'xa':'ぁ', 'xi':'ぃ', 'xu':'ぅ', 'xe':'ぇ', 'xo':'ぉ',
     'la':'ぁ', 'li':'ぃ', 'lu':'ぅ', 'le':'ぇ', 'lo':'ぉ',
@@ -62,9 +62,9 @@ var after = null;
 var prebefore = null;
 var preafter = null;
 var candidate = 0;
-var candidates = [];
+var composition = [];
 
-function convertToKana(text)
+function composeKana(text)
 {
     var result = '';
     for (var i = 0; i < text.length;) {
@@ -74,8 +74,8 @@ function convertToKana(text)
         if (44 <= code && code <= 46 || 97 <= code && code <= 122 || code == 126) {
             for (len = 4; 0 < len; --len) {
                 var key = text.substring(i, i + len);
-                if (key in hepburnTable) {
-                    var kana = hepburnTable[key];
+                if (key in Romaji) {
+                    var kana = Romaji[key];
                     result += kana;
                     i += len;
                     if (len == 2 && kana == 'っ')
@@ -101,44 +101,44 @@ function convert(text)
 }
 
 function convertCallback(result) {
-    candidates = result;
+    composition = result;
     candidate = 0;
-    prebefore.data = candidates[0][1][0];
+    prebefore.data = composition[0][1][0];
     var text = '';
-    for (var i = 1; i < candidates.length; i++)
-        text += candidates[i][1][0];
+    for (var i = 1; i < composition.length; i++)
+        text += composition[i][1][0];
     preafter.data = text;
     if (ime)
         document.getElementsByTagName('head')[0].removeChild(ime);
 }
 
-function commit()
+function confirmComposition()
 {
     raw = '';
-    candidates.shift();
-    for (var i = 0; i < candidates.length; i++)
-        raw += candidates[i][0];
+    composition.shift();
+    for (var i = 0; i < composition.length; i++)
+        raw += composition[i][0];
     before.appendData(prebefore.data);
-    if (0 < candidates.length)
-        prebefore.data = candidates[0][1][0];
+    if (0 < composition.length)
+        prebefore.data = composition[0][1][0];
     else {
         ime = null;
         prebefore.deleteData(0, prebefore.length);
     }
     var text = '';
-    for (var i = 1; i < candidates.length; i++)
-        text += candidates[i][1][0];
+    for (var i = 1; i < composition.length; i++)
+        text += composition[i][1][0];
     preafter.data = text;
     candidate = 0;
-    return candidates.length == 0;
+    return composition.length == 0;
 }
 
 function nextCandidate()
 {
     ++candidate;
-    if (candidates[0][1].length <= candidate)
+    if (composition[0][1].length <= candidate)
         candidate = 0;
-    prebefore.data = candidates[0][1][candidate];
+    prebefore.data = composition[0][1][candidate];
 }
 
 function init()
@@ -163,9 +163,9 @@ function init()
                 nextCandidate();
         } else if (c != 13) {
             while (ime)
-                commit();
+                confirmComposition();
             raw += String.fromCharCode(c);
-            prebefore.data = convertToKana(raw);
+            prebefore.data = composeKana(raw);
         }
     }, false);
     textbox.addEventListener('keydown', function(event) {
@@ -173,7 +173,7 @@ function init()
         case 8:   // Backspace
             if (0 < raw.length) {
                 raw = raw.slice(0, -1);
-                prebefore.data = convertToKana(raw);
+                prebefore.data = composeKana(raw);
                 preafter.deleteData(0, preafter.length);
                 ime = null;
             }
@@ -182,7 +182,7 @@ function init()
             break;
         case 13:  // Enter
             if (0 < raw.length)
-                commit();
+                confirmComposition();
             break;
         case 35:  // End
             before.appendData(after.data);
