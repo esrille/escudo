@@ -100,16 +100,19 @@ function convert(text)
     return script;
 }
 
-function convertCallback(result) {
-    composition = result;
-    candidate = 0;
-    prebefore.data = composition[0][1][0];
-    var text = '';
-    for (var i = 1; i < composition.length; i++)
-        text += composition[i][1][0];
-    preafter.data = text;
-    if (ime)
-        document.getElementsByTagName('head')[0].removeChild(ime);
+function convertCallback(result)
+{
+    try {
+        composition = result;
+        candidate = 0;
+        prebefore.data = composition[0][1][0];
+        var text = '';
+        for (var i = 1; i < composition.length; i++)
+            text += composition[i][1][0];
+        preafter.data = text;
+        if (ime)
+            document.getElementsByTagName('head')[0].removeChild(ime);
+    } catch (e) {}
 }
 
 function confirmComposition()
@@ -176,8 +179,7 @@ function init()
                 prebefore.data = composeKana(raw);
                 preafter.deleteData(0, preafter.length);
                 ime = null;
-            }
-            else if (0 < before.length)
+            } else if (0 < before.length)
                 before.deleteData(before.length - 1, 1);
             break;
         case 13:  // Enter
@@ -193,14 +195,30 @@ function init()
             before.deleteData(0, before.length);
             break;
         case 37:  // <-
-            if (0 < before.length) {
+            if (0 < raw.length) {
+                if (1 < composition[0][0].length) {
+                    raw = composition[0][0].slice(0, -1) + ',' + composition[0][0].slice(-1);
+                    for (var i = 1; i < composition.length; i++)
+                        raw += composition[i][0] + ',';
+                    ime = convert(raw);
+                }
+            } else if (0 < before.length) {
                 var c = before.substringData(before.length - 1, 1);
                 before.deleteData(before.length - 1, 1);
                 after.insertData(0, c);
             }
             break;
         case 39:  // ->
-            if (0 < after.length) {
+            if (0 < raw.length) {
+                if (1 < composition.length) {
+                    composition[0][0] += composition[1][0].slice(0, 1);
+                    composition[1][0] = composition[1][0].slice(1);
+                    raw = '';
+                    for (var i = 0; i < composition.length; i++)
+                        raw += composition[i][0] + ',';
+                    ime = convert(raw);
+                }
+            } else if (0 < after.length) {
                 var c = after.substringData(0, 1);
                 after.deleteData(0, 1);
                 before.appendData(c);
@@ -231,9 +249,24 @@ function init()
 #preafter {
     background-color: #FF0;
 }
+table {
+    border-collapse: collapse;
+}
+td {
+    border: 1px solid gray;
+}
 </style>
 </head>
 <body onload='init()'>
 <div id='textbox' tabindex='1'><span id='before'></span><span id='prebefore'></span><span id='preafter'></span><span id='after'></span></div>
+<p>
+<table>
+<caption>使い方</caption>
+<tr><td>変換</td><td>Space</td></tr>
+<tr><td>文節確定</td><td>Enter</td></tr>
+<tr><td>文節長+1</td><td>→</td></tr>
+<tr><td>文節長-1</td><td>←</td></tr>
+<tr><td>後退</td><td>Backspace</td></tr>
+</table>
 </body>
 </html>
