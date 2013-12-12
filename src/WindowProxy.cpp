@@ -329,8 +329,10 @@ bool WindowProxy::poll()
         if (!backgroundTask.isRestarting()) {
             switch (backgroundTask.getState()) {
             case BackgroundTask::Cascaded:
-                HTMLElementImp::xblEnteredDocument(document);
-                backgroundTask.wakeUp(BackgroundTask::Layout);
+                if (HTMLElementImp::xblEnteredDocument(document))
+                    backgroundTask.wakeUp(BackgroundTask::Cascade);
+                else
+                    backgroundTask.wakeUp(BackgroundTask::Layout);
                 break;
             case BackgroundTask::Init:
             case BackgroundTask::Done: {
@@ -1826,8 +1828,12 @@ void WindowProxy::updateView()
         {
             backgroundTask.wait();
             if (backgroundTask.getState() == BackgroundTask::Cascaded) {
-                if (auto document = window->getDocument())
-                    HTMLElementImp::xblEnteredDocument(document);
+                if (auto document = window->getDocument()) {
+                    if (HTMLElementImp::xblEnteredDocument(document)) {
+                        backgroundTask.wakeUp(BackgroundTask::Cascade);
+                        continue;
+                    }
+                }
                 backgroundTask.wakeUp(BackgroundTask::Layout);
             }
         }

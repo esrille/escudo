@@ -307,7 +307,9 @@ public:
     void setAttributeAsUnsigned(const std::u16string& name, unsigned int value);
 
     // xblEnteredDocument() should be called after view->constructComputedStyles().
-    static void xblEnteredDocument(Node node);
+    // xblEnteredDocument() returns true if it has invoked xblEnteredDocument()
+    // against bound element(s).
+    static bool xblEnteredDocument(Node node);
 };
 
 }}}}  // org::w3c::dom::bootstrap

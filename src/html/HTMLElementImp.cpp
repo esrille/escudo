@@ -410,8 +410,9 @@ bool HTMLElementImp::generateShadowContent(const CSSStyleDeclarationPtr& style)
     return false;
 }
 
-void HTMLElementImp::xblEnteredDocument(Node node)
+bool HTMLElementImp::xblEnteredDocument(Node node)
 {
+    bool result = false;
     while (node) {
         if (auto element = std::dynamic_pointer_cast<HTMLElementImp>(node.self())) {
             if (element->shadowTarget && !element->shadowImplementation) {
@@ -421,12 +422,14 @@ void HTMLElementImp::xblEnteredDocument(Node node)
                 element->shadowImplementation = document->getContext()->xblCreateImplementation(element->shadowTarget, element->bindingImplementation, element, element->shadowTree).self();
                 element->shadowImplementation.xblEnteredDocument();
                 document->exit();
+                result = true;
             }
         }
         if (node.hasChildNodes())
-            xblEnteredDocument(node.getFirstChild());
+            result |= xblEnteredDocument(node.getFirstChild());
         node = node.getNextSibling();
     }
+    return result;
 }
 
 void HTMLElementImp::invokeShadowTarget(const EventPtr& event)
