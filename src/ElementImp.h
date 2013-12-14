@@ -65,6 +65,9 @@ class ElementImp : public ObjectMixin<ElementImp, NodeImp>
     Element querySelector(CSSSelectorsGroup* selectorsGroup, ViewCSSImp* view);
     void querySelectorAll(NodeListPtr nodeList, CSSSelectorsGroup* selectorsGroup, ViewCSSImp* view);
 
+protected:
+    void cloneAttributes(const ElementImp* org);
+
 public:
     ElementImp(DocumentImp* ownerDocument, const std::u16string& localName, const std::u16string& namespaceURI, const std::u16string& prefix = u"");
     ElementImp(const ElementImp& org);
@@ -84,6 +87,7 @@ public:
     virtual unsigned short getNodeType();
     virtual Node cloneNode(bool deep = true) {
         auto node = std::make_shared<ElementImp>(*this);
+        node->cloneAttributes(this);
         if (deep)
             node->cloneChildren(this);
         return node;

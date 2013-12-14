@@ -48,6 +48,12 @@ void ElementImp::setAttributes(const std::deque<Attr>& attributes)
     }
 }
 
+void ElementImp::cloneAttributes(const ElementImp* org)
+{
+    assert(org);
+    setAttributes(org->attributes);
+}
+
 ElementPtr ElementImp::getNextElement(const ElementPtr& root)
 {
     auto n = std::dynamic_pointer_cast<NodeImp>(self());
@@ -680,10 +686,6 @@ ElementImp::ElementImp(const ElementImp& org) :
     prefix(org.prefix),
     localName(org.localName)
 {
-    for (auto i = org.attributes.begin(); i != org.attributes.end(); ++i) {
-        AttrPtr attr = std::dynamic_pointer_cast<AttrImp>((*i).self());
-        attributes.push_back(attr); // TODO: dup?
-    }
 }
 
 }}}}  // org::w3c::dom::bootstrap

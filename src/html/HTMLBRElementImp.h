@@ -32,13 +32,14 @@ class HTMLBRElementImp : public ObjectMixin<HTMLBRElementImp, HTMLElementImp>
 {
 public:
     HTMLBRElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"br") 
+        ObjectMixin(ownerDocument, u"br")
     {
     }
 
     // Node
     virtual Node cloneNode(bool deep = true) {
         auto node = std::make_shared<HTMLBRElementImp>(*this);
+        node->cloneAttributes(this);
         if (deep)
             node->cloneChildren(this);
         return node;

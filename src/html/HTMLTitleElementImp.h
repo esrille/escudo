@@ -35,6 +35,7 @@ public:
     // Node - override
     virtual Node cloneNode(bool deep = true) {
         auto node = std::make_shared<HTMLTitleElementImp>(*this);
+        node->cloneAttributes(this);
         if (deep)
             node->cloneChildren(this);
         return node;

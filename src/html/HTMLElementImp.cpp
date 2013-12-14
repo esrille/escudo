@@ -65,15 +65,6 @@ HTMLElementImp::HTMLElementImp(const HTMLElementImp& org) :
     mutationListener(boost::bind(&HTMLElementImp::handleMutation, this, _1, _2)),
     tabIndex(org.tabIndex)
 {
-#if 0   // TODO: Do we really need the following code?
-    if (auto orgStyle = std::dynamic_pointer_cast<CSSStyleDeclarationImp>(org->style.self())) {
-        auto imp = std::make_shared<CSSStyleDeclarationImp>(orgStyle);
-        if (imp) {
-            imp->setOwner(self());  // XXX self() cannot be used inside the constructor
-            style = imp;
-        }
-    }
-#endif
     addEventListener(u"click", clickListener, false, EventTargetImp::UseDefault);
     addEventListener(u"mousemove", mouseMoveListener, false, EventTargetImp::UseDefault);
     addEventListener(u"DOMAttrModified", mutationListener, false, EventTargetImp::UseDefault);

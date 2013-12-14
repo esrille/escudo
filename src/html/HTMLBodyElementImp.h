@@ -51,6 +51,7 @@ public:
     // Node
     virtual Node cloneNode(bool deep = true) {
         auto node = std::make_shared<HTMLBodyElementImp>(*this);
+        node->cloneAttributes(this);
         if (deep)
             node->cloneChildren(this);
         return node;
