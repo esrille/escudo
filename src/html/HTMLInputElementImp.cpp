@@ -227,8 +227,7 @@ void HTMLInputElementImp::handleMutation(events::MutationEvent mutation)
 void HTMLInputElementImp::handleClick(EventListenerImp* listener, events::Event event)
 {
     if (type == SubmitButton) {
-        html::HTMLFormElement form = getForm();
-        if (auto imp = std::dynamic_pointer_cast<HTMLFormElementImp>(form.self()))
+        if (auto imp = std::dynamic_pointer_cast<HTMLFormElementImp>(getForm().self()))
             imp->submit(std::static_pointer_cast<HTMLInputElementImp>(self()));
     }
 }
@@ -436,8 +435,10 @@ html::HTMLFormElement HTMLInputElementImp::getForm()
     if (!form.expired())
         return form.lock();
     for (Element parent = getParentElement(); parent; parent = parent.getParentElement()) {
-        if (html::HTMLFormElement::hasInstance(parent))
-            return interface_cast<html::HTMLFormElement>(parent);
+        if (html::HTMLFormElement::hasInstance(parent)) {
+            form = std::dynamic_pointer_cast<HTMLFormElementImp>(parent.self());
+            return form.lock();
+        }
     }
     return nullptr;
 }
