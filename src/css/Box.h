@@ -490,14 +490,16 @@ public:
 
     BoxPtr boxFromPoint(int x, int y, StackingContext* context = 0) {
         if (context && stackingContext && stackingContext != context)
-            return 0;
+            return nullptr;
+        int xx(x);
+        int yy(y);
         if (!isAnonymous() && Element::hasInstance(node)) {
             Element element = interface_cast<Element>(node);
-            x += element.getScrollLeft();
-            y += element.getScrollTop();
+            xx += element.getScrollLeft();
+            yy += element.getScrollTop();
         }
         for (BoxPtr box = getFirstChild(); box; box = box->getNextSibling()) {
-            if (BoxPtr target = box->boxFromPoint(x, y, context)) {
+            if (BoxPtr target = box->boxFromPoint(xx, yy, context)) {
                 if (!isClipped() || isInside(x, y))
                     return target;
             }
