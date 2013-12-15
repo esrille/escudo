@@ -16,6 +16,17 @@
 
 #include "HTMLSelectElementImp.h"
 
+#include <boost/bind.hpp>
+
+#include <org/w3c/dom/events/MutationEvent.h>
+#include <org/w3c/dom/html/HTMLOptionElement.h>
+
+#include "HTMLCollectionImp.h"
+#include "HTMLFormElementImp.h"
+#include "HTMLOptGroupElementImp.h"
+#include "HTMLOptionElementImp.h"
+#include "HTMLOptionsCollectionImp.h"
+
 namespace org
 {
 namespace w3c
@@ -25,43 +36,129 @@ namespace dom
 namespace bootstrap
 {
 
+HTMLSelectElementImp::HTMLSelectElementImp(DocumentImp* ownerDocument) :
+    ObjectMixin(ownerDocument, u"select"),
+    mutationListener(boost::bind(&HTMLSelectElementImp::handleMutation, this, _1, _2)),
+    mute(false)
+{
+    addEventListener(u"DOMAttrModified", mutationListener, false, EventTargetImp::UseDefault);
+}
+
+HTMLSelectElementImp::HTMLSelectElementImp(const HTMLSelectElementImp& org) :
+    ObjectMixin(org),
+    mutationListener(boost::bind(&HTMLSelectElementImp::handleMutation, this, _1, _2)),
+    mute(false)
+{
+    addEventListener(u"DOMAttrModified", mutationListener, false, EventTargetImp::UseDefault);
+}
+
+void HTMLSelectElementImp::handleMutation(EventListenerImp* listener, events::Event event)
+{
+    if (mute || getMultiple())
+        return;
+    events::MutationEvent mutation(interface_cast<events::MutationEvent>(event));
+    if (mutation.getAttrName() != u"selected")
+        return;
+    HTMLOptionElementPtr option = std::static_pointer_cast<HTMLOptionElementImp>(mutation.getTarget().self());
+    if (!option)
+        return;
+    bool set = (mutation.getAttrChange() != events::MutationEvent::REMOVAL);
+    mute = true;
+    HTMLOptionElementPtr first;
+    for (Element e = getFirstElementChild(); e; e = e.getNextElementSibling()) {
+        if (auto o = std::dynamic_pointer_cast<HTMLOptionElementImp>(e.self())) {
+            if (option != o)
+                o->setSelected(false);
+            if (!o->getDisabled()) {
+                if (!first)
+                    first = o;
+            } else if (option == o && set) {
+                set = false;
+                option->setSelected(false);
+            }
+        } else if (auto group = std::dynamic_pointer_cast<HTMLOptGroupElementImp>(e.self())) {
+            for (Element f = group->getFirstElementChild(); f; f = f.getNextElementSibling()) {
+                if (auto o = std::dynamic_pointer_cast<HTMLOptionElementImp>(f.self())) {
+                    if (option != o)
+                        o->setSelected(false);
+                    if (!o->getDisabled() && !group->getDisabled()) {
+                        if (!first)
+                            first = o;
+                    } else if (option == o && set) {
+                        set = false;
+                        option->setSelected(false);
+                    }
+                }
+            }
+        }
+    }
+    if (!set && first)
+        first->setSelected(true);
+    mute = false;
+}
+
+int HTMLSelectElementImp::getIndex(const HTMLOptionElementPtr& option)
+{
+    int index = -1;
+    for (Element e = getFirstElementChild(); e; e = e.getNextElementSibling()) {
+        if (html::HTMLOptionElement::hasInstance(e)) {
+            ++index;
+            if (e == option)
+                return index;
+        } else if (html::HTMLOptGroupElement::hasInstance(e)) {
+            for (Element f = e.getFirstElementChild(); f; f = f.getNextElementSibling()) {
+                if (html::HTMLOptionElement::hasInstance(f)) {
+                    ++index;
+                    if (f == option)
+                        return index;
+                }
+            }
+        }
+    }
+    return index;
+}
+
 bool HTMLSelectElementImp::getAutofocus()
 {
-    // TODO: implement me!
-    return 0;
+    return getAttributeAsBoolean(u"autofocus");
 }
 
 void HTMLSelectElementImp::setAutofocus(bool autofocus)
 {
-    // TODO: implement me!
+    setAttributeAsBoolean(u"autofocus", autofocus);
 }
 
 bool HTMLSelectElementImp::getDisabled()
 {
-    // TODO: implement me!
-    return 0;
+    return getAttributeAsBoolean(u"disabled");
 }
 
 void HTMLSelectElementImp::setDisabled(bool disabled)
 {
-    // TODO: implement me!
+    setAttributeAsBoolean(u"disabled", disabled);
 }
 
 html::HTMLFormElement HTMLSelectElementImp::getForm()
 {
-    // TODO: implement me!
+    if (!form.expired())
+        return form.lock();
+    for (Element parent = getParentElement(); parent; parent = parent.getParentElement()) {
+        if (html::HTMLFormElement::hasInstance(parent)) {
+            form = std::dynamic_pointer_cast<HTMLFormElementImp>(parent.self());
+            return form.lock();
+        }
+    }
     return nullptr;
 }
 
 bool HTMLSelectElementImp::getMultiple()
 {
-    // TODO: implement me!
-    return 0;
+    return getAttributeAsBoolean(u"multiple");
 }
 
 void HTMLSelectElementImp::setMultiple(bool multiple)
 {
-    // TODO: implement me!
+    setAttributeAsBoolean(u"multiple", multiple);
 }
 
 std::u16string HTMLSelectElementImp::getName()
@@ -76,42 +173,57 @@ void HTMLSelectElementImp::setName(const std::u16string& name)
 
 bool HTMLSelectElementImp::getRequired()
 {
-    // TODO: implement me!
-    return 0;
+    return getAttributeAsBoolean(u"required");
 }
 
 void HTMLSelectElementImp::setRequired(bool required)
 {
-    // TODO: implement me!
+    setAttributeAsBoolean(u"required", required);
 }
 
 unsigned int HTMLSelectElementImp::getSize()
 {
-    // TODO: implement me!
-    return 0;
+    // For historical reasons, the default value of the size IDL attribute
+    // does not return the actual size used.
+    // cf. http://www.w3.org/html/wg/drafts/html/CR/forms.html#dom-select-size
+    return getAttributeAsUnsigned(u"size", 0);
 }
 
 void HTMLSelectElementImp::setSize(unsigned int size)
 {
-    // TODO: implement me!
+    setAttributeAsUnsigned(u"size", size);
 }
 
 std::u16string HTMLSelectElementImp::getType()
 {
-    // TODO: implement me!
-    return u"";
+    return getMultiple() ? u"select-multiple" : u"select-one";
 }
 
 html::HTMLOptionsCollection HTMLSelectElementImp::getOptions()
 {
-    // TODO: implement me!
-    return nullptr;
+    if (options)
+        return options;
+    try {
+        return std::make_shared<HTMLOptionsCollectionImp>(std::dynamic_pointer_cast<HTMLSelectElementImp>(self()));
+    } catch (...) {
+        return nullptr;
+    }
 }
 
 unsigned int HTMLSelectElementImp::getLength()
 {
-    // TODO: implement me!
-    return 0;
+    unsigned int length = 0;
+    for (Element e = getFirstElementChild(); e; e = e.getNextElementSibling()) {
+        if (html::HTMLOptionElement::hasInstance(e))
+            ++length;
+        else if (html::HTMLOptGroupElement::hasInstance(e)) {
+            for (Element f = e.getFirstElementChild(); f; f = f.getNextElementSibling()) {
+                if (html::HTMLOptionElement::hasInstance(f))
+                    ++length;
+            }
+        }
+    }
+    return length;
 }
 
 void HTMLSelectElementImp::setLength(unsigned int length)
@@ -121,13 +233,39 @@ void HTMLSelectElementImp::setLength(unsigned int length)
 
 Element HTMLSelectElementImp::item(unsigned int index)
 {
-    // TODO: implement me!
+    for (Element e = getFirstElementChild(); e; e = e.getNextElementSibling()) {
+        if (html::HTMLOptionElement::hasInstance(e)) {
+            if (index-- == 0)
+                return e;
+        } else if (html::HTMLOptGroupElement::hasInstance(e)) {
+            for (Element f = e.getFirstElementChild(); f; f = f.getNextElementSibling()) {
+                if (html::HTMLOptionElement::hasInstance(f)) {
+                    if (index-- == 0)
+                        return f;
+                }
+            }
+        }
+    }
     return nullptr;
 }
 
 Object HTMLSelectElementImp::namedItem(const std::u16string& name)
 {
-    // TODO: implement me!
+    if (name.empty())
+        return nullptr;
+    for (Element e = getFirstElementChild(); e; e = e.getNextElementSibling()) {
+        if (html::HTMLOptionElement::hasInstance(e)) {
+            if (e.getId() == name || e.getAttribute(u"name") == name)
+                return e;
+        } else if (html::HTMLOptGroupElement::hasInstance(e)) {
+            for (Element f = e.getFirstElementChild(); f; f = f.getNextElementSibling()) {
+                if (html::HTMLOptionElement::hasInstance(f)) {
+                    if (f.getId() == name || f.getAttribute(u"name") == name)
+                        return f;
+                }
+            }
+        }
+    }
     return nullptr;
 }
 
@@ -153,24 +291,93 @@ void HTMLSelectElementImp::setElement(unsigned int index, html::HTMLOptionElemen
 
 html::HTMLCollection HTMLSelectElementImp::getSelectedOptions()
 {
-    // TODO: implement me!
-    return nullptr;
+    try {
+        HTMLCollectionPtr collection = std::make_shared<HTMLCollectionImp>();
+        for (Element e = getFirstElementChild(); e; e = e.getNextElementSibling()) {
+            if (auto option = std::dynamic_pointer_cast<HTMLOptionElementImp>(e.self())) {
+                if (option->getSelected() && !option->getDisabled())
+                    collection->addItem(option);
+            } else if (auto group = std::dynamic_pointer_cast<HTMLOptGroupElementImp>(e.self())) {
+                if (!group->getDisabled()) {
+                    for (Element f = group->getFirstElementChild(); f; f = f.getNextElementSibling()) {
+                        if (auto option = std::dynamic_pointer_cast<HTMLOptionElementImp>(f.self())) {
+                            if (option->getSelected() && !option->getDisabled())
+                                collection->addItem(option);
+                        }
+                    }
+                }
+            }
+        }
+        return collection;
+    } catch (...) {
+        return nullptr;
+    }
 }
 
 int HTMLSelectElementImp::getSelectedIndex()
 {
-    // TODO: implement me!
-    return 0;
+    HTMLOptionElementPtr first;
+    int firstIndex = -1;
+    int index = -1;
+    for (Element e = getFirstElementChild(); e; e = e.getNextElementSibling()) {
+        if (auto option = std::dynamic_pointer_cast<HTMLOptionElementImp>(e.self())) {
+            ++index;
+            if (!option->getDisabled()) {
+                if (!first) {
+                    first = option;
+                    firstIndex = index;
+                }
+                if (option->getSelected())
+                    return index;
+            }
+        } else if (auto group = std::dynamic_pointer_cast<HTMLOptGroupElementImp>(e.self())) {
+            for (Element f = e.getFirstElementChild(); f; f = f.getNextElementSibling()) {
+                if (auto option = std::dynamic_pointer_cast<HTMLOptionElementImp>(f.self())) {
+                    ++index;
+                    if (!option->getDisabled() && !group->getDisabled()) {
+                        if (!first) {
+                            first = option;
+                            firstIndex = index;
+                        }
+                        if (option->getSelected())
+                            return index;
+                    }
+                }
+            }
+        }
+    }
+    if (!getMultiple() && first) {
+        first->setSelected(true);
+        return firstIndex;
+    }
+    return -1;
 }
 
 void HTMLSelectElementImp::setSelectedIndex(int selectedIndex)
 {
-    // TODO: implement me!
+    html::HTMLOptionElement option(interface_cast<html::HTMLOptionElement>(item(selectedIndex)));
+    if (option)
+        option.setSelected(true);
 }
 
 std::u16string HTMLSelectElementImp::getValue()
 {
-    // TODO: implement me!
+    html::HTMLOptionElement option;
+    for (Element e = getFirstElementChild(); e; e = e.getNextElementSibling()) {
+        if (auto option = std::dynamic_pointer_cast<HTMLOptionElementImp>(e.self())) {
+            if (option->getSelected() && !option->getDisabled())
+                return option->getValue();
+        } else if (auto group = std::dynamic_pointer_cast<HTMLOptGroupElementImp>(e.self())) {
+            if (!group->getDisabled()) {
+                for (Element f = group->getFirstElementChild(); f; f = f.getNextElementSibling()) {
+                    if (auto option = std::dynamic_pointer_cast<HTMLOptionElementImp>(f.self())) {
+                        if (option->getSelected() && !option->getDisabled())
+                            return option->getValue();
+                    }
+                }
+            }
+        }
+    }
     return u"";
 }
 

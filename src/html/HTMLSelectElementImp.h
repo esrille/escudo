@@ -43,13 +43,27 @@ namespace dom
 {
 namespace bootstrap
 {
+
+class HTMLFormElementImp;
+class HTMLOptionElementImp;
+class HTMLOptionsCollectionImp;
+
+typedef std::shared_ptr<HTMLOptionElementImp> HTMLOptionElementPtr;
+
 class HTMLSelectElementImp : public ObjectMixin<HTMLSelectElementImp, HTMLElementImp>
 {
+    std::weak_ptr<HTMLFormElementImp> form;
+    std::shared_ptr<HTMLOptionsCollectionImp> options;
+    Retained<EventListenerImp> mutationListener;
+    bool mute;
+
+    void handleMutation(EventListenerImp* listener, events::Event event);
+
 public:
-    HTMLSelectElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"select")
-    {
-    }
+    HTMLSelectElementImp(DocumentImp* ownerDocument);
+    HTMLSelectElementImp(const HTMLSelectElementImp& org);
+
+    int getIndex(const HTMLOptionElementPtr& option);
 
     // Node - override
     virtual Node cloneNode(bool deep = true) {
@@ -105,6 +119,8 @@ public:
         return html::HTMLSelectElement::getMetaData();
     }
 };
+
+typedef std::shared_ptr<HTMLSelectElementImp> HTMLSelectElementPtr;
 
 }
 }
