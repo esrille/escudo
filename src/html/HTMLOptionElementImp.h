@@ -25,7 +25,8 @@
 #include "HTMLElementImp.h"
 
 #include <org/w3c/dom/html/HTMLElement.h>
-#include <org/w3c/dom/html/HTMLFormElement.h>
+
+#include "HTMLFormElementImp.h"
 
 namespace org
 {
@@ -35,13 +36,22 @@ namespace dom
 {
 namespace bootstrap
 {
+
+class HTMLSelectElementImp;
+typedef std::shared_ptr<HTMLSelectElementImp> HTMLSelectElementPtr;
+
 class HTMLOptionElementImp : public ObjectMixin<HTMLOptionElementImp, HTMLElementImp>
 {
+    bool disabled;
+    bool selected;
+
 public:
-    HTMLOptionElementImp(DocumentImp* ownerDocument) :
-        ObjectMixin(ownerDocument, u"option")
-    {
-    }
+    HTMLOptionElementImp(DocumentImp* ownerDocument);
+    HTMLOptionElementImp(const HTMLOptionElementImp& org);
+
+    virtual void handleMutation(events::MutationEvent mutation);
+
+    HTMLSelectElementPtr getSelect();
 
     // Node - override
     virtual Node cloneNode(bool deep = true) {
@@ -77,6 +87,8 @@ public:
         return html::HTMLOptionElement::getMetaData();
     }
 };
+
+typedef std::shared_ptr<HTMLOptionElementImp> HTMLOptionElementPtr;
 
 }
 }
