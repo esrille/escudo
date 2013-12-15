@@ -32,8 +32,10 @@
 
 #include "DOMImplementationImp.h"
 #include "NodeImp.h"
+#include "html/HTMLElementImp.h"
 #include "html/HTMLInputStream.h"
 #include "html/HTMLParser.h"
+#include "html/HTMLTemplateElementImp.h"
 #include "css/Box.h"
 #include "css/CSSInputStream.h"
 #include "css/CSSParser.h"
@@ -112,6 +114,7 @@ void dumpStyleSheet(std::ostream& result, css::CSSStyleSheet sheet)
 void printComputedValues(Node node, ViewCSSImp* view, std::string indent)
 {
     while (node) {
+        Node n = node;
         if (node.getNodeType() == Node::ELEMENT_NODE) {
             Element element = interface_cast<Element>(node);
             std::cout << indent << '<' << element.getLocalName() << '>';
@@ -120,9 +123,13 @@ void printComputedValues(Node node, ViewCSSImp* view, std::string indent)
                 if (4 <= getLogLevel())
                     decl->dump(indent);
             }
+            if (auto imp = std::dynamic_pointer_cast<HTMLElementImp>(element.self())) {
+                if (html::HTMLTemplateElement shadow = imp->getShadowTree())
+                    n = shadow;
+            }
         }
-        if (node.hasChildNodes())
-            printComputedValues(node.getFirstChild(), view, indent + "  ");
+        if (n.hasChildNodes())
+            printComputedValues(n.getFirstChild(), view, indent + "  ");
         node = node.getNextSibling();
     }
 }
