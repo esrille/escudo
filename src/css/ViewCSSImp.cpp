@@ -125,6 +125,13 @@ void ViewCSSImp::removeComputedStyle(Element element)
     if (CSSStyleDeclarationPtr style = getStyle(element)) {
         style->revert(element);
         map.erase(element);
+
+        if (auto imp = std::dynamic_pointer_cast<HTMLElementImp>(element.self())) {
+            if (auto shadowTree = imp->getShadowTree())
+                removeComputedStyle(shadowTree);
+        }
+
+        // TODO: Check children
     }
 }
 
@@ -306,8 +313,10 @@ bool ViewCSSImp::expandBinding(Element element, const CSSStyleDeclarationPtr& st
     if (!imp->generateShadowContent(style))
         return false;
     if (shadowTree = imp->getShadowTree()) {
-        if (auto imp = std::dynamic_pointer_cast<HTMLTemplateElementImp>(shadowTree.self()))
+        if (auto imp = std::dynamic_pointer_cast<HTMLTemplateElementImp>(shadowTree.self())) {
             imp->setHost(element);
+            addStyle(shadowTree, style);
+        }
         return true;
     }
     return false;
@@ -318,6 +327,10 @@ unsigned ViewCSSImp::constructComputedStyle(Node node, CSSStyleDeclarationPtr pa
     CSSStyleDeclarationPtr style;
     Element element((node.getNodeType() == Node::ELEMENT_NODE) ? interface_cast<Element>(node) : nullptr);
     if (element) {
+#ifndef NDEBUG
+        std::u16string tag(interface_cast<html::HTMLElement>(element).getTagName());
+        std::u16string id(interface_cast<html::HTMLElement>(element).getId());
+#endif
         auto found = map.find(element);
         if (found != map.end()) {
             style = found->second;
