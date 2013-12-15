@@ -132,6 +132,145 @@
   })
 </implementation>
 </binding>
+<binding id="select">
+<template><span style='padding: 0 0.5em;'></span><ul style='display: none; list-style-type: none; position: absolute; left: 0; top: 1em; margin: 2px 0 0 0; border: 1px hsl(20, 7%, 88%) solid; background-color: white; padding: 0;'></ul></template>
+<implementation>
+  ({
+    xblEnteredDocument: function() {
+        var select = this.boundElement;
+        select.tabIndex = 0;
+        var label = document.createTextNode(select[select.selectedIndex].label + ' ▾');
+        this.shadowTree.firstChild.appendChild(label);
+        var ul = this.shadowTree.lastChild;
+        var index = -1;
+        var e;
+        for (e = select.firstElementChild; e; e = e.nextElementSibling) {
+            if (e instanceof HTMLOptionElement) {
+                ++index;
+                var li = document.createElement('li');
+                li.appendChild(document.createTextNode(e.label));
+                ul.appendChild(li);
+                li.style.padding = '0 1em';
+                if (e.disabled)
+                    li.style.color = 'hsl(20, 7%, 88%)';
+                else {
+                    li.value = index;
+                    li.addEventListener('click', function(event) {
+                        select.selectedIndex = event.currentTarget.value;
+                        ul.style.display = 'none';
+                        label.data = event.currentTarget.firstChild.data + ' ▾';
+                        event.stopPropagation();
+                    }, false);
+                }
+            } else if (e instanceof HTMLOptGroupElement) {
+                var li = document.createElement('li');
+                li.appendChild(document.createTextNode(e.label));
+                ul.appendChild(li);
+                li.style.padding = '0 1em';
+                li.style.fontWeight = 'bold';
+                if (e.disabled)
+                    li.style.color = 'hsl(20, 7%, 88%)';
+                var f;
+                for (f = e.firstElementChild; f; f = f.nextElementSibling) {
+                    if (f instanceof HTMLOptionElement) {
+                        ++index;
+                        var li = document.createElement('li');
+                        li.appendChild(document.createTextNode(f.label));
+                        ul.appendChild(li);
+                        li.style.padding = '0 1em 0 2em';
+                        if (e.disabled || f.disabled)
+                            li.style.color = 'hsl(20, 7%, 88%)';
+                        else {
+                            li.value = index;
+                            li.addEventListener('click', function(event) {
+                                select.selectedIndex = event.currentTarget.value;
+                                ul.style.display = 'none';
+                                label.data = event.currentTarget.firstChild.data + ' ▾';
+                                event.stopPropagation();
+                            }, false);
+                        }
+                    }
+                }
+            }
+        }
+        this.addEventListener('click', function(event) {
+          ul.style.display = (ul.style.display == 'block') ? 'none' : 'block';
+        }, false);
+    }
+  })
+</implementation>
+</binding>
+<binding id="select-multiple">
+<template><ul style='list-style-type: none; margin: 0; padding: 0; border: 2px hsl(20, 7%, 88%) outset; background-color: white;'></ul></template>
+<implementation>
+  ({
+    xblEnteredDocument: function() {
+        var select = this.boundElement;
+        select.tabIndex = 0;
+        var ul = this.shadowTree.lastChild;
+        var index = -1;
+        var e;
+        for (e = select.firstElementChild; e; e = e.nextElementSibling) {
+            if (e instanceof HTMLOptionElement) {
+                ++index;
+                var li = document.createElement('li');
+                li.appendChild(document.createTextNode(e.label));
+                ul.appendChild(li);
+                li.style.height = '1em';
+                li.style.margin = '0';
+                li.style.padding = '0 1em';
+                li.style.backgroundColor = e.selected ? 'hsl(20, 7%, 88%)' : 'rgb(255, 255, 255)';
+                if (e.disabled)
+                    li.style.color = 'hsl(20, 7%, 88%)';
+                else {
+                    li.value = index;
+                    li.addEventListener('click', function(event) {
+                        var option = select[event.currentTarget.value];
+                        option.selected = option.selected ? false : true;
+                        var style = event.currentTarget.style;
+                        style.backgroundColor = option.selected ? 'hsl(20, 7%, 88%)' : 'rgb(255, 255, 255)';
+                    }, false);
+                }
+            } else if (e instanceof HTMLOptGroupElement) {
+                var li = document.createElement('li');
+                li.appendChild(document.createTextNode(e.label));
+                ul.appendChild(li);
+                li.style.height = '1em';
+                li.style.margin = '0';
+                li.style.padding = '0 1em';
+                li.style.fontWeight = 'bold';
+                if (e.disabled)
+                    li.style.color = 'hsl(20, 7%, 88%)';
+                var f;
+                for (f = e.firstElementChild; f; f = f.nextElementSibling) {
+                    if (f instanceof HTMLOptionElement) {
+                        ++index;
+                        var li = document.createElement('li');
+                        li.appendChild(document.createTextNode(f.label));
+                        ul.appendChild(li);
+                        li.style.height = '1em';
+                        li.style.margin = '0';
+                        li.style.padding = '0 1em 0 2em';
+                        li.style.backgroundColor = f.selected ? 'hsl(20, 7%, 88%)' : 'rgb(255, 255, 255)';
+                        if (e.disabled || f.disabled)
+                            li.style.color = 'hsl(20, 7%, 88%)';
+                        else {
+                            li.value = index;
+                            li.addEventListener('click', function(event) {
+                                var option = select[event.currentTarget.value];
+                                option.selected = option.selected ? false : true;
+                                var style = event.currentTarget.style;
+                                style.backgroundColor = option.selected ? 'hsl(20, 7%, 88%)' : 'rgb(255, 255, 255)';
+                            }, false);
+                        }
+                    }
+                }
+            }
+        }
+    }
+  })
+</implementation>
+</binding>
 <style type="text/css">
 body
 {

@@ -150,7 +150,26 @@ input[type=submit i], input[type=reset i], input[type=button i] {
 marquee { binding: marquee; }
 meter { binding: meter; }
 progress { binding: progress; }
-select { binding: select; }
+select {
+    binding: url(escudo.html#select);
+    display: inline-block;
+    background-color: hsl(20, 7%, 88%);
+    border: 2px hsl(20, 7%, 88%) outset;
+    height: 1em;
+    position: relative;
+    cursor: default;
+    white-space: nowrap;
+}
+select[multiple] {
+    binding: url(escudo.html#select-multiple);
+    display: inline-block;
+    border: 2px hsl(20, 7%, 88%) outset;
+    cursor: default;
+    margin: 0;
+    background-color: white;
+    height: 4em;
+    overflow: scroll;
+}
 textarea { binding: textarea; white-space: pre-wrap; }
 keygen { binding: keygen; }
 time[datetime] { binding: time; }

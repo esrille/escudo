@@ -1,0 +1,39 @@
+<html>
+<head>
+<title>select element test</title>
+<script type="text/javascript">
+function doTest() {
+  this.addEventListener('keydown', function(event) {
+    if (event.keyCode == 13) {
+      var s = document.getElementById("single");
+      var m = document.getElementById("multiple");
+      alert(s.selectedIndex + " " + m.selectedOptions.length);
+    }
+  }, false);
+}
+</script>
+</head>
+<body onload="doTest()">
+<p>
+ <label>Jupiter:</label>
+ <select id="single">
+  <option value="1" disabled> Io </option>
+  <option value="2"> Europa </option>
+  <option value="3"> Ganymede </option>
+  <option value="4"> Callisto </option>
+ </select>
+</p>
+<p>
+ <label>Saturn:</label>
+ <select multiple id="multiple">
+  <option value="1"> Mimas </option>
+  <option value="2"> Enceladus </option>
+  <option value="3"> Tethys </option>
+  <option value="4"> Dione </option>
+  <option value="5" disabled> Rhea </option>
+  <option value="6" selected> Titan </option>
+  <option value="7"> Iapetus </option>
+ </select>
+</p>
+</body>
+</html>
