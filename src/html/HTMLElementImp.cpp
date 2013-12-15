@@ -1439,8 +1439,9 @@ void HTMLElementImp::setAttributeAsBoolean(const std::u16string& name, bool on)
 
 int HTMLElementImp::getAttributeAsInteger(const std::u16string& name, int defaultValue)
 {
+    std::u16string attr(getAttribute(name));
     int value;
-    if (toInteger(name, value))
+    if (toInteger(attr, value))
         return value;
     return defaultValue;
 }
@@ -1452,8 +1453,9 @@ void HTMLElementImp::setAttributeAsInteger(const std::u16string& name, int value
 
 unsigned int HTMLElementImp::getAttributeAsUnsigned(const std::u16string& name, unsigned int defaultValue)
 {
+    std::u16string attr(getAttribute(name));
     unsigned int value;
-    if (toUnsigned(name, value))
+    if (toUnsigned(attr, value))
         return value;
     return defaultValue;
 }
