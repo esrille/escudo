@@ -34,10 +34,12 @@ bool toInteger(const std::u16string& value, int& output)
 
 bool toUnsigned(const std::u16string& value, unsigned int& output)
 {
-    int s;
-    if (!toInteger(value, s))
-        return false;
-    return 0 <= s;
+    int n;
+    if (toInteger(value, n) && 0 <= n) {
+        output = n;
+        return true;
+    }
+    return false;
 }
 
 bool mapToInteger(std::u16string& value)
