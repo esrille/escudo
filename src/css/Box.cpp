@@ -758,7 +758,7 @@ void Block::resolveHeight()
 
 void Block::layOutInlineBlock(ViewCSSImp* view, Node node, const BlockPtr& inlineBlock, FormattingContext* context)
 {
-    InlineBoxPtr inlineBox = std::make_shared<InlineBox>(nullptr, nullptr); // Treat this box as an anonymous box
+    InlineBoxPtr inlineBox = std::make_shared<InlineBox>(nullptr, inlineBlock->style); // Treat this box as an anonymous box
     if (!inlineBox)
         return;  // TODO error
 

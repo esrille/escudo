@@ -886,7 +886,7 @@ public:
     }
 
     virtual bool isAnonymous() const {
-        return !style || (font && !style->display.isInline()) || !style->display.isInlineLevel();
+        return !node || !style || (font && !style->display.isInline()) || !style->display.isInlineLevel();
     }
     bool isInline() const {
         return style && style->display.isInline();
