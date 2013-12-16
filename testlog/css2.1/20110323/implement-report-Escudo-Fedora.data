@@ -1,5 +1,5 @@
-# Escudo 0.4.0 (2013-10-24 e433fdc147) Fedora Linux 19
-# Escudo/0.4.0
+# Escudo 0.4.1 (2013-12-17 798733f2fc) Fedora Linux 19
+# Escudo/0.4.1
 # http://test.csswg.org/suites/css2.1/20110323/
 # See http://wiki.csswg.org/test/implementation-report for instructions
 testname    result  comment
@@ -5863,7 +5863,7 @@ html4/inlines-007.htm	pass
 html4/inlines-009.htm	pass
 html4/inlines-010.htm	pass
 html4/inlines-011.htm	pass
-html4/inlines-012.htm	pass
+html4/inlines-012.htm	fail (check)
 html4/inlines-013.htm	pass
 html4/inlines-014.htm	pass
 html4/inlines-015.htm	pass
@@ -6189,7 +6189,7 @@ html4/list-style-position-013.htm	pass
 html4/list-style-position-014.htm	pass
 html4/list-style-position-015.htm	pass
 html4/list-style-position-016.htm	pass
-html4/list-style-position-017.htm	pass
+html4/list-style-position-017.htm	fail (check)
 html4/list-style-position-019.htm	pass
 html4/list-style-position-020.htm	pass
 html4/list-style-position-021.htm	pass
