@@ -1820,9 +1820,9 @@ void Block::layOutAbsolute(ViewCSSImp* view)
         if (BoxPtr lineBox = getParentBox()) {  // A root element can be absolutely positioned.
             for (BoxPtr box = getPreviousSibling(); box; box = box->getPreviousSibling()) {
                 if (!box->isAbsolutelyPositioned()) {
-                    if (maskV == (Top | Height | Bottom) || maskV == (Top | Bottom))
+                    if (style->top.isAuto() && style->bottom.isAuto())
                         offsetV += lineBox->height + lineBox->getBlankBottom();
-                    if (maskH == (Left | Width | Right) || maskH == (Left | Right))
+                    if (style->left.isAuto() && style->right.isAuto())
                         offsetH -= box->getTotalWidth();
                 }
             }
