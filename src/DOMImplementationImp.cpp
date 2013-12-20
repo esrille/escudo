@@ -65,14 +65,33 @@ XMLDocument DOMImplementationImp::createDocument(const Nullable<std::u16string>&
 
 Document DOMImplementationImp::createHTMLDocument()
 {
-    // TODO: implement me!
-    return nullptr;
+    return createHTMLDocument(u"");
 }
 
 Document DOMImplementationImp::createHTMLDocument(const std::u16string& title)
 {
-    // TODO: implement me!
-    return nullptr;
+    try {
+        DocumentPtr document = std::make_shared<DocumentImp>();
+        document->setContentType(u"text/html");
+        DocumentType doctype = createDocumentType(u"html", u"", u"");    // TODO: set node document
+        document->appendChild(doctype);
+        Element html = document->createElement(u"html");
+        document->appendChild(html);
+        Element head = document->createElement(u"head");
+        html.appendChild(head);
+        if (!title.empty()) {
+            Element t = document->createElement(u"title");
+            head.appendChild(t);
+            Text text = document->createTextNode(title);
+            t.appendChild(text);
+        }
+        Element body = document->createElement(u"body");
+        html.appendChild(body);
+        // TODO: Step 8.
+        return document;
+    } catch (...) {
+        return nullptr;
+    }
 }
 
 bool DOMImplementationImp::hasFeature(const std::u16string& feature, const std::u16string& version)
