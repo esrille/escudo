@@ -83,11 +83,18 @@ Nullable<std::u16string> ElementImp::getTextContent()
 {
     std::u16string content;
     for (Node child = getFirstChild(); child; child = child.getNextSibling()) {
-        if (child.getNodeType() == Node::COMMENT_NODE)
-            continue;
-        Nullable<std::u16string> text = child.getTextContent();
-        if (text.hasValue())
-            content += text.value();
+        switch (child.getNodeType()) {
+        case Node::ELEMENT_NODE:
+        case Node::TEXT_NODE:
+        case Node::DOCUMENT_FRAGMENT_NODE: {
+            Nullable<std::u16string> text = child.getTextContent();
+            if (text.hasValue())
+                content += text.value();
+            break;
+        }
+        default:
+            break;
+        }
     }
     return content;
 }
