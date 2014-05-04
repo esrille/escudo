@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 Esrille Inc.
+ * Copyright 2010-2014 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,11 @@
 
 #include <unicode/utypes.h>
 
-#include <freetype/ftoutln.h>
-#include <freetype/ftsizes.h>
-#include <freetype/ftsnames.h>
-#include <freetype/tttables.h>
+#include <ft2build.h>
+#include FT_OUTLINE_H
+#include FT_SIZES_H
+#include FT_SFNT_NAMES_H
+#include FT_TRUETYPE_TABLES_H
 
 #include "utf.h"
 #include "TextIterator.h"
