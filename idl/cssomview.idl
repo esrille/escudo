@@ -50,8 +50,6 @@ interface Screen {
 module dom
 {
 
-typedef views::ClientRectList ClientRectList;
-typedef views::ClientRect ClientRect;
 typedef ranges::Range Range;
 
 partial interface Document {
@@ -62,11 +60,12 @@ partial interface Document {
 interface CaretPosition {
     readonly attribute Node offsetNode;
     readonly attribute unsigned long offset;
+    DOMRect? getClientRect();
 };
 
 partial interface Element {
-    ClientRectList getClientRects ();
-    ClientRect getBoundingClientRect ();
+    DOMRectList getClientRects ();
+    DOMRect getBoundingClientRect ();
     void scrollIntoView (optional boolean top);
     attribute long scrollTop;
     attribute long scrollLeft;
@@ -98,12 +97,12 @@ partial interface HTMLElement {
 module ranges
 {
 
-typedef views::ClientRectList ClientRectList;
-typedef views::ClientRect ClientRect;
+typedef dom::DOMRectList DOMRectList;
+typedef dom::DOMRect DOMRect;
 
 partial interface Range {
-    ClientRectList getClientRects ();
-    ClientRect getBoundingClientRect ();
+    DOMRectList getClientRects ();
+    DOMRect getBoundingClientRect ();
 };
 
 };
@@ -124,25 +123,6 @@ partial interface MouseEvent {
     readonly attribute long y;
     readonly attribute long offsetX;
     readonly attribute long offsetY;
-};
-
-};
-
-module views
-{
-
-interface ClientRectList {
-    readonly attribute unsigned long length;
-    ClientRect item (unsigned long index);
-};
-
-interface ClientRect {
-    readonly attribute float top;
-    readonly attribute float right;
-    readonly attribute float bottom;
-    readonly attribute float left;
-    readonly attribute float width;
-    readonly attribute float height;
 };
 
 };

@@ -169,13 +169,13 @@ DocumentFragment RangeImp::createContextualFragment(const std::u16string& fragme
     return nullptr;
 }
 
-views::ClientRectList RangeImp::getClientRects()
+DOMRectList RangeImp::getClientRects()
 {
     // TODO: implement me!
     return nullptr;
 }
 
-views::ClientRect RangeImp::getBoundingClientRect()
+DOMRect RangeImp::getBoundingClientRect()
 {
     // TODO: implement me!
     return nullptr;

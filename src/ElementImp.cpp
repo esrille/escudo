@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 Esrille Inc.
+ * Copyright 2010-2014 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -473,13 +473,13 @@ css::CSSStyleDeclaration ElementImp::getStyle()
     return nullptr;
 }
 
-views::ClientRectList ElementImp::getClientRects()
+DOMRectList ElementImp::getClientRects()
 {
     // TODO: implement me!
     return nullptr;
 }
 
-views::ClientRect ElementImp::getBoundingClientRect()
+DOMRect ElementImp::getBoundingClientRect()
 {
     // TODO: implement me!
     return nullptr;

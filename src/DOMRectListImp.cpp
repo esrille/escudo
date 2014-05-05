@@ -3,7 +3,7 @@
 // implementation.  Permission to use, copy, modify and distribute
 // this file in any software license is hereby granted.
 
-#include "CaretPositionImp.h"
+#include "DOMRectListImp.h"
 
 namespace org
 {
@@ -14,19 +14,13 @@ namespace dom
 namespace bootstrap
 {
 
-Node CaretPositionImp::getOffsetNode()
-{
-    // TODO: implement me!
-    return nullptr;
-}
-
-unsigned int CaretPositionImp::getOffset()
+unsigned int DOMRectListImp::getLength()
 {
     // TODO: implement me!
     return 0;
 }
 
-DOMRect CaretPositionImp::getClientRect()
+DOMRect DOMRectListImp::item(unsigned int index)
 {
     // TODO: implement me!
     return nullptr;

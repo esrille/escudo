@@ -159,22 +159,25 @@ am_libeshtml5_a_OBJECTS = Any.$(OBJEXT) ECMAScript.$(OBJEXT) \
 	Replaced.$(OBJEXT) Table.$(OBJEXT) TableGL.$(OBJEXT) \
 	ViewCSSImp.$(OBJEXT) ViewCSSImpGL.$(OBJEXT) AttrImp.$(OBJEXT) \
 	BeforeUnloadEventImp.$(OBJEXT) CaretPositionImp.$(OBJEXT) \
-	CharacterDataImp.$(OBJEXT) ClientRectImp.$(OBJEXT) \
-	ClientRectListImp.$(OBJEXT) CommentImp.$(OBJEXT) \
+	CharacterDataImp.$(OBJEXT) CommentImp.$(OBJEXT) \
 	CompositionEventImp.$(OBJEXT) \
 	CompositionEventInitImp.$(OBJEXT) CustomEventImp.$(OBJEXT) \
 	CustomEventInitImp.$(OBJEXT) DocumentFragmentImp.$(OBJEXT) \
 	DocumentImp.$(OBJEXT) DocumentTypeImp.$(OBJEXT) \
 	DOMErrorImp.$(OBJEXT) DOMImplementationImp.$(OBJEXT) \
-	DOMParserImp.$(OBJEXT) DOMSettableTokenListImp.$(OBJEXT) \
-	DOMStringListImp.$(OBJEXT) DOMStringMapImp.$(OBJEXT) \
-	DOMTokenListImp.$(OBJEXT) DragEventImp.$(OBJEXT) \
-	DragEventInitImp.$(OBJEXT) ElementImp.$(OBJEXT) \
-	EventHandlerNonNullImp.$(OBJEXT) EventImp.$(OBJEXT) \
-	EventInitImp.$(OBJEXT) EventListenerImp.$(OBJEXT) \
-	EventSourceImp.$(OBJEXT) EventTargetImp.$(OBJEXT) \
-	ExternalImp.$(OBJEXT) FocusEventImp.$(OBJEXT) \
-	FocusEventInitImp.$(OBJEXT) \
+	DOMMatrixImp.$(OBJEXT) DOMMatrixReadOnlyImp.$(OBJEXT) \
+	DOMParserImp.$(OBJEXT) DOMPointImp.$(OBJEXT) \
+	DOMPointInitImp.$(OBJEXT) DOMPointReadOnlyImp.$(OBJEXT) \
+	DOMQuadImp.$(OBJEXT) DOMRectImp.$(OBJEXT) \
+	DOMRectListImp.$(OBJEXT) DOMRectReadOnlyImp.$(OBJEXT) \
+	DOMSettableTokenListImp.$(OBJEXT) DOMStringListImp.$(OBJEXT) \
+	DOMStringMapImp.$(OBJEXT) DOMTokenListImp.$(OBJEXT) \
+	DragEventImp.$(OBJEXT) DragEventInitImp.$(OBJEXT) \
+	ElementImp.$(OBJEXT) EventHandlerNonNullImp.$(OBJEXT) \
+	EventImp.$(OBJEXT) EventInitImp.$(OBJEXT) \
+	EventListenerImp.$(OBJEXT) EventSourceImp.$(OBJEXT) \
+	EventTargetImp.$(OBJEXT) ExternalImp.$(OBJEXT) \
+	FocusEventImp.$(OBJEXT) FocusEventInitImp.$(OBJEXT) \
 	FunctionStringCallbackImp.$(OBJEXT) \
 	HashChangeEventImp.$(OBJEXT) HashChangeEventInitImp.$(OBJEXT) \
 	HistoryImp.$(OBJEXT) KeyboardEventImp.$(OBJEXT) \
@@ -308,18 +311,21 @@ am__objects_1 = ArrayBuffer.$(OBJEXT) ArrayBufferView.$(OBJEXT) \
 	Uint8Array.$(OBJEXT) Uint8ClampedArray.$(OBJEXT) \
 	XMLHttpRequestEventTarget.$(OBJEXT) XMLHttpRequest.$(OBJEXT) \
 	XMLHttpRequestOptions.$(OBJEXT) XMLHttpRequestUpload.$(OBJEXT) \
-	XMLSerializer.$(OBJEXT) Counter.$(OBJEXT) \
-	CSS2Properties.$(OBJEXT) CSSCharsetRule.$(OBJEXT) \
-	CSSFontFaceRule.$(OBJEXT) CSSImportRule.$(OBJEXT) \
-	CSSMediaRule.$(OBJEXT) CSSNamespaceRule.$(OBJEXT) \
-	CSSPageRule.$(OBJEXT) CSSPrimitiveValue.$(OBJEXT) \
-	CSSRule.$(OBJEXT) CSSRuleList.$(OBJEXT) \
-	CSSStyleDeclaration.$(OBJEXT) CSSStyleRule.$(OBJEXT) \
-	CSSStyleSheet.$(OBJEXT) CSSUnknownRule.$(OBJEXT) \
-	CSSValue.$(OBJEXT) CSSValueList.$(OBJEXT) \
-	DocumentCSS.$(OBJEXT) DOMImplementationCSS.$(OBJEXT) \
-	ElementCSSInlineStyle.$(OBJEXT) Rect.$(OBJEXT) \
-	RGBColor.$(OBJEXT) CompositionEvent.$(OBJEXT) \
+	XMLSerializer.$(OBJEXT) DOMPointReadOnly.$(OBJEXT) \
+	DOMPoint.$(OBJEXT) DOMPointInit.$(OBJEXT) DOMRect.$(OBJEXT) \
+	DOMRectReadOnly.$(OBJEXT) DOMRectList.$(OBJEXT) \
+	DOMQuad.$(OBJEXT) DOMMatrixReadOnly.$(OBJEXT) \
+	DOMMatrix.$(OBJEXT) Counter.$(OBJEXT) CSS2Properties.$(OBJEXT) \
+	CSSCharsetRule.$(OBJEXT) CSSFontFaceRule.$(OBJEXT) \
+	CSSImportRule.$(OBJEXT) CSSMediaRule.$(OBJEXT) \
+	CSSNamespaceRule.$(OBJEXT) CSSPageRule.$(OBJEXT) \
+	CSSPrimitiveValue.$(OBJEXT) CSSRule.$(OBJEXT) \
+	CSSRuleList.$(OBJEXT) CSSStyleDeclaration.$(OBJEXT) \
+	CSSStyleRule.$(OBJEXT) CSSStyleSheet.$(OBJEXT) \
+	CSSUnknownRule.$(OBJEXT) CSSValue.$(OBJEXT) \
+	CSSValueList.$(OBJEXT) DocumentCSS.$(OBJEXT) \
+	DOMImplementationCSS.$(OBJEXT) ElementCSSInlineStyle.$(OBJEXT) \
+	Rect.$(OBJEXT) RGBColor.$(OBJEXT) CompositionEvent.$(OBJEXT) \
 	CompositionEventInit.$(OBJEXT) CustomEvent.$(OBJEXT) \
 	CustomEventInit.$(OBJEXT) Event.$(OBJEXT) \
 	EventHandlerNonNull.$(OBJEXT) EventInit.$(OBJEXT) \
@@ -409,7 +415,6 @@ am__objects_1 = ArrayBuffer.$(OBJEXT) ArrayBufferView.$(OBJEXT) \
 	Range.$(OBJEXT) MediaList.$(OBJEXT) StyleSheet.$(OBJEXT) \
 	SVGMatrix.$(OBJEXT) NodeFilter.$(OBJEXT) \
 	NodeIterator.$(OBJEXT) TreeWalker.$(OBJEXT) \
-	ClientRect.$(OBJEXT) ClientRectList.$(OBJEXT) \
 	DocumentXBL.$(OBJEXT) ElementXBL.$(OBJEXT) \
 	XBLContentElement.$(OBJEXT) XBLImplementation.$(OBJEXT) \
 	XBLImplementationList.$(OBJEXT)
@@ -852,6 +857,7 @@ idl_files = \
 	domparsing.idl \
 	eventsource.idl \
 	file.idl \
+	geometry.idl \
 	html5.idl \
 	progress-events.idl \
 	selectors.idl \
@@ -899,6 +905,15 @@ generated_headers = \
 	org/w3c/dom/XMLHttpRequestOptions.h \
 	org/w3c/dom/XMLHttpRequestUpload.h \
 	org/w3c/dom/XMLSerializer.h \
+	org/w3c/dom/DOMPointReadOnly.h \
+	org/w3c/dom/DOMPoint.h \
+	org/w3c/dom/DOMPointInit.h \
+	org/w3c/dom/DOMRect.h \
+	org/w3c/dom/DOMRectReadOnly.h \
+	org/w3c/dom/DOMRectList.h \
+	org/w3c/dom/DOMQuad.h \
+	org/w3c/dom/DOMMatrixReadOnly.h \
+	org/w3c/dom/DOMMatrix.h \
 	org/w3c/dom/css/Counter.h \
 	org/w3c/dom/css/CSS2Properties.h \
 	org/w3c/dom/css/CSSCharsetRule.h \
@@ -1104,8 +1119,6 @@ generated_headers = \
 	org/w3c/dom/traversal/NodeFilter.h \
 	org/w3c/dom/traversal/NodeIterator.h \
 	org/w3c/dom/traversal/TreeWalker.h \
-	org/w3c/dom/views/ClientRect.h \
-	org/w3c/dom/views/ClientRectList.h \
 	org/w3c/dom/xbl2/DocumentXBL.h \
 	org/w3c/dom/xbl2/ElementXBL.h \
 	org/w3c/dom/xbl2/XBLContentElement.h \
@@ -1150,6 +1163,15 @@ generated_sources = \
 	org/w3c/dom/XMLHttpRequestOptions.cpp \
 	org/w3c/dom/XMLHttpRequestUpload.cpp \
 	org/w3c/dom/XMLSerializer.cpp \
+	org/w3c/dom/DOMPointReadOnly.cpp \
+	org/w3c/dom/DOMPoint.cpp \
+	org/w3c/dom/DOMPointInit.cpp \
+	org/w3c/dom/DOMRect.cpp \
+	org/w3c/dom/DOMRectReadOnly.cpp \
+	org/w3c/dom/DOMRectList.cpp \
+	org/w3c/dom/DOMQuad.cpp \
+	org/w3c/dom/DOMMatrixReadOnly.cpp \
+	org/w3c/dom/DOMMatrix.cpp \
 	org/w3c/dom/css/Counter.cpp \
 	org/w3c/dom/css/CSS2Properties.cpp \
 	org/w3c/dom/css/CSSCharsetRule.cpp \
@@ -1354,8 +1376,6 @@ generated_sources = \
 	org/w3c/dom/traversal/NodeFilter.cpp \
 	org/w3c/dom/traversal/NodeIterator.cpp \
 	org/w3c/dom/traversal/TreeWalker.cpp \
-	org/w3c/dom/views/ClientRect.cpp \
-	org/w3c/dom/views/ClientRectList.cpp \
 	org/w3c/dom/xbl2/DocumentXBL.cpp \
 	org/w3c/dom/xbl2/ElementXBL.cpp \
 	org/w3c/dom/xbl2/XBLContentElement.cpp \
@@ -1465,9 +1485,7 @@ libeshtml5_a_SOURCES = org/w3c/dom/ObjectArray.h src/one_at_a_time.hpp \
 	src/AttrImp.h src/BeforeUnloadEventImp.cpp \
 	src/BeforeUnloadEventImp.h src/CaretPositionImp.cpp \
 	src/CaretPositionImp.h src/CharacterDataImp.cpp \
-	src/CharacterDataImp.h src/ClientRectImp.cpp \
-	src/ClientRectImp.h src/ClientRectListImp.cpp \
-	src/ClientRectListImp.h src/CommentImp.cpp src/CommentImp.h \
+	src/CharacterDataImp.h src/CommentImp.cpp src/CommentImp.h \
 	src/CompositionEventImp.cpp src/CompositionEventImp.h \
 	src/CompositionEventInitImp.cpp src/CompositionEventInitImp.h \
 	src/CustomEventImp.cpp src/CustomEventImp.h \
@@ -1476,12 +1494,19 @@ libeshtml5_a_SOURCES = org/w3c/dom/ObjectArray.h src/one_at_a_time.hpp \
 	src/DocumentImp.cpp src/DocumentImp.h src/DocumentTypeImp.cpp \
 	src/DocumentTypeImp.h src/DOMErrorImp.cpp src/DOMErrorImp.h \
 	src/DOMImplementationImp.cpp src/DOMImplementationImp.h \
-	src/DOMParserImp.cpp src/DOMParserImp.h \
-	src/DOMSettableTokenListImp.cpp src/DOMSettableTokenListImp.h \
-	src/DOMStringListImp.cpp src/DOMStringListImp.h \
-	src/DOMStringMapImp.cpp src/DOMStringMapImp.h \
-	src/DOMTokenListImp.cpp src/DOMTokenListImp.h \
-	src/DragEventImp.cpp src/DragEventImp.h \
+	src/DOMMatrixImp.cpp src/DOMMatrixImp.h \
+	src/DOMMatrixReadOnlyImp.cpp src/DOMMatrixReadOnlyImp.h \
+	src/DOMParserImp.cpp src/DOMParserImp.h src/DOMPointImp.cpp \
+	src/DOMPointImp.h src/DOMPointInitImp.cpp \
+	src/DOMPointInitImp.h src/DOMPointReadOnlyImp.cpp \
+	src/DOMPointReadOnlyImp.h src/DOMQuadImp.cpp src/DOMQuadImp.h \
+	src/DOMRectImp.cpp src/DOMRectImp.h src/DOMRectListImp.cpp \
+	src/DOMRectListImp.h src/DOMRectReadOnlyImp.cpp \
+	src/DOMRectReadOnlyImp.h src/DOMSettableTokenListImp.cpp \
+	src/DOMSettableTokenListImp.h src/DOMStringListImp.cpp \
+	src/DOMStringListImp.h src/DOMStringMapImp.cpp \
+	src/DOMStringMapImp.h src/DOMTokenListImp.cpp \
+	src/DOMTokenListImp.h src/DragEventImp.cpp src/DragEventImp.h \
 	src/DragEventInitImp.cpp src/DragEventInitImp.h \
 	src/ElementImp.cpp src/ElementImp.h \
 	src/EventHandlerNonNullImp.cpp src/EventHandlerNonNullImp.h \
@@ -1894,6 +1919,7 @@ EXTRA_DIST = \
 	idl/eventsource.idl \
 	idl/file.idl \
 	idl/geolocation.idl \
+	idl/geometry.idl \
 	idl/html5.idl \
 	idl/idl_scraper.pl \
 	idl/indexeddb.idl \
@@ -2311,10 +2337,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CaretPositionImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CharacterData.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CharacterDataImp.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ClientRect.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ClientRectImp.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ClientRectList.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ClientRectListImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Comment.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CommentImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/CompositionEvent.Po@am__quote@
@@ -2332,8 +2354,26 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMImplementation.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMImplementationCSS.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMImplementationImp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMMatrix.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMMatrixImp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMMatrixReadOnly.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMMatrixReadOnlyImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMParser.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMParserImp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMPoint.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMPointImp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMPointInit.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMPointInitImp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMPointReadOnly.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMPointReadOnlyImp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMQuad.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMQuadImp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMRect.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMRectImp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMRectList.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMRectListImp.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMRectReadOnly.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMRectReadOnlyImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMSettableTokenList.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMSettableTokenListImp.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/DOMStringList.Po@am__quote@
@@ -3503,34 +3543,6 @@ CharacterDataImp.obj: src/CharacterDataImp.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o CharacterDataImp.obj `if test -f 'src/CharacterDataImp.cpp'; then $(CYGPATH_W) 'src/CharacterDataImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/CharacterDataImp.cpp'; fi`
 
-ClientRectImp.o: src/ClientRectImp.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ClientRectImp.o -MD -MP -MF $(DEPDIR)/ClientRectImp.Tpo -c -o ClientRectImp.o `test -f 'src/ClientRectImp.cpp' || echo '$(srcdir)/'`src/ClientRectImp.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ClientRectImp.Tpo $(DEPDIR)/ClientRectImp.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/ClientRectImp.cpp' object='ClientRectImp.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ClientRectImp.o `test -f 'src/ClientRectImp.cpp' || echo '$(srcdir)/'`src/ClientRectImp.cpp
-
-ClientRectImp.obj: src/ClientRectImp.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ClientRectImp.obj -MD -MP -MF $(DEPDIR)/ClientRectImp.Tpo -c -o ClientRectImp.obj `if test -f 'src/ClientRectImp.cpp'; then $(CYGPATH_W) 'src/ClientRectImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/ClientRectImp.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ClientRectImp.Tpo $(DEPDIR)/ClientRectImp.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/ClientRectImp.cpp' object='ClientRectImp.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ClientRectImp.obj `if test -f 'src/ClientRectImp.cpp'; then $(CYGPATH_W) 'src/ClientRectImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/ClientRectImp.cpp'; fi`
-
-ClientRectListImp.o: src/ClientRectListImp.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ClientRectListImp.o -MD -MP -MF $(DEPDIR)/ClientRectListImp.Tpo -c -o ClientRectListImp.o `test -f 'src/ClientRectListImp.cpp' || echo '$(srcdir)/'`src/ClientRectListImp.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ClientRectListImp.Tpo $(DEPDIR)/ClientRectListImp.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/ClientRectListImp.cpp' object='ClientRectListImp.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ClientRectListImp.o `test -f 'src/ClientRectListImp.cpp' || echo '$(srcdir)/'`src/ClientRectListImp.cpp
-
-ClientRectListImp.obj: src/ClientRectListImp.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ClientRectListImp.obj -MD -MP -MF $(DEPDIR)/ClientRectListImp.Tpo -c -o ClientRectListImp.obj `if test -f 'src/ClientRectListImp.cpp'; then $(CYGPATH_W) 'src/ClientRectListImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/ClientRectListImp.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ClientRectListImp.Tpo $(DEPDIR)/ClientRectListImp.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/ClientRectListImp.cpp' object='ClientRectListImp.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ClientRectListImp.obj `if test -f 'src/ClientRectListImp.cpp'; then $(CYGPATH_W) 'src/ClientRectListImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/ClientRectListImp.cpp'; fi`
-
 CommentImp.o: src/CommentImp.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT CommentImp.o -MD -MP -MF $(DEPDIR)/CommentImp.Tpo -c -o CommentImp.o `test -f 'src/CommentImp.cpp' || echo '$(srcdir)/'`src/CommentImp.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/CommentImp.Tpo $(DEPDIR)/CommentImp.Po
@@ -3671,6 +3683,34 @@ DOMImplementationImp.obj: src/DOMImplementationImp.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMImplementationImp.obj `if test -f 'src/DOMImplementationImp.cpp'; then $(CYGPATH_W) 'src/DOMImplementationImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/DOMImplementationImp.cpp'; fi`
 
+DOMMatrixImp.o: src/DOMMatrixImp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMMatrixImp.o -MD -MP -MF $(DEPDIR)/DOMMatrixImp.Tpo -c -o DOMMatrixImp.o `test -f 'src/DOMMatrixImp.cpp' || echo '$(srcdir)/'`src/DOMMatrixImp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMMatrixImp.Tpo $(DEPDIR)/DOMMatrixImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/DOMMatrixImp.cpp' object='DOMMatrixImp.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMMatrixImp.o `test -f 'src/DOMMatrixImp.cpp' || echo '$(srcdir)/'`src/DOMMatrixImp.cpp
+
+DOMMatrixImp.obj: src/DOMMatrixImp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMMatrixImp.obj -MD -MP -MF $(DEPDIR)/DOMMatrixImp.Tpo -c -o DOMMatrixImp.obj `if test -f 'src/DOMMatrixImp.cpp'; then $(CYGPATH_W) 'src/DOMMatrixImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/DOMMatrixImp.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMMatrixImp.Tpo $(DEPDIR)/DOMMatrixImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/DOMMatrixImp.cpp' object='DOMMatrixImp.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMMatrixImp.obj `if test -f 'src/DOMMatrixImp.cpp'; then $(CYGPATH_W) 'src/DOMMatrixImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/DOMMatrixImp.cpp'; fi`
+
+DOMMatrixReadOnlyImp.o: src/DOMMatrixReadOnlyImp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMMatrixReadOnlyImp.o -MD -MP -MF $(DEPDIR)/DOMMatrixReadOnlyImp.Tpo -c -o DOMMatrixReadOnlyImp.o `test -f 'src/DOMMatrixReadOnlyImp.cpp' || echo '$(srcdir)/'`src/DOMMatrixReadOnlyImp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMMatrixReadOnlyImp.Tpo $(DEPDIR)/DOMMatrixReadOnlyImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/DOMMatrixReadOnlyImp.cpp' object='DOMMatrixReadOnlyImp.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMMatrixReadOnlyImp.o `test -f 'src/DOMMatrixReadOnlyImp.cpp' || echo '$(srcdir)/'`src/DOMMatrixReadOnlyImp.cpp
+
+DOMMatrixReadOnlyImp.obj: src/DOMMatrixReadOnlyImp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMMatrixReadOnlyImp.obj -MD -MP -MF $(DEPDIR)/DOMMatrixReadOnlyImp.Tpo -c -o DOMMatrixReadOnlyImp.obj `if test -f 'src/DOMMatrixReadOnlyImp.cpp'; then $(CYGPATH_W) 'src/DOMMatrixReadOnlyImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/DOMMatrixReadOnlyImp.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMMatrixReadOnlyImp.Tpo $(DEPDIR)/DOMMatrixReadOnlyImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/DOMMatrixReadOnlyImp.cpp' object='DOMMatrixReadOnlyImp.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMMatrixReadOnlyImp.obj `if test -f 'src/DOMMatrixReadOnlyImp.cpp'; then $(CYGPATH_W) 'src/DOMMatrixReadOnlyImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/DOMMatrixReadOnlyImp.cpp'; fi`
+
 DOMParserImp.o: src/DOMParserImp.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMParserImp.o -MD -MP -MF $(DEPDIR)/DOMParserImp.Tpo -c -o DOMParserImp.o `test -f 'src/DOMParserImp.cpp' || echo '$(srcdir)/'`src/DOMParserImp.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMParserImp.Tpo $(DEPDIR)/DOMParserImp.Po
@@ -3684,6 +3724,104 @@ DOMParserImp.obj: src/DOMParserImp.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/DOMParserImp.cpp' object='DOMParserImp.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMParserImp.obj `if test -f 'src/DOMParserImp.cpp'; then $(CYGPATH_W) 'src/DOMParserImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/DOMParserImp.cpp'; fi`
+
+DOMPointImp.o: src/DOMPointImp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMPointImp.o -MD -MP -MF $(DEPDIR)/DOMPointImp.Tpo -c -o DOMPointImp.o `test -f 'src/DOMPointImp.cpp' || echo '$(srcdir)/'`src/DOMPointImp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMPointImp.Tpo $(DEPDIR)/DOMPointImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/DOMPointImp.cpp' object='DOMPointImp.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMPointImp.o `test -f 'src/DOMPointImp.cpp' || echo '$(srcdir)/'`src/DOMPointImp.cpp
+
+DOMPointImp.obj: src/DOMPointImp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMPointImp.obj -MD -MP -MF $(DEPDIR)/DOMPointImp.Tpo -c -o DOMPointImp.obj `if test -f 'src/DOMPointImp.cpp'; then $(CYGPATH_W) 'src/DOMPointImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/DOMPointImp.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMPointImp.Tpo $(DEPDIR)/DOMPointImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/DOMPointImp.cpp' object='DOMPointImp.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMPointImp.obj `if test -f 'src/DOMPointImp.cpp'; then $(CYGPATH_W) 'src/DOMPointImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/DOMPointImp.cpp'; fi`
+
+DOMPointInitImp.o: src/DOMPointInitImp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMPointInitImp.o -MD -MP -MF $(DEPDIR)/DOMPointInitImp.Tpo -c -o DOMPointInitImp.o `test -f 'src/DOMPointInitImp.cpp' || echo '$(srcdir)/'`src/DOMPointInitImp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMPointInitImp.Tpo $(DEPDIR)/DOMPointInitImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/DOMPointInitImp.cpp' object='DOMPointInitImp.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMPointInitImp.o `test -f 'src/DOMPointInitImp.cpp' || echo '$(srcdir)/'`src/DOMPointInitImp.cpp
+
+DOMPointInitImp.obj: src/DOMPointInitImp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMPointInitImp.obj -MD -MP -MF $(DEPDIR)/DOMPointInitImp.Tpo -c -o DOMPointInitImp.obj `if test -f 'src/DOMPointInitImp.cpp'; then $(CYGPATH_W) 'src/DOMPointInitImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/DOMPointInitImp.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMPointInitImp.Tpo $(DEPDIR)/DOMPointInitImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/DOMPointInitImp.cpp' object='DOMPointInitImp.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMPointInitImp.obj `if test -f 'src/DOMPointInitImp.cpp'; then $(CYGPATH_W) 'src/DOMPointInitImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/DOMPointInitImp.cpp'; fi`
+
+DOMPointReadOnlyImp.o: src/DOMPointReadOnlyImp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMPointReadOnlyImp.o -MD -MP -MF $(DEPDIR)/DOMPointReadOnlyImp.Tpo -c -o DOMPointReadOnlyImp.o `test -f 'src/DOMPointReadOnlyImp.cpp' || echo '$(srcdir)/'`src/DOMPointReadOnlyImp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMPointReadOnlyImp.Tpo $(DEPDIR)/DOMPointReadOnlyImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/DOMPointReadOnlyImp.cpp' object='DOMPointReadOnlyImp.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMPointReadOnlyImp.o `test -f 'src/DOMPointReadOnlyImp.cpp' || echo '$(srcdir)/'`src/DOMPointReadOnlyImp.cpp
+
+DOMPointReadOnlyImp.obj: src/DOMPointReadOnlyImp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMPointReadOnlyImp.obj -MD -MP -MF $(DEPDIR)/DOMPointReadOnlyImp.Tpo -c -o DOMPointReadOnlyImp.obj `if test -f 'src/DOMPointReadOnlyImp.cpp'; then $(CYGPATH_W) 'src/DOMPointReadOnlyImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/DOMPointReadOnlyImp.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMPointReadOnlyImp.Tpo $(DEPDIR)/DOMPointReadOnlyImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/DOMPointReadOnlyImp.cpp' object='DOMPointReadOnlyImp.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMPointReadOnlyImp.obj `if test -f 'src/DOMPointReadOnlyImp.cpp'; then $(CYGPATH_W) 'src/DOMPointReadOnlyImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/DOMPointReadOnlyImp.cpp'; fi`
+
+DOMQuadImp.o: src/DOMQuadImp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMQuadImp.o -MD -MP -MF $(DEPDIR)/DOMQuadImp.Tpo -c -o DOMQuadImp.o `test -f 'src/DOMQuadImp.cpp' || echo '$(srcdir)/'`src/DOMQuadImp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMQuadImp.Tpo $(DEPDIR)/DOMQuadImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/DOMQuadImp.cpp' object='DOMQuadImp.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMQuadImp.o `test -f 'src/DOMQuadImp.cpp' || echo '$(srcdir)/'`src/DOMQuadImp.cpp
+
+DOMQuadImp.obj: src/DOMQuadImp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMQuadImp.obj -MD -MP -MF $(DEPDIR)/DOMQuadImp.Tpo -c -o DOMQuadImp.obj `if test -f 'src/DOMQuadImp.cpp'; then $(CYGPATH_W) 'src/DOMQuadImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/DOMQuadImp.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMQuadImp.Tpo $(DEPDIR)/DOMQuadImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/DOMQuadImp.cpp' object='DOMQuadImp.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMQuadImp.obj `if test -f 'src/DOMQuadImp.cpp'; then $(CYGPATH_W) 'src/DOMQuadImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/DOMQuadImp.cpp'; fi`
+
+DOMRectImp.o: src/DOMRectImp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMRectImp.o -MD -MP -MF $(DEPDIR)/DOMRectImp.Tpo -c -o DOMRectImp.o `test -f 'src/DOMRectImp.cpp' || echo '$(srcdir)/'`src/DOMRectImp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMRectImp.Tpo $(DEPDIR)/DOMRectImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/DOMRectImp.cpp' object='DOMRectImp.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMRectImp.o `test -f 'src/DOMRectImp.cpp' || echo '$(srcdir)/'`src/DOMRectImp.cpp
+
+DOMRectImp.obj: src/DOMRectImp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMRectImp.obj -MD -MP -MF $(DEPDIR)/DOMRectImp.Tpo -c -o DOMRectImp.obj `if test -f 'src/DOMRectImp.cpp'; then $(CYGPATH_W) 'src/DOMRectImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/DOMRectImp.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMRectImp.Tpo $(DEPDIR)/DOMRectImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/DOMRectImp.cpp' object='DOMRectImp.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMRectImp.obj `if test -f 'src/DOMRectImp.cpp'; then $(CYGPATH_W) 'src/DOMRectImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/DOMRectImp.cpp'; fi`
+
+DOMRectListImp.o: src/DOMRectListImp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMRectListImp.o -MD -MP -MF $(DEPDIR)/DOMRectListImp.Tpo -c -o DOMRectListImp.o `test -f 'src/DOMRectListImp.cpp' || echo '$(srcdir)/'`src/DOMRectListImp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMRectListImp.Tpo $(DEPDIR)/DOMRectListImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/DOMRectListImp.cpp' object='DOMRectListImp.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMRectListImp.o `test -f 'src/DOMRectListImp.cpp' || echo '$(srcdir)/'`src/DOMRectListImp.cpp
+
+DOMRectListImp.obj: src/DOMRectListImp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMRectListImp.obj -MD -MP -MF $(DEPDIR)/DOMRectListImp.Tpo -c -o DOMRectListImp.obj `if test -f 'src/DOMRectListImp.cpp'; then $(CYGPATH_W) 'src/DOMRectListImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/DOMRectListImp.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMRectListImp.Tpo $(DEPDIR)/DOMRectListImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/DOMRectListImp.cpp' object='DOMRectListImp.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMRectListImp.obj `if test -f 'src/DOMRectListImp.cpp'; then $(CYGPATH_W) 'src/DOMRectListImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/DOMRectListImp.cpp'; fi`
+
+DOMRectReadOnlyImp.o: src/DOMRectReadOnlyImp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMRectReadOnlyImp.o -MD -MP -MF $(DEPDIR)/DOMRectReadOnlyImp.Tpo -c -o DOMRectReadOnlyImp.o `test -f 'src/DOMRectReadOnlyImp.cpp' || echo '$(srcdir)/'`src/DOMRectReadOnlyImp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMRectReadOnlyImp.Tpo $(DEPDIR)/DOMRectReadOnlyImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/DOMRectReadOnlyImp.cpp' object='DOMRectReadOnlyImp.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMRectReadOnlyImp.o `test -f 'src/DOMRectReadOnlyImp.cpp' || echo '$(srcdir)/'`src/DOMRectReadOnlyImp.cpp
+
+DOMRectReadOnlyImp.obj: src/DOMRectReadOnlyImp.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMRectReadOnlyImp.obj -MD -MP -MF $(DEPDIR)/DOMRectReadOnlyImp.Tpo -c -o DOMRectReadOnlyImp.obj `if test -f 'src/DOMRectReadOnlyImp.cpp'; then $(CYGPATH_W) 'src/DOMRectReadOnlyImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/DOMRectReadOnlyImp.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMRectReadOnlyImp.Tpo $(DEPDIR)/DOMRectReadOnlyImp.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='src/DOMRectReadOnlyImp.cpp' object='DOMRectReadOnlyImp.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMRectReadOnlyImp.obj `if test -f 'src/DOMRectReadOnlyImp.cpp'; then $(CYGPATH_W) 'src/DOMRectReadOnlyImp.cpp'; else $(CYGPATH_W) '$(srcdir)/src/DOMRectReadOnlyImp.cpp'; fi`
 
 DOMSettableTokenListImp.o: src/DOMSettableTokenListImp.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMSettableTokenListImp.o -MD -MP -MF $(DEPDIR)/DOMSettableTokenListImp.Tpo -c -o DOMSettableTokenListImp.o `test -f 'src/DOMSettableTokenListImp.cpp' || echo '$(srcdir)/'`src/DOMSettableTokenListImp.cpp
@@ -7325,6 +7463,132 @@ XMLSerializer.obj: org/w3c/dom/XMLSerializer.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o XMLSerializer.obj `if test -f 'org/w3c/dom/XMLSerializer.cpp'; then $(CYGPATH_W) 'org/w3c/dom/XMLSerializer.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/XMLSerializer.cpp'; fi`
 
+DOMPointReadOnly.o: org/w3c/dom/DOMPointReadOnly.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMPointReadOnly.o -MD -MP -MF $(DEPDIR)/DOMPointReadOnly.Tpo -c -o DOMPointReadOnly.o `test -f 'org/w3c/dom/DOMPointReadOnly.cpp' || echo '$(srcdir)/'`org/w3c/dom/DOMPointReadOnly.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMPointReadOnly.Tpo $(DEPDIR)/DOMPointReadOnly.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='org/w3c/dom/DOMPointReadOnly.cpp' object='DOMPointReadOnly.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMPointReadOnly.o `test -f 'org/w3c/dom/DOMPointReadOnly.cpp' || echo '$(srcdir)/'`org/w3c/dom/DOMPointReadOnly.cpp
+
+DOMPointReadOnly.obj: org/w3c/dom/DOMPointReadOnly.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMPointReadOnly.obj -MD -MP -MF $(DEPDIR)/DOMPointReadOnly.Tpo -c -o DOMPointReadOnly.obj `if test -f 'org/w3c/dom/DOMPointReadOnly.cpp'; then $(CYGPATH_W) 'org/w3c/dom/DOMPointReadOnly.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/DOMPointReadOnly.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMPointReadOnly.Tpo $(DEPDIR)/DOMPointReadOnly.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='org/w3c/dom/DOMPointReadOnly.cpp' object='DOMPointReadOnly.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMPointReadOnly.obj `if test -f 'org/w3c/dom/DOMPointReadOnly.cpp'; then $(CYGPATH_W) 'org/w3c/dom/DOMPointReadOnly.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/DOMPointReadOnly.cpp'; fi`
+
+DOMPoint.o: org/w3c/dom/DOMPoint.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMPoint.o -MD -MP -MF $(DEPDIR)/DOMPoint.Tpo -c -o DOMPoint.o `test -f 'org/w3c/dom/DOMPoint.cpp' || echo '$(srcdir)/'`org/w3c/dom/DOMPoint.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMPoint.Tpo $(DEPDIR)/DOMPoint.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='org/w3c/dom/DOMPoint.cpp' object='DOMPoint.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMPoint.o `test -f 'org/w3c/dom/DOMPoint.cpp' || echo '$(srcdir)/'`org/w3c/dom/DOMPoint.cpp
+
+DOMPoint.obj: org/w3c/dom/DOMPoint.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMPoint.obj -MD -MP -MF $(DEPDIR)/DOMPoint.Tpo -c -o DOMPoint.obj `if test -f 'org/w3c/dom/DOMPoint.cpp'; then $(CYGPATH_W) 'org/w3c/dom/DOMPoint.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/DOMPoint.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMPoint.Tpo $(DEPDIR)/DOMPoint.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='org/w3c/dom/DOMPoint.cpp' object='DOMPoint.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMPoint.obj `if test -f 'org/w3c/dom/DOMPoint.cpp'; then $(CYGPATH_W) 'org/w3c/dom/DOMPoint.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/DOMPoint.cpp'; fi`
+
+DOMPointInit.o: org/w3c/dom/DOMPointInit.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMPointInit.o -MD -MP -MF $(DEPDIR)/DOMPointInit.Tpo -c -o DOMPointInit.o `test -f 'org/w3c/dom/DOMPointInit.cpp' || echo '$(srcdir)/'`org/w3c/dom/DOMPointInit.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMPointInit.Tpo $(DEPDIR)/DOMPointInit.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='org/w3c/dom/DOMPointInit.cpp' object='DOMPointInit.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMPointInit.o `test -f 'org/w3c/dom/DOMPointInit.cpp' || echo '$(srcdir)/'`org/w3c/dom/DOMPointInit.cpp
+
+DOMPointInit.obj: org/w3c/dom/DOMPointInit.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMPointInit.obj -MD -MP -MF $(DEPDIR)/DOMPointInit.Tpo -c -o DOMPointInit.obj `if test -f 'org/w3c/dom/DOMPointInit.cpp'; then $(CYGPATH_W) 'org/w3c/dom/DOMPointInit.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/DOMPointInit.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMPointInit.Tpo $(DEPDIR)/DOMPointInit.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='org/w3c/dom/DOMPointInit.cpp' object='DOMPointInit.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMPointInit.obj `if test -f 'org/w3c/dom/DOMPointInit.cpp'; then $(CYGPATH_W) 'org/w3c/dom/DOMPointInit.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/DOMPointInit.cpp'; fi`
+
+DOMRect.o: org/w3c/dom/DOMRect.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMRect.o -MD -MP -MF $(DEPDIR)/DOMRect.Tpo -c -o DOMRect.o `test -f 'org/w3c/dom/DOMRect.cpp' || echo '$(srcdir)/'`org/w3c/dom/DOMRect.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMRect.Tpo $(DEPDIR)/DOMRect.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='org/w3c/dom/DOMRect.cpp' object='DOMRect.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMRect.o `test -f 'org/w3c/dom/DOMRect.cpp' || echo '$(srcdir)/'`org/w3c/dom/DOMRect.cpp
+
+DOMRect.obj: org/w3c/dom/DOMRect.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMRect.obj -MD -MP -MF $(DEPDIR)/DOMRect.Tpo -c -o DOMRect.obj `if test -f 'org/w3c/dom/DOMRect.cpp'; then $(CYGPATH_W) 'org/w3c/dom/DOMRect.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/DOMRect.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMRect.Tpo $(DEPDIR)/DOMRect.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='org/w3c/dom/DOMRect.cpp' object='DOMRect.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMRect.obj `if test -f 'org/w3c/dom/DOMRect.cpp'; then $(CYGPATH_W) 'org/w3c/dom/DOMRect.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/DOMRect.cpp'; fi`
+
+DOMRectReadOnly.o: org/w3c/dom/DOMRectReadOnly.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMRectReadOnly.o -MD -MP -MF $(DEPDIR)/DOMRectReadOnly.Tpo -c -o DOMRectReadOnly.o `test -f 'org/w3c/dom/DOMRectReadOnly.cpp' || echo '$(srcdir)/'`org/w3c/dom/DOMRectReadOnly.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMRectReadOnly.Tpo $(DEPDIR)/DOMRectReadOnly.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='org/w3c/dom/DOMRectReadOnly.cpp' object='DOMRectReadOnly.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMRectReadOnly.o `test -f 'org/w3c/dom/DOMRectReadOnly.cpp' || echo '$(srcdir)/'`org/w3c/dom/DOMRectReadOnly.cpp
+
+DOMRectReadOnly.obj: org/w3c/dom/DOMRectReadOnly.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMRectReadOnly.obj -MD -MP -MF $(DEPDIR)/DOMRectReadOnly.Tpo -c -o DOMRectReadOnly.obj `if test -f 'org/w3c/dom/DOMRectReadOnly.cpp'; then $(CYGPATH_W) 'org/w3c/dom/DOMRectReadOnly.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/DOMRectReadOnly.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMRectReadOnly.Tpo $(DEPDIR)/DOMRectReadOnly.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='org/w3c/dom/DOMRectReadOnly.cpp' object='DOMRectReadOnly.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMRectReadOnly.obj `if test -f 'org/w3c/dom/DOMRectReadOnly.cpp'; then $(CYGPATH_W) 'org/w3c/dom/DOMRectReadOnly.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/DOMRectReadOnly.cpp'; fi`
+
+DOMRectList.o: org/w3c/dom/DOMRectList.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMRectList.o -MD -MP -MF $(DEPDIR)/DOMRectList.Tpo -c -o DOMRectList.o `test -f 'org/w3c/dom/DOMRectList.cpp' || echo '$(srcdir)/'`org/w3c/dom/DOMRectList.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMRectList.Tpo $(DEPDIR)/DOMRectList.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='org/w3c/dom/DOMRectList.cpp' object='DOMRectList.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMRectList.o `test -f 'org/w3c/dom/DOMRectList.cpp' || echo '$(srcdir)/'`org/w3c/dom/DOMRectList.cpp
+
+DOMRectList.obj: org/w3c/dom/DOMRectList.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMRectList.obj -MD -MP -MF $(DEPDIR)/DOMRectList.Tpo -c -o DOMRectList.obj `if test -f 'org/w3c/dom/DOMRectList.cpp'; then $(CYGPATH_W) 'org/w3c/dom/DOMRectList.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/DOMRectList.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMRectList.Tpo $(DEPDIR)/DOMRectList.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='org/w3c/dom/DOMRectList.cpp' object='DOMRectList.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMRectList.obj `if test -f 'org/w3c/dom/DOMRectList.cpp'; then $(CYGPATH_W) 'org/w3c/dom/DOMRectList.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/DOMRectList.cpp'; fi`
+
+DOMQuad.o: org/w3c/dom/DOMQuad.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMQuad.o -MD -MP -MF $(DEPDIR)/DOMQuad.Tpo -c -o DOMQuad.o `test -f 'org/w3c/dom/DOMQuad.cpp' || echo '$(srcdir)/'`org/w3c/dom/DOMQuad.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMQuad.Tpo $(DEPDIR)/DOMQuad.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='org/w3c/dom/DOMQuad.cpp' object='DOMQuad.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMQuad.o `test -f 'org/w3c/dom/DOMQuad.cpp' || echo '$(srcdir)/'`org/w3c/dom/DOMQuad.cpp
+
+DOMQuad.obj: org/w3c/dom/DOMQuad.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMQuad.obj -MD -MP -MF $(DEPDIR)/DOMQuad.Tpo -c -o DOMQuad.obj `if test -f 'org/w3c/dom/DOMQuad.cpp'; then $(CYGPATH_W) 'org/w3c/dom/DOMQuad.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/DOMQuad.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMQuad.Tpo $(DEPDIR)/DOMQuad.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='org/w3c/dom/DOMQuad.cpp' object='DOMQuad.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMQuad.obj `if test -f 'org/w3c/dom/DOMQuad.cpp'; then $(CYGPATH_W) 'org/w3c/dom/DOMQuad.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/DOMQuad.cpp'; fi`
+
+DOMMatrixReadOnly.o: org/w3c/dom/DOMMatrixReadOnly.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMMatrixReadOnly.o -MD -MP -MF $(DEPDIR)/DOMMatrixReadOnly.Tpo -c -o DOMMatrixReadOnly.o `test -f 'org/w3c/dom/DOMMatrixReadOnly.cpp' || echo '$(srcdir)/'`org/w3c/dom/DOMMatrixReadOnly.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMMatrixReadOnly.Tpo $(DEPDIR)/DOMMatrixReadOnly.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='org/w3c/dom/DOMMatrixReadOnly.cpp' object='DOMMatrixReadOnly.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMMatrixReadOnly.o `test -f 'org/w3c/dom/DOMMatrixReadOnly.cpp' || echo '$(srcdir)/'`org/w3c/dom/DOMMatrixReadOnly.cpp
+
+DOMMatrixReadOnly.obj: org/w3c/dom/DOMMatrixReadOnly.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMMatrixReadOnly.obj -MD -MP -MF $(DEPDIR)/DOMMatrixReadOnly.Tpo -c -o DOMMatrixReadOnly.obj `if test -f 'org/w3c/dom/DOMMatrixReadOnly.cpp'; then $(CYGPATH_W) 'org/w3c/dom/DOMMatrixReadOnly.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/DOMMatrixReadOnly.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMMatrixReadOnly.Tpo $(DEPDIR)/DOMMatrixReadOnly.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='org/w3c/dom/DOMMatrixReadOnly.cpp' object='DOMMatrixReadOnly.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMMatrixReadOnly.obj `if test -f 'org/w3c/dom/DOMMatrixReadOnly.cpp'; then $(CYGPATH_W) 'org/w3c/dom/DOMMatrixReadOnly.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/DOMMatrixReadOnly.cpp'; fi`
+
+DOMMatrix.o: org/w3c/dom/DOMMatrix.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMMatrix.o -MD -MP -MF $(DEPDIR)/DOMMatrix.Tpo -c -o DOMMatrix.o `test -f 'org/w3c/dom/DOMMatrix.cpp' || echo '$(srcdir)/'`org/w3c/dom/DOMMatrix.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMMatrix.Tpo $(DEPDIR)/DOMMatrix.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='org/w3c/dom/DOMMatrix.cpp' object='DOMMatrix.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMMatrix.o `test -f 'org/w3c/dom/DOMMatrix.cpp' || echo '$(srcdir)/'`org/w3c/dom/DOMMatrix.cpp
+
+DOMMatrix.obj: org/w3c/dom/DOMMatrix.cpp
+@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DOMMatrix.obj -MD -MP -MF $(DEPDIR)/DOMMatrix.Tpo -c -o DOMMatrix.obj `if test -f 'org/w3c/dom/DOMMatrix.cpp'; then $(CYGPATH_W) 'org/w3c/dom/DOMMatrix.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/DOMMatrix.cpp'; fi`
+@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/DOMMatrix.Tpo $(DEPDIR)/DOMMatrix.Po
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='org/w3c/dom/DOMMatrix.cpp' object='DOMMatrix.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o DOMMatrix.obj `if test -f 'org/w3c/dom/DOMMatrix.cpp'; then $(CYGPATH_W) 'org/w3c/dom/DOMMatrix.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/DOMMatrix.cpp'; fi`
+
 Counter.o: org/w3c/dom/css/Counter.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT Counter.o -MD -MP -MF $(DEPDIR)/Counter.Tpo -c -o Counter.o `test -f 'org/w3c/dom/css/Counter.cpp' || echo '$(srcdir)/'`org/w3c/dom/css/Counter.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/Counter.Tpo $(DEPDIR)/Counter.Po
@@ -10180,34 +10444,6 @@ TreeWalker.obj: org/w3c/dom/traversal/TreeWalker.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='org/w3c/dom/traversal/TreeWalker.cpp' object='TreeWalker.obj' libtool=no @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o TreeWalker.obj `if test -f 'org/w3c/dom/traversal/TreeWalker.cpp'; then $(CYGPATH_W) 'org/w3c/dom/traversal/TreeWalker.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/traversal/TreeWalker.cpp'; fi`
-
-ClientRect.o: org/w3c/dom/views/ClientRect.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ClientRect.o -MD -MP -MF $(DEPDIR)/ClientRect.Tpo -c -o ClientRect.o `test -f 'org/w3c/dom/views/ClientRect.cpp' || echo '$(srcdir)/'`org/w3c/dom/views/ClientRect.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ClientRect.Tpo $(DEPDIR)/ClientRect.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='org/w3c/dom/views/ClientRect.cpp' object='ClientRect.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ClientRect.o `test -f 'org/w3c/dom/views/ClientRect.cpp' || echo '$(srcdir)/'`org/w3c/dom/views/ClientRect.cpp
-
-ClientRect.obj: org/w3c/dom/views/ClientRect.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ClientRect.obj -MD -MP -MF $(DEPDIR)/ClientRect.Tpo -c -o ClientRect.obj `if test -f 'org/w3c/dom/views/ClientRect.cpp'; then $(CYGPATH_W) 'org/w3c/dom/views/ClientRect.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/views/ClientRect.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ClientRect.Tpo $(DEPDIR)/ClientRect.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='org/w3c/dom/views/ClientRect.cpp' object='ClientRect.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ClientRect.obj `if test -f 'org/w3c/dom/views/ClientRect.cpp'; then $(CYGPATH_W) 'org/w3c/dom/views/ClientRect.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/views/ClientRect.cpp'; fi`
-
-ClientRectList.o: org/w3c/dom/views/ClientRectList.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ClientRectList.o -MD -MP -MF $(DEPDIR)/ClientRectList.Tpo -c -o ClientRectList.o `test -f 'org/w3c/dom/views/ClientRectList.cpp' || echo '$(srcdir)/'`org/w3c/dom/views/ClientRectList.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ClientRectList.Tpo $(DEPDIR)/ClientRectList.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='org/w3c/dom/views/ClientRectList.cpp' object='ClientRectList.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ClientRectList.o `test -f 'org/w3c/dom/views/ClientRectList.cpp' || echo '$(srcdir)/'`org/w3c/dom/views/ClientRectList.cpp
-
-ClientRectList.obj: org/w3c/dom/views/ClientRectList.cpp
-@am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT ClientRectList.obj -MD -MP -MF $(DEPDIR)/ClientRectList.Tpo -c -o ClientRectList.obj `if test -f 'org/w3c/dom/views/ClientRectList.cpp'; then $(CYGPATH_W) 'org/w3c/dom/views/ClientRectList.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/views/ClientRectList.cpp'; fi`
-@am__fastdepCXX_TRUE@	$(AM_V_at)$(am__mv) $(DEPDIR)/ClientRectList.Tpo $(DEPDIR)/ClientRectList.Po
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(AM_V_CXX)source='org/w3c/dom/views/ClientRectList.cpp' object='ClientRectList.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCXX_FALSE@	$(AM_V_CXX@am__nodep@)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o ClientRectList.obj `if test -f 'org/w3c/dom/views/ClientRectList.cpp'; then $(CYGPATH_W) 'org/w3c/dom/views/ClientRectList.cpp'; else $(CYGPATH_W) '$(srcdir)/org/w3c/dom/views/ClientRectList.cpp'; fi`
 
 DocumentXBL.o: org/w3c/dom/xbl2/DocumentXBL.cpp
 @am__fastdepCXX_TRUE@	$(AM_V_CXX)$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT DocumentXBL.o -MD -MP -MF $(DEPDIR)/DocumentXBL.Tpo -c -o DocumentXBL.o `test -f 'org/w3c/dom/xbl2/DocumentXBL.cpp' || echo '$(srcdir)/'`org/w3c/dom/xbl2/DocumentXBL.cpp

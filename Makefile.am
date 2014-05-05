@@ -19,6 +19,7 @@ idl_files = \
 	domparsing.idl \
 	eventsource.idl \
 	file.idl \
+	geometry.idl \
 	html5.idl \
 	progress-events.idl \
 	selectors.idl \
@@ -66,6 +67,15 @@ generated_headers = \
 	org/w3c/dom/XMLHttpRequestOptions.h \
 	org/w3c/dom/XMLHttpRequestUpload.h \
 	org/w3c/dom/XMLSerializer.h \
+	org/w3c/dom/DOMPointReadOnly.h \
+	org/w3c/dom/DOMPoint.h \
+	org/w3c/dom/DOMPointInit.h \
+	org/w3c/dom/DOMRect.h \
+	org/w3c/dom/DOMRectReadOnly.h \
+	org/w3c/dom/DOMRectList.h \
+	org/w3c/dom/DOMQuad.h \
+	org/w3c/dom/DOMMatrixReadOnly.h \
+	org/w3c/dom/DOMMatrix.h \
 	org/w3c/dom/css/Counter.h \
 	org/w3c/dom/css/CSS2Properties.h \
 	org/w3c/dom/css/CSSCharsetRule.h \
@@ -271,8 +281,6 @@ generated_headers = \
 	org/w3c/dom/traversal/NodeFilter.h \
 	org/w3c/dom/traversal/NodeIterator.h \
 	org/w3c/dom/traversal/TreeWalker.h \
-	org/w3c/dom/views/ClientRect.h \
-	org/w3c/dom/views/ClientRectList.h \
 	org/w3c/dom/xbl2/DocumentXBL.h \
 	org/w3c/dom/xbl2/ElementXBL.h \
 	org/w3c/dom/xbl2/XBLContentElement.h \
@@ -317,6 +325,15 @@ generated_sources = \
 	org/w3c/dom/XMLHttpRequestOptions.cpp \
 	org/w3c/dom/XMLHttpRequestUpload.cpp \
 	org/w3c/dom/XMLSerializer.cpp \
+	org/w3c/dom/DOMPointReadOnly.cpp \
+	org/w3c/dom/DOMPoint.cpp \
+	org/w3c/dom/DOMPointInit.cpp \
+	org/w3c/dom/DOMRect.cpp \
+	org/w3c/dom/DOMRectReadOnly.cpp \
+	org/w3c/dom/DOMRectList.cpp \
+	org/w3c/dom/DOMQuad.cpp \
+	org/w3c/dom/DOMMatrixReadOnly.cpp \
+	org/w3c/dom/DOMMatrix.cpp \
 	org/w3c/dom/css/Counter.cpp \
 	org/w3c/dom/css/CSS2Properties.cpp \
 	org/w3c/dom/css/CSSCharsetRule.cpp \
@@ -521,8 +538,6 @@ generated_sources = \
 	org/w3c/dom/traversal/NodeFilter.cpp \
 	org/w3c/dom/traversal/NodeIterator.cpp \
 	org/w3c/dom/traversal/TreeWalker.cpp \
-	org/w3c/dom/views/ClientRect.cpp \
-	org/w3c/dom/views/ClientRectList.cpp \
 	org/w3c/dom/xbl2/DocumentXBL.cpp \
 	org/w3c/dom/xbl2/ElementXBL.cpp \
 	org/w3c/dom/xbl2/XBLContentElement.cpp \
@@ -734,10 +749,6 @@ libeshtml5_a_SOURCES += \
 	src/CaretPositionImp.h \
 	src/CharacterDataImp.cpp \
 	src/CharacterDataImp.h \
-	src/ClientRectImp.cpp \
-	src/ClientRectImp.h \
-	src/ClientRectListImp.cpp \
-	src/ClientRectListImp.h \
 	src/CommentImp.cpp \
 	src/CommentImp.h \
 	src/CompositionEventImp.cpp \
@@ -758,8 +769,26 @@ libeshtml5_a_SOURCES += \
 	src/DOMErrorImp.h \
 	src/DOMImplementationImp.cpp \
 	src/DOMImplementationImp.h \
+        src/DOMMatrixImp.cpp \
+        src/DOMMatrixImp.h \
+        src/DOMMatrixReadOnlyImp.cpp \
+        src/DOMMatrixReadOnlyImp.h \
 	src/DOMParserImp.cpp \
 	src/DOMParserImp.h \
+        src/DOMPointImp.cpp \
+        src/DOMPointImp.h \
+        src/DOMPointInitImp.cpp \
+        src/DOMPointInitImp.h \
+        src/DOMPointReadOnlyImp.cpp \
+        src/DOMPointReadOnlyImp.h \
+        src/DOMQuadImp.cpp \
+        src/DOMQuadImp.h \
+        src/DOMRectImp.cpp \
+        src/DOMRectImp.h \
+        src/DOMRectListImp.cpp \
+        src/DOMRectListImp.h \
+        src/DOMRectReadOnlyImp.cpp \
+        src/DOMRectReadOnlyImp.h \
 	src/DOMSettableTokenListImp.cpp \
 	src/DOMSettableTokenListImp.h \
 	src/DOMStringListImp.cpp \
@@ -1392,6 +1421,7 @@ EXTRA_DIST = \
 	idl/eventsource.idl \
 	idl/file.idl \
 	idl/geolocation.idl \
+	idl/geometry.idl \
 	idl/html5.idl \
 	idl/idl_scraper.pl \
 	idl/indexeddb.idl \

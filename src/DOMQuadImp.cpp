@@ -3,7 +3,7 @@
 // implementation.  Permission to use, copy, modify and distribute
 // this file in any software license is hereby granted.
 
-#include "CaretPositionImp.h"
+#include "DOMQuadImp.h"
 
 namespace org
 {
@@ -14,19 +14,31 @@ namespace dom
 namespace bootstrap
 {
 
-Node CaretPositionImp::getOffsetNode()
+DOMPoint DOMQuadImp::getP1()
 {
     // TODO: implement me!
     return nullptr;
 }
 
-unsigned int CaretPositionImp::getOffset()
+DOMPoint DOMQuadImp::getP2()
 {
     // TODO: implement me!
-    return 0;
+    return nullptr;
 }
 
-DOMRect CaretPositionImp::getClientRect()
+DOMPoint DOMQuadImp::getP3()
+{
+    // TODO: implement me!
+    return nullptr;
+}
+
+DOMPoint DOMQuadImp::getP4()
+{
+    // TODO: implement me!
+    return nullptr;
+}
+
+DOMRectReadOnly DOMQuadImp::getBounds()
 {
     // TODO: implement me!
     return nullptr;

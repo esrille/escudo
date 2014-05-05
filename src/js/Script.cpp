@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2013 Esrille Inc.
+ * Copyright 2011-2014 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -276,9 +276,10 @@
 #include "typedarray/Uint8ArrayImp.h"
 #include "typedarray/Uint8ClampedArrayImp.h"
 
-// views
-#include "ClientRectImp.h"
-#include "ClientRectListImp.h"
+// geometry
+#include "DOMRectImp.h"
+#include "DOMRectReadOnlyImp.h"
+#include "DOMRectListImp.h"
 
 // xbl2
 // #include "xbl/DocumentXBLImp.h"
@@ -573,8 +574,9 @@ void initializeClasses()
     Uint8ArrayImp::setStaticPrivate(new NativeClass(Uint8ArrayImp::getMetaData()));
     Uint8ClampedArrayImp::setStaticPrivate(new NativeClass(Uint8ClampedArrayImp::getMetaData()));
 #endif
-    ClientRectImp::setStaticPrivate(new NativeClass(ClientRectImp::getMetaData()));
-    ClientRectListImp::setStaticPrivate(new NativeClass(ClientRectListImp::getMetaData()));
+    DOMRectImp::setStaticPrivate(new NativeClass(DOMRectImp::getMetaData()));
+    DOMRectReadOnlyImp::setStaticPrivate(new NativeClass(DOMRectReadOnlyImp::getMetaData()));
+    DOMRectListImp::setStaticPrivate(new NativeClass(DOMRectListImp::getMetaData()));
     XBLContentElementImp::setStaticPrivate(new NativeClass(XBLContentElementImp::getMetaData()));
     XBLImplementationImp::setStaticPrivate(new NativeClass(XBLImplementationImp::getMetaData()));
     XBLImplementationListImp::setStaticPrivate(new NativeClass(XBLImplementationListImp::getMetaData()));

@@ -3,16 +3,15 @@
 // implementation.  Permission to use, copy, modify and distribute
 // this file in any software license is hereby granted.
 
-#ifndef ORG_W3C_DOM_BOOTSTRAP_CARETPOSITIONIMP_H_INCLUDED
-#define ORG_W3C_DOM_BOOTSTRAP_CARETPOSITIONIMP_H_INCLUDED
+#ifndef ORG_W3C_DOM_BOOTSTRAP_DOMRECTLISTIMP_H_INCLUDED
+#define ORG_W3C_DOM_BOOTSTRAP_DOMRECTLISTIMP_H_INCLUDED
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
-#include <org/w3c/dom/CaretPosition.h>
+#include <org/w3c/dom/DOMRectList.h>
 
-#include <org/w3c/dom/Node.h>
 #include <org/w3c/dom/DOMRect.h>
 
 namespace org
@@ -23,21 +22,20 @@ namespace dom
 {
 namespace bootstrap
 {
-class CaretPositionImp : public ObjectMixin<CaretPositionImp>
+class DOMRectListImp : public ObjectMixin<DOMRectListImp>
 {
 public:
-    // CaretPosition
-    Node getOffsetNode();
-    unsigned int getOffset();
-    DOMRect getClientRect();
+    // DOMRectList
+    unsigned int getLength();
+    DOMRect item(unsigned int index);
     // Object
     virtual Any message_(uint32_t selector, const char* id, int argc, Any* argv)
     {
-        return CaretPosition::dispatch(this, selector, id, argc, argv);
+        return DOMRectList::dispatch(this, selector, id, argc, argv);
     }
     static const char* const getMetaData()
     {
-        return CaretPosition::getMetaData();
+        return DOMRectList::getMetaData();
     }
 };
 
@@ -46,4 +44,4 @@ public:
 }
 }
 
-#endif  // ORG_W3C_DOM_BOOTSTRAP_CARETPOSITIONIMP_H_INCLUDED
+#endif  // ORG_W3C_DOM_BOOTSTRAP_DOMRECTLISTIMP_H_INCLUDED

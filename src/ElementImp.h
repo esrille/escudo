@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 Esrille Inc.
+ * Copyright 2010-2014 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@
 #include "NodeImp.h"
 
 #include <org/w3c/dom/css/CSSStyleDeclaration.h>
-#include <org/w3c/dom/views/ClientRectList.h>
-#include <org/w3c/dom/views/ClientRect.h>
+#include <org/w3c/dom/DOMRectList.h>
+#include <org/w3c/dom/DOMRect.h>
 #include <org/w3c/dom/Node.h>
 #include <org/w3c/dom/Element.h>
 #include <org/w3c/dom/Attr.h>
@@ -127,8 +127,8 @@ public:
     // ElementCSSInlineStyle
     virtual css::CSSStyleDeclaration getStyle();
     // Element-49
-    virtual views::ClientRectList getClientRects();
-    virtual views::ClientRect getBoundingClientRect();
+    virtual DOMRectList getClientRects();
+    virtual DOMRect getBoundingClientRect();
     virtual void scrollIntoView(bool top = true);
     virtual int getScrollTop();
     virtual void setScrollTop(int scrollTop);

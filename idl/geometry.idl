@@ -1,0 +1,213 @@
+/*
+ * geometry.idl
+ *
+ * Geometry Interfaces Module Level 1
+ *
+ * Original Editor’s Draft, 30 April 2014:
+ *
+ *   http://dev.w3.org/fxtf/geometry/
+ */
+
+module dom {
+
+interface DOMPointReadOnly {
+    readonly attribute unrestricted double x;
+    readonly attribute unrestricted double y;
+    readonly attribute unrestricted double z;
+    readonly attribute unrestricted double w;
+};
+
+[Constructor(optional DOMPointInit point),
+ Constructor(unrestricted double x, unrestricted double y,
+             optional unrestricted double z = 0, optional unrestricted double w = 1)]
+interface DOMPoint : DOMPointReadOnly {
+    inherit attribute unrestricted double x;
+    inherit attribute unrestricted double y;
+    inherit attribute unrestricted double z;
+    inherit attribute unrestricted double w;
+};
+
+dictionary DOMPointInit {
+    unrestricted double x = 0;
+    unrestricted double y = 0;
+    unrestricted double z = 0;
+    unrestricted double w = 1;
+};
+
+
+[Constructor,
+ Constructor(unrestricted double x, unrestricted double y,
+             unrestricted double width, unrestricted double height)]
+interface DOMRect : DOMRectReadOnly {
+    inherit attribute unrestricted double x;
+    inherit attribute unrestricted double y;
+    inherit attribute unrestricted double width;
+    inherit attribute unrestricted double height;
+};
+
+interface DOMRectReadOnly {
+    readonly attribute unrestricted double x;
+    readonly attribute unrestricted double y;
+    readonly attribute unrestricted double width;
+    readonly attribute unrestricted double height;
+    readonly attribute unrestricted double top;
+    readonly attribute unrestricted double right;
+    readonly attribute unrestricted double bottom;
+    readonly attribute unrestricted double left;
+};
+
+
+[ArrayClass]
+interface DOMRectList {
+    readonly attribute unsigned long length;
+    getter DOMRect item(unsigned long index);
+};
+
+
+[Constructor(DOMPointInit p1, DOMPointInit p2,
+             DOMPointInit p3, DOMPointInit p4),
+ Constructor(DOMRectReadOnly rect)]
+interface DOMQuad {
+    [SameObject] readonly attribute DOMPoint p1;
+    [SameObject] readonly attribute DOMPoint p2;
+    [SameObject] readonly attribute DOMPoint p3;
+    [SameObject] readonly attribute DOMPoint p4;
+    [SameObject] readonly attribute DOMRectReadOnly bounds;
+};
+
+
+interface DOMMatrixReadOnly {
+    // These attributes are simple aliases for certain elements of the 4x4 matrix
+    readonly attribute unrestricted double a;
+    readonly attribute unrestricted double b;
+    readonly attribute unrestricted double c;
+    readonly attribute unrestricted double d;
+    readonly attribute unrestricted double e;
+    readonly attribute unrestricted double f;
+
+    readonly attribute unrestricted double m11;
+    readonly attribute unrestricted double m12;
+    readonly attribute unrestricted double m13;
+    readonly attribute unrestricted double m14;
+    readonly attribute unrestricted double m21;
+    readonly attribute unrestricted double m22;
+    readonly attribute unrestricted double m23;
+    readonly attribute unrestricted double m24;
+    readonly attribute unrestricted double m31;
+    readonly attribute unrestricted double m32;
+    readonly attribute unrestricted double m33;
+    readonly attribute unrestricted double m34;
+    readonly attribute unrestricted double m41;
+    readonly attribute unrestricted double m42;
+    readonly attribute unrestricted double m43;
+    readonly attribute unrestricted double m44;
+
+    // Immutable transform methods
+    DOMMatrix translate(unrestricted double tx,
+                        unrestricted double ty,
+                        optional unrestricted double tz = 0);
+    DOMMatrix scale(unrestricted double scale,
+                    optional unrestricted double originX = 0,
+                    optional unrestricted double originY = 0);
+    DOMMatrix scale3d(unrestricted double scale,
+                      optional unrestricted double originX = 0,
+                      optional unrestricted double originY = 0,
+                      optional unrestricted double originZ = 0);
+    DOMMatrix scaleNonUniform(unrestricted double scaleX,
+                              optional unrestricted double scaleY = 1,
+                              optional unrestricted double scaleZ = 1,
+                              optional unrestricted double originX = 0,
+                              optional unrestricted double originY = 0,
+                              optional unrestricted double originZ = 0);
+    DOMMatrix rotate(unrestricted double angle,
+                     optional unrestricted double originX = 0,
+                     optional unrestricted double originY = 0);
+    DOMMatrix rotateFromVector(unrestricted double x,
+                               unrestricted double y);
+    DOMMatrix rotateAxisAngle(unrestricted double x,
+                              unrestricted double y,
+                              unrestricted double z,
+                              unrestricted double angle);
+    DOMMatrix skewX(unrestricted double sx);
+    DOMMatrix skewY(unrestricted double sy);
+    DOMMatrix multiply(DOMMatrix other);
+    DOMMatrix flipX();
+    DOMMatrix flipY();
+    DOMMatrix inverse();
+
+    // Helper methods
+    boolean             is2D();
+    unrestricted double determinant();
+    DOMPoint            transformPoint(DOMPointInit point);
+    Float32Array        toFloat32Array();
+    Float64Array        toFloat64Array();
+                        stringifier;
+};
+
+[Constructor,
+ Constructor(DOMString transformList),
+ Constructor(DOMMatrixReadOnly other),
+ Constructor(Float32Array array32),
+ Constructor(Float64Array array64),
+ Constructor(sequence<unrestricted double> numberSequence)]
+interface DOMMatrix : DOMMatrixReadOnly {
+    // These attributes are simple aliases for certain elements of the 4x4 matrix
+    inherit attribute unrestricted double a;
+    inherit attribute unrestricted double b;
+    inherit attribute unrestricted double c;
+    inherit attribute unrestricted double d;
+    inherit attribute unrestricted double e;
+    inherit attribute unrestricted double f;
+
+    inherit attribute unrestricted double m11;
+    inherit attribute unrestricted double m12;
+    inherit attribute unrestricted double m13;
+    inherit attribute unrestricted double m14;
+    inherit attribute unrestricted double m21;
+    inherit attribute unrestricted double m22;
+    inherit attribute unrestricted double m23;
+    inherit attribute unrestricted double m24;
+    inherit attribute unrestricted double m31;
+    inherit attribute unrestricted double m32;
+    inherit attribute unrestricted double m33;
+    inherit attribute unrestricted double m34;
+    inherit attribute unrestricted double m41;
+    inherit attribute unrestricted double m42;
+    inherit attribute unrestricted double m43;
+    inherit attribute unrestricted double m44;
+
+    // Mutable transform methods
+    void multiplyBy(DOMMatrix other);
+    void preMultiplyBy(DOMMatrix other);
+    void translateBy(unrestricted double tx,
+                     unrestricted double ty,
+                     optional unrestricted double tz = 0);
+    void scaleBy(unrestricted double scale,
+                 optional unrestricted double originX = 0,
+                 optional unrestricted double originY = 0);
+    void scale3dBy(unrestricted double scale,
+                   optional unrestricted double originX = 0,
+                   optional unrestricted double originY = 0,
+                   optional unrestricted double originZ = 0);
+    void scaleNonUniformBy(unrestricted double scaleX,
+                           optional unrestricted double scaleY = 1,
+                           optional unrestricted double scaleZ = 1,
+                           optional unrestricted double originX = 0,
+                           optional unrestricted double originY = 0,
+                           optional unrestricted double originZ = 0);
+    void rotateBy(unrestricted double angle,
+                  optional unrestricted double originX = 0,
+                  optional unrestricted double originY = 0);
+    void rotateFromVectorBy(unrestricted double x,
+                            unrestricted double y);
+    void rotateAxisAngleBy(unrestricted double x,
+                           unrestricted double y,
+                           unrestricted double z,
+                           unrestricted double angle);
+    void skewXBy(unrestricted double sx);
+    void skewYBy(unrestricted double sy);
+    void invert();
+};
+
+
+};
