@@ -181,7 +181,7 @@ bool Block::layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
             return !isAnonymous();
     }
 
-    bool psuedoChecked = isAnonymous() && getParentBox()->getFirstChild() != self();
+    bool pseudoChecked = isAnonymous() && getParentBox()->getFirstChild() != self();
     CSSStyleDeclarationPtr firstLineStyle;
     CSSStyleDeclarationPtr firstLetterStyle;
     CSSStyleDeclarationPtr activeStyle;
@@ -206,8 +206,8 @@ bool Block::layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
             if (!context->addLineBox(view, self()))
                 return false;  // TODO error
         }
-        if (!psuedoChecked && getFirstChild() == context->lineBox) {
-            psuedoChecked = true;
+        if (!pseudoChecked && getFirstChild() == context->lineBox) {
+            pseudoChecked = true;
             getPsuedoStyles(view, context, style, firstLetterStyle, firstLineStyle);
             if (firstLetterStyle) {
                 activeStyle = setActiveStyle(view, firstLetterStyle, font, point);
