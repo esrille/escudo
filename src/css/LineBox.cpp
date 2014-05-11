@@ -52,20 +52,6 @@ CSSStyleDeclarationPtr setActiveStyle(ViewCSSImp* view, const CSSStyleDeclaratio
     return style;
 }
 
-size_t getfirstLetterLength(const std::u16string& data, size_t position)
-{
-    size_t fitLength = data.size() - position;
-    if (0 < fitLength) {
-        fitLength = 0;
-        while (u_ispunct(nextChar(data, position)))
-            fitLength = position;
-        nextChar(data, fitLength);
-        while (u_ispunct(nextChar(data, position)))
-            fitLength = position;
-    }
-    return fitLength;
-}
-
 }
 
 void Block::nextLine(ViewCSSImp* view, FormattingContext* context, CSSStyleDeclarationPtr& activeStyle,
@@ -158,7 +144,7 @@ size_t Block::layOutFloatingFirstLetter(ViewCSSImp* view, FormattingContext* con
         while (Node child = floatingFirstLetter.getFirstChild())
             floatingFirstLetter.removeChild(child);
     }
-    size_t length = getfirstLetterLength(data, 0);  // TODO: position?
+    size_t length = firstLetterStyle->getfirstLetterLength(data, 0);  // TODO: position?
     Text text = document->createTextNode(data.substr(0, length));
     floatingFirstLetter.appendChild(text);
     BlockPtr floatingBox = view->createBlock(floatingFirstLetter, self(), firstLetterStyle, true);
@@ -281,7 +267,7 @@ bool Block::layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
             linefeed = true;
         } else {
             std::u16string inlineData;
-            size_t fitLength = firstLetterStyle ? getfirstLetterLength(data, position) : (data.length() - position);
+            size_t fitLength = firstLetterStyle ? firstLetterStyle->getfirstLetterLength(data, position) : (data.length() - position);
             // We are still not sure if there's a room for text in context->lineBox.
             // If there's no room due to float box(es), move the linebox down to
             // the closest bottom of float box.

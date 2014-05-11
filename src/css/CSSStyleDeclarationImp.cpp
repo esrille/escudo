@@ -2449,6 +2449,20 @@ std::u16string CSSStyleDeclarationImp::resolveRelativeURL(const std::u16string& 
     return target;
 }
 
+size_t CSSStyleDeclarationImp::getfirstLetterLength(const std::u16string& data, size_t position)
+{
+    size_t fitLength = data.size() - position;
+    if (0 < fitLength) {
+        fitLength = 0;
+        while (u_ispunct(nextChar(data, position)))
+            fitLength = position;
+        nextChar(data, fitLength);
+        while (u_ispunct(nextChar(data, position)))
+            fitLength = position;
+    }
+    return fitLength;
+}
+
 float CSSStyleDeclarationImp::measureText(ViewCSSImp* view,
                                           const char16_t* text, size_t length, float point, bool isFirstCharacter,
                                           FontGlyph*& glyph, std::u16string& transformed)

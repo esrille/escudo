@@ -645,6 +645,7 @@ public:
 
     void dump(const std::string& indent);
 
+    static size_t getfirstLetterLength(const std::u16string& data, size_t position);
     float measureText(ViewCSSImp* view,
                       const char16_t* text, size_t length, float point, bool isFirstCharacter,
                       FontGlyph*& glyph, std::u16string& transformed);
