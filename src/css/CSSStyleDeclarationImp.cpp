@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 Esrille Inc.
+ * Copyright 2010-2014 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -2447,6 +2447,67 @@ std::u16string CSSStyleDeclarationImp::resolveRelativeURL(const std::u16string& 
     URL base(href);
     URL target(href, url);
     return target;
+}
+
+float CSSStyleDeclarationImp::measureText(ViewCSSImp* view,
+                                          const char16_t* text, size_t length, float point, bool isFirstCharacter,
+                                          FontGlyph*& glyph, std::u16string& transformed)
+{
+    FontTexture* font = getFontTexture();
+    unsigned transform = textTransform.getValue();
+    unsigned variant = fontVariant.getValue();
+    float width = 0.0f;
+    const char16_t* p = text;
+    const char16_t* end = text + length;
+    char32_t u;
+    while (p < end && (p = utf16to32(p, &u)) && u) {
+        if (u == '\n' || u == u'\u200B')
+            continue;
+        switch (transform) {
+        case 1:  // capitalize
+            if (u == u'\u00A0')  // NBSP
+                isFirstCharacter = true;
+            else if (isFirstCharacter && !u_ispunct(u)) {
+                u = u_totitle(u);
+                isFirstCharacter = false;
+            }
+                        break;
+        case 2:  // uppercase
+            u = u_toupper(u);
+            break;
+        case 3:  // lowercase
+            u = u_tolower(u);
+            break;
+        default:  // none
+            break;
+        }
+        char32_t caps = u;
+        if (variant == CSSFontVariantValueImp::SmallCaps)
+            caps = u_toupper(u);
+        FontTexture* currentFont = font;
+        glyph = font->getGlyph(caps);
+        if (font->isMissingGlyph(glyph)) {
+            FontTexture* altFont = currentFont;
+            while (altFont = getAltFontTexture(view, altFont, caps)) {
+                FontGlyph* altGlyph = altFont->getGlyph(caps);
+                if (!altFont->isMissingGlyph(altGlyph)) {
+                    glyph = altGlyph;
+                    currentFont = altFont;
+                    break;
+                }
+            }
+        }
+        if (caps == u)
+            width += glyph->advance * currentFont->getScale(point);
+        else
+            width += glyph->advance * currentFont->getScale(point) * currentFont->getSmallCapsScale();
+        append(transformed, u);
+        if (u == ' ' || u == u'\u00A0')  // SP or NBSP
+            width += wordSpacing.getPx();
+        if (!letterSpacing.isNormal())
+            width += letterSpacing.getPx();
+    }
+    return width;
 }
 
 //

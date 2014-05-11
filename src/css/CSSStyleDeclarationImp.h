@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 Esrille Inc.
+ * Copyright 2010-2014 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@
 #include "CSSRuleListImp.h"
 #include "StackingContext.h"
 
+struct FontGlyph;
 class FontTexture;  // TODO: define namespace
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
@@ -643,6 +644,10 @@ public:
     }
 
     void dump(const std::string& indent);
+
+    float measureText(ViewCSSImp* view,
+                      const char16_t* text, size_t length, float point, bool isFirstCharacter,
+                      FontGlyph*& glyph, std::u16string& transformed);
 
     // CSSStyleDeclaration
     virtual std::u16string getCssText();

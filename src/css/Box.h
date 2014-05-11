@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 Esrille Inc.
+ * Copyright 2010-2014 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -587,9 +587,6 @@ class Block : public Box
                   CSSStyleDeclarationPtr& firstLetterStyle, CSSStyleDeclarationPtr& firstLineStyle,
                   const CSSStyleDeclarationPtr& style, bool linefeed, FontTexture*& font, float& point);
     size_t layOutFloatingFirstLetter(ViewCSSImp* view, FormattingContext* context, const std::u16string& data, const CSSStyleDeclarationPtr& firstLetterStyle);
-    float measureText(ViewCSSImp* view, const CSSStyleDeclarationPtr& activeStyle,
-                      const char16_t* text, size_t length, float point, bool isFirstCharacter,
-                      FontGlyph*& glyph, std::u16string& transformed);
     bool layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
                     std::u16string data, Element element, const CSSStyleDeclarationPtr& style);
     void layOutInlineBlock(ViewCSSImp* view, Node node, const BlockPtr& inlineBlock, FormattingContext* context);

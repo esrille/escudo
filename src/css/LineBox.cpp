@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 Esrille Inc.
+ * Copyright 2010-2014 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -172,67 +172,6 @@ size_t Block::layOutFloatingFirstLetter(ViewCSSImp* view, FormattingContext* con
     return length;
 }
 
-float Block::measureText(ViewCSSImp* view, const CSSStyleDeclarationPtr& activeStyle,
-                                 const char16_t* text, size_t length, float point, bool isFirstCharacter,
-                                 FontGlyph*& glyph, std::u16string& transformed)
-{
-    FontTexture* font = activeStyle->getFontTexture();
-    unsigned transform = activeStyle->textTransform.getValue();
-    unsigned variant = activeStyle->fontVariant.getValue();
-    float width = 0.0f;
-    const char16_t* p = text;
-    const char16_t* end = text + length;
-    char32_t u;
-    while (p < end && (p = utf16to32(p, &u)) && u) {
-        if (u == '\n' || u == u'\u200B')
-            continue;
-        switch (transform) {
-        case 1:  // capitalize
-            if (u == u'\u00A0')  // NBSP
-                isFirstCharacter = true;
-            else if (isFirstCharacter && !u_ispunct(u)) {
-                u = u_totitle(u);
-                isFirstCharacter = false;
-            }
-            break;
-        case 2:  // uppercase
-            u = u_toupper(u);
-            break;
-        case 3:  // lowercase
-            u = u_tolower(u);
-            break;
-        default:  // none
-            break;
-        }
-        char32_t caps = u;
-        if (variant == CSSFontVariantValueImp::SmallCaps)
-            caps = u_toupper(u);
-        FontTexture* currentFont = font;
-        glyph = font->getGlyph(caps);
-        if (font->isMissingGlyph(glyph)) {
-            FontTexture* altFont = currentFont;
-            while (altFont = activeStyle->getAltFontTexture(view, altFont, caps)) {
-                FontGlyph* altGlyph = altFont->getGlyph(caps);
-                if (!altFont->isMissingGlyph(altGlyph)) {
-                    glyph = altGlyph;
-                    currentFont = altFont;
-                    break;
-                }
-            }
-        }
-        if (caps == u)
-            width += glyph->advance * currentFont->getScale(point);
-        else
-            width += glyph->advance * currentFont->getScale(point) * currentFont->getSmallCapsScale();
-        append(transformed, u);
-        if (u == ' ' || u == u'\u00A0')  // SP or NBSP
-            width += activeStyle->wordSpacing.getPx();
-        if (!activeStyle->letterSpacing.isNormal())
-            width += activeStyle->letterSpacing.getPx();
-    }
-    return width;
-}
-
 bool Block::layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
                        std::u16string data, Element element, const CSSStyleDeclarationPtr& style)
 {
@@ -366,7 +305,7 @@ bool Block::layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
                 next = position + context->getNextTextBoundary();
                 FontGlyph* glyph;
                 std::u16string transformed;
-                float w = measureText(view, activeStyle, p, next - wrap, point, isFirstCharacter, glyph, transformed);
+                float w = activeStyle->measureText(view, p, next - wrap, point, isFirstCharacter, glyph, transformed);
                 p += next - wrap;
                 isFirstCharacter = true;
                 if (firstLetterStyle || data.length() <= next && inlineBox->isEmptyInlineAtLast(style, element, text))
@@ -413,8 +352,8 @@ bool Block::layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
                                     FontGlyph* glyph;
                                     std::u16string transformed;
                                     // TODO: measureText using the original text data
-                                    box->width = measureText(view, wrapStyle, box->getData().c_str(), box->getData().length(), point,
-                                                             isFirstCharacter, glyph, transformed);
+                                    box->width = wrapStyle->measureText(view, box->getData().c_str(), box->getData().length(), point,
+                                                                        isFirstCharacter, glyph, transformed);
                                     box->data.clear();
                                     box->setData(font, point, transformed, 0, 0.0f);
                                     isFirstCharacter = false;
