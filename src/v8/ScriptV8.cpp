@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2014 Esrille Inc.
+ * Copyright 2011-2015 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -562,8 +562,8 @@ void registerClasses(v8::Handle<v8::ObjectTemplate> global)
     Uint32ArrayImp::setStaticPrivate(new NativeClass(global, Uint32ArrayImp::getMetaData()));
     Uint8ArrayImp::setStaticPrivate(new NativeClass(global, Uint8ArrayImp::getMetaData()));
     Uint8ClampedArrayImp::setStaticPrivate(new NativeClass(global, Uint8ClampedArrayImp::getMetaData()));
-    DOMRectImp::setStaticPrivate(new NativeClass(global, DOMRectImp::getMetaData()));
     DOMRectReadOnlyImp::setStaticPrivate(new NativeClass(global, DOMRectReadOnlyImp::getMetaData()));
+    DOMRectImp::setStaticPrivate(new NativeClass(global, DOMRectImp::getMetaData()));
     DOMRectListImp::setStaticPrivate(new NativeClass(global, DOMRectListImp::getMetaData()));
     XBLContentElementImp::setStaticPrivate(new NativeClass(global, XBLContentElementImp::getMetaData()));
     XBLImplementationImp::setStaticPrivate(new NativeClass(global, XBLImplementationImp::getMetaData()));

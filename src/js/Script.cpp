@@ -1,5 +1,5 @@
 /*
- * Copyright 2011-2014 Esrille Inc.
+ * Copyright 2011-2015 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -574,8 +574,8 @@ void initializeClasses()
     Uint8ArrayImp::setStaticPrivate(new NativeClass(Uint8ArrayImp::getMetaData()));
     Uint8ClampedArrayImp::setStaticPrivate(new NativeClass(Uint8ClampedArrayImp::getMetaData()));
 #endif
-    DOMRectImp::setStaticPrivate(new NativeClass(DOMRectImp::getMetaData()));
     DOMRectReadOnlyImp::setStaticPrivate(new NativeClass(DOMRectReadOnlyImp::getMetaData()));
+    DOMRectImp::setStaticPrivate(new NativeClass(DOMRectImp::getMetaData()));
     DOMRectListImp::setStaticPrivate(new NativeClass(DOMRectListImp::getMetaData()));
     XBLContentElementImp::setStaticPrivate(new NativeClass(XBLContentElementImp::getMetaData()));
     XBLImplementationImp::setStaticPrivate(new NativeClass(XBLImplementationImp::getMetaData()));
