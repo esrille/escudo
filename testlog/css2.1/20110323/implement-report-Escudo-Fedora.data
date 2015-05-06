@@ -1,4 +1,4 @@
-# Escudo 0.4.1 (2013-12-17 798733f2fc) Fedora Linux 19
+# Escudo 0.4.1 (2015-05-06 655f3e0c5e) Fedora Linux 21
 # Escudo/0.4.1
 # http://test.csswg.org/suites/css2.1/20110323/
 # See http://wiki.csswg.org/test/implementation-report for instructions
@@ -3389,7 +3389,7 @@ html4/c5504-mrgn-l-003.htm	pass
 html4/c5505-imrgn-000.htm	pass
 html4/c5505-mrgn-000.htm	pass
 html4/c5505-mrgn-001.htm	pass
-html4/c5505-mrgn-002.htm	pass
+html4/c5505-mrgn-002.htm	fail
 html4/c5505-mrgn-003.htm	pass
 html4/c5506-ipadn-t-000.htm	pass
 html4/c5506-ipadn-t-001.htm	pass
@@ -4578,7 +4578,7 @@ html4/first-letter-dynamic-001.htm	pass
 html4/first-letter-dynamic-002.htm	fail
 html4/first-letter-dynamic-003a.htm	pass
 html4/first-letter-dynamic-003b.htm	pass
-html4/first-letter-inherit-001.htm	pass
+html4/first-letter-inherit-001.htm	fail
 html4/first-letter-nested-001.htm	pass
 html4/first-letter-nested-002.htm	pass
 html4/first-letter-nested-003.htm	pass
@@ -5008,7 +5008,7 @@ html4/first-letter-selector-006.htm	pass
 html4/first-letter-selector-007.htm	pass
 html4/first-letter-selector-008.htm	pass
 html4/first-letter-selector-009.htm	pass
-html4/first-letter-selector-010.htm	pass
+html4/first-letter-selector-010.htm	fail
 html4/first-letter-selector-011.htm	pass
 html4/first-letter-selector-012.htm	pass
 html4/first-letter-selector-013.htm	pass
@@ -6253,7 +6253,7 @@ html4/ltr-basic.htm	pass
 html4/ltr-borders-001.htm	pass
 html4/ltr-ib.htm	pass
 html4/ltr-span-only-ib.htm	pass
-html4/ltr-span-only.htm	pass
+html4/ltr-span-only.htm	fail
 html4/malformed-decl-001.htm	pass
 html4/malformed-decl-002.htm	pass
 html4/malformed-decl-003.htm	pass
@@ -7092,7 +7092,7 @@ html4/outline-016.htm	pass
 html4/outline-017.htm	pass
 html4/outline-018.htm	pass
 html4/outline-019.htm	fail
-html4/outline-020.htm	fail
+html4/outline-020.htm	pass
 html4/outline-applies-to-001.htm	pass
 html4/outline-applies-to-002.htm	pass
 html4/outline-applies-to-003.htm	pass
@@ -9092,7 +9092,7 @@ html4/white-space-collapsing-bidi-003.htm	fail
 html4/white-space-collapsing-breaks-001.htm	pass
 html4/white-space-control-characters-001.htm	pass
 html4/white-space-generated-content-before-001.htm	pass
-html4/white-space-mixed-001.htm	pass
+html4/white-space-mixed-001.htm	invalid
 html4/white-space-mixed-002.htm	pass
 html4/white-space-mixed-003.htm	pass
 html4/white-space-mixed-004.htm	pass
