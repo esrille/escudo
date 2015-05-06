@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 Esrille Inc.
+ * Copyright 2010-2015 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,6 +84,8 @@ class ViewCSSImp
     // Repaint
     unsigned clipCount;
     unsigned short flags{0};
+    bool isFirstLetter{true};
+    char32_t prevChar{'\n'};
 
     // Animation
     unsigned last;   // in 1/100 sec for GIF
@@ -145,6 +147,12 @@ public:
     void render(unsigned clipCount);
     void renderCanvas(unsigned color);
     unsigned getBackgroundColor();
+
+    char32_t nextChar(const CSSStyleDeclarationPtr& style, const std::u16string data, size_t& offset);
+    void resetNextChar() {
+        isFirstLetter = true;
+        prevChar = '\n';
+    }
 
     // Misc.
 

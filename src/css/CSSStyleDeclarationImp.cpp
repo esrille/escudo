@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2014 Esrille Inc.
+ * Copyright 2010-2015 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -2161,19 +2161,33 @@ size_t CSSStyleDeclarationImp::processWhiteSpace(std::u16string& data, char16_t&
     return data.length();
 }
 
-size_t CSSStyleDeclarationImp::processLineHeadWhiteSpace(const std::u16string& data, size_t position)
+size_t CSSStyleDeclarationImp::skipWhiteSpace(const std::u16string& data, size_t position)
 {
-    switch (whiteSpace.getValue()) {
-    case CSSWhiteSpaceValueImp::Normal:
-    case CSSWhiteSpaceValueImp::Nowrap:
-    case CSSWhiteSpaceValueImp::PreLine:
-        if (position < data.length() && data[position] == u' ')
-            ++position;
-        break;
-    default:
-        break;
+    if (!whiteSpace.isCollapsingSpace())
+        return position;
+
+    size_t offset(position);
+    while (position < data.length()) {
+        char32_t u = ::nextChar(data, position);
+        switch (u) {
+        case '\t':
+            u = ' ';
+            break;
+        case '\r':
+            u = '\n';
+            // FALL THROUGH
+        case '\n':
+            if (whiteSpace.getValue() != CSSWhiteSpaceValueImp::PreLine)
+                u = ' ';
+            break;
+        default:
+            break;
+        }
+        if (u != ' ')
+            break;
+        offset = position;
     }
-    return position;
+    return offset;
 }
 
 FontTexture* CSSStyleDeclarationImp::getAltFontTexture(ViewCSSImp* view, FontTexture* current, char32_t u)
@@ -2454,49 +2468,151 @@ size_t CSSStyleDeclarationImp::getfirstLetterLength(const std::u16string& data, 
     size_t fitLength = data.size() - position;
     if (0 < fitLength) {
         fitLength = 0;
-        while (u_ispunct(nextChar(data, position)))
+        while (u_ispunct(::nextChar(data, position)))
             fitLength = position;
-        nextChar(data, fitLength);
-        while (u_ispunct(nextChar(data, position)))
+        ::nextChar(data, fitLength);
+        while (u_ispunct(::nextChar(data, position)))
             fitLength = position;
     }
     return fitLength;
 }
 
-float CSSStyleDeclarationImp::measureText(ViewCSSImp* view,
-                                          const char16_t* text, size_t length, float point, bool isFirstCharacter,
-                                          FontGlyph*& glyph, std::u16string& transformed)
+char32_t CSSStyleDeclarationImp::nextChar(const std::u16string& s, size_t& offset, bool& isFirstLetter, char32_t prev)
 {
-    FontTexture* font = getFontTexture();
-    unsigned transform = textTransform.getValue();
-    unsigned variant = fontVariant.getValue();
-    float width = 0.0f;
-    const char16_t* p = text;
-    const char16_t* end = text + length;
     char32_t u;
-    while (p < end && (p = utf16to32(p, &u)) && u) {
-        if (u == '\n' || u == u'\u200B')
-            continue;
-        switch (transform) {
-        case 1:  // capitalize
-            if (u == u'\u00A0')  // NBSP
-                isFirstCharacter = true;
-            else if (isFirstCharacter && !u_ispunct(u)) {
+    size_t spaceCount(0);
+    size_t position(offset);
+
+    for (;;) {
+        position = offset;
+        u = ::nextChar(s, offset);
+        switch (textTransform.getValue()) {
+        case CSSTextTransformValueImp::Capitalize:
+            if (isFirstLetter && !u_ispunct(u))
                 u = u_totitle(u);
-                isFirstCharacter = false;
-            }
-                        break;
-        case 2:  // uppercase
+            break;
+        case CSSTextTransformValueImp::Uppercase:
             u = u_toupper(u);
             break;
-        case 3:  // lowercase
+        case CSSTextTransformValueImp::Lowercase:
             u = u_tolower(u);
             break;
-        default:  // none
+        default:  // None
             break;
         }
+        if (whiteSpace.isCollapsingSpace()) {
+            switch (u) {
+            case '\t':
+                u = ' ';
+                break;
+            case '\r':
+                u = '\n';
+                // FALL THROUGH
+            case '\n':
+                if (whiteSpace.getValue() != CSSWhiteSpaceValueImp::PreLine)
+                    u = ' ';
+                break;
+            default:
+                break;
+            }
+            if (u == ' ') {
+                ++spaceCount;
+                continue;
+            }
+        } else if (u == ' ' && !whiteSpace.isBreakingLines())
+            u = u'\u00A0';  // NBSP; cf. html4/white-space-mixed-002.htm
+        break;
+    }
+    if (0 < spaceCount && prev != ' ' && prev != '\n') {
+        offset = position;
+        u = ' ';
+    }
+    if (u) {
+        if (isSpace(u) || u == u'\u00A0')  // NBSP
+            isFirstLetter = true;
+        else if (!u_ispunct(u))
+            isFirstLetter = false;
+    }
+    return u;
+}
+
+size_t CSSStyleDeclarationImp::getFirstLetter(const std::u16string& data, size_t& position,
+                                              bool& isFirstLetter, char32_t& prev, std::u16string& letter)
+{
+    isFirstLetter = true;
+    prev = u'\n';
+    letter.clear();
+
+    size_t offset;
+    char32_t u;
+    for (;;) {
+        offset = position;
+        u = nextChar(data, position, isFirstLetter, prev);
+        if (!u_ispunct(u))
+            break;
+        append(letter, u);
+        prev = u;
+    }
+    if (u && !isSpace(u) && u != u'\u00A0') { // NBSP
+        isFirstLetter = false;
+        append(letter, u);
+        prev = u;
+        for (;;) {
+            offset = position;
+            char32_t u = nextChar(data, position, isFirstLetter, prev);
+            if (!u_ispunct(u))
+                break;
+            append(letter, u);
+            prev = u;
+        }
+        isFirstLetter = false;
+    } else
+        isFirstLetter = true;
+    position = offset;
+    return letter.length();
+}
+
+size_t CSSStyleDeclarationImp::getNextWord(const std::u16string& data, size_t& position,
+                                           bool& isFirstLetter, char32_t& prev, std::u16string& transformed)
+{
+    TextIterator ti;
+    size_t offset(position);
+
+    for (;;) {
+        size_t current(position);
+        bool ifl(isFirstLetter);
+        char32_t u = nextChar(data, position, ifl, prev);
+        if (!u)
+            break;
+        prev = u;
+        append(transformed, u);
+        if (2 <= transformed.length()) {
+            ti.setText(transformed.c_str(), transformed.length());
+            if (ti.next() && *ti < transformed.length()) {
+                position = current;
+                transformed.erase(*ti);
+                break;
+            }
+        }
+        isFirstLetter = ifl;
+    }
+    return position - offset;
+}
+
+float CSSStyleDeclarationImp::measureText(ViewCSSImp* view,
+                                          const std::u16string& s, size_t offset, size_t length, float point, bool isFirstLetter,
+                                          char32_t prev, FontGlyph*& glyph)
+{
+    FontTexture* font = getFontTexture();
+    float width = 0.0f;
+
+    for (size_t position = offset; position - offset < length; ) {
+        char32_t u = nextChar(s, position, isFirstLetter, prev);
+        prev = u;
+        if (u == '\n' || u == u'\u200B')
+            continue;
         char32_t caps = u;
-        if (variant == CSSFontVariantValueImp::SmallCaps)
+        if (fontVariant.getValue() == CSSFontVariantValueImp::SmallCaps)
             caps = u_toupper(u);
         FontTexture* currentFont = font;
         glyph = font->getGlyph(caps);
@@ -2515,7 +2631,6 @@ float CSSStyleDeclarationImp::measureText(ViewCSSImp* view,
             width += glyph->advance * currentFont->getScale(point);
         else
             width += glyph->advance * currentFont->getScale(point) * currentFont->getSmallCapsScale();
-        append(transformed, u);
         if (u == ' ' || u == u'\u00A0')  // SP or NBSP
             width += wordSpacing.getPx();
         if (!letterSpacing.isNormal())

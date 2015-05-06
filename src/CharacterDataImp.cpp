@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 Esrille Inc.
+ * Copyright 2010-2015 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,6 +72,8 @@ unsigned int CharacterDataImp::getLength()
 
 std::u16string CharacterDataImp::substringData(unsigned int offset, unsigned int count)
 {
+    if (data.length() <= offset)    // TODO: Check html4/table-anonymous-objects-159.htm
+        return u"";
     return data.substr(offset, count);
 }
 

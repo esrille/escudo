@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 Esrille Inc.
+ * Copyright 2010-2015 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,6 +53,73 @@ typedef std::shared_ptr<Box> BoxPtr;
 typedef std::shared_ptr<Block> BlockPtr;
 typedef std::shared_ptr<LineBox> LineBoxPtr;
 typedef std::shared_ptr<InlineBox> InlineBoxPtr;
+
+struct WrapControl
+{
+    const unsigned Restart = 0x0001;
+    const unsigned Breakable = 0x0002;
+
+    Node node{nullptr};     // a node in inlines that begins non-breakable text, or nullptr if there's none.
+    size_t offset{0};
+    unsigned flags{0};
+    float mcw{0.0f};        // minimum content width
+
+    size_t getOffset() const {
+        return offset;
+    }
+    bool isEmpty() const {
+        return !node;
+    }
+    bool isRestart() const {
+        return flags & Restart;
+    }
+    bool isBreakable() const {
+        return (flags & Breakable) || !isEmpty();
+    }
+    float getMCW() const {
+        return mcw;
+    }
+    void clear() {
+        node = nullptr;
+        offset = 0;
+        mcw = 0.0f;
+        flags = 0;
+    }
+    void restart() {
+        flags |= Restart;
+    }
+    void clearRestart() {
+        flags &= ~Restart;
+        node = nullptr;
+    }
+    void markBreakable() {
+        clear();
+        flags |= Breakable;
+    }
+    bool clearBreakable() {
+        bool prev = (flags & Breakable);
+        flags &= ~Breakable;
+        return prev;
+    }
+    void set(Node node, size_t offset, unsigned flags = 0) {
+        this->node = node;
+        this->offset = offset;
+        this->flags = flags;
+    }
+    void clearMCW() {
+        mcw = 0.0f;
+    }
+    void extendMCW(float width) {
+        mcw += width;
+    }
+    std::list<Node>::iterator find(std::list<Node>& list, std::list<Node>::iterator i) const {
+        if (!node)
+            return i;
+        while (i != list.begin() && *i != node)
+            --i;
+        return i;
+    }
+};
 
 // SavedFormattingContext stores the initial FormattingContext state for
 // laying out a block-level box.
@@ -113,12 +180,12 @@ class FormattingContext
     TextIterator textIterator;
     size_t textLength;
 
-    bool breakable;
+    bool isFirstLetter;
     bool isFirstLine;
     LineBoxPtr lineBox;
     float x;
     float leftover;
-    char16_t prevChar;
+    char32_t prevChar;
 
     // Context for floating boxes
     float blankLeft;
@@ -225,8 +292,8 @@ public:
     size_t getNextTextBoundary() {
         return textIterator.next() ? *textIterator : textIterator.size();
     }
-    bool isFirstCharacter(const std::u16string& text);
-    InlineBoxPtr getWrapBox(const std::u16string& text);
+
+    void removeWrapBox(WrapControl& control);
 };
 
 }}}}  // org::w3c::dom::bootstrap

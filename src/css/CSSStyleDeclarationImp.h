@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2014 Esrille Inc.
+ * Copyright 2010-2015 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -557,7 +557,7 @@ public:
     bool updateCounters(ViewCSSImp* view, CSSAutoNumberingValueImp::CounterContext* context);
 
     size_t processWhiteSpace(std::u16string& data, char16_t& prevChar);
-    size_t processLineHeadWhiteSpace(const std::u16string& data, size_t position);
+    size_t skipWhiteSpace(const std::u16string& data, size_t position);
 
     bool isFlowRoot() const;
 
@@ -646,9 +646,15 @@ public:
     void dump(const std::string& indent);
 
     static size_t getfirstLetterLength(const std::u16string& data, size_t position);
+    char32_t nextChar(const std::u16string& s, size_t& offset, bool& isFirstLetter, char32_t prev);
+    size_t getFirstLetter(const std::u16string& data, size_t& position,
+                          bool& isFirstLetter, char32_t& prev, std::u16string& transformed);
+    size_t getNextWord(const std::u16string& data, size_t& position,
+                       bool& isFirstLetter, char32_t& prev, std::u16string& transformed);
+
     float measureText(ViewCSSImp* view,
-                      const char16_t* text, size_t length, float point, bool isFirstCharacter,
-                      FontGlyph*& glyph, std::u16string& transformed);
+                      const std::u16string& s, size_t offset, size_t length, float point, bool isFirstCharacter,
+                      char32_t prev, FontGlyph*& glyph);
 
     // CSSStyleDeclaration
     virtual std::u16string getCssText();

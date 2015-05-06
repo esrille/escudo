@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 Esrille Inc.
+ * Copyright 2010-2015 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -553,7 +553,9 @@ BlockPtr ViewCSSImp::constructBlock(Text text, const BlockPtr& parentBox, const 
     if (!parentBox->hasChildBoxes()) {
         if (discardable && !parentBox->hasInline() && style->whiteSpace.isCollapsingSpace()) {
             std::u16string data = text.getData();
-            if (data.length() <= style->processLineHeadWhiteSpace(data, 0))
+            size_t offset(0);
+            bool firstLetter(true);
+            if (!style->nextChar(data, offset, firstLetter, '\n'))
                 return nullptr;
         }
         parentBox->insertInline(text);
@@ -577,7 +579,9 @@ BlockPtr ViewCSSImp::constructBlock(Text text, const BlockPtr& parentBox, const 
         // generate any anonymous inline boxes.
         if (style->whiteSpace.isCollapsingSpace()) {
             std::u16string data = text.getData();
-            if (data.length() <= style->processLineHeadWhiteSpace(data, 0))
+            size_t offset(0);
+            bool firstLetter(true);
+            if (!style->nextChar(data, offset, firstLetter, '\n'))
                 return nullptr;
         }
     }
@@ -970,6 +974,14 @@ unsigned ViewCSSImp::getBackgroundColor()
             return style->backgroundColor.getARGB();
     }
     return 0;
+}
+
+char32_t ViewCSSImp::nextChar(const CSSStyleDeclarationPtr& style, const std::u16string data, size_t& offset)
+{
+    char32_t u = style->nextChar(data, offset, isFirstLetter, prevChar);
+    if (u)
+        prevChar = u;
+    return u;
 }
 
 }}}}  // org::w3c::dom::bootstrap

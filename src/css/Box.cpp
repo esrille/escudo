@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 Esrille Inc.
+ * Copyright 2010-2015 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,9 @@ namespace
 {
     std::atomic_uint aid;
 }
+
+bool ContainingBlock::dumpIsFirstLetter{true};
+char32_t ContainingBlock::dumpPrevChar{'\n'};
 
 ContainingBlock::ContainingBlock() :
     uid(++aid)
@@ -767,7 +770,6 @@ void Block::layOutInlineBlock(ViewCSSImp* view, Node node, const BlockPtr& inlin
             return;  // TODO error
     }
 
-    context->prevChar = 0;
     inlineBox->setContainingBox(context->lineBox);  // for getContainingBlock
     inlineBox->appendChild(inlineBlock);
     inlineBox->width = inlineBlock->getTotalWidth();
@@ -781,9 +783,7 @@ void Block::layOutInlineBlock(ViewCSSImp* view, Node node, const BlockPtr& inlin
         else
             inlineBox->baseline = inlineBlock->getBaseline();
     }
-    while (context->leftover < inlineBox->getTotalWidth() &&
-           (context->breakable || (style && style->whiteSpace.isBreakingLines())))
-    {
+    while (context->leftover < inlineBox->getTotalWidth() && (style && style->whiteSpace.isBreakingLines())) {  // TODO: Check wrapControl as well.
         if (context->lineBox->hasChildBoxes() || context->hasNewFloats()) {
             context->nextLine(view, self(), false);
             if (!context->addLineBox(view, self()))
@@ -857,15 +857,16 @@ bool Block::layOutInline(ViewCSSImp* view, FormattingContext* context, float ori
     removeChildren();
 
     bool collapsed = true;
-    for (auto i = inlines.begin(); i != inlines.end(); ++i) {
+    WrapControl wrapControl;
+    for (auto i = inlines.begin(); i != inlines.end();) {
         Node node = *i;
 #ifndef NDEBUG
-    std::u16string tag(interface_cast<html::HTMLElement>(node).getTagName());
-    std::u16string id(interface_cast<html::HTMLElement>(node).getId());
+        std::u16string tag(interface_cast<html::HTMLElement>(node).getTagName());
+        std::u16string id(interface_cast<html::HTMLElement>(node).getId());
 #endif
+
         BlockPtr block = findBlock(node);
         if (block && block != self()) {  // Check an empty absolutely positioned box; cf. bottom-applies-to-010.
-
             if (!block->getParentBox())
                 block->setContainingBox(self());
             context->useMargin(self());
@@ -875,8 +876,10 @@ bool Block::layOutInline(ViewCSSImp* view, FormattingContext* context, float ori
                 layOutFloat(view, node, block, context);
             } else if (block->isAbsolutelyPositioned())
                 layOutAbsolute(view, node, block, context);
-            else
+            else {
                 layOutInlineBlock(view, node, block, context);
+                context->prevChar = u'\u00A0';  // NBSP
+            }
             collapsed = false;
         } else {
             Element element = getContainingElement(node);
@@ -889,14 +892,19 @@ bool Block::layOutInline(ViewCSSImp* view, FormattingContext* context, float ori
                 style->resolve(view, self());
             if (node.getNodeType() == Node::TEXT_NODE) {
                 Text text = interface_cast<Text>(node);
-                if (layOutText(view, node, context, text.getData(), element, style))
+                if (layOutText(view, node, context, text.getData(), element, style, wrapControl))
                     collapsed = false;
             } else {
                 // empty inline element
-                if (layOutText(view, node, context, u"", element, style))
+                if (layOutText(view, node, context, u"", element, style, wrapControl))
                     collapsed = false;
             }
         }
+
+        if (!wrapControl.isRestart())
+            ++i;
+        else
+            i = wrapControl.find(inlines, i);
     }
     if (context->lineBox)
         context->nextLine(view, self(), false);
@@ -1971,6 +1979,9 @@ void Block::resolveXY(ViewCSSImp* view, float left, float top, const BlockPtr& c
 
 void Block::dump(std::string indent)
 {
+    dumpIsFirstLetter = true;
+    dumpPrevChar = '\n';
+
     std::cout << indent << "* block-level box";
     float relativeX = stackingContext ? stackingContext->getRelativeX() : 0.0f;
     float relativeY = stackingContext ? stackingContext->getRelativeY() : 0.0f;
@@ -1997,6 +2008,8 @@ void Block::dump(std::string indent)
     indent += "  ";
     for (BoxPtr child = getFirstChild(); child; child = child->getNextSibling())
         child->dump(indent);
+
+    dumpPrevChar = u'\u00A0';   // NBSP
 }
 
 }}}}  // org::w3c::dom::bootstrap

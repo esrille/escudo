@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2014 Esrille Inc.
+ * Copyright 2010-2015 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,34 +54,16 @@ CSSStyleDeclarationPtr setActiveStyle(ViewCSSImp* view, const CSSStyleDeclaratio
 
 }
 
-void Block::nextLine(ViewCSSImp* view, FormattingContext* context, CSSStyleDeclarationPtr& activeStyle,
-                     CSSStyleDeclarationPtr& firstLetterStyle, CSSStyleDeclarationPtr& firstLineStyle,
-                     const CSSStyleDeclarationPtr& style, bool linefeed,
-                     FontTexture*& font, float& point)
-{
-    if (firstLetterStyle) {
-        firstLetterStyle = nullptr;
-        if (firstLineStyle)
-            activeStyle = setActiveStyle(view, firstLineStyle, font, point);
-        else
-            activeStyle = setActiveStyle(view, style, font, point);
-    } else {
-        context->nextLine(view, self(), linefeed);
-        if (firstLineStyle) {
-            firstLineStyle = nullptr;
-            activeStyle = setActiveStyle(view, style, font, point);
-        }
-    }
-}
-
 void Block::getPsuedoStyles(ViewCSSImp* view, FormattingContext* context, const CSSStyleDeclarationPtr& style,
                             CSSStyleDeclarationPtr& firstLetterStyle, CSSStyleDeclarationPtr& firstLineStyle)
 {
     bool isFirstLetter = true;
-    for (BoxPtr i = context->lineBox->getFirstChild(); i; i = i->getNextSibling()) {
-        if (std::dynamic_pointer_cast<InlineBox>(i)) {
-            isFirstLetter = false;
-            break;
+    if (context->lineBox) {
+        for (BoxPtr i = context->lineBox->getFirstChild(); i; i = i->getNextSibling()) {
+            if (std::dynamic_pointer_cast<InlineBox>(i)) {
+                isFirstLetter = false;
+                break;
+            }
         }
     }
 
@@ -158,8 +140,38 @@ size_t Block::layOutFloatingFirstLetter(ViewCSSImp* view, FormattingContext* con
     return length;
 }
 
+namespace {
+
+size_t trimSpacesAtBack(const std::u16string& data, size_t offset, size_t length, bool preLine)
+{
+    size_t len;
+    for (len = length; 0 < len; --len) {
+        char16_t u = data[offset + len - 1];
+        switch (u) {
+        case '\t':
+            u = ' ';
+            break;
+        case '\r':
+            u = '\n';
+            // FALL THROUGH
+        case '\n':
+            if (!preLine)
+                u = ' ';
+            break;
+        default:
+            break;
+        }
+        if (u != ' ')
+            break;
+    }
+    return len;
+}
+
+}
+
 bool Block::layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
-                       std::u16string data, Element element, const CSSStyleDeclarationPtr& style)
+                       std::u16string data, Element element, const CSSStyleDeclarationPtr& style,
+                       WrapControl& wrapControl)
 {
     assert(element);
     assert(style);
@@ -169,260 +181,246 @@ bool Block::layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
     // cf. 10.8 Line height calculations: the ’line-height’ and ’vertical-align’ properties
     bool discardable = !data.empty();
     if (discardable && style->display.isInline()) {
+        // TODO: Check emptyInline
         if (element.getFirstChild() == text && (style->marginLeft.getPx() || style->borderLeftWidth.getPx() || style->paddingLeft.getPx()) ||
             element.getLastChild() == text && (style->marginRight.getPx() || style->borderRightWidth.getPx() || style->paddingRight.getPx()))
             discardable = false;
     }
 
-    if (style->processWhiteSpace(data, context->prevChar) == 0) {
-        if (!context->atLineHead && style->whiteSpace.isBreakingLines())
-            context->breakable = true;
-        if (discardable)
-            return !isAnonymous();
-    }
-
-    bool pseudoChecked = isAnonymous() && getParentBox()->getFirstChild() != self();
-    CSSStyleDeclarationPtr firstLineStyle;
-    CSSStyleDeclarationPtr firstLetterStyle;
-    CSSStyleDeclarationPtr activeStyle;
     FontTexture* font;
     float point;
-    activeStyle = setActiveStyle(view, style, font, point);
+    CSSStyleDeclarationPtr activeStyle = setActiveStyle(view, style, font, point);
+    CSSStyleDeclarationPtr firstLineStyle;
+    CSSStyleDeclarationPtr firstLetterStyle;
 
-    size_t position = 0;  // within data
-    InlineBoxPtr inlineBox;
-    InlineBoxPtr wrapBox;    // characters moved to the next line
-    for (;;) {
-        if (context->atLineHead && !wrapBox) {
-            size_t next = style->processLineHeadWhiteSpace(data, position);
-            if (position != next && data.length() <= next && discardable)
-                return (position == 0) ? !isAnonymous() : true;
-            position = next;
-        }
-
-        context->useMargin(self());
-
-        if (!context->lineBox) {
-            if (!context->addLineBox(view, self()))
-                return false;  // TODO error
-        }
-        if (!pseudoChecked && getFirstChild() == context->lineBox) {
-            pseudoChecked = true;
+    if (!isAnonymous() || getParentBox()->getFirstChild() == self()) {
+        if (!getFirstChild())
+            context->isFirstLetter = true;
+        if (!getFirstChild() || childCount == 1 && getFirstChild()->getBoxType() == LINE_BOX && context->lineBox)
             getPsuedoStyles(view, context, style, firstLetterStyle, firstLineStyle);
-            if (firstLetterStyle) {
-                activeStyle = setActiveStyle(view, firstLetterStyle, font, point);
-                if (firstLetterStyle->isFloat()) {
-                    position += layOutFloatingFirstLetter(view, context, data, firstLetterStyle);
-                    if (data.length() <= position)
-                        break;
-                    nextLine(view, context, activeStyle, firstLetterStyle, firstLineStyle, style, false, font, point);
-                    continue;
-                }
-            } else if (firstLineStyle)
-                activeStyle = setActiveStyle(view, firstLineStyle, font, point);
-        }
-        LineBoxPtr lineBox = context->lineBox;
+    }
 
-        float nbl = 0.0f;
-        if (wrapBox) {
-            for (InlineBoxPtr box = wrapBox; box; box = std::dynamic_pointer_cast<InlineBox>(box->getNextSibling()))
-                nbl += box->getTotalWidth();
-            context->x += nbl;
-            context->leftover -= nbl;
-            if (context->leftover < 0.0f && (lineBox->hasChildBoxes() || context->hasNewFloats())) {
+    size_t base(0);
+    size_t position(0);   // within data
+    if (wrapControl.isRestart()) {
+        position = wrapControl.getOffset();
+        wrapControl.clearRestart();
+    }
+    size_t wrap(position);
+    float wrapWidth(0.0f);
+    InlineBoxPtr inlineBox;
+    FontGlyph* glyph(nullptr);
+    float blankLeft(0.0f);
+    float blankRight(0.0f);
+
+    // The outer loop processes line boxes and finished inline boxes:
+    do {
+        bool linefeed(false);
+        LineBoxPtr lineBox;
+
+        // Check pseudo
+        if (firstLetterStyle)
+            activeStyle = setActiveStyle(view, firstLetterStyle, font, point);
+        else if (firstLineStyle)
+            activeStyle = setActiveStyle(view, firstLineStyle, font, point);
+
+        if (context->atLineHead || context->prevChar == ' ') {
+            context->prevChar = '\n';
+            size_t skipped = activeStyle->skipWhiteSpace(data, position);
+            if (position < skipped) {
+                if (position == 0)
+                    base = skipped;
+                position = skipped;
+                if (!context->atLineHead && activeStyle->whiteSpace.isBreakingLines())
+                    wrapControl.markBreakable();
+            }
+        }
+
+        // The inner loop processes the data for completing an inline box:
+        do {
+            size_t offset(position);
+            bool isFirstLetter(context->isFirstLetter);
+            char32_t prevChar(context->prevChar);
+            std::u16string word;
+            size_t length(0);
+            bool breakable(false);
+
+            if (activeStyle != firstLetterStyle)
+                length = activeStyle->getNextWord(data, position, context->isFirstLetter, context->prevChar, word);
+            else
+                length = activeStyle->getFirstLetter(data, position, context->isFirstLetter, context->prevChar, word);
+            breakable = (position < data.length() && activeStyle->whiteSpace.isBreakingLines());
+            if (word.empty()) {
+                if (!context->atLineHead && activeStyle->whiteSpace.isBreakingLines() && offset < data.length())
+                    wrapControl.markBreakable();    // cf. html4/white-space-007.htm
+                if (discardable)
+                    return !isAnonymous();
+            } else {
+                if (offset == 0 && activeStyle->whiteSpace.isBreakingLines() && !context->atLineHead && prevChar) {
+                    TextIterator ti;
+                    std::u16string test;
+                    append(test, prevChar);
+                    size_t testLength = test.length();
+                    test += word;
+                    ti.setText(test.c_str(), test.length());
+                    if (ti.next() && *ti == testLength)
+                        wrapControl.markBreakable();
+                }
+                if (word.front() == u'\n' || word.back() == '\n') {
+                    linefeed = true;
+                    breakable= true;
+                }
+            }
+
+            // Prepare a new line box.
+            discardable = false;
+            context->useMargin(self());
+            if (!context->lineBox) {
+                if (!context->addLineBox(view, self()))
+                    return false;  // TODO error
+            }
+            lineBox = context->lineBox;
+
+#if 0
+            // XXX Use word for the inline box created inside the floating box.
+            if (firstLetterStyle && firstLetterStyle->isFloat()) {
+                position += layOutFloatingFirstLetter(view, context, data, firstLetterStyle);
+                if (data.length() <= position)
+                    break;
                 nextLine(view, context, activeStyle, firstLetterStyle, firstLineStyle, style, false, font, point);
                 continue;
             }
-        }
+#endif
 
-        if (!inlineBox) {
-            inlineBox = std::make_shared<InlineBox>(text, activeStyle);
-            if (!inlineBox)
-                return false;  // TODO error
-            inlineBox->resolveWidth();
-            if (0 < position || !inlineBox->isEmptyInlineAtFirst(style, element, text))
-                inlineBox->clearBlankLeft();
-        } else {
-            inlineBox->setStyle(activeStyle);
-            context->x += inlineBox->width;
-            context->leftover -= inlineBox->width;
-        }
-        float blankLeft = inlineBox->getBlankLeft();
-        float blankRight = inlineBox->getBlankRight();
-
-        context->x += blankLeft;
-        context->leftover -= blankLeft;
-
-        bool linefeed = false;
-        float advanced = 0.0f;
-
-        if (data.empty()) {
-            inlineBox->setData(font, point, data, 0, 0);
-            if (!inlineBox->isEmptyInlineAtLast(style, element, text)) {
-                inlineBox->clearBlankRight();
-                blankRight = 0;
+            if (!inlineBox) {
+                try {
+                    inlineBox = std::make_shared<InlineBox>(text, activeStyle);
+                } catch (...) {
+                    return false;
+                }
+                inlineBox->resolveWidth();
+                if (base < offset || !inlineBox->isEmptyInlineAtFirst(style, element, text))
+                    inlineBox->clearBlankLeft();
+                blankLeft = inlineBox->getBlankLeft();
+                blankRight = inlineBox->getBlankRight();
+                context->x += blankLeft;
+                context->leftover -= blankLeft;
             }
-        } else if (data[position] == '\n') {
-            ++position;
-            linefeed = true;
-        } else {
-            std::u16string inlineData;
-            size_t fitLength = firstLetterStyle ? firstLetterStyle->getfirstLetterLength(data, position) : (data.length() - position);
-            // We are still not sure if there's a room for text in context->lineBox.
-            // If there's no room due to float box(es), move the linebox down to
-            // the closest bottom of float box.
-            // And repeat this process until there's no more float box in the context.
-            const char16_t* p = data.c_str() + position;
-            size_t length = 0;  // of the new text segment
-            size_t wrap = position;
-            size_t next = position;
-            float advanced = 0.0f;
-            float wrapWidth = 0.0f;
-            context->setText(p, fitLength);
-            unsigned transform = activeStyle->textTransform.getValue();
-            bool isFirstCharacter = wrapBox ? false : true;
-            if (transform == CSSTextTransformValueImp::Capitalize) {
-                if (!wrapBox && position == 0)
-                    isFirstCharacter = context->isFirstCharacter(data);
-            }
-            do {
-                wrap = next;
-                wrapWidth = advanced;
-                next = position + context->getNextTextBoundary();
-                FontGlyph* glyph;
-                std::u16string transformed;
-                float w = activeStyle->measureText(view, p, next - wrap, point, isFirstCharacter, glyph, transformed);
-                p += next - wrap;
-                isFirstCharacter = true;
-                if (firstLetterStyle || data.length() <= next && inlineBox->isEmptyInlineAtLast(style, element, text))
-                    w += blankRight;
-                while (context->leftover < w && (context->breakable || activeStyle->whiteSpace.isBreakingLines())) {
-                    if (activeStyle->whiteSpace.isCollapsingSpace() && 0 < transformed.length() && transformed[transformed.length() - 1] == u' ') {
-                        float lineEnd = (next - wrap == 1) ? 0.0f : w - glyph->advance * font->getScale(point) - activeStyle->wordSpacing.getPx();
-                        if (!activeStyle->letterSpacing.isNormal())
-                            lineEnd -= activeStyle->letterSpacing.getPx();
-                        if (lineEnd == 0 || lineEnd <= context->leftover) {
-                            context->breakable = true;
-                            context->dontWrap();
-                            w = lineEnd;
-                            transformed.erase(transformed.length() - 1);
-                            inlineData += transformed;
-                            advanced += w;
-                            context->leftover -= w;
-                            wrap = length = next - position - 1;
-                            updateMCW(nbl + w);
-                            goto BreakLine;
-                        }
-                    }
-                    // This text segment doesn't fit in the current line.
-                    if (position < wrap) {
-                        next = wrap;
-                        goto BreakLine;
-                    }
-                    if (!wrapBox && position == 0) {
-                        wrapBox = context->getWrapBox(data);
-                        if (wrapBox) {
-                            if (!wrapBox->getStyle()->whiteSpace.isBreakingLines())
-                                break;
-                            if (firstLineStyle) {
-                                // If the current line is the first line, the style applied to the wrap-box has to be changed.
-                                bool isFirstCharacter = true;
-                                for (InlineBoxPtr box = wrapBox; box; box = std::dynamic_pointer_cast<InlineBox>(box->getNextSibling())) {
-                                    Node node = box->getNode();
-                                    CSSStyleDeclarationPtr wrapStyle = view->getStyle(interface_cast<Element>(node));
-                                    if (!wrapStyle)
-                                        wrapStyle = getStyle();
-                                    FontTexture* font;
-                                    float point;
-                                    box->style = setActiveStyle(view, wrapStyle, font, point);
-                                    FontGlyph* glyph;
-                                    std::u16string transformed;
-                                    // TODO: measureText using the original text data
-                                    box->width = wrapStyle->measureText(view, box->getData().c_str(), box->getData().length(), point,
-                                                                        isFirstCharacter, glyph, transformed);
-                                    box->data.clear();
-                                    box->setData(font, point, transformed, 0, 0.0f);
-                                    isFirstCharacter = false;
-                                }
-                            }
-                        }
-                    }
-                    if (lineBox->hasChildBoxes() || context->hasNewFloats())
-                        goto NextLine;
-                    if (context->shiftDownLineBox(view)) {
-                        if (wrapBox) {
-                            nbl = 0.0f;
-                            for (InlineBoxPtr box = wrapBox; box; box = std::dynamic_pointer_cast<InlineBox>(box->getNextSibling()))
-                                nbl += box->getTotalWidth();
-                            context->x += nbl;
-                            context->leftover -= nbl;
-                        }
-                    } else {
-                        inlineData += transformed;
-                        advanced += w;
-                        context->leftover -= w;
-                        length = next - position;
-                        context->breakable = false;
-                        updateMCW(nbl + w);
-                        goto BreakLine;
+
+            float w = activeStyle->measureText(view, data, offset, length, point, isFirstLetter, prevChar, glyph);
+            if (firstLetterStyle || data.length() <= position && inlineBox->isEmptyInlineAtLast(style, element, text))
+                w += blankRight;    // BWBAL: blankRight will be adjusted later
+
+            while (context->leftover < w && (wrapControl.isBreakable() || activeStyle->whiteSpace.isBreakingLines())) {
+                if (activeStyle->whiteSpace.isCollapsingSpace() && !word.empty() && word.back() == u' ') {
+                    float lineEnd = w - glyph->advance * font->getScale(point) - activeStyle->wordSpacing.getPx();
+                    if (!activeStyle->letterSpacing.isNormal())
+                        lineEnd -= activeStyle->letterSpacing.getPx();
+                    if (lineEnd <= context->leftover || lineEnd <= 0.0f) {
+                        breakable = true;
+                        context->dontWrap();
+                        w = lineEnd;
+                        length = trimSpacesAtBack(data, offset, length, activeStyle->whiteSpace.getValue() == CSSWhiteSpaceValueImp::PreLine);
+                        linefeed = true;
+                        break;
                     }
                 }
-
-                inlineData += transformed;
-                advanced += w;
-                context->leftover -= w;
-                length = next - position;
-                if (context->breakable || activeStyle->whiteSpace.isBreakingLines()) {
-                    updateMCW(nbl + w);
-                    nbl = 0.0f;
-                } else
-                    updateMCW(nbl + advanced);
-                context->breakable = false;
-                if (wrap < next && data[next - 1] == '\n') {
+                // This text segment doesn't fit in the current line.
+                if (inlineBox->isBreakable()) {
+                    position = offset;
+                    length = 0;
+                    w = 0.0f;
+                    context->isFirstLetter = isFirstLetter;
+                    context->prevChar = prevChar;
                     linefeed = true;
                     break;
                 }
-            } while (next < position + fitLength);
-        BreakLine:
-            inlineBox->setData(font, point, inlineData, wrap - position, wrapWidth);
-            inlineBox->width += advanced;
-            position = next;
+                if (wrapControl.isBreakable()) {
+                    context->removeWrapBox(wrapControl);
+                    wrapControl.clearMCW();
+                    wrapControl.restart();
+                    // if (lineBox->hasChildBoxes() || context->hasNewFloats()) {
+                    position = offset;
+                    length = 0;
+                    context->isFirstLetter = isFirstLetter;
+                    context->prevChar = prevChar;
+                    linefeed = true;
+                    inlineBox = 0;
+                    break;
+                }
+                if (!context->shiftDownLineBox(view))
+                    break;
+            }
+            if (!inlineBox)
+                break;
 
-            if (firstLetterStyle || data.length() <= position && inlineBox->isEmptyInlineAtLast(style, element, text))
-                inlineBox->width -= blankRight;
-            else {
+            if (offset < position) {
+                context->x += w;
+                context->leftover -= w;
+                inlineBox->width += w;
+                if (firstLetterStyle || data.length() <= position && inlineBox->isEmptyInlineAtLast(style, element, text))
+                    inlineBox->width -= blankRight;     // Amend BWBAL.
+            }
+
+            // cf. html4/white-space-normal-001.htm
+            if (activeStyle->whiteSpace.isCollapsingSpace() && !word.empty() && word.back() == u' ')
+                w -= glyph->advance * font->getScale(point) + activeStyle->wordSpacing.getPx();
+
+            wrapControl.extendMCW(w);
+            updateMCW(wrapControl.getMCW());
+            if (breakable) {
+                wrap = position;
+                wrapWidth = inlineBox->width;
+                wrapControl.clearMCW();
+            }
+
+            inlineBox->setData(font, point, offset, length, wrap, wrapWidth);
+        } while (activeStyle != firstLetterStyle && !linefeed && position < data.length());
+
+        if (inlineBox) {
+            if (!firstLetterStyle && (position < data.length() || !inlineBox->isEmptyInlineAtLast(style, element, text))) {
                 inlineBox->clearBlankRight();
-                blankRight = 0;
+                blankRight = 0.0f;
+            }
+
+            if (inlineBox->hasHeight()) {   // TODO: This can be done in LineBox::layOut().
+                // Switch height from 'line-height' to the content height.
+                inlineBox->height = font->getLineHeight(point);
+                inlineBox->leading = activeStyle->lineHeight.getPx() - inlineBox->height;
+                lineBox->underlinePosition = std::max(lineBox->underlinePosition, font->getUnderlinePosition(point));
+                lineBox->underlineThickness = std::max(lineBox->underlineThickness, font->getUnderlineThickness(point));
+                lineBox->lineThroughPosition = std::max(lineBox->lineThroughPosition, font->getLineThroughPosition(point));
+                lineBox->lineThroughThickness = std::max(lineBox->lineThroughThickness, font->getLineThroughThickness(point));
+            }
+            context->appendInlineBox(view, inlineBox, activeStyle);
+            style->addBox(inlineBox);  // activeStyle? maybe not...
+            if (inlineBox->isBreakable()) {
+                if (!linefeed)
+                    wrapControl.set(text, wrap);
+                else
+                    wrapControl.clear();
+            }
+            inlineBox = 0;
+        }
+
+        if (firstLetterStyle) {
+            firstLetterStyle = nullptr;
+            if (firstLineStyle)
+                activeStyle = setActiveStyle(view, firstLineStyle, font, point);
+            else
+                activeStyle = setActiveStyle(view, style, font, point);
+        }
+        if (linefeed) {
+            context->nextLine(view, self(), linefeed);
+            if (firstLineStyle) {
+                firstLineStyle = nullptr;
+                activeStyle = setActiveStyle(view, style, font, point);
             }
         }
 
-        while (wrapBox) {
-            auto next = std::dynamic_pointer_cast<InlineBox>(wrapBox->getNextSibling());
-            context->appendInlineBox(view, wrapBox, wrapBox->getStyle()); // TODO: leading, etc.
-            wrapBox = next;
-        }
-
-        if (inlineBox->hasHeight()) {
-            // Switch height from 'line-height' to the content height.
-            inlineBox->height = font->getLineHeight(point);
-            inlineBox->leading = activeStyle->lineHeight.getPx() - inlineBox->height;
-            lineBox->underlinePosition = std::max(lineBox->underlinePosition, font->getUnderlinePosition(point));
-            lineBox->underlineThickness = std::max(lineBox->underlineThickness, font->getUnderlineThickness(point));
-            lineBox->lineThroughPosition = std::max(lineBox->lineThroughPosition, font->getLineThroughPosition(point));
-            lineBox->lineThroughThickness = std::max(lineBox->lineThroughThickness, font->getLineThroughThickness(point));
-        }
-        context->x += advanced + blankRight;
-        context->appendInlineBox(view, inlineBox, activeStyle);
-        style->addBox(inlineBox);  // activeStyle? maybe not...
-        if (data.length() <= position) {  // layout done?
-            if (linefeed)
-                context->nextLine(view, self(), linefeed);
+        if (wrapControl.isRestart())
             break;
-        }
-        inlineBox = 0;
-    NextLine:
-        nextLine(view, context, activeStyle, firstLetterStyle, firstLineStyle, style, linefeed, font, point);
-    }
+    } while (position < data.length());
     return true;
 }
 
@@ -588,6 +586,8 @@ InlineBox::InlineBox(Node node, const CSSStyleDeclarationPtr& style) :
     point(0.0f),
     baseline(0.0f),
     leading(0.0f),
+    offset(0),
+    length(0),
     wrap(0),
     wrapWidth(0.0f),
     emptyInline(0)
@@ -616,69 +616,55 @@ bool InlineBox::isEmptyInlineAtLast(const CSSStyleDeclarationPtr& style, Element
     return !(emptyInline & 1) && ((emptyInline & 2) || emptyInline == 4);
 }
 
-void InlineBox::setData(FontTexture* font, float point, const std::u16string& data, size_t wrap, float wrapWidth)
+void InlineBox::setData(FontTexture* font, float point, size_t offset, size_t length, size_t wrap, float wrapWidth)
 {
-    assert(data[0] != 0 || data.empty());
     this->font = font;
     this->point = point;
-    if (this->data.empty()) {
+    baseline = font->getAscender(point);
+
+    if (this->length == 0) {
+        this->offset = offset;
+        this->length = length;
         this->wrap = wrap;
         this->wrapWidth = wrapWidth;
     } else {
-        this->wrap = this->data.length() + wrap;
-        this->wrapWidth = this->width + wrapWidth;
+        this->length = offset + length - this->offset;
+        if (this->offset < wrap) {
+            this->wrap = wrap;
+            this->wrapWidth = wrapWidth;
+        }
     }
-    this->data += data;
-    baseline = font->getAscender(point);
-    if (0 < this->data.length() && this->data[this->data.length() - 1] == u' ')
-        this->wrap = this->data.length();
+    if (wrap < this->offset)
+        wrap = this->offset;
 }
 
-InlineBoxPtr InlineBox::split()
+// Trim this inline box at the wrap position.
+void InlineBox::trim()
 {
-    assert(wrap < data.length());
-    InlineBoxPtr wrapBox = std::make_shared<InlineBox>(node, getStyle());
-    if (!wrapBox)
-        return nullptr;
-    wrapBox->marginTop = marginTop;
-    wrapBox->marginRight = marginRight;
-    wrapBox->marginBottom = marginBottom;
-    wrapBox->paddingTop = paddingTop;
-    wrapBox->paddingRight = paddingRight;
-    wrapBox->paddingBottom = paddingBottom;
-    wrapBox->borderTop = borderTop;
-    wrapBox->borderRight = borderRight;
-    wrapBox->borderBottom = borderBottom;
-    wrapBox->visibility = visibility;
-    wrapBox->setData(font, point, data.substr(wrap), data.length() - wrap, 0.0f);
-    wrapBox->width = width - wrapWidth;
-    wrapBox->wrap = 0;
-    wrapBox->wrapWidth = 0.0f;
     clearBlankRight();
-    data.erase(wrap);
-    wrap = data.length();
+    length = wrap - offset;
     width = wrapWidth;
-    return wrapBox;
 }
 
 float InlineBox::atEndOfLine()
 {
-    size_t length = data.length();
-    if (length < 1)
+    if (length == 0)
         return 0.0f;
-    if (style->whiteSpace.isCollapsingSpace() && data[length - 1] == u' ') {
-        data.erase(length - 1);
-        if (data.length() == 0) {
-            // Deal with the errors in floating point operations.
-            float w = -width;
-            width = 0.0f;
-            return w;
-        } else {
-            float w = -font->measureText(u" ", point) - getStyle()->wordSpacing.getPx();
-            if (!getStyle()->letterSpacing.isNormal())
-                w -= getStyle()->letterSpacing.getPx();
-            width += w;
-            return w;
+    if (style->whiteSpace.isCollapsingSpace()) {
+        std::u16string data;
+        if (node.getNodeType() == Node::TEXT_NODE) {
+            Text text = interface_cast<Text>(node);
+            data = text.substringData(offset, length);
+            size_t len = trimSpacesAtBack(data, 0, length, getStyle()->whiteSpace.getValue() == CSSWhiteSpaceValueImp::PreLine);
+            if (len < length) {
+                length = len;
+                // TODO: Deal with the errors in floating point operations.
+                float w = -font->measureText(u" ", point) - getStyle()->wordSpacing.getPx();
+                if (!getStyle()->letterSpacing.isNormal())
+                    w -= getStyle()->letterSpacing.getPx();
+                width += w;
+                return w;
+            }
         }
     }
     return 0.0f;
@@ -735,19 +721,35 @@ void InlineBox::resolveXY(ViewCSSImp* view, float left, float top, const BlockPt
 
 void InlineBox::dump(std::string indent)
 {
+    const CSSStyleDeclarationPtr& activeStyle = getStyle();
     float relativeX = stackingContext->getRelativeX();
     float relativeY = stackingContext->getRelativeY();
     std::cout << indent << "* inline-level box";
     if (3 <= getLogLevel())
         std::cout << " [" << uid << '|' << std::hex << flags << std::dec << '(' << count_() << ")]";
+
+    std::u16string data;
+    std::u16string transformed;
+    if (node.getNodeType() == Node::TEXT_NODE) {
+        Text text = interface_cast<Text>(node);
+        data = text.substringData(offset, length);
+        for (size_t position = 0; position < length; ) {
+            char32_t u = activeStyle->nextChar(data, position, dumpIsFirstLetter, dumpPrevChar);
+            dumpPrevChar = u;
+            if (u == '\n' || u == u'\u200B')
+                continue;
+            append(transformed, u);
+        }
+    }
+
     std::cout << " (" << x + relativeX << ", " << y + relativeY << ") " <<
         "w:" << width << " h:" << height << ' ' <<
         "m:" << marginTop << ':' << marginRight << ':' << marginBottom << ':' << marginLeft << ' ' <<
         "p:" << paddingTop << ':' <<  paddingRight << ':'<< paddingBottom<< ':' << paddingLeft << ' ' <<
         "b:" << borderTop << ':' <<  borderRight << ':' << borderBottom<< ':' << borderLeft << ' ' <<
-        '"' << data << "\" ";
-    if (getStyle())
-        std::cout << std::hex << CSSSerializeRGB(getStyle()->color.getARGB()) << std::dec;
+        '"' << transformed << "\" ";
+    if (activeStyle)
+        std::cout << std::hex << CSSSerializeRGB(activeStyle->color.getARGB()) << std::dec;
     std::cout << '\n';
     indent += "  ";
     for (BoxPtr child = getFirstChild(); child; child = child->getNextSibling())

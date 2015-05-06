@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2014 Esrille Inc.
+ * Copyright 2010-2015 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,6 +69,10 @@ class ContainingBlock : public std::enable_shared_from_this<ContainingBlock>
 protected:
     // for debugging
     unsigned uid;
+
+    // for dump()
+    static bool dumpIsFirstLetter;
+    static char32_t dumpPrevChar;
 
 public:
     ContainingBlock();
@@ -583,12 +587,10 @@ class Block : public Box
 
     void getPsuedoStyles(ViewCSSImp* view, FormattingContext* context, const CSSStyleDeclarationPtr& style,
                          CSSStyleDeclarationPtr& firstLetterStyle, CSSStyleDeclarationPtr& firstLineStyle);
-    void nextLine(ViewCSSImp* view, FormattingContext* context, CSSStyleDeclarationPtr& activeStyle,
-                  CSSStyleDeclarationPtr& firstLetterStyle, CSSStyleDeclarationPtr& firstLineStyle,
-                  const CSSStyleDeclarationPtr& style, bool linefeed, FontTexture*& font, float& point);
     size_t layOutFloatingFirstLetter(ViewCSSImp* view, FormattingContext* context, const std::u16string& data, const CSSStyleDeclarationPtr& firstLetterStyle);
     bool layOutText(ViewCSSImp* view, Node text, FormattingContext* context,
-                    std::u16string data, Element element, const CSSStyleDeclarationPtr& style);
+                    std::u16string data, Element element, const CSSStyleDeclarationPtr& style,
+                    WrapControl& wrapControl);
     void layOutInlineBlock(ViewCSSImp* view, Node node, const BlockPtr& inlineBlock, FormattingContext* context);
     void layOutFloat(ViewCSSImp* view, Node node, const BlockPtr&floatBox, FormattingContext* context);
     void layOutAbsolute(ViewCSSImp* view, Node node, const BlockPtr&absBox, FormattingContext* context);  // 1st pass
@@ -854,14 +856,16 @@ class InlineBox : public Box
     float point;
     float baseline;
     float leading;
-    std::u16string data;
 
-    size_t wrap;
+    size_t offset;
+    size_t length;
+
+    size_t wrap;        // The words are breakable at this offset. offset <= wrap < offset + length.
     float wrapWidth;
 
     int emptyInline;    // 0: none, 1: first, 2: last, 3: both, 4: empty
 
-    void renderText(ViewCSSImp* view, const std::u16string& data, float point);
+    void renderText(ViewCSSImp* view);
     void renderMultipleBackground(ViewCSSImp* view);
     void renderEmptyBox(ViewCSSImp* view, const CSSStyleDeclarationPtr& parentStyle);
 
@@ -899,17 +903,10 @@ public:
         marginRight = paddingRight = borderRight = 0.0f;
     }
 
-    size_t getWrap() const {
-        return wrap;
+    bool isBreakable() const {
+        return offset < wrap;
     }
-    bool hasWrapBox() const {
-        // Check font to skip inline-block, etc.
-        return font && (data.empty() || wrap < data.length());
-    }
-    std::u16string getWrapText() const {
-        return data.substr(wrap);
-    }
-    InlineBoxPtr split();
+    void trim();
 
     // has non-zero margins, padding, or borders?
     bool hasHeight() const {
@@ -936,10 +933,7 @@ public:
     float getSuper() const;
 
     void resolveWidth();
-    void setData(FontTexture* font, float point, const std::u16string& data, size_t wrap, float wrapWidth);
-    const std::u16string& getData() const {
-        return data;
-    }
+    void setData(FontTexture* font, float point, size_t offset, size_t length, size_t wrap, float wrapWidth);
     virtual void resolveXY(ViewCSSImp* view, float left, float top, const BlockPtr&clip);
     virtual void render(ViewCSSImp* view, StackingContext* stackingContext);
     void renderOutline(ViewCSSImp* view);

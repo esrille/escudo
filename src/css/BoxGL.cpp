@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 Esrille Inc.
+ * Copyright 2010-2015 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -689,6 +689,8 @@ void Block::renderInline(ViewCSSImp* view, StackingContext* stackingContext)
 
     if (isTableBox())
         std::dynamic_pointer_cast<TableWrapperBox>(getParentBox())->renderTableOutlines(view);
+
+    view->resetNextChar();
 }
 
 void Block::render(ViewCSSImp* view, StackingContext* stackingContext)
@@ -961,7 +963,7 @@ void InlineBox::render(ViewCSSImp* view, StackingContext* stackingContext)
                 unsigned color = getStyle()->color.getARGB();
                 glColor4ub(color >> 16, color >> 8, color, color >> 24);
                 glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-                renderText(view, data, point);
+                renderText(view);
                 glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
             glPopMatrix();
             if (lineDecoration & CSSTextDecorationValueImp::LineThrough) {
@@ -984,7 +986,7 @@ void InlineBox::render(ViewCSSImp* view, StackingContext* stackingContext)
     glPopMatrix();
 }
 
-void InlineBox::renderText(ViewCSSImp* view, const std::u16string& data, float point)
+void InlineBox::renderText(ViewCSSImp* view)
 {
     const CSSStyleDeclarationPtr& activeStyle = getStyle();
     FontTexture* font = activeStyle->getFontTexture();
@@ -994,12 +996,19 @@ void InlineBox::renderText(ViewCSSImp* view, const std::u16string& data, float p
     float wordSpacing = activeStyle->wordSpacing.getPx() * font->getPoint() / point;
     unsigned variant = activeStyle->fontVariant.getValue();
     font->beginRender();
-    const char16_t* p = data.c_str();
-    const char16_t* end = p + data.length();
-    char32_t u;
-    while (p < end && (p = utf16to32(p, &u)) && u) {
+
+    std::u16string data;
+    if (node.getNodeType() == Node::TEXT_NODE) {
+        Text text = interface_cast<Text>(node);
+        data = text.substringData(offset, length);
+    }
+
+    for (size_t position = 0; position < length; ) {
+        char32_t u = view->nextChar(activeStyle, data, position);
         if (u == '\n' || u == u'\u200B')
             continue;
+        if (!u) // TODO: Check html4/table-anonymous-objects-157.htm
+            break;
         char32_t caps = u;
         if (variant == CSSFontVariantValueImp::SmallCaps)
             caps = u_toupper(u);
@@ -1033,6 +1042,7 @@ void InlineBox::renderText(ViewCSSImp* view, const std::u16string& data, float p
         if (spacing != 0.0f)
             glTranslatef(spacing, 0.0f, 0.0f);
     }
+
     font->endRender();
 }
 

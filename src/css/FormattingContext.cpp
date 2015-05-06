@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2012 Esrille Inc.
+ * Copyright 2010-2015 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 FormattingContext::FormattingContext() :
-    breakable(false),
+    isFirstLetter(false),
     isFirstLine(false),
     lineBox(0),
     x(0.0f),
@@ -141,7 +141,6 @@ void FormattingContext::restoreContext(const BlockPtr& block)
     block->consumed = block->savedFormattingContext.consumed;
     restoreContext(block->savedFormattingContext.marginContext);
 
-    breakable = false;
     isFirstLine = false;
     lineBox = 0;
     x = 0.0f;
@@ -538,7 +537,7 @@ void FormattingContext::dontWrap()
 {
     assert(lineBox);
     if (auto box = std::dynamic_pointer_cast<InlineBox>(lineBox->getLastChild())) {
-        box->wrap = box->data.length();
+        box->wrap = box->offset;
         box->wrapWidth = box->width;
     }
 }
@@ -604,7 +603,6 @@ void FormattingContext::nextLine(ViewCSSImp* view, const BlockPtr& parentBox, bo
     lineBox = 0;
     x = leftover = 0.0f;
     atLineHead = true;
-    breakable = false;
 }
 
 void FormattingContext::addFloat(const BlockPtr& floatingBox, float totalWidth)
@@ -696,74 +694,23 @@ float FormattingContext::fixMargin()
     return updateRemainingHeight(0.0f);
 }
 
-bool FormattingContext::isFirstCharacter(const std::u16string& text)
+void FormattingContext::removeWrapBox(WrapControl& control)
 {
-    bool result = true;
-    size_t pos = 0;
-    char32_t ch = nextChar(text, pos);
-    if (!ch)
-        return false;
+    if (control.clearBreakable())
+        return;
     auto box = std::dynamic_pointer_cast<InlineBox>(lineBox->getLastChild());
-    while (box && box->hasWrapBox()) {
-        std::u16string wrapText = box->getWrapText();
-        size_t wrapLength = wrapText.length();
-        if (0 < wrapLength) {
-            wrapText += ch; // TODO: check this works with surrogate pairs.
-            TextIterator ti;
-            ti.setText(wrapText.c_str(), wrapText.length());
-            if (!ti.next() || *ti == wrapLength)
-                return true;
-
-            char32_t last;
-            pos = 0;
-            while (pos < wrapLength)
-                last = nextChar(wrapText, pos);
-            return u_ispunct(last);
-        }
-        result = false;
-        box = std::dynamic_pointer_cast<InlineBox>(box->getPreviousSibling());
-    }
-    return result;
-}
-
-InlineBoxPtr FormattingContext::getWrapBox(const std::u16string& text)
-{
-    InlineBoxPtr wrapBox;
-    auto box = std::dynamic_pointer_cast<InlineBox>(lineBox->getLastChild());
-    size_t pos = 0;
-    char32_t ch = nextChar(text, pos);
-    while (box && box->hasWrapBox()) {
-        std::u16string wrapText = box->getWrapText();
-        size_t wrapLength = wrapText.length();
-        if (ch)
-            wrapText += ch; // TODO: check this works with surrogate pairs.
-        TextIterator ti;
-        ti.setText(wrapText.c_str(), wrapText.length());
-        if (!ti.next() || *ti == wrapLength)
-            break;
-        wrapBox = box;
-        if (0 < box->getWrap())
-            break;
-        box = std::dynamic_pointer_cast<InlineBox>(box->getPreviousSibling());
-        pos = 0;
-        if (char32_t n = nextChar(wrapBox->getData(), pos))
-            ch = n;
-    }
-    if (!wrapBox)
-        return 0;
-    if (0 < wrapBox->getWrap()) {
-        box = std::dynamic_pointer_cast<InlineBox>(wrapBox->getNextSibling());
-        wrapBox = wrapBox->split();
-        wrapBox->nextSibling = box;
-    } else
-        box = wrapBox;
     while (box) {
-        auto next = std::dynamic_pointer_cast<InlineBox>(box->getNextSibling());
-        box->getParentBox()->removeChild(box);
-        box->nextSibling = next;
-        box = next;
+        if (box->node == control.node && box->offset <= control.offset) {
+            if (box->offset < control.offset)
+                box->trim();
+            else
+                lineBox->removeChild(box);
+            break;
+        }
+        auto previous = std::dynamic_pointer_cast<InlineBox>(box->getPreviousSibling());
+        lineBox->removeChild(box);
+        box = previous;
     }
-    return wrapBox;
 }
 
 }}}}  // org::w3c::dom::bootstrap
