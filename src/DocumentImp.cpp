@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 Esrille Inc.
+ * Copyright 2010-2015 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -641,12 +641,11 @@ Node DocumentImp::adoptNode(Node node)
 {
     auto n = std::dynamic_pointer_cast<NodeImp>(node.self());
     if (!n)
-        return node;    // TODO: throw NotSupportedError
+        return nullptr;
     if (n->getNodeType() == Node::DOCUMENT_NODE)
-        return node;    // TODO: throw NotSupportedError
-    Node parent = n->getParentNode();
-    if (parent)
-        parent.removeChild(node);
+        return nullptr;   // TODO: throw NotSupportedError
+    if (auto parent = n->getParent())
+        parent->removeChild(node);
     n->setOwnerDocument(std::static_pointer_cast<DocumentImp>(self()));
     // TODO: Change base URL for elements
     return node;

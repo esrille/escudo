@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 Esrille Inc.
+ * Copyright 2010-2015 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,9 +74,11 @@ NodePtr NodeImp::appendChild(NodePtr item)
 
 void NodeImp::setOwnerDocument(const DocumentPtr& document)
 {
-    ownerDocument = document;
-    for (NodePtr child = firstChild; child; child = child->nextSibling)
-        child->setOwnerDocument(document);
+    if (getOwnerDocumentImp() != document) {
+        ownerDocument = document;
+        for (NodePtr child = firstChild; child; child = child->nextSibling)
+            child->setOwnerDocument(document);
+    }
 }
 
 // Node
@@ -111,7 +113,7 @@ Node NodeImp::getParentNode()
 Element NodeImp::getParentElement()
 {
     if (auto parent = getParent())
-        return std::dynamic_pointer_cast<ElementImp>(parent->self());
+        return std::dynamic_pointer_cast<ElementImp>(parent);
     return nullptr;
 }
 
