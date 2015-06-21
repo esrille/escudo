@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>DOM Test</title>
+</head>
+<body>
+<div style='display: none;'>
+<span id='pass'>PASS</span>
+</div>
+<div id='target'>TEST </div>
+<script>
+var target = document.getElementById('target');
+target.appendChild(document.getElementById('pass'));
+</script>
+</body>
+</html>

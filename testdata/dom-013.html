@@ -1,0 +1,18 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>DOM Test</title>
+</head>
+<body>
+<div style='display: none;'>
+<span id='pass'>PASS</span>
+</div>
+<div id='target'>TEST <span id='fail'>FAIL</span></div>
+<script>
+var target = document.getElementById('target');
+target.insertBefore(document.getElementById('pass'), document.getElementById('fail'));
+target.removeChild(document.getElementById('fail'));
+</script>
+</body>
+</html>

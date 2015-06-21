@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 Esrille Inc.
+ * Copyright 2010-2015 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,16 +76,39 @@ public:
         parentNode = node;
     }
 
+    NodePtr getFirstChildPtr() const {
+        return firstChild;
+    }
+    NodePtr getLastChildPtr() const {
+        return lastChild;
+    }
+    NodePtr getNextSiblingPtr() const {
+        return nextSibling;
+    }
+    NodePtr getPreviousSiblingPtr() const {
+        return previousSibling;
+    }
+
+    NodePtr getRoot() {
+        NodePtr current = std::static_pointer_cast<NodeImp>(self());
+        while (NodePtr parent = current->getParent())
+            current = parent;
+        return current;
+    }
+
     // Returns true if this is an ancestor of the node
-    bool isAncestorOf(const NodePtr& node) {
+    bool isAncestorOf(const NodePtr& node) const {
         for (NodePtr parent = node->getParent(); parent; parent = parent->getParent()) {
             if (this == parent.get())
                 return true;
         }
         return false;
     }
+    bool isInclusiveAncestorOf(const NodePtr& node) const {
+        return node.get() == this || isAncestorOf(node);
+    }
 
-    bool isDescendantOf(const NodePtr& node) {
+    bool isDescendantOf(const NodePtr& node) const {
         for (NodePtr parent = getParent(); parent; parent = parent->getParent()) {
             if (node == parent)
                 return true;
@@ -101,6 +124,22 @@ public:
     unsigned int getChildCount() const {
         return childCount;
     }
+
+    unsigned int getPrecedingSiblingCount() const {
+        unsigned int count = 0;
+        for (NodePtr prev = previousSibling; prev; prev = prev->previousSibling)
+            ++count;
+        return count;
+    }
+
+    NodePtr getNextNode() const;
+    NodePtr getPreviousNode() const;
+
+    NodePtr preInsert(const NodePtr& node, const NodePtr& child, bool suppressObservers = false);
+    void insert(const NodePtr& node, const NodePtr& child, bool suppressObservers = false);
+    NodePtr replace(const NodePtr& child, const NodePtr& node);
+    NodePtr preRemove(const NodePtr& child);
+    void remove(const NodePtr& child, bool suppressObservers = false);
 
     void cloneChildren(NodeImp* org);
 

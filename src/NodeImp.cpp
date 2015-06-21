@@ -81,6 +81,293 @@ void NodeImp::setOwnerDocument(const DocumentPtr& document)
     }
 }
 
+NodePtr NodeImp::getNextNode() const
+{
+    if (firstChild)
+        return firstChild;
+    if (nextSibling)
+        return nextSibling;
+    for (auto node = getParent(); node; node = node->getParent()) {
+        if (node->nextSibling)
+            return node->nextSibling;
+    }
+    return nullptr;
+}
+
+NodePtr NodeImp::getPreviousNode() const
+{
+    if (!previousSibling)
+        return getParent();
+    auto node = previousSibling;
+    while (node->lastChild)
+        node = node->lastChild;
+    return node;
+}
+
+// Pre-insert a node before child.
+NodePtr NodeImp::preInsert(const NodePtr& node, const NodePtr& child, bool suppressObservers)
+{
+    NodePtr parent(std::static_pointer_cast<NodeImp>(self()));
+
+    // Ensure pre-insertion validity of node
+    unsigned short parentType = getNodeType();
+    switch (parentType) {
+    case Node::DOCUMENT_NODE:
+    case Node::DOCUMENT_FRAGMENT_NODE:
+    case Node::ELEMENT_NODE:
+        break;
+    default:
+        throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
+        break;
+    }
+
+    if (node->isInclusiveAncestorOf(parent))
+        throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
+    // TODO: Check parent root's host too.
+
+    if (child && child->getParent().get() != this)
+        throw DOMException{DOMException::NOT_FOUND_ERR};
+
+    unsigned short nodeType = node->getNodeType();
+    switch (nodeType) {
+    case Node::DOCUMENT_FRAGMENT_NODE:
+    case Node::DOCUMENT_TYPE_NODE:
+    case Node::ELEMENT_NODE:
+    case Node::TEXT_NODE:
+    case Node::PROCESSING_INSTRUCTION_NODE:
+    case Node::COMMENT_NODE:
+        break;
+    default:
+        throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
+        break;
+    }
+
+    if (nodeType == Node::TEXT_NODE && parentType == Node::DOCUMENT_NODE || nodeType == Node::DOCUMENT_TYPE_NODE && parentType != Node::DOCUMENT_NODE)
+        throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
+
+    if (parentType == Node::DOCUMENT_NODE) {
+        unsigned elementCount{0};
+        switch (nodeType) {
+        case Node::DOCUMENT_FRAGMENT_NODE:
+            for (auto i = node->firstChild; i; i = i->nextSibling) {
+                switch (i->getNodeType()) {
+                case Node::ELEMENT_NODE:
+                    if (1 < ++elementCount)
+                        throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
+                    break;
+                case Node::TEXT_NODE:
+                    throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
+                default:
+                    break;
+                }
+            }
+            if (elementCount == 1) {
+                for (auto i = firstChild; i; i = i->nextSibling) {
+                    if (i->getNodeType() == Node::ELEMENT_NODE)
+                        throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
+                }
+            }
+            for (auto i = child; i; i = i->nextSibling) {
+                if (i->getNodeType() == Node::DOCUMENT_TYPE_NODE)
+                    throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
+            }
+            break;
+        case Node::ELEMENT_NODE:
+            for (auto i = firstChild; i; i = i->nextSibling) {
+                if (i->getNodeType() == Node::ELEMENT_NODE)
+                    throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
+            }
+            for (auto i = child; i; i = i->nextSibling) {
+                if (i->getNodeType() == Node::DOCUMENT_TYPE_NODE)
+                    throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
+            }
+            break;
+        case Node::DOCUMENT_TYPE_NODE:
+            for (auto i = firstChild; i; i = i->nextSibling) {
+                switch (i->getNodeType()) {
+                case Node::ELEMENT_NODE:
+                    ++elementCount;
+                    break;
+                case Node::DOCUMENT_TYPE_NODE:
+                    throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
+                default:
+                    break;
+                }
+            }
+            if (child) {
+                for (auto i = child->previousSibling; i; i = i->previousSibling) {
+                    if (i->getNodeType() == Node::ELEMENT_NODE)
+                        throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
+                }
+            } else if (0 < elementCount)
+                throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
+            break;
+        }
+    }
+
+    auto reference = child;
+    if (reference == node)
+        reference = node->nextSibling;
+    if (DocumentPtr owner = getOwnerDocumentImp())
+        owner->adoptNode(node);
+    insert(node, reference);
+    return node;
+}
+
+// Insert a node before child.
+void NodeImp::insert(const NodePtr& node, const NodePtr& child, bool suppressObservers)
+{
+    unsigned short nodeType = node->getNodeType();
+    unsigned count = (nodeType == Node::DOCUMENT_FRAGMENT_NODE) ? node->getChildCount() : 1;
+    // TODO: from 2. to 3.
+    if (nodeType == Node::DOCUMENT_FRAGMENT_NODE) {
+        while (0 < node->getChildCount()) {
+            Node n = node->getFirstChild();
+            node->removeChild(n);
+            if (child)
+                insertBefore(n.self(), child);
+            else
+                appendChild(n.self());
+            if (!suppressObservers) {
+                auto event = std::make_shared<MutationEventImp>();
+                event->initMutationEvent(u"DOMNodeInserted", true, false, self(), u"", u"", u"", 0);
+                node->dispatchEvent(event);
+            }
+        }
+    } else {
+        if (child)
+            insertBefore(node, child);
+        else
+            appendChild(node);
+        if (!suppressObservers) {
+            auto event = std::make_shared<MutationEventImp>();
+            event->initMutationEvent(u"DOMNodeInserted", true, false, self(), u"", u"", u"", 0);
+            node->dispatchEvent(event);
+        }
+    }
+}
+
+NodePtr NodeImp::replace(const NodePtr& node, const NodePtr& child)
+{
+    NodePtr parent(std::static_pointer_cast<NodeImp>(self()));
+
+    // Ensure pre-insertion validity of node
+    unsigned short parentType = getNodeType();
+    switch (parentType) {
+    case Node::DOCUMENT_NODE:
+    case Node::DOCUMENT_FRAGMENT_NODE:
+    case Node::ELEMENT_NODE:
+        break;
+    default:
+        throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
+        break;
+    }
+
+    if (node->isInclusiveAncestorOf(parent))
+        throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
+    // TODO: Check parent root's host too.
+
+    if (child && child->getParent().get() != this)
+        throw DOMException{DOMException::NOT_FOUND_ERR};
+
+    unsigned short nodeType = node->getNodeType();
+    switch (nodeType) {
+    case Node::DOCUMENT_FRAGMENT_NODE:
+    case Node::DOCUMENT_TYPE_NODE:
+    case Node::ELEMENT_NODE:
+    case Node::TEXT_NODE:
+    case Node::PROCESSING_INSTRUCTION_NODE:
+    case Node::COMMENT_NODE:
+        break;
+    default:
+        throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
+        break;
+    }
+
+    if (nodeType == Node::TEXT_NODE && parentType == Node::DOCUMENT_NODE || nodeType == Node::DOCUMENT_TYPE_NODE && parentType != Node::DOCUMENT_NODE)
+        throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
+
+    if (parentType == Node::DOCUMENT_NODE) {
+        unsigned elementCount{0};
+        switch (nodeType) {
+        case Node::DOCUMENT_FRAGMENT_NODE:
+            for (auto i = node->firstChild; i; i = i->nextSibling) {
+                switch (i->getNodeType()) {
+                case Node::ELEMENT_NODE:
+                    if (1 < ++elementCount)
+                        throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
+                    break;
+                case Node::TEXT_NODE:
+                    throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
+                default:
+                    break;
+                }
+            }
+            if (elementCount == 1) {
+                for (auto i = firstChild; i; i = i->nextSibling) {
+                    if (i->getNodeType() == Node::ELEMENT_NODE && i != child)
+                        throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
+                }
+            }
+            for (auto i = child->nextSibling; i; i = i->nextSibling) {
+                if (i->getNodeType() == Node::DOCUMENT_TYPE_NODE)
+                    throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
+            }
+            break;
+        case Node::ELEMENT_NODE:
+            for (auto i = firstChild; i; i = i->nextSibling) {
+                if (i->getNodeType() == Node::ELEMENT_NODE && i != child)
+                    throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
+            }
+            for (auto i = child->nextSibling; i; i = i->nextSibling) {
+                if (i->getNodeType() == Node::DOCUMENT_TYPE_NODE)
+                    throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
+            }
+            break;
+        case Node::DOCUMENT_TYPE_NODE:
+            for (auto i = firstChild; i; i = i->nextSibling) {
+                if (i->getNodeType() == Node::DOCUMENT_TYPE_NODE && i != child)
+                    throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
+            }
+            for (auto i = child->previousSibling; i; i = i->previousSibling) {
+                if (i->getNodeType() == Node::ELEMENT_NODE)
+                    throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
+            }
+            break;
+        }
+    }
+
+    auto reference = child->nextSibling;
+    if (reference == node)
+        reference = node->nextSibling;
+    if (DocumentPtr owner = getOwnerDocumentImp())
+        owner->adoptNode(node);
+    remove(child, true);
+    insert(node, reference, true);
+    return child;
+}
+
+NodePtr NodeImp::preRemove(const NodePtr& child)
+{
+    if (child->getParent().get() != this)
+        throw DOMException{DOMException::NOT_FOUND_ERR};
+    remove(child);
+    return child;
+}
+
+void NodeImp::remove(const NodePtr& child, bool suppressObservers)
+{
+    unsigned int index = getPrecedingSiblingCount();
+    // TODO: from 2. to 7.
+
+    if (!suppressObservers) {
+        auto event = std::make_shared<MutationEventImp>();
+        event->initMutationEvent(u"DOMNodeRemoved", true, false, std::static_pointer_cast<NodeImp>(self()), u"", u"", u"", 0);
+        child->dispatchEvent(event);
+    }
+    removeChild(child);
+}
+
 // Node
 unsigned short NodeImp::getNodeType()
 {
@@ -234,50 +521,27 @@ void NodeImp::setTextContent(const Nullable<std::u16string>& textContent)
 
 Node NodeImp::insertBefore(Node newChild, Node refChild)
 {
-    auto ref = std::dynamic_pointer_cast<NodeImp>(refChild.self());
-    if (!ref)
-        return appendChild(newChild);
-    auto child = std::dynamic_pointer_cast<NodeImp>(newChild.self());
-    if (!child)
-        return child;
-    if (child != ref) {
-        DocumentPtr ownerOfChild = child->getOwnerDocumentImp();
-        if (ownerOfChild != getOwnerDocumentImp() && ownerOfChild.get() != this)
-            throw DOMException{DOMException::WRONG_DOCUMENT_ERR};
-        if (ref->getParent().get() != this)
-            throw DOMException{DOMException::NOT_FOUND_ERR};
-        if (child.get() == this || child->isAncestorOf(std::static_pointer_cast<NodeImp>(self())))
-            throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
-        if (child->getParent())
-            child->getParent()->removeChild(child);
-        insertBefore(child, ref);
-        events::MutationEvent event = std::make_shared<MutationEventImp>();
-        event.initMutationEvent(u"DOMNodeInserted", true, false, std::static_pointer_cast<NodeImp>(self()), u"", u"", u"", 0);
-        child->dispatchEvent(event);
+    NodePtr ref;
+    if (refChild) {
+        ref = std::dynamic_pointer_cast<NodeImp>(refChild.self());
+        if (!ref)
+            throw DOMException{DOMException::TYPE_MISMATCH_ERR};
     }
-    return child;
-}
+    NodePtr child = std::dynamic_pointer_cast<NodeImp>(newChild.self());
+    if (!child)
+        throw DOMException{DOMException::TYPE_MISMATCH_ERR};
+    return preInsert(child, ref);
+ }
 
 Node NodeImp::replaceChild(Node newChild, Node oldChild)
 {
-    auto child = std::dynamic_pointer_cast<NodeImp>(newChild.self());
+    auto node = std::dynamic_pointer_cast<NodeImp>(newChild.self());
+    if (!node)
+        throw DOMException{DOMException::TYPE_MISMATCH_ERR};
+    auto child = std::dynamic_pointer_cast<NodeImp>(oldChild.self());
     if (!child)
-        return oldChild;
-    auto ref = std::dynamic_pointer_cast<NodeImp>(oldChild.self());
-    if (!ref || ref->getParent().get() != this)
-        throw DOMException{DOMException::NOT_FOUND_ERR};
-    if (child != ref) {
-        DocumentPtr ownerOfChild = child->getOwnerDocumentImp();
-        if (ownerOfChild != getOwnerDocumentImp() && ownerOfChild.get() != this)
-            throw DOMException{DOMException::WRONG_DOCUMENT_ERR};
-        if (child.get() == this || child->isAncestorOf(std::static_pointer_cast<NodeImp>(self())))
-            throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
-        if (child->getParent())
-            child->getParent()->removeChild(child);
-        insertBefore(child, ref);
-        removeChild(ref);
-    }
-    return ref;
+        throw DOMException{DOMException::TYPE_MISMATCH_ERR};
+    return replace(node, child);
 }
 
 Node NodeImp::removeChild(Node oldChild)
@@ -285,35 +549,15 @@ Node NodeImp::removeChild(Node oldChild)
     auto child = std::dynamic_pointer_cast<NodeImp>(oldChild.self());
     if (!child)
         throw DOMException{DOMException::NOT_FOUND_ERR};
-    if (child->getParent().get() != this)
-        throw DOMException{DOMException::NOT_FOUND_ERR};
-    auto event = std::make_shared<MutationEventImp>();
-    event->initMutationEvent(u"DOMNodeRemoved", true, false, std::static_pointer_cast<NodeImp>(self()), u"", u"", u"", 0);
-    child->dispatchEvent(event);
-    removeChild(child);
-    return child;
+    return preRemove(child);
 }
 
 Node NodeImp::appendChild(Node newChild, bool clone)
 {
     auto child = std::dynamic_pointer_cast<NodeImp>(newChild.self());
     if (!child)
-        return child;
-    DocumentPtr ownerOfChild = child->getOwnerDocumentImp();
-    if (ownerOfChild != getOwnerDocumentImp() && ownerOfChild.get() != this)
-        throw DOMException{DOMException::WRONG_DOCUMENT_ERR};
-    if (child.get() == this || isDescendantOf(child))
-        throw DOMException{DOMException::HIERARCHY_REQUEST_ERR};
-    // TODO: case child is a DocumentFragment
-    if (auto oldParent = child->getParent())
-        oldParent->removeChild(child);
-    appendChild(child);
-    if (!clone) {
-        auto event = std::make_shared<MutationEventImp>();
-        event->initMutationEvent(u"DOMNodeInserted", true, false, std::static_pointer_cast<NodeImp>(self()), u"", u"", u"", 0);
-        child->dispatchEvent(event);
-    }
-    return child;
+        throw DOMException{DOMException::TYPE_MISMATCH_ERR};
+    return preInsert(child, nullptr, clone);
 }
 
 void NodeImp::normalize()
