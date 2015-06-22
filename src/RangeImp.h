@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2014 Esrille Inc.
+ * Copyright 2010-2015 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,9 +37,53 @@ namespace dom
 {
 namespace bootstrap
 {
+
+class DocumentImp;
+class NodeImp;
+
+typedef std::shared_ptr<NodeImp> NodePtr;
+typedef std::shared_ptr<DocumentImp> DocumentPtr;
+
 class RangeImp : public ObjectMixin<RangeImp>
 {
+    struct BoundaryPoint
+    {
+        NodePtr node;
+        unsigned int offset;
+
+        BoundaryPoint() :
+            node(nullptr),
+            offset(0)
+        {}
+        BoundaryPoint(const NodePtr& node, unsigned int offset = 0) :
+            node(node),
+            offset(offset)
+        {}
+
+        BoundaryPoint(const BoundaryPoint&) = default;
+        BoundaryPoint(BoundaryPoint&&) = default;
+        BoundaryPoint& operator=(const BoundaryPoint&) = default;
+        BoundaryPoint& operator=(BoundaryPoint&&) = default;
+
+        NodePtr getTargetNode() const;
+
+        bool operator==(const BoundaryPoint& other) const {
+            return node == other.node && offset == other.offset;
+        }
+        bool operator<(const BoundaryPoint& other) const;
+    };
+
+    std::weak_ptr<DocumentImp> ownerDocument;
+    BoundaryPoint start;
+    BoundaryPoint end;
+
 public:
+    RangeImp(const DocumentPtr& ownerDocument);
+
+    NodePtr getRoot();
+    bool contains(const NodePtr& node);
+    bool partiallyContains(const NodePtr& node);
+
     // Range
     Node getStartContainer();
     unsigned int getStartOffset();

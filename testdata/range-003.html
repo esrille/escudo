@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Range test</title>
+<script type="text/javascript">
+function doTest() {
+  range = document.createRange();
+  range.setStart(document.getElementById('start').firstChild, 1);
+  range.setEnd(document.getElementById('end').lastChild, 2);
+  frag = range.extractContents();
+  alert('"' + frag.textContent + '"');
+}
+</script>
+</head>
+<body onload="doTest()">
+<div id='t'>
+  <div>
+    <div id='start'>abc</div>
+    def
+    <div>ghi</div>
+  </div>jkl
+  <div id='end'>mno</div>
+</div>
+</body>
+</html>

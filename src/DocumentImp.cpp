@@ -34,6 +34,7 @@
 #include "EventImp.h"
 #include "NodeListImp.h"
 #include "ObjectArrayImp.h"
+#include "RangeImp.h"
 #include "TextImp.h"
 #include "WindowProxy.h"
 #include "XMLDocumentImp.h"
@@ -1718,8 +1719,11 @@ NodeList DocumentImp::querySelectorAll(const std::u16string& selectors)
 
 ranges::Range DocumentImp::createRange()
 {
-    // TODO: implement me!
-    return nullptr;
+    try {
+        return std::make_shared<RangeImp>(std::static_pointer_cast<DocumentImp>(self()));
+    } catch (...) {
+        return nullptr;
+    }
 }
 
 traversal::NodeIterator DocumentImp::createNodeIterator(Node root, unsigned int whatToShow, traversal::NodeFilter filter)
