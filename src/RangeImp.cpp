@@ -105,12 +105,11 @@ void RangeImp::checkOwner()
 
     DocumentPtr oldDocument = ownerDocument.lock();
     DocumentPtr newDocument = start.node->getOwnerDocumentImp();
-    if (oldDocument != newDocument) {
+    if (oldDocument != newDocument && newDocument) {
         RangePtr range(std::static_pointer_cast<RangeImp>(self()));
         if (oldDocument)
             oldDocument->eraseRange(range);
-        if (newDocument)
-            newDocument->appendRange(range);
+        newDocument->appendRange(range);
         ownerDocument = newDocument;
     }
 }
@@ -167,6 +166,30 @@ void RangeImp::onReplaceData(const NodePtr& node, unsigned offset, unsigned coun
             end.offset = offset;
         if (offset + count < end.offset)
             end.offset += length - count;
+    }
+}
+
+void RangeImp::onSplitText(const NodePtr& parent, const NodePtr& node, const NodePtr& newNode, unsigned offset)
+{
+    if (parent) {
+        if (start.node == node && offset < start.offset) {
+            start.node = newNode;
+            start.offset -= offset;
+        }
+        if (end.node == node && offset < end.offset) {
+            end.node = newNode;
+            end.offset -= offset;
+        }
+        unsigned index = node->getPrecedingSiblingCount();
+        if (start.node == parent && index + 1 == start.offset)
+            ++start.offset;
+        if (end.node == parent && index + 1 == end.offset)
+            ++end.offset;
+    } else {
+        if (start.node == node && offset < start.offset)
+            start.offset = offset;
+        if (end.node == node && offset < end.offset)
+            end.offset -= offset;
     }
 }
 

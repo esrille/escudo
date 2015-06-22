@@ -16,6 +16,9 @@
 
 #include "TextImp.h"
 
+#include "DocumentImp.h"
+#include "RangeImp.h"
+
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
 // Node
@@ -25,8 +28,36 @@ unsigned short TextImp::getNodeType()
 }
 
 // Text
+
+namespace {
+
+struct SplitTextFunctor
+{
+    const NodePtr& parent;
+    const NodePtr& node;
+    const NodePtr& newNode;
+    unsigned offset;
+    unsigned count;
+    unsigned length;
+
+    SplitTextFunctor(const NodePtr& parent, const NodePtr& node, const NodePtr& newNode, unsigned offset) :
+        parent(parent),
+        node(node),
+        newNode(newNode),
+        offset(offset)
+    {
+    }
+    void operator()(const RangePtr& range) {
+        range->onSplitText(parent, node, newNode, offset);
+    }
+};
+
+}
+
 Text TextImp::splitText(unsigned int offset)
 {
+    TextPtr node(std::static_pointer_cast<TextImp>(self()));
+
     unsigned int length = getLength();
     if (length < offset)
         throw DOMException{DOMException::INDEX_SIZE_ERR};
@@ -38,13 +69,16 @@ Text TextImp::splitText(unsigned int offset)
     } catch (...) {
         return nullptr;
     }
+    DocumentPtr document = getOwnerDocumentImp();
     auto parent = getParent();
     if (parent) {
         parent->insert(newNode, getNextSiblingPtr());
-        // TODO: 2.5
+        if (document)
+            document->forEachRange(SplitTextFunctor(parent, node, newNode, offset));
     }
     replaceData(offset, count, u"");
-    // TODO: 9.
+    if (!parent && document)
+        document->forEachRange(SplitTextFunctor(parent, node, newNode, offset));
     return newNode;
 }
 

@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Range test</title>
+<script type="text/javascript">
+function doTest() {
+  target = document.getElementById('t');
+  range = document.createRange();
+  range.setStart(target.firstChild, 0);
+  range.setEnd(target.firstChild, 10);
+  r2 = document.createRange();
+  r2.setStart(target, 0);
+  r2.setEnd(target, 1);
+  alert(range.startOffset + ", " + range.endOffset + "/" + r2.startOffset + ", " + r2.endOffset);	// 0, 10/0, 1
+  target.firstChild.splitText(5);
+  alert(range.startOffset + ", " + range.endOffset + "/" + r2.startOffset + ", " + r2.endOffset);	// 0, 5/0, 2
+  target.firstChild.splitText(2);
+  alert(range.startOffset + ", " + range.endOffset + "/" + r2.startOffset + ", " + r2.endOffset);	// 0, 5/0, 3
+}
+</script>
+</head>
+<body onload="doTest()">
+<div>
+<span id='t'>0123456789</span>
+</div>
+</body>
+</html>
