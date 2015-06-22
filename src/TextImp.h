@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 Esrille Inc.
+ * Copyright 2010-2015 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -61,6 +61,8 @@ public:
         return Text::getMetaData();
     }
 };
+
+typedef std::shared_ptr<TextImp> TextPtr;
 
 }}}}  // org::w3c::dom::bootstrap
 

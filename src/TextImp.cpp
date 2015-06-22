@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2013 Esrille Inc.
+ * Copyright 2010-2015 Esrille Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,25 @@ unsigned short TextImp::getNodeType()
 // Text
 Text TextImp::splitText(unsigned int offset)
 {
-    // TODO: implement me!
-    return nullptr;
+    unsigned int length = getLength();
+    if (length < offset)
+        throw DOMException{DOMException::INDEX_SIZE_ERR};
+    unsigned int count = length - offset;
+    std::u16string newData = substringData(offset, count);
+    TextPtr newNode;
+    try {
+        newNode = std::make_shared<TextImp>(getOwnerDocumentImp().get(), newData);
+    } catch (...) {
+        return nullptr;
+    }
+    auto parent = getParent();
+    if (parent) {
+        parent->insert(newNode, getNextSiblingPtr());
+        // TODO: 2.5
+    }
+    replaceData(offset, count, u"");
+    // TODO: 9.
+    return newNode;
 }
 
 std::u16string TextImp::getWholeText()
