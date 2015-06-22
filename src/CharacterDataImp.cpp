@@ -15,7 +15,9 @@
  */
 
 #include "CharacterDataImp.h"
+#include "DocumentImp.h"
 #include "MutationEventImp.h"
+#include "RangeImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -58,11 +60,9 @@ std::u16string CharacterDataImp::getData()
     return data;
 }
 
-void CharacterDataImp::setData(const std::u16string& data)
+void CharacterDataImp::setData(const std::u16string& arg)
 {
-    std::u16string prev = this->data;
-    this->data = data;
-    dispatchMutationEvent(prev);
+    replaceData(0, data.length(), arg);
 }
 
 unsigned int CharacterDataImp::getLength()
@@ -72,36 +72,62 @@ unsigned int CharacterDataImp::getLength()
 
 std::u16string CharacterDataImp::substringData(unsigned int offset, unsigned int count)
 {
-    if (data.length() <= offset)    // TODO: Check html4/table-anonymous-objects-159.htm
-        return u"";
+    // TODO: Check html4/table-anonymous-objects-159.htm
+    if (data.length() < offset)
+        throw DOMException{DOMException::INDEX_SIZE_ERR};
     return data.substr(offset, count);
 }
 
 void CharacterDataImp::appendData(const std::u16string& arg)
 {
-    std::u16string prev = this->data;
-    data += arg;
-    dispatchMutationEvent(prev);
+    replaceData(data.length(), 0, arg);
 }
 
 void CharacterDataImp::insertData(unsigned int offset, const std::u16string& arg)
 {
-    std::u16string prev = this->data;
-    data.insert(offset, arg);
-    dispatchMutationEvent(prev);
+    replaceData(offset, 0, arg);
 }
 
 void CharacterDataImp::deleteData(unsigned int offset, unsigned int count)
 {
-    std::u16string prev = this->data;
-    data.erase(offset, count);
-    dispatchMutationEvent(prev);
+    replaceData(offset, count, u"");
+}
+
+namespace {
+
+struct ReplaceFunctor
+{
+    const NodePtr& node;
+    unsigned offset;
+    unsigned count;
+    unsigned length;
+
+    ReplaceFunctor(const NodePtr& node, unsigned offset, unsigned count, unsigned length) :
+        node(node),
+        offset(offset),
+        count(count),
+        length(length)
+    {
+    }
+    void operator()(const RangePtr& range) {
+        range->onReplaceData(node, offset, count, length);
+    }
+};
+
 }
 
 void CharacterDataImp::replaceData(unsigned int offset, unsigned int count, const std::u16string& arg)
 {
-    std::u16string prev = this->data;
+    CharacterDataPtr node(std::static_pointer_cast<CharacterDataImp>(self()));
+
+    if (data.length() < offset)
+        throw DOMException{DOMException::INDEX_SIZE_ERR};
+    if (data.length() < offset + count)
+        count = data.length() - offset;
+    std::u16string prev(data);
     data.replace(offset, count, arg);
+    if (DocumentPtr document = getOwnerDocumentImp())
+        document->forEachRange(ReplaceFunctor(node, offset, count, arg.length()));
     dispatchMutationEvent(prev);
 }
 

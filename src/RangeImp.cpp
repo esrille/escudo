@@ -154,6 +154,22 @@ void RangeImp::onRemove(const NodePtr& parent, const NodePtr& node, unsigned ind
         --end.offset;
 }
 
+void RangeImp::onReplaceData(const NodePtr& node, unsigned offset, unsigned count, unsigned length)
+{
+    if (start.node == node) {
+        if (offset < start.offset && start.offset <= offset + count)
+            start.offset = offset;
+        if (offset + count < start.offset)
+            start.offset += length - count;
+    }
+    if (end.node == node) {
+        if (offset < end.offset && end.offset <= offset + count)
+            end.offset = offset;
+        if (offset + count < end.offset)
+            end.offset += length - count;
+    }
+}
+
 RangeImp::RangeImp(const DocumentPtr& ownerDocument) :
     ownerDocument(ownerDocument),
     start(ownerDocument),

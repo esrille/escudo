@@ -88,6 +88,7 @@ public:
 
     void onInsert(const NodePtr& parent, unsigned index, unsigned count);
     void onRemove(const NodePtr& parent, const NodePtr& node, unsigned index);
+    void onReplaceData(const NodePtr& node, unsigned offset, unsigned count, unsigned length);
 
     // Range
     Node getStartContainer();
