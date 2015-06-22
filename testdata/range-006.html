@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Range test</title>
+<script type="text/javascript">
+function doTest() {
+  range = document.createRange();
+  end = document.getElementById('end');
+  target = document.getElementById('t');
+  range.selectNode(end);
+  alert(range.startOffset + ", " + range.endOffset);	// 3, 4
+  end.parentNode.insertBefore(target, end);
+  alert(range.startOffset + ", " + range.endOffset);	// 3, 5
+  end.parentNode.removeChild(target);
+  alert(range.startOffset + ", " + range.endOffset);	// 3, 4
+}
+</script>
+</head>
+<body onload="doTest()">
+<div style='display: none;'>
+  <div id='t'>123</div>
+</div>
+<div>
+  <div>
+    <div id='start'>abc</div>
+    def
+    <div>ghi</div>
+  </div>jkl
+  <div id='end'>mno</div>
+</div>
+</body>
+</html>

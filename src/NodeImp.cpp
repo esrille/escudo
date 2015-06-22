@@ -19,6 +19,7 @@
 #include "MutationEventImp.h"
 #include "ElementImp.h"
 #include "NodeListImp.h"
+#include "RangeImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -214,12 +215,40 @@ NodePtr NodeImp::preInsert(const NodePtr& node, const NodePtr& child, bool suppr
     return node;
 }
 
+namespace {
+
+struct InsertFunctor
+{
+    NodePtr parent;
+    unsigned index;
+    unsigned count;
+
+    InsertFunctor(NodePtr parent, unsigned index, unsigned count) :
+        parent(parent),
+        index(index),
+        count(count)
+    {
+    }
+    void operator()(const RangePtr& range) {
+        range->onInsert(parent, index, count);
+    }
+};
+
+}
+
 // Insert a node before child.
 void NodeImp::insert(const NodePtr& node, const NodePtr& child, bool suppressObservers)
 {
+    NodePtr parent(std::static_pointer_cast<NodeImp>(self()));
     unsigned short nodeType = node->getNodeType();
     unsigned count = (nodeType == Node::DOCUMENT_FRAGMENT_NODE) ? node->getChildCount() : 1;
-    // TODO: from 2. to 3.
+
+    DocumentPtr document = getOwnerDocumentImp();
+    if (document && child) {
+        unsigned int index = child->getPrecedingSiblingCount();
+        document->forEachRange(InsertFunctor(parent, index, count));
+    }
+
     if (nodeType == Node::DOCUMENT_FRAGMENT_NODE) {
         while (0 < node->getChildCount()) {
             Node n = node->getFirstChild();
@@ -355,10 +384,35 @@ NodePtr NodeImp::preRemove(const NodePtr& child)
     return child;
 }
 
+namespace {
+
+struct RemoveFunctor
+{
+    const NodePtr& parent;
+    const NodePtr& node;
+    unsigned index;
+
+    RemoveFunctor(const NodePtr& parent, const NodePtr& node, unsigned index) :
+        parent(parent),
+        node(node),
+        index(index)
+    {
+    }
+    void operator()(const RangePtr& range) {
+        range->onRemove(parent, node, index);
+    }
+};
+
+}
+
 void NodeImp::remove(const NodePtr& child, bool suppressObservers)
 {
+    NodePtr parent(std::static_pointer_cast<NodeImp>(self()));
     unsigned int index = getPrecedingSiblingCount();
-    // TODO: from 2. to 7.
+
+    DocumentPtr document = getOwnerDocumentImp();
+    if (document)
+        document->forEachRange(RemoveFunctor(parent, child, index));
 
     if (!suppressObservers) {
         auto event = std::make_shared<MutationEventImp>();

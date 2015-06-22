@@ -62,6 +62,9 @@ class HTMLTokenizer;
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
+class RangeImp;
+typedef std::shared_ptr<RangeImp> RangePtr;
+
 class WindowProxy;
 typedef std::shared_ptr<WindowProxy> WindowProxyPtr;
 
@@ -85,6 +88,8 @@ class DocumentImp : public ObjectMixin<DocumentImp, NodeImp>
     std::list<html::HTMLScriptElement> deferScripts;
     std::list<html::HTMLScriptElement> asyncScripts;
     std::list<html::HTMLScriptElement> orderedScripts;
+
+    std::list<std::weak_ptr<RangeImp>> rangeList;
 
     WindowProxyPtr defaultView;
     std::weak_ptr<ElementImp> activeElement;
@@ -230,6 +235,20 @@ public:
     unsigned decrementLoadEventDelayCount(const std::u16string& href = u"");
 
     bool isBindingDocumentWindow(const WindowProxyPtr& window) const;
+
+    void appendRange(const RangePtr& range);
+    void eraseRange(const RangePtr& range);
+    template<class F>
+    void forEachRange(F f) {
+        for (auto i = rangeList.begin(); i != rangeList.end(); ) {
+            if (auto p = i->lock()) {
+                f(p);
+                ++i;
+            }
+            else
+                i = rangeList.erase(i);
+        }
+    }
 
     // Node - override
     virtual unsigned short getNodeType();

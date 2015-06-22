@@ -98,6 +98,23 @@ NodePtr RangeImp::BoundaryPoint::getTargetNode() const
     return target;
 }
 
+void RangeImp::checkOwner()
+{
+    if (!start.node)
+        return;
+
+    DocumentPtr oldDocument = ownerDocument.lock();
+    DocumentPtr newDocument = start.node->getOwnerDocumentImp();
+    if (oldDocument != newDocument) {
+        RangePtr range(std::static_pointer_cast<RangeImp>(self()));
+        if (oldDocument)
+            oldDocument->eraseRange(range);
+        if (newDocument)
+            newDocument->appendRange(range);
+        ownerDocument = newDocument;
+    }
+}
+
 NodePtr RangeImp::getRoot()
 {
     return start.node ? start.node->getRoot() : nullptr;
@@ -113,6 +130,28 @@ bool RangeImp::contains(const NodePtr& node)
 bool RangeImp::partiallyContains(const NodePtr& node)
 {
     return node->isInclusiveAncestorOf(start.node) ^ node->isInclusiveAncestorOf(end.node);
+}
+
+void RangeImp::onInsert(const NodePtr& parent, unsigned index, unsigned count)
+{
+     if (start.node == parent && index < start.offset)
+         start.offset += count;
+     if (end.node == parent && index < end.offset)
+         end.offset += count;
+}
+
+void RangeImp::onRemove(const NodePtr& parent, const NodePtr& node, unsigned index)
+{
+    if (start.node->isDescendantOf(node)) {
+        start.node = parent;
+        start.offset = index;
+    } else if (start.node == parent && index < start.offset)
+        --start.offset;
+    if (end.node->isDescendantOf(node)) {
+        end.node = parent;
+        end.offset = index;
+    } else if (end.node == parent && index < end.offset)
+        --end.offset;
 }
 
 RangeImp::RangeImp(const DocumentPtr& ownerDocument) :
@@ -167,6 +206,7 @@ void RangeImp::setStart(Node refNode, unsigned int offset)
         if (end < bp || getRoot() != node->getRoot())
             end = bp;
         start = bp;
+        checkOwner();
     }
 }
 
@@ -181,6 +221,7 @@ void RangeImp::setEnd(Node refNode, unsigned int offset)
         if (bp < start || getRoot() != node->getRoot())
             start = bp;
         end = bp;
+        checkOwner();
     }
 }
 

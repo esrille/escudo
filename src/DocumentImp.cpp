@@ -297,6 +297,22 @@ unsigned DocumentImp::decrementLoadEventDelayCount(const std::u16string& href) {
     return count;
 }
 
+void DocumentImp::appendRange(const RangePtr& range)
+{
+    rangeList.push_back(range);
+}
+
+void DocumentImp::eraseRange(const RangePtr& range)
+{
+    for (auto i = rangeList.begin(); i != rangeList.end(); ++i) {
+        if (i->lock() == range) {
+            rangeList.erase(i);
+            break;
+        }
+    }
+}
+
+
 // Document
 
 DOMImplementation DocumentImp::getImplementation()
@@ -1720,7 +1736,9 @@ NodeList DocumentImp::querySelectorAll(const std::u16string& selectors)
 ranges::Range DocumentImp::createRange()
 {
     try {
-        return std::make_shared<RangeImp>(std::static_pointer_cast<DocumentImp>(self()));
+        RangePtr range = std::make_shared<RangeImp>(std::static_pointer_cast<DocumentImp>(self()));
+        appendRange(range);
+        return range;
     } catch (...) {
         return nullptr;
     }

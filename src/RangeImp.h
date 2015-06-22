@@ -80,9 +80,14 @@ class RangeImp : public ObjectMixin<RangeImp>
 public:
     RangeImp(const DocumentPtr& ownerDocument);
 
+    void checkOwner();
+
     NodePtr getRoot();
     bool contains(const NodePtr& node);
     bool partiallyContains(const NodePtr& node);
+
+    void onInsert(const NodePtr& parent, unsigned index, unsigned count);
+    void onRemove(const NodePtr& parent, const NodePtr& node, unsigned index);
 
     // Range
     Node getStartContainer();
@@ -127,6 +132,8 @@ public:
         return ranges::Range::getMetaData();
     }
 };
+
+typedef std::shared_ptr<RangeImp> RangePtr;
 
 }
 }
