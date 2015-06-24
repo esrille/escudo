@@ -20,6 +20,7 @@
 #include "ElementImp.h"
 #include "NodeListImp.h"
 #include "RangeImp.h"
+#include "TextImp.h"
 
 namespace org { namespace w3c { namespace dom { namespace bootstrap {
 
@@ -614,9 +615,79 @@ Node NodeImp::appendChild(Node newChild, bool clone)
     return preInsert(child, nullptr, clone);
 }
 
+namespace {
+
+struct NormalizeFunctor
+{
+    const NodePtr& currentNode;
+    const NodePtr& node;
+    unsigned length;
+    unsigned index;
+    NormalizeFunctor(const NodePtr& currentNode, const NodePtr& node, unsigned length) :
+        currentNode(currentNode),
+        node(node),
+        length(length),
+        index(currentNode->getPrecedingSiblingCount())
+    {
+    }
+    void operator()(const RangePtr& range) {
+        range->onNormalize(currentNode, node, length, index);
+    }
+};
+
+}
+
 void NodeImp::normalize()
 {
-    // TODO: implement me!
+    NodePtr end(nextSibling);
+    if (!end) {
+        for (auto node = getParent(); node; node = node->getParent()) {
+            if (node->nextSibling) {
+                end = node->nextSibling;
+                break;
+            }
+        }
+    }
+    for (auto node = getNextNode(); node != end; ) {
+        TextPtr text(std::dynamic_pointer_cast<TextImp>(node->self()));
+        if (!text) {
+            node = node->getNextNode();
+            continue;
+        }
+
+        unsigned length = text->getLength();
+        if (length == 0) {
+            node = node->getNextNode();
+            text->getParent()->remove(text);
+            continue;
+        }
+
+        std::u16string data;
+        for (auto current = text->getNextSiblingPtr(); current; current = current->getNextSiblingPtr()) {
+            TextPtr currentText(std::dynamic_pointer_cast<TextImp>(current->self()));
+            if (!currentText)
+                break;
+            data += currentText->getData();
+        }
+        text->appendData(data);
+        if (DocumentPtr document = getOwnerDocumentImp()) {
+            for (auto current = text->getNextSiblingPtr(); current; current = current->getNextSiblingPtr()) {
+                TextPtr currentText(std::dynamic_pointer_cast<TextImp>(current->self()));
+                if (!currentText)
+                    break;
+                document->forEachRange(NormalizeFunctor(currentText, text, length));
+                length += currentText->getLength();
+            }
+        }
+        for (auto current = text->getNextSiblingPtr(); current; ) {
+            TextPtr currentText(std::dynamic_pointer_cast<TextImp>(current->self()));
+            if (!currentText)
+                break;
+            current = current->getNextSiblingPtr();
+            currentText->getParent()->remove(currentText);
+        }
+        node = node->getNextNode();
+    }
 }
 
 Node NodeImp::cloneNode(bool deep)

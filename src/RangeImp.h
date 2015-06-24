@@ -90,6 +90,7 @@ public:
     void onRemove(const NodePtr& parent, const NodePtr& node, unsigned index);
     void onReplaceData(const NodePtr& node, unsigned offset, unsigned count, unsigned length);
     void onSplitText(const NodePtr& parent, const NodePtr& node, const NodePtr& newNode, unsigned offset);
+    void onNormalize(const NodePtr& currentNode, const NodePtr& node, unsigned length, unsigned index);
 
     // Range
     Node getStartContainer();

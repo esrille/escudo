@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Range test</title>
+<script type="text/javascript">
+function doTest() {
+  a = document.getElementById('a');
+  a.firstChild.splitText(12);
+  a.firstChild.nextSibling.deleteData(0, 1);
+  a.firstChild.splitText(7);
+  a.firstChild.splitText(6);
+  a.firstChild.nextSibling.deleteData(0, 1);
+  a.firstChild.splitText(1);
+  a.firstChild.deleteData(0, 1);
+  alert(a.childNodes.length);
+
+  b = document.getElementById('b');
+  b.firstChild.splitText(12);
+  b.firstChild.nextSibling.deleteData(0, 1);
+  b.firstChild.splitText(7);
+  b.firstChild.splitText(6);
+  b.firstChild.nextSibling.deleteData(0, 1);
+  b.firstChild.splitText(1);
+  b.firstChild.deleteData(0, 1);
+  alert(b.childNodes.length);
+
+  t = document.getElementById('t');
+  t.normalize();
+  alert(a.childNodes.length + " " + b.childNodes.length);
+}
+</script>
+</head>
+<body onload="doTest()">
+<div id='t'>
+<span id='a'>X01234X56789X</span>
+<span id='b'>X01234X56789X</span>
+</div>
+</body>
+</html>

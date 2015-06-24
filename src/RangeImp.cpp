@@ -193,6 +193,26 @@ void RangeImp::onSplitText(const NodePtr& parent, const NodePtr& node, const Nod
     }
 }
 
+void RangeImp::onNormalize(const NodePtr& currentNode, const NodePtr& node, unsigned length, unsigned index)
+{
+    if (start.node == currentNode) {
+        start.offset += length;
+        start.node = node;
+    }
+    if (end.node == currentNode) {
+        end.offset += length;
+        end.node = node;
+    }
+    if (start.node == currentNode->getParent() && start.offset == index) {
+        start.node = node;
+        start.offset = length;
+    }
+    if (end.node == currentNode->getParent() && end.offset == index) {
+        end.node = node;
+        end.offset = length;
+    }
+}
+
 RangeImp::RangeImp(const DocumentPtr& ownerDocument) :
     ownerDocument(ownerDocument),
     start(ownerDocument),
