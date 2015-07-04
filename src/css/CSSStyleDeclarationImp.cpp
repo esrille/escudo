@@ -2260,7 +2260,7 @@ bool CSSStyleDeclarationImp::hasMultipleBoxes() const
                 return true;
         }
     }
-    return nullptr;
+    return false;
 }
 
 BlockPtr CSSStyleDeclarationImp::updateInlines(Element element)
