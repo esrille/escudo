@@ -1403,6 +1403,9 @@ LDADD = libeshtml5.a libesfontmanager.a \
 AM_LDFLAGS = \
 	$(X11_LDFLAGS)
 
+AM_LDFLAGS = \
+	$(X11_LDFLAGS)
+
 AM_CPPFLAGS = \
 	$(STD_CXX11_CPPFLAGS) \
 	-I $(srcdir) -I $(srcdir)/src \
